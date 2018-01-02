@@ -1,0 +1,30 @@
+{
+    "name": "openmedia",
+    "author": {
+        "name": "Rafael Miranda",
+        "email": "rafa8626@gmail.com"
+    },
+    "license": "MIT",
+    "description": "HTML5 video and audio player",
+    "repository": {
+        "url": "https://github.com/rafa8626/openmedia",
+        "type": "public"
+    },
+    "keywords": [
+        "media",
+        "video",
+        "audio",
+        "hls",
+        "dash",
+        "youtube",
+        "facebook",
+        "twitch",
+        "vimeo",
+        "mp4",
+        "mp3"
+    ],
+    "readme": "https://github.com/rafa8626/openmedia/blob/master/README.md",
+    "devDependencies": {
+        "eslint": "^4.14.0"
+    }
+}
