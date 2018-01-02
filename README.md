@@ -1,7 +1,8 @@
 # Open Media
+
 HTML5 video and audio player
 
-Based on [http://camendesign.com/code/video_for_everybody](Video for Everybody!), this player adapts to the most popular libraries/APIs to play a variety of media, such as native MP4/MP3, HLS, M(PEG)-DASH, YouTube, Vimeo, etc.
+Based on [Video for Everybody!](http://camendesign.com/code/video_for_everybody), this player adapts to the most popular libraries/APIs to play a variety of media, such as native MP4/MP3, HLS, M(PEG)-DASH, YouTube, Vimeo, etc.
 
 A few key features:
 
