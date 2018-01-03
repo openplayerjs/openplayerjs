@@ -1,0 +1,5 @@
+/** https://css-tricks.com/NetMag/FluidWidthVideo/Article-FluidWidthVideo.php */
+video, audio {
+    height: auto !important;
+    width: 100% !important;
+}
