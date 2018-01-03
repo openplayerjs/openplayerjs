@@ -2,10 +2,10 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-    entry: './openmedia.js',
+    entry: './player.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'openmedia.min.js'
+        filename: 'om_player.min.js'
     },
     module: {
         rules: [
