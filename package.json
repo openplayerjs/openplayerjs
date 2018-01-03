@@ -25,6 +25,16 @@
     ],
     "readme": "https://github.com/rafa8626/openmedia/blob/master/README.md",
     "devDependencies": {
-        "eslint": "^4.14.0"
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.2",
+        "babel-preset-env": "^1.6.1",
+        "eslint": "^4.14.0",
+        "eslint-config-airbnb": "^15.1.0",
+        "eslint-config-airbnb-base": "^12.1.0",
+        "eslint-loader": "^1.9.0",
+        "eslint-plugin-import": "^2.7.0",
+        "eslint-plugin-jsx-a11y": "^5.1.1",
+        "eslint-plugin-react": "^7.1.0",
+        "webpack": "^3.10.0"
     }
 }
