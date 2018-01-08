@@ -1,0 +1,23 @@
+.om-player video, 
+.om-player audio {
+    height: auto !important;
+    width: 100% !important;
+}
+.om-controls {
+    background: #000;
+}
+.om-controls button {
+    height: 30px;
+    width: 30px;
+}
+.om-controls svg {
+    fill: #000;
+}
+.om-sr {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+}
