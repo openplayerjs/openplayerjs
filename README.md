@@ -1,4 +1,4 @@
-# Open Media
+# Open Player
 
 HTML5 video and audio player
 
