@@ -1,4 +1,5 @@
 import * as Utils from './src/js/utils/media';
+import Media from './src/js/media';
 import playIcon from './src/css/play.svg';
 import muteIcon from './src/css/volume-off.svg';
 import './src/css/player.css';
@@ -6,7 +7,7 @@ import './src/css/player.css';
 // import replayIcon from './src/css/replay.svg';
 
 /**
- * Class that creates the OpenMedia player
+ * Class that creates Open Player instance
  *
  * @class Player
  */
@@ -23,7 +24,6 @@ class Player {
             this._wrapInstance();
             this._createControls();
         }
-
         return this;
     }
 
@@ -128,13 +128,20 @@ class Player {
 
     /**
      * Load callbacks/events depending of media type
+     *
      * @memberof Player
      */
     _prepareMedia() {
-        if (Utils.isIframe(this.element)) {
-            this._buildResponsiveIframe();
-        } else {
-            this.element.canPlayType('');
+        try {
+            this.media = new Media(this.element);
+            this.media.load();
+            this._wrapInstance();
+
+            if (Utils.isIframe(this.element)) {
+                this._buildResponsiveIframe();
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 

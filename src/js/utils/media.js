@@ -35,7 +35,7 @@ export function isAudio(element) {
  * Get media file extension from URL
  *
  * @param {string} url
- * @return {string}
+ * @returns {string}
  */
 export function getExtension(url) {
     if (typeof url !== 'string') {
@@ -53,7 +53,7 @@ export function getExtension(url) {
  *
  * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#the-source-element
  * @param {string} type
- * @return {string}
+ * @returns {string}
  */
 export function getMimeType(type) {
     if (typeof type !== 'string') {

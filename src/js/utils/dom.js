@@ -3,7 +3,7 @@
  *
  * @export
  * @param {string} url
- * @return {Promise}
+ * @returns {Promise}
  */
 export function loadScript(url) {
     return new Promise((resolve, reject) => {

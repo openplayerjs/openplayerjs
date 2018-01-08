@@ -1,32 +1,40 @@
-import {loadScript} from '../utils/dom';
+import * as Utils from './utils';
 
-/**
- * Class that creates the setup to play HLS using hls.js library
- *
- * @class MediaHls
- */
-class MediaHls {
-    /**
-     * Creates an instance of MediaHls.
-     * @memberof MediaHls
-     * @return {MediaHls}
-     */
-    constructor() {
-        this.promise = null;
-
-        function createPlayer() {
-            this._createPlayer();
+class HlsMedia {
+    constructor(element) {
+        // We need this only if browser doesn't support HLS natively
+        if (Utils.SUPPORTS_NATIVE_HLS) {
+            throw new TypeError('Browsers supports natively Hls... using native approach instead');
         }
 
+        /**
+         * @private
+         */
+        function createInstance() {
+            this._createInstance();
+        }
+        this.element = element;
+        this.hlsPlayer = null;
         this.promise = (typeof Hls === 'undefined') ?
-            loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') :
+            // Ever-green script
+            Utils.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') :
             new Promise(resolve => {
                 resolve();
             });
 
-        this.promise.then(createPlayer);
+        this.promise.then(createInstance.bind(this));
         return this;
+    }
+
+    load() {
+        this.hlsPlayer.detachMedia();
+        this.hlsPlayer.loadSource(this.element.src);
+        this.hlsPlayer.attachMedia(this.element);
+    }
+
+    _createInstance() {
+        this.hlsPlayer = new Hls();
     }
 }
 
-export default MediaHls;
+export default HlsMedia;
