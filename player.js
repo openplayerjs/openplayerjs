@@ -1,3 +1,10 @@
+import * as Utils from './src/js/utils/media';
+import playIcon from './src/css/play.svg';
+import muteIcon from './src/css/volume-off.svg';
+import './src/css/player.css';
+// import pauseIcon from './src/css/pause.svg';
+// import replayIcon from './src/css/replay.svg';
+
 /**
  * Class that creates the OpenMedia player
  *
@@ -12,26 +19,17 @@ class Player {
     constructor(element) {
         this.element = element;
         if (this._isValid()) {
-            this._build();
+            this._prepareMedia();
+            this._wrapInstance();
+            this._createControls();
         }
-    }
 
-    /**
-     * Evaluate the attributes of the element to create player
-     * @private
-     * @memberof Player
-     */
-    _build() {
-        this._wrapInstance();
-
-        if (this.element.tagName.toLowerCase() === 'iframe') {
-            this._buildResponsiveIframe();
-        }
+        return this;
     }
 
     /**
      * Check if the element passed in the constructor is a valid video/audio/iframe tag
-     * with 'om__player' class
+     * with 'om-player' class
      * @private
      * @memberof Player
      * @return {boolean}
@@ -45,7 +43,7 @@ class Player {
             return false;
         }
 
-        if (!this.element.classList.contains('om__player')) {
+        if (!this.element.classList.contains('om-player')) {
             return false;
         }
 
@@ -58,10 +56,86 @@ class Player {
      */
     _wrapInstance() {
         const wrapper = document.createElement('div');
-        wrapper.className = 'om__player-wrapper';
+        wrapper.className = 'om-player';
 
+        this.element.classList.remove('om-player');
         this.element.parentNode.insertBefore(wrapper, this.element);
         wrapper.appendChild(this.element);
+    }
+    /**
+     * Build HTML markup for media controls
+     * @memberof Player
+     */
+    _createControls() {
+        this.element.controls = false;
+        const container = document.createElement('div');
+        container.className = 'om-controls';
+
+        // Append basic buttons
+        const play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'om-controls__playpause';
+        play.innerHTML = `<svg viewBox="${playIcon.viewBox}">
+            <use xlink:href="#${playIcon.id}" />
+        </svg> <span class="om-sr">Play/Pause</span>`;
+        container.appendChild(play);
+
+        const current = document.createElement('time');
+        current.className = 'om-controls__current';
+        current.innerText = this.element.currentTime;
+        container.appendChild(current);
+
+        const duration = document.createElement('time');
+        duration.className = 'om-controls__duration';
+        duration.innerText = this.element.duration;
+        container.appendChild(duration);
+
+        const progress = document.createElement('input');
+        progress.type = 'range';
+        progress.className = 'om-controls__progress';
+        progress.setAttribute('min', this.element.currentTime);
+        progress.setAttribute('max', this.element.duration);
+        progress.setAttribute('step', 0.1);
+        progress.value = 0;
+        container.appendChild(progress);
+
+        const mute = document.createElement('button');
+        mute.type = 'button';
+        mute.className = 'om-controls__mute';
+        mute.innerHTML = `<svg viewBox="${muteIcon.viewBox}">
+            <use xlink:href="#${muteIcon.id}" />
+        </svg> <span class="om-sr">Mute</span>`;
+        container.appendChild(mute);
+
+        const volume = document.createElement('input');
+        volume.type = 'range';
+        volume.className = 'om-controls__volume';
+        volume.setAttribute('min', 0);
+        volume.setAttribute('max', 1);
+        volume.setAttribute('step', 0.1);
+        volume.value = 0.8;
+        container.appendChild(volume);
+
+        const fullscreen = document.createElement('button');
+        fullscreen.type = 'button';
+        fullscreen.className = 'om-controls__fullscreen';
+        fullscreen.innerText = 'Fullscreen';
+        container.appendChild(fullscreen);
+
+        // Append controls to wrapper
+        this.element.parentNode.appendChild(container);
+    }
+
+    /**
+     * Load callbacks/events depending of media type
+     * @memberof Player
+     */
+    _prepareMedia() {
+        if (Utils.isIframe(this.element)) {
+            this._buildResponsiveIframe();
+        } else {
+            this.element.canPlayType('');
+        }
     }
 
     /**
@@ -96,9 +170,9 @@ class Player {
 
 /**
  * Entry point
- * Convert all the video/audio/iframe with 'om__player' class in a OpenMedia player
+ * Convert all the video/audio/iframe with 'om-player' class in a OpenMedia player
  */
-const targets = document.querySelectorAll('video.om__player, audio.om__player, iframe.om__player');
+const targets = document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player');
 const instances = [];
 for (let i = 0, total = targets.length; i < total; i++) {
     instances.push(new Player(targets[i]));
