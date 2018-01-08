@@ -27,11 +27,9 @@ class HlsMedia {
     }
 
     load() {
-        this.promise.then(() => {
-            this.hlsPlayer.detachMedia();
-            this.hlsPlayer.loadSource(this.element.src);
-            this.hlsPlayer.attachMedia(this.element);
-        });
+        this.hlsPlayer.detachMedia();
+        this.hlsPlayer.loadSource(this.element.src);
+        this.hlsPlayer.attachMedia(this.element);
     }
 
     _createInstance() {
