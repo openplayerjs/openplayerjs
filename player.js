@@ -1,3 +1,5 @@
+import Media from './src/media';
+
 /**
  * Class that creates the OpenMedia player
  *
@@ -22,10 +24,18 @@ class Player {
      * @memberof Player
      */
     _build() {
-        this._wrapInstance();
+        this.media = new Media(this.element);
 
-        if (this.element.tagName.toLowerCase() === 'iframe') {
-            this._buildResponsiveIframe();
+        try {
+            this.media.load();
+
+            this._wrapInstance();
+
+            if (this.element.tagName.toLowerCase() === 'iframe') {
+                this._buildResponsiveIframe();
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 
