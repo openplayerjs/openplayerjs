@@ -1,4 +1,4 @@
-import * as Utils from './src/js/utils/media';
+import * as Utils from './src/js/utils/mediaHelpers';
 import Media from './src/js/media';
 import playIcon from './src/css/play.svg';
 import muteIcon from './src/css/volume-off.svg';

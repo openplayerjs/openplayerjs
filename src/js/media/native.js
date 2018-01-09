@@ -1,11 +1,17 @@
-import {isAudio, isVideo} from '../utils/media';
-
+import {isAudio, isVideo} from '../utils/mediaHelpers';
 /**
+ * Class that wraps the native HTML5 video/audio tags
  *
+ * @class NativeMedia
  */
 class NativeMedia {
+    /**
+     * Creates an instance of NativeMedia.
+     * @param {HTMLElement} element
+     * @returns {NativeMedia}
+     * @memberof NativeMedia
+     */
     constructor(element) {
-        // We need this only if browser doesn't support HLS natively
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
@@ -17,9 +23,7 @@ class NativeMedia {
     }
 
     load() {
-        this.promise.then(() => {
-            this.element.load();
-        });
+        this.element.load();
     }
 }
 

@@ -61,7 +61,9 @@ class Media {
         }
 
         try {
-            // '
+            // if (this.media.canPlayType(mimeType)) {
+            //    throw new TypeError('Media cannot be played');
+            // }
             this.media.promise.then(() => {
                 this.media.load();
             });

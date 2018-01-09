@@ -15,7 +15,7 @@ class HlsMedia {
          * @private
          */
         function createInstance() {
-            this._createInstance();
+            this.hlsPlayer = new Hls();
         }
         this.element = element;
         this.hlsPlayer = null;
@@ -34,10 +34,6 @@ class HlsMedia {
         this.hlsPlayer.detachMedia();
         this.hlsPlayer.loadSource(this.element.src);
         this.hlsPlayer.attachMedia(this.element);
-    }
-
-    _createInstance() {
-        this.hlsPlayer = new Hls();
     }
 }
 
