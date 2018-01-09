@@ -9,7 +9,7 @@ const extractPlugin = new ExtractTextPlugin({
 });
 
 module.exports = {
-    entry: './player.js',
+    entry: './src/js/player.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'om_player.min.js'
