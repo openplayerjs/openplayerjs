@@ -1,4 +1,37 @@
 /**
+ * Checks if element is an iframe
+ *
+ * @export
+ * @param {HTMLElement} element
+ * @return {boolean}
+ */
+export function isIframe(element) {
+    return element.tagName.toLowerCase() === 'iframe';
+}
+
+/**
+ * Checks if element is a video tag
+ *
+ * @export
+ * @param {HTMLElement} element
+ * @return {boolean}
+ */
+export function isVideo(element) {
+    return element.tagName.toLowerCase() === 'video';
+}
+
+/**
+ * Checks if element is an audio tag
+ *
+ * @export
+ * @param {HTMLElement} element
+ * @return {boolean}
+ */
+export function isAudio(element) {
+    return element.tagName.toLowerCase() === 'audio';
+}
+
+/**
  * Load a script using Promise
  *
  * @export

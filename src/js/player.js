@@ -1,13 +1,9 @@
-import * as Utils from './utils/mediaHelpers';
+import { isIframe, isAudio, isVideo } from './utils/dom';
 import Media from './media';
-import playIcon from '../css/play.svg';
-import muteIcon from '../css/volume-off.svg';
-import '../css/player.css';
-// import pauseIcon from './src/css/pause.svg';
-// import replayIcon from './src/css/replay.svg';
+import Controls from './controls';
 
 /**
- * Class that creates Open Player instance
+ * Class that creates an Open Player instance
  *
  * @class Player
  */
@@ -22,7 +18,7 @@ class Player {
         if (this._isValid()) {
             this._prepareMedia();
             this._wrapInstance();
-            // this._createControls();
+            this._createControls();
         }
         return this;
     }
@@ -35,20 +31,23 @@ class Player {
      * @return {boolean}
      */
     _isValid() {
-        if (this.element instanceof HTMLElement === false) {
+        const el = this.element;
+
+        if (el instanceof HTMLElement === false) {
             return false;
         }
 
-        if (!/^(video|audio|iframe)$/.test(this.element.tagName.toLowerCase())) {
+        if (!isAudio(el) && !isVideo(el) && !isIframe(el)) {
             return false;
         }
 
-        if (!this.element.classList.contains('om-player')) {
+        if (!el.classList.contains('om-player')) {
             return false;
         }
 
         return true;
     }
+
     /**
      * Wrap media instance within a DIV
      * @private
@@ -62,68 +61,16 @@ class Player {
         this.element.parentNode.insertBefore(wrapper, this.element);
         wrapper.appendChild(this.element);
     }
+
     /**
      * Build HTML markup for media controls
      * @memberof Player
      */
     _createControls() {
-        this.element.controls = false;
-        const container = document.createElement('div');
-        container.className = 'om-controls';
+        const controls = new Controls(this.element);
 
-        // Append basic buttons
-        const play = document.createElement('button');
-        play.type = 'button';
-        play.className = 'om-controls__playpause';
-        play.innerHTML = `<svg viewBox="${playIcon.viewBox}">
-            <use xlink:href="#${playIcon.id}" />
-        </svg> <span class="om-sr">Play/Pause</span>`;
-        container.appendChild(play);
-
-        const current = document.createElement('time');
-        current.className = 'om-controls__current';
-        current.innerText = this.element.currentTime;
-        container.appendChild(current);
-
-        const duration = document.createElement('time');
-        duration.className = 'om-controls__duration';
-        duration.innerText = this.element.duration;
-        container.appendChild(duration);
-
-        const progress = document.createElement('input');
-        progress.type = 'range';
-        progress.className = 'om-controls__progress';
-        progress.setAttribute('min', this.element.currentTime);
-        progress.setAttribute('max', this.element.duration);
-        progress.setAttribute('step', 0.1);
-        progress.value = 0;
-        container.appendChild(progress);
-
-        const mute = document.createElement('button');
-        mute.type = 'button';
-        mute.className = 'om-controls__mute';
-        mute.innerHTML = `<svg viewBox="${muteIcon.viewBox}">
-            <use xlink:href="#${muteIcon.id}" />
-        </svg> <span class="om-sr">Mute</span>`;
-        container.appendChild(mute);
-
-        const volume = document.createElement('input');
-        volume.type = 'range';
-        volume.className = 'om-controls__volume';
-        volume.setAttribute('min', 0);
-        volume.setAttribute('max', 1);
-        volume.setAttribute('step', 0.1);
-        volume.value = 0.8;
-        container.appendChild(volume);
-
-        const fullscreen = document.createElement('button');
-        fullscreen.type = 'button';
-        fullscreen.className = 'om-controls__fullscreen';
-        fullscreen.innerText = 'Fullscreen';
-        container.appendChild(fullscreen);
-
-        // Append controls to wrapper
-        this.element.parentNode.appendChild(container);
+        // Append controls to player wrapper
+        this.element.parentNode.appendChild(controls.container);
     }
 
     /**
@@ -136,9 +83,7 @@ class Player {
             this.media = new Media(this.element);
             this.media.load();
 
-            this._wrapInstance();
-
-            if (Utils.isIframe(this.element)) {
+            if (isIframe(this.element)) {
                 this._buildResponsiveIframe();
             }
         } catch (e) {
