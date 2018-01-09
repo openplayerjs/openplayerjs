@@ -18,7 +18,6 @@ class NativeMedia {
 
     load() {
         this.promise.then(() => {
-            console.log(this.element);
             this.element.load();
         });
     }
