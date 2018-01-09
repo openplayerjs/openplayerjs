@@ -1,5 +1,6 @@
 import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
+import { isIframe } from './utils/dom';
 
 /**
  *
@@ -49,7 +50,7 @@ class Media {
         try {
             if (/.m3u8/.test(this.url)) {
                 this.media = new HlsMedia(this.element);
-            } else {
+            } else if (!isIframe(this.element)) {
                 this.media = new NativeMedia(this.element);
             }
         } catch (e) {
@@ -69,7 +70,7 @@ class Media {
             });
         } catch (e) {
             // destroy media
-            this.media.destroy();
+            // this.media.destroy();
         }
     }
 
