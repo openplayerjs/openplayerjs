@@ -1,4 +1,4 @@
-import {isAudio, isVideo} from '../utils/mediaHelpers';
+import {isAudio, isVideo} from '../utils/dom';
 /**
  * Class that wraps the native HTML5 video/audio tags
  *
