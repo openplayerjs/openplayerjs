@@ -1,6 +1,7 @@
 import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
 import { isIframe } from './utils/dom';
+import { predictType } from './utils/url';
 
 /**
  *
@@ -44,8 +45,8 @@ class Media {
             throw new TypeError('URL not set');
         }
 
-        // @todo: Add method to grab correct MIME type
-        // const mimeType = 'video/mp4';
+        // Attempt to grab correct MIME type from URL
+        const mimeType = predictType(this.url);
 
         try {
             if (/.m3u8/.test(this.url)) {
@@ -62,9 +63,9 @@ class Media {
         }
 
         try {
-            // if (this.media.canPlayType(mimeType)) {
-            //    throw new TypeError('Media cannot be played');
-            // }
+            if (this.media.canPlayType(mimeType)) {
+                throw new TypeError('Media cannot be played');
+            }
             this.media.promise.then(() => {
                 this.media.load();
             });

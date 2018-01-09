@@ -85,3 +85,40 @@ export function isFacebookSource(url) {
 export function isDailymotionSource(url) {
     return /\/\/((www\.)?dailymotion\.com|dai\.ly)/i.test(url);
 }
+
+export function predictType(url) {
+    const extension = getExtension(url);
+    let type;
+
+    // If no extension found, check if media is a vendor iframe
+    if (!extension) {
+        if (isDailymotionSource(url)) {
+            return 'video/x-dailymotion';
+        }
+        if (isFacebookSource(url)) {
+            return 'video/x-facebook';
+        }
+        if (isTwitchSource(url)) {
+            return 'video/x-twitch';
+        }
+        if (isVimeoSource(url)) {
+            return 'video/x-vimeo';
+        }
+        if (isYouTubeSource(url)) {
+            return 'video/x-youtube';
+        }
+        return 'video/mp4';
+    }
+    switch (extension) {
+        case 'm3u8':
+            type = 'application/x-mpegURL';
+            break;
+        case 'mp3':
+            type = 'audio/mp3';
+            break;
+        default:
+            type = 'video/mp4';
+            break;
+    }
+    return type;
+}
