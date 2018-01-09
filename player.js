@@ -22,7 +22,7 @@ class Player {
         if (this._isValid()) {
             this._prepareMedia();
             this._wrapInstance();
-            this._createControls();
+            // this._createControls();
         }
         return this;
     }
@@ -135,6 +135,7 @@ class Player {
         try {
             this.media = new Media(this.element);
             this.media.load();
+
             this._wrapInstance();
 
             if (Utils.isIframe(this.element)) {
