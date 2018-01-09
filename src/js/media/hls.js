@@ -1,9 +1,13 @@
-import * as Utils from './utils';
+import {SUPPORTS_NATIVE_HLS} from '../utils/constants';
+import {loadScript} from '../utils/dom';
 
+/**
+ *
+ */
 class HlsMedia {
     constructor(element) {
         // We need this only if browser doesn't support HLS natively
-        if (Utils.SUPPORTS_NATIVE_HLS) {
+        if (SUPPORTS_NATIVE_HLS) {
             throw new TypeError('Browsers supports natively Hls... using native approach instead');
         }
 
@@ -17,7 +21,7 @@ class HlsMedia {
         this.hlsPlayer = null;
         this.promise = (typeof Hls === 'undefined') ?
             // Ever-green script
-            Utils.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') :
+            loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') :
             new Promise(resolve => {
                 resolve();
             });

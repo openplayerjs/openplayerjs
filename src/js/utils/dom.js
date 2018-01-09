@@ -64,7 +64,7 @@ export function request(url, dataType, success, error) {
 
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    completed = true;  
+                    completed = true;
                     let data;
                     switch (dataType) {
                         case 'json':
