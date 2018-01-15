@@ -51,7 +51,7 @@ class Media {
                     this._loadIframeSource(media) :
                     this._loadNativeSource(media);
             } catch (e) {
-                this.media = new NativeMedia(this.element);
+                this.media = new NativeMedia(this.element, media);
             }
 
             return this.canPlayType(media.type);
@@ -171,7 +171,6 @@ class Media {
      * @memberof Media
      */
     _loadIframeSource(media) {
-        console.log(isYouTubeSource(media.src));
         if (isYouTubeSource(media.src)) {
             return new YouTubeMedia(this.element);
         }
@@ -193,7 +192,7 @@ class Media {
             return new DashMedia(this.element, media);
         }
 
-        return new NativeMedia(this.element);
+        return new NativeMedia(this.element, media);
     }
 }
 
