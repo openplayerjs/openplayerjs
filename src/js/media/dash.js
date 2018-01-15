@@ -39,7 +39,15 @@ class DashMedia {
     }
 
     load() {
-        console.log(this);
+        this.element.load();
+    }
+
+    play() {
+        this.element.play();
+    }
+
+    pause() {
+        this.element.pause();
     }
 }
 

@@ -38,6 +38,14 @@ class NativeMedia {
     load() {
         this.element.load();
     }
+
+    play() {
+        this.element.play();
+    }
+
+    pause() {
+        this.element.pause();
+    }
 }
 
 export default NativeMedia;

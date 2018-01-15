@@ -10,8 +10,8 @@ class Controls {
      * @returns {Controls}
      * @memberof Controls
      */
-    constructor() {
-        // element.controls = false;
+    constructor(element) {
+        element.controls = false;
         this.container = document.createElement('div');
         this.container.className = 'om-controls';
         return this;
