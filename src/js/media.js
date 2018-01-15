@@ -1,30 +1,27 @@
 import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
+import DashMedia from './media/dash';
+import YouTubeMedia from './media/youtube';
 import { isIframe } from './utils/dom';
-import { predictType } from './utils/url';
+import { predictType, isHlsSource, isDashSource, isYouTubeSource } from './utils/url';
 
 /**
+ * Class that creates the Media Component in the player
  *
+ * The `Media` is the either the visual/audio area that results from playing
+ * a valis source
+ * @class Media
  */
 class Media {
     constructor(element) {
         this.element = element;
-        this.url = element.src || '';
-
-        // If no single source inside tag, check first `<source>` tag
-        if (!this.url) {
-            const source = element.querySelector('source');
-            this.url = source.src;
-        }
-        // Ensure that we set the URL if found
-        if (this.url) {
-            this.element.src = this.url;
-        }
-
+        this.mediaFiles = this._getMediaFiles();
+        this.promisePlay = null;
         return this;
     }
 
     /**
+     * Check if player can play the current media type (MIME type)
      *
      * @param {string} mimeType
      * @returns {boolean}
@@ -34,37 +31,35 @@ class Media {
     }
 
     /**
-     * Check URL and process it according to its type.
+     * Check media associated and process it according to its type
      *
      * It requires to run with Promises to avoid racing errors between execution of the action
-     * and the time the potential libraries are loaded completely.
+     * and the time the potential libraries are loaded completely
+     *
+     * It will loop the media list found until it reached the first element that can be played
      *
      */
     load() {
-        if (!this.url) {
-            throw new TypeError('URL not set');
+        if (!this.mediaFiles.length) {
+            throw new TypeError('Media not set');
         }
 
-        // Attempt to grab correct MIME type from URL
-        const mimeType = predictType(this.url);
-
-        try {
-            if (/.m3u8/.test(this.url)) {
-                this.media = new HlsMedia(this.element);
-            } else if (!isIframe(this.element)) {
+        // Loop until first playable source is found
+        this.mediaFiles.some(media => {
+            try {
+                this.media = isIframe(this.element) ?
+                    this._loadIframeSource(media) :
+                    this._loadNativeSource(media);
+            } catch (e) {
                 this.media = new NativeMedia(this.element);
             }
-        } catch (e) {
-            if (e instanceof TypeError) {
-                this.media = new NativeMedia(this.element);
-            } else {
-                throw e;
-            }
-        }
+
+            return this.canPlayType(media.type);
+        });
 
         try {
-            if (this.media.canPlayType(mimeType)) {
-                throw new TypeError('Media cannot be played');
+            if (this.media === null) {
+                throw new TypeError('Media cannot be played with any valid media type');
             }
             this.media.promise.then(() => {
                 this.media.load();
@@ -89,17 +84,116 @@ class Media {
     }
 
     pause() {
-        this.promisePlay.then(() => {
+        if (this.promisePlay) {
+            this.promisePlay.then(() => {
+                this.media.pause();
+            });
+        } else {
             this.media.pause();
-        });
+        }
     }
-
-    set src(url) {
-        this.element.src = url;
+    /**
+     * Set one or more media sources
+     *
+     * @param {string|object|object[]} media
+     * @memberof Media
+     */
+    set src(media) {
+        if (typeof media === 'string') {
+            this.mediaFiles.push({
+                src: media,
+                type: predictType(media)
+            });
+        } else if (Array.isArray(media)) {
+            this.media = media;
+        } else if (typeof media === 'object') {
+            this.mediaFiles.push(media);
+        }
     }
-
+    /**
+     * Get all media associated with element
+     *
+     * @returns {Object[]}
+     * @readonly
+     * @memberof Media
+     */
     get src() {
-        return this.element.src;
+        return this.mediaFiles;
+    }
+
+    /**
+     * Gather all media sources within the video/audio/iframe tags
+     *
+     * It will be grouped inside the `mediaFiles` array. This method basically mimics
+     * the native behavior when multiple sources are associated with an element, and
+     * the browswer takes care of selecting the most appropriate one
+     * @returns {Object[]}
+     * @memberof Media
+     */
+    _getMediaFiles() {
+        const mediaFiles = [];
+
+        if (isIframe(this.element)) {
+            mediaFiles.push({
+                type: predictType(this.element.src),
+                src: this.element.src
+            });
+        } else {
+            const sourceTags = this.element.querySelectorAll('source');
+            const nodeSource = this.element.src;
+
+            // Consider if node contains the `src` and `type` attributes
+            if (nodeSource) {
+                const src = this.element.getAttribute('src');
+                mediaFiles.push({
+                    type: this.element.getAttribute('type') || predictType(src),
+                    src
+                });
+            }
+
+            // test <source> types to see if they are usable
+            sourceTags.forEach(source => {
+                const src = source.src;
+                mediaFiles.push({
+                    type: source.getAttribute('type') || predictType(src),
+                    src
+                });
+            });
+        }
+
+        return mediaFiles;
+    }
+    /**
+     * Assign class to play iframe (third-party APIs)
+     *
+     * @param {Object} media
+     * @returns {YouTubeMedia}
+     * @memberof Media
+     */
+    _loadIframeSource(media) {
+        console.log(isYouTubeSource(media.src));
+        if (isYouTubeSource(media.src)) {
+            return new YouTubeMedia(this.element);
+        }
+
+        return null;
+    }
+
+    /**
+     * Assign class to play "native" media (without the use of iframes)
+     *
+     * @param {Object} media
+     * @returns {HlsMedia|DashMedia|NativeMedia}
+     * @memberof Media
+     */
+    _loadNativeSource(media) {
+        if (isHlsSource(media.src)) {
+            return new HlsMedia(this.element, media);
+        } else if (isDashSource(media.src)) {
+            return new DashMedia(this.element, media);
+        }
+
+        return new NativeMedia(this.element);
     }
 }
 
