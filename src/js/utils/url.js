@@ -33,6 +33,28 @@ export function getMimeType(type) {
 }
 
 /**
+ * Check if URL is an HLS element
+ *
+ * @export
+ * @param {string} url
+ * @returns {boolean}
+ */
+export function isHlsSource(url) {
+    return /\.m3u8/i.test(url);
+}
+
+/**
+ * Check if URL is an MPEG-DASH element
+ *
+ * @export
+ * @param {string} url
+ * @returns {boolean}
+ */
+export function isDashSource(url) {
+    return /\.mpd/i.test(url);
+}
+
+/**
  * Check if URL is a YouTube element
  *
  * @export
@@ -109,9 +131,14 @@ export function predictType(url) {
         }
         return 'video/mp4';
     }
+
+    // Check native media types
     switch (extension) {
         case 'm3u8':
             type = 'application/x-mpegURL';
+            break;
+        case 'mpd':
+            type = 'application/dash+xml';
             break;
         case 'mp3':
             type = 'audio/mp3';
