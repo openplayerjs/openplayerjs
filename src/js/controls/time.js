@@ -1,14 +1,18 @@
 class Time {
     constructor() {
-        const current = document.createElement('time');
-        current.className = 'om-controls__current';
-        current.innerHTML = '<span class="om-current">0:00</span>';
-        container.appendChild(current);
+        this.current = document.createElement('time');
+        this.current.className = 'om-controls__current';
+        this.current.innerHTML = '<span class="om-current">0:00</span>';
 
-        const duration = document.createElement('time');
-        duration.className = 'om-controls__duration';
-        duration.innerHTML = '<span class="om-duration">0:00</span>';
-        container.appendChild(duration);
+        this.delimiter = document.createElement('span');
+        this.delimiter.className = 'om-controls__time-delimiter';
+        this.delimiter.innerText = '/';
+
+        this.duration = document.createElement('time');
+        this.duration.className = 'om-controls__duration';
+        this.duration.innerHTML = '<span class="om-duration">0:00</span>';
+
+        return this;
     }
 }
 

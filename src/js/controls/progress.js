@@ -1,13 +1,15 @@
 class Progress {
     constructor() {
-        const progress = document.createElement('input');
-        progress.type = 'range';
-        progress.className = 'om-controls__progress';
-        progress.setAttribute('min', this.element.currentTime);
-        progress.setAttribute('max', this.element.duration);
-        progress.setAttribute('step', 0.1);
-        progress.value = 0;
-        container.appendChild(progress);
+        this.slider = document.createElement('input');
+        this.slider.type = 'range';
+        this.slider.className = 'om-controls__progress';
+        this.slider.setAttribute('min', 0);
+        this.slider.setAttribute('max', 0);
+        this.slider.setAttribute('step', 0.1);
+        this.slider.value = 0;
+        this.slider.innerHTML = '<span class="om-controls__progress-bar"></span>';
+
+        return this;
     }
 }
 

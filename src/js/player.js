@@ -68,9 +68,8 @@ class Player {
      */
     _createControls() {
         const controls = new Controls(this.element);
-
-        // Append controls to player wrapper
-        this.element.parentNode.appendChild(controls.container);
+        controls.prepare();
+        controls.render();
     }
 
     /**
