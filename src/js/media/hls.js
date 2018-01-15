@@ -39,14 +39,42 @@ class HlsMedia {
         return this;
     }
 
+    /**
+     *
+     * @param {string} mimeType
+     * @returns {boolean}
+     * @memberof HlsMedia
+     */
     canPlayType(mimeType) {
         return mimeType === 'application/x-mpegURL' && this.media.type === mimeType;
     }
 
+    /**
+     *
+     *
+     * @memberof HlsMedia
+     */
     load() {
         this.hlsPlayer.detachMedia();
         this.hlsPlayer.loadSource(this.media.src);
         this.hlsPlayer.attachMedia(this.element);
+    }
+
+    /**
+     *
+     *
+     * @memberof HlsMedia
+     */
+    play() {
+        this.element.play();
+    }
+    /**
+     *
+     *
+     * @memberof HlsMedia
+     */
+    pause() {
+        this.element.pause();
     }
 }
 
