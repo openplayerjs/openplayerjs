@@ -1,21 +1,7 @@
-.om-player {
-    height: 100%;
-    margin: 1.25rem auto;
-    max-height: 30.875rem;
-    max-width: 64rem;
-    padding: 1.051%;
-    width: 100%;
-}
 .om-player video, 
 .om-player audio {
     height: auto !important;
     width: 100% !important;
-}
-.om-controls {
-    background: #313131;
-    height:  8.0971659919028340080971659919028%;
-    position:relative;
-    width: 100%;
 }
 .om-controls button {
     height: 30px;
