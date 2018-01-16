@@ -1,5 +1,6 @@
 class Volume {
-    constructor() {
+    constructor(media) {
+        this.media = media;
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__volume';
@@ -14,6 +15,9 @@ class Volume {
         this.button.innerHTML = '<span class="om-sr">Mute</span>';
 
         return this;
+    }
+    register() {
+        console.log(this);
     }
 }
 

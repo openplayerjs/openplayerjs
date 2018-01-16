@@ -67,7 +67,8 @@ class Player {
      * @memberof Player
      */
     _createControls() {
-        const controls = new Controls(this.element);
+        this.element.controls = false;
+        const controls = new Controls(this.media);
         controls.prepare();
         controls.render();
     }

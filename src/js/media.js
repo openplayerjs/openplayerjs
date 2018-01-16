@@ -65,6 +65,7 @@ class Media {
                 this.media.load();
             });
         } catch (e) {
+            throw e;
             // destroy media
             // this.media.destroy();
         }
