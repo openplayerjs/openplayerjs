@@ -1,14 +1,44 @@
+.om-player {
+    position: relative;
+}
 .om-player video, 
 .om-player audio {
     height: auto !important;
     width: 100% !important;
 }
-.om-controls button {
-    height: 30px;
-    width: 30px;
+.om-controls {
+    background: #fff;
+    bottom: 20px;
+    font-size: .85em;
+    position: absolute;
+    width: 100%;
 }
-.om-controls svg {
-    fill: #000;
+.om-controls button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+.om-controls button:before {
+    display: inline-block;
+    font-size: 1.5em;
+    line-height: 1.2;
+    height: 15px;
+    width: 15px;
+}
+.om-controls__time-delimiter {
+    margin: 0 3px;
+}
+.om-controls__playpause:before {
+    content: '\25B6';
+}
+.om-controls__playpause--pause:before {
+    content: '\2759\A0\2759';
+}
+.om-controls__playpause--replay:before {
+    content: '\27F3';
+}
+.om-controls__progress {
+    margin: 0 10px;
 }
 .om-sr {
     height: 1px;

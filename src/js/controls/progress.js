@@ -1,5 +1,12 @@
 class Progress {
-    constructor() {
+    /**
+     *
+     * @param {Media} media
+     * @returns {Progress}
+     * @memberof Progress
+     */
+    constructor(media) {
+        this.media = media;
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__progress';
@@ -9,6 +16,47 @@ class Progress {
         this.slider.value = 0;
         this.slider.innerHTML = '<span class="om-controls__progress-bar"></span>';
 
+        return this;
+    }
+
+    /**
+     *
+     * @returns {Progress}
+     * @memberof Progress
+     */
+    register() {
+        const el = this.media.element;
+        el.addEventListener('loadedmetadata', () => {
+            if (el.duration !== Infinity) {
+                this.slider.setAttribute('max', el.duration);
+            } else {
+                this.slider.style.display = 'none';
+            }
+        });
+
+        el.addEventListener('timeupdate', () => {
+            if (el.duration !== Infinity) {
+                if (!this.slider.getAttribute('max')) {
+                    this.slider.setAttribute('max', el.duration);
+                }
+                this.slider.value = el.currentTime;
+                this.slider.firstChild.style.width = `${Math.floor((el.currentTime / el.duration) * 100)}%`;
+            } else {
+                this.slider.style.display = 'none';
+            }
+        });
+
+        return this;
+    }
+
+    /**
+     *
+     * @param {HTMLElement} container
+     * @returns {Progress}
+     * @memberof Progress
+     */
+    build(container) {
+        container.appendChild(this.slider);
         return this;
     }
 }

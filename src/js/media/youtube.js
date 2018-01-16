@@ -16,6 +16,9 @@ class YouTubeMedia {
     constructor(element, media) {
         this.element = element;
         this.media = media;
+        this.promise = new Promise(resolve => {
+            resolve();
+        });
         return this;
     }
 
