@@ -173,7 +173,7 @@ class Media {
      */
     _loadIframeSource(media) {
         if (isYouTubeSource(media.src)) {
-            return new YouTubeMedia(this.element);
+            return new YouTubeMedia(this.element, media);
         }
 
         return null;
