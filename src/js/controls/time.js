@@ -1,4 +1,4 @@
-import {formatTime} from '../utils/time';
+import formatTime from '../utils/time';
 
 /**
  * Class that renders current and duration times in human-readable format
@@ -27,6 +27,8 @@ class Time {
         this.duration.className = 'om-controls__duration';
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
+        this.events = {};
+
         return this;
     }
 
@@ -37,27 +39,42 @@ class Time {
      */
     register() {
         const el = this.media.element;
-        el.addEventListener('loadedmetadata', () => {
-            if (el.duration !== Infinity && !isNaN(el.duration)) {
-                this.duration.innerText = formatTime(el.duration);
-            } else {
-                this.duration.style.display = 'none';
-                this.delimiter.style.display = 'none';
+        this.events = {
+            loadedmetadata: () => {
+                if (el.duration !== Infinity && !isNaN(el.duration)) {
+                    this.duration.innerText = formatTime(el.duration);
+                } else {
+                    this.duration.style.display = 'none';
+                    this.delimiter.style.display = 'none';
+                }
+            },
+            timeupdate: () => {
+                if (el.duration !== Infinity) {
+                    if (!isNaN(el.duration) && !el.duration) {
+                        this.duration.innerText = formatTime(el.duration);
+                    }
+                    this.current.innerText = formatTime(el.currentTime);
+                } else {
+                    this.duration.style.display = 'none';
+                    this.delimiter.style.display = 'none';
+                    this.current.innerText = 'Live Broadcast';
+                }
             }
+        };
+
+        Object.keys(this.events).forEach(event => {
+            el.addEventListener(event, this.events[event]);
         });
 
-        el.addEventListener('timeupdate', () => {
-            if (el.duration !== Infinity) {
-                if (!isNaN(el.duration) && !el.duration) {
-                    this.duration.innerText = formatTime(el.duration);
-                }
-                this.current.innerText = formatTime(el.currentTime);
-            } else {
-                this.duration.style.display = 'none';
-                this.delimiter.style.display = 'none';
-                this.current.innerText = 'Live Broadcast';
-            }
+        return this;
+    }
+
+    unregister() {
+        Object.keys(this.events).forEach(event => {
+            el.removeEventListener(event, this.events[event]);
         });
+
+        this.events = {};
 
         return this;
     }

@@ -13,10 +13,13 @@ class Play {
      */
     constructor(media) {
         this.media = media;
+
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__playpause';
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
+
+        this.events = {};
 
         return this;
     }
@@ -29,26 +32,43 @@ class Play {
      */
     register() {
         const el = this.media.element;
-
-        this.button.onclick = () => {
-            if (el.paused || el.ended) {
-                this.media.play();
-            } else {
-                this.media.pause();
+        this.events = {
+            click: () => {
+                if (el.paused || el.ended) {
+                    this.media.play();
+                } else {
+                    this.media.pause();
+                }
+            },
+            play: () => {
+                if (el.ended) {
+                    this.button.classList.add('om-controls__playpause--replay');
+                } else {
+                    this.button.classList.add('om-controls__playpause--pause');
+                }
+            },
+            pause: () => {
+                this.button.classList.remove('om-controls__playpause--pause');
             }
         };
 
-        el.addEventListener('play', () => {
-            if (el.ended) {
-                this.button.classList.add('om-controls__playpause--replay');
-            } else {
-                this.button.classList.add('om-controls__playpause--pause');
-            }
+        Object.keys(this.events).forEach(event => {
+            el.addEventListener(event, this.events[event]);
         });
 
-        el.addEventListener('pause', () => {
-            this.button.classList.remove('om-controls__playpause--pause');
+        this.button.addEventListener('click', this.events.click);
+
+        return this;
+    }
+
+    unregister() {
+        Object.keys(this.events).forEach(event => {
+            el.removeEventListener(event, this.events[event]);
         });
+
+        this.button.removeEventListener('click', this.events.click);
+
+        this.events = {};
 
         return this;
     }

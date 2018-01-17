@@ -1,3 +1,4 @@
+
 export const NAV = window.navigator;
 export const UA = NAV.userAgent.toLowerCase();
 export const IS_IPAD = /ipad/i.test(UA) && !window.MSStream;

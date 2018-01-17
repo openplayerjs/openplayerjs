@@ -1,4 +1,11 @@
-export function formatTime(seconds) {
+/**
+ * Generate a human-readable time based on media current time
+ *
+ * @export
+ * @param {number} seconds
+ * @returns {string}
+ */
+export default function formatTime(seconds) {
     let hrs = Math.floor(seconds / 3600);
     const min = Math.floor((seconds - (hrs * 3600)) / 60);
     let secs = Math.floor(seconds - (hrs * 3600) - (min * 60));
@@ -8,5 +15,3 @@ export function formatTime(seconds) {
     secs = secs < 10 ? `0${secs}` : secs;
     return `${(showHours ? `${hrs}:` : '')}${min}:${secs}`;
 }
-
-export const n = 1;
