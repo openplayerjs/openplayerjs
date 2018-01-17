@@ -1,17 +1,17 @@
 // import {loadScript} from '../utils/dom';
 /**
  *
- * @class YouTubeMedia
- * @description Class that handles the YouTube API within the player
+ * @class FacebookMedia
+ * @description Class that handles the Facebook API within the player
  */
-class YouTubeMedia {
+class FacebookMedia {
     /**
-     * Creates an instance of YouTubeMedia.
+     * Creates an instance of FacebookMedia.
      *
      * @param {HTMLElement} element
      * @param {object} mediaFile
-     * @returns {YouTubeMedia}
-     * @memberof YouTubeMedia
+     * @returns {FacebookMedia}
+     * @memberof FacebookMedia
      */
     constructor(element, mediaFile) {
         this.element = element;
@@ -23,7 +23,7 @@ class YouTubeMedia {
     }
 
     canPlayType(mimeType) {
-        return mimeType === 'application/x-youtube' && this.media.type === mimeType;
+        return mimeType === 'application/x-facebook' && this.media.type === mimeType;
     }
 
     load() {
@@ -31,4 +31,4 @@ class YouTubeMedia {
     }
 }
 
-export default YouTubeMedia;
+export default FacebookMedia;

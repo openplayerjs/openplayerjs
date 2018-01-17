@@ -1,5 +1,4 @@
 /**
- * Checks if element is an iframe
  *
  * @export
  * @param {HTMLElement} element
@@ -10,7 +9,6 @@ export function isIframe(element) {
 }
 
 /**
- * Checks if element is a video tag
  *
  * @export
  * @param {HTMLElement} element
@@ -21,7 +19,6 @@ export function isVideo(element) {
 }
 
 /**
- * Checks if element is an audio tag
  *
  * @export
  * @param {HTMLElement} element
@@ -32,7 +29,7 @@ export function isAudio(element) {
 }
 
 /**
- * Load a script using Promise
+ * Load an external script via Promise
  *
  * @export
  * @param {string} url
@@ -55,7 +52,7 @@ export function loadScript(url) {
     });
 }
 /**
- * Wrapper for AJAX GET request
+ * Perform an asynchronous request
  *
  * @export
  * @param {string} url

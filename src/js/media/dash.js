@@ -3,9 +3,9 @@ import { loadScript } from '../utils/dom';
 import { addEvent } from '../events';
 
 /**
- * Class that handles the dash.js API within the player
  *
  * @class DashMedia
+ * @description Class that handles the dash.js API within the player
  */
 class DashMedia {
     /**
@@ -13,10 +13,9 @@ class DashMedia {
      *
      * @param {HTMLElement} element
      * @param {object} mediaFile
-     * @param {object?} drm Configuration to stream protected data
      * @memberof DashMedia
      */
-    constructor(element, mediaFile, drm) {
+    constructor(element, mediaFile) {
         /**
          * @private
          */
@@ -25,7 +24,6 @@ class DashMedia {
         }
         this.element = element;
         this.media = mediaFile;
-        this.drm = drm;
         this.dashPlayer = null;
         this.events = null;
         this.promise = (typeof dashjs === 'undefined') ?
@@ -52,8 +50,8 @@ class DashMedia {
         this.dashPlayer.setAutoPlay(false);
 
         // If DRM is set, load protection data
-        if (typeof this.drm === 'object' && Object.keys(this.drm).length) {
-            this.dashPlayer.setProtectionData(this.drm);
+        if (typeof this.media.drm === 'object' && Object.keys(this.media.drm).length) {
+            this.dashPlayer.setProtectionData(this.media.drm);
             // if (isString(options.dash.robustnessLevel) && options.dash.robustnessLevel) {
             //     this.dashPlayer.getProtectionController().setRobustnessLevel(options.dash.robustnessLevel);
             // }
@@ -63,29 +61,29 @@ class DashMedia {
         if (!this.events) {
             this.events = dashjs.MediaPlayer.events;
             Object.keys(this.events).forEach(event => {
-                this.dashPlayer.on(this.events[event], this._assignEvent.bind(this));
+                this.dashPlayer.on(this.events[event], this._assign.bind(this));
             });
         }
-    }
-
-    play() {
-        this.element.play();
-    }
-
-    pause() {
-        this.element.pause();
     }
 
     destroy() {
-        if (this.events) {
-            Object.keys(this.events).forEach(event => {
-                this.dashPlayer.off(this.events[event], this._assignEvent.bind(this));
-            });
-            this.events = null;
-        }
+        this._revoke();
     }
 
-    _assignEvent(event) {
+    set src(media) {
+        this._revoke();
+        this.dashPlayer = dashjs.MediaPlayer().create();
+    }
+
+    /**
+     * Custom M(PEG)-DASH events
+     *
+     * These events can be attached to the original node using addEventListener and the name of the event,
+     * not using dashjs.MediaPlayer.events object
+     * @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html
+     * @param {MediaPlayerEvents} event
+     */
+    _assign(event) {
         if (event.type === 'error') {
             // mediaElement.generateError(event.message, node.src);
             console.error(e);
@@ -94,6 +92,21 @@ class DashMedia {
             e.data = event;
             this.element.dispatchEvent(e);
         }
+    }
+
+    /**
+     *
+     *
+     * @memberof DashMedia
+     */
+    _revoke() {
+        if (this.events) {
+            Object.keys(this.events).forEach(event => {
+                this.dashPlayer.off(this.events[event], this._assign.bind(this));
+            });
+            this.events = null;
+        }
+        this.dashPlayer.reset();
     }
 }
 

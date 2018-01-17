@@ -1,18 +1,27 @@
-import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
+import HlsMedia from './media/hls';
 import DashMedia from './media/dash';
+import DailymotionMedia from './media/dailymotion';
+import FacebookMedia from './media/facebook';
+import TwitchMedia from './media/twitch';
+import VimeoMedia from './media/vimeo';
 import YouTubeMedia from './media/youtube';
 import { isIframe } from './utils/dom';
-import { predictType, isHlsSource, isDashSource, isYouTubeSource } from './utils/url';
+import * as source from './utils/url';
 
 /**
- * Class that creates the Media Component in the player
  *
- * The `Media` is the either the visual/audio area that results from playing
- * a valis source
  * @class Media
+ * @description Class that creates the Media Component in the player.
+ * The `Media` is the visual/audio area that results from playing
+ * a valid source (MP4, MP3, M3U8, MPD, etc.)
  */
 class Media {
+    /**
+     * Creates an instance of Media.
+     * @param {HTMLElement} element
+     * @memberof Media
+     */
     constructor(element) {
         this.element = element;
         this.mediaFiles = this._getMediaFiles();
@@ -77,7 +86,8 @@ class Media {
         }).then(() => {
             // Wait until any other Promise is resolved to execute the Play action
             this.media.promise.then(() => {
-                this.media.play();
+                const target = typeof this.media.play === 'function' ? this.media : this.element;
+                target.play();
             });
         });
 
@@ -85,12 +95,13 @@ class Media {
     }
 
     pause() {
+        const target = typeof this.media.pause === 'function' ? this.media : this.element;
         if (this.promisePlay) {
             this.promisePlay.then(() => {
-                this.media.pause();
+                target.pause();
             });
         } else {
-            this.media.pause();
+            target.pause();
         }
     }
     /**
@@ -106,9 +117,13 @@ class Media {
                 type: predictType(media)
             });
         } else if (Array.isArray(media)) {
-            this.media = media;
+            this.mediaFiles = media;
         } else if (typeof media === 'object') {
             this.mediaFiles.push(media);
+        }
+
+        if (typeof this.media.src === 'function') {
+            this.media.src(this.mediaFiles);
         }
     }
     /**
@@ -120,6 +135,10 @@ class Media {
      */
     get src() {
         return this.mediaFiles;
+    }
+
+    destroy() {
+        this.media.destroy();
     }
 
     /**
@@ -136,27 +155,25 @@ class Media {
 
         if (isIframe(this.element)) {
             mediaFiles.push({
-                type: predictType(this.element.src),
+                type: source.predictType(this.element.src),
                 src: this.element.src
             });
         } else {
             const sourceTags = this.element.querySelectorAll('source');
-            const nodeSource = this.element.src;
 
             // Consider if node contains the `src` and `type` attributes
             if (nodeSource) {
-                const src = this.element.getAttribute('src');
                 mediaFiles.push({
-                    type: this.element.getAttribute('type') || predictType(src),
-                    src
+                    type: this.element.getAttribute('type') || source.predictType(nodeSource),
+                    nodeSource
                 });
             }
 
             // test <source> types to see if they are usable
-            sourceTags.forEach(source => {
-                const src = source.src;
+            sourceTags.forEach(item => {
+                const src = item.src;
                 mediaFiles.push({
-                    type: source.getAttribute('type') || predictType(src),
+                    type: item.getAttribute('type') || source.predictType(src),
                     src
                 });
             });
@@ -168,11 +185,19 @@ class Media {
      * Assign class to play iframe (third-party APIs)
      *
      * @param {Object} media
-     * @returns {YouTubeMedia}
+     * @returns {DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|null}
      * @memberof Media
      */
     _loadIframeSource(media) {
-        if (isYouTubeSource(media.src)) {
+        if (source.isDailymotionSource(media.src)) {
+            return new DailymotionMedia(this.element, media);
+        } else if (source.isFacebookSource(media.src)) {
+            return new FacebookMedia(this.element, media);
+        } else if (source.isTwitchSource(media.src)) {
+            return new TwitchMedia(this.element, media);
+        } else if (source.isVimeoSource(media.src)) {
+            return new VimeoMedia(this.element, media);
+        } else if (source.isYouTubeSource(media.src)) {
             return new YouTubeMedia(this.element, media);
         }
 
@@ -187,9 +212,9 @@ class Media {
      * @memberof Media
      */
     _loadNativeSource(media) {
-        if (isHlsSource(media.src)) {
+        if (source.isHlsSource(media.src)) {
             return new HlsMedia(this.element, media);
-        } else if (isDashSource(media.src)) {
+        } else if (source.isDashSource(media.src)) {
             return new DashMedia(this.element, media);
         }
 

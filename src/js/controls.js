@@ -5,9 +5,10 @@ import Time from './controls/time';
 // import Volume from './controls/volume';
 
 /**
- * Class that renders all control elements
  *
  * @class Controls
+ * @description Class that renders all control elements inside a control bar
+ * and appends it in the player container
  */
 class Controls {
     /**

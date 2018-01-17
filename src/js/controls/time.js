@@ -1,10 +1,10 @@
 import formatTime from '../utils/time';
 
 /**
- * Class that renders current and duration times in human-readable format
- * and registers events to update them in the controls
  *
  * @class Time
+ * @description Class that renders current and duration times in human-readable format
+ * and registers events to update them in the control bar
  */
 class Time {
     /**
