@@ -3,9 +3,10 @@ import Media from './media';
 import Controls from './controls';
 
 /**
- * Class that creates an Open Player instance
  *
  * @class Player
+ * @description Class that creates an Open Player instance.
+ * This is the entry point for the entire plugin.
  */
 class Player {
     /**
@@ -64,6 +65,7 @@ class Player {
 
     /**
      * Build HTML markup for media controls
+     *
      * @memberof Player
      */
     _createControls() {

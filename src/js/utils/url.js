@@ -16,23 +16,6 @@ export function getExtension(url) {
 }
 
 /**
- * Return MIME type ignoring the codec string
- * i.e., `video/mp4; codecs="avc1.42E01E, mp4a.40.2"` becomes `video/mp4`
- *
- * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#the-source-element
- * @export
- * @param {string} type
- * @returns {string}
- */
-export function getMimeType(type) {
-    if (typeof type !== 'string') {
-        throw new Error('`type` argument must be a string');
-    }
-
-    return (type && type.indexOf(';') > -1) ? type.substr(0, type.indexOf(';')) : type;
-}
-
-/**
  * Check if URL is an HLS element
  *
  * @export
@@ -107,7 +90,14 @@ export function isFacebookSource(url) {
 export function isDailymotionSource(url) {
     return /\/\/((www\.)?dailymotion\.com|dai\.ly)/i.test(url);
 }
-
+/**
+ * Get a base MIME type using a URL anc hecking its file extension;
+ * it will default to `video/mp4` if nothing found
+ *
+ * @export
+ * @param {string} url
+ * @returns {string}
+ */
 export function predictType(url) {
     const extension = getExtension(url);
     let type;

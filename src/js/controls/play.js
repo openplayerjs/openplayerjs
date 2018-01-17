@@ -1,8 +1,7 @@
 /**
- * Class that renders play/pause/replay buttons
- * and registers events to update them in the controls
  *
  * @class Play
+ * @description  Class that renders play/pause/replay button and registers events to update it
  */
 class Play {
     /**

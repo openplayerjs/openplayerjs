@@ -1,17 +1,17 @@
 // import {loadScript} from '../utils/dom';
 /**
  *
- * @class YouTubeMedia
- * @description Class that handles the YouTube API within the player
+ * @class TwitchMedia
+ * @description Class that handles the Twitch API within the player
  */
-class YouTubeMedia {
+class TwitchMedia {
     /**
-     * Creates an instance of YouTubeMedia.
+     * Creates an instance of TwitchMedia.
      *
      * @param {HTMLElement} element
      * @param {object} mediaFile
-     * @returns {YouTubeMedia}
-     * @memberof YouTubeMedia
+     * @returns {TwitchMedia}
+     * @memberof TwitchMedia
      */
     constructor(element, mediaFile) {
         this.element = element;
@@ -23,7 +23,7 @@ class YouTubeMedia {
     }
 
     canPlayType(mimeType) {
-        return mimeType === 'application/x-youtube' && this.media.type === mimeType;
+        return mimeType === 'application/x-twitch' && this.media.type === mimeType;
     }
 
     load() {
@@ -31,4 +31,4 @@ class YouTubeMedia {
     }
 }
 
-export default YouTubeMedia;
+export default TwitchMedia;

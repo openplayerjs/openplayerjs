@@ -1,9 +1,9 @@
 import { isAudio, isVideo } from '../utils/dom';
 
 /**
- * Class that wraps the native HTML5 video/audio tags
  *
  * @class NativeMedia
+ * @description Class that wraps the native HTML5 video/audio tags
  */
 class NativeMedia {
     /**
@@ -34,18 +34,6 @@ class NativeMedia {
      */
     canPlayType(mimeType) {
         return !!(this.element.canPlayType(mimeType).replace('no', ''));
-    }
-
-    load() {
-        this.element.load();
-    }
-
-    play() {
-        this.element.play();
-    }
-
-    pause() {
-        this.element.pause();
     }
 }
 
