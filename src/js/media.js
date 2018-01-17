@@ -40,12 +40,12 @@ class Media {
     }
 
     /**
-     * Check media associated and process it according to its type
+     * Check media associated and process it according to its type.
      *
      * It requires to run with Promises to avoid racing errors between execution of the action
-     * and the time the potential libraries are loaded completely
+     * and the time the potential libraries are loaded completely.
      *
-     * It will loop the media list found until it reached the first element that can be played
+     * It will loop the media list found until it reached the first element that can be played.
      *
      */
     load() {
