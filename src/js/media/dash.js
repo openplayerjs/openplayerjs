@@ -1,3 +1,4 @@
+import { HAS_MSE } from '../utils/constants';
 import { loadScript } from '../utils/dom';
 import { addEvent } from '../events';
 
@@ -39,7 +40,7 @@ class DashMedia {
     }
 
     canPlayType(mimeType) {
-        return mimeType === 'application/dash+xml' && this.media.type === mimeType;
+        return HAS_MSE && mimeType === 'application/dash+xml' && this.media.type === mimeType;
     }
 
     load() {

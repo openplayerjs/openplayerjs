@@ -33,7 +33,7 @@ class NativeMedia {
      * @memberof NativeMedia
      */
     canPlayType(mimeType) {
-        return this.media.type === mimeType && !!(this.element.canPlayType(mimeType).replace('no', ''));
+        return !!(this.element.canPlayType(mimeType).replace('no', ''));
     }
 
     load() {

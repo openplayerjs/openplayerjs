@@ -1,5 +1,5 @@
-import {SUPPORTS_NATIVE_HLS} from '../utils/constants';
-import {loadScript} from '../utils/dom';
+import { SUPPORTS_NATIVE_HLS, HAS_MSE } from '../utils/constants';
+import { loadScript } from '../utils/dom';
 /**
  * Class that handles the hls.js API within the player
  *
@@ -14,11 +14,6 @@ class HlsMedia {
      * @memberof HlsMedia
      */
     constructor(element, mediaFile) {
-        // We need this only if browser doesn't support HLS natively
-        if (SUPPORTS_NATIVE_HLS) {
-            throw new TypeError('Browsers supports natively Hls... using native approach instead');
-        }
-
         /**
          * @private
          */
@@ -40,13 +35,15 @@ class HlsMedia {
     }
 
     /**
+     * Provide support via hls.js if browser does not have native support for HLS
      *
      * @param {string} mimeType
      * @returns {boolean}
      * @memberof HlsMedia
      */
     canPlayType(mimeType) {
-        return mimeType === 'application/x-mpegURL' && this.media.type === mimeType;
+        return !SUPPORTS_NATIVE_HLS && HAS_MSE && mimeType === 'application/x-mpegURL' &&
+            this.media.type === mimeType;
     }
 
     /**
