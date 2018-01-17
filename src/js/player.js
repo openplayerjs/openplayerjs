@@ -125,8 +125,11 @@ class Player {
  * Entry point
  * Convert all the video/audio/iframe with 'om-player' class in a OpenMedia player
  */
-const targets = document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player');
-const instances = [];
-for (let i = 0, total = targets.length; i < total; i++) {
-    instances.push(new Player(targets[i]));
-}
+Player.instances = [];
+Player.init = () => {
+    document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player').forEach(target => {
+        Player.instances.push(new Player(target));
+    });
+};
+
+Player.init();
