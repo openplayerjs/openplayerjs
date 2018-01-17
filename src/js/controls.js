@@ -1,7 +1,7 @@
 import Play from './controls/play';
-// import Fullscreen from './controls/fullscreen';
 import Progress from './controls/progress';
 import Time from './controls/time';
+// import Fullscreen from './controls/fullscreen';
 // import Volume from './controls/volume';
 
 /**

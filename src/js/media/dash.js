@@ -11,17 +11,19 @@ class DashMedia {
      *
      * @param {HTMLElement} element
      * @param {object} media
+     * @param {object?} drm
      * @memberof DashMedia
      */
-    constructor(element, media) {
+    constructor(element, media, drm) {
         /**
          * @private
          */
         function createInstance() {
-            this.dashPlayer = new Hls();
+            this.dashPlayer = dashjs.MediaPlayer().create();
         }
         this.element = element;
         this.media = media;
+        this.drm = drm;
         this.dashPlayer = null;
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
@@ -39,7 +41,21 @@ class DashMedia {
     }
 
     load() {
-        this.element.load();
+        this.dashPlayer.getDebug().setLogToBrowserConsole(false);
+        this.dashPlayer.initialize();
+        this.dashPlayer.setScheduleWhilePaused(false);
+        this.dashPlayer.setFastSwitchEnabled(true);
+        this.dashPlayer.attachView(this.element);
+        this.dashPlayer.setAutoPlay(false);
+
+        // If DRM is set, load protection data
+        if (typeof this.drm === 'object' && Object.keys(this.drm).length) {
+            this.dashPlayer.setProtectionData(this.drm);
+            // if (isString(options.dash.robustnessLevel) && options.dash.robustnessLevel) {
+            //     this.dashPlayer.getProtectionController().setRobustnessLevel(options.dash.robustnessLevel);
+            // }
+        }
+        this.dashPlayer.attachSource(this.media.src);
     }
 
     play() {
