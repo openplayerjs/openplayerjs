@@ -1,4 +1,5 @@
-import {loadScript} from '../utils/dom';
+import { loadScript } from '../utils/dom';
+import { addEvent } from '../events';
 
 /**
  * Class that handles the dash.js API within the player
@@ -10,11 +11,11 @@ class DashMedia {
      * Creates an instance of DashMedia.
      *
      * @param {HTMLElement} element
-     * @param {object} media
-     * @param {object?} drm
+     * @param {object} mediaFile
+     * @param {object?} drm Configuration to stream protected data
      * @memberof DashMedia
      */
-    constructor(element, media, drm) {
+    constructor(element, mediaFile, drm) {
         /**
          * @private
          */
@@ -22,9 +23,10 @@ class DashMedia {
             this.dashPlayer = dashjs.MediaPlayer().create();
         }
         this.element = element;
-        this.media = media;
+        this.media = mediaFile;
         this.drm = drm;
         this.dashPlayer = null;
+        this.events = null;
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
             loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
@@ -56,6 +58,13 @@ class DashMedia {
             // }
         }
         this.dashPlayer.attachSource(this.media.src);
+
+        if (!this.events) {
+            this.events = dashjs.MediaPlayer.events;
+            Object.keys(this.events).forEach(event => {
+                this.dashPlayer.on(this.events[event], this._assignEvent.bind(this));
+            });
+        }
     }
 
     play() {
@@ -64,6 +73,26 @@ class DashMedia {
 
     pause() {
         this.element.pause();
+    }
+
+    destroy() {
+        if (this.events) {
+            Object.keys(this.events).forEach(event => {
+                this.dashPlayer.off(this.events[event], this._assignEvent.bind(this));
+            });
+            this.events = null;
+        }
+    }
+
+    _assignEvent(event) {
+        if (event.type === 'error') {
+            // mediaElement.generateError(event.message, node.src);
+            console.error(e);
+        } else {
+            const e = addEvent(event.type);
+            e.data = event;
+            this.element.dispatchEvent(e);
+        }
     }
 }
 

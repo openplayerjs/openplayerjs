@@ -9,13 +9,13 @@ class YouTubeMedia {
      * Creates an instance of YouTubeMedia.
      *
      * @param {HTMLElement} element
-     * @param {object} media
+     * @param {object} mediaFile
      * @returns {YouTubeMedia}
      * @memberof YouTubeMedia
      */
-    constructor(element, media) {
+    constructor(element, mediaFile) {
         this.element = element;
-        this.media = media;
+        this.media = mediaFile;
         this.promise = new Promise(resolve => {
             resolve();
         });
