@@ -1,7 +1,7 @@
 .om-player {
     position: relative;
 }
-.om-player video, 
+.om-player video,
 .om-player audio {
     height: auto !important;
     width: 100% !important;
@@ -47,4 +47,14 @@
     position: absolute;
     top: auto;
     width: 1px;
+}
+#om-ads {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.om-ads--active {
+    overflow: hidden;
 }
