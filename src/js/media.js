@@ -6,6 +6,7 @@ import FacebookMedia from './media/facebook';
 import TwitchMedia from './media/twitch';
 import VimeoMedia from './media/vimeo';
 import YouTubeMedia from './media/youtube';
+import Ads from './media/ads';
 import { isIframe } from './utils/dom';
 import * as source from './utils/url';
 
@@ -22,8 +23,9 @@ class Media {
      * @param {HTMLElement} element
      * @memberof Media
      */
-    constructor(element) {
+    constructor(element, ads) {
         this.element = element;
+        this.ads = ads;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
         return this;
@@ -36,7 +38,7 @@ class Media {
      * @returns {boolean}
      */
     canPlayType(mimeType) {
-        return !!(this.media.canPlayType(mimeType));
+        return this.media.canPlayType(mimeType);
     }
 
     /**
@@ -56,9 +58,7 @@ class Media {
         // Loop until first playable source is found
         this.mediaFiles.some(media => {
             try {
-                this.media = isIframe(this.element) ?
-                    this._loadIframeSource(media) :
-                    this._loadNativeSource(media);
+                this.media = this._loadSource(media);
             } catch (e) {
                 this.media = new NativeMedia(this.element, media);
             }
@@ -86,8 +86,7 @@ class Media {
         }).then(() => {
             // Wait until any other Promise is resolved to execute the Play action
             this.media.promise.then(() => {
-                const target = typeof this.media.play === 'function' ? this.media : this.element;
-                target.play();
+                this.media.play();
             });
         });
 
@@ -95,13 +94,12 @@ class Media {
     }
 
     pause() {
-        const target = typeof this.media.pause === 'function' ? this.media : this.element;
         if (this.promisePlay) {
             this.promisePlay.then(() => {
-                target.pause();
+                this.media.pause();
             });
         } else {
-            target.pause();
+            this.media.pause();
         }
     }
     /**
@@ -129,7 +127,7 @@ class Media {
     /**
      * Get all media associated with element
      *
-     * @returns {Object[]}
+     * @returns {object[]}
      * @readonly
      * @memberof Media
      */
@@ -146,7 +144,7 @@ class Media {
      *
      * It will be grouped inside the `mediaFiles` array. This method basically mimics
      * the native behavior when multiple sources are associated with an element, and
-     * the browswer takes care of selecting the most appropriate one
+     * the browser takes care of selecting the most appropriate one
      * @returns {Object[]}
      * @memberof Media
      */
@@ -183,14 +181,16 @@ class Media {
         return mediaFiles;
     }
     /**
-     * Assign class to play iframe (third-party APIs)
+     * Assign class to play iframe (third-party APIs) or "native" media (without the use of iframes)
      *
      * @param {Object} media
-     * @returns {DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|null}
+     * @returns {Ads|DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|HlsMedia|DashMedia|NativeMedia}
      * @memberof Media
      */
-    _loadIframeSource(media) {
-        if (source.isDailymotionSource(media.src)) {
+    _loadSource(media) {
+        if (this.ads) {
+            return new Ads(this.element, media.src);
+        } else if (source.isDailymotionSource(media.src)) {
             return new DailymotionMedia(this.element, media);
         } else if (source.isFacebookSource(media.src)) {
             return new FacebookMedia(this.element, media);
@@ -200,20 +200,7 @@ class Media {
             return new VimeoMedia(this.element, media);
         } else if (source.isYouTubeSource(media.src)) {
             return new YouTubeMedia(this.element, media);
-        }
-
-        return null;
-    }
-
-    /**
-     * Assign class to play "native" media (without the use of iframes)
-     *
-     * @param {Object} media
-     * @returns {HlsMedia|DashMedia|NativeMedia}
-     * @memberof Media
-     */
-    _loadNativeSource(media) {
-        if (source.isHlsSource(media.src)) {
+        } else if (source.isHlsSource(media.src)) {
             return new HlsMedia(this.element, media);
         } else if (source.isDashSource(media.src)) {
             return new DashMedia(this.element, media);

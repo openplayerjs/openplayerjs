@@ -66,6 +66,14 @@ class HlsMedia {
         }
     }
 
+    play() {
+        this.element.play();
+    }
+
+    pause() {
+        this.element.pause();
+    }
+
     destroy() {
         this._revoke();
     }

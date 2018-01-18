@@ -35,6 +35,18 @@ class NativeMedia {
     canPlayType(mimeType) {
         return !!(this.element.canPlayType(mimeType).replace('no', ''));
     }
+
+    load() {
+        this.element.load();
+    }
+
+    play() {
+        this.element.play();
+    }
+
+    pause() {
+        this.element.pause();
+    }
 }
 
 export default NativeMedia;

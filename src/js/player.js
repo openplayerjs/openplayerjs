@@ -14,8 +14,9 @@ class Player {
      * @param {HTMLElement} element
      * @memberof Player
      */
-    constructor(element) {
+    constructor(element, ads) {
         this.element = element;
+        this.ads = ads;
         if (this._isValid()) {
             this._prepareMedia();
             this._wrapInstance();
@@ -82,7 +83,7 @@ class Player {
      */
     _prepareMedia() {
         try {
-            this.media = new Media(this.element);
+            this.media = new Media(this.element, this.ads);
             this.media.load();
 
             if (isIframe(this.element)) {
@@ -130,7 +131,7 @@ class Player {
 Player.instances = [];
 Player.init = () => {
     document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player').forEach(target => {
-        Player.instances.push(new Player(target));
+        Player.instances.push(new Player(target, target.getAttribute('data-om-ads')));
     });
 };
 
