@@ -83,6 +83,22 @@ class DashMedia {
         this.dashPlayer = dashjs.MediaPlayer().create();
     }
 
+    set volume(value) {
+        this.element.volume = value;
+    }
+
+    get volume() {
+        return this.element.volume;
+    }
+
+    set muted(value) {
+        this.element.muted = value;
+    }
+
+    get muted() {
+        return this.element.muted;
+    }
+
     /**
      * Custom M(PEG)-DASH events
      *

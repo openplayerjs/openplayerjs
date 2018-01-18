@@ -25,7 +25,6 @@ class Play {
 
     /**
      *
-     * @param {Media} media
      * @returns {Play}
      * @memberof Play
      */

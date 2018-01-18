@@ -82,6 +82,15 @@ class HlsMedia {
         this._revoke();
         this.hlsPlayer = new Hls();
     }
+
+    set volume(value) {
+        this.element.volume = value;
+    }
+
+    get volume() {
+        return this.element.volume;
+    }
+
     /**
      * Custom HLS events
      *

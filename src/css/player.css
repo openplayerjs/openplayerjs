@@ -7,18 +7,31 @@
     width: 100% !important;
 }
 .om-controls {
-    background: #fff;
+    background: #000;
     bottom: 20px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    color: #fff;
+    display: flex;
     font-size: .85em;
     position: absolute;
     width: 100%;
 }
-.om-controls button {
+.om-controls > * {
+    flex-grow: 0;
+}
+.om-controls > .om-controls__progress {
+    flex-grow: 2;
+}
+.om-controls > button {
     border: none;
     background: transparent;
     cursor: pointer;
 }
-.om-controls button:before {
+.om-controls > time {
+    margin-top: 3px;
+}
+.om-controls > button:before {
+    color: #fff;
     display: inline-block;
     font-size: 1.5em;
     line-height: 1.2;
@@ -26,7 +39,7 @@
     width: 15px;
 }
 .om-controls__time-delimiter {
-    margin: 0 3px;
+    margin: 3px 3px 0;
 }
 .om-controls__playpause:before {
     content: '\25B6';

@@ -1,6 +1,7 @@
 import { isIframe, isAudio, isVideo } from './utils/dom';
 import Media from './media';
 import Controls from './controls';
+import '../css/player.css';
 
 /**
  *
