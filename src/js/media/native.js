@@ -47,6 +47,14 @@ class NativeMedia {
     pause() {
         this.element.pause();
     }
+
+    set volume(value) {
+        this.element.volume = value;
+    }
+
+    get volume() {
+        return this.element.volume;
+    }
 }
 
 export default NativeMedia;

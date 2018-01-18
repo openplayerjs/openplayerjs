@@ -135,6 +135,14 @@ class Media {
         return this.mediaFiles;
     }
 
+    set volume(value) {
+        this.media.volume = value;
+    }
+
+    get volume() {
+        return this.media.volume;
+    }
+
     destroy() {
         this.media.destroy();
     }

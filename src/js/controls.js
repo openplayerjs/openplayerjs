@@ -1,8 +1,8 @@
 import Play from './controls/play';
 import Progress from './controls/progress';
 import Time from './controls/time';
+import Volume from './controls/volume';
 // import Fullscreen from './controls/fullscreen';
-// import Volume from './controls/volume';
 
 /**
  *
@@ -25,7 +25,7 @@ class Controls {
         this.controls.play = new Play(media);
         this.controls.time = new Time(media);
         this.controls.progress = new Progress(media);
-        // this.controls.volume = new Volume(media);
+        this.controls.volume = new Volume(media);
         // this.controls.fullscreen = new Fullscreen(media);
 
         return this;
