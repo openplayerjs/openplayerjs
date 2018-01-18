@@ -160,6 +160,7 @@ class Media {
             });
         } else {
             const sourceTags = this.element.querySelectorAll('source');
+            const nodeSource = this.element.src;
 
             // Consider if node contains the `src` and `type` attributes
             if (nodeSource) {
