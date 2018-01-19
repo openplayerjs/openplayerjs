@@ -2,7 +2,7 @@
 
 HTML5 video and audio player
 
-This player adapts to the most popular libraries/APIs to play a variety of media, such as native MP4/MP3, HLS, M(PEG)-DASH, YouTube, Vimeo, etc.
+Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.io/), this player adapts to the most popular libraries/APIs to play a variety of media, such as native MP4/MP3, HLS, M(PEG)-DASH, YouTube, Vimeo, etc.
 
 A few key features:
 
