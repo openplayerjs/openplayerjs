@@ -1,7 +1,8 @@
 /* === General =================== */
 .om-player {
-    position: relative;
     background: #000;
+    min-height: 32px;
+    position: relative;
 }
 .om-player video,
 .om-player audio {
@@ -27,9 +28,8 @@
     width: calc(100% - 16px);
 }
 .om-player.om-player__audio>.om-controls {
-    background: #000;
     bottom: 0;
-    padding: 7px 5px;
+    padding: 5px;
 }
 .om-controls > * {
     flex-grow: 0;
