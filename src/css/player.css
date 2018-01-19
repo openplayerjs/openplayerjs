@@ -1,11 +1,22 @@
+/* === General =================== */
 .om-player {
     position: relative;
+    background: #000;
 }
 .om-player video,
 .om-player audio {
     height: auto !important;
     width: 100% !important;
 }
+.om-sr {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+}
+/* === Controls =================== */
 .om-controls {
     bottom: 20px;
     color: #fff;
@@ -14,6 +25,11 @@
     padding: 0 8px;
     position: absolute;
     width: calc(100% - 16px);
+}
+.om-player.om-player__audio>.om-controls {
+    background: #000;
+    bottom: 0;
+    padding: 7px 5px;
 }
 .om-controls > * {
     flex-grow: 0;
@@ -26,9 +42,6 @@
     background: transparent;
     cursor: pointer;
 }
-.om-controls > time {
-    margin-top: 3px;
-}
 .om-controls > button:before {
     color: #fff;
     display: inline-block;
@@ -37,9 +50,16 @@
     height: 15px;
     width: 15px;
 }
+
+/* === Time =================== */
+.om-controls > time {
+    margin-top: 3px;
+}
 .om-controls__time-delimiter {
     margin: 3px 3px 0;
 }
+
+/* === Play =================== */
 .om-controls__playpause:before {
     content: '\25B6';
 }
@@ -49,10 +69,13 @@
 .om-controls__playpause--replay:before {
     content: '\27F3';
 }
+
+/* === Progress =================== */
 .om-controls__progress {
     margin: 0 10px;
 }
 
+/* === Volume =================== */
 .om-controls__volume {
     -webkit-appearance: none;
     background: transparent;
@@ -132,14 +155,7 @@
 .om-controls__volume:focus::-ms-fill-upper {
     background: #ff0505;
 }
-.om-sr {
-    height: 1px;
-    left: -10000px;
-    overflow: hidden;
-    position: absolute;
-    top: auto;
-    width: 1px;
-}
+/* === Ads =================== */
 #om-ads {
     position: absolute;
     top: 0;
@@ -149,4 +165,14 @@
 }
 .om-ads--active {
     overflow: hidden;
+}
+
+/* === Focus =================== */
+.om-player:focus,
+.om-player > .om-controls > *:focus {
+    outline: dotted 1px #999;
+}
+.om-player.om-player__keyboard--inactive:focus,
+.om-player.om-player__keyboard--inactive > .om-controls > *:focus {
+    outline: none;
 }
