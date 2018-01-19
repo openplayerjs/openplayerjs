@@ -58,11 +58,24 @@ class Player {
      */
     _wrapInstance() {
         const wrapper = document.createElement('div');
-        wrapper.className = 'om-player';
+        wrapper.className = 'om-player om-player__keyboard--inactive';
+        wrapper.className += isAudio(this.element) ? ' om-player__audio' : ' om-player__video';
 
         this.element.classList.remove('om-player');
         this.element.parentNode.insertBefore(wrapper, this.element);
         wrapper.appendChild(this.element);
+
+        wrapper.addEventListener('keydown', () => {
+            if (wrapper.classList.contains('om-player__keyboard--inactive')) {
+                wrapper.classList.remove('om-player__keyboard--inactive');
+            }
+        });
+
+        wrapper.addEventListener('click', () => {
+            if (!wrapper.classList.contains('om-player__keyboard--inactive')) {
+                wrapper.classList.add('om-player__keyboard--inactive');
+            }
+        });
     }
 
     /**
