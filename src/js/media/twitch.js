@@ -16,9 +16,11 @@ class TwitchMedia {
     constructor(element, mediaFile) {
         this.element = element;
         this.media = mediaFile;
-        this.promise = new Promise(resolve => {
-            resolve();
-        });
+        this.promise = (typeof Twitch === 'undefined') ?
+            loadScript('https://player.twitch.tv/js/embed/v1.js') :
+            new Promise(resolve => {
+                resolve();
+            });
         return this;
     }
 

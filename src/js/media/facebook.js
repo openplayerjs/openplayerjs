@@ -16,9 +16,11 @@ class FacebookMedia {
     constructor(element, mediaFile) {
         this.element = element;
         this.media = mediaFile;
-        this.promise = new Promise(resolve => {
-            resolve();
-        });
+        this.promise = (typeof YT === 'undefined' || !YT.loaded) ?
+            loadScript('https://connect.facebook.net/en/sdk.js') :
+            new Promise(resolve => {
+                resolve();
+            });
         return this;
     }
 
