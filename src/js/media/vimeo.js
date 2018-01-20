@@ -16,9 +16,11 @@ class VimeoMedia {
     constructor(element, mediaFile) {
         this.element = element;
         this.media = mediaFile;
-        this.promise = new Promise(resolve => {
-            resolve();
-        });
+        this.promise = (typeof Vimeo === 'undefined') ?
+            loadScript('https://player.vimeo.com/api/player.js') :
+            new Promise(resolve => {
+                resolve();
+            });
         return this;
     }
 

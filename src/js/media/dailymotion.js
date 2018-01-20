@@ -16,9 +16,11 @@ class DailyMotionMedia {
     constructor(element, mediaFile) {
         this.element = element;
         this.media = mediaFile;
-        this.promise = new Promise(resolve => {
-            resolve();
-        });
+        this.promise = (typeof DM === 'undefined') ?
+            loadScript('https://api.dmcdn.net/all.js') :
+            new Promise(resolve => {
+                resolve();
+            });
         return this;
     }
 

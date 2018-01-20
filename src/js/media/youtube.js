@@ -16,9 +16,11 @@ class YouTubeMedia {
     constructor(element, mediaFile) {
         this.element = element;
         this.media = mediaFile;
-        this.promise = new Promise(resolve => {
-            resolve();
-        });
+        this.promise = (typeof YT === 'undefined' || !YT.loaded) ?
+            loadScript('https://www.youtube.com/player_api') :
+            new Promise(resolve => {
+                resolve();
+            });
         return this;
     }
 
