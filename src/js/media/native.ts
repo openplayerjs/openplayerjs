@@ -1,15 +1,16 @@
 import { isAudio, isVideo } from '../utils/dom';
+import Native from "../components/native";
 
 /**
  *
  * @class NativeMedia
  * @description Class that wraps the native HTML5 video/audio tags
  */
-class NativeMedia {
+class NativeMedia extends Native {
     /**
      * Creates an instance of NativeMedia.
      *
-     * @param {HTMLElement} element
+     * @param {HTMLMediaElement} element
      * @param {object} mediaFile
      * @returns {NativeMedia}
      * @memberof NativeMedia
@@ -18,11 +19,7 @@ class NativeMedia {
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
-        this.element = element;
-        this.media = mediaFile;
-        this.promise = new Promise(resolve => {
-            resolve();
-        });
+        super(element, mediaFile);
         return this;
     }
     /**
@@ -48,12 +45,32 @@ class NativeMedia {
         this.element.pause();
     }
 
+    destroy() {
+        console.log(this.element);
+    }
+
+    set src(value) {
+        this.element.src = value;
+    }
+
+    get src() {
+        return this.element.src;
+    }
+
     set volume(value) {
         this.element.volume = value;
     }
 
     get volume() {
         return this.element.volume;
+    }
+
+    set muted(value) {
+        this.element.muted = value;
+    }
+
+    get muted() {
+        return this.element.muted;
     }
 }
 

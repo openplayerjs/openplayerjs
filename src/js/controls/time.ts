@@ -1,4 +1,5 @@
 import formatTime from '../utils/time';
+import Media from '../media';
 
 /**
  *
@@ -7,6 +8,23 @@ import formatTime from '../utils/time';
  * and registers events to update them in the control bar
  */
 class Time {
+
+    /**
+     * @type Media
+     */
+    media: Media;
+
+    /**
+     * @type HTMLTimeElement
+     */
+    current: HTMLTimeElement;
+
+    delimiter: HTMLSpanElement;
+
+    duration: HTMLTimeElement;
+
+    events: Object;
+
     /**
      *
      * @param {Media} media
@@ -27,17 +45,6 @@ class Time {
         this.duration.className = 'om-controls__duration';
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
-        this.events = {};
-
-        return this;
-    }
-
-    /**
-     *
-     * @returns {Time}
-     * @memberof Time
-     */
-    register() {
         const el = this.media.element;
         this.events = {
             loadedmetadata: () => {
@@ -62,8 +69,17 @@ class Time {
             }
         };
 
+        return this;
+    }
+
+    /**
+     *
+     * @returns {Time}
+     * @memberof Time
+     */
+    register() {
         Object.keys(this.events).forEach(event => {
-            el.addEventListener(event, this.events[event]);
+            this.media.element.addEventListener(event, this.events[event]);
         });
 
         return this;
@@ -71,7 +87,7 @@ class Time {
 
     unregister() {
         Object.keys(this.events).forEach(event => {
-            el.removeEventListener(event, this.events[event]);
+            this.media.element.removeEventListener(event, this.events[event]);
         });
 
         this.events = {};
@@ -81,7 +97,7 @@ class Time {
 
     /**
      *
-     * @param {HTMLElement} container
+     * @param {HTMLDivElement} container
      * @returns {Time}
      * @memberof Time
      */

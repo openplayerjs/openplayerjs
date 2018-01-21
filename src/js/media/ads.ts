@@ -1,17 +1,26 @@
 import {loadScript} from '../utils/dom';
+import Native from "../components/native";
 
-class Ads {
+class Ads extends Native {
+    events: object;
+
+    adsManager?: AdsManager;
+
+    adsContainer: HTMLDivElement;
+
+    adDisplayContainer: adDisplayContainer;
+
     /**
      * Creates an instance of Google IMA SDK.
      *
-     * @param {HTMLElement} element
+     * @param {HTMLMediaElement} element
      * @param {object} mediaFile
      * @returns {Ads}
      * @memberof Ads
      */
     constructor(element, mediaFile) {
-        this.element = element;
-        this.media = mediaFile;
+        super(element, mediaFile);
+
         this.adsManager = null;
         this.events = null;
 
@@ -24,8 +33,8 @@ class Ads {
         return this;
     }
 
-    canPlayType() {
-        return this.adsLoader !== null;
+    canPlayType(mimeType) {
+        return this.adsLoader !== null && /\.(mp[34]|m3u8|mpd)/.test(mimeType);
     }
 
     load() {
@@ -56,13 +65,48 @@ class Ads {
         this.adsLoader.addEventListener(error, this._error.bind(this));
     }
 
+    play() {
+        this.element.play();
+    }
+
+    pause() {
+        this.element.pause();
+    }
+
+    destroy() {
+        this._revoke();
+    }
+
+    set src(media) {
+    }
+
+    get src() {
+        return 'aaaaa';
+    }
+
+    set volume(value) {
+        this.element.volume = value;
+    }
+
+    get volume() {
+        return this.element.volume;
+    }
+
+    set muted(value) {
+        this.element.muted = value;
+    }
+
+    get muted() {
+        return this.element.muted;
+    }
+
     _assign(event) {
         if (event.type === google.ima.AdEvent.Type.CLICK) {
-            this.application_.adClicked();
+            // this.application_.adClicked();
         } else if (event.type === google.ima.AdEvent.Type.LOADED) {
             const ad = event.getAd();
             if (!ad.isLinear()) {
-                this.onContentResumeRequested_();
+                // this.onContentResumeRequested_();
             }
         }
     }
@@ -83,12 +127,12 @@ class Ads {
         // Attach the pause/resume events.
         manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-            this.onContentPauseRequested_,
+            // this.onContentPauseRequested_,
             false
         );
         manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
-            this.onContentResumeRequested_
+            // this.onContentResumeRequested_
         );
         // Handle errors.
         manager.addEventListener(
@@ -113,8 +157,8 @@ class Ads {
         });
 
         manager.init(
-            this.element.parentNode.offsetWidth,
-            this.element.parentNode.offsetHeight,
+            (<HTMLElement>this.element.parentNode).offsetWidth,
+            (<HTMLElement>this.element.parentNode).offsetHeight,
             google.ima.ViewMode.NORMAL
         );
 

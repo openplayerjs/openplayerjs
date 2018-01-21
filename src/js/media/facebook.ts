@@ -1,21 +1,22 @@
-// import {loadScript} from '../utils/dom';
+import {loadScript} from '../utils/dom';
+import Iframe from "../components/iframe";
+
 /**
  *
  * @class FacebookMedia
  * @description Class that handles the Facebook API within the player
  */
-class FacebookMedia {
+class FacebookMedia extends Iframe {
     /**
      * Creates an instance of FacebookMedia.
      *
-     * @param {HTMLElement} element
+     * @param {HTMLMediaElement} element
      * @param {object} mediaFile
      * @returns {FacebookMedia}
      * @memberof FacebookMedia
      */
     constructor(element, mediaFile) {
-        this.element = element;
-        this.media = mediaFile;
+        super(element, mediaFile);
         this.promise = (typeof YT === 'undefined' || !YT.loaded) ?
             loadScript('https://connect.facebook.net/en/sdk.js') :
             new Promise(resolve => {
@@ -30,6 +31,40 @@ class FacebookMedia {
 
     load() {
         console.log(this);
+    }
+
+    play() {
+
+    }
+
+    pause() {
+
+    }
+
+    destroy() {
+    }
+
+    set src(media) {
+    }
+
+    get src() {
+        return 'aaaaa';
+    }
+
+    set volume(value) {
+
+    }
+
+    get volume() {
+        return 1;
+    }
+
+    set muted(value) {
+
+    }
+
+    get muted() {
+        return true;
     }
 }
 
