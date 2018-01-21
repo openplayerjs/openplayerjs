@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "outDir": "ts-dist",
+    "module": "es6",
+    "target": "es6",
+    "types": [
+      "node"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "ts-dist",
+    "dist",
+    "webpack.config.js"
+  ]
+}

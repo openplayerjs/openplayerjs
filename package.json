@@ -23,8 +23,12 @@
         "mp4",
         "mp3"
     ],
+    "scripts": {
+        "build": "rm -rf ./dist/ && rm -rf ./ts-dist/ && tsc && webpack && open demo/index.html"
+    },
     "readme": "https://github.com/rafa8626/openmedia/blob/master/README.md",
     "devDependencies": {
+        "@types/node": "^9.3.0",
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.2",
         "babel-preset-env": "^1.6.1",
@@ -43,6 +47,7 @@
         "postcss-loader": "^2.0.10",
         "stylelint": "^8.4.0",
         "svg-sprite-loader": "^3.6.2",
+        "typescript": "^2.6.2",
         "webpack": "^3.10.0"
     }
 }

@@ -1,21 +1,22 @@
-// import {loadScript} from '../utils/dom';
+import {loadScript} from '../utils/dom';
+import Iframe from "../components/iframe";
+
 /**
  *
  * @class VimeoMedia
  * @description Class that handles the Vimeo API within the player
  */
-class VimeoMedia {
+class VimeoMedia extends Iframe {
     /**
      * Creates an instance of VimeoMedia.
      *
-     * @param {HTMLElement} element
+     * @param {HTMLMediaElement} element
      * @param {object} mediaFile
      * @returns {VimeoMedia}
      * @memberof VimeoMedia
      */
     constructor(element, mediaFile) {
-        this.element = element;
-        this.media = mediaFile;
+        super(element, mediaFile);
         this.promise = (typeof Vimeo === 'undefined') ?
             loadScript('https://player.vimeo.com/api/player.js') :
             new Promise(resolve => {
@@ -30,6 +31,40 @@ class VimeoMedia {
 
     load() {
         console.log(this);
+    }
+
+    play() {
+
+    }
+
+    pause() {
+
+    }
+
+    destroy() {
+    }
+
+    set src(media) {
+    }
+
+    get src() {
+        return 'aaaaa';
+    }
+
+    set volume(value) {
+
+    }
+
+    get volume() {
+        return 1;
+    }
+
+    set muted(value) {
+
+    }
+
+    get muted() {
+        return true;
     }
 }
 

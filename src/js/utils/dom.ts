@@ -1,7 +1,7 @@
 /**
  *
  * @export
- * @param {HTMLElement} element
+ * @param {HTMLMediaElement} element
  * @return {boolean}
  */
 export function isIframe(element) {
@@ -11,7 +11,7 @@ export function isIframe(element) {
 /**
  *
  * @export
- * @param {HTMLElement} element
+ * @param {HTMLMediaElement} element
  * @return {boolean}
  */
 export function isVideo(element) {
@@ -21,7 +21,7 @@ export function isVideo(element) {
 /**
  *
  * @export
- * @param {HTMLElement} element
+ * @param {HTMLMediaElement} element
  * @return {boolean}
  */
 export function isAudio(element) {
@@ -61,7 +61,8 @@ export function loadScript(url) {
  * @param {function} error
  */
 export function request(url, dataType, success, error) {
-    const xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    const xhr = (<any>window).XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    let type;
     switch (dataType) {
         case 'text':
             type = 'text/plain';

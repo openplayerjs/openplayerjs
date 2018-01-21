@@ -1,21 +1,23 @@
-// import {loadScript} from '../utils/dom';
+import {loadScript} from '../utils/dom';
+import Iframe from "../components/iframe";
+
+
 /**
  *
  * @class DailyMotionMedia
  * @description Class that handles the DailyMotion API within the player
  */
-class DailyMotionMedia {
+class DailyMotionMedia extends Iframe {
     /**
      * Creates an instance of DailyMotionMedia.
      *
-     * @param {HTMLElement} element
+     * @param {HTMLMediaElement} element
      * @param {object} mediaFile
      * @returns {DailyMotionMedia}
      * @memberof DailyMotionMedia
      */
     constructor(element, mediaFile) {
-        this.element = element;
-        this.media = mediaFile;
+        super(element, mediaFile);
         this.promise = (typeof DM === 'undefined') ?
             loadScript('https://api.dmcdn.net/all.js') :
             new Promise(resolve => {
@@ -30,6 +32,40 @@ class DailyMotionMedia {
 
     load() {
         console.log(this);
+    }
+
+    play() {
+
+    }
+
+    pause() {
+
+    }
+
+    destroy() {
+    }
+
+    set src(media) {
+    }
+
+    get src() {
+        return 'aaaaa';
+    }
+
+    set volume(value) {
+
+    }
+
+    get volume() {
+        return 1;
+    }
+
+    set muted(value) {
+
+    }
+
+    get muted() {
+        return true;
     }
 }
 
