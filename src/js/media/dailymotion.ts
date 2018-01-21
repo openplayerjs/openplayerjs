@@ -1,5 +1,5 @@
 import {loadScript} from '../utils/dom';
-import Iframe from "../components/iframe";
+import Iframe from '../components/iframe';
 
 
 /**
@@ -11,8 +11,8 @@ class DailyMotionMedia extends Iframe {
     /**
      * Creates an instance of DailyMotionMedia.
      *
-     * @param {HTMLMediaElement} element
-     * @param {object} mediaFile
+     * @param {HTMLIFrameElement} element
+     * @param {File} mediaFile
      * @returns {DailyMotionMedia}
      * @memberof DailyMotionMedia
      */

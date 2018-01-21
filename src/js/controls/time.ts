@@ -8,22 +8,11 @@ import Media from '../media';
  * and registers events to update them in the control bar
  */
 class Time {
-
-    /**
-     * @type Media
-     */
     media: Media;
-
-    /**
-     * @type HTMLTimeElement
-     */
     current: HTMLTimeElement;
-
     delimiter: HTMLSpanElement;
-
     duration: HTMLTimeElement;
-
-    events: Object;
+    events: object;
 
     /**
      *
@@ -46,26 +35,24 @@ class Time {
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
         const el = this.media.element;
-        this.events = {
-            loadedmetadata: () => {
-                if (el.duration !== Infinity && !isNaN(el.duration)) {
+        this.events['loadedmetadata'] = () => {
+            if (el.duration !== Infinity && !isNaN(el.duration)) {
+                this.duration.innerText = formatTime(el.duration);
+            } else {
+                this.duration.style.display = 'none';
+                this.delimiter.style.display = 'none';
+            }
+        };
+        this.events['timeupdate'] = () => {
+            if (el.duration !== Infinity) {
+                if (!isNaN(el.duration) && !el.duration) {
                     this.duration.innerText = formatTime(el.duration);
-                } else {
-                    this.duration.style.display = 'none';
-                    this.delimiter.style.display = 'none';
                 }
-            },
-            timeupdate: () => {
-                if (el.duration !== Infinity) {
-                    if (!isNaN(el.duration) && !el.duration) {
-                        this.duration.innerText = formatTime(el.duration);
-                    }
-                    this.current.innerText = formatTime(el.currentTime);
-                } else {
-                    this.duration.style.display = 'none';
-                    this.delimiter.style.display = 'none';
-                    this.current.innerText = 'Live Broadcast';
-                }
+                this.current.innerText = formatTime(el.currentTime);
+            } else {
+                this.duration.style.display = 'none';
+                this.delimiter.style.display = 'none';
+                this.current.innerText = 'Live Broadcast';
             }
         };
 

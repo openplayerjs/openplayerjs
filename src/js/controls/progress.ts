@@ -1,11 +1,7 @@
 import Media from '../media';
 
 class Progress {
-    /**
-     * @type Media
-     */
     media: Media;
-
     slider: HTMLInputElement;
 
     /**

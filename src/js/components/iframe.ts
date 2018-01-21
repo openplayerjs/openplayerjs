@@ -1,14 +1,9 @@
-import Type from "./interfaces/media/type";
-import File from "./interfaces/media/file";
+import Type from './interfaces/media/type';
+import File from './interfaces/media/file';
 
 export default class Iframe implements Type {
-    /**
-     * @type HTMLIFrameElement
-     */
     element: HTMLIFrameElement;
-
     media: File;
-
     promise: Promise<any>;
 
     constructor (element, media) {

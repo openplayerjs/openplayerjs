@@ -12,7 +12,7 @@ module.exports = {
     entry: './ts-dist/player.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'om_player.min.js'
+        filename: 'om_player.js'
     },
     module: {
         rules: [
@@ -27,7 +27,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.js$/,
+                test: /src\/*\.js$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',

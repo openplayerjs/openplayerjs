@@ -6,16 +6,8 @@ import Media from '../media';
  * @description  Class that renders play/pause/replay button and registers events to update it
  */
 class Play {
-    /**
-     * @type Media
-     */
     media: Media;
-
-    /**
-     * @type HTMLButtonElement
-     */
     button: HTMLButtonElement;
-
     events: object;
 
     /**
