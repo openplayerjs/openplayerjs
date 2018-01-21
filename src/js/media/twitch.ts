@@ -1,5 +1,5 @@
 import {loadScript} from '../utils/dom';
-import Iframe from "../components/iframe";
+import Iframe from '../components/iframe';
 
 /**
  *
@@ -10,8 +10,8 @@ class TwitchMedia extends Iframe {
     /**
      * Creates an instance of TwitchMedia.
      *
-     * @param {HTMLMediaElement} element
-     * @param {object} mediaFile
+     * @param {HTMLIFrameElement} element
+     * @param {File} mediaFile
      * @returns {TwitchMedia}
      * @memberof TwitchMedia
      */

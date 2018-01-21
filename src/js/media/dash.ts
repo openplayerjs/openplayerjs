@@ -1,7 +1,7 @@
 import { HAS_MSE } from '../utils/constants';
 import { loadScript } from '../utils/dom';
 import { addEvent } from '../events';
-import Native from "../components/native";
+import Native from '../components/native';
 
 /**
  *
@@ -10,14 +10,13 @@ import Native from "../components/native";
  */
 class DashMedia extends Native {
     player: MediaPlayer;
-
     events: object;
 
     /**
      * Creates an instance of DashMedia.
      *
      * @param {HTMLMediaElement} element
-     * @param {object} mediaFile
+     * @param {File} mediaFile
      * @memberof DashMedia
      */
     constructor(element, mediaFile) {

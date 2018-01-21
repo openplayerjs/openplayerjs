@@ -9,8 +9,8 @@ import YouTubeMedia from './media/youtube';
 import Ads from './media/ads';
 import { isIframe } from './utils/dom';
 import * as source from './utils/url';
-import Controls from "./controls";
-import File from "./components/interfaces/media/file";
+import Controls from './controls';
+import File from './components/interfaces/media/file';
 
 /**
  *

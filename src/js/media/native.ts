@@ -1,5 +1,5 @@
 import { isAudio, isVideo } from '../utils/dom';
-import Native from "../components/native";
+import Native from '../components/native';
 
 /**
  *
@@ -11,7 +11,7 @@ class NativeMedia extends Native {
      * Creates an instance of NativeMedia.
      *
      * @param {HTMLMediaElement} element
-     * @param {object} mediaFile
+     * @param {File} mediaFile
      * @returns {NativeMedia}
      * @memberof NativeMedia
      */

@@ -1,5 +1,5 @@
 import {loadScript} from '../utils/dom';
-import Iframe from "../components/iframe";
+import Iframe from '../components/iframe';
 
 /**
  *
@@ -10,8 +10,8 @@ class VimeoMedia extends Iframe {
     /**
      * Creates an instance of VimeoMedia.
      *
-     * @param {HTMLMediaElement} element
-     * @param {object} mediaFile
+     * @param {HTMLIFrameElement} element
+     * @param {File} mediaFile
      * @returns {VimeoMedia}
      * @memberof VimeoMedia
      */

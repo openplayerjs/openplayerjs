@@ -1,7 +1,7 @@
 import { SUPPORTS_NATIVE_HLS, HAS_MSE } from '../utils/constants';
 import { loadScript } from '../utils/dom';
 import { addEvent } from '../events';
-import Native from "../components/native";
+import Native from '../components/native';
 
 /**
  *
@@ -10,18 +10,15 @@ import Native from "../components/native";
  */
 class HlsMedia extends Native {
     player: Hls;
-
     events: object;
-
     recoverDecodingErrorDate: number;
-
     recoverSwapAudioCodecDate: number;
 
     /**
      * Creates an instance of HlsMedia.
      *
      * @param {HTMLMediaElement} element
-     * @param {object} mediaFile
+     * @param {File} mediaFile
      * @memberof HlsMedia
      */
     constructor(element, mediaFile) {

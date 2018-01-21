@@ -1,13 +1,10 @@
 import {loadScript} from '../utils/dom';
-import Native from "../components/native";
+import Native from '../components/native';
 
 class Ads extends Native {
     events: object;
-
     adsManager?: AdsManager;
-
     adsContainer: HTMLDivElement;
-
     adDisplayContainer: adDisplayContainer;
 
     /**

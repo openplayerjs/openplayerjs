@@ -1,5 +1,5 @@
 import {loadScript} from '../utils/dom';
-import Iframe from "../components/iframe";
+import Iframe from '../components/iframe';
 
 /**
  *
@@ -10,8 +10,8 @@ class YouTubeMedia extends Iframe {
     /**
      * Creates an instance of YouTubeMedia.
      *
-     * @param {HTMLMediaElement} element
-     * @param {MediaFile} mediaFile
+     * @param {HTMLIFrameElement} element
+     * @param {File} mediaFile
      * @returns {YouTubeMedia}
      * @memberof YouTubeMedia
      */

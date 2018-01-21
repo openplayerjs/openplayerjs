@@ -7,24 +7,12 @@ import Media from '../media';
  * @description  Class that renders volume slider and mute button, and registers events to update them
  */
 class Volume {
-    /**
-     * @type Media
-     */
     media: Media;
-
-    /**
-     * @type HTMLButtonElement
-     */
     button: HTMLButtonElement;
-
     slider: HTMLInputElement;
-
-    buttonEvents: Object;
-
-    sliderEvents: Object;
-
-    events: Object;
-
+    buttonEvents: object;
+    sliderEvents: object;
+    events: object;
     volume: number;
 
     /**
