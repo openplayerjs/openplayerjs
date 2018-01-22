@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const StyleLintPlugin = require('stylelint-webpack-plugin');
 
 
 const extractPlugin = new ExtractTextPlugin({
@@ -28,12 +27,6 @@ module.exports = {
                 }
             },
             {
-                enforce: 'pre',
-                test: /\.css$/,
-                exclude: /node_modules/,
-                loader: 'stylelint-loader'
-            },
-            {
                 test: /src\/*\.js$/,
                 exclude: /node_modules/,
                 use: {
@@ -57,6 +50,7 @@ module.exports = {
                             options: {
                                 ident: 'postcss',
                                 plugins: [
+                                    require('stylelint')(),
                                     require('postcss-cssnext')({
                                         browsers: ['last 3 versions'],
                                         warnForDuplicates: false
@@ -72,7 +66,6 @@ module.exports = {
     },
     plugins: [
         // new webpack.optimize.UglifyJsPlugin(),
-        new StyleLintPlugin(),
         extractPlugin,
     ]
 };
