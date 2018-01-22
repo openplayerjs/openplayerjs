@@ -1,24 +1,24 @@
 const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+
 
 const extractPlugin = new ExtractTextPlugin({
     filename: 'om_player.min.css',
-    allChunks: true
+    allChunks: false
 });
 
 module.exports = {
-    entry: './src/js/player.js',
+    entry: './ts-dist/player.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'om_player.min.js'
+        filename: 'om_player.js'
     },
     module: {
         rules: [
             {
                 enforce: 'pre',
-                test: /\.js$/,
+                test: /src\/*\.js$/,
                 exclude: /node_modules/,
                 loader: 'eslint-loader',
                 options: {
@@ -27,7 +27,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.js$/,
+                test: /src\/*\.js$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
@@ -42,31 +42,30 @@ module.exports = {
                 use: extractPlugin.extract({
                     use: [
                         {
+                            loader: 'css-loader',
+                            options: { importLoaders: 1 },
+                        },
+                        {
                             loader: 'postcss-loader',
                             options: {
                                 ident: 'postcss',
                                 plugins: [
-                                    require('postcss-cssnext')({ browsers: ['last 3 versions'] }),
+                                    require('stylelint')(),
+                                    require('postcss-cssnext')({
+                                        browsers: ['last 3 versions'],
+                                        warnForDuplicates: false
+                                    }),
                                     require('cssnano')()
                                 ]
                             }
                         }
                     ],
                 })
-            },
-            {
-                test: /\.svg$/,
-                loader: 'svg-sprite-loader',
-                // options: {
-                //     extract: true,
-                //     spriteFilename: 'sprite-[hash:6].svg'
-                // }
             }
         ]
     },
     plugins: [
         // new webpack.optimize.UglifyJsPlugin(),
         extractPlugin,
-        new SpriteLoaderPlugin()
     ]
 };
