@@ -1,7 +1,7 @@
 import { isIframe, isAudio, isVideo } from './utils/dom';
 import Media from './media';
 import Controls from './controls';
-import '../css/player.css';
+import '../src/css/player.css';
 
 /**
  *
@@ -11,8 +11,27 @@ import '../css/player.css';
  */
 class Player {
     /**
+     * @type Player[]
+     */
+    instances: Player[];
+    /**
+     * @type HTMLMediaElement
+     */
+    element: HTMLMediaElement|HTMLIFrameElement;
+
+    /**
+     * @type Object
+     */
+    ads: Object;
+
+    /**
+     * @type Media
+     */
+    media: Media;
+
+    /**
      * Creates an instance of Player.
-     * @param {HTMLElement} element
+     * @param {HTMLMediaElement|HTMLIFrameElement} element
      * @memberof Player
      */
     constructor(element, ads) {
@@ -24,6 +43,16 @@ class Player {
             this._createControls();
         }
         return this;
+    }
+
+    /**
+     * Entry point
+     * Convert all the video/audio/iframe tags with `om-player` class in a OpenMedia player
+     */
+    static init() {
+        document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player').forEach(target => {
+            new Player(target, target.getAttribute('data-om-ads'));
+        });
     }
 
     /**
@@ -84,7 +113,6 @@ class Player {
      * @memberof Player
      */
     _createControls() {
-        this.element.controls = false;
         const controls = new Controls(this.media);
         controls.prepare();
         controls.render();
@@ -119,15 +147,16 @@ class Player {
          * Change dimensions of iframe when resizing window
          * @private
          */
-        const resizeIframeCallback = () => {
-            const width = el.parentNode.offsetWidth;
+        const resizeIframeCallback = (): void => {
+            const width = (<HTMLElement>el.parentNode).offsetWidth;
+            const height = width * parseFloat(el.getAttribute('data-ratio'));
             el.style.width = `${width}px`;
-            el.style.height = `${width * el.getAttribute('data-ratio')}px`;
+            el.style.height = `${height}px`;
         };
 
         // This workflow is used when the aspect ratio of the media is unknown
-        const ratio = el.getAttribute('height') / el.getAttribute('width');
-        el.setAttribute('data-ratio', ratio);
+        const ratio = parseFloat(el.getAttribute('height')) / parseFloat(el.getAttribute('width'));
+        el.setAttribute('data-ratio', `${ratio}`);
         el.removeAttribute('width');
         el.removeAttribute('height');
 
@@ -137,16 +166,5 @@ class Player {
         window.dispatchEvent(event);
     }
 }
-
-/**
- * Entry point
- * Convert all the video/audio/iframe with 'om-player' class in a OpenMedia player
- */
-Player.instances = [];
-Player.init = () => {
-    document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player').forEach(target => {
-        Player.instances.push(new Player(target, target.getAttribute('data-om-ads')));
-    });
-};
 
 Player.init();

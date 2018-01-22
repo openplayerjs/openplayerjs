@@ -2,6 +2,7 @@ import Play from './controls/play';
 import Progress from './controls/progress';
 import Time from './controls/time';
 import Volume from './controls/volume';
+import Media from './media';
 // import Fullscreen from './controls/fullscreen';
 
 /**
@@ -12,6 +13,21 @@ import Volume from './controls/volume';
  */
 class Controls {
     /**
+     * @type Media
+     */
+    media: Media;
+
+    /**
+     * @type Object
+     */
+    controls: Object;
+
+    /**
+     * @type HTMLDivElement
+     */
+    container: HTMLDivElement;
+
+    /**
      * Creates an instance of Controls.
      * @param {Media} media
      * @returns {Controls}
@@ -19,14 +35,16 @@ class Controls {
      */
     constructor(media) {
         this.media = media;
-        this.controls = {};
-        this.container = '';
+        this.media.element.controls = false;
+        this.controls = {
+            play: new Play(media),
+            time: new Time(media),
+            progress: new Progress(media),
+            volume: new Volume(media),
+            // fullscreen = new Fullscreen(media),
+        };
 
-        this.controls.play = new Play(media);
-        this.controls.time = new Time(media);
-        this.controls.progress = new Progress(media);
-        this.controls.volume = new Volume(media);
-        // this.controls.fullscreen = new Fullscreen(media);
+        this.container = null;
 
         return this;
     }

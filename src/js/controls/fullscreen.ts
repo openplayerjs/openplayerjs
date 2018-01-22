@@ -1,4 +1,15 @@
+import Media from '../media';
+
 class Fullscreen {
+    media: Media;
+    button: HTMLButtonElement;
+
+    /**
+     *
+     * @param {Media} media
+     * @returns {Fullscreen}
+     * @memberof Fullscreen
+     */
     constructor(media) {
         this.media = media;
         this.button = document.createElement('button');

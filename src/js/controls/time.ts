@@ -1,4 +1,5 @@
 import formatTime from '../utils/time';
+import Media from '../media';
 
 /**
  *
@@ -7,6 +8,12 @@ import formatTime from '../utils/time';
  * and registers events to update them in the control bar
  */
 class Time {
+    media: Media;
+    current: HTMLTimeElement;
+    delimiter: HTMLSpanElement;
+    duration: HTMLTimeElement;
+    events: object;
+
     /**
      *
      * @param {Media} media
@@ -27,7 +34,28 @@ class Time {
         this.duration.className = 'om-controls__duration';
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
+        const el = this.media.element;
         this.events = {};
+        this.events['loadedmetadata'] = () => {
+            if (el.duration !== Infinity && !isNaN(el.duration)) {
+                this.duration.innerText = formatTime(el.duration);
+            } else {
+                this.duration.style.display = 'none';
+                this.delimiter.style.display = 'none';
+            }
+        };
+        this.events['timeupdate'] = () => {
+            if (el.duration !== Infinity) {
+                if (!isNaN(el.duration) && !el.duration) {
+                    this.duration.innerText = formatTime(el.duration);
+                }
+                this.current.innerText = formatTime(el.currentTime);
+            } else {
+                this.duration.style.display = 'none';
+                this.delimiter.style.display = 'none';
+                this.current.innerText = 'Live Broadcast';
+            }
+        };
 
         return this;
     }
@@ -38,32 +66,8 @@ class Time {
      * @memberof Time
      */
     register() {
-        const el = this.media.element;
-        this.events = {
-            loadedmetadata: () => {
-                if (el.duration !== Infinity && !isNaN(el.duration)) {
-                    this.duration.innerText = formatTime(el.duration);
-                } else {
-                    this.duration.style.display = 'none';
-                    this.delimiter.style.display = 'none';
-                }
-            },
-            timeupdate: () => {
-                if (el.duration !== Infinity) {
-                    if (!isNaN(el.duration) && !el.duration) {
-                        this.duration.innerText = formatTime(el.duration);
-                    }
-                    this.current.innerText = formatTime(el.currentTime);
-                } else {
-                    this.duration.style.display = 'none';
-                    this.delimiter.style.display = 'none';
-                    this.current.innerText = 'Live Broadcast';
-                }
-            }
-        };
-
         Object.keys(this.events).forEach(event => {
-            el.addEventListener(event, this.events[event]);
+            this.media.element.addEventListener(event, this.events[event]);
         });
 
         return this;
@@ -71,7 +75,7 @@ class Time {
 
     unregister() {
         Object.keys(this.events).forEach(event => {
-            el.removeEventListener(event, this.events[event]);
+            this.media.element.removeEventListener(event, this.events[event]);
         });
 
         this.events = {};
@@ -81,7 +85,7 @@ class Time {
 
     /**
      *
-     * @param {HTMLElement} container
+     * @param {HTMLDivElement} container
      * @returns {Time}
      * @memberof Time
      */

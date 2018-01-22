@@ -9,6 +9,8 @@ import YouTubeMedia from './media/youtube';
 import Ads from './media/ads';
 import { isIframe } from './utils/dom';
 import * as source from './utils/url';
+import Controls from './controls';
+import File from './components/interfaces/media/file';
 
 /**
  *
@@ -19,8 +21,28 @@ import * as source from './utils/url';
  */
 class Media {
     /**
+     * @type HTMLMediaElement
+     */
+    element: HTMLMediaElement;
+
+    /**
+     * @type Object
+     */
+    ads: object;
+
+    /**
+     * @type {Ads|DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|HlsMedia|DashMedia|NativeMedia}
+     */
+    media: Ads|DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|HlsMedia|DashMedia|NativeMedia;
+
+    promisePlay: Promise<void>;
+    promise: Promise<void>;
+
+    mediaFiles: File[];
+
+    /**
      * Creates an instance of Media.
-     * @param {HTMLElement} element
+     * @param {HTMLMediaElement} element
      * @memberof Media
      */
     constructor(element, ads) {
@@ -74,9 +96,9 @@ class Media {
                 this.media.load();
             });
         } catch (e) {
-            throw e;
             // destroy media
-            // this.media.destroy();
+            this.media.destroy();
+            throw e;
         }
     }
 
@@ -112,7 +134,7 @@ class Media {
         if (typeof media === 'string') {
             this.mediaFiles.push({
                 src: media,
-                type: predictType(media)
+                type: source.predictType(media)
             });
         } else if (Array.isArray(media)) {
             this.mediaFiles = media;
@@ -141,6 +163,14 @@ class Media {
 
     get volume() {
         return this.media.volume;
+    }
+
+    set muted(value) {
+        this.media.muted = value;
+    }
+
+    get muted() {
+        return this.media.muted;
     }
 
     destroy() {

@@ -1,9 +1,15 @@
+import Media from '../media';
+
 /**
  *
  * @class Play
  * @description  Class that renders play/pause/replay button and registers events to update it
  */
 class Play {
+    media: Media;
+    button: HTMLButtonElement;
+    events: object;
+
     /**
      *
      * @param {Media} media
@@ -18,7 +24,26 @@ class Play {
         this.button.className = 'om-controls__playpause';
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
 
+        const el = this.media.element;
+
         this.events = {};
+        this.events['click'] = () => {
+            if (el.paused || el.ended) {
+                this.media.play();
+            } else {
+                this.media.pause();
+            }
+        };
+        this.events['play'] = () => {
+            if (el.ended) {
+                this.button.classList.add('om-controls__playpause--replay');
+            } else {
+                this.button.classList.add('om-controls__playpause--pause');
+            }
+        };
+        this.events['pause'] = () => {
+            this.button.classList.remove('om-controls__playpause--pause');
+        };
 
         return this;
     }
@@ -29,42 +54,21 @@ class Play {
      * @memberof Play
      */
     register() {
-        const el = this.media.element;
-        this.events = {
-            click: () => {
-                if (el.paused || el.ended) {
-                    this.media.play();
-                } else {
-                    this.media.pause();
-                }
-            },
-            play: () => {
-                if (el.ended) {
-                    this.button.classList.add('om-controls__playpause--replay');
-                } else {
-                    this.button.classList.add('om-controls__playpause--pause');
-                }
-            },
-            pause: () => {
-                this.button.classList.remove('om-controls__playpause--pause');
-            }
-        };
-
         Object.keys(this.events).forEach(event => {
-            el.addEventListener(event, this.events[event]);
+            this.media.element.addEventListener(event, this.events[event]);
         });
 
-        this.button.addEventListener('click', this.events.click);
+        this.button.addEventListener('click', this.events['click']);
 
         return this;
     }
 
     unregister() {
         Object.keys(this.events).forEach(event => {
-            el.removeEventListener(event, this.events[event]);
+            this.media.element.removeEventListener(event, this.events[event]);
         });
 
-        this.button.removeEventListener('click', this.events.click);
+        this.button.removeEventListener('click', this.events['click']);
 
         this.events = {};
 
@@ -73,7 +77,7 @@ class Play {
 
     /**
      *
-     * @param {HTMLElement} container
+     * @param {HTMLDivElement} container
      * @returns {Play}
      * @memberof Play
      */

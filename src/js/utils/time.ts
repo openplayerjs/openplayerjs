@@ -11,7 +11,8 @@ export default function formatTime(seconds) {
     let secs = Math.floor(seconds - (hrs * 3600) - (min * 60));
     const showHours = hrs > 0;
 
-    hrs = hrs < 10 ? `0${hrs}` : hrs;
-    secs = secs < 10 ? `0${secs}` : secs;
-    return `${(showHours ? `${hrs}:` : '')}${min}:${secs}`;
+    let hrsFormat = hrs < 10 ? `0${hrs}` : hrs;
+    let minFormat = min < 10 && showHours ? `0${min}` : min;
+    let secsFormat = secs < 10 ? `0${secs}` : secs;
+    return `${(showHours ? `${hrsFormat}:` : '')}${minFormat}:${secsFormat}`;
 }
