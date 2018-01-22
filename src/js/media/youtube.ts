@@ -1,6 +1,7 @@
 import {loadScript} from '../utils/dom';
 import Iframe from '../components/iframe';
 
+declare const YT: any;
 /**
  *
  * @class YouTubeMedia
@@ -17,7 +18,7 @@ class YouTubeMedia extends Iframe {
      */
     constructor(element, mediaFile) {
         super(element, mediaFile);
-        this.promise = (typeof (<any>YT) === 'undefined' || !(<any>YT).loaded) ?
+        this.promise = (typeof YT === 'undefined' || !YT.loaded) ?
             loadScript('https://www.youtube.com/player_api') :
             new Promise(resolve => {
                 resolve();

@@ -1,6 +1,8 @@
 import {loadScript} from '../utils/dom';
 import Iframe from '../components/iframe';
 
+declare const FB: any;
+
 /**
  *
  * @class FacebookMedia
@@ -17,7 +19,7 @@ class FacebookMedia extends Iframe {
      */
     constructor(element, mediaFile) {
         super(element, mediaFile);
-        this.promise = (typeof YT === 'undefined' || !YT.loaded) ?
+        this.promise = (typeof FB === 'undefined') ?
             loadScript('https://connect.facebook.net/en/sdk.js') :
             new Promise(resolve => {
                 resolve();

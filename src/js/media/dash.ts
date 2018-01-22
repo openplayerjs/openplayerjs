@@ -3,13 +3,15 @@ import { loadScript } from '../utils/dom';
 import { addEvent } from '../events';
 import Native from '../components/native';
 
+declare const dashjs: any;
+
 /**
  *
  * @class DashMedia
  * @description Class that handles the dash.js API within the player
  */
 class DashMedia extends Native {
-    player: MediaPlayer;
+    player: any;
     events: object;
 
     /**

@@ -3,13 +3,15 @@ import { loadScript } from '../utils/dom';
 import { addEvent } from '../events';
 import Native from '../components/native';
 
+declare const Hls: any;
+
 /**
  *
  * @class HlsMedia
  * @description Class that handles the hls.js API within the player
  */
 class HlsMedia extends Native {
-    player: Hls;
+    player: any;
     events: object;
     recoverDecodingErrorDate: number;
     recoverSwapAudioCodecDate: number;

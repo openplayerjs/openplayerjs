@@ -1,11 +1,14 @@
 import {loadScript} from '../utils/dom';
 import Native from '../components/native';
 
+declare const google: any;
+
 class Ads extends Native {
     events: object;
-    adsManager?: AdsManager;
+    adsManager: any;
+    adsLoader: any;
     adsContainer: HTMLDivElement;
-    adDisplayContainer: adDisplayContainer;
+    adDisplayContainer: HTMLDivElement;
 
     /**
      * Creates an instance of Google IMA SDK.
@@ -71,7 +74,6 @@ class Ads extends Native {
     }
 
     destroy() {
-        this._revoke();
     }
 
     set src(media) {
