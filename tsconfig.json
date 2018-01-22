@@ -2,9 +2,8 @@
   "compilerOptions": {
     "allowJs": true,
     "outDir": "ts-dist",
-    "module": "system",
+    "module": "es6",
     "target": "es6",
-    "moduleResolution": "node",
     "types": [
       "node"
     ]

@@ -1,6 +1,8 @@
 import {loadScript} from '../utils/dom';
 import Iframe from '../components/iframe';
 
+declare const Twitch: any;
+
 /**
  *
  * @class TwitchMedia

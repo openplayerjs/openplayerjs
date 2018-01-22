@@ -123,12 +123,12 @@
     cursor: pointer;
 }
 .om-controls__volume::-ms-track {
-    width: 100%;
-    height: 6px;
-    cursor: pointer;
     background: transparent;
     border-color: transparent;
     color: transparent;
+    cursor: pointer;
+    height: 6px;
+    width: 100%;
 }
 .om-controls__volume::-ms-fill-lower {
     background: #fa0000;

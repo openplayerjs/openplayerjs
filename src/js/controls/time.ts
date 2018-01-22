@@ -35,6 +35,7 @@ class Time {
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
         const el = this.media.element;
+        this.events = {};
         this.events['loadedmetadata'] = () => {
             if (el.duration !== Infinity && !isNaN(el.duration)) {
                 this.duration.innerText = formatTime(el.duration);

@@ -26,7 +26,7 @@
         "mp3"
     ],
     "scripts": {
-        "build": "rm -rf ./dist/ && rm -rf ./ts-dist/ && tsc && webpack && open demo/index.html"
+        "build": "rm -rf ./dist/ && rm -rf ./ts-dist/ && tsc && webpack && open http://localhost/openplayer/demo/index.html"
     },
     "readme": "https://github.com/rafa8626/openmedia/blob/master/README.md",
     "devDependencies": {
@@ -34,6 +34,7 @@
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.2",
         "babel-preset-env": "^1.6.1",
+        "css-loader": "^0.28.9",
         "cssnano": "^3.10.0",
         "eslint": "^4.14.0",
         "eslint-config-airbnb": "^15.1.0",
@@ -43,14 +44,16 @@
         "eslint-plugin-jsx-a11y": "^5.1.1",
         "eslint-plugin-react": "^7.1.0",
         "extract-text-webpack-plugin": "^3.0.2",
+        "file-loader": "^1.1.6",
         "postcss": "^6.0.16",
         "postcss-cssnext": "^3.0.2",
         "postcss-import": "^11.0.0",
         "postcss-loader": "^2.0.10",
+        "style-loader": "^0.19.1",
         "stylelint": "^8.4.0",
-        "svg-sprite-loader": "^3.6.2",
+        "stylelint-order": "^0.4.4",
+        "stylelint-webpack-plugin": "^0.10.1",
         "typescript": "^2.6.2",
-        "typings": "^2.1.1",
         "webpack": "^3.10.0"
     }
 }
