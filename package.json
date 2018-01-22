@@ -52,7 +52,6 @@
         "style-loader": "^0.19.1",
         "stylelint": "^8.4.0",
         "stylelint-order": "^0.4.4",
-        "stylelint-webpack-plugin": "^0.10.1",
         "typescript": "^2.6.2",
         "webpack": "^3.10.0"
     }
