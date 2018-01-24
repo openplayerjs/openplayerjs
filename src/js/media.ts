@@ -20,24 +20,11 @@ import File from './components/interfaces/media/file';
  * a valid source (MP4, MP3, M3U8, MPD, etc.)
  */
 class Media {
-    /**
-     * @type HTMLMediaElement
-     */
     element: HTMLMediaElement;
-
-    /**
-     * @type Object
-     */
     ads: object;
-
-    /**
-     * @type {Ads|DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|HlsMedia|DashMedia|NativeMedia}
-     */
     media: Ads|DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|HlsMedia|DashMedia|NativeMedia;
-
     promisePlay: Promise<void>;
     promise: Promise<void>;
-
     mediaFiles: File[];
 
     /**
@@ -227,7 +214,7 @@ class Media {
      */
     _loadSource(media) {
         if (this.ads) {
-            return new Ads(this.element, media.src);
+            return new Ads(this.element, media.src, this.ads);
         } else if (source.isDailymotionSource(media.src)) {
             return new DailymotionMedia(this.element, media);
         } else if (source.isFacebookSource(media.src)) {
