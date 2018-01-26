@@ -1,7 +1,7 @@
+import Native from '../components/native';
+import { addEvent } from '../events';
 import { HAS_MSE } from '../utils/constants';
 import { loadScript } from '../utils/dom';
-import { addEvent } from '../events';
-import Native from '../components/native';
 
 declare const dashjs: any;
 
@@ -11,8 +11,8 @@ declare const dashjs: any;
  * @description Class that handles the dash.js API within the player
  */
 class DashMedia extends Native {
-    player: any;
-    events: object;
+    private player: any;
+    private events: object;
 
     /**
      * Creates an instance of DashMedia.
@@ -42,11 +42,11 @@ class DashMedia extends Native {
         return this;
     }
 
-    canPlayType(mimeType) {
-        return HAS_MSE && mimeType === 'application/dash+xml' && this.media.type === mimeType;
+    protected canPlayType(mimeType) {
+        return HAS_MSE && mimeType === 'application/dash+xml';
     }
 
-    load() {
+    protected load() {
         this.player.getDebug().setLogToBrowserConsole(false);
         this.player.initialize();
         this.player.setScheduleWhilePaused(false);
@@ -71,41 +71,13 @@ class DashMedia extends Native {
         }
     }
 
-    play() {
-        this.element.play();
-    }
-
-    pause() {
-        this.element.pause();
-    }
-
-    destroy() {
+    protected destroy() {
         this._revoke();
     }
 
     set src(media) {
         this._revoke();
         this.player = dashjs.MediaPlayer().create();
-    }
-
-    get src() {
-        return 'aaaaa';
-    }
-
-    set volume(value) {
-        this.element.volume = value;
-    }
-
-    get volume() {
-        return this.element.volume;
-    }
-
-    set muted(value) {
-        this.element.muted = value;
-    }
-
-    get muted() {
-        return this.element.muted;
     }
 
     /**
@@ -116,7 +88,7 @@ class DashMedia extends Native {
      * @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html
      * @param {dashjs.MediaPlayerEvents.events} event
      */
-    _assign(event) {
+    private _assign(event) {
         if (event.type === 'error') {
             // mediaElement.generateError(event.message, node.src);
             console.error(event);
@@ -131,7 +103,7 @@ class DashMedia extends Native {
      *
      * @memberof DashMedia
      */
-    _revoke() {
+    private _revoke() {
         if (this.events) {
             Object.keys(this.events).forEach(event => {
                 this.player.off(this.events[event], this._assign.bind(this));

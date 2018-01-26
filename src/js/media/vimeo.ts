@@ -1,5 +1,5 @@
-import {loadScript} from '../utils/dom';
 import Iframe from '../components/iframe';
+import {loadScript} from '../utils/dom';
 
 declare const Vimeo: any;
 
@@ -27,23 +27,23 @@ class VimeoMedia extends Iframe {
         return this;
     }
 
-    canPlayType(mimeType) {
-        return mimeType === 'application/x-vimeo' && this.media.type === mimeType;
+    public canPlayType(mimeType) {
+        return mimeType === 'application/x-vimeo';
     }
 
-    load() {
+    public load() {
         console.log(this);
     }
 
-    play() {
+    public play() {
 
     }
 
-    pause() {
+    public pause() {
 
     }
 
-    destroy() {
+    public destroy() {
     }
 
     set src(media) {
@@ -66,6 +66,14 @@ class VimeoMedia extends Iframe {
     }
 
     get muted() {
+        return true;
+    }
+
+    get paused() {
+        return true;
+    }
+
+    get ended() {
         return true;
     }
 }

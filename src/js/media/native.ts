@@ -1,5 +1,5 @@
-import { isAudio, isVideo } from '../utils/dom';
 import Native from '../components/native';
+import { isAudio, isVideo } from '../utils/dom';
 
 /**
  *
@@ -11,7 +11,7 @@ class NativeMedia extends Native {
      * Creates an instance of NativeMedia.
      *
      * @param {HTMLMediaElement} element
-     * @param {File} mediaFile
+     * @param {IFile} mediaFile
      * @returns {NativeMedia}
      * @memberof NativeMedia
      */
@@ -29,48 +29,16 @@ class NativeMedia extends Native {
      * @returns {boolean}
      * @memberof NativeMedia
      */
-    canPlayType(mimeType) {
+    public canPlayType(mimeType) {
         return !!(this.element.canPlayType(mimeType).replace('no', ''));
     }
 
-    load() {
+    public load() {
         this.element.load();
     }
 
-    play() {
-        this.element.play();
-    }
-
-    pause() {
-        this.element.pause();
-    }
-
-    destroy() {
+    public destroy() {
         console.log(this.element);
-    }
-
-    set src(value) {
-        this.element.src = value;
-    }
-
-    get src() {
-        return this.element.src;
-    }
-
-    set volume(value) {
-        this.element.volume = value;
-    }
-
-    get volume() {
-        return this.element.volume;
-    }
-
-    set muted(value) {
-        this.element.muted = value;
-    }
-
-    get muted() {
-        return this.element.muted;
     }
 }
 

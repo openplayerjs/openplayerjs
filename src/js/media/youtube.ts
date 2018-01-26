@@ -1,5 +1,5 @@
-import {loadScript} from '../utils/dom';
 import Iframe from '../components/iframe';
+import {loadScript} from '../utils/dom';
 
 declare const YT: any;
 /**
@@ -26,23 +26,23 @@ class YouTubeMedia extends Iframe {
         return this;
     }
 
-    canPlayType(mimeType) {
-        return mimeType === 'application/x-youtube' && this.media.type === mimeType;
+    public canPlayType(mimeType) {
+        return mimeType === 'application/x-youtube';
     }
 
-    load() {
+    public load() {
         console.log(this);
     }
 
-    play() {
+    public play() {
 
     }
 
-    pause() {
+    public pause() {
 
     }
 
-    destroy() {
+    public destroy() {
     }
 
     set src(media) {
@@ -65,6 +65,14 @@ class YouTubeMedia extends Iframe {
     }
 
     get muted() {
+        return true;
+    }
+
+    get paused() {
+        return true;
+    }
+
+    get ended() {
         return true;
     }
 }
