@@ -25,6 +25,7 @@ class Ads {
     private adEnded: boolean;
     private adsDone: boolean;
     private adsActive: boolean;
+    private adsStarted: boolean;
 
     /**
      * Creates an instance of Google IMA SDK.
@@ -44,6 +45,7 @@ class Ads {
         this.adEnded = false;
         this.adsDone = false;
         this.adsActive = false;
+        this.adsStarted = false;
 
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -100,9 +102,9 @@ class Ads {
         }
         if (this.adsManager) {
             this.adsManager.resume();
-            this.adsActive = true;
             const e = addEvent('play');
             this.element.dispatchEvent(e);
+            this.adsActive = true;
         } else {
             this.instance.play();
         }
@@ -111,9 +113,9 @@ class Ads {
     public pause() {
         if (this.adsManager) {
             this.adsManager.pause();
-            this.adsActive = false;
             const e = addEvent('pause');
             this.element.dispatchEvent(e);
+            this.adsActive = false;
         } else {
             this.instance.pause();
         }
@@ -221,8 +223,8 @@ class Ads {
                 google.ima.ViewMode.NORMAL,
             );
 
+            this.adsActive = true;
             manager.start();
-
             const e = addEvent('play');
             this.element.dispatchEvent(e);
         } catch (adError) {
@@ -233,13 +235,16 @@ class Ads {
     private _contentEndedListener() {
         this.adEnded = true;
         this.adsActive = false;
+        this.adsStarted = false;
         this.adsLoader.contentComplete();
     }
 
     private _onContentPauseRequested() {
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-        if (this.adsActive) {
+        if (this.adsStarted) {
             this.instance.pause();
+        } else {
+            this.adsStarted = true;
         }
     }
 
@@ -251,6 +256,7 @@ class Ads {
     private _resumeMedia() {
         this.adEnded = true;
         this.adsActive = false;
+        this.adsStarted = false;
         this.element.classList.remove('om-ads--active');
         this.instance.ads = null;
         this.instance.loadSources([{
