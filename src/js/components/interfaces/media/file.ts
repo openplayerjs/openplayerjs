@@ -1,5 +1,11 @@
-export default interface File {
-    src: string,
-    type: string,
+/**
+ * Media file
+ *
+ * @export
+ * @interface IFile
+ */
+export default interface IFile {
+    src: string;
+    type: string;
     drm?: object;
 }

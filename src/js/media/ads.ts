@@ -1,21 +1,25 @@
-import {loadScript} from '../utils/dom';
-import Native from '../components/native';
+import IFile from '../components/interfaces/media/file';
 import Media from '../media';
+import {loadScript} from '../utils/dom';
 import { predictType } from '../utils/url';
 
 declare const google: any;
 
-class Ads extends Native {
-    instance: Media;
-    events: object;
-    adUrl: string;
-    adsManager: any;
-    adsLoader: any;
-    adsContainer: HTMLDivElement;
-    adDisplayContainer: any;
-    adsRequest: any;
-    adEnded: boolean;
-    adsDone: boolean;
+class Ads {
+    public element: HTMLMediaElement;
+    public media: IFile;
+    public promise: Promise<any>;
+    private instance: Media;
+    private events: object;
+    private adUrl: string;
+    private adsManager: any;
+    private adsLoader: any;
+    private adsContainer: HTMLDivElement;
+    private adDisplayContainer: any;
+    private adsRequest: any;
+    private adEnded: boolean;
+    private adsDone: boolean;
+    private adsActive: boolean;
 
     /**
      * Creates an instance of Google IMA SDK.
@@ -27,13 +31,15 @@ class Ads extends Native {
      * @memberof Ads
      */
     constructor(media, file) {
-        super(media.element, file);
+        this.element = media.element;
+        this.media = file;
         this.adUrl = media.ads;
         this.instance = media;
         this.adsManager = null;
         this.events = null;
         this.adEnded = false;
         this.adsDone = false;
+        this.adsActive = false;
 
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -44,11 +50,11 @@ class Ads extends Native {
         return this;
     }
 
-    canPlayType(mimeType) {
+    public canPlayType(mimeType) {
         return this.adsLoader !== null && /\.(mp[34]|m3u8|mpd)/.test(mimeType);
     }
 
-    load() {
+    public load() {
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'om-ads';
         this.element.parentNode.insertBefore(this.adsContainer, this.element.nextSibling);
@@ -58,7 +64,7 @@ class Ads extends Native {
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
                 this.adsContainer,
-                this.element
+                this.element,
             );
 
         this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
@@ -79,27 +85,29 @@ class Ads extends Native {
         this.adsLoader.requestAds(this.adsRequest);
     }
 
-    play() {
+    public play() {
         if (!this.adsDone) {
             this.adDisplayContainer.initialize();
             this.adsDone = true;
         }
         if (this.adsManager) {
+            this.adsActive = true;
             this.adsManager.resume();
         } else {
             this.instance.play();
         }
     }
 
-    pause() {
+    public pause() {
         if (this.adsManager) {
+            this.adsActive = false;
             this.adsManager.pause();
         } else {
             this.instance.pause();
         }
     }
 
-    destroy() {
+    public destroy() {
     }
 
     set src(media) {
@@ -125,7 +133,15 @@ class Ads extends Native {
         return this.element.muted;
     }
 
-    _assign(event) {
+    get paused() {
+        return this.adsActive;
+    }
+
+    get ended() {
+        return this.adEnded;
+    }
+
+    private _assign(event) {
         if (event.type === google.ima.AdEvent.Type.CLICK) {
             // this.application_.adClicked();
         } else if (event.type === google.ima.AdEvent.Type.LOADED) {
@@ -136,15 +152,15 @@ class Ads extends Native {
         }
     }
 
-    _error(e) {
+    private _error(e) {
         console.error(`Ad error: ${e.getError().toString()}`);
         if (this.adsManager) {
             this.adsManager.destroy();
         }
-        // this.instance.play();
+        this._resumeMedia();
     }
 
-    _loaded(adsManagerLoadedEvent) {
+    private _loaded(adsManagerLoadedEvent) {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
 
@@ -157,7 +173,7 @@ class Ads extends Native {
     //
     // }
 
-    _start(manager) {
+    private _start(manager) {
         // Add listeners to the required events.
         manager.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
@@ -178,7 +194,7 @@ class Ads extends Native {
             google.ima.AdEvent.Type.MIDPOINT,
             google.ima.AdEvent.Type.PAUSED,
             google.ima.AdEvent.Type.STARTED,
-            google.ima.AdEvent.Type.THIRD_QUARTILE
+            google.ima.AdEvent.Type.THIRD_QUARTILE,
         ];
 
         Object.keys(this.events).forEach(event => {
@@ -188,38 +204,41 @@ class Ads extends Native {
         try {
             // Initialize the ads manager. Ad rules playlist will start at this time.
             manager.init(
-                this.element.offsetWidth, 
-                this.element.offsetHeight, 
-                google.ima.ViewMode.NORMAL
+                this.element.offsetWidth,
+                this.element.offsetHeight,
+                google.ima.ViewMode.NORMAL,
             );
+            this.adsActive = true;
             manager.start();
         } catch (adError) {
-            this._contentEndedListener();
-            this.instance.play();
+            this._resumeMedia();
         }
     }
 
-    _contentEndedListener() {
+    private _contentEndedListener() {
         this.adEnded = true;
+        this.adsActive = false;
         this.adsLoader.contentComplete();
     }
 
-    _onContentPauseRequested() {
-        // This function is where you should setup UI for showing ads (e.g.
-        // display ad timer countdown, disable seeking, etc.)
+    private _onContentPauseRequested() {
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         this.instance.pause();
     }
 
-    _onContentResumeRequested() {
-        // This function is where you should ensure that your UI is ready
-        // to play content.
+    private _onContentResumeRequested() {
         this.element.addEventListener('ended', this._contentEndedListener.bind(this));
+        this._resumeMedia();
+    }
+
+    private _resumeMedia() {
+        this.adEnded = true;
+        this.adsActive = false;
         this.element.classList.remove('om-ads--active');
         this.instance.ads = null;
-        this.instance._loaded([{
+        this.instance.loadSources([{
             src: this.media,
-            type: predictType(this.media)
+            type: predictType(this.media),
         }]);
         this.instance.play();
     }

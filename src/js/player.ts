@@ -1,7 +1,7 @@
-import { isIframe, isAudio, isVideo } from './utils/dom';
-import Media from './media';
-import Controls from './controls';
 import '../src/css/player.css';
+import Controls from './controls';
+import Media from './media';
+import { isAudio, isIframe, isVideo } from './utils/dom';
 
 /**
  *
@@ -11,23 +11,19 @@ import '../src/css/player.css';
  */
 class Player {
     /**
-     * @type Player[]
+     * Entry point
+     * Convert all the video/audio/iframe tags with `om-player` class in a OpenMedia player
      */
-    instances: Player[];
-    /**
-     * @type HTMLMediaElement
-     */
-    element: HTMLMediaElement|HTMLIFrameElement;
+    public static init() {
+        document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player').forEach(target => {
+            const player = new Player(target, target.getAttribute('data-om-ads'));
+        });
+    }
 
-    /**
-     * @type Object
-     */
-    ads: Object;
-
-    /**
-     * @type Media
-     */
-    media: Media;
+    public instances: Player[];
+    public element: HTMLMediaElement|HTMLIFrameElement;
+    public ads?: object;
+    public media: Media;
 
     /**
      * Creates an instance of Player.
@@ -46,23 +42,13 @@ class Player {
     }
 
     /**
-     * Entry point
-     * Convert all the video/audio/iframe tags with `om-player` class in a OpenMedia player
-     */
-    static init() {
-        document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player').forEach(target => {
-            new Player(target, target.getAttribute('data-om-ads'));
-        });
-    }
-
-    /**
      * Check if the element passed in the constructor is a valid video/audio/iframe tag
      * with 'om-player' class
      * @private
      * @memberof Player
      * @return {boolean}
      */
-    _isValid() {
+    private _isValid() {
         const el = this.element;
 
         if (el instanceof HTMLElement === false) {
@@ -85,7 +71,7 @@ class Player {
      * @private
      * @memberof Player
      */
-    _wrapInstance() {
+    private _wrapInstance() {
         const wrapper = document.createElement('div');
         wrapper.className = 'om-player om-player__keyboard--inactive';
         wrapper.className += isAudio(this.element) ? ' om-player__audio' : ' om-player__video';
@@ -112,7 +98,7 @@ class Player {
      *
      * @memberof Player
      */
-    _createControls() {
+    private _createControls() {
         const controls = new Controls(this.media);
         controls.prepare();
         controls.render();
@@ -123,7 +109,7 @@ class Player {
      *
      * @memberof Player
      */
-    _prepareMedia() {
+    private _prepareMedia() {
         try {
             this.media = new Media(this.element, this.ads);
             this.media.load();
@@ -141,14 +127,14 @@ class Player {
      * @private
      * @memberof Player
      */
-    _buildResponsiveIframe() {
+    private _buildResponsiveIframe() {
         const el = this.element;
         /**
          * Change dimensions of iframe when resizing window
          * @private
          */
         const resizeIframeCallback = (): void => {
-            const width = (<HTMLElement>el.parentNode).offsetWidth;
+            const width = (el.parentNode as HTMLElement).offsetWidth;
             const height = width * parseFloat(el.getAttribute('data-ratio'));
             el.style.width = `${width}px`;
             el.style.height = `${height}px`;

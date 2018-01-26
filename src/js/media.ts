@@ -1,16 +1,18 @@
-import NativeMedia from './media/native';
-import HlsMedia from './media/hls';
-import DashMedia from './media/dash';
+import Iframe from './components/iframe';
+import IFile from './components/interfaces/media/file';
+import Native from './components/native';
+import Controls from './controls';
+import Ads from './media/ads';
 import DailymotionMedia from './media/dailymotion';
+import DashMedia from './media/dash';
 import FacebookMedia from './media/facebook';
+import HlsMedia from './media/hls';
+import NativeMedia from './media/native';
 import TwitchMedia from './media/twitch';
 import VimeoMedia from './media/vimeo';
 import YouTubeMedia from './media/youtube';
-import Ads from './media/ads';
 import { isIframe } from './utils/dom';
 import * as source from './utils/url';
-import Controls from './controls';
-import File from './components/interfaces/media/file';
 
 /**
  *
@@ -20,16 +22,17 @@ import File from './components/interfaces/media/file';
  * a valid source (MP4, MP3, M3U8, MPD, etc.)
  */
 class Media {
-    element: HTMLMediaElement;
-    ads: object;
-    media: Ads|DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|HlsMedia|DashMedia|NativeMedia;
-    promisePlay: Promise<void>;
-    promise: Promise<void>;
-    mediaFiles: File[];
+    public ads?: object;
+    public element: HTMLMediaElement;
+    public media: any;
+    private promisePlay: Promise<void>;
+    private promise: Promise<void>;
+    private mediaFiles: IFile[];
 
     /**
      * Creates an instance of Media.
      * @param {HTMLMediaElement} element
+     * @param {object?} ads
      * @memberof Media
      */
     constructor(element, ads) {
@@ -46,7 +49,7 @@ class Media {
      * @param {string} mimeType
      * @returns {boolean}
      */
-    canPlayType(mimeType) {
+    public canPlayType(mimeType) {
         return this.media.canPlayType(mimeType);
     }
 
@@ -59,11 +62,11 @@ class Media {
      * It will loop the media list found until it reached the first element that can be played.
      *
      */
-    load() {
-        this._loaded(this.mediaFiles);
+    public load() {
+        this.loadSources(this.mediaFiles);
     }
 
-    play() {
+    public play() {
         this.promisePlay = new Promise(resolve => {
             resolve();
         }).then(() => {
@@ -76,7 +79,7 @@ class Media {
         return this.promisePlay;
     }
 
-    pause() {
+    public pause() {
         if (this.promisePlay) {
             this.promisePlay.then(() => {
                 this.media.pause();
@@ -95,7 +98,7 @@ class Media {
         if (typeof media === 'string') {
             this.mediaFiles.push({
                 src: media,
-                type: source.predictType(media)
+                type: source.predictType(media),
             });
         } else if (Array.isArray(media)) {
             this.mediaFiles = media;
@@ -134,90 +137,27 @@ class Media {
         return this.media.muted;
     }
 
-    destroy() {
+    get paused() {
+        return this.media.paused;
+    }
+
+    get ended() {
+        return this.media.ended;
+    }
+
+    public destroy() {
         this.media.destroy();
     }
 
-    /**
-     * Gather all media sources within the video/audio/iframe tags
-     *
-     * It will be grouped inside the `mediaFiles` array. This method basically mimics
-     * the native behavior when multiple sources are associated with an element, and
-     * the browser takes care of selecting the most appropriate one
-     * @returns {Object[]}
-     * @memberof Media
-     */
-    _getMediaFiles() {
-        const mediaFiles = [];
-
-        if (isIframe(this.element)) {
-            mediaFiles.push({
-                type: source.predictType(this.element.src),
-                src: this.element.src
-            });
-        } else {
-            const sourceTags = this.element.querySelectorAll('source');
-            const nodeSource = this.element.src;
-
-            // Consider if node contains the `src` and `type` attributes
-            if (nodeSource) {
-                mediaFiles.push({
-                    type: this.element.getAttribute('type') || source.predictType(nodeSource),
-                    nodeSource
-                });
-            }
-
-            // test <source> types to see if they are usable
-            sourceTags.forEach(item => {
-                const src = item.src;
-                mediaFiles.push({
-                    type: item.getAttribute('type') || source.predictType(src),
-                    src
-                });
-            });
-        }
-
-        return mediaFiles;
-    }
-    /**
-     * Assign class to play iframe (third-party APIs) or "native" media (without the use of iframes)
-     *
-     * @param {Object} media
-     * @returns {Ads|DailymotionMedia|FacebookMedia|TwitchMedia|VimeoMedia|YouTubeMedia|HlsMedia|DashMedia|NativeMedia}
-     * @memberof Media
-     */
-    _loadSource(media) {
-        if (this.ads) {
-            return new Ads(this, media.src);
-        } else if (source.isDailymotionSource(media.src)) {
-            return new DailymotionMedia(this.element, media);
-        } else if (source.isFacebookSource(media.src)) {
-            return new FacebookMedia(this.element, media);
-        } else if (source.isTwitchSource(media.src)) {
-            return new TwitchMedia(this.element, media);
-        } else if (source.isVimeoSource(media.src)) {
-            return new VimeoMedia(this.element, media);
-        } else if (source.isYouTubeSource(media.src)) {
-            return new YouTubeMedia(this.element, media);
-        } else if (source.isHlsSource(media.src)) {
-            return new HlsMedia(this.element, media);
-        } else if (source.isDashSource(media.src)) {
-            return new DashMedia(this.element, media);
-        }
-
-        return new NativeMedia(this.element, media);
-    }
-    _loaded(files) {
-        if (!files.length) {
+    public loadSources(sources) {
+        if (!sources.length) {
             throw new TypeError('Media not set');
         }
 
-        console.log(files);
-
         // Loop until first playable source is found
-        files.some(media => {
+        sources.some(media => {
             try {
-                this.media = this._loadSource(media);
+                this.media = this._invoke(media);
             } catch (e) {
                 this.media = new NativeMedia(this.element, media);
             }
@@ -238,6 +178,76 @@ class Media {
             this.media.destroy();
             throw e;
         }
+    }
+
+    /**
+     * Gather all media sources within the video/audio/iframe tags
+     *
+     * It will be grouped inside the `mediaFiles` array. This method basically mimics
+     * the native behavior when multiple sources are associated with an element, and
+     * the browser takes care of selecting the most appropriate one
+     * @returns {Object[]}
+     * @memberof Media
+     */
+    private _getMediaFiles() {
+        const mediaFiles = [];
+
+        if (isIframe(this.element)) {
+            mediaFiles.push({
+                src: this.element.src,
+                type: source.predictType(this.element.src),
+            });
+        } else {
+            const sourceTags = this.element.querySelectorAll('source');
+            const nodeSource = this.element.src;
+
+            // Consider if node contains the `src` and `type` attributes
+            if (nodeSource) {
+                mediaFiles.push({
+                    nodeSource,
+                    type: this.element.getAttribute('type') || source.predictType(nodeSource),
+                });
+            }
+
+            // test <source> types to see if they are usable
+            sourceTags.forEach(item => {
+                const src = item.src;
+                mediaFiles.push({
+                    src,
+                    type: item.getAttribute('type') || source.predictType(src),
+                });
+            });
+        }
+
+        return mediaFiles;
+    }
+    /**
+     * Assign class to play iframe (third-party APIs) or "native" media (without the use of iframes)
+     *
+     * @param {Object} media
+     * @returns {*}
+     * @memberof Media
+     */
+    private _invoke(media) {
+        if (this.ads) {
+            return new Ads(this, media.src);
+        } else if (source.isDailymotionSource(media.src)) {
+            return new DailymotionMedia(this.element, media);
+        } else if (source.isFacebookSource(media.src)) {
+            return new FacebookMedia(this.element, media);
+        } else if (source.isTwitchSource(media.src)) {
+            return new TwitchMedia(this.element, media);
+        } else if (source.isVimeoSource(media.src)) {
+            return new VimeoMedia(this.element, media);
+        } else if (source.isYouTubeSource(media.src)) {
+            return new YouTubeMedia(this.element, media);
+        } else if (source.isHlsSource(media.src)) {
+            return new HlsMedia(this.element, media);
+        } else if (source.isDashSource(media.src)) {
+            return new DashMedia(this.element, media);
+        }
+
+        return new NativeMedia(this.element, media);
     }
 }
 

@@ -24,7 +24,7 @@ class Play {
         this.button.className = 'om-controls__playpause';
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
 
-        const el = this.media.element;
+        const el = this.media;
 
         this.events = {};
         this.events['click'] = () => {

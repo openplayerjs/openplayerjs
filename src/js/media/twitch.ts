@@ -1,5 +1,5 @@
-import {loadScript} from '../utils/dom';
 import Iframe from '../components/iframe';
+import {loadScript} from '../utils/dom';
 
 declare const Twitch: any;
 
@@ -27,23 +27,23 @@ class TwitchMedia extends Iframe {
         return this;
     }
 
-    canPlayType(mimeType) {
-        return mimeType === 'application/x-twitch' && this.media.type === mimeType;
+    public canPlayType(mimeType) {
+        return mimeType === 'application/x-twitch';
     }
 
-    load() {
+    public load() {
         console.log(this);
     }
 
-    play() {
+    public play() {
 
     }
 
-    pause() {
+    public pause() {
 
     }
 
-    destroy() {
+    public destroy() {
     }
 
     set src(media) {
@@ -66,6 +66,14 @@ class TwitchMedia extends Iframe {
     }
 
     get muted() {
+        return true;
+    }
+
+    get paused() {
+        return true;
+    }
+
+    get ended() {
         return true;
     }
 }

@@ -12,20 +12,9 @@ import Media from './media';
  * and appends it in the player container
  */
 class Controls {
-    /**
-     * @type Media
-     */
-    media: Media;
-
-    /**
-     * @type Object
-     */
-    controls: Object;
-
-    /**
-     * @type HTMLDivElement
-     */
-    container: HTMLDivElement;
+    public media: Media;
+    public controls: object;
+    public container: HTMLDivElement;
 
     /**
      * Creates an instance of Controls.
@@ -37,11 +26,11 @@ class Controls {
         this.media = media;
         this.media.element.controls = false;
         this.controls = {
-            play: new Play(media),
-            time: new Time(media),
-            progress: new Progress(media),
-            volume: new Volume(media),
-            // fullscreen = new Fullscreen(media),
+            a: new Play(media),
+            b: new Time(media),
+            c: new Progress(media),
+            d: new Volume(media),
+            // e: new Fullscreen(media),
         };
 
         this.container = null;
@@ -49,7 +38,7 @@ class Controls {
         return this;
     }
 
-    prepare() {
+    public prepare() {
         this.container = document.createElement('div');
         this.container.className = 'om-controls';
 
@@ -59,7 +48,7 @@ class Controls {
         });
     }
 
-    render() {
+    public render() {
         this.media.element.parentNode.appendChild(this.container);
     }
 }

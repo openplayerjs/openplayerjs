@@ -61,7 +61,8 @@ export function loadScript(url) {
  * @param {function} error
  */
 export function request(url, dataType, success, error) {
-    const xhr = (<any>window).XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    const xhr = (window as any).XMLHttpRequest ? new XMLHttpRequest() :
+        new ActiveXObject('Microsoft.XMLHTTP');
     let type;
     switch (dataType) {
         case 'text':

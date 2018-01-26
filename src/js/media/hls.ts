@@ -1,7 +1,7 @@
-import { SUPPORTS_NATIVE_HLS, HAS_MSE } from '../utils/constants';
-import { loadScript } from '../utils/dom';
-import { addEvent } from '../events';
 import Native from '../components/native';
+import { addEvent } from '../events';
+import { HAS_MSE, SUPPORTS_NATIVE_HLS } from '../utils/constants';
+import { loadScript } from '../utils/dom';
 
 declare const Hls: any;
 
@@ -11,10 +11,10 @@ declare const Hls: any;
  * @description Class that handles the hls.js API within the player
  */
 class HlsMedia extends Native {
-    player: any;
-    events: object;
-    recoverDecodingErrorDate: number;
-    recoverSwapAudioCodecDate: number;
+    private player: any;
+    private events: object;
+    private recoverDecodingErrorDate: number;
+    private recoverSwapAudioCodecDate: number;
 
     /**
      * Creates an instance of HlsMedia.
@@ -53,9 +53,8 @@ class HlsMedia extends Native {
      * @returns {boolean}
      * @memberof HlsMedia
      */
-    canPlayType(mimeType) {
-        return !SUPPORTS_NATIVE_HLS && HAS_MSE && mimeType === 'application/x-mpegURL' &&
-            this.media.type === mimeType;
+    public canPlayType(mimeType) {
+        return !SUPPORTS_NATIVE_HLS && HAS_MSE && mimeType === 'application/x-mpegURL';
     }
 
     /**
@@ -63,7 +62,7 @@ class HlsMedia extends Native {
      *
      * @memberof HlsMedia
      */
-    load() {
+    public load() {
         this.player.detachMedia();
         this.player.loadSource(this.media.src);
         this.player.attachMedia(this.element);
@@ -76,41 +75,13 @@ class HlsMedia extends Native {
         }
     }
 
-    play() {
-        this.element.play();
-    }
-
-    pause() {
-        this.element.pause();
-    }
-
-    destroy() {
+    public destroy() {
         this._revoke();
     }
 
     set src(media) {
         this._revoke();
         this.player = new Hls();
-    }
-
-    get src() {
-        return 'aaaaa';
-    }
-
-    set volume(value) {
-        this.element.volume = value;
-    }
-
-    get volume() {
-        return this.element.volume;
-    }
-
-    set muted(value) {
-        this.element.muted = value;
-    }
-
-    get muted() {
-        return this.element.muted;
     }
 
     /**
@@ -123,7 +94,7 @@ class HlsMedia extends Native {
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#runtime-events
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#errors
      */
-    _assign(event, data) {
+    private _assign(event, data) {
         if (name === 'hlsError') {
             console.warn(data);
             data = data[1];
@@ -142,9 +113,9 @@ class HlsMedia extends Native {
                             this.player.swapAudioCodec();
                             this.player.recoverMediaError();
                         } else {
-                            const message = 'Cannot recover, last media error recovery failed';
+                            const msg = 'Cannot recover, last media error recovery failed';
                             // mediaElement.generateError(message, node.src);
-                            console.error(message);
+                            console.error(msg);
                         }
                         break;
                     case 'networkError':
@@ -167,7 +138,7 @@ class HlsMedia extends Native {
      *
      * @memberof HlsMedia
      */
-    _revoke() {
+    private _revoke() {
         if (this.events) {
             Object.keys(this.events).forEach(event => {
                 this.player.off(this.events[event], this._assign.bind(this));
