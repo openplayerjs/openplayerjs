@@ -1,8 +1,8 @@
 import Media from '../media';
 
 class Fullscreen {
-    media: Media;
-    button: HTMLButtonElement;
+    public media: Media;
+    private button: HTMLButtonElement;
 
     /**
      *
@@ -19,7 +19,7 @@ class Fullscreen {
 
         return this;
     }
-    register() {
+    public register() {
         console.log(this);
     }
 }

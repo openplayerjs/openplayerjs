@@ -1,8 +1,8 @@
 import Media from '../media';
 
 class Progress {
-    media: Media;
-    slider: HTMLInputElement;
+    public media: Media;
+    private slider: HTMLInputElement;
 
     /**
      *
@@ -29,7 +29,7 @@ class Progress {
      * @returns {Progress}
      * @memberof Progress
      */
-    register() {
+    public register() {
         const el = this.media.element;
         el.addEventListener('loadedmetadata', () => {
             if (el.duration !== Infinity) {
@@ -45,7 +45,8 @@ class Progress {
                     this.slider.setAttribute('max', `${el.duration}`);
                 }
                 this.slider.value = el.currentTime.toString();
-                (<HTMLElement>this.slider.firstChild).style.width = `${Math.floor((el.currentTime / el.duration) * 100)}%`;
+                (this.slider.firstChild as HTMLElement).style.width =
+                    `${Math.floor((el.currentTime / el.duration) * 100)}%`;
             } else {
                 this.slider.style.display = 'none';
             }
@@ -60,7 +61,7 @@ class Progress {
      * @returns {Progress}
      * @memberof Progress
      */
-    build(container) {
+    public build(container) {
         container.appendChild(this.slider);
         return this;
     }

@@ -1,5 +1,5 @@
-import formatTime from '../utils/time';
 import Media from '../media';
+import formatTime from '../utils/time';
 
 /**
  *
@@ -8,11 +8,11 @@ import Media from '../media';
  * and registers events to update them in the control bar
  */
 class Time {
-    media: Media;
-    current: HTMLTimeElement;
-    delimiter: HTMLSpanElement;
-    duration: HTMLTimeElement;
-    events: object;
+    public media: Media;
+    private current: HTMLTimeElement;
+    private delimiter: HTMLSpanElement;
+    private duration: HTMLTimeElement;
+    private events: object;
 
     /**
      *
@@ -65,7 +65,7 @@ class Time {
      * @returns {Time}
      * @memberof Time
      */
-    register() {
+    public register() {
         Object.keys(this.events).forEach(event => {
             this.media.element.addEventListener(event, this.events[event]);
         });
@@ -73,7 +73,7 @@ class Time {
         return this;
     }
 
-    unregister() {
+    public unregister() {
         Object.keys(this.events).forEach(event => {
             this.media.element.removeEventListener(event, this.events[event]);
         });
@@ -89,7 +89,7 @@ class Time {
      * @returns {Time}
      * @memberof Time
      */
-    build(container) {
+    public build(container) {
         container.appendChild(this.current);
         container.appendChild(this.delimiter);
         container.appendChild(this.duration);
