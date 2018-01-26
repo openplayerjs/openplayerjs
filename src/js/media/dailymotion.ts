@@ -1,4 +1,5 @@
 import Iframe from '../components/iframe';
+import IFile from '../components/interfaces/media/file';
 import {loadScript} from '../utils/dom';
 
 declare const DM: any;
@@ -13,11 +14,11 @@ class DailyMotionMedia extends Iframe {
      * Creates an instance of DailyMotionMedia.
      *
      * @param {HTMLIFrameElement} element
-     * @param {File} mediaFile
+     * @param {IFile} mediaFile
      * @returns {DailyMotionMedia}
      * @memberof DailyMotionMedia
      */
-    constructor(element, mediaFile) {
+    constructor(element: HTMLIFrameElement, mediaFile: IFile) {
         super(element, mediaFile);
         this.promise = (typeof DM === 'undefined') ?
             loadScript('https://api.dmcdn.net/all.js') :
@@ -27,7 +28,7 @@ class DailyMotionMedia extends Iframe {
         return this;
     }
 
-    public canPlayType(mimeType) {
+    public canPlayType(mimeType: string) {
         return mimeType === 'application/x-dailymotion';
     }
 
@@ -47,22 +48,23 @@ class DailyMotionMedia extends Iframe {
     }
 
     set src(media) {
+        console.log(media);
     }
 
     get src() {
         return 'aaaaa';
     }
 
-    set volume(value) {
-
+    set volume(value: number) {
+        console.log(value);
     }
 
     get volume() {
         return 1;
     }
 
-    set muted(value) {
-
+    set muted(value: boolean) {
+        console.log(value);
     }
 
     get muted() {

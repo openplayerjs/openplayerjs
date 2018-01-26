@@ -1,7 +1,4 @@
-import Iframe from './components/iframe';
 import IFile from './components/interfaces/media/file';
-import Native from './components/native';
-import Controls from './controls';
 import Ads from './media/ads';
 import DailymotionMedia from './media/dailymotion';
 import DashMedia from './media/dash';
@@ -22,20 +19,19 @@ import * as source from './utils/url';
  * a valid source (MP4, MP3, M3U8, MPD, etc.)
  */
 class Media {
-    public ads?: object;
-    public element: HTMLMediaElement;
+    public ads?: string;
+    public element: any;
     public media: any;
     private promisePlay: Promise<void>;
-    private promise: Promise<void>;
     private mediaFiles: IFile[];
 
     /**
      * Creates an instance of Media.
-     * @param {HTMLMediaElement} element
+     * @param {HTMLMediaElement|HTMLIFrameElement} element
      * @param {object?} ads
      * @memberof Media
      */
-    constructor(element, ads) {
+    constructor(element: any, ads: string) {
         this.element = element;
         this.ads = ads;
         this.mediaFiles = this._getMediaFiles();
@@ -49,7 +45,7 @@ class Media {
      * @param {string} mimeType
      * @returns {boolean}
      */
-    public canPlayType(mimeType) {
+    public canPlayType(mimeType: string) {
         return this.media.canPlayType(mimeType);
     }
 
@@ -149,7 +145,7 @@ class Media {
         this.media.destroy();
     }
 
-    public loadSources(sources) {
+    public loadSources(sources: IFile[]) {
         if (!sources.length) {
             throw new TypeError('Media not set');
         }
@@ -190,7 +186,7 @@ class Media {
      * @memberof Media
      */
     private _getMediaFiles() {
-        const mediaFiles = [];
+        const mediaFiles: IFile[] = [];
 
         if (isIframe(this.element)) {
             mediaFiles.push({
@@ -204,19 +200,20 @@ class Media {
             // Consider if node contains the `src` and `type` attributes
             if (nodeSource) {
                 mediaFiles.push({
-                    nodeSource,
+                    src: nodeSource,
                     type: this.element.getAttribute('type') || source.predictType(nodeSource),
                 });
             }
 
             // test <source> types to see if they are usable
-            sourceTags.forEach(item => {
+            for (let i = 0, total = sourceTags.length; i < total; i++) {
+                const item = sourceTags[i];
                 const src = item.src;
                 mediaFiles.push({
                     src,
                     type: item.getAttribute('type') || source.predictType(src),
                 });
-            });
+            }
         }
 
         return mediaFiles;
@@ -228,7 +225,7 @@ class Media {
      * @returns {*}
      * @memberof Media
      */
-    private _invoke(media) {
+    private _invoke(media: IFile) {
         if (this.ads) {
             return new Ads(this, media.src);
         } else if (source.isDailymotionSource(media.src)) {

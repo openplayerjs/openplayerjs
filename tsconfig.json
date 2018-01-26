@@ -1,12 +1,22 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "dom",
+      "es2015",
+      "es2016"
+    ],
     "allowJs": true,
-    "outDir": "ts-dist",
-    "module": "es6",
-    "target": "es6",
-    "types": [
-      "node"
-    ]
+    "target": "es2016",
+    "module": "es2015",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",

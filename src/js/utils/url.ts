@@ -5,7 +5,7 @@
  * @param {string} url
  * @returns {string}
  */
-export function getExtension(url) {
+export function getExtension(url: string) {
     if (typeof url !== 'string') {
         throw new Error('`url` argument must be a string');
     }
@@ -22,7 +22,7 @@ export function getExtension(url) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isHlsSource(url) {
+export function isHlsSource(url: string) {
     return /\.m3u8/i.test(url);
 }
 
@@ -33,7 +33,7 @@ export function isHlsSource(url) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isDashSource(url) {
+export function isDashSource(url: string) {
     return /\.mpd/i.test(url);
 }
 
@@ -44,7 +44,7 @@ export function isDashSource(url) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isYouTubeSource(url) {
+export function isYouTubeSource(url: string) {
     return /\/\/(www\.youtube|youtu\.?be)/i.test(url);
 }
 /**
@@ -54,7 +54,7 @@ export function isYouTubeSource(url) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isVimeoSource(url) {
+export function isVimeoSource(url: string) {
     return /(\/\/player\.vimeo|vimeo\.com)/i.test(url);
 }
 
@@ -65,7 +65,7 @@ export function isVimeoSource(url) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isTwitchSource(url) {
+export function isTwitchSource(url: string) {
     return /\/\/(www|player).twitch.tv/i.test(url);
 }
 
@@ -76,7 +76,7 @@ export function isTwitchSource(url) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isFacebookSource(url) {
+export function isFacebookSource(url: string) {
     return url.toLowerCase().indexOf('//www.facebook') > -1;
 }
 
@@ -87,7 +87,7 @@ export function isFacebookSource(url) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isDailymotionSource(url) {
+export function isDailymotionSource(url: string) {
     return /\/\/((www\.)?dailymotion\.com|dai\.ly)/i.test(url);
 }
 /**
@@ -98,7 +98,7 @@ export function isDailymotionSource(url) {
  * @param {string} url
  * @returns {string}
  */
-export function predictType(url) {
+export function predictType(url: string) {
     const extension = getExtension(url);
     let type;
 

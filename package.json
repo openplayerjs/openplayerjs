@@ -26,7 +26,7 @@
         "mp3"
     ],
     "scripts": {
-        "build": "rm -rf ./dist/ && rm -rf ./ts-dist/ && tsc && webpack && open http://localhost/openplayer/demo/index.html"
+        "build": "rm -rf ./dist/ && webpack && open http://localhost/openplayer/demo/index.html"
     },
     "readme": "https://github.com/rafa8626/openmedia/blob/master/README.md",
     "devDependencies": {
@@ -52,6 +52,7 @@
         "style-loader": "^0.19.1",
         "stylelint": "^8.4.0",
         "stylelint-order": "^0.4.4",
+        "ts-loader": "^3.3.1",
         "tslint": "^5.9.1",
         "typescript": "^2.6.2",
         "webpack": "^3.10.0"

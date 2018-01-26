@@ -1,3 +1,4 @@
+import IEvent from '../components/interfaces/general/event';
 import { addEvent } from '../events';
 import Media from '../media';
 
@@ -10,9 +11,9 @@ class Volume {
     public media: Media;
     private button: HTMLButtonElement;
     private slider: HTMLInputElement;
-    private buttonEvents: object;
-    private sliderEvents: object;
-    private events: object;
+    private buttonEvents: IEvent;
+    private sliderEvents: IEvent;
+    private events: IEvent;
     private volume: number;
 
     /**
@@ -20,7 +21,7 @@ class Volume {
      * @param media
      * @returns {Volume}
      */
-    constructor(media) {
+    constructor(media: Media) {
         this.media = media;
         this.slider = document.createElement('input');
         this.slider.type = 'range';
@@ -52,11 +53,11 @@ class Volume {
             this.slider.value = `${this.media.volume}`;
         };
 
-        const updateVolume = e => {
-            this.media.volume = e.target.value;
-            this.volume = e.target.value;
-            const event = addEvent('volumechange');
-            el.dispatchEvent(event);
+        const updateVolume = (event: any) => {
+            this.media.volume = event.target.value;
+            this.volume = event.target.value;
+            const e = addEvent('volumechange');
+            el.dispatchEvent(e);
         };
 
         this.events = {};
@@ -122,7 +123,7 @@ class Volume {
      * @returns {Volume}
      * @memberof Volume
      */
-    public build(container) {
+    public build(container: HTMLDivElement) {
         container.appendChild(this.button);
         container.appendChild(this.slider);
         return this;

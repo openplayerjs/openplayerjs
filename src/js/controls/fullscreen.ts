@@ -10,7 +10,7 @@ class Fullscreen {
      * @returns {Fullscreen}
      * @memberof Fullscreen
      */
-    constructor(media) {
+    constructor(media: Media) {
         this.media = media;
         this.button = document.createElement('button');
         this.button.type = 'button';

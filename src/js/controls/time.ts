@@ -1,3 +1,4 @@
+import IEvent from '../components/interfaces/general/event';
 import Media from '../media';
 import formatTime from '../utils/time';
 
@@ -12,7 +13,7 @@ class Time {
     private current: HTMLTimeElement;
     private delimiter: HTMLSpanElement;
     private duration: HTMLTimeElement;
-    private events: object;
+    private events: IEvent;
 
     /**
      *
@@ -20,7 +21,7 @@ class Time {
      * @returns {Time}
      * @memberof Time
      */
-    constructor(media) {
+    constructor(media: Media) {
         this.media = media;
         this.current = document.createElement('time');
         this.current.className = 'om-controls__current';
@@ -89,7 +90,7 @@ class Time {
      * @returns {Time}
      * @memberof Time
      */
-    public build(container) {
+    public build(container: HTMLDivElement) {
         container.appendChild(this.current);
         container.appendChild(this.delimiter);
         container.appendChild(this.duration);

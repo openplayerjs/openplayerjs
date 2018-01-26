@@ -1,4 +1,5 @@
 import Iframe from '../components/iframe';
+import IFile from '../components/interfaces/media/file';
 import {loadScript} from '../utils/dom';
 
 declare const YT: any;
@@ -12,11 +13,11 @@ class YouTubeMedia extends Iframe {
      * Creates an instance of YouTubeMedia.
      *
      * @param {HTMLIFrameElement} element
-     * @param {File} mediaFile
+     * @param {IFile} mediaFile
      * @returns {YouTubeMedia}
      * @memberof YouTubeMedia
      */
-    constructor(element, mediaFile) {
+    constructor(element: HTMLIFrameElement, mediaFile: IFile) {
         super(element, mediaFile);
         this.promise = (typeof YT === 'undefined' || !YT.loaded) ?
             loadScript('https://www.youtube.com/player_api') :
@@ -26,7 +27,7 @@ class YouTubeMedia extends Iframe {
         return this;
     }
 
-    public canPlayType(mimeType) {
+    public canPlayType(mimeType: string) {
         return mimeType === 'application/x-youtube';
     }
 
@@ -46,22 +47,23 @@ class YouTubeMedia extends Iframe {
     }
 
     set src(media) {
+        console.log(media);
     }
 
     get src() {
         return 'aaaaa';
     }
 
-    set volume(value) {
-
+    set volume(value: number) {
+        console.log(value);
     }
 
     get volume() {
         return 1;
     }
 
-    set muted(value) {
-
+    set muted(value: boolean) {
+        console.log(value);
     }
 
     get muted() {

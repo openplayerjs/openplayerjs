@@ -2,16 +2,22 @@ const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-
 const extractPlugin = new ExtractTextPlugin({
     filename: 'om_player.min.css',
     allChunks: false
 });
 
+const babelLoader = {
+    loader: 'babel-loader',
+    options: {
+        presets: ['babel-preset-env']
+    }
+};
+
 module.exports = {
-    entry: './ts-dist/player.js',
+    entry: './src/js/player.ts',
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, './dist'),
         filename: 'om_player.js'
     },
     module: {
@@ -27,14 +33,19 @@ module.exports = {
                 }
             },
             {
+                test: /\.tsx?$/,
+                exclude: /node_modules/,
+                use: [
+                    babelLoader,
+                    {
+                        loader: 'ts-loader'
+                    }
+                ]
+            },
+            {
                 test: /src\/*\.js$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['babel-preset-env']
-                    }
-                }
+                use: babelLoader
             },
             {
                 test: /\.css$/,
@@ -64,8 +75,11 @@ module.exports = {
             }
         ]
     },
+    resolve: {
+        extensions: ['.ts', '.js']
+    },
     plugins: [
-        // new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.UglifyJsPlugin(),
         extractPlugin,
     ]
 };

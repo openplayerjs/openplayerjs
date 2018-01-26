@@ -5,7 +5,7 @@
  * @param {number} seconds
  * @returns {string}
  */
-export default function formatTime(seconds) {
+export default function formatTime(seconds: number) {
     const hrs = Math.floor(seconds / 3600);
     const min = Math.floor((seconds - (hrs * 3600)) / 60);
     const secs = Math.floor(seconds - (hrs * 3600) - (min * 60));

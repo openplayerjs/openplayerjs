@@ -1,30 +1,32 @@
+declare const ActiveXObject: any;
+
 /**
  *
  * @export
- * @param {HTMLMediaElement} element
+ * @param {Element} element
  * @return {boolean}
  */
-export function isIframe(element) {
+export function isIframe(element: Element) {
     return element.tagName.toLowerCase() === 'iframe';
 }
 
 /**
  *
  * @export
- * @param {HTMLMediaElement} element
+ * @param {Element} element
  * @return {boolean}
  */
-export function isVideo(element) {
+export function isVideo(element: Element) {
     return element.tagName.toLowerCase() === 'video';
 }
 
 /**
  *
  * @export
- * @param {HTMLMediaElement} element
+ * @param {Element} element
  * @return {boolean}
  */
-export function isAudio(element) {
+export function isAudio(element: Element) {
     return element.tagName.toLowerCase() === 'audio';
 }
 
@@ -35,7 +37,7 @@ export function isAudio(element) {
  * @param {string} url
  * @returns {Promise}
  */
-export function loadScript(url) {
+export function loadScript(url: string) {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.src = url;
@@ -60,7 +62,7 @@ export function loadScript(url) {
  * @param {function} success
  * @param {function} error
  */
-export function request(url, dataType, success, error) {
+export function request(url: string, dataType: string, success: (n: any) => any, error: (n: any) => any) {
     const xhr = (window as any).XMLHttpRequest ? new XMLHttpRequest() :
         new ActiveXObject('Microsoft.XMLHTTP');
     let type;

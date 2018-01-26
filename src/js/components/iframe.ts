@@ -6,7 +6,7 @@ export default class Iframe implements IType {
     public media: IFile;
     public promise: Promise<any>;
 
-    constructor(element, media) {
+    constructor(element: HTMLIFrameElement, media: IFile) {
         this.element = element;
         this.media = media;
         this.promise = new Promise(resolve => {
