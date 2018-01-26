@@ -1,3 +1,4 @@
+import IObject from './components/interfaces/general/object';
 import Play from './controls/play';
 import Progress from './controls/progress';
 import Time from './controls/time';
@@ -13,7 +14,7 @@ import Media from './media';
  */
 class Controls {
     public media: Media;
-    public controls: object;
+    public controls: IObject;
     public container: HTMLDivElement;
 
     /**
@@ -22,7 +23,7 @@ class Controls {
      * @returns {Controls}
      * @memberof Controls
      */
-    constructor(media) {
+    constructor(media: Media) {
         this.media = media;
         this.media.element.controls = false;
         this.controls = {

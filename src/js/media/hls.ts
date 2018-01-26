@@ -1,3 +1,5 @@
+import IEvent from '../components/interfaces/general/event';
+import IFile from '../components/interfaces/media/file';
 import Native from '../components/native';
 import { addEvent } from '../events';
 import { HAS_MSE, SUPPORTS_NATIVE_HLS } from '../utils/constants';
@@ -12,7 +14,7 @@ declare const Hls: any;
  */
 class HlsMedia extends Native {
     private player: any;
-    private events: object;
+    private events: IEvent;
     private recoverDecodingErrorDate: number;
     private recoverSwapAudioCodecDate: number;
 
@@ -23,7 +25,7 @@ class HlsMedia extends Native {
      * @param {File} mediaFile
      * @memberof HlsMedia
      */
-    constructor(element, mediaFile) {
+    constructor(element: HTMLMediaElement, mediaFile: IFile) {
         super(element, mediaFile);
         /**
          * @private
@@ -53,7 +55,7 @@ class HlsMedia extends Native {
      * @returns {boolean}
      * @memberof HlsMedia
      */
-    public canPlayType(mimeType) {
+    public canPlayType(mimeType: string) {
         return !SUPPORTS_NATIVE_HLS && HAS_MSE && mimeType === 'application/x-mpegURL';
     }
 
@@ -79,8 +81,9 @@ class HlsMedia extends Native {
         this._revoke();
     }
 
-    set src(media) {
+    set src(media: IFile) {
         this._revoke();
+        console.log(media);
         this.player = new Hls();
     }
 
@@ -94,7 +97,7 @@ class HlsMedia extends Native {
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#runtime-events
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#errors
      */
-    private _assign(event, data) {
+    private _assign(event: string, data: any) {
         if (name === 'hlsError') {
             console.warn(data);
             data = data[1];

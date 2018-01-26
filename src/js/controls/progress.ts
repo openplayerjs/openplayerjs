@@ -10,7 +10,7 @@ class Progress {
      * @returns {Progress}
      * @memberof Progress
      */
-    constructor(media) {
+    constructor(media: Media) {
         this.media = media;
         this.slider = document.createElement('input');
         this.slider.type = 'range';
@@ -61,7 +61,7 @@ class Progress {
      * @returns {Progress}
      * @memberof Progress
      */
-    public build(container) {
+    public build(container: HTMLDivElement) {
         container.appendChild(this.slider);
         return this;
     }

@@ -6,7 +6,7 @@ export default class Native implements IType {
     public media: IFile;
     public promise: Promise<any>;
 
-    constructor(element, media) {
+    constructor(element: HTMLMediaElement, media: IFile) {
         this.element = element;
         this.media = media;
         this.promise = new Promise(resolve => {

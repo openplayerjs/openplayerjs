@@ -1,4 +1,5 @@
 import Iframe from '../components/iframe';
+import IFile from '../components/interfaces/media/file';
 import {loadScript} from '../utils/dom';
 
 declare const Twitch: any;
@@ -17,7 +18,7 @@ class TwitchMedia extends Iframe {
      * @returns {TwitchMedia}
      * @memberof TwitchMedia
      */
-    constructor(element, mediaFile) {
+    constructor(element: HTMLIFrameElement, mediaFile: IFile) {
         super(element, mediaFile);
         this.promise = (typeof Twitch === 'undefined') ?
             loadScript('https://player.twitch.tv/js/embed/v1.js') :
@@ -27,7 +28,7 @@ class TwitchMedia extends Iframe {
         return this;
     }
 
-    public canPlayType(mimeType) {
+    public canPlayType(mimeType: string) {
         return mimeType === 'application/x-twitch';
     }
 
@@ -47,22 +48,23 @@ class TwitchMedia extends Iframe {
     }
 
     set src(media) {
+        console.log(media);
     }
 
     get src() {
         return 'aaaaa';
     }
 
-    set volume(value) {
-
+    set volume(value: number) {
+        console.log(value);
     }
 
     get volume() {
         return 1;
     }
 
-    set muted(value) {
-
+    set muted(value: boolean) {
+        console.log(value);
     }
 
     get muted() {

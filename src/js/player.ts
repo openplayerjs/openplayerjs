@@ -1,4 +1,4 @@
-import '../src/css/player.css';
+import '../css/player.css';
 import Controls from './controls';
 import Media from './media';
 import { isAudio, isIframe, isVideo } from './utils/dom';
@@ -15,30 +15,36 @@ class Player {
      * Convert all the video/audio/iframe tags with `om-player` class in a OpenMedia player
      */
     public static init() {
-        document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player').forEach(target => {
+        const targets = document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player');
+        for (let i = 0, total = targets.length; i < total; i++) {
+            const target = targets[i];
             const player = new Player(target, target.getAttribute('data-om-ads'));
-        });
+            player.init();
+        }
     }
 
-    public instances: Player[];
-    public element: HTMLMediaElement|HTMLIFrameElement;
-    public ads?: object;
+    public element: Element;
+    public ads?: string;
     public media: Media;
 
     /**
      * Creates an instance of Player.
      * @param {HTMLMediaElement|HTMLIFrameElement} element
+     * @param {string} ads
      * @memberof Player
      */
-    constructor(element, ads) {
+    constructor(element: Element, ads: string) {
         this.element = element;
         this.ads = ads;
+        return this;
+    }
+
+    public init() {
         if (this._isValid()) {
             this._prepareMedia();
             this._wrapInstance();
             this._createControls();
         }
-        return this;
     }
 
     /**
@@ -136,8 +142,8 @@ class Player {
         const resizeIframeCallback = (): void => {
             const width = (el.parentNode as HTMLElement).offsetWidth;
             const height = width * parseFloat(el.getAttribute('data-ratio'));
-            el.style.width = `${width}px`;
-            el.style.height = `${height}px`;
+            (el as HTMLElement).style.width = `${width}px`;
+            (el as HTMLElement).style.height = `${height}px`;
         };
 
         // This workflow is used when the aspect ratio of the media is unknown

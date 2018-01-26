@@ -1,3 +1,4 @@
+import IEvent from '../components/interfaces/general/event';
 import IFile from '../components/interfaces/media/file';
 import { addEvent } from '../events';
 import Media from '../media';
@@ -12,10 +13,10 @@ declare const google: any;
  */
 class Ads {
     public element: HTMLMediaElement;
-    public media: IFile;
+    public media: string;
     public promise: Promise<any>;
     private instance: Media;
-    private events: object;
+    private events: IEvent;
     private adUrl: string;
     private adsManager: any;
     private adsLoader: any;
@@ -35,7 +36,7 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media, file) {
+    constructor(media: Media, file: string) {
         this.element = media.element;
         this.media = file;
         this.adUrl = media.ads;
@@ -56,7 +57,7 @@ class Ads {
         return this;
     }
 
-    public canPlayType(mimeType) {
+    public canPlayType(mimeType: string) {
         return this.adsLoader !== null && /\.(mp[34]|m3u8|mpd)/.test(mimeType);
     }
     /**
@@ -124,11 +125,8 @@ class Ads {
     public destroy() {
     }
 
-    set src(media) {
-    }
-
-    get src() {
-        return this.instance.src;
+    set src(media: IFile) {
+        console.log(media);
     }
 
     set volume(value) {
@@ -155,7 +153,7 @@ class Ads {
         return this.adEnded;
     }
 
-    private _assign(event) {
+    private _assign(event: any) {
         if (event.type === google.ima.AdEvent.Type.CLICK) {
             // this.application_.adClicked();
         } else if (event.type === google.ima.AdEvent.Type.LOADED) {
@@ -166,15 +164,15 @@ class Ads {
         }
     }
 
-    private _error(e) {
-        console.error(`Ad error: ${e.getError().toString()}`);
+    private _error(event: any) {
+        console.error(`Ad error: ${event.getError().toString()}`);
         if (this.adsManager) {
             this.adsManager.destroy();
         }
         this._resumeMedia();
     }
 
-    private _loaded(adsManagerLoadedEvent) {
+    private _loaded(adsManagerLoadedEvent: any) {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
 
@@ -187,7 +185,7 @@ class Ads {
     //
     // }
 
-    private _start(manager) {
+    private _start(manager: any) {
         // Add listeners to the required events.
         manager.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
@@ -199,17 +197,17 @@ class Ads {
             google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
             this._onContentResumeRequested.bind(this));
 
-        this.events = [
-            google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
-            google.ima.AdEvent.Type.CLICK,
-            google.ima.AdEvent.Type.COMPLETE,
-            google.ima.AdEvent.Type.FIRST_QUARTILE,
-            google.ima.AdEvent.Type.LOADED,
-            google.ima.AdEvent.Type.MIDPOINT,
-            google.ima.AdEvent.Type.PAUSED,
-            google.ima.AdEvent.Type.STARTED,
-            google.ima.AdEvent.Type.THIRD_QUARTILE,
-        ];
+        this.events = {
+            a: google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+            b: google.ima.AdEvent.Type.CLICK,
+            c: google.ima.AdEvent.Type.COMPLETE,
+            d: google.ima.AdEvent.Type.FIRST_QUARTILE,
+            e: google.ima.AdEvent.Type.LOADED,
+            f: google.ima.AdEvent.Type.MIDPOINT,
+            g: google.ima.AdEvent.Type.PAUSED,
+            h: google.ima.AdEvent.Type.STARTED,
+            i: google.ima.AdEvent.Type.THIRD_QUARTILE,
+        };
 
         Object.keys(this.events).forEach(event => {
             manager.addEventListener(this.events[event], this._assign.bind(this));
@@ -259,10 +257,12 @@ class Ads {
         this.adsStarted = false;
         this.element.classList.remove('om-ads--active');
         this.instance.ads = null;
-        this.instance.loadSources([{
-            src: this.media,
-            type: predictType(this.media),
-        }]);
+        this.instance.loadSources([
+            {
+                src: this.media,
+                type: predictType(this.media),
+            },
+        ]);
         this.instance.play();
     }
 }

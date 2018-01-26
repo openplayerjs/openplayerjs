@@ -1,3 +1,4 @@
+import IFile from '../components/interfaces/media/file';
 import Native from '../components/native';
 import { isAudio, isVideo } from '../utils/dom';
 
@@ -15,7 +16,7 @@ class NativeMedia extends Native {
      * @returns {NativeMedia}
      * @memberof NativeMedia
      */
-    constructor(element, mediaFile) {
+    constructor(element: HTMLMediaElement, mediaFile: IFile) {
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
@@ -29,7 +30,7 @@ class NativeMedia extends Native {
      * @returns {boolean}
      * @memberof NativeMedia
      */
-    public canPlayType(mimeType) {
+    public canPlayType(mimeType: string) {
         return !!(this.element.canPlayType(mimeType).replace('no', ''));
     }
 

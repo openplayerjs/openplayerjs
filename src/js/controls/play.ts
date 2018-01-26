@@ -1,3 +1,4 @@
+import IEvent from '../components/interfaces/general/event';
 import Media from '../media';
 
 /**
@@ -8,7 +9,7 @@ import Media from '../media';
 class Play {
     public media: Media;
     private button: HTMLButtonElement;
-    private events: object;
+    private events: IEvent;
 
     /**
      *
@@ -16,7 +17,7 @@ class Play {
      * @returns {Play}
      * @memberof Play
      */
-    constructor(media) {
+    constructor(media: Media) {
         this.media = media;
 
         this.button = document.createElement('button');
@@ -81,7 +82,7 @@ class Play {
      * @returns {Play}
      * @memberof Play
      */
-    public build(container) {
+    public build(container: HTMLDivElement) {
         container.appendChild(this.button);
         return this;
     }
