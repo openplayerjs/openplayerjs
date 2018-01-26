@@ -60,33 +60,7 @@ class Media {
      *
      */
     load() {
-        if (!this.mediaFiles.length) {
-            throw new TypeError('Media not set');
-        }
-
-        // Loop until first playable source is found
-        this.mediaFiles.some(media => {
-            try {
-                this.media = this._loadSource(media);
-            } catch (e) {
-                this.media = new NativeMedia(this.element, media);
-            }
-
-            return this.canPlayType(media.type);
-        });
-
-        try {
-            if (this.media === null) {
-                throw new TypeError('Media cannot be played with any valid media type');
-            }
-            this.media.promise.then(() => {
-                this.media.load();
-            });
-        } catch (e) {
-            // destroy media
-            this.media.destroy();
-            throw e;
-        }
+        this._loaded(this.mediaFiles);
     }
 
     play() {
@@ -214,7 +188,7 @@ class Media {
      */
     _loadSource(media) {
         if (this.ads) {
-            return new Ads(this.element, media.src, this.ads);
+            return new Ads(this, media.src);
         } else if (source.isDailymotionSource(media.src)) {
             return new DailymotionMedia(this.element, media);
         } else if (source.isFacebookSource(media.src)) {
@@ -232,6 +206,38 @@ class Media {
         }
 
         return new NativeMedia(this.element, media);
+    }
+    _loaded(files) {
+        if (!files.length) {
+            throw new TypeError('Media not set');
+        }
+
+        console.log(files);
+
+        // Loop until first playable source is found
+        files.some(media => {
+            try {
+                this.media = this._loadSource(media);
+            } catch (e) {
+                this.media = new NativeMedia(this.element, media);
+            }
+
+            return this.canPlayType(media.type);
+        });
+
+        try {
+            if (this.media === null) {
+                throw new TypeError('Media cannot be played with any valid media type');
+            }
+
+            this.media.promise.then(() => {
+                this.media.load();
+            });
+        } catch (e) {
+            // destroy media
+            this.media.destroy();
+            throw e;
+        }
     }
 }
 

@@ -1,9 +1,12 @@
 import {loadScript} from '../utils/dom';
 import Native from '../components/native';
+import Media from '../media';
+import { predictType } from '../utils/url';
 
 declare const google: any;
 
 class Ads extends Native {
+    instance: Media;
     events: object;
     adUrl: string;
     adsManager: any;
@@ -11,21 +14,26 @@ class Ads extends Native {
     adsContainer: HTMLDivElement;
     adDisplayContainer: any;
     adsRequest: any;
+    adEnded: boolean;
+    adsDone: boolean;
 
     /**
      * Creates an instance of Google IMA SDK.
      *
-     * @param {HTMLMediaElement} element
+     * @param {Media} media
      * @param {object} mediaFile
      * @param {string} adUrl
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(element, mediaFile, adUrl) {
-        super(element, mediaFile);
-        this.adUrl = adUrl;
+    constructor(media, file) {
+        super(media.element, file);
+        this.adUrl = media.ads;
+        this.instance = media;
         this.adsManager = null;
         this.events = null;
+        this.adEnded = false;
+        this.adsDone = false;
 
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -53,8 +61,6 @@ class Ads extends Native {
                 this.element
             );
 
-        this.adDisplayContainer.initialize();
-
         this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
 
         const loaded = google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED;
@@ -65,20 +71,32 @@ class Ads extends Native {
         this.element.onended = this._contentEndedListener.bind(this);
         this.adsRequest = new google.ima.AdsRequest();
         this.adsRequest.adTagUrl = this.adUrl;
-        // Specify the linear and nonlinear slot sizes. This helps the SDK to
-        // select the correct creative if multiple are returned.
+
         this.adsRequest.linearAdSlotWidth = this.element.offsetWidth;
         this.adsRequest.linearAdSlotHeight = this.element.offsetHeight;
         this.adsRequest.nonLinearAdSlotWidth = this.element.offsetWidth;
         this.adsRequest.nonLinearAdSlotHeight = 150;
-    }
-
-    play() {
         this.adsLoader.requestAds(this.adsRequest);
     }
 
+    play() {
+        if (!this.adsDone) {
+            this.adDisplayContainer.initialize();
+            this.adsDone = true;
+        }
+        if (this.adsManager) {
+            this.adsManager.resume();
+        } else {
+            this.instance.play();
+        }
+    }
+
     pause() {
-        this.element.pause();
+        if (this.adsManager) {
+            this.adsManager.pause();
+        } else {
+            this.instance.pause();
+        }
     }
 
     destroy() {
@@ -88,7 +106,7 @@ class Ads extends Native {
     }
 
     get src() {
-        return 'aaaaa';
+        return this.instance.src;
     }
 
     set volume(value) {
@@ -113,7 +131,7 @@ class Ads extends Native {
         } else if (event.type === google.ima.AdEvent.Type.LOADED) {
             const ad = event.getAd();
             if (!ad.isLinear()) {
-                // this.onContentResumeRequested_();
+                this._onContentResumeRequested();
             }
         }
     }
@@ -123,41 +141,16 @@ class Ads extends Native {
         if (this.adsManager) {
             this.adsManager.destroy();
         }
-        // this.application_.resumeAfterAd();
+        // this.instance.play();
     }
 
     _loaded(adsManagerLoadedEvent) {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+
         // Get the ads manager.
         this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
-        // Add listeners to the required events.
-        this.adsManager.addEventListener(
-            google.ima.AdErrorEvent.Type.AD_ERROR,
-            this._error.bind(this));
-        this.adsManager.addEventListener(
-            google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-            this._onContentPauseRequested.bind(this));
-        this.adsManager.addEventListener(
-            google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
-            this._onContentResumeRequested.bind(this));
-
-        try {
-            // Initialize the ads manager. Ad rules playlist will start at this time.
-            this.adsManager.init(
-                this.element.offsetWidth, 
-                this.element.offsetHeight, 
-                google.ima.ViewMode.NORMAL
-            );
-            // Call start to show ads. Single video and overlay ads will
-            // start at this time; this call will be ignored for ad rules, as ad rules
-            // ads start when the adsManager is initialized.
-            this.adsManager.start();
-        } catch (adError) {
-            // An error may be thrown if there was a problem with the VAST response.
-            // Play content here, because we won't be getting an ad.
-            this.element.play();
-        }
+        this._start(this.adsManager);
     }
 
     // _revoke() {
@@ -165,21 +158,16 @@ class Ads extends Native {
     // }
 
     _start(manager) {
-        // Attach the pause/resume events.
-        manager.addEventListener(
-            google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-            // this.onContentPauseRequested_,
-            false
-        );
-        manager.addEventListener(
-            google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
-            // this.onContentResumeRequested_
-        );
-        // Handle errors.
+        // Add listeners to the required events.
         manager.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
-            this._error.bind(this)
-        );
+            this._error.bind(this));
+        manager.addEventListener(
+            google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
+            this._onContentPauseRequested.bind(this));
+        manager.addEventListener(
+            google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
+            this._onContentResumeRequested.bind(this));
 
         this.events = [
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
@@ -197,16 +185,22 @@ class Ads extends Native {
             manager.addEventListener(this.events[event], this._assign.bind(this));
         });
 
-        manager.init(
-            (<HTMLElement>this.element.parentNode).offsetWidth,
-            (<HTMLElement>this.element.parentNode).offsetHeight,
-            google.ima.ViewMode.NORMAL
-        );
-
-        manager.start();
+        try {
+            // Initialize the ads manager. Ad rules playlist will start at this time.
+            manager.init(
+                this.element.offsetWidth, 
+                this.element.offsetHeight, 
+                google.ima.ViewMode.NORMAL
+            );
+            manager.start();
+        } catch (adError) {
+            this._contentEndedListener();
+            this.instance.play();
+        }
     }
 
     _contentEndedListener() {
+        this.adEnded = true;
         this.adsLoader.contentComplete();
     }
 
@@ -214,14 +208,20 @@ class Ads extends Native {
         // This function is where you should setup UI for showing ads (e.g.
         // display ad timer countdown, disable seeking, etc.)
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-        this.element.pause();
+        this.instance.pause();
     }
 
     _onContentResumeRequested() {
         // This function is where you should ensure that your UI is ready
         // to play content.
         this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-        this.element.play();
+        this.element.classList.remove('om-ads--active');
+        this.instance.ads = null;
+        this.instance._loaded([{
+            src: this.media,
+            type: predictType(this.media)
+        }]);
+        this.instance.play();
     }
 }
 
