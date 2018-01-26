@@ -1,10 +1,15 @@
 import IFile from '../components/interfaces/media/file';
+import { addEvent } from '../events';
 import Media from '../media';
 import {loadScript} from '../utils/dom';
 import { predictType } from '../utils/url';
 
 declare const google: any;
-
+/**
+ *
+ *
+ * @class Ads
+ */
 class Ads {
     public element: HTMLMediaElement;
     public media: IFile;
@@ -25,8 +30,7 @@ class Ads {
      * Creates an instance of Google IMA SDK.
      *
      * @param {Media} media
-     * @param {object} mediaFile
-     * @param {string} adUrl
+     * @param {object} file
      * @returns {Ads}
      * @memberof Ads
      */
@@ -53,7 +57,11 @@ class Ads {
     public canPlayType(mimeType) {
         return this.adsLoader !== null && /\.(mp[34]|m3u8|mpd)/.test(mimeType);
     }
-
+    /**
+     * Create the Ads container.
+     *
+     * @memberof Ads
+     */
     public load() {
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'om-ads';
@@ -91,8 +99,10 @@ class Ads {
             this.adsDone = true;
         }
         if (this.adsManager) {
-            this.adsActive = true;
             this.adsManager.resume();
+            this.adsActive = true;
+            const e = addEvent('play');
+            this.element.dispatchEvent(e);
         } else {
             this.instance.play();
         }
@@ -100,8 +110,10 @@ class Ads {
 
     public pause() {
         if (this.adsManager) {
-            this.adsActive = false;
             this.adsManager.pause();
+            this.adsActive = false;
+            const e = addEvent('pause');
+            this.element.dispatchEvent(e);
         } else {
             this.instance.pause();
         }
@@ -134,7 +146,7 @@ class Ads {
     }
 
     get paused() {
-        return this.adsActive;
+        return !this.adsActive;
     }
 
     get ended() {
@@ -208,8 +220,11 @@ class Ads {
                 this.element.offsetHeight,
                 google.ima.ViewMode.NORMAL,
             );
-            this.adsActive = true;
+
             manager.start();
+
+            const e = addEvent('play');
+            this.element.dispatchEvent(e);
         } catch (adError) {
             this._resumeMedia();
         }
@@ -223,7 +238,9 @@ class Ads {
 
     private _onContentPauseRequested() {
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-        this.instance.pause();
+        if (this.adsActive) {
+            this.instance.pause();
+        }
     }
 
     private _onContentResumeRequested() {
