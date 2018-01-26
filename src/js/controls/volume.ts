@@ -7,13 +7,13 @@ import Media from '../media';
  * @description  Class that renders volume slider and mute button, and registers events to update them
  */
 class Volume {
-    media: Media;
-    button: HTMLButtonElement;
-    slider: HTMLInputElement;
-    buttonEvents: object;
-    sliderEvents: object;
-    events: object;
-    volume: number;
+    public media: Media;
+    private button: HTMLButtonElement;
+    private slider: HTMLInputElement;
+    private buttonEvents: object;
+    private sliderEvents: object;
+    private events: object;
+    private volume: number;
 
     /**
      *
@@ -46,9 +46,9 @@ class Volume {
 
         const updateSlider = () => {
             const mediaVolume = this.media.volume * 1;
-            const volume = Math.floor(mediaVolume * 100);
-            this.slider.setAttribute('aria-valuenow', `${volume}`);
-            this.slider.setAttribute('aria-valuetext', `${volume}%`);
+            const vol = Math.floor(mediaVolume * 100);
+            this.slider.setAttribute('aria-valuenow', `${vol}`);
+            this.slider.setAttribute('aria-valuetext', `${vol}%`);
             this.slider.value = `${this.media.volume}`;
         };
 
@@ -88,7 +88,7 @@ class Volume {
      * @returns {Volume}
      * @memberof Volume
      */
-    register() {
+    public register() {
         this.button.addEventListener('click', this.buttonEvents['click']);
 
         this.media.element.addEventListener('volumechange', this.events['volumechange']);
@@ -100,7 +100,7 @@ class Volume {
         return this;
     }
 
-    unregister() {
+    public unregister() {
         Object.keys(this.sliderEvents).forEach(event => {
             this.slider.addEventListener(event, this.sliderEvents[event]);
         });
@@ -122,7 +122,7 @@ class Volume {
      * @returns {Volume}
      * @memberof Volume
      */
-    build(container) {
+    public build(container) {
         container.appendChild(this.button);
         container.appendChild(this.slider);
         return this;

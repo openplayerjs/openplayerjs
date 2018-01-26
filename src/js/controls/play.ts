@@ -6,9 +6,9 @@ import Media from '../media';
  * @description  Class that renders play/pause/replay button and registers events to update it
  */
 class Play {
-    media: Media;
-    button: HTMLButtonElement;
-    events: object;
+    public media: Media;
+    private button: HTMLButtonElement;
+    private events: object;
 
     /**
      *
@@ -53,7 +53,7 @@ class Play {
      * @returns {Play}
      * @memberof Play
      */
-    register() {
+    public register() {
         Object.keys(this.events).forEach(event => {
             this.media.element.addEventListener(event, this.events[event]);
         });
@@ -63,7 +63,7 @@ class Play {
         return this;
     }
 
-    unregister() {
+    public unregister() {
         Object.keys(this.events).forEach(event => {
             this.media.element.removeEventListener(event, this.events[event]);
         });
@@ -81,7 +81,7 @@ class Play {
      * @returns {Play}
      * @memberof Play
      */
-    build(container) {
+    public build(container) {
         container.appendChild(this.button);
         return this;
     }
