@@ -28,7 +28,6 @@ class Play {
 
         this.events = {};
         this.events['click'] = () => {
-            console.log('event', el.paused);
             if (el.paused || el.ended) {
                 this.media.play();
             } else {
