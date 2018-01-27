@@ -89,9 +89,11 @@ class Ads {
         this.adsRequest = new google.ima.AdsRequest();
         this.adsRequest.adTagUrl = this.adUrl;
 
-        this.adsRequest.linearAdSlotWidth = this.element.offsetWidth;
-        this.adsRequest.linearAdSlotHeight = this.element.offsetHeight;
-        this.adsRequest.nonLinearAdSlotWidth = this.element.offsetWidth;
+        const width = (this.element.parentNode as HTMLElement).offsetWidth;
+        const height = (this.element.parentNode as HTMLElement).offsetWidth;
+        this.adsRequest.linearAdSlotWidth = width;
+        this.adsRequest.linearAdSlotHeight = height;
+        this.adsRequest.nonLinearAdSlotWidth = width;
         this.adsRequest.nonLinearAdSlotHeight = 150;
 
         // Create responsive ad
@@ -272,8 +274,8 @@ class Ads {
     private _resizeAds() {
         if (this.adsManager) {
             this.adsManager.resize(
-                this.element.offsetWidth,
-                this.element.offsetHeight,
+                (this.element.parentNode as HTMLElement).offsetWidth,
+                (this.element.parentNode as HTMLElement).offsetHeight,
                 google.ima.ViewMode.NORMAL);
         }
     }
