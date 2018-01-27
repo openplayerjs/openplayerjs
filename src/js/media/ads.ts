@@ -93,6 +93,9 @@ class Ads {
         this.adsRequest.linearAdSlotHeight = this.element.offsetHeight;
         this.adsRequest.nonLinearAdSlotWidth = this.element.offsetWidth;
         this.adsRequest.nonLinearAdSlotHeight = 150;
+
+        // Create responsive ad
+        window.addEventListener('resize', this._resizeAds.bind(this));
         this.adsLoader.requestAds(this.adsRequest);
     }
 
@@ -264,6 +267,15 @@ class Ads {
             },
         ]);
         this.instance.play();
+    }
+
+    private _resizeAds() {
+        if (this.adsManager) {
+            this.adsManager.resize(
+                this.element.offsetWidth,
+                this.element.offsetHeight,
+                google.ima.ViewMode.NORMAL);
+        }
     }
 }
 

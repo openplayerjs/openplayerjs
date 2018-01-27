@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>OpenPlayer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet" href="../dist/om_player.min.css">
     <style>
         body {
@@ -21,15 +27,71 @@
         <source src="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL">
         <!-- <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4" type="video/mp4"> -->
     </video>
+    <br>
+    <div>
+        <label>Change source <select name="sources">
+            <option value="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4">MP4</option>
+            <option value="http://ep-lin-upload.s3.amazonaws.com/vupl_lin/F64/CDF/F64CDF3B0348471E95C244DE2DDDD3F3">MP4 (no ext.)</option>
+            <option value="https://upload.wikimedia.org/wikipedia/commons/2/22/Volcano_Lava_Sample.webm">WebM</option>
+            <option value="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8">HLS</option>
+            <option value="https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd">M(PEG)-DASH</option>
+        </select>
+        </label>
+    </div>
 
     <h1>Audio Sample</h1>
     <audio class="om-player" controls>
         <source src="https://api.soundcloud.com/tracks/323195515/stream?client_id=95f22ed54a5c297b1c41f72d713623ef" type="audio/mp3">
     </audio>
+    <br>
+    <div>
+        <label>Change source <select name="sources">
+            <option value="http://www.largesound.com/ashborytour/sound/AshboryBYU.mp3">MP3</option>
+            <option value="https://api.soundcloud.com/tracks/323195515/stream?client_id=95f22ed54a5c297b1c41f72d713623ef">SoundCloud</option>
+            <option value="http://www.vorbis.com/music/Hydrate-Kenny_Beltrey.ogg">OGG</option>
+            <option value="http://db3.indexcom.com/bucket/ram/00/05/64k/05.m3u8">HLS</option>
+        </select>
+        </label>
+    </div>
 
     <h1>Iframe Sample</h1>
     <iframe class="om-player" width="560" height="315" src="https://www.youtube.com/embed/dsUXAEzaC3Q" frameborder="0" gesture="media" allow="encrypted-media" allowfullscreen></iframe>
+    <div>
+        <label>Change source <select name="sources">
+            <option value="https://www.dailymotion.com/video/x11prnt">DailyMotion</option>
+            <option value="https://www.youtube.com/watch?v=twYp6W6vt2U">YouTube</option>
+            <option value="https://player.vimeo.com/video/108018156?title=0&amp;byline=0&amp;portrait=0&amp;badge=0">Vimeo</option>
+            <option value="https://www.facebook.com/facebook/videos/10155278547321729">Facebook</option>
+            <option value="https://www.twitch.tv/videos/109010497">Twitch</option>
+        </select>
+        </label>
+    </div>
 
     <script src="../dist/om_player.js"></script>
+    <script>
+        var sourcesSelector = document.querySelectorAll('select[name=sources]');
+	    var sourcesTotal = sourcesSelector.length;
+
+        for (var i = 0; i < sourcesTotal; i++) {
+            sourcesSelector[i].addEventListener('change', function () {
+                var media = this.closest('.players').querySelector('.mejs__container').id,
+                    player = mejs.players[media]
+                ;
+
+                player.setSrc(this.value.replace('&amp;', '&'));
+                player.load();
+                if (!mejs.Features.isiOS && !mejs.Features.isAndroid) {
+                    player.play();
+                }
+
+                var renderer = document.getElementById(player.media.id + '-rendername');
+                renderer.querySelector('.src').innerHTML = '<a href="' + this.value + '" target="_blank">' + this.value + '</a>';
+                renderer.querySelector('.renderer').innerHTML = player.media.rendererName;
+                renderer.querySelector('.error').innerHTML = '';
+
+            });
+        }
+
+    </script>
 </body>
 </html>
