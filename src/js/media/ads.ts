@@ -2,13 +2,16 @@ import IEvent from '../components/interfaces/general/event';
 import IFile from '../components/interfaces/media/file';
 import { addEvent } from '../events';
 import Media from '../media';
+import { IS_ANDROID, IS_IOS, IS_SAFARI, IS_CHROME } from '../utils/constants';
 import {loadScript} from '../utils/dom';
 import { predictType } from '../utils/url';
 
 declare const google: any;
 /**
+ * Ads
  *
- *
+ * @description This class implements Google IMA SDK v3.0 to display VAST and VPAID advertisement
+ * @see https://developers.google.com/interactive-media-ads/
  * @class Ads
  */
 class Ads {
@@ -27,6 +30,7 @@ class Ads {
     private adsDone: boolean;
     private adsActive: boolean;
     private adsStarted: boolean;
+    private intervalTimer: number;
 
     /**
      * Creates an instance of Google IMA SDK.
@@ -47,6 +51,7 @@ class Ads {
         this.adsDone = false;
         this.adsActive = false;
         this.adsStarted = false;
+        this.intervalTimer = 0;
 
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -61,7 +66,7 @@ class Ads {
         return this.adsLoader !== null && /\.(mp[34]|m3u8|mpd)/.test(mimeType);
     }
     /**
-     * Create the Ads container.
+     * Create the Ads container and loader to process the Ads URL provided.
      *
      * @memberof Ads
      */
@@ -79,26 +84,19 @@ class Ads {
             );
 
         this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
+        this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
 
         const loaded = google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED;
         const error = google.ima.AdErrorEvent.Type.AD_ERROR;
 
         this.adsLoader.addEventListener(error, this._error.bind(this));
         this.adsLoader.addEventListener(loaded, this._loaded.bind(this));
-        this.element.onended = this._contentEndedListener.bind(this);
-        this.adsRequest = new google.ima.AdsRequest();
-        this.adsRequest.adTagUrl = this.adUrl;
-
-        const width = (this.element.parentNode as HTMLElement).offsetWidth;
-        const height = (this.element.parentNode as HTMLElement).offsetWidth;
-        this.adsRequest.linearAdSlotWidth = width;
-        this.adsRequest.linearAdSlotHeight = height;
-        this.adsRequest.nonLinearAdSlotWidth = width;
-        this.adsRequest.nonLinearAdSlotHeight = 150;
 
         // Create responsive ad
         window.addEventListener('resize', this._resizeAds.bind(this));
-        this.adsLoader.requestAds(this.adsRequest);
+
+        this.element.onended = this._contentEndedListener.bind(this);
+        this._requestAds();
     }
 
     public play() {
@@ -159,13 +157,26 @@ class Ads {
     }
 
     private _assign(event: any) {
-        if (event.type === google.ima.AdEvent.Type.CLICK) {
-            // this.application_.adClicked();
-        } else if (event.type === google.ima.AdEvent.Type.LOADED) {
-            const ad = event.getAd();
-            if (!ad.isLinear()) {
-                this._onContentResumeRequested();
-            }
+        const ad = event.getAd();
+        switch (event.type) {
+            case google.ima.AdEvent.Type.LOADED:
+                if (!ad.isLinear()) {
+                    this._onContentResumeRequested();
+                }
+                break;
+            case google.ima.AdEvent.Type.STARTED:
+                if (ad.isLinear()) {
+                    this.intervalTimer = window.setInterval(() => {
+                        const remainingTime = this.adsManager.getRemainingTime();
+                        console.log(remainingTime);
+                    }, 300);
+                }
+                break;
+            case google.ima.AdEvent.Type.COMPLETE:
+                if (ad.isLinear()) {
+                    clearInterval(this.intervalTimer);
+                }
+                break;
         }
     }
 
@@ -278,6 +289,26 @@ class Ads {
                 (this.element.parentNode as HTMLElement).offsetHeight,
                 google.ima.ViewMode.NORMAL);
         }
+    }
+
+    private _requestAds() {
+        if (this.adsLoader) {
+            this.adsLoader.contentComplete();
+        }
+        this.adsRequest = new google.ima.AdsRequest();
+        this.adsRequest.adTagUrl = this.adUrl;
+
+        const width = (this.element.parentNode as HTMLElement).offsetWidth;
+        const height = (this.element.parentNode as HTMLElement).offsetWidth;
+        this.adsRequest.linearAdSlotWidth = width;
+        this.adsRequest.linearAdSlotHeight = height;
+        this.adsRequest.nonLinearAdSlotWidth = width;
+        this.adsRequest.nonLinearAdSlotHeight = 150;
+
+        this.adsRequest.setAdWillAutoPlay(!(IS_ANDROID || IS_IOS));
+        this.adsRequest.setAdWillPlayMuted(IS_IOS && (IS_SAFARI || IS_CHROME));
+
+        this.adsLoader.requestAds(this.adsRequest);
     }
 }
 
