@@ -99,8 +99,7 @@ class Ads {
 
         // Create responsive ad
         window.addEventListener('resize', this._resizeAds.bind(this));
-
-        this.element.onended = this._contentEndedListener.bind(this);
+        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
         this._requestAds();
     }
 
@@ -150,6 +149,7 @@ class Ads {
             this.adsManager.destroy();
         }
 
+        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         window.removeEventListener('resize', this._resizeAds.bind(this));
         this.adsContainer.remove();
     }
@@ -235,10 +235,6 @@ class Ads {
         this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
         this._start(this.adsManager);
     }
-
-    // _revoke() {
-    //
-    // }
 
     private _start(manager: any) {
         // Add listeners to the required events.
