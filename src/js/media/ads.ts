@@ -1,8 +1,6 @@
 import IEvent from '../components/interfaces/general/event';
-import IFile from '../components/interfaces/media/file';
 import { addEvent } from '../events';
 import Media from '../media';
-import { IS_ANDROID, IS_IOS, IS_SAFARI, IS_CHROME } from '../utils/constants';
 import {loadScript} from '../utils/dom';
 import { predictType } from '../utils/url';
 
@@ -31,6 +29,8 @@ class Ads {
     private adsActive: boolean;
     private adsStarted: boolean;
     private intervalTimer: number;
+    private adsVolume: number;
+    private adsMuted: boolean;
 
     /**
      * Creates an instance of Google IMA SDK.
@@ -52,6 +52,8 @@ class Ads {
         this.adsActive = false;
         this.adsStarted = false;
         this.intervalTimer = 0;
+        this.adsVolume = this.element.volume;
+        this.adsMuted = false;
 
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -76,7 +78,7 @@ class Ads {
         this.element.parentNode.insertBefore(this.adsContainer, this.element.nextSibling);
         this.element.classList.add('om-ads--active');
 
-        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
+        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
                 this.adsContainer,
@@ -86,11 +88,14 @@ class Ads {
         this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
         this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
 
-        const loaded = google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED;
-        const error = google.ima.AdErrorEvent.Type.AD_ERROR;
-
-        this.adsLoader.addEventListener(error, this._error.bind(this));
-        this.adsLoader.addEventListener(loaded, this._loaded.bind(this));
+        this.adsLoader.addEventListener(
+            google.ima.AdErrorEvent.Type.AD_ERROR,
+            this._error.bind(this),
+        );
+        this.adsLoader.addEventListener(
+            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+            this._loaded.bind(this),
+        );
 
         // Create responsive ad
         window.addEventListener('resize', this._resizeAds.bind(this));
@@ -126,26 +131,52 @@ class Ads {
     }
 
     public destroy() {
-    }
+        Object.keys(this.events).forEach(event => {
+            this.adsManager.removeEventListener(this.events[event], this._assign.bind(this));
+        });
 
-    set src(media: IFile) {
-        console.log(media);
+        this.events = {};
+
+        this.adsLoader.removeEventListener(
+            google.ima.AdErrorEvent.Type.AD_ERROR,
+            this._error.bind(this),
+        );
+        this.adsLoader.removeEventListener(
+            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+            this._loaded.bind(this),
+        );
+
+        if (this.adsManager) {
+            this.adsManager.destroy();
+        }
+
+        window.removeEventListener('resize', this._resizeAds.bind(this));
+        this.adsContainer.remove();
     }
 
     set volume(value) {
-        this.element.volume = value;
+        if (value > 0) {
+            this.adsVolume = value;
+        }
+        this.adsManager.setVolume(value);
     }
 
     get volume() {
-        return this.element.volume;
+        return this.adsVolume;
     }
 
     set muted(value) {
-        this.element.muted = value;
+        if (value === true) {
+            this.adsManager.setVolume(0);
+            this.adsMuted = true;
+        } else {
+            this.adsManager.setVolume(this.adsVolume);
+            this.adsMuted = false;
+        }
     }
 
     get muted() {
-        return this.element.muted;
+        return this.adsMuted;
     }
 
     get paused() {
@@ -173,8 +204,16 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
+            case google.ima.AdEvent.Type.SKIPPED:
                 if (ad.isLinear()) {
                     clearInterval(this.intervalTimer);
+                }
+                break;
+            case google.ima.AdEvent.Type.VOLUME_CHANGED:
+            case google.ima.AdEvent.Type.VOLUME_MUTED:
+                if (ad.isLinear()) {
+                    const e = addEvent('volumechanged');
+                    this.element.dispatchEvent(e);
                 }
                 break;
         }
@@ -214,15 +253,18 @@ class Ads {
             this._onContentResumeRequested.bind(this));
 
         this.events = {
-            a: google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
-            b: google.ima.AdEvent.Type.CLICK,
-            c: google.ima.AdEvent.Type.COMPLETE,
-            d: google.ima.AdEvent.Type.FIRST_QUARTILE,
-            e: google.ima.AdEvent.Type.LOADED,
-            f: google.ima.AdEvent.Type.MIDPOINT,
-            g: google.ima.AdEvent.Type.PAUSED,
-            h: google.ima.AdEvent.Type.STARTED,
-            i: google.ima.AdEvent.Type.THIRD_QUARTILE,
+            0: google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+            1: google.ima.AdEvent.Type.CLICK,
+            2: google.ima.AdEvent.Type.COMPLETE,
+            3: google.ima.AdEvent.Type.FIRST_QUARTILE,
+            4: google.ima.AdEvent.Type.LOADED,
+            5: google.ima.AdEvent.Type.MIDPOINT,
+            6: google.ima.AdEvent.Type.PAUSED,
+            7: google.ima.AdEvent.Type.STARTED,
+            8: google.ima.AdEvent.Type.THIRD_QUARTILE,
+            9: google.ima.AdEvent.Type.SKIPPED,
+            10: google.ima.AdEvent.Type.VOLUME_CHANGED,
+            11: google.ima.AdEvent.Type.VOLUME_MUTED,
         };
 
         Object.keys(this.events).forEach(event => {
@@ -304,9 +346,6 @@ class Ads {
         this.adsRequest.linearAdSlotHeight = height;
         this.adsRequest.nonLinearAdSlotWidth = width;
         this.adsRequest.nonLinearAdSlotHeight = 150;
-
-        this.adsRequest.setAdWillAutoPlay(!(IS_ANDROID || IS_IOS));
-        this.adsRequest.setAdWillPlayMuted(IS_IOS && (IS_SAFARI || IS_CHROME));
 
         this.adsLoader.requestAds(this.adsRequest);
     }
