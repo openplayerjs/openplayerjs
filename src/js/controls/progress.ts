@@ -1,8 +1,11 @@
+import IEvent from '../components/interfaces/general/event';
 import Media from '../media';
 
 class Progress {
     public media: Media;
     private slider: HTMLInputElement;
+    private events: IEvent;
+    // private sliderEvents: IEvent;
 
     /**
      *
@@ -21,6 +24,28 @@ class Progress {
         this.slider.value = '0';
         this.slider.innerHTML = '<span class="om-controls__progress-bar"></span>';
 
+        this.events = {};
+        // this.sliderEvents = {};
+        this.events['loadedmetadata'] = () => {
+            if (this.media.element.duration !== Infinity) {
+                this.slider.setAttribute('max', `${this.media.element.duration}`);
+            } else {
+                this.slider.style.display = 'none';
+            }
+        };
+        this.events['timeupdate'] = () => {
+            if (this.media.element.duration !== Infinity) {
+                if (!this.slider.getAttribute('max')) {
+                    this.slider.setAttribute('max', `${this.media.element.duration}`);
+                }
+                this.slider.value = this.media.element.currentTime.toString();
+                (this.slider.firstChild as HTMLElement).style.width =
+                    `${Math.floor((this.media.element.currentTime / this.media.element.duration) * 100)}%`;
+            } else {
+                this.slider.style.display = 'none';
+            }
+        };
+
         return this;
     }
 
@@ -30,27 +55,19 @@ class Progress {
      * @memberof Progress
      */
     public register() {
-        const el = this.media.element;
-        el.addEventListener('loadedmetadata', () => {
-            if (el.duration !== Infinity) {
-                this.slider.setAttribute('max', `${el.duration}`);
-            } else {
-                this.slider.style.display = 'none';
-            }
+        Object.keys(this.events).forEach(event => {
+            this.media.element.addEventListener(event, this.events[event]);
         });
 
-        el.addEventListener('timeupdate', () => {
-            if (el.duration !== Infinity) {
-                if (!this.slider.getAttribute('max')) {
-                    this.slider.setAttribute('max', `${el.duration}`);
-                }
-                this.slider.value = el.currentTime.toString();
-                (this.slider.firstChild as HTMLElement).style.width =
-                    `${Math.floor((el.currentTime / el.duration) * 100)}%`;
-            } else {
-                this.slider.style.display = 'none';
-            }
+        return this;
+    }
+
+    public unregister() {
+        Object.keys(this.events).forEach(event => {
+            this.media.element.removeEventListener(event, this.events[event]);
         });
+        this.events = {};
+        // this.sliderEvents = {};
 
         return this;
     }

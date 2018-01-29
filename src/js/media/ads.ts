@@ -1,4 +1,3 @@
-import IEvent from '../components/interfaces/general/event';
 import { addEvent } from '../events';
 import Media from '../media';
 import {loadScript} from '../utils/dom';
@@ -17,7 +16,7 @@ class Ads {
     public media: string;
     public promise: Promise<any>;
     private instance: Media;
-    private events: IEvent;
+    private events: any[];
     private adUrl: string;
     private adsManager: any;
     private adsLoader: any;
@@ -130,11 +129,11 @@ class Ads {
     }
 
     public destroy() {
-        Object.keys(this.events).forEach(event => {
-            this.adsManager.removeEventListener(this.events[event], this._assign.bind(this));
+        this.events.forEach(event => {
+            this.adsManager.removeEventListener(event, this._assign.bind(this));
         });
 
-        this.events = {};
+        this.events = [];
 
         this.adsLoader.removeEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
@@ -248,23 +247,23 @@ class Ads {
             google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
             this._onContentResumeRequested.bind(this));
 
-        this.events = {
-            0: google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
-            1: google.ima.AdEvent.Type.CLICK,
-            2: google.ima.AdEvent.Type.COMPLETE,
-            3: google.ima.AdEvent.Type.FIRST_QUARTILE,
-            4: google.ima.AdEvent.Type.LOADED,
-            5: google.ima.AdEvent.Type.MIDPOINT,
-            6: google.ima.AdEvent.Type.PAUSED,
-            7: google.ima.AdEvent.Type.STARTED,
-            8: google.ima.AdEvent.Type.THIRD_QUARTILE,
-            9: google.ima.AdEvent.Type.SKIPPED,
-            10: google.ima.AdEvent.Type.VOLUME_CHANGED,
-            11: google.ima.AdEvent.Type.VOLUME_MUTED,
-        };
+        this.events = [
+            google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+            google.ima.AdEvent.Type.CLICK,
+            google.ima.AdEvent.Type.COMPLETE,
+            google.ima.AdEvent.Type.FIRST_QUARTILE,
+            google.ima.AdEvent.Type.LOADED,
+            google.ima.AdEvent.Type.MIDPOINT,
+            google.ima.AdEvent.Type.PAUSED,
+            google.ima.AdEvent.Type.STARTED,
+            google.ima.AdEvent.Type.THIRD_QUARTILE,
+            google.ima.AdEvent.Type.SKIPPED,
+            google.ima.AdEvent.Type.VOLUME_CHANGED,
+            google.ima.AdEvent.Type.VOLUME_MUTED,
+        ];
 
-        Object.keys(this.events).forEach(event => {
-            manager.addEventListener(this.events[event], this._assign.bind(this));
+        this.events.forEach(event => {
+            manager.addEventListener(event, this._assign.bind(this));
         });
 
         try {
