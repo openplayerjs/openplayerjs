@@ -1,4 +1,4 @@
-import IObject from './components/interfaces/general/object';
+import AirPlay from './controls/airplay';
 import Play from './controls/play';
 import Progress from './controls/progress';
 import Time from './controls/time';
@@ -14,7 +14,7 @@ import Media from './media';
  */
 class Controls {
     public media: Media;
-    public controls: IObject;
+    public controls: any[];
     public container: HTMLDivElement;
 
     /**
@@ -26,13 +26,14 @@ class Controls {
     constructor(media: Media) {
         this.media = media;
         this.media.element.controls = false;
-        this.controls = {
-            a: new Play(media),
-            b: new Time(media),
-            c: new Progress(media),
-            d: new Volume(media),
-            // e: new Fullscreen(media),
-        };
+        this.controls = [
+            new Play(media),
+            new Time(media),
+            new Progress(media),
+            new Volume(media),
+            // 4: new Fullscreen(media),
+            new AirPlay(media),
+        ];
 
         this.container = null;
 
@@ -44,8 +45,8 @@ class Controls {
         this.container.className = 'om-controls';
 
         // Loop controls to build them and register events
-        Object.keys(this.controls).forEach(item => {
-            this.controls[item].build(this.container).register();
+        this.controls.forEach(item => {
+            item.build(this.container).register();
         });
     }
 
