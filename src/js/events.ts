@@ -10,3 +10,10 @@ export function addEvent(event: string, details?: object) {
 
     return new CustomEvent(event, details);
 }
+
+export const events: string[] = [
+    'loadstart', 'durationchange', 'loadedmetadata', 'loadeddata',
+    'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error',
+    'emptied', 'stalled', 'play', 'playing',  'pause', 'waiting', 'seeking',
+    'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange',
+];

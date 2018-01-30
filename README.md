@@ -2,7 +2,7 @@
 
 HTML5 video and audio player
 
-Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.io/), this player written in TypeScript mimics the HTML5 video/audio and integrates the most popular libraries/APIs to play a variety of media, such as native MP4/MP3, HLS, M(PEG)-DASH, YouTube, Vimeo, etc.
+Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.io/), this player written in TypeScript mimics the HTML5 video/audio and integrates the most popular libraries to play the different native media, such as native MP4/MP3, HLS, M(PEG)-DASH.
 
 A few key features:
 

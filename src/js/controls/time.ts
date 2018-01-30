@@ -35,7 +35,7 @@ class Time {
         this.duration.className = 'om-controls__duration';
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
-        const el = this.media.element;
+        const el = this.media;
         this.events = {};
         this.events['loadedmetadata'] = () => {
             if (el.duration !== Infinity && !isNaN(el.duration)) {
@@ -68,7 +68,7 @@ class Time {
      */
     public register() {
         Object.keys(this.events).forEach(event => {
-            this.media.element.addEventListener(event, this.events[event]);
+            this.media.addEventListener(event, this.events[event]);
         });
 
         return this;
@@ -76,7 +76,7 @@ class Time {
 
     public unregister() {
         Object.keys(this.events).forEach(event => {
-            this.media.element.removeEventListener(event, this.events[event]);
+            this.media.removeEventListener(event, this.events[event]);
         });
 
         this.events = {};

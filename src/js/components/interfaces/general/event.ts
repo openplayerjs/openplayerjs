@@ -5,5 +5,5 @@
  * @interface IEvent
  */
 export default interface IEvent {
-    [key: string]: (n: any) => any;
+    [key: string]: any;
 }

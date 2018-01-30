@@ -27,20 +27,20 @@ class Progress {
         this.events = {};
         // this.sliderEvents = {};
         this.events['loadedmetadata'] = () => {
-            if (this.media.element.duration !== Infinity) {
-                this.slider.setAttribute('max', `${this.media.element.duration}`);
+            if (this.media.duration !== Infinity) {
+                this.slider.setAttribute('max', `${this.media.duration}`);
             } else {
                 this.slider.style.display = 'none';
             }
         };
         this.events['timeupdate'] = () => {
-            if (this.media.element.duration !== Infinity) {
+            if (this.media.duration !== Infinity) {
                 if (!this.slider.getAttribute('max')) {
-                    this.slider.setAttribute('max', `${this.media.element.duration}`);
+                    this.slider.setAttribute('max', `${this.media.duration}`);
                 }
                 this.slider.value = this.media.element.currentTime.toString();
                 (this.slider.firstChild as HTMLElement).style.width =
-                    `${Math.floor((this.media.element.currentTime / this.media.element.duration) * 100)}%`;
+                    `${Math.floor((this.media.currentTime / this.media.duration) * 100)}%`;
             } else {
                 this.slider.style.display = 'none';
             }
@@ -56,7 +56,7 @@ class Progress {
      */
     public register() {
         Object.keys(this.events).forEach(event => {
-            this.media.element.addEventListener(event, this.events[event]);
+            this.media.addEventListener(event, this.events[event]);
         });
 
         return this;
@@ -64,7 +64,7 @@ class Progress {
 
     public unregister() {
         Object.keys(this.events).forEach(event => {
-            this.media.element.removeEventListener(event, this.events[event]);
+            this.media.removeEventListener(event, this.events[event]);
         });
         this.events = {};
         // this.sliderEvents = {};

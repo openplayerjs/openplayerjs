@@ -92,7 +92,7 @@ class Volume {
     public register() {
         this.button.addEventListener('click', this.buttonEvents['click']);
 
-        this.media.element.addEventListener('volumechange', this.events['volumechange']);
+        this.media.addEventListener('volumechange', this.events['volumechange']);
 
         Object.keys(this.sliderEvents).forEach(event => {
             this.slider.addEventListener(event, this.sliderEvents[event]);
@@ -106,7 +106,7 @@ class Volume {
             this.slider.addEventListener(event, this.sliderEvents[event]);
         });
 
-        this.media.element.removeEventListener('volumechange', this.events['volumechange']);
+        this.media.removeEventListener('volumechange', this.events['volumechange']);
 
         this.button.removeEventListener('click', this.buttonEvents['click']);
 

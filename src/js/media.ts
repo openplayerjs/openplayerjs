@@ -1,13 +1,10 @@
+import IEvent from './components/interfaces/general/event';
 import IFile from './components/interfaces/media/file';
+import { addEvent, events } from './events';
 import Ads from './media/ads';
-import DailymotionMedia from './media/dailymotion';
 import DashMedia from './media/dash';
-import FacebookMedia from './media/facebook';
 import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
-import TwitchMedia from './media/twitch';
-import VimeoMedia from './media/vimeo';
-import YouTubeMedia from './media/youtube';
 import { isIframe } from './utils/dom';
 import * as source from './utils/url';
 
@@ -24,6 +21,7 @@ class Media {
     public media: any;
     private promisePlay: Promise<void>;
     private mediaFiles: IFile[];
+    private events: IEvent;
 
     /**
      * Creates an instance of Media.
@@ -36,6 +34,7 @@ class Media {
         this.ads = ads;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
+        this.events = {};
         return this;
     }
 
@@ -60,6 +59,12 @@ class Media {
      */
     public load() {
         this.loadSources(this.mediaFiles);
+
+        // Trigger basic events
+        for (let i = 0, total = events.length; i < total; i++) {
+            const event = addEvent(events[i]);
+            this.dispatchEvent(event);
+        }
     }
 
     public play() {
@@ -133,6 +138,17 @@ class Media {
         return this.media.muted;
     }
 
+    set currentTime(value: number) {
+        this.media.currentTime = value;
+    }
+    get currentTime() {
+        return this.media.currentTime;
+    }
+
+    get duration() {
+        return this.media.duration;
+    }
+
     get paused() {
         return this.media.paused;
     }
@@ -174,6 +190,41 @@ class Media {
             this.media.destroy();
             throw e;
         }
+    }
+
+    public addEventListener(eventName: string, callback: (event: any) => any) {
+        // create or find the array of callbacks for this eventName
+        if (typeof this.events[eventName] === 'undefined') {
+            this.events[eventName] = [];
+        }
+
+        // push the callback into the stack
+        this.events[eventName].push(callback);
+    }
+
+    public removeEventListener(eventName: string, callback: (event: any) => any) {
+        if (!this.events[eventName]) {
+          return;
+        }
+        const stack = this.events[eventName];
+        for (let i = 0, total = stack.length; i < total; i++) {
+            if (stack[i] === callback) {
+                stack.splice(i, 1);
+                return;
+            }
+        }
+    }
+
+    public dispatchEvent(event: any) {
+        if (!this.events[event.type]) {
+          return true;
+        }
+        const stack = this.events[event.type];
+
+        for (let i = 0, total = stack.length; i < total; i++) {
+          stack[i].call(this, event);
+        }
+        return !event.defaultPrevented;
     }
 
     /**
@@ -228,16 +279,6 @@ class Media {
     private _invoke(media: IFile) {
         if (this.ads) {
             return new Ads(this, media.src);
-        } else if (source.isDailymotionSource(media.src)) {
-            return new DailymotionMedia(this.element, media);
-        } else if (source.isFacebookSource(media.src)) {
-            return new FacebookMedia(this.element, media);
-        } else if (source.isTwitchSource(media.src)) {
-            return new TwitchMedia(this.element, media);
-        } else if (source.isVimeoSource(media.src)) {
-            return new VimeoMedia(this.element, media);
-        } else if (source.isYouTubeSource(media.src)) {
-            return new YouTubeMedia(this.element, media);
         } else if (source.isHlsSource(media.src)) {
             return new HlsMedia(this.element, media);
         } else if (source.isDashSource(media.src)) {
