@@ -79,7 +79,7 @@ module.exports = {
         extensions: ['.ts', '.js']
     },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin(),
+        // new webpack.optimize.UglifyJsPlugin(),
         extractPlugin,
     ]
 };

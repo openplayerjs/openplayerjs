@@ -30,6 +30,8 @@ class Ads {
     private intervalTimer: number;
     private adsVolume: number;
     private adsMuted: boolean;
+    private adsDuration: number;
+    private adsCurrentTime: number;
 
     /**
      * Creates an instance of Google IMA SDK.
@@ -53,6 +55,8 @@ class Ads {
         this.intervalTimer = 0;
         this.adsVolume = this.element.volume;
         this.adsMuted = false;
+        this.adsDuration = Infinity;
+        this.adsCurrentTime = 0;
 
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -110,7 +114,7 @@ class Ads {
         if (this.adsManager) {
             this.adsManager.resume();
             const e = addEvent('play');
-            this.element.dispatchEvent(e);
+            this.instance.dispatchEvent(e);
             this.adsActive = true;
         } else {
             this.instance.play();
@@ -121,7 +125,7 @@ class Ads {
         if (this.adsManager) {
             this.adsManager.pause();
             const e = addEvent('pause');
-            this.element.dispatchEvent(e);
+            this.instance.dispatchEvent(e);
             this.adsActive = false;
         } else {
             this.instance.pause();
@@ -178,6 +182,17 @@ class Ads {
         return this.adsMuted;
     }
 
+    set currentTime(value: number) {
+        this.adsCurrentTime = value;
+    }
+    get currentTime() {
+        return this.adsCurrentTime;
+    }
+
+    get duration() {
+        return this.adsDuration;
+    }
+
     get paused() {
         return !this.adsActive;
     }
@@ -192,14 +207,20 @@ class Ads {
             case google.ima.AdEvent.Type.LOADED:
                 if (!ad.isLinear()) {
                     this._onContentResumeRequested();
+                } else {
+                    this.adsDuration = ad.getDuration();
+                    const e = addEvent('loadedmetadata');
+                    this.instance.dispatchEvent(e);
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
                     this.intervalTimer = window.setInterval(() => {
-                        const remainingTime = this.adsManager.getRemainingTime();
-                        console.log(remainingTime);
+                        this.adsCurrentTime = this.adsManager.getRemainingTime();
+                        const e = addEvent('timeupdate');
+                        this.instance.dispatchEvent(e);
                     }, 300);
+
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
@@ -276,8 +297,6 @@ class Ads {
 
             this.adsActive = true;
             manager.start();
-            const e = addEvent('play');
-            this.element.dispatchEvent(e);
         } catch (adError) {
             this._resumeMedia();
         }
@@ -300,14 +319,19 @@ class Ads {
     }
 
     private _onContentResumeRequested() {
-        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
+        this.instance.addEventListener('ended', this._contentEndedListener.bind(this));
         this._resumeMedia();
     }
 
     private _resumeMedia() {
         this.adEnded = true;
+        this.adsDone = false;
         this.adsActive = false;
         this.adsStarted = false;
+        this.intervalTimer = 0;
+        this.adsMuted = false;
+        this.adsDuration = Infinity;
+        this.adsCurrentTime = 0;
         this.element.classList.remove('om-ads--active');
         this.instance.ads = null;
         this.instance.loadSources([

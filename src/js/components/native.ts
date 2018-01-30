@@ -42,6 +42,17 @@ export default class Native implements IType {
         return this.element.muted;
     }
 
+    set currentTime(value) {
+        this.element.currentTime = value;
+    }
+    get currentTime() {
+        return this.element.currentTime;
+    }
+
+    get duration() {
+        return this.element.duration;
+    }
+
     get paused() {
         return this.element.paused;
     }

@@ -36,6 +36,7 @@ class Play {
             }
         };
         this.events['play'] = () => {
+            console.log(el.ended);
             if (el.ended) {
                 this.button.classList.add('om-controls__playpause--replay');
             } else {
@@ -56,7 +57,7 @@ class Play {
      */
     public register() {
         Object.keys(this.events).forEach(event => {
-            this.media.element.addEventListener(event, this.events[event]);
+            this.media.addEventListener(event, this.events[event]);
         });
 
         this.button.addEventListener('click', this.events['click']);
@@ -66,7 +67,7 @@ class Play {
 
     public unregister() {
         Object.keys(this.events).forEach(event => {
-            this.media.element.removeEventListener(event, this.events[event]);
+            this.media.removeEventListener(event, this.events[event]);
         });
 
         this.button.removeEventListener('click', this.events['click']);

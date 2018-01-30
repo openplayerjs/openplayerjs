@@ -26,7 +26,7 @@
         "mp3"
     ],
     "scripts": {
-        "build": "rm -rf ./dist/ && webpack && open http://localhost/openplayer/demo/index.html"
+        "build": "rm -rf ./dist/ && webpack"
     },
     "readme": "https://github.com/rafa8626/openmedia/blob/master/README.md",
     "devDependencies": {
