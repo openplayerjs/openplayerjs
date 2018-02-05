@@ -219,17 +219,23 @@ class Ads {
                         const e = addEvent('loadedmetadata');
                         this.media.element.dispatchEvent(e);
                     }, 50);
+
+                    this.intervalTimer = window.setInterval(() => {
+                        this.adsCurrentTime = this.adsManager.getRemainingTime();
+                        const e = addEvent('timeupdate');
+                        this.media.element.dispatchEvent(e);
+                    }, 50);
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
                     this.adsDuration = ad.getDuration();
-                    this.adsCurrentTime = ad.getDuration();
+                    this.adsCurrentTime = this.adsManager.getRemainingTime();
                     this.intervalTimer = window.setInterval(() => {
                         this.adsCurrentTime = this.adsManager.getRemainingTime();
                         const e = addEvent('timeupdate');
                         this.media.element.dispatchEvent(e);
-                    }, 300);
+                    }, 50);
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
@@ -353,9 +359,11 @@ class Ads {
         this.media.element.dispatchEvent(e);
 
         if (!this.media.ended) {
-            this.media.play();
-            const event = addEvent('play');
-            this.media.element.dispatchEvent(event);
+            setTimeout(() => {
+                this.media.play();
+                const event = addEvent('play');
+                this.media.element.dispatchEvent(event);
+            }, 500);
         }
     }
 
