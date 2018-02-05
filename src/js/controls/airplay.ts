@@ -53,7 +53,7 @@ class AirPlay {
     public register() {
         if (this.canUseAirplay) {
             Object.keys(this.events).forEach(event => {
-                this.media.addEventListener(event, this.events[event]);
+                this.media.element.addEventListener(event, this.events[event]);
             });
         }
 
@@ -63,7 +63,7 @@ class AirPlay {
     public unregister() {
         if (this.canUseAirplay) {
             Object.keys(this.events).forEach(event => {
-                this.media.removeEventListener(event, this.events[event]);
+                this.media.element.removeEventListener(event, this.events[event]);
             });
 
             this.events = {};
@@ -80,7 +80,7 @@ class AirPlay {
      */
     public build(container: HTMLDivElement) {
         if (this.canUseAirplay) {
-            this.media.addEventListener('webkitplaybacktargetavailabilitychanged', (e: any) => {
+            this.media.element.addEventListener('webkitplaybacktargetavailabilitychanged', (e: any) => {
                 if (e.availability === 'available') {
                     container.appendChild(this.button);
                 }

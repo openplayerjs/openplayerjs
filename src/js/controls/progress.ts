@@ -1,20 +1,21 @@
 import IEvent from '../components/interfaces/general/event';
 import Media from '../media';
+import Player from '../player';
 
 class Progress {
-    public media: Media;
+    public player: Player;
     private slider: HTMLInputElement;
     private events: IEvent;
     // private sliderEvents: IEvent;
 
     /**
      *
-     * @param {Media} media
+     * @param {Media} player
      * @returns {Progress}
      * @memberof Progress
      */
-    constructor(media: Media) {
-        this.media = media;
+    constructor(player: Player) {
+        this.player = player;
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__progress';
@@ -27,20 +28,28 @@ class Progress {
         this.events = {};
         // this.sliderEvents = {};
         this.events['loadedmetadata'] = () => {
-            if (this.media.duration !== Infinity) {
-                this.slider.setAttribute('max', `${this.media.duration}`);
+            const el = this.player.activeElement();
+            if (el.duration !== Infinity) {
+                this.slider.setAttribute('max', `${el.duration}`);
+                const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
+                this.slider.value = current.toString();
+                (this.slider.firstChild as HTMLElement).style.width =
+                    `${((current / el.duration) * 100)}%`;
             } else {
                 this.slider.style.display = 'none';
             }
         };
         this.events['timeupdate'] = () => {
-            if (this.media.duration !== Infinity) {
+            const el = this.player.activeElement();
+            if (el.duration !== Infinity) {
                 if (!this.slider.getAttribute('max')) {
-                    this.slider.setAttribute('max', `${this.media.duration}`);
+                    this.slider.setAttribute('max', `${el.duration}`);
                 }
-                this.slider.value = this.media.element.currentTime.toString();
+
+                const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
+                this.slider.value = current.toString();
                 (this.slider.firstChild as HTMLElement).style.width =
-                    `${Math.floor((this.media.currentTime / this.media.duration) * 100)}%`;
+                    `${((current / el.duration) * 100)}%`;
             } else {
                 this.slider.style.display = 'none';
             }
@@ -56,7 +65,7 @@ class Progress {
      */
     public register() {
         Object.keys(this.events).forEach(event => {
-            this.media.addEventListener(event, this.events[event]);
+            this.player.media.element.addEventListener(event, this.events[event]);
         });
 
         return this;
@@ -64,7 +73,7 @@ class Progress {
 
     public unregister() {
         Object.keys(this.events).forEach(event => {
-            this.media.removeEventListener(event, this.events[event]);
+            this.player.media.element.removeEventListener(event, this.events[event]);
         });
         this.events = {};
         // this.sliderEvents = {};

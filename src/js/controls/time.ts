@@ -1,5 +1,5 @@
 import IEvent from '../components/interfaces/general/event';
-import Media from '../media';
+import Player from '../player';
 import formatTime from '../utils/time';
 
 /**
@@ -9,7 +9,7 @@ import formatTime from '../utils/time';
  * and registers events to update them in the control bar
  */
 class Time {
-    public media: Media;
+    public player: Player;
     private current: HTMLTimeElement;
     private delimiter: HTMLSpanElement;
     private duration: HTMLTimeElement;
@@ -21,8 +21,8 @@ class Time {
      * @returns {Time}
      * @memberof Time
      */
-    constructor(media: Media) {
-        this.media = media;
+    constructor(player: Player) {
+        this.player = player;
         this.current = document.createElement('time');
         this.current.className = 'om-controls__current';
         this.current.innerHTML = '<span class="om-current">0:00</span>';
@@ -35,22 +35,26 @@ class Time {
         this.duration.className = 'om-controls__duration';
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
-        const el = this.media;
         this.events = {};
         this.events['loadedmetadata'] = () => {
+            const el = this.player.activeElement();
             if (el.duration !== Infinity && !isNaN(el.duration)) {
                 this.duration.innerText = formatTime(el.duration);
+                this.current.innerText = formatTime(el.currentTime);
             } else {
                 this.duration.style.display = 'none';
                 this.delimiter.style.display = 'none';
             }
         };
         this.events['timeupdate'] = () => {
+            const el = this.player.activeElement();
             if (el.duration !== Infinity) {
-                if (!isNaN(el.duration) && !el.duration) {
+                if (!isNaN(el.duration) && !el.duration && this.duration.innerText !== el.duration) {
                     this.duration.innerText = formatTime(el.duration);
                 }
                 this.current.innerText = formatTime(el.currentTime);
+                this.duration.style.display = 'initial';
+                this.delimiter.style.display = 'initial';
             } else {
                 this.duration.style.display = 'none';
                 this.delimiter.style.display = 'none';
@@ -68,7 +72,7 @@ class Time {
      */
     public register() {
         Object.keys(this.events).forEach(event => {
-            this.media.addEventListener(event, this.events[event]);
+            this.player.element.addEventListener(event, this.events[event]);
         });
 
         return this;
@@ -76,7 +80,7 @@ class Time {
 
     public unregister() {
         Object.keys(this.events).forEach(event => {
-            this.media.removeEventListener(event, this.events[event]);
+            this.player.element.removeEventListener(event, this.events[event]);
         });
 
         this.events = {};

@@ -1,7 +1,5 @@
 import IEvent from './components/interfaces/general/event';
 import IFile from './components/interfaces/media/file';
-import { addEvent, events } from './events';
-import Ads from './media/ads';
 import DashMedia from './media/dash';
 import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
@@ -16,7 +14,6 @@ import * as source from './utils/url';
  * a valid source (MP4, MP3, M3U8, MPD, etc.)
  */
 class Media {
-    public ads?: string;
     public element: any;
     public media: any;
     private promisePlay: Promise<void>;
@@ -29,9 +26,8 @@ class Media {
      * @param {object?} ads
      * @memberof Media
      */
-    constructor(element: any, ads: string) {
+    constructor(element: any) {
         this.element = element;
-        this.ads = ads;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
         this.events = {};
@@ -59,12 +55,6 @@ class Media {
      */
     public load() {
         this.loadSources(this.mediaFiles);
-
-        // Trigger basic events
-        for (let i = 0, total = events.length; i < total; i++) {
-            const event = addEvent(events[i]);
-            this.dispatchEvent(event);
-        }
     }
 
     public play() {
@@ -277,9 +267,7 @@ class Media {
      * @memberof Media
      */
     private _invoke(media: IFile) {
-        if (this.ads) {
-            return new Ads(this, media.src);
-        } else if (source.isHlsSource(media.src)) {
+        if (source.isHlsSource(media.src)) {
             return new HlsMedia(this.element, media);
         } else if (source.isDashSource(media.src)) {
             return new DashMedia(this.element, media);

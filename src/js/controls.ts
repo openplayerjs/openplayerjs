@@ -1,10 +1,11 @@
 import AirPlay from './controls/airplay';
+import Fullscreen from './controls/fullscreen';
 import Play from './controls/play';
 import Progress from './controls/progress';
 import Time from './controls/time';
 import Volume from './controls/volume';
 import Media from './media';
-// import Fullscreen from './controls/fullscreen';
+import Player from './player';
 
 /**
  *
@@ -23,16 +24,16 @@ class Controls {
      * @returns {Controls}
      * @memberof Controls
      */
-    constructor(media: Media) {
-        this.media = media;
+    constructor(player: Player) {
+        this.media = player.media;
         this.media.element.controls = false;
         this.controls = [
-            new Play(media),
-            new Time(media),
-            new Progress(media),
-            new Volume(media),
-            // 4: new Fullscreen(media),
-            new AirPlay(media),
+            new Play(player),
+            new Time(player),
+            new Progress(player),
+            new Volume(player),
+            new Fullscreen(player.media),
+            new AirPlay(player.media),
         ];
 
         this.container = null;
