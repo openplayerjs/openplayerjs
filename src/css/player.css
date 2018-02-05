@@ -19,6 +19,7 @@
 }
 /* === Controls =================== */
 .om-controls {
+    background: #000;
     bottom: 20px;
     color: #fff;
     display: flex;
@@ -163,6 +164,15 @@
     top: 0;
     width: 100%;
 }
+/* #om-ads__company {
+    background: #f00;
+    bottom: 50px;
+    height: 85px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 3;
+} */
 .om-ads--active {
     overflow: hidden;
 }

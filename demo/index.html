@@ -24,11 +24,11 @@
     <video class="om-player" controls playsinline webkit-playsinline
         data-om-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=">
         <!-- <source src="https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd" type="application/dash+xml">-->
-        <source src="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL">
-        <!-- <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4" type="video/mp4"> -->
+        <!-- <source src="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL"> -->
+        <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4" type="video/mp4">
     </video>
     <br>
-    <div>
+    <!-- <div>
         <label>Change source <select name="sources">
             <option value="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4">MP4</option>
             <option value="http://ep-lin-upload.s3.amazonaws.com/vupl_lin/F64/CDF/F64CDF3B0348471E95C244DE2DDDD3F3">MP4 (no ext.)</option>
@@ -37,14 +37,14 @@
             <option value="https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd">M(PEG)-DASH</option>
         </select>
         </label>
-    </div>
+    </div> -->
 
     <h1>Audio Sample</h1>
     <audio class="om-player" controls>
         <source src="https://api.soundcloud.com/tracks/323195515/stream?client_id=95f22ed54a5c297b1c41f72d713623ef" type="audio/mp3">
     </audio>
     <br>
-    <div>
+    <!-- <div>
         <label>Change source <select name="sources">
             <option value="http://www.largesound.com/ashborytour/sound/AshboryBYU.mp3">MP3</option>
             <option value="https://api.soundcloud.com/tracks/323195515/stream?client_id=95f22ed54a5c297b1c41f72d713623ef">SoundCloud</option>
@@ -52,10 +52,10 @@
             <option value="http://db3.indexcom.com/bucket/ram/00/05/64k/05.m3u8">HLS</option>
         </select>
         </label>
-    </div>
+    </div> -->
 
     <script src="../dist/om_player.js"></script>
-    <script>
+    <!-- <script>
         var sourcesSelector = document.querySelectorAll('select[name=sources]');
 	    var sourcesTotal = sourcesSelector.length;
 
@@ -75,10 +75,8 @@
                 renderer.querySelector('.src').innerHTML = '<a href="' + this.value + '" target="_blank">' + this.value + '</a>';
                 renderer.querySelector('.renderer').innerHTML = player.media.rendererName;
                 renderer.querySelector('.error').innerHTML = '';
-
             });
         }
-
-    </script>
+    </script> -->
 </body>
 </html>

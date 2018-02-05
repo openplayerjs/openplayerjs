@@ -1,6 +1,6 @@
 import IEvent from '../components/interfaces/general/event';
 import { addEvent } from '../events';
-import Media from '../media';
+import Player from '../player';
 
 /**
  *
@@ -8,7 +8,7 @@ import Media from '../media';
  * @description  Class that renders volume slider and mute button, and registers events to update them
  */
 class Volume {
-    public media: Media;
+    public player: Player;
     private button: HTMLButtonElement;
     private slider: HTMLInputElement;
     private buttonEvents: IEvent;
@@ -18,17 +18,17 @@ class Volume {
 
     /**
      *
-     * @param media
+     * @param {Player} player
      * @returns {Volume}
      */
-    constructor(media: Media) {
-        this.media = media;
+    constructor(player: Player) {
+        this.player = player;
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__volume';
-        const volume = Math.floor(media.volume * 100);
+        const volume = Math.floor(this.player.media.volume * 100);
 
-        this.slider.value = media.volume;
+        this.slider.value = this.player.media.volume;
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('aria-valuemin', '0');
         this.slider.setAttribute('max', '1');
@@ -37,32 +37,32 @@ class Volume {
         this.slider.setAttribute('aria-valuetext', `${volume}%`);
 
         // Use as backup when mute is clicked
-        this.volume = media.volume;
+        this.volume = this.player.media.volume;
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__mute';
         this.button.innerHTML = '<span class="om-sr">Mute</span>';
 
-        const el = this.media.element;
-
-        const updateSlider = () => {
-            const mediaVolume = this.media.volume * 1;
+        const updateSlider = (element: any) => {
+            const mediaVolume = element.volume * 1;
             const vol = Math.floor(mediaVolume * 100);
             this.slider.setAttribute('aria-valuenow', `${vol}`);
             this.slider.setAttribute('aria-valuetext', `${vol}%`);
-            this.slider.value = `${this.media.volume}`;
+            this.slider.value = `${element.volume}`;
         };
 
         const updateVolume = (event: any) => {
-            this.media.volume = event.target.value;
+            const el = this.player.activeElement();
+            el.volume = event.target.value;
             this.volume = event.target.value;
             const e = addEvent('volumechange');
-            el.dispatchEvent(e);
+            this.player.element.dispatchEvent(e);
         };
 
         this.events = {};
         this.events['volumechange'] = () => {
-            updateSlider();
+            const el = this.player.activeElement();
+            updateSlider(el);
         };
         this.sliderEvents = {};
         this.sliderEvents['input'] = updateVolume.bind(this);
@@ -70,15 +70,16 @@ class Volume {
 
         this.buttonEvents = {};
         this.buttonEvents['click'] = () => {
-            this.media.muted = !this.media.muted;
+            const el = this.player.activeElement();
+            el.muted = !el.muted;
 
-            if (this.media.muted) {
-                this.media.volume = 0;
+            if (el.muted) {
+                el.volume = 0;
             } else {
-                this.media.volume = this.volume;
+                el.volume = this.volume;
             }
             const event = addEvent('volumechange');
-            el.dispatchEvent(event);
+            this.player.media.element.dispatchEvent(event);
         };
 
         return this;
@@ -92,7 +93,7 @@ class Volume {
     public register() {
         this.button.addEventListener('click', this.buttonEvents['click']);
 
-        this.media.addEventListener('volumechange', this.events['volumechange']);
+        this.player.media.element.addEventListener('volumechange', this.events['volumechange']);
 
         Object.keys(this.sliderEvents).forEach(event => {
             this.slider.addEventListener(event, this.sliderEvents[event]);
@@ -106,7 +107,7 @@ class Volume {
             this.slider.addEventListener(event, this.sliderEvents[event]);
         });
 
-        this.media.removeEventListener('volumechange', this.events['volumechange']);
+        this.player.media.element.removeEventListener('volumechange', this.events['volumechange']);
 
         this.button.removeEventListener('click', this.buttonEvents['click']);
 

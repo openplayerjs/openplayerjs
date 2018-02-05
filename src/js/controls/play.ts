@@ -1,5 +1,6 @@
 import IEvent from '../components/interfaces/general/event';
 import Media from '../media';
+import Player from '../player';
 
 /**
  *
@@ -7,37 +8,36 @@ import Media from '../media';
  * @description  Class that renders play/pause/replay button and registers events to update it
  */
 class Play {
-    public media: Media;
+    public player: Player;
     private button: HTMLButtonElement;
     private events: IEvent;
 
     /**
      *
-     * @param {Media} media
+     * @param {Player} player
      * @returns {Play}
      * @memberof Play
      */
-    constructor(media: Media) {
-        this.media = media;
+    constructor(player: Player) {
+        this.player = player;
 
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__playpause';
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
 
-        const el = this.media;
-
         this.events = {};
         this.events['click'] = () => {
+            const el = this.player.activeElement();
             if (el.paused || el.ended) {
-                this.media.play();
+                el.play();
             } else {
-                this.media.pause();
+                el.pause();
             }
         };
         this.events['play'] = () => {
-            console.log(el.ended);
-            if (el.ended) {
+            const el = this.player.activeElement();
+            if (el.ended && el instanceof Media) {
                 this.button.classList.add('om-controls__playpause--replay');
             } else {
                 this.button.classList.add('om-controls__playpause--pause');
@@ -45,6 +45,12 @@ class Play {
         };
         this.events['pause'] = () => {
             this.button.classList.remove('om-controls__playpause--pause');
+        };
+        this.events['ended'] = () => {
+            const el = this.player.activeElement();
+            if (el.ended && el instanceof Media) {
+                this.button.classList.add('om-controls__playpause--replay');
+            }
         };
 
         return this;
@@ -57,7 +63,7 @@ class Play {
      */
     public register() {
         Object.keys(this.events).forEach(event => {
-            this.media.addEventListener(event, this.events[event]);
+            this.player.media.element.addEventListener(event, this.events[event]);
         });
 
         this.button.addEventListener('click', this.events['click']);
@@ -67,7 +73,7 @@ class Play {
 
     public unregister() {
         Object.keys(this.events).forEach(event => {
-            this.media.removeEventListener(event, this.events[event]);
+            this.player.media.element.removeEventListener(event, this.events[event]);
         });
 
         this.button.removeEventListener('click', this.events['click']);

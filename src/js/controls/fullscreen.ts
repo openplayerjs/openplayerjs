@@ -22,6 +22,17 @@ class Fullscreen {
     public register() {
         console.log(this);
     }
+
+    /**
+     *
+     * @param {HTMLDivElement} container
+     * @returns {Fullscreen}
+     * @memberof Fullscreen
+     */
+    public build(container: HTMLDivElement) {
+        container.appendChild(this.button);
+        return this;
+    }
 }
 
 export default Fullscreen;

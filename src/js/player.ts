@@ -1,6 +1,7 @@
 import '../css/player.css';
 import Controls from './controls';
 import Media from './media';
+import Ads from './media/ads';
 import { isAudio, isIframe, isVideo } from './utils/dom';
 
 /**
@@ -24,7 +25,8 @@ class Player {
     }
 
     public element: Element;
-    public ads?: string;
+    public adsUrl?: string;
+    public ads: Ads;
     public media: Media;
 
     /**
@@ -35,7 +37,8 @@ class Player {
      */
     constructor(element: Element, ads: string) {
         this.element = element;
-        this.ads = ads;
+        this.adsUrl = ads;
+        this.ads = null;
         return this;
     }
 
@@ -45,6 +48,34 @@ class Player {
             this._wrapInstance();
             this._createControls();
         }
+    }
+
+    public play() {
+        if (this.ads.adsManager) {
+            this.ads.play();
+        } else {
+            this.media.play();
+        }
+    }
+
+    public pause() {
+        if (this.ads.adsManager) {
+            this.ads.pause();
+        } else {
+            this.media.pause();
+        }
+    }
+
+    public destroy() {
+        if (this.ads.adsManager) {
+            this.ads.destroy();
+        } else {
+            this.media.destroy();
+        }
+    }
+
+    public activeElement() {
+        return this.ads && this.ads.adsStarted ? this.ads : this.media;
     }
 
     /**
@@ -105,7 +136,7 @@ class Player {
      * @memberof Player
      */
     private _createControls() {
-        const controls = new Controls(this.media);
+        const controls = new Controls(this);
         controls.prepare();
         controls.render();
     }
@@ -117,8 +148,12 @@ class Player {
      */
     private _prepareMedia() {
         try {
-            this.media = new Media(this.element, this.ads);
+            this.media = new Media(this.element);
             this.media.load();
+
+            if (this.adsUrl) {
+                this.ads = new Ads(this.media, this.adsUrl);
+            }
 
             if (isIframe(this.element)) {
                 this._buildResponsiveIframe();
@@ -158,5 +193,7 @@ class Player {
         window.dispatchEvent(event);
     }
 }
+
+export default Player;
 
 Player.init();
