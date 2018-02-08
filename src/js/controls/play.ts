@@ -37,9 +37,14 @@ class Play {
         };
         this.events['play'] = () => {
             const el = this.player.activeElement();
-            if (el.ended && el instanceof Media) {
-                this.button.classList.add('om-controls__playpause--replay');
+            if (el.ended) {
+                if (el instanceof Media) {
+                    this.button.classList.add('om-controls__playpause--replay');
+                } else {
+                    this.button.classList.add('om-controls__playpause--pause');
+                }
             } else {
+                this.button.classList.remove('om-controls__playpause--replay');
                 this.button.classList.add('om-controls__playpause--pause');
             }
         };

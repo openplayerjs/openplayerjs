@@ -55,6 +55,16 @@ class Volume {
             const el = this.player.activeElement();
             el.volume = event.target.value;
             this.volume = event.target.value;
+            if (el.volume <= 0.5 && el.volume > 0) {
+                this.button.classList.remove('om-controls__mute--muted');
+                this.button.classList.add('om-controls__mute--half');
+            } else if (el.volume === 0) {
+                this.button.classList.add('om-controls__mute--muted');
+                this.button.classList.remove('om-controls__mute--half');
+            } else {
+                this.button.classList.remove('om-controls__mute--muted');
+                this.button.classList.remove('om-controls__mute--half');
+            }
             const e = addEvent('volumechange');
             this.player.element.dispatchEvent(e);
         };
@@ -75,8 +85,10 @@ class Volume {
 
             if (el.muted) {
                 el.volume = 0;
+                this.button.classList.add('om-controls__mute--muted');
             } else {
                 el.volume = this.volume;
+                this.button.classList.remove('om-controls__mute--muted');
             }
             const event = addEvent('volumechange');
             this.player.media.element.dispatchEvent(event);
