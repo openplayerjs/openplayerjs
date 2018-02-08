@@ -48,6 +48,10 @@ module.exports = {
                 use: babelLoader
             },
             {
+                test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                loader: 'url-loader?limit=100000'
+            },
+            {
                 test: /\.css$/,
                 exclude: /node_modules/,
                 use: extractPlugin.extract({

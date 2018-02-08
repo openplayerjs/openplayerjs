@@ -106,8 +106,6 @@ class Ads {
             this._loaded.bind(this),
         );
 
-        // Create responsive ad
-        window.addEventListener('resize', this._resizeAds.bind(this));
         this.media.element.addEventListener('ended', this._contentEndedListener.bind(this));
         this._requestAds();
     }
@@ -219,6 +217,9 @@ class Ads {
                         const e = addEvent('loadedmetadata');
                         this.media.element.dispatchEvent(e);
                     }, 50);
+
+                    // Create responsive ad
+                    window.addEventListener('resize', this._resizeAds.bind(this));
 
                     this.intervalTimer = window.setInterval(() => {
                         this.adsCurrentTime = this.adsManager.getRemainingTime();
