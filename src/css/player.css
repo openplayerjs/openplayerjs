@@ -11,7 +11,6 @@
 }
 /* === General =================== */
 .om-player {
-    background: #000;
     min-height: 32px;
     position: relative;
 }
@@ -19,6 +18,9 @@
 .om-player audio {
     height: auto !important;
     width: 100% !important;
+}
+.om-player__audio {
+    background: #000;
 }
 .om-sr {
     height: 1px;
@@ -30,14 +32,19 @@
 }
 /* === Controls =================== */
 .om-controls {
-    background: #000;
-    bottom: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
+    bottom: 4px;
     color: #fff;
     display: flex;
     font-size: 0.85em;
-    padding: 0 8px;
+    padding: 5px 8px;
     position: absolute;
+    -webkit-transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease;
     width: calc(100% - 16px);
+    z-index: 2;
 }
 .om-player.om-player__audio > .om-controls {
     bottom: 0;
@@ -46,7 +53,7 @@
 .om-controls > * {
     flex-grow: 0;
 }
-.om-controls > .om-controls__progress {
+.om-controls > .om-controls__progress-bar {
     flex-grow: 2;
 }
 .om-controls > button {
@@ -55,12 +62,12 @@
     cursor: pointer;
 }
 .om-controls > button:before {
-    /* -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased; */
     color: #fff;
     display: inline-block;
     font-family: 'open-player';
     font-size: 1.5em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     font-style: normal;
     font-variant: normal;
     font-weight: normal;
@@ -83,7 +90,7 @@
     margin: 3px 3px 0;
 }
 
-/* === Play =================== */
+/* === Buttons =================== */
 .om-controls__playpause:before {
     content: '\e810';
 }
@@ -93,10 +100,90 @@
 .om-controls__playpause--replay:before {
     content: '\e80c';
 }
+.om-controls__fullscreen:before {
+    content: '\e811';
+}
+.om-controls__fullscreen--out:before {
+    content: '\e812';
+}
+.om-controls__mute:before {
+    content: '\e816';
+}
+.om-controls__mute--half:before {
+    content: '\e814';
+}
+.om-controls__mute--muted:before {
+    content: '\e815';
+}
 
 /* === Progress =================== */
+.om-controls__progress-bar {
+    display: inline-block;
+    margin-left: 10px;
+}
 .om-controls__progress {
-    margin: 0 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: rgba(255, 255, 255, 0.25);
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f10), color-stop(100%, #f10));
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 8px;
+    margin-top: 7px;
+    outline: none;
+    padding: 0;
+    width: 100%;
+}
+.om-controls__progress::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    box-shadow: none;
+    cursor: pointer;
+    height: 6px;
+    margin-left: -1px;
+}
+
+.om-controls__progress::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background:#f00;
+    border: 0 solid rgba(255, 0, 0, 0);
+    border-radius: 25px;
+    cursor: pointer;
+    height: 15px;
+    margin-top: -4.5px;
+    width: 15px;
+}
+.om-controls__buffer,
+.om-controls__played {
+    display: none;
+    /* -webkit-appearance: none;
+    -moz-appearance: none;
+    background: 0 0;
+    border: none;
+    border-radius: 100px;
+    color: #3498db;
+    height: 8px;
+    left: 0;
+    padding: 0;
+    position: absolute;
+    top: 50%;
+    -webkit-transition: none;
+    transition: none;
+    vertical-align: top;
+    z-index: 1; */
+}
+.om-ads--active .om-controls__progress {
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fecb2f), color-stop(100%, #fecb2f));
+}
+.om-ads--active .om-controls__progress::-webkit-slider-thumb {
+    display: none;
+}
+.om-ads--active .om-controls__progress::-webkit-slider-runnable-track {
+    cursor: default;
 }
 
 /* === Volume =================== */
@@ -179,15 +266,7 @@
 .om-controls__volume:focus::-ms-fill-upper {
     background: #ff0505;
 }
-.om-controls__mute:before {
-    content: '\e816';
-}
-.om-controls__mute--half:before {
-    content: '\e814';
-}
-.om-controls__mute--muted:before {
-    content: '\e815';
-}
+
 /* === Ads =================== */
 #om-ads {
     height: 100%;
@@ -218,3 +297,4 @@
 .om-player.om-player__keyboard--inactive > .om-controls > *:focus {
     outline: none;
 }
+

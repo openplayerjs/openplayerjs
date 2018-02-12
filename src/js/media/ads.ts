@@ -83,8 +83,7 @@ class Ads {
         this.adsContainer.id = 'om-ads';
         this.media.element.parentNode.insertBefore(this.adsContainer, this.media.element.nextSibling);
 
-
-        this.media.element.classList.add('om-ads--active');
+        this.media.element.parentNode.classList.add('om-ads--active');
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         this.adDisplayContainer =
@@ -218,6 +217,7 @@ class Ads {
                         this.media.element.dispatchEvent(e);
                     }, 50);
 
+                    this.media.element.parentNode.classList.add('om-ads--active');
                     // Create responsive ad
                     window.addEventListener('resize', this._resizeAds.bind(this));
 
@@ -253,7 +253,7 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
-                this.media.element.classList.remove('om-ads--active');
+                this.media.element.parentNode.classList.remove('om-ads--active');
                 break;
         }
     }
@@ -269,7 +269,6 @@ class Ads {
     private _loaded(adsManagerLoadedEvent: any) {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-
         // Get the ads manager.
         this.adsManager = adsManagerLoadedEvent.getAdsManager(this.media.element, adsRenderingSettings);
         this._start(this.adsManager);
@@ -347,6 +346,7 @@ class Ads {
 
     private _onContentResumeRequested() {
         this.media.element.addEventListener('ended', this._contentEndedListener.bind(this));
+        this.media.element.parentNode.classList.remove('om-ads--active');
         this._resumeMedia();
     }
 

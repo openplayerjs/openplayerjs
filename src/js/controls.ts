@@ -32,7 +32,7 @@ class Controls {
             new Time(player),
             new Progress(player),
             new Volume(player),
-            new Fullscreen(player.media),
+            new Fullscreen(player),
             new AirPlay(player.media),
         ];
 
