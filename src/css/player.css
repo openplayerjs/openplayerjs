@@ -48,7 +48,7 @@
 }
 .om-player.om-player__audio > .om-controls {
     bottom: 0;
-    padding: 5px;
+    padding: 0 5px 5px;
 }
 .om-controls > * {
     flex-grow: 0;
