@@ -1,5 +1,6 @@
 import IEvent from '../components/interfaces/general/event';
 import Player from '../player';
+import { isVideo } from '../utils/dom';
 
 class Fullscreen {
     public player: Player;
@@ -51,7 +52,9 @@ class Fullscreen {
      * @memberof Fullscreen
      */
     public build(container: HTMLDivElement) {
-        container.appendChild(this.button);
+        if (isVideo(this.player.element)) {
+            container.appendChild(this.button);
+        }
         return this;
     }
 }
