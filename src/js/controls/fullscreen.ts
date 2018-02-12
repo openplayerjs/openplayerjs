@@ -1,26 +1,47 @@
-import Media from '../media';
+import IEvent from '../components/interfaces/general/event';
+import Player from '../player';
 
 class Fullscreen {
-    public media: Media;
+    public player: Player;
     private button: HTMLButtonElement;
+    private events: IEvent;
 
     /**
      *
-     * @param {Media} media
+     * @param {Player} media
      * @returns {Fullscreen}
      * @memberof Fullscreen
      */
-    constructor(media: Media) {
-        this.media = media;
+    constructor(player: Player) {
+        this.player = player;
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__fullscreen';
         this.button.innerHTML = '<span class="om-sr">Fullscreen</span>';
 
+        this.events = {};
+        this.events['click'] = () => {
+            if (this.button.classList.contains('om-controls__fullscreen--out')) {
+                this.button.classList.remove('om-controls__fullscreen--out');
+            } else {
+                this.button.classList.add('om-controls__fullscreen--out');
+            }
+        };
+
         return this;
     }
     public register() {
-        console.log(this);
+        this.button.addEventListener('click', this.events['click']);
+
+        return this;
+    }
+
+    public unregister() {
+        this.button.removeEventListener('click', this.events['click']);
+
+        this.events = {};
+
+        return this;
     }
 
     /**

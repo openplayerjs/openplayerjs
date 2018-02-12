@@ -5,8 +5,11 @@ import Player from '../player';
 class Progress {
     public player: Player;
     private slider: HTMLInputElement;
+    private buffer: HTMLProgressElement;
+    private progress: HTMLDivElement;
+    private played: HTMLProgressElement;
     private events: IEvent;
-    // private sliderEvents: IEvent;
+    private sliderEvents: IEvent;
 
     /**
      *
@@ -16,6 +19,9 @@ class Progress {
      */
     constructor(player: Player) {
         this.player = player;
+        this.progress = document.createElement('div');
+        this.progress.className = 'om-controls__progress-bar';
+
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__progress';
@@ -25,8 +31,23 @@ class Progress {
         this.slider.value = '0';
         this.slider.innerHTML = '<span class="om-controls__progress-bar"></span>';
 
+        this.buffer = document.createElement('progress');
+        this.buffer.className = 'om-controls__buffer';
+        this.buffer.setAttribute('max', '100');
+        this.buffer.value = 0;
+
+        this.played = document.createElement('progress');
+        this.played.className = 'om-controls__played';
+        this.played.setAttribute('max', '100');
+        this.played.value = 0;
+
+        this.progress.appendChild(this.slider);
+        this.progress.appendChild(this.played);
+        this.progress.appendChild(this.buffer);
+
+
         this.events = {};
-        // this.sliderEvents = {};
+        this.sliderEvents = {};
         this.events['loadedmetadata'] = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
@@ -47,12 +68,23 @@ class Progress {
                 }
 
                 const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
+                const min = parseFloat(this.slider.min);
+                const max = parseFloat(this.slider.max);
                 this.slider.value = current.toString();
                 (this.slider.firstChild as HTMLElement).style.width =
                     `${((current / el.duration) * 100)}%`;
+                this.slider.style.backgroundSize = (current - min) * 100 / (max - min) + '% 100%';
             } else {
                 this.slider.style.display = 'none';
             }
+        };
+
+        this.sliderEvents['input'] = (e: any) => {
+            const min = e.target.min;
+            const max = e.target.max;
+            const val = e.target.value;
+
+            e.target.style.backgroundSize = (val - min) * 100 / (max - min) + '% 100%';
         };
 
         return this;
@@ -67,6 +99,8 @@ class Progress {
         Object.keys(this.events).forEach(event => {
             this.player.media.element.addEventListener(event, this.events[event]);
         });
+
+        this.slider.addEventListener('input', this.sliderEvents.input.bind(this));
 
         return this;
     }
@@ -88,7 +122,7 @@ class Progress {
      * @memberof Progress
      */
     public build(container: HTMLDivElement) {
-        container.appendChild(this.slider);
+        container.appendChild(this.progress);
         return this;
     }
 }
