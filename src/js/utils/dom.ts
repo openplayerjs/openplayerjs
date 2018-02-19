@@ -126,6 +126,7 @@ export function request(url: string, dataType: string, success: (n: any) => any,
  *
  * It combines the techines described in https://raw.githubusercontent.com/googleads/googleads-ima-html5/2.11/attempt_to_autoplay/ads.js
  * and https://github.com/Modernizr/Modernizr/issues/1095#issuecomment-304682473
+ * @export
  * @param {function} autoplay
  * @param {function} muted
  * @param {function} callback
