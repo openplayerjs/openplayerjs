@@ -11,7 +11,7 @@ declare const google: any;
  * @class Ads
  */
 class Ads {
-    public adEnded: boolean;
+    public adsEnded: boolean;
     public adsDone: boolean;
     public adsActive: boolean;
     public adsStarted: boolean;
@@ -46,7 +46,7 @@ class Ads {
         this.media = media;
         this.adsManager = null;
         this.events = null;
-        this.adEnded = false;
+        this.adsEnded = false;
         this.adsDone = false;
         this.adsActive = false;
         this.adsStarted = false;
@@ -68,7 +68,7 @@ class Ads {
                 this.media.muted = true;
                 this.media.volume = 0;
 
-                const e = addEvent('volumechanged');
+                const e = addEvent('volumechange');
                 this.media.element.dispatchEvent(e);
             }
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
@@ -185,7 +185,7 @@ class Ads {
     }
 
     get ended() {
-        return this.adEnded;
+        return this.adsEnded;
     }
 
     private _assign(event: any) {
@@ -213,6 +213,12 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
+                    if (this.media.ended) {
+                        this.adsActive = true;
+                        this.adsEnded = false;
+                        const e = addEvent('ads.ended');
+                        this.media.element.dispatchEvent(e);
+                    }
                     this.adsDuration = ad.getDuration();
                     this.intervalTimer = window.setInterval(() => {
                         this.adsCurrentTime = this.adsManager.getRemainingTime();
@@ -224,6 +230,8 @@ class Ads {
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
                 this.media.element.parentNode.classList.remove('om-ads--active');
+                this.adsActive = false;
+                this.adsEnded = true;
                 if (ad.isLinear()) {
                     clearInterval(this.intervalTimer);
                 }
@@ -231,7 +239,7 @@ class Ads {
             case google.ima.AdEvent.Type.VOLUME_CHANGED:
             case google.ima.AdEvent.Type.VOLUME_MUTED:
                 if (ad.isLinear()) {
-                    const e = addEvent('volumechanged');
+                    const e = addEvent('volumechange');
                     this.media.element.dispatchEvent(e);
                 }
                 break;
@@ -294,7 +302,7 @@ class Ads {
     }
 
     private _contentEndedListener() {
-        this.adEnded = true;
+        this.adsEnded = true;
         this.adsActive = false;
         this.adsStarted = false;
         this.adsLoader.contentComplete();
@@ -323,8 +331,6 @@ class Ads {
         this.adsDuration = 0;
         this.adsCurrentTime = 0;
         this.media.element.parentNode.classList.remove('om-ads--active');
-        const e = addEvent('loadedmetadata');
-        this.media.element.dispatchEvent(e);
 
         if (this.autoplayAllowed && !this.media.ended) {
             setTimeout(() => {
@@ -332,6 +338,9 @@ class Ads {
                 const event = addEvent('play');
                 this.media.element.dispatchEvent(event);
             }, 500);
+        } else {
+            const event = addEvent('ended');
+            this.media.element.dispatchEvent(event);
         }
     }
 

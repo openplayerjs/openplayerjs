@@ -106,7 +106,7 @@ class Progress {
             this.player.media.element.addEventListener(event, this.events[event]);
         });
 
-        Object.keys(this.events).forEach(event => {
+        Object.keys(this.sliderEvents).forEach(event => {
             this.slider.addEventListener(event, this.sliderEvents[event]);
         });
 
@@ -118,7 +118,7 @@ class Progress {
             this.player.media.element.removeEventListener(event, this.events[event]);
         });
 
-        Object.keys(this.events).forEach(event => {
+        Object.keys(this.sliderEvents).forEach(event => {
             this.slider.removeEventListener(event, this.sliderEvents[event]);
         });
 
