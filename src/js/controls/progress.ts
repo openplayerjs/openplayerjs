@@ -45,7 +45,6 @@ class Progress {
         this.progress.appendChild(this.played);
         this.progress.appendChild(this.buffer);
 
-
         this.events = {};
         this.sliderEvents = {};
         this.events['loadedmetadata'] = () => {
@@ -73,19 +72,26 @@ class Progress {
                 this.slider.value = current.toString();
                 (this.slider.firstChild as HTMLElement).style.width =
                     `${((current / el.duration) * 100)}%`;
-                this.slider.style.backgroundSize = (current - min) * 100 / (max - min) + '% 100%';
+                this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
             } else {
                 this.slider.style.display = 'none';
             }
         };
 
-        this.sliderEvents['input'] = (e: any) => {
+        const updateSlider = (e: any) => {
+            const el = this.player.activeElement();
             const min = e.target.min;
             const max = e.target.max;
             const val = e.target.value;
+            this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
 
-            e.target.style.backgroundSize = (val - min) * 100 / (max - min) + '% 100%';
+            // If current progress is not related to an Ad, manipulate current time
+            if (el instanceof Media) {
+                el.currentTime = val;
+            }
         };
+        this.sliderEvents['input'] = updateSlider.bind(this);
+        this.sliderEvents['change'] = updateSlider.bind(this);
 
         return this;
     }
@@ -100,7 +106,9 @@ class Progress {
             this.player.media.element.addEventListener(event, this.events[event]);
         });
 
-        this.slider.addEventListener('input', this.sliderEvents.input.bind(this));
+        Object.keys(this.events).forEach(event => {
+            this.slider.addEventListener(event, this.sliderEvents[event]);
+        });
 
         return this;
     }
@@ -109,8 +117,13 @@ class Progress {
         Object.keys(this.events).forEach(event => {
             this.player.media.element.removeEventListener(event, this.events[event]);
         });
+
+        Object.keys(this.events).forEach(event => {
+            this.slider.removeEventListener(event, this.sliderEvents[event]);
+        });
+
         this.events = {};
-        // this.sliderEvents = {};
+        this.sliderEvents = {};
 
         return this;
     }

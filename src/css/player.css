@@ -128,9 +128,9 @@
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f10), color-stop(100%, #f10));
     background-repeat: no-repeat;
     background-size: 0% 100%;
-    border-radius: 10px;
     cursor: pointer;
     height: 8px;
+    left: 0;
     margin-top: 7px;
     outline: none;
     padding: 0;
@@ -144,7 +144,7 @@
     box-shadow: none;
     cursor: pointer;
     height: 6px;
-    margin-left: -1px;
+    width: 6px;
 }
 
 .om-controls__progress::-webkit-slider-thumb {
@@ -154,6 +154,7 @@
     border-radius: 25px;
     cursor: pointer;
     height: 15px;
+    margin-left: -2px;
     margin-top: -4.5px;
     width: 15px;
 }
