@@ -346,10 +346,17 @@ class Ads {
 
     private _resizeAds() {
         if (this.adsManager) {
-            this.adsManager.resize(
-                (this.media.element.parentNode as HTMLElement).offsetWidth,
-                (this.media.element.parentNode as HTMLElement).offsetHeight,
-                google.ima.ViewMode.NORMAL);
+            if ((this.media.element.parentNode as any).getAttribute('data-fullscreen') === 'true') {
+                this.adsManager.resize(
+                    (this.media.element.parentNode as HTMLElement).offsetWidth,
+                    (this.media.element.parentNode as HTMLElement).offsetHeight,
+                    google.ima.ViewMode.NORMAL);
+            } else {
+                this.adsManager.resize(
+                    window.screen.width,
+                    window.screen.height,
+                    google.ima.ViewMode.FULLSCREEN);
+            }
         }
     }
 

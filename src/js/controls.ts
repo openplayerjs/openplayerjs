@@ -6,6 +6,7 @@ import Time from './controls/time';
 import Volume from './controls/volume';
 import Media from './media';
 import Player from './player';
+import { isVideo } from './utils/dom';
 
 /**
  *
@@ -32,9 +33,12 @@ class Controls {
             new Time(player),
             new Progress(player),
             new Volume(player),
-            new Fullscreen(player),
-            new AirPlay(player.media),
         ];
+        if (isVideo(this.media.element)) {
+            this.controls.push(new Fullscreen(player));
+        }
+
+        this.controls.push(new AirPlay(player.media));
 
         this.container = null;
 

@@ -268,6 +268,14 @@
     background: #ff0505;
 }
 
+/* == Fullscreen ============= */
+.om-player[data-fullscreen='true'] .om-controls {
+    z-index: 2147483648;
+}
+.om-player video::-webkit-media-controls { 
+    display: none !important;
+}
+
 /* === Ads =================== */
 #om-ads {
     height: 100%;
@@ -287,6 +295,10 @@
 } */
 .om-ads--active {
     overflow: hidden;
+}
+
+.om-player[data-fullscreen='true'] #om-ads {
+    z-index: 2147483647;
 }
 
 /* === Focus =================== */

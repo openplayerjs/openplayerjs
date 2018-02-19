@@ -70,7 +70,9 @@ module.exports = {
                                         browsers: ['last 3 versions'],
                                         warnForDuplicates: false
                                     }),
-                                    require('cssnano')()
+                                    require('cssnano')({
+                                        zindex: false
+                                    })
                                 ]
                             }
                         }
