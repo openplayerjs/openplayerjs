@@ -121,33 +121,51 @@ export function request(url: string, dataType: string, success: (n: any) => any,
     }
 }
 
+/**
+ * Test if browser supports autoplay (and if so, it it requires to be muted or not)
+ *
+ * It combines the techines described in https://raw.githubusercontent.com/googleads/googleads-ima-html5/2.11/attempt_to_autoplay/ads.js
+ * and https://github.com/Modernizr/Modernizr/issues/1095#issuecomment-304682473
+ * @param {function} autoplay
+ * @param {function} muted
+ * @param {function} callback
+ */
 export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any) {
     // try to play video
     const videoContent = document.createElement('video');
     videoContent.src = 'http://techslides.com/demos/sample-videos/small.mp4';
-    videoContent.play().then(() => {
-        // If we make it here, unmuted autoplay works.
-        videoContent.pause();
-        autoplay(true);
-        muted(false);
-        callback();
-    }).catch(() => {
-        // Unmuted autoplay failed. Now try muted autoplay.
-        videoContent.volume = 0;
-        videoContent.muted = true;
-        videoContent.play().then(() => {
-            // If we make it here, muted autoplay works but unmuted autoplay does not.
+    // In browsers that don’t yet support this functionality,
+    // playPromise won’t be defined.
+    const playPromise = videoContent.play();
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            // If we make it here, unmuted autoplay works.
             videoContent.pause();
             autoplay(true);
-            muted(true);
-            callback();
-        }).catch(() => {
-            // Both muted and unmuted autoplay failed. Fall back to click to play.
-            videoContent.volume = 1;
-            videoContent.muted = false;
-            autoplay(false);
             muted(false);
             callback();
+        }).catch(() => {
+            // Unmuted autoplay failed. Now try muted autoplay.
+            videoContent.volume = 0;
+            videoContent.muted = true;
+            videoContent.play().then(() => {
+                // If we make it here, muted autoplay works but unmuted autoplay does not.
+                videoContent.pause();
+                autoplay(true);
+                muted(true);
+                callback();
+            }).catch(() => {
+                // Both muted and unmuted autoplay failed. Fall back to click to play.
+                videoContent.volume = 1;
+                videoContent.muted = false;
+                autoplay(false);
+                muted(false);
+                callback();
+            });
         });
-    });
+    } else {
+        autoplay(!videoContent.paused || 'Promise' in window && playPromise instanceof Promise);
+        muted(false);
+        callback();
+    }
 }
