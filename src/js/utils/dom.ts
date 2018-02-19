@@ -120,3 +120,34 @@ export function request(url: string, dataType: string, success: (n: any) => any,
         xhr.send();
     }
 }
+
+export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any) {
+    // try to play video
+    const videoContent = document.createElement('video');
+    videoContent.src = 'http://techslides.com/demos/sample-videos/small.mp4';
+    videoContent.play().then(() => {
+        // If we make it here, unmuted autoplay works.
+        videoContent.pause();
+        autoplay(true);
+        muted(false);
+        callback();
+    }).catch(() => {
+        // Unmuted autoplay failed. Now try muted autoplay.
+        videoContent.volume = 0;
+        videoContent.muted = true;
+        videoContent.play().then(() => {
+            // If we make it here, muted autoplay works but unmuted autoplay does not.
+            videoContent.pause();
+            autoplay(true);
+            muted(true);
+            callback();
+        }).catch(() => {
+            // Both muted and unmuted autoplay failed. Fall back to click to play.
+            videoContent.volume = 1;
+            videoContent.muted = false;
+            autoplay(false);
+            muted(false);
+            callback();
+        });
+    });
+}
