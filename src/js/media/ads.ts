@@ -95,6 +95,9 @@ class Ads {
 
         this.media.element.parentNode.classList.add('om-ads--active');
 
+        // Create responsive ad
+        window.addEventListener('resize', this.resizeAds.bind(this));
+
         this._setup();
         this._requestAds();
     }
@@ -142,8 +145,29 @@ class Ads {
         }
 
         this.media.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-        window.removeEventListener('resize', this._resizeAds.bind(this));
+        window.removeEventListener('resize', this.resizeAds.bind(this));
         this.adsContainer.remove();
+    }
+
+    public resizeAds(width?: number, height?: number) {
+        if (this.adsManager) {
+            const target = (this.media.element.parentNode as HTMLElement);
+            if (width && height) {
+                const mode = target.getAttribute('data-fullscreen') === 'true' ?
+                    google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
+                this.adsManager.resize(
+                    width,
+                    height,
+                    mode,
+                );
+            } else {
+                this.adsManager.resize(
+                    target.offsetWidth,
+                    target.offsetHeight,
+                    google.ima.ViewMode.NORMAL,
+                );
+            }
+        }
     }
 
     set volume(value) {
@@ -204,8 +228,6 @@ class Ads {
                     this.media.element.dispatchEvent(loadedEvent);
 
                     this.media.element.parentNode.classList.add('om-ads--active');
-                    // Create responsive ad
-                    window.addEventListener('resize', this._resizeAds.bind(this));
                     this.adsCurrentTime = this.adsManager.getRemainingTime();
                     const timeEvent = addEvent('timeupdate');
                     this.media.element.dispatchEvent(timeEvent);
@@ -341,22 +363,6 @@ class Ads {
         } else {
             const event = addEvent('ended');
             this.media.element.dispatchEvent(event);
-        }
-    }
-
-    private _resizeAds() {
-        if (this.adsManager) {
-            if ((this.media.element.parentNode as any).getAttribute('data-fullscreen') === 'true') {
-                this.adsManager.resize(
-                    (this.media.element.parentNode as HTMLElement).offsetWidth,
-                    (this.media.element.parentNode as HTMLElement).offsetHeight,
-                    google.ima.ViewMode.NORMAL);
-            } else {
-                this.adsManager.resize(
-                    window.screen.width,
-                    window.screen.height,
-                    google.ima.ViewMode.FULLSCREEN);
-            }
         }
     }
 

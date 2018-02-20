@@ -269,6 +269,20 @@
 }
 
 /* == Fullscreen ============= */
+.om-player[data-fullscreen='true'] {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+.om-player[data-fullscreen='true']:-webkit-full-screen-ancestor:not(iframe) {
+    position: absolute;
+}
+.om-player[data-fullscreen='true'] video {
+    height: 100%;
+    width: 100%;
+}
 .om-player[data-fullscreen='true'] .om-controls {
     z-index: 2147483648;
 }
