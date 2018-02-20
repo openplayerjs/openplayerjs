@@ -139,7 +139,6 @@ class Fullscreen {
     }
 
     private _setFullscreenData(state: boolean) {
-        console.trace(state);
         (this.player.element.parentNode as HTMLElement).setAttribute('data-fullscreen', (!!state).toString());
         if (state) {
             this.button.classList.add('om-controls__fullscreen--out');
