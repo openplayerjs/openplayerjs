@@ -1,5 +1,6 @@
 {
     "name": "openmedia",
+    "version": "1.0.0",
     "author": {
         "name": "Rafael Miranda",
         "email": "rafa8626@gmail.com"
@@ -10,8 +11,8 @@
         "url": "https://github.com/rafa8626/openmedia",
         "type": "public"
     },
-    "main": "build/om-player.js",
-    "types": "build/om-player.d.ts",
+    "main": "dist/om-player.js",
+    "types": "om-player.d.ts",
     "keywords": [
         "media",
         "video",
