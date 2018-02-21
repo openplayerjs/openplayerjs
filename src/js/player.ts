@@ -1,4 +1,3 @@
-import '../css/player.css';
 import IFile from './components/interfaces/media/file';
 import Controls from './controls';
 import Media from './media';
