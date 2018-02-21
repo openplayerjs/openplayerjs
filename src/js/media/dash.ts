@@ -4,6 +4,7 @@ import Native from '../components/native';
 import { addEvent } from '../events';
 import { HAS_MSE } from '../utils/constants';
 import { loadScript } from '../utils/dom';
+import { isDashSource } from '../utils/url';
 
 declare const dashjs: any;
 
@@ -78,9 +79,15 @@ class DashMedia extends Native {
     }
 
     set src(media: IFile) {
-        this._revoke();
-        console.log(media);
-        this.player = dashjs.MediaPlayer().create();
+        if (isDashSource(media.src)) {
+            this._revoke();
+            this.player = dashjs.MediaPlayer().create();
+            // If DRM is set, load protection data
+            if (typeof media.drm === 'object' && Object.keys(this.media.drm).length) {
+                this.player.setProtectionData(media.drm);
+            }
+            this.player.attachSource(media.src);
+        }
     }
 
     /**
@@ -93,7 +100,6 @@ class DashMedia extends Native {
      */
     private _assign(event: any) {
         if (event.type === 'error') {
-            // mediaElement.generateError(event.message, node.src);
             console.error(event);
         } else {
             const e = addEvent(event.type, event);

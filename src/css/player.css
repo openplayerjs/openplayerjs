@@ -22,6 +22,9 @@
 .om-player__audio {
     background: #000;
 }
+.om-player .media-controls.mac.fullscreen > .controls-bar {
+    display: none;
+}
 .om-sr {
     height: 1px;
     left: -10000px;

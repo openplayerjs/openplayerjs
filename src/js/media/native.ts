@@ -39,7 +39,11 @@ class NativeMedia extends Native {
     }
 
     public destroy() {
-        console.log(this.element);
+        return this;
+    }
+
+    set src(media: IFile) {
+        this.element.src = media.src;
     }
 }
 
