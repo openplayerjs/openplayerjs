@@ -1,4 +1,5 @@
 import '../css/player.css';
+import IFile from './components/interfaces/media/file';
 import Controls from './controls';
 import Media from './media';
 import Ads from './media/ads';
@@ -11,12 +12,15 @@ import { isAudio, isIframe, isVideo } from './utils/dom';
  * This is the entry point for the entire plugin.
  */
 class Player {
+    public static instances: any;
+
     /**
      * Entry point
-     * Convert all the video/audio/iframe tags with `om-player` class in a OpenMedia player
+     * Convert all the video/audio tags with `om-player` class in a OpenMedia player
      */
     public static init() {
-        const targets = document.querySelectorAll('video.om-player, audio.om-player, iframe.om-player');
+        Player.instances = {};
+        const targets = document.querySelectorAll('video.om-player, audio.om-player');
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = targets[i];
             const player = new Player(target, target.getAttribute('data-om-ads'));
@@ -24,6 +28,7 @@ class Player {
         }
     }
 
+    public uid: string;
     public element: Element;
     public adsUrl?: string;
     public ads: Ads;
@@ -31,13 +36,13 @@ class Player {
 
     /**
      * Creates an instance of Player.
-     * @param {HTMLMediaElement|HTMLIFrameElement} element
-     * @param {string} ads
+     * @param {Element|string} element
+     * @param {?string} adsUrl
      * @memberof Player
      */
-    constructor(element: Element, ads: string) {
-        this.element = element;
-        this.adsUrl = ads;
+    constructor(element: Element|string, adsUrl?: string) {
+        this.element = element instanceof Element ? element : document.getElementById(element);
+        this.adsUrl = adsUrl;
         this.ads = null;
         return this;
     }
@@ -47,11 +52,19 @@ class Player {
             this._prepareMedia();
             this._wrapInstance();
             this._createControls();
+            this._createUID();
+            Player.instances[this.uid] = this;
+        }
+    }
+
+    public load() {
+        if (this.media instanceof Media) {
+            this.media.load();
         }
     }
 
     public play() {
-        if (this.ads.adsManager) {
+        if (this.ads) {
             this.ads.play();
         } else {
             this.media.play();
@@ -59,7 +72,7 @@ class Player {
     }
 
     public pause() {
-        if (this.ads.adsManager) {
+        if (this.ads) {
             this.ads.pause();
         } else {
             this.media.pause();
@@ -67,11 +80,26 @@ class Player {
     }
 
     public destroy() {
-        if (this.ads.adsManager) {
+        if (this.ads) {
             this.ads.destroy();
         } else {
+            if (this.element.getAttribute('data-om-file')) {
+                (this.element as HTMLMediaElement).src = this.element.getAttribute('data-om-file');
+                this.element.removeAttribute('data-om-file');
+            }
             this.media.destroy();
         }
+    }
+
+    set src(media: IFile[]) {
+        if (this.media instanceof Media) {
+            this.media.mediaFiles = [];
+            this.media.src = media;
+        }
+    }
+
+    get src() {
+        return this.media.src;
     }
 
     public activeElement() {
@@ -192,8 +220,25 @@ class Player {
         window.addEventListener('resize', resizeIframeCallback);
         window.dispatchEvent(event);
     }
+
+    private _createUID() {
+        if (this.element.id) {
+            this.uid = this.element.id;
+            this.element.removeAttribute('id');
+        } else {
+            let uid;
+            do  {
+                uid = `om_${Math.random().toString(36).substr(2, 9)}`;
+            } while (Player.instances[uid] !== undefined);
+            this.uid = uid;
+        }
+        (this.element.parentNode as HTMLElement).id = this.uid;
+    }
 }
 
 export default Player;
+
+// Expose element globally
+(window as any).OpenPlayer = Player;
 
 Player.init();

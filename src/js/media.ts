@@ -16,8 +16,8 @@ import * as source from './utils/url';
 class Media {
     public element: any;
     public media: any;
+    public mediaFiles: IFile[];
     private promisePlay: Promise<void>;
-    private mediaFiles: IFile[];
     private events: IEvent;
 
     /**
@@ -97,9 +97,16 @@ class Media {
             this.mediaFiles.push(media);
         }
 
-        if (typeof this.media.src === 'function') {
-            this.media.src(this.mediaFiles);
+        this.mediaFiles.some(file => {
+            return this.canPlayType(file.type);
+        });
+
+        // Save copy of original file
+        if (this.element.src) {
+            this.element.setAttribute('data-om-file', this.mediaFiles[0].src);
         }
+        this.element.src = this.mediaFiles[0].src;
+        this.media.src = this.mediaFiles[0];
     }
     /**
      * Get all media associated with element

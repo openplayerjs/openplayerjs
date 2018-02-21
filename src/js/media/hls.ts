@@ -4,6 +4,7 @@ import Native from '../components/native';
 import { addEvent } from '../events';
 import { HAS_MSE, SUPPORTS_NATIVE_HLS } from '../utils/constants';
 import { loadScript } from '../utils/dom';
+import { isHlsSource } from '../utils/url';
 
 declare const Hls: any;
 
@@ -82,9 +83,12 @@ class HlsMedia extends Native {
     }
 
     set src(media: IFile) {
-        this._revoke();
-        console.log(media);
-        this.player = new Hls();
+        if (isHlsSource(media.src)) {
+            this._revoke();
+            this.player = new Hls();
+            this.player.loadSource(media.src);
+            this.player.attachMedia(this.player.element);
+        }
     }
 
     /**

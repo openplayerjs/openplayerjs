@@ -133,6 +133,9 @@ export function predictType(url: string) {
         case 'mp3':
             type = 'audio/mp3';
             break;
+        case 'webm':
+            type = 'video/webm';
+            break;
         default:
             type = 'video/mp4';
             break;

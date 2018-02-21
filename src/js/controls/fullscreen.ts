@@ -1,6 +1,11 @@
 import IEvent from '../components/interfaces/general/event';
 import Player from '../player';
 
+/**
+ *
+ * @class Fullscreen
+ * @description Class that handles the fullscreen behavior cross/browsers
+ */
 class Fullscreen {
     public player: Player;
     public fullScreenEnabled: boolean;
@@ -85,6 +90,12 @@ class Fullscreen {
 
         return this;
     }
+    /**
+     *
+     *
+     * @returns {Fullscreen}
+     * @memberof Fullscreen
+     */
     public register() {
         this.fullscreenEvents.forEach(event => {
             document.addEventListener(event, this._fullscreenChange.bind(this));
@@ -120,7 +131,6 @@ class Fullscreen {
     private _fullscreenChange() {
         const width = this.isFullscreen ? this.originalWidth : this.fullscreenWidth;
         const height = this.isFullscreen ? this.originalHeight : this.fullscreenHeight;
-
         this._setFullscreenData(!this.isFullscreen);
 
         if (this.player.ads) {
