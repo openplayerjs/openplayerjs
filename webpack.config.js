@@ -1,24 +1,19 @@
-const webpack = require('webpack');
-const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const extractPlugin = new ExtractTextPlugin({
-    filename: 'om_player.min.css',
-    allChunks: false
-});
-
-const babelLoader = {
-    loader: 'babel-loader',
-    options: {
-        presets: ['babel-preset-env']
-    }
-};
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const path = require('path');
+const BabiliPlugin = require('babili-webpack-plugin');
 
 module.exports = {
-    entry: './src/js/player.ts',
+    context: __dirname,
+    entry: {
+        'om_player.js': './src/js/player.ts',
+        'om_player.min.js': './src/js/player.ts',
+        'om_player.css': './src/css/player.css',
+        'om_player.min.css': './src/css/player.css',
+    },
     output: {
         path: path.resolve(__dirname, './dist'),
-        filename: 'om_player.js'
+        filename: '[name]'
     },
     module: {
         rules: [
@@ -36,7 +31,12 @@ module.exports = {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
                 use: [
-                    babelLoader,
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['babel-preset-env']
+                        }
+                    },
                     {
                         loader: 'ts-loader'
                     }
@@ -45,7 +45,12 @@ module.exports = {
             {
                 test: /src\/*\.js$/,
                 exclude: /node_modules/,
-                use: babelLoader
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['babel-preset-env']
+                    }
+                }
             },
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
@@ -54,7 +59,7 @@ module.exports = {
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
-                use: extractPlugin.extract({
+                use: ExtractTextPlugin.extract({
                     use: [
                         {
                             loader: 'css-loader',
@@ -70,9 +75,6 @@ module.exports = {
                                         browsers: ['last 3 versions'],
                                         warnForDuplicates: false
                                     }),
-                                    require('cssnano')({
-                                        zindex: false
-                                    })
                                 ]
                             }
                         }
@@ -85,7 +87,20 @@ module.exports = {
         extensions: ['.ts', '.js']
     },
     plugins: [
-        // new webpack.optimize.UglifyJsPlugin(),
-        extractPlugin,
+        new ExtractTextPlugin('[name]'),
+        new BabiliPlugin({}, {
+            test: /\.min\.js$/,
+        }),
+        new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.min\.css$/,
+            cssProcessorOptions: {
+                discardComments: {
+                    removeAll: true
+                }
+            },
+            cssProcessor: require('cssnano')({
+                zindex: false
+            }),
+        }),
     ]
 };
