@@ -14,13 +14,19 @@
         body {
             max-width: 700px;
         }
+        select {
+            margin-top: 20px;
+        }
+        select:last-child {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="players">
         <h1>Video Sample</h1>
-        <video class="om-player" controls playsinline webkit-playsinline>
-            <!-- data-om-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpostonly&cmsid=496&vid=short_onecue&correlator=">-->
+        <video class="om-player" controls playsinline webkit-playsinline
+            data-om-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpostonly&cmsid=496&vid=short_onecue&correlator=">
             <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4" type="video/mp4">
         </video>
         <div>
