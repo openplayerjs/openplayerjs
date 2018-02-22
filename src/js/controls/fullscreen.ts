@@ -15,8 +15,6 @@ class Fullscreen {
     private isFullscreen: boolean;
     private fullscreenWidth: number;
     private fullscreenHeight: number;
-    private originalWidth: number;
-    private originalHeight: number;
     private clickEvent: any;
 
     /**
@@ -34,9 +32,6 @@ class Fullscreen {
         this.button.innerHTML = '<span class="om-sr">Fullscreen</span>';
 
         const target = (document as any);
-        const wrapper = (this.player.element.parentNode as HTMLElement);
-        this.originalHeight = wrapper.offsetHeight;
-        this.originalWidth = wrapper.offsetWidth;
 
         // Check if fullscreen is supported
         this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled ||
@@ -129,14 +124,13 @@ class Fullscreen {
     }
 
     private _fullscreenChange() {
-        const width = this.isFullscreen ? this.originalWidth : this.fullscreenWidth;
-        const height = this.isFullscreen ? this.originalHeight : this.fullscreenHeight;
+        const width = this.isFullscreen ? 0 : this.fullscreenWidth;
+        const height = this.isFullscreen ? 0 : this.fullscreenHeight;
         this._setFullscreenData(!this.isFullscreen);
 
         if (this.player.ads) {
             this.player.ads.resizeAds(width, height);
         }
-
         this.isFullscreen = !this.isFullscreen;
         this._resize(width, height);
     }
@@ -150,13 +144,13 @@ class Fullscreen {
         }
     }
 
-    private _resize(width: number, height: number) {
+    private _resize(width?: number, height?: number) {
         const wrapper = (this.player.element.parentNode as HTMLElement);
         const video = (this.player.element as HTMLElement);
-        wrapper.style.width = `${width}px`;
-        wrapper.style.height = `${height}px`;
-        video.style.width = `${width}px`;
-        video.style.height = `${height}px`;
+        wrapper.style.width = width ? `${width}px` : null;
+        wrapper.style.height = height ? `${height}px` : null;
+        video.style.width = width ? `${width}px` : null;
+        video.style.height = height ? `${height}px` : null;
     }
 }
 
