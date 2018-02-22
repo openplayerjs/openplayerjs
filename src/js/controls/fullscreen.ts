@@ -63,13 +63,13 @@ class Fullscreen {
                 this.fullscreenHeight = window.screen.height;
 
                 if (video.requestFullscreen) {
-                    video.requestFullscreen();
+                    video.parentNode.requestFullscreen();
                 } else if (video.mozRequestFullScreen) {
-                    video.mozRequestFullScreen();
+                    video.parentNode.mozRequestFullScreen();
                 } else if (video.webkitRequestFullScreen) {
-                    video.webkitRequestFullScreen();
+                    video.parentNode.webkitRequestFullScreen();
                 } else if (video.msRequestFullscreen) {
-                    video.msRequestFullscreen();
+                    video.parentNode.msRequestFullscreen();
                 } else {
                     this._fullscreenChange();
                 }
@@ -137,15 +137,8 @@ class Fullscreen {
             this.player.ads.resizeAds(width, height);
         }
 
-        if (this.isFullscreen) {
-            this.isFullscreen = false;
-            // Return the video to its original size and position
-            this._resize('relative', '', '', width, height);
-        } else {
-            this.isFullscreen = true;
-            // Make the video take up the entire screen
-            this._resize('absolute', '0', '0', width, height);
-        }
+        this.isFullscreen = !this.isFullscreen;
+        this._resize(width, height);
     }
 
     private _setFullscreenData(state: boolean) {
@@ -157,12 +150,9 @@ class Fullscreen {
         }
     }
 
-    private _resize(position: string, top: string, left: string, width: number, height: number) {
+    private _resize(width: number, height: number) {
         const wrapper = (this.player.element.parentNode as HTMLElement);
         const video = (this.player.element as HTMLElement);
-        wrapper.style.position = position;
-        wrapper.style.top = `${top}px`;
-        wrapper.style.left = `${left}px`;
         wrapper.style.width = `${width}px`;
         wrapper.style.height = `${height}px`;
         video.style.width = `${width}px`;

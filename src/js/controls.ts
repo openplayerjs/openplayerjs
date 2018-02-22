@@ -1,4 +1,5 @@
 import AirPlay from './controls/airplay';
+import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Play from './controls/play';
 import Progress from './controls/progress';
@@ -34,7 +35,9 @@ class Controls {
             new Progress(player),
             new Volume(player),
         ];
+
         if (isVideo(this.media.element)) {
+            this.controls.push(new Captions(player));
             this.controls.push(new Fullscreen(player));
         }
 

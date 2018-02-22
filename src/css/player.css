@@ -11,12 +11,13 @@
 }
 /* === General =================== */
 .om-player {
+    background: #000;
     min-height: 32px;
     position: relative;
 }
 .om-player video,
 .om-player audio {
-    height: auto !important;
+    height: auto;
     width: 100% !important;
 }
 .om-player__audio {
@@ -84,6 +85,11 @@
     text-transform: none;
     width: 15px;
 }
+.om-controls button:hover,
+.subtitles-menu li button:hover,
+.subtitles-menu li button[data-state='active'] {
+    opacity: 0.5;
+}
 
 /* === Time =================== */
 .om-controls > time {
@@ -117,6 +123,12 @@
 }
 .om-controls__mute--muted:before {
     content: '\e815';
+}
+.om-controls__captions:before {
+    content: '\e809';
+}
+.om-controls__settings:before { 
+    content: '\e800'; 
 }
 
 /* === Progress =================== */
@@ -272,20 +284,6 @@
 }
 
 /* == Fullscreen ============= */
-.om-player[data-fullscreen='true'] {
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-.om-player[data-fullscreen='true']:-webkit-full-screen-ancestor:not(iframe) {
-    position: absolute;
-}
-.om-player[data-fullscreen='true'] video {
-    height: 100%;
-    width: 100%;
-}
 .om-player[data-fullscreen='true'] .om-controls {
     z-index: 2147483648;
 }
@@ -293,6 +291,41 @@
     display: none !important;
 }
 
+/* == Captions =============== */
+.om-controls__subtitles-menu {
+    background:#666;
+    bottom: 14.8%;
+    display: none;
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+    position: absolute;
+    right: 20px;
+    width: 100px;
+}
+.om-controls__subtitles-menu li {
+    padding:0;
+    text-align:center;
+}
+.om-controls__subtitles-menu li button {
+    background:#000;
+    border:none;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    border-radius:2px;
+    color:#fff;
+    cursor:pointer;
+    padding:2px 5px;
+    width:90%;
+}
+
+/* WebVTT cues */
+::cue { 
+    color:#ccc;
+}
+video:-webkit-media-text-track-display {
+    top: -15%;
+}
 /* === Ads =================== */
 #om-ads {
     height: 100%;
