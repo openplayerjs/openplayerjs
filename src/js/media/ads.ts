@@ -1,6 +1,7 @@
 import { addEvent } from '../events';
 import Media from '../media';
-import { isAutoplaySupported, loadScript } from '../utils/dom';
+import { loadScript } from '../utils/general';
+import { isAutoplaySupported } from '../utils/media';
 
 declare const google: any;
 /**

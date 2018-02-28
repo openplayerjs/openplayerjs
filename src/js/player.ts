@@ -2,7 +2,7 @@ import IFile from './components/interfaces/media/file';
 import Controls from './controls';
 import Media from './media';
 import Ads from './media/ads';
-import { isAudio, isIframe, isVideo } from './utils/dom';
+import { isAudio, isIframe, isVideo } from './utils/general';
 
 /**
  *
@@ -48,10 +48,10 @@ class Player {
 
     public init() {
         if (this._isValid()) {
+            this._createUID();
             this._prepareMedia();
             this._wrapInstance();
             this._createControls();
-            this._createUID();
             Player.instances[this.uid] = this;
         }
     }

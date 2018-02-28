@@ -3,8 +3,8 @@ import IFile from './components/interfaces/media/file';
 import DashMedia from './media/dash';
 import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
-import { isIframe } from './utils/dom';
-import * as source from './utils/url';
+import { isIframe } from './utils/general';
+import * as source from './utils/media';
 
 /**
  *

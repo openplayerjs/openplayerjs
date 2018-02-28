@@ -43,7 +43,7 @@
     color: #fff;
     display: flex;
     font-size: 0.85em;
-    padding: 5px 8px;
+    padding: 10px 8px 5px;
     position: absolute;
     -webkit-transition: opacity 0.3s ease;
     transition: opacity 0.3s ease;
@@ -76,6 +76,7 @@
     font-variant: normal;
     font-weight: normal;
     height: 15px;
+    justify-content: flex-start;
     line-height: 1em;
     margin-left: 0.2em;
     margin-right: 0.2em;
@@ -135,6 +136,15 @@
 .om-controls__progress-bar {
     display: inline-block;
     margin-left: 10px;
+}
+.om-player__video .om-controls__progress-bar {
+    bottom: 30px;
+    margin-left: -8px;
+    position: absolute;
+    width: 100%;
+}
+.om-player__video .om-controls__progress {
+    width: 100%;
 }
 /* .om-controls__progress {
     -webkit-appearance: none;
@@ -292,6 +302,33 @@
 }
 
 /* == Captions =============== */
+.om-controls__captions{
+    margin-left: auto;
+}
+.om-captions__container {
+    bottom: 0;
+    color: #fff;
+    display: none;
+    font-weight: 400;
+    left: 0;
+    padding: 20px 0;
+    position: absolute;
+    text-align: center;
+    -webkit-transform: translateY(-40px);
+    transform: translateY(-40px);
+    -webkit-transition: -webkit-transform 0.3s ease;
+    transition: -webkit-transform 0.3s ease;
+    transition: transform 0.3s ease;
+    transition: transform 0.3s ease,-webkit-transform 0.3s ease;
+    width: 100%;
+}
+.om-captions__container > span {
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    line-height: 150%;
+    padding: 3px 10px;
+}
 .om-controls__subtitles-menu {
     background:#666;
     bottom: 14.8%;

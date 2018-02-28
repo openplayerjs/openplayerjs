@@ -98,12 +98,12 @@ class Play {
 
     /**
      *
-     * @param {HTMLDivElement} container
+     * @param {HTMLDivElement} controls
      * @returns {Play}
      * @memberof Play
      */
-    public build(container: HTMLDivElement) {
-        container.appendChild(this.button);
+    public build(controls: HTMLDivElement) {
+        controls.appendChild(this.button);
         return this;
     }
 }

@@ -114,12 +114,12 @@ class Fullscreen {
 
     /**
      *
-     * @param {HTMLDivElement} container
+     * @param {HTMLDivElement} controls
      * @returns {Fullscreen}
      * @memberof Fullscreen
      */
-    public build(container: HTMLDivElement) {
-        container.appendChild(this.button);
+    public build(controls: HTMLDivElement) {
+        controls.appendChild(this.button);
         return this;
     }
 

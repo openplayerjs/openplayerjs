@@ -1,6 +1,6 @@
 import IFile from '../components/interfaces/media/file';
 import Native from '../components/native';
-import { isAudio, isVideo } from '../utils/dom';
+import { isAudio, isVideo } from '../utils/general';
 
 /**
  *

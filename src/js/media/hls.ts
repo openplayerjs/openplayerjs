@@ -3,8 +3,8 @@ import IFile from '../components/interfaces/media/file';
 import Native from '../components/native';
 import { addEvent } from '../events';
 import { HAS_MSE, SUPPORTS_NATIVE_HLS } from '../utils/constants';
-import { loadScript } from '../utils/dom';
-import { isHlsSource } from '../utils/url';
+import { loadScript } from '../utils/general';
+import { isHlsSource } from '../utils/media';
 
 declare const Hls: any;
 

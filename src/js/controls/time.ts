@@ -1,6 +1,6 @@
 import IEvent from '../components/interfaces/general/event';
 import Player from '../player';
-import formatTime from '../utils/time';
+import { formatTime } from '../utils/time';
 
 /**
  *
@@ -90,14 +90,14 @@ class Time {
 
     /**
      *
-     * @param {HTMLDivElement} container
+     * @param {HTMLDivElement} controls
      * @returns {Time}
      * @memberof Time
      */
-    public build(container: HTMLDivElement) {
-        container.appendChild(this.current);
-        container.appendChild(this.delimiter);
-        container.appendChild(this.duration);
+    public build(controls: HTMLDivElement) {
+        controls.appendChild(this.current);
+        controls.appendChild(this.delimiter);
+        controls.appendChild(this.duration);
         return this;
     }
 }

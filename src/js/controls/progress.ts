@@ -130,12 +130,12 @@ class Progress {
 
     /**
      *
-     * @param {HTMLDivElement} container
+     * @param {HTMLDivElement} controls
      * @returns {Progress}
      * @memberof Progress
      */
-    public build(container: HTMLDivElement) {
-        container.appendChild(this.progress);
+    public build(controls: HTMLDivElement) {
+        controls.appendChild(this.progress);
         return this;
     }
 }
