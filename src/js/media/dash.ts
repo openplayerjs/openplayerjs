@@ -3,8 +3,8 @@ import IFile from '../components/interfaces/media/file';
 import Native from '../components/native';
 import { addEvent } from '../events';
 import { HAS_MSE } from '../utils/constants';
-import { loadScript } from '../utils/dom';
-import { isDashSource } from '../utils/url';
+import { loadScript } from '../utils/general';
+import { isDashSource } from '../utils/media';
 
 declare const dashjs: any;
 

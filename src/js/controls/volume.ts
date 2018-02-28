@@ -135,13 +135,13 @@ class Volume {
 
     /**
      *
-     * @param {HTMLDivElement} container
+     * @param {HTMLDivElement} controls
      * @returns {Volume}
      * @memberof Volume
      */
-    public build(container: HTMLDivElement) {
-        container.appendChild(this.button);
-        container.appendChild(this.slider);
+    public build(controls: HTMLDivElement) {
+        controls.appendChild(this.button);
+        controls.appendChild(this.slider);
         return this;
     }
 }

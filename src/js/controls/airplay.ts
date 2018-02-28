@@ -74,15 +74,15 @@ class AirPlay {
 
     /**
      *
-     * @param {HTMLDivElement} container
+     * @param {HTMLDivElement} controls
      * @returns {AirPlay}
      * @memberof AirPlay
      */
-    public build(container: HTMLDivElement) {
+    public build(controls: HTMLDivElement) {
         if (this.canUseAirplay) {
             this.media.element.addEventListener('webkitplaybacktargetavailabilitychanged', (e: any) => {
                 if (e.availability === 'available') {
-                    container.appendChild(this.button);
+                    controls.appendChild(this.button);
                 }
             });
         }

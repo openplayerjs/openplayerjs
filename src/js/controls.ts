@@ -7,7 +7,7 @@ import Time from './controls/time';
 import Volume from './controls/volume';
 import Media from './media';
 import Player from './player';
-import { isVideo } from './utils/dom';
+import { isVideo } from './utils/general';
 
 /**
  *
