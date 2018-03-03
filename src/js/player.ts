@@ -48,9 +48,9 @@ class Player {
 
     public init() {
         if (this._isValid()) {
-            this._createUID();
             this._prepareMedia();
             this._wrapInstance();
+            this._createUID();
             this._createControls();
             Player.instances[this.uid] = this;
         }

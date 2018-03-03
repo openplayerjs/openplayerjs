@@ -28,7 +28,7 @@ class Fullscreen {
         this.isFullscreen = false;
         this.button = document.createElement('button');
         this.button.type = 'button';
-        this.button.className = 'om-controls__fullscreen';
+        this.button.className = 'om-controls__fullscreen om-control__right';
         this.button.innerHTML = '<span class="om-sr">Fullscreen</span>';
 
         const target = (document as any);
