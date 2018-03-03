@@ -151,6 +151,7 @@
 }
 .om-player__video .om-controls__progress {
     width: 100%;
+    z-index: 2;
 }
 /* .om-controls__progress {
     -webkit-appearance: none;
@@ -189,15 +190,13 @@
     margin-top: -3.5px;
     width: 13px;
 } */
-.om-controls__buffer,
-.om-controls__played {
-    display: none;
+.om-controls__buffer {
     /* -webkit-appearance: none;
     -moz-appearance: none;
     background: 0 0;
     border: none;
     border-radius: 100px;
-    color: #3498db;
+    color: #485f6e;
     height: 8px;
     left: 0;
     padding: 0;
@@ -205,8 +204,17 @@
     top: 50%;
     -webkit-transition: none;
     transition: none;
-    vertical-align: top;
-    z-index: 1; */
+    vertical-align: top; */
+    background-size: 0;
+    height: 8px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 0;
+    z-index: 0;
+}
+.om-controls__buffer::-webkit-progress-bar {
+    background-color: #485f6e;
 }
 .om-ads--active .om-controls__progress {
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fecb2f), color-stop(100%, #fecb2f));
