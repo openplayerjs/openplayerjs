@@ -28,7 +28,7 @@ class Captions {
         this.trackUrlList = {};
         this.tracks = {};
         this.button = document.createElement('button');
-        this.button.className = 'om-controls__captions';
+        this.button.className = 'om-controls__captions om-control__right';
         this.button.setAttribute('aria-controls', player.uid);
         this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
@@ -57,7 +57,7 @@ class Captions {
 
         if (this.trackList.length > 1) {
             this.settings = document.createElement('button');
-            this.settings.className = 'om-controls__settings';
+            this.settings.className = 'om-controls__settings om-control__right';
             this.settings.setAttribute('aria-controls', player.uid);
             this.settings.innerHTML = '<span class="om-sr">Player Settings</span>';
         }

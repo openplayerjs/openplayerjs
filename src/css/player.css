@@ -65,6 +65,12 @@
     border: none;
     cursor: pointer;
 }
+.om-control__right {
+    margin-left: auto;
+}
+.om-control__right ~ .om-control__right {
+    margin-left: 0;
+}
 .om-controls > button:before {
     color: #fff;
     display: inline-block;
@@ -302,9 +308,6 @@
 }
 
 /* == Captions =============== */
-.om-controls__captions{
-    margin-left: auto;
-}
 .om-captions__container {
     bottom: 0;
     color: #fff;

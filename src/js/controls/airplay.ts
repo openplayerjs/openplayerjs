@@ -18,7 +18,7 @@ class AirPlay {
         this.events = {};
         this.canUseAirplay = (window as any).WebKitPlaybackTargetAvailabilityEvent;
         this.button = document.createElement('button');
-        this.button.className = 'om-controls__airplay';
+        this.button.className = 'om-controls__airplay om-control__right';
         this.button.innerHTML = '<span class="om-sr">AirPlay</span>';
 
         this.button.addEventListener('click', () => {
