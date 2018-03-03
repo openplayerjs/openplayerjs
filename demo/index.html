@@ -69,7 +69,6 @@
             sourcesSelector[i].addEventListener('change', function () {
                 const id = this.closest('.players').querySelector('.om-player').id;
                 const player = OpenPlayer.instances[id];
-                console.log(OpenPlayer.instances);
 
                 player.src = this.value.replace('&amp;', '&');
                 player.load();
