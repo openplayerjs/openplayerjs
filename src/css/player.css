@@ -46,7 +46,7 @@
     background: rgba(0, 0, 0, 0.2);
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
-    bottom: 4px;
+    bottom: 0;
     color: #fff;
     display: flex;
     font-size: 0.85em;
@@ -75,7 +75,7 @@
     -webkit-user-select: none;
     user-select: none;
 }
-.om-controls > .om-controls__progress-bar {
+.om-controls > .om-controls__progress {
     flex-grow: 2;
 }
 .om-controls > button {
@@ -157,23 +157,23 @@
 }
 
 /* === Progress =================== */
-.om-controls__progress-bar {
+.om-controls__progress {
     display: inline-block;
     margin-left: 10px;
     position: relative;
 }
-.om-player__video .om-controls__progress-bar {
+.om-player__video .om-controls__progress {
     bottom: 40px;
     margin-left: -8px;
     position: absolute;
     width: 100%;
 }
-.om-controls__progress {
+.om-controls__progress--seek {
     background: transparent;
 }
-.om-controls__progress,
-.om-controls__buffer,
-.om-controls__played {
+.om-controls__progress--seek,
+.om-controls__progress--buffer,
+.om-controls__progress--played {
     -webkit-appearance: none;
     -moz-appearance: none;
     height: 5px;
@@ -184,12 +184,12 @@
     transition: none;
     width: 100%;
 }
-.om-player__audio .om-controls__progress,
-.om-player__audio .om-controls__buffer,
-.om-player__audio .om-controls__played {
+.om-player__audio .om-controls__progress--seek,
+.om-player__audio .om-controls__progress--buffer,
+.om-player__audio .om-controls__progress--played {
     margin-top: 8px;
 }
-.om-controls__progress::-webkit-slider-thumb {
+.om-controls__progress--seek::-webkit-slider-thumb {
     -webkit-appearance: none;
     -moz-appearance: none;
     background: #fff;
@@ -202,43 +202,43 @@
     position: relative;
     width: 12px;
 }
-.om-controls__buffer {
+.om-controls__progress--buffer {
     background: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.25);
 }
-.om-controls__played {
+.om-controls__progress--played {
     background: 0 0;
     color: #f00;
     -webkit-transition: none;
     transition: none;
     z-index: 1;
 }
-.om-controls__buffer::-webkit-progress-bar,
-.om-controls__played::-webkit-progress-bar {
+.om-controls__progress--buffer::-webkit-progress-bar,
+.om-controls__progress--played::-webkit-progress-bar {
     background: 0 0;
 }
-.om-controls__buffer::-webkit-progress-value,
-.om-controls__played::-webkit-progress-value {
+.om-controls__progress--buffer::-webkit-progress-value,
+.om-controls__progress--played::-webkit-progress-value {
     background: currentColor;
     min-width: 8px;
 }
-.om-controls__buffer::-webkit-progress-value {
+.om-controls__progress--buffer::-webkit-progress-value {
     -webkit-transition: width 0.2s ease;
     transition: width 0.2s ease;
 }
-.om-controls__played::-webkit-progress-value {
+.om-controls__progress--played::-webkit-progress-value {
     max-width: 99%;
     min-width: 8px;
     -webkit-transition: none;
     transition: none;
 }
-.om-ads--active .om-controls__progress {
+.om-ads--active .om-controls__progress--seek {
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fecb2f), color-stop(100%, #fecb2f));
 }
-.om-ads--active .om-controls__progress::-webkit-slider-thumb {
+.om-ads--active .om-controls__progress--seek::-webkit-slider-thumb {
     display: none;
 }
-.om-ads--active .om-controls__progress::-webkit-slider-runnable-track {
+.om-ads--active .om-controls__progress--seek::-webkit-slider-runnable-track {
     cursor: default;
 }
 
@@ -250,77 +250,6 @@
 }
 .om-controls__volume:focus {
     outline: none;
-}
-.om-controls__volume::-webkit-slider-runnable-track {
-    background: #f00;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    height: 6px;
-    width: 100%;
-}
-.om-controls__volume::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    background:#f00;
-    border: 0 solid rgba(255, 0, 0, 0);
-    border-radius: 25px;
-    cursor: pointer;
-    height: 15px;
-    margin-top: -4.5px;
-    width: 15px;
-}
-.om-controls__volume:focus::-webkit-slider-runnable-track {
-    background: #ff0505;
-}
-.om-controls__volume::-moz-range-track {
-    background: #f00;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    height: 6px;
-    width: 100%;
-}
-.om-controls__volume::-moz-range-thumb {
-    background: #f00;
-    border: 0 solid rgba(255, 0, 0, 0);
-    border-radius: 25px;
-    box-shadow: 0 0 0 #f00, 0 0 0 #ff1a1a;
-    cursor: pointer;
-    height: 15px;
-    width: 15px;
-}
-.om-controls__volume::-ms-track {
-    background: transparent;
-    border-color: transparent;
-    color: transparent;
-    cursor: pointer;
-    height: 6px;
-    width: 100%;
-}
-.om-controls__volume::-ms-fill-lower {
-    background: #fa0000;
-    border: none;
-    border-radius: 0;
-}
-.om-controls__volume::-ms-fill-upper {
-    background: #f00;
-    border: none;
-    border-radius: 0;
-}
-.om-controls__volume::-ms-thumb {
-    background: #f00;
-    border: 0 solid rgba(255, 0, 0, 0);
-    border-radius: 25px;
-    box-shadow: 0 0 0 #f00, 0 0 0 #ff1a1a;
-    cursor: pointer;
-    height: 15px;
-    width: 15px;
-}
-.om-controls__volume:focus::-ms-fill-lower {
-    background: #f00;
-}
-.om-controls__volume:focus::-ms-fill-upper {
-    background: #ff0505;
 }
 
 /* == Fullscreen ============= */
@@ -409,11 +338,11 @@ video:-webkit-media-text-track-display {
 /* === Focus =================== */
 .om-player:focus,
 .om-player > .om-controls > *:focus,
-.om-player > .om-controls .om-controls__progress:focus {
+.om-player > .om-controls .om-controls__progress--seek:focus {
     outline: dotted 1px #999;
 }
 .om-player.om-player__keyboard--inactive:focus,
 .om-player.om-player__keyboard--inactive > .om-controls > *:focus,
-.om-player.om-player__keyboard--inactive > .om-controls .om-controls__progress:focus {
+.om-player.om-player__keyboard--inactive > .om-controls .om-controls__progress--seek:focus {
     outline: none;
 }

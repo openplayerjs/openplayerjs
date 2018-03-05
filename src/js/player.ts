@@ -2,6 +2,7 @@ import IFile from './components/interfaces/media/file';
 import Controls from './controls';
 import Media from './media';
 import Ads from './media/ads';
+import { IS_IPHONE } from './utils/constants';
 import { isAudio, isIframe, isVideo } from './utils/general';
 
 /**
@@ -51,7 +52,11 @@ class Player {
             this._prepareMedia();
             this._wrapInstance();
             this._createUID();
-            this._createControls();
+
+            // Let QuickTime render its own controls for video in iPhone
+            if (!IS_IPHONE && isVideo) {
+                this._createControls();
+            }
             Player.instances[this.uid] = this;
         }
     }

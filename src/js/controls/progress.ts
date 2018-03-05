@@ -13,31 +13,30 @@ class Progress {
 
     /**
      *
-     * @param {Media} player
+     * @param {Player} player
      * @returns {Progress}
      * @memberof Progress
      */
     constructor(player: Player) {
         this.player = player;
         this.progress = document.createElement('div');
-        this.progress.className = 'om-controls__progress-bar';
+        this.progress.className = 'om-controls__progress';
 
         this.slider = document.createElement('input');
         this.slider.type = 'range';
-        this.slider.className = 'om-controls__progress';
+        this.slider.className = 'om-controls__progress--seek';
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('max', '0');
         this.slider.setAttribute('step', '0.1');
         this.slider.value = '0';
-        this.slider.innerHTML = '<span class="om-controls__progress-bar"></span>';
 
         this.buffer = document.createElement('progress');
-        this.buffer.className = 'om-controls__buffer';
+        this.buffer.className = 'om-controls__progress--buffer';
         this.buffer.setAttribute('max', '100');
         this.buffer.value = 0;
 
         this.played = document.createElement('progress');
-        this.played.className = 'om-controls__played';
+        this.played.className = 'om-controls__progress--played';
         this.played.setAttribute('max', '100');
         this.played.setAttribute('role', 'presentation');
         this.played.value = 0;
@@ -54,8 +53,6 @@ class Progress {
                 this.slider.setAttribute('max', `${el.duration}`);
                 const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
-                (this.slider.firstChild as HTMLElement).style.width =
-                    `${((current / el.duration) * 100)}%`;
             // } else {
             //     this.slider.style.display = 'none';
             }
@@ -82,8 +79,6 @@ class Progress {
                 const min = parseFloat(this.slider.min);
                 const max = parseFloat(this.slider.max);
                 this.slider.value = current.toString();
-                (this.slider.firstChild as HTMLElement).style.width =
-                    `${((current / el.duration) * 100)}%`;
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
 
                 const currentEl = e.target;
