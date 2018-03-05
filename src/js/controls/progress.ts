@@ -7,7 +7,7 @@ class Progress {
     private slider: HTMLInputElement;
     private buffer: HTMLProgressElement;
     private progress: HTMLDivElement;
-    // private played: HTMLProgressElement;
+    private played: HTMLProgressElement;
     private events: IEvent;
     private sliderEvents: IEvent;
 
@@ -36,13 +36,14 @@ class Progress {
         this.buffer.setAttribute('max', '100');
         this.buffer.value = 0;
 
-        // this.played = document.createElement('progress');
-        // this.played.className = 'om-controls__played';
-        // this.played.setAttribute('max', '100');
-        // this.played.value = 0;
+        this.played = document.createElement('progress');
+        this.played.className = 'om-controls__played';
+        this.played.setAttribute('max', '100');
+        this.played.setAttribute('role', 'presentation');
+        this.played.value = 0;
 
         this.progress.appendChild(this.slider);
-        // this.progress.appendChild(this.played);
+        this.progress.appendChild(this.played);
         this.progress.appendChild(this.buffer);
 
         this.events = {};
@@ -64,14 +65,13 @@ class Progress {
             if (el.duration > 0) {
                 for (let i = 0, total = el.buffered.length; i < total; i++) {
                     if (el.buffered.start(el.buffered.length - 1 - i) < el.currentTime) {
-                        this.buffer.style.width =
-                            `${(el.buffered.end(e.target.buffered.length - 1 - i) / el.duration) * 100}%`;
+                        this.buffer.value = (el.buffered.end(e.target.buffered.length - 1 - i) / el.duration) * 100;
                         break;
                     }
                 }
             }
         };
-        this.events['timeupdate'] = () => {
+        this.events['timeupdate'] = (e: any) => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 if (!this.slider.getAttribute('max')) {
@@ -85,6 +85,11 @@ class Progress {
                 (this.slider.firstChild as HTMLElement).style.width =
                     `${((current / el.duration) * 100)}%`;
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
+
+                const currentEl = e.target;
+                if (currentEl.duration > 0) {
+                    this.played.value = ((currentEl.currentTime / currentEl.duration) * 100);
+                }
             // } else {
             //     this.slider.style.display = 'none';
             }
