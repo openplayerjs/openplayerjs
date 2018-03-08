@@ -1,13 +1,11 @@
 import IEvent from '../components/interfaces/general/event';
-// import { addEvent } from '../events';
 import Player from '../player';
-import { getAbsoluteUrl, request } from '../utils/general';
+import { getAbsoluteUrl, hasClass, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
 class Captions {
     public player: Player;
     private button: HTMLButtonElement;
-    private settings: HTMLButtonElement;
     private captions: HTMLDivElement;
     private events: IEvent;
     private tracks: any;
@@ -45,9 +43,8 @@ class Captions {
             this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);
         }
 
-        console.log(this.trackUrlList);
-
         for (let i = 0, total = this.trackList.length; i < total; i++) {
+            // Determine default or make first caption visible
             this.trackList[i].mode = 'hidden';
         }
 
@@ -55,67 +52,22 @@ class Captions {
         this.captions = document.createElement('div');
         this.captions.className = 'om-captions__container';
 
-        if (this.trackList.length > 1) {
-            this.settings = document.createElement('button');
-            this.settings.className = 'om-controls__settings om-control__right';
-            this.settings.setAttribute('aria-controls', player.uid);
-            this.settings.innerHTML = '<span class="om-sr">Player Settings</span>';
+        if (this.trackList.length <= 1) {
+            return this;
         }
 
-        const subtitleMenuButtons: any = [];
-        const createMenuItem = (id: string, lang: string, label: string) => {
-            const listItem = document.createElement('li');
-            const button = listItem.appendChild(document.createElement('button'));
-            button.setAttribute('id', id);
-            button.className = 'om-controls__subtitles-button';
-            if (lang.length > 0) {
-                button.setAttribute('lang', lang);
+        // Assign event to caption options
+        document.addEventListener('click', (e: any) => {
+            if (hasClass(e.target, 'om-subtitles__option')) {
+                const button = e.target;
+                const language = button.getAttribute('data-value').replace('captions-', '');
+                this.current = Array.from(this.trackList).filter(item => item.language === language);
+                this._displayCaptions();
             }
-            button.value = label;
-            button.setAttribute('data-state', 'inactive');
-            button.appendChild(document.createTextNode(label));
-            button.addEventListener('click', () => {
-                // Set all buttons to inactive
-                subtitleMenuButtons.map((v: any) => {
-                    v.setAttribute('data-state', 'inactive');
-                });
-                // Find the language to activate
-                const language = button.getAttribute('lang');
-                for (let i = 0, total = this.trackList.length; i < total; i++) {
-                    // For the 'subtitles-off' button, the first condition will never match so all
-                    // will subtitles be turned off
-                    if (this.trackList[i].language === language) {
-                        this.current = this.trackList[i];
-                        this._displayCaptions();
-                        button.setAttribute('data-state', 'active');
-                    } else {
-                        this.trackList[i].mode = 'hidden';
-                    }
-                }
-                subtitlesMenu.style.display = 'none';
-            });
-            subtitleMenuButtons.push(button);
-            return listItem;
-        };
-
-        let subtitlesMenu: any;
-        const df = document.createDocumentFragment();
-        subtitlesMenu = df.appendChild(document.createElement('ul'));
-        subtitlesMenu.className = 'om-controls__subtitles-menu';
-        subtitlesMenu.appendChild(createMenuItem('subtitles-off', '', 'Off'));
-        for (let i = 0, total = this.trackList.length; i < total; i++) {
-            subtitlesMenu.appendChild(createMenuItem(
-                `om-controls__subtitles-${this.trackList[i].language}`,
-                this.trackList[i].language,
-                this.trackList[i].label,
-            ));
-        }
-        this.player.element.parentNode.appendChild(subtitlesMenu);
+        });
 
         this.button.addEventListener('click', () => {
-            if (subtitlesMenu) {
-                subtitlesMenu.style.display = (subtitlesMenu.style.display === 'block' ? 'none' : 'block');
-            }
+            // Show/hide captions
         });
 
         return this;
@@ -154,12 +106,23 @@ class Captions {
             target.insertBefore(this.captions, target.firstChild);
 
             controls.appendChild(this.button);
-
-            if (this.trackList.length > 1) {
-                controls.appendChild(this.settings);
-            }
         }
         return this;
+    }
+
+    public addSettingsMenu() {
+        const subitems = [{key: 'off', label: 'Off'}];
+        // Build object based on available languages
+        for (let i = 0, total = this.trackList.length; i < total; i++) {
+            subitems.push({key: this.trackList[i].language, label: this.trackList[i].label});
+        }
+        return {
+            className: 'om-subtitles__option',
+            default: 'off',
+            key: 'captions',
+            name: 'Subtitles/CC',
+            subitems,
+        };
     }
 
     private _getCues(webvttText: string) {
@@ -220,6 +183,9 @@ class Captions {
     // }
 
     private _displayCaptions() {
+        if (typeof this.current.cues === 'undefined') {
+            return;
+        }
         if (!this.current.cues.length) {
             request(getAbsoluteUrl(this.trackUrlList[this.current.language]), 'text', d => {
                 this.tracks[this.current.language] = this._getCues(d);

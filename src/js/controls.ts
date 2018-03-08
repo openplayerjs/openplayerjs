@@ -1,8 +1,9 @@
-import AirPlay from './controls/airplay';
+// import AirPlay from './controls/airplay';
 import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Play from './controls/play';
 import Progress from './controls/progress';
+import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
 import Media from './media';
@@ -19,6 +20,7 @@ class Controls {
     public media: Media;
     public controls: any[];
     public container: HTMLDivElement;
+    public settings: Settings;
 
     /**
      * Creates an instance of Controls.
@@ -36,12 +38,15 @@ class Controls {
             new Volume(player),
         ];
 
+        this.settings = new Settings(player);
+
         if (isVideo(this.media.element)) {
             this.controls.push(new Captions(player));
+            this.controls.push(this.settings);
             this.controls.push(new Fullscreen(player));
+        } else {
+            this.controls.push(this.settings);
         }
-
-        this.controls.push(new AirPlay(player.media));
 
         this.container = null;
 
@@ -54,7 +59,15 @@ class Controls {
 
         // Loop controls to build them and register events
         this.controls.forEach(item => {
-            item.build(this.container).register();
+            item.build(this.container);
+
+            if (typeof item.addSettingsMenu === 'function') {
+                const menuItem = item.addSettingsMenu();
+                this.settings.addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems,
+                    menuItem.className);
+            }
+
+            item.register();
         });
     }
 

@@ -15,6 +15,9 @@
     min-height: 32px;
     position: relative;
 }
+.om-player__video {
+    overflow: hidden;
+}
 .om-player,
 .om-player *,
 .om-player ::after,
@@ -154,6 +157,76 @@
 }
 .om-controls__settings:before { 
     content: '\e800'; 
+}
+
+/* === Settings =================== */
+.om-settings {
+    background: rgba(28, 28, 28, 0.9);
+    bottom: 49px;
+    color: #fff;
+    overflow: hidden;
+    position: absolute;
+    right: 5px;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+    -moz-transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
+    -webkit-transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
+    transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    will-change: width,height;
+    z-index: 3;
+}
+.om-settings[aria-hidden='true'] {
+    display: none;
+}
+.om-settings__menu {
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0;
+}
+.om-settings__menu-item,
+.om-settings__submenu-item {
+    display: table-row;
+    outline: none;
+    padding: 0;
+}
+.om-settings__menu-label,
+.om-settings__submenu-label {
+    display: table-cell;
+    padding: 5px 15px;
+    vertical-align: middle;
+}
+.om-settings__submenu-item,
+.om-settings__submenu-label {
+    display: block;
+}
+.om-settings__submenu-item {
+    cursor: pointer;
+}
+.om-settings__submenu-item[aria-checked='true'] .om-settings__submenu-label {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJNOSAxNi4yTDQuOCAxMmwtMS40IDEuNEw5IDE5IDIxIDdsLTEuNC0xLjRMOSAxNi4yeiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=');
+    background-position: left 4px center;
+    background-repeat: no-repeat;
+    -moz-background-size: 18px;
+    -webkit-background-size: 18px;
+    background-size: 18px;
+    padding: 8px 15px 8px 25px;
+}
+.om-settings__menu-content {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJtIDEyLjU5LDIwLjM0IDQuNTgsLTQuNTkgLTQuNTgsLTQuNTkgMS40MSwtMS40MSA2LDYgLTYsNiB6IiBmaWxsPSIjZmZmIiAvPjwvc3ZnPg==');
+    background-position: right 0 center;
+    background-repeat: no-repeat;
+    -moz-background-size: 32px 32px;
+    -webkit-background-size: 32px 32px;
+    background-size: 32px 32px;
+    cursor: pointer;
+    display: table-cell;
+    padding: 0 15px;
+    padding-right: 38px;
+    vertical-align: middle;
 }
 
 /* === Progress =================== */

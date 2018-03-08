@@ -135,3 +135,7 @@ export function request(url: string, dataType: string, success: (n: any) => any,
         xhr.send();
     }
 }
+
+export function hasClass(target: any, className: string) {
+    return target.className.split(' ').indexOf(className) > -1;
+}
