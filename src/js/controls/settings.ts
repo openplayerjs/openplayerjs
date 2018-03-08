@@ -73,7 +73,7 @@ class Settings {
             <div class="om-settings__menu-content">${submenu.find(x => x.key === defaultValue).label}</div>`;
 
         this.menu.querySelector('.om-settings__menu').appendChild(menuItem);
-        const mainMenu = this.menu.innerHTML;
+        let mainMenu = this.menu.innerHTML;
 
         // Store the submenu to reach all options for current menu item
         if (submenu) {
@@ -98,17 +98,20 @@ class Settings {
             } else if (hasClass(e.target, 'om-settings__menu-content') && typeof this.submenu[key] !== undefined) {
                 this.menu.innerHTML = this.submenu[key];
             } else if (hasClass(e.target, 'om-settings__submenu-label')) {
+                // Update values in submenu and store
                 this.menu.querySelector('.om-settings__submenu-item[aria-checked=true]').setAttribute('aria-checked', 'false');
                 e.target.parentNode.setAttribute('aria-checked', 'true');
                 this.submenu[key] = this.menu.innerHTML;
                 const value = e.target.getAttribute('data-value').replace(`${key}-`, '');
                 const label = e.target.innerText;
                 this.menu.style.display = 'none';
+
                 // Restore original menu, and set the new value
                 this.menu.innerHTML = mainMenu;
                 const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
                 prev.setAttribute('data-value', `${key}-${value}`);
                 prev.nextElementSibling.innerHTML = label;
+                mainMenu = this.menu.innerHTML;
             }
         });
     }
