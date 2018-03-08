@@ -111,6 +111,9 @@ class Captions {
     }
 
     public addSettingsMenu() {
+        if (!this.hasTracks) {
+            return {};
+        }
         const subitems = [{key: 'off', label: 'Off'}];
         // Build object based on available languages
         for (let i = 0, total = this.trackList.length; i < total; i++) {

@@ -63,8 +63,15 @@ class Controls {
 
             if (typeof item.addSettingsMenu === 'function') {
                 const menuItem = item.addSettingsMenu();
-                this.settings.addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems,
-                    menuItem.className);
+                if (Object.keys(menuItem).length) {
+                    this.settings.addItem(
+                        menuItem.name,
+                        menuItem.key,
+                        menuItem.default,
+                        menuItem.subitems,
+                        menuItem.className,
+                    );
+                }
             }
 
             item.register();
