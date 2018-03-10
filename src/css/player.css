@@ -334,7 +334,7 @@
 }
 
 /* == Captions =============== */
-.om-captions__container {
+.om-captions {
     bottom: 0;
     color: #fff;
     display: none;
@@ -351,38 +351,15 @@
     transition: transform 0.3s ease,-webkit-transform 0.3s ease;
     width: 100%;
 }
-.om-captions__container > span {
+.om-captions--on {
+    display: block;
+}
+.om-captions > span {
     background: rgba(0, 0, 0, 0.7);
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
     line-height: 150%;
     padding: 3px 10px;
-}
-.om-controls__subtitles-menu {
-    background:#666;
-    bottom: 14.8%;
-    display: none;
-    list-style-type: none;
-    margin: 0;
-    padding: 10px;
-    position: absolute;
-    right: 20px;
-    width: 100px;
-}
-.om-controls__subtitles-menu li {
-    padding:0;
-    text-align:center;
-}
-.om-controls__subtitles-menu li button {
-    background:#000;
-    border:none;
-    -moz-border-radius:2px;
-    -webkit-border-radius:2px;
-    border-radius:2px;
-    color:#fff;
-    cursor:pointer;
-    padding:2px 5px;
-    width:90%;
 }
 
 /* WebVTT cues */
