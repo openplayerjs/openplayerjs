@@ -79,6 +79,14 @@ class Volume {
             updateSlider(el);
             updateButton(el);
         };
+        this.events['loadedmetadata'] = () => {
+            const el = this.player.activeElement();
+            if (el.muted) {
+                el.volume = 0;
+                const e = addEvent('volumechange');
+                this.player.element.dispatchEvent(e);
+            }
+        };
         this.sliderEvents = {};
         this.sliderEvents['input'] = updateVolume.bind(this);
         this.sliderEvents['change'] = updateVolume.bind(this);
@@ -107,8 +115,9 @@ class Volume {
      */
     public register() {
         this.button.addEventListener('click', this.buttonEvents['click']);
-
-        this.player.media.element.addEventListener('volumechange', this.events['volumechange']);
+        Object.keys(this.events).forEach(event => {
+            this.player.media.element.addEventListener(event, this.events[event]);
+        });
 
         Object.keys(this.sliderEvents).forEach(event => {
             this.slider.addEventListener(event, this.sliderEvents[event]);

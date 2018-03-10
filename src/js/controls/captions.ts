@@ -50,8 +50,25 @@ class Captions {
 
         // Build container to display captions to mitigate cross browser inconsistencies
         this.captions = document.createElement('div');
-        this.captions.className = 'om-captions__container';
+        this.captions.className = 'om-captions';
+        this.captions.innerHTML = '<span></span>';
 
+        // Assign by default first track
+        this.current = this.trackList[0];
+
+        // Show/hide captions
+        this.button.addEventListener('click', (e: any) => {
+            const button = (e.target as HTMLDivElement);
+            if (hasClass(button, 'om-controls__captions--on')) {
+                this._hide();
+                button.classList.remove('om-controls__captions--on');
+            } else {
+                this._show();
+                button.classList.add('om-controls__captions--on');
+            }
+        });
+
+        // For the following workflow it is required to have more than 1 language available
         if (this.trackList.length <= 1) {
             return this;
         }
@@ -59,15 +76,11 @@ class Captions {
         // Assign event to caption options
         document.addEventListener('click', (e: any) => {
             if (hasClass(e.target, 'om-subtitles__option')) {
-                const button = e.target;
-                const language = button.getAttribute('data-value').replace('captions-', '');
-                this.current = Array.from(this.trackList).filter(item => item.language === language);
-                this._displayCaptions();
+                const option = e.target;
+                const language = option.getAttribute('data-value').replace('captions-', '');
+                this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
+                this._show();
             }
-        });
-
-        this.button.addEventListener('click', () => {
-            // Show/hide captions
         });
 
         return this;
@@ -111,7 +124,7 @@ class Captions {
     }
 
     public addSettingsMenu() {
-        if (!this.hasTracks) {
+        if (this.trackList.length <= 1) {
             return {};
         }
         const subitems = [{key: 'off', label: 'Off'}];
@@ -133,11 +146,11 @@ class Captions {
         const entries = [];
         const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
         let timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
-        timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*)$';
+        timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*?)$';
         const regexp = new RegExp(timePattern);
 
         let timecode;
-        let text;
+        let cue;
         let identifier;
 
         for (let i = 0, total = lines.length; i < total; i++) {
@@ -149,22 +162,21 @@ class Captions {
                 }
                 i++;
                 // grab all the (possibly multi-line) text that follows
-                const line = lines[i];
-                text = line;
+                cue = lines[i];
                 i++;
-                while (line !== '' && i < lines.length) {
-                    text = `${text}\n${line}`;
+                while (lines[i] !== '' && i < lines.length) {
+                    cue = `${cue}\n${lines[i]}`;
                     i++;
                 }
-                text = text.replace(urlRegexp, "<a href='$1' target='_blank'>$1</a>");
+                cue = cue.trim().replace(urlRegexp, "<a href='$1' target='_blank'>$1</a>");
                 const initTime = timeToSeconds(timecode[1]);
 
                 entries.push({
                     identifier,
-                    settings: timecode[5],
+                    settings: timecode[5] || {},
                     start: (initTime === 0) ? 0.200 : initTime,
                     stop: timeToSeconds(timecode[3]),
-                    text,
+                    text: cue,
                 });
             }
             identifier = '';
@@ -172,31 +184,103 @@ class Captions {
         return entries;
     }
 
-    // private _load() {
-    //     const el = (this.player.element as HTMLVideoElement);
-    //     const tracks = el.querySelectorAll('track');
-    //     for (let i = 0, total = tracks.length; i < total; i++) {
-    //         request(tracks[i].src, 'text', d => {
-    //             this.tracks[tracks[i].lang] = this._parse(d);
-    //             // this._enable(this.tracks[tracks[i].lang]);
-    //         }, () => {
-    //             // this._remove(this.tracks[tracks[i].lang);
-    //         });
-    //     }
-    // }
-
-    private _displayCaptions() {
+    private _show() {
         if (typeof this.current.cues === 'undefined') {
             return;
         }
+
+        this.captions.classList.add('om-captions--on');
+        const container = this.captions.querySelector('span');
+
         if (!this.current.cues.length) {
             request(getAbsoluteUrl(this.trackUrlList[this.current.language]), 'text', d => {
                 this.tracks[this.current.language] = this._getCues(d);
+
+                const currentCues = this.tracks[this.current.language];
+
+                // Use `timeupdate` to update remote captions
+                this.player.element.addEventListener('timeupdate', () => {
+                    const el = this.player.activeElement();
+                    let i = this._search(currentCues, el.currentTime);
+                    container.innerHTML = '';
+                    if (i > -1 && hasClass(this.button, 'om-controls__captions--on')) {
+                        this.captions.classList.add('om-captions--on');
+                        container.innerHTML = currentCues[i].text;
+                    } else {
+                        this._hide();
+                    }
+                });     
             });
         } else {
-            this.tracks[this.current.language] = this.current.cues;
+            this.current.oncuechange = function () {
+                const cue = this.activeCues[0];
+                if (cue) {
+                    container.innerHTML = '';
+                    container.appendChild(cue.getCueAsHTML());
+                }
+            };
         }
     }
+
+    private _hide() {
+        this.captions.classList.remove('om-captions--on')
+    }
+
+    private _search (tracks: any[], currentTime: number) {
+        let lo = 0;
+        let hi = tracks.length;
+        let mid;
+        let start;
+        let stop;
+
+		while (lo <= hi) {
+            mid = ((lo + hi) >> 1);
+			start = tracks[mid].start;
+			stop = tracks[mid].stop;
+
+			if (currentTime >= start && currentTime < stop) {
+				return mid;
+			} else if (start < currentTime) {
+				lo = mid + 1;
+			} else if (start > currentTime) {
+				hi = mid - 1;
+			}
+		}
+
+		return -1;
+    }
+
+    // private _sanitize (html: string) {
+    //     const div = document.createElement('div');
+    //     div.innerHTML = html;
+
+    //     // Remove all `<script>` tags first
+    //     const scripts = div.getElementsByTagName('script');
+    //     let i = scripts.length;
+    //     while (i--) {
+    //         scripts[i].remove();
+    //     }
+
+    //     // Loop the elements and remove anything that contains value="javascript:" or an `on*` attribute
+    //     // (`onerror`, `onclick`, etc.)
+    //     const allElements = div.getElementsByTagName('*');
+    //     for (let i = 0, n = allElements.length; i < n; i++) {
+    //         const
+    //             attributesObj = allElements[i].attributes,
+    //             attributes = Array.prototype.slice.call(attributesObj)
+    //         ;
+
+    //         for (let j = 0, total = attributes.length; j < total; j++) {
+    //             if (attributes[j].name.startsWith('on') || attributes[j].value.startsWith('javascript')) {
+    //                 allElements[i].remove();
+    //             } else if (attributes[j].name === 'style') {
+    //                 allElements[i].removeAttribute(attributes[j].name);
+    //             }
+    //         }
+
+    //     }
+    //     return div.innerHTML;
+    // }
 }
 
 export default Captions;
