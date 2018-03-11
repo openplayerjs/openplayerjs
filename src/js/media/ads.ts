@@ -94,8 +94,6 @@ class Ads {
         this.adsContainer.id = 'om-ads';
         this.media.element.parentNode.insertBefore(this.adsContainer, this.media.element.nextSibling);
 
-        this.media.element.parentNode.classList.add('om-ads--active');
-
         // Create responsive ad
         window.addEventListener('resize', this.resizeAds.bind(this));
 
@@ -228,7 +226,6 @@ class Ads {
                     const loadedEvent = addEvent('loadedmetadata');
                     this.media.element.dispatchEvent(loadedEvent);
 
-                    this.media.element.parentNode.classList.add('om-ads--active');
                     this.adsCurrentTime = this.adsManager.getRemainingTime();
                     const timeEvent = addEvent('timeupdate');
                     this.media.element.dispatchEvent(timeEvent);
@@ -236,6 +233,7 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
+                    this.media.element.parentNode.classList.add('om-ads--active');
                     if (this.media.ended) {
                         this.adsActive = true;
                         this.adsEnded = false;

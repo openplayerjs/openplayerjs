@@ -89,6 +89,10 @@ class Progress {
             //     this.slider.style.display = 'none';
             }
         };
+        this.events['ended'] = () => {
+            this.slider.style.backgroundSize = '0% 100%';
+            this.buffer.value = 0;
+        };
 
         const updateSlider = (e: any) => {
             const el = this.player.activeElement();
