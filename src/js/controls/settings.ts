@@ -1,4 +1,5 @@
 import IEvent from '../components/interfaces/general/event';
+import Media from '../media';
 import Player from '../player';
 import { hasClass } from '../utils/general';
 
@@ -45,6 +46,10 @@ class Settings {
         document.addEventListener('click', (e: any) => {
             if (hasClass(e.target, 'om-speed__option')) {
                 const option = e.target;
+                const el = this.player.activeElement();
+                if (el instanceof Media) {
+                    el.playbackRate = parseFloat(option.getAttribute('data-value').replace('speed-', ''));
+                }
             }
         });
 

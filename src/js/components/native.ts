@@ -38,6 +38,14 @@ export default class Native implements IType {
         this.element.muted = value;
     }
 
+    get playbackRate() {
+        return this.element.playbackRate;
+    }
+
+    set playbackRate(value) {
+        this.element.playbackRate = value;
+    }
+
     get muted() {
         return this.element.muted;
     }
