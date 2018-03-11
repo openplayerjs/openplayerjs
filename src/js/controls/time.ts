@@ -35,21 +35,10 @@ class Time {
         this.duration.className = 'om-controls__duration';
         this.duration.innerHTML = '<span class="om-duration">0:00</span>';
 
-        this.events = {};
-        this.events['loadedmetadata'] = () => {
-            const el = this.player.activeElement();
-            if (el.duration !== Infinity && !isNaN(el.duration)) {
-                this.duration.innerText = formatTime(el.duration);
-                this.current.innerText = formatTime(el.currentTime);
-            } else {
-                this.duration.style.display = 'none';
-                this.delimiter.style.display = 'none';
-            }
-        };
-        this.events['timeupdate'] = () => {
+        const updateTime = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
-                if (!isNaN(el.duration) && !el.duration && this.duration.innerText !== el.duration) {
+                if (!isNaN(el.duration)) {
                     this.duration.innerText = formatTime(el.duration);
                 }
                 this.current.innerText = formatTime(el.currentTime);
@@ -61,6 +50,20 @@ class Time {
                 this.current.innerText = 'Live Broadcast';
             }
         };
+
+        this.events = {};
+        this.events['loadedmetadata'] = () => {
+            const el = this.player.activeElement();
+            if (el.duration !== Infinity && !isNaN(el.duration)) {
+                this.duration.innerText = formatTime(el.duration);
+                this.current.innerText = formatTime(el.currentTime);
+            } else {
+                this.duration.style.display = 'none';
+                this.delimiter.style.display = 'none';
+            }
+        };
+        this.events['timeupdate'] = updateTime.bind(this);
+        this.events['ads.ended'] = updateTime.bind(this);
 
         return this;
     }
