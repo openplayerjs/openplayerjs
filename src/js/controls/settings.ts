@@ -41,6 +41,13 @@ class Settings {
         this.submenu = {};
         this.events['click'] = this.clickEvent.bind(this);
 
+        // Assign event to speed options
+        document.addEventListener('click', (e: any) => {
+            if (hasClass(e.target, 'om-speed__option')) {
+                const option = e.target;
+            }
+        });
+
         return this;
     }
     /**
@@ -61,6 +68,24 @@ class Settings {
         this.events = {};
 
         return this;
+    }
+
+    public addSettingsMenu() {
+        return {
+            className: 'om-speed__option',
+            default: '1',
+            key: 'speed',
+            name: 'Speed',
+            subitems: [
+                {key: '0.25', label: '0.25'},
+                {key: '0.5', label: '0.5'},
+                {key: '0.75', label: '0.75'},
+                {key: '1', label: 'Normal'},
+                {key: '1.25', label: '1.25'},
+                {key: '1.5', label: '1.5'},
+                {key: '2', label: '2'},
+            ],
+        };
     }
 
     public addItem(name: string, key: string, defaultValue: string, submenu?: any[], className?: string) {
