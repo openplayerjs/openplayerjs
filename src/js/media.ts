@@ -135,6 +135,14 @@ class Media {
         return this.media.muted;
     }
 
+    get playbackRate() {
+        return this.media.playbackRate;
+    }
+
+    set playbackRate(value) {
+        this.media.playbackRate = value;
+    }
+
     set currentTime(value: number) {
         this.media.currentTime = value;
     }
