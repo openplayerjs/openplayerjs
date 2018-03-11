@@ -189,7 +189,6 @@ class Captions {
             return;
         }
 
-        this.captions.classList.add('om-captions--on');
         const container = this.captions.querySelector('span');
 
         if (!this.current.cues.length) {
@@ -212,6 +211,7 @@ class Captions {
                 });     
             });
         } else {
+            this.captions.classList.add('om-captions--on');
             this.current.oncuechange = function () {
                 const cue = this.activeCues[0];
                 if (cue) {
