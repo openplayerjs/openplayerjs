@@ -262,7 +262,7 @@ class Captions {
      */
     private _search(tracks: any[], currentTime: number) {
         let low = 0;
-        let high = tracks.length;
+        let high = tracks.length - 1;
         while (low <= high) {
             const mid = ((low + high) >> 1);
             const start = tracks[mid].start;
@@ -306,7 +306,7 @@ class Captions {
             const attributes = Array.prototype.slice.call(attributesObj);
 
             for (let j = 0, total = attributes.length; j < total; j++) {
-                if (attributes[j].name.startsWith('on') || attributes[j].value.startsWith('javascript')) {
+                if (/^(on|javascript:)/.test(attributes[j].name)) {
                     allElements[index].remove();
                 } else if (attributes[j].name === 'style') {
                     allElements[index].removeAttribute(attributes[j].name);
