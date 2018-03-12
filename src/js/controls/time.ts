@@ -1,4 +1,5 @@
 import IEvent from '../components/interfaces/general/event';
+import Media from '../media';
 import Player from '../player';
 import { formatTime } from '../utils/time';
 
@@ -25,7 +26,7 @@ class Time {
         this.player = player;
         this.current = document.createElement('time');
         this.current.className = 'om-controls__current';
-        this.current.innerHTML = '<span class="om-current">0:00</span>';
+        this.current.innerText = '0:00';
 
         this.delimiter = document.createElement('span');
         this.delimiter.className = 'om-controls__time-delimiter';
@@ -33,7 +34,7 @@ class Time {
 
         this.duration = document.createElement('time');
         this.duration.className = 'om-controls__duration';
-        this.duration.innerHTML = '<span class="om-duration">0:00</span>';
+        this.duration.innerText = '0:00';
 
         this.events = {};
         this.events['loadedmetadata'] = () => {
@@ -49,16 +50,22 @@ class Time {
         this.events['timeupdate'] = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
-                if (!isNaN(el.duration)) {
+                if (!isNaN(el.duration) && el.duration !== this.duration.innerText) {
                     this.duration.innerText = formatTime(el.duration);
+                    this.duration.style.display = 'initial';
+                    this.delimiter.style.display = 'initial';
                 }
                 this.current.innerText = formatTime(el.currentTime);
-                this.duration.style.display = 'initial';
-                this.delimiter.style.display = 'initial';
-            } else {
+            } else if (this.duration.style.display !== 'none') {
                 this.duration.style.display = 'none';
                 this.delimiter.style.display = 'none';
                 this.current.innerText = 'Live Broadcast';
+            }
+        };
+        this.events['ended'] = () => {
+            const el = this.player.activeElement();
+            if (el instanceof Media && this.duration.innerText !== '0:00') {
+                this.duration.innerText = formatTime(el.duration);
             }
         };
 

@@ -221,6 +221,7 @@ class Ads {
                     if (!this.media.paused) {
                         this.media.pause();
                     }
+                    this.media.element.parentNode.classList.add('om-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
                     const loadedEvent = addEvent('loadedmetadata');
@@ -233,14 +234,12 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
-                    this.media.element.parentNode.classList.add('om-ads--active');
                     if (this.media.ended) {
                         this.adsActive = true;
                         this.adsEnded = false;
                         const e = addEvent('ads.ended');
                         this.media.element.dispatchEvent(e);
                     }
-                    this.adsDuration = ad.getDuration();
                     this.intervalTimer = window.setInterval(() => {
                         this.adsCurrentTime = this.adsManager.getRemainingTime();
                         const e = addEvent('timeupdate');

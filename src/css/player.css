@@ -293,7 +293,6 @@
 .om-controls__progress--buffer::-webkit-progress-value,
 .om-controls__progress--played::-webkit-progress-value {
     background: currentColor;
-    min-width: 8px;
 }
 .om-controls__progress--buffer::-webkit-progress-value {
     -webkit-transition: width 0.2s ease;
@@ -301,7 +300,6 @@
 }
 .om-controls__progress--played::-webkit-progress-value {
     max-width: 99%;
-    min-width: 8px;
     -webkit-transition: none;
     transition: none;
 }

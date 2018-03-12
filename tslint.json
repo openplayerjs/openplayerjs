@@ -4,7 +4,7 @@
         "arrow-parens": false,
         "quotemark": [true, "single", "avoid-escape", "avoid-template"],
         "no-consecutive-blank-lines": true,
-        "no-bitwise": true,
+        "no-bitwise": false,
         "no-string-literal": false,
         "no-conditional-assignment": true,
         "no-arg": true,

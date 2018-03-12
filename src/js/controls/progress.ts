@@ -53,8 +53,6 @@ class Progress {
                 this.slider.setAttribute('max', `${el.duration}`);
                 const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
-            // } else {
-            //     this.slider.style.display = 'none';
             }
         };
         this.events['progress'] = (e: any) => {
@@ -71,7 +69,7 @@ class Progress {
         this.events['timeupdate'] = (e: any) => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
-                if (!this.slider.getAttribute('max')) {
+                if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0') {
                     this.slider.setAttribute('max', `${el.duration}`);
                 }
 
@@ -85,13 +83,13 @@ class Progress {
                 if (currentEl.duration > 0) {
                     this.played.value = ((currentEl.currentTime / currentEl.duration) * 100);
                 }
-            // } else {
-            //     this.slider.style.display = 'none';
             }
         };
         this.events['ended'] = () => {
             this.slider.style.backgroundSize = '0% 100%';
+            this.slider.setAttribute('max', '0');
             this.buffer.value = 0;
+            this.played.value = 0;
         };
 
         const updateSlider = (e: any) => {
