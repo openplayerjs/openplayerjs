@@ -122,7 +122,12 @@ class Captions {
         }
         return this;
     }
-
+    /**
+     * Add list of available captions in the Settings menu
+     *
+     * @returns {any}
+     * @memberof Captions
+     */
     public addSettingsMenu() {
         if (this.trackList.length <= 1) {
             return {};
@@ -140,7 +145,14 @@ class Captions {
             subitems,
         };
     }
-
+    /**
+     * Parse WebVTT text from external domain to emulate native cues
+     *
+     * @private
+     * @param {string} webvttText
+     * @returns {any[]}
+     * @memberof Captions
+     */
     private _getCues(webvttText: string) {
         const lines = webvttText.split(/\r?\n/);
         const entries = [];
@@ -149,12 +161,10 @@ class Captions {
         timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*?)$';
         const regexp = new RegExp(timePattern);
 
-        let timecode;
-        let cue;
         let identifier;
 
         for (let i = 0, total = lines.length; i < total; i++) {
-            timecode = regexp.exec(lines[i]);
+            const timecode = regexp.exec(lines[i]);
 
             if (timecode && i < lines.length) {
                 if ((i - 1) >= 0 && lines[i - 1] !== '') {
@@ -162,7 +172,7 @@ class Captions {
                 }
                 i++;
                 // grab all the (possibly multi-line) text that follows
-                cue = lines[i];
+                let cue = lines[i];
                 i++;
                 while (lines[i] !== '' && i < lines.length) {
                     cue = `${cue}\n${lines[i]}`;
@@ -183,7 +193,13 @@ class Captions {
         }
         return entries;
     }
-
+    /**
+     * Display current caption checking for cues or parsing remote source
+     *
+     * @private
+     * @returns {void}
+     * @memberof Captions
+     */
     private _show() {
         if (typeof this.current.cues === 'undefined') {
             return;
@@ -200,87 +216,105 @@ class Captions {
                 // Use `timeupdate` to update remote captions
                 this.player.element.addEventListener('timeupdate', () => {
                     const el = this.player.activeElement();
-                    let i = this._search(currentCues, el.currentTime);
+                    const index = this._search(currentCues, el.currentTime);
                     container.innerHTML = '';
-                    if (i > -1 && hasClass(this.button, 'om-controls__captions--on')) {
+                    if (index > -1 && hasClass(this.button, 'om-controls__captions--on')) {
                         this.captions.classList.add('om-captions--on');
-                        container.innerHTML = currentCues[i].text;
+                        container.innerHTML = this._sanitize(currentCues[index].text);
                     } else {
                         this._hide();
                     }
-                });     
+                });
             });
         } else {
-            this.captions.classList.add('om-captions--on');
-            this.current.oncuechange = function () {
+            const instance = this;
+            this.current.oncuechange = function() {
                 const cue = this.activeCues[0];
                 if (cue) {
+                    instance.captions.classList.add('om-captions--on');
                     container.innerHTML = '';
                     container.appendChild(cue.getCueAsHTML());
+                } else {
+                    instance._hide();
                 }
             };
         }
     }
 
+    /**
+     * Remove class to turn captions off
+     *
+     * @private
+     * @memberof Captions
+     */
     private _hide() {
-        this.captions.classList.remove('om-captions--on')
+        this.captions.classList.remove('om-captions--on');
     }
 
-    private _search (tracks: any[], currentTime: number) {
-        let lo = 0;
-        let hi = tracks.length;
-        let mid;
-        let start;
-        let stop;
+    /**
+     * Search for match index using binary search algorithm
+     *
+     * @private
+     * @param {any[]} tracks
+     * @param {number} currentTime
+     * @returns {number}
+     * @memberof Captions
+     */
+    private _search(tracks: any[], currentTime: number) {
+        let low = 0;
+        let high = tracks.length;
+        while (low <= high) {
+            const mid = ((low + high) >> 1);
+            const start = tracks[mid].start;
+            const stop = tracks[mid].stop;
 
-		while (lo <= hi) {
-            mid = ((lo + hi) >> 1);
-			start = tracks[mid].start;
-			stop = tracks[mid].stop;
-
-			if (currentTime >= start && currentTime < stop) {
-				return mid;
-			} else if (start < currentTime) {
-				lo = mid + 1;
-			} else if (start > currentTime) {
-				hi = mid - 1;
-			}
-		}
-
-		return -1;
+            if (currentTime >= start && currentTime < stop) {
+                return mid;
+            } else if (start < currentTime) {
+                low = mid + 1;
+            } else if (start > currentTime) {
+                high = mid - 1;
+            }
+        }
+        return -1;
     }
 
-    // private _sanitize (html: string) {
-    //     const div = document.createElement('div');
-    //     div.innerHTML = html;
+    /**
+     * Ensure that caption from remote source has clean output
+     *
+     * @private
+     * @param {string} html
+     * @returns {string}
+     * @memberof Captions
+     */
+    private _sanitize(html: string) {
+        const div = document.createElement('div');
+        div.innerHTML = html;
 
-    //     // Remove all `<script>` tags first
-    //     const scripts = div.getElementsByTagName('script');
-    //     let i = scripts.length;
-    //     while (i--) {
-    //         scripts[i].remove();
-    //     }
+        // Remove all `<script>` tags first
+        const scripts = div.getElementsByTagName('script');
+        let i = scripts.length;
+        while (i--) {
+            scripts[i].remove();
+        }
 
-    //     // Loop the elements and remove anything that contains value="javascript:" or an `on*` attribute
-    //     // (`onerror`, `onclick`, etc.)
-    //     const allElements = div.getElementsByTagName('*');
-    //     for (let i = 0, n = allElements.length; i < n; i++) {
-    //         const
-    //             attributesObj = allElements[i].attributes,
-    //             attributes = Array.prototype.slice.call(attributesObj)
-    //         ;
+        // Loop the elements and remove anything that contains value="javascript:" or an `on*` attribute
+        // (`onerror`, `onclick`, etc.)
+        const allElements = div.getElementsByTagName('*');
+        for (let index = 0, n = allElements.length; index < n; index++) {
+            const attributesObj = allElements[index].attributes;
+            const attributes = Array.prototype.slice.call(attributesObj);
 
-    //         for (let j = 0, total = attributes.length; j < total; j++) {
-    //             if (attributes[j].name.startsWith('on') || attributes[j].value.startsWith('javascript')) {
-    //                 allElements[i].remove();
-    //             } else if (attributes[j].name === 'style') {
-    //                 allElements[i].removeAttribute(attributes[j].name);
-    //             }
-    //         }
-
-    //     }
-    //     return div.innerHTML;
-    // }
+            for (let j = 0, total = attributes.length; j < total; j++) {
+                if (attributes[j].name.startsWith('on') || attributes[j].value.startsWith('javascript')) {
+                    allElements[index].remove();
+                } else if (attributes[j].name === 'style') {
+                    allElements[index].removeAttribute(attributes[j].name);
+                }
+            }
+        }
+        return div.innerHTML;
+    }
 }
 
 export default Captions;

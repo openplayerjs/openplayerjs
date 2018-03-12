@@ -35,6 +35,7 @@
       "ignoreComments": true,
       "ignorePattern": "true"
     }],
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "no-bitwise": 0
   }
 }
