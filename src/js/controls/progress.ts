@@ -93,16 +93,31 @@ class Progress {
         };
 
         const updateSlider = (e: any) => {
+            if (this.slider.classList.contains('.om-progress--pressed')) {
+                return;
+            }
+            this.slider.classList.add('.om-progress--pressed');
             const el = this.player.activeElement();
             const min = e.target.min;
             const max = e.target.max;
             const val = e.target.value;
             this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
 
+
             // If current progress is not related to an Ad, manipulate current time
             if (el instanceof Media) {
+                if (!el.paused) {
+                    el.pause();
+                }
+
                 el.currentTime = val;
+
+                if (el.paused) {
+                    el.play();
+                }
             }
+
+            this.slider.classList.remove('.om-progress--pressed');
         };
         this.sliderEvents['input'] = updateSlider.bind(this);
         this.sliderEvents['change'] = updateSlider.bind(this);
