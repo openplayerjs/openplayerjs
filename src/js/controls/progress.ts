@@ -69,7 +69,8 @@ class Progress {
         this.events['timeupdate'] = (e: any) => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
-                if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0') {
+                if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
+                    this.slider.getAttribute('max') !== el.duration) {
                     this.slider.setAttribute('max', `${el.duration}`);
                 }
 
