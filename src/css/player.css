@@ -53,7 +53,7 @@
     color: #fff;
     display: flex;
     font-size: 0.85em;
-    padding: 10px 8px 5px;
+    padding: 0 8px 5px;
     position: absolute;
     -webkit-transition: opacity 0.3s ease;
     transition: opacity 0.3s ease;
@@ -62,7 +62,6 @@
 }
 .om-player.om-player__audio > .om-controls {
     bottom: 0;
-    padding: 0 5px 5px;
 }
 .om-controls > * {
     flex-grow: 0;
@@ -85,6 +84,10 @@
     background: transparent;
     border: none;
     cursor: pointer;
+    margin-top: 5px;
+}
+.om-player__audio .om-controls > button {
+    margin-top: 0;
 }
 .om-control__right {
     margin-left: auto;
@@ -121,10 +124,14 @@
 
 /* === Time =================== */
 .om-controls > time {
-    margin-top: 3px;
+    margin-top: 8px;
+}
+.om-player__audio .om-controls__time-delimiter,
+.om-player__audio .om-controls > time {
+    margin-top: 4px;
 }
 .om-controls__time-delimiter {
-    margin: 3px 3px 0;
+    margin: 8px 3px 0;
 }
 
 /* === Buttons =================== */
@@ -230,23 +237,27 @@
 }
 
 /* === Progress =================== */
-.om-controls__progress {
+.om-controls__progress,
+.om-controls__volume {
     display: inline-block;
     margin-left: 10px;
     position: relative;
 }
 .om-player__video .om-controls__progress {
-    bottom: 40px;
+    bottom: 38px;
     margin-left: -8px;
     position: absolute;
     width: 100%;
 }
-.om-controls__progress--seek {
+.om-controls__progress--seek,
+.om-controls__volume--input {
     background: transparent;
 }
 .om-controls__progress--seek,
 .om-controls__progress--buffer,
-.om-controls__progress--played {
+.om-controls__progress--played,
+.om-controls__volume--input,
+.om-controls__volume--display {
     -webkit-appearance: none;
     -moz-appearance: none;
     height: 5px;
@@ -259,10 +270,13 @@
 }
 .om-player__audio .om-controls__progress--seek,
 .om-player__audio .om-controls__progress--buffer,
-.om-player__audio .om-controls__progress--played {
+.om-player__audio .om-controls__progress--played,
+.om-player__audio .om-controls__volume--input,
+.om-player__audio .om-controls__volume--display {
     margin-top: 8px;
 }
-.om-controls__progress--seek::-webkit-slider-thumb {
+.om-controls__progress--seek::-webkit-slider-thumb,
+.om-controls__volume--input::-webkit-slider-thumb {
     -webkit-appearance: none;
     -moz-appearance: none;
     background: #fff;
@@ -279,7 +293,8 @@
     background: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.25);
 }
-.om-controls__progress--played {
+.om-controls__progress--played,
+.om-controls__volume--display {
     background: 0 0;
     color: #f00;
     -webkit-transition: none;
@@ -287,21 +302,27 @@
     z-index: 1;
 }
 .om-controls__progress--buffer::-webkit-progress-bar,
-.om-controls__progress--played::-webkit-progress-bar {
+.om-controls__progress--played::-webkit-progress-bar,
+.om-controls__volume--display::-webkit-progress-bar {
     background: 0 0;
 }
 .om-controls__progress--buffer::-webkit-progress-value,
-.om-controls__progress--played::-webkit-progress-value {
+.om-controls__progress--played::-webkit-progress-value,
+.om-controls__volume--display::-webkit-progress-value {
     background: currentColor;
 }
 .om-controls__progress--buffer::-webkit-progress-value {
     -webkit-transition: width 0.2s ease;
     transition: width 0.2s ease;
 }
-.om-controls__progress--played::-webkit-progress-value {
+.om-controls__progress--played::-webkit-progress-value,
+.om-controls__volume--display::-webkit-progress-value {
     max-width: 99%;
     -webkit-transition: none;
     transition: none;
+}
+.om-controls__volume--display {
+    background: rgba(255, 255, 255, 0.35);
 }
 .om-ads--active .om-controls__progress--seek {
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fecb2f), color-stop(100%, #fecb2f));
@@ -315,11 +336,13 @@
 
 /* === Volume =================== */
 .om-controls__volume {
-    -webkit-appearance: none;
-    background: transparent;
+    margin-left: 0;
     width: 70px;
 }
-.om-controls__volume:focus {
+.om-player__video .om-controls__volume {
+    margin-top: 13px;
+}
+.om-controls__volume--input:focus {
     outline: none;
 }
 

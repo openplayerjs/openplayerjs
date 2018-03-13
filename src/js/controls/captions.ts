@@ -230,9 +230,9 @@ class Captions {
             const instance = this;
             this.current.oncuechange = function() {
                 const cue = this.activeCues[0];
-                if (cue) {
+                container.innerHTML = '';
+                if (cue && hasClass(this.button, 'om-controls__captions--on')) {
                     instance.captions.classList.add('om-captions--on');
-                    container.innerHTML = '';
                     container.appendChild(cue.getCueAsHTML());
                 } else {
                     instance._hide();
