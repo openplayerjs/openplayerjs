@@ -10,6 +10,8 @@ import Player from '../player';
 class Volume {
     public player: Player;
     private button: HTMLButtonElement;
+    private volumeContainer: HTMLDivElement;
+    private display: HTMLProgressElement;
     private slider: HTMLInputElement;
     private buttonEvents: IEvent;
     private sliderEvents: IEvent;
@@ -23,9 +25,12 @@ class Volume {
      */
     constructor(player: Player) {
         this.player = player;
+        this.volumeContainer = document.createElement('div');
+        this.volumeContainer.className = 'om-controls__volume';
+
         this.slider = document.createElement('input');
         this.slider.type = 'range';
-        this.slider.className = 'om-controls__volume';
+        this.slider.className = 'om-controls__volume--input';
         const volume = Math.floor(this.player.media.volume * 100);
 
         this.slider.value = this.player.media.volume;
@@ -35,6 +40,15 @@ class Volume {
         this.slider.setAttribute('aria-valuemax', '1');
         this.slider.setAttribute('step', '0.1');
         this.slider.setAttribute('aria-valuetext', `${volume}%`);
+
+        this.display = document.createElement('progress');
+        this.display.className = 'om-controls__volume--display';
+        this.display.setAttribute('max', '10');
+        this.display.setAttribute('role', 'presentation');
+        this.display.value = this.player.media.volume * 10;
+
+        this.volumeContainer.appendChild(this.slider);
+        this.volumeContainer.appendChild(this.display);
 
         // Use as backup when mute is clicked
         this.volume = this.player.media.volume;
@@ -49,6 +63,7 @@ class Volume {
             this.slider.setAttribute('aria-valuenow', `${vol}`);
             this.slider.setAttribute('aria-valuetext', `${vol}%`);
             this.slider.value = `${element.volume}`;
+            this.display.value = (mediaVolume * 10);
         };
 
         const updateButton = (element: any) => {
@@ -150,7 +165,7 @@ class Volume {
      */
     public build(controls: HTMLDivElement) {
         controls.appendChild(this.button);
-        controls.appendChild(this.slider);
+        controls.appendChild(this.volumeContainer);
         return this;
     }
 }
