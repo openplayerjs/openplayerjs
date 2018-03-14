@@ -44,7 +44,7 @@ class Settings {
 
         // Assign event to speed options
         document.addEventListener('click', (e: any) => {
-            if (hasClass(e.target, 'om-speed__option')) {
+            if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-speed__option')) {
                 const option = e.target;
                 const el = this.player.activeElement();
                 if (el instanceof Media) {
@@ -74,7 +74,12 @@ class Settings {
 
         return this;
     }
-
+    /**
+     * By default, Settings will contaim speed adjustments
+     *
+     * @returns {any}
+     * @memberof Settings
+     */
     public addSettingsMenu() {
         return {
             className: 'om-speed__option',
@@ -123,25 +128,28 @@ class Settings {
         }
 
         document.addEventListener('click', (e: any) => {
-            if (hasClass(e.target, 'om-settings__back')) {
-                this.menu.innerHTML = mainMenu;
-            } else if (hasClass(e.target, 'om-settings__menu-content') && typeof this.submenu[key] !== undefined) {
-                this.menu.innerHTML = this.submenu[key];
-            } else if (hasClass(e.target, 'om-settings__submenu-label')) {
-                // Update values in submenu and store
-                this.menu.querySelector('.om-settings__submenu-item[aria-checked=true]').setAttribute('aria-checked', 'false');
-                e.target.parentNode.setAttribute('aria-checked', 'true');
-                this.submenu[key] = this.menu.innerHTML;
-                const value = e.target.getAttribute('data-value').replace(`${key}-`, '');
-                const label = e.target.innerText;
-                this.menu.style.display = 'none';
+            if (e.target.closest(`#${this.player.id}`)) {
+                if (hasClass(e.target, 'om-settings__back')) {
+                    this.menu.innerHTML = mainMenu;
+                } else if (hasClass(e.target, 'om-settings__menu-content') && typeof this.submenu[key] !== undefined) {
+                    this.menu.innerHTML = this.submenu[key];
+                } else if (hasClass(e.target, 'om-settings__submenu-label')) {
+                    // Update values in submenu and store
+                    this.menu.querySelector('.om-settings__submenu-item[aria-checked=true]').setAttribute('aria-checked', 'false');
+                    e.target.parentNode.setAttribute('aria-checked', 'true');
+                    this.submenu[key] = this.menu.innerHTML;
+                    const value = e.target.getAttribute('data-value').replace(`${key}-`, '');
+                    const label = e.target.innerText;
+                    this.menu.style.display = 'none';
 
-                // Restore original menu, and set the new value
-                this.menu.innerHTML = mainMenu;
-                const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
-                prev.setAttribute('data-value', `${key}-${value}`);
-                prev.nextElementSibling.innerHTML = label;
-                mainMenu = this.menu.innerHTML;
+                    // Restore original menu, and set the new value
+                    this.menu.innerHTML = mainMenu;
+                    const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
+                    prev.setAttribute('data-value', `${key}-${value}`);
+                    prev.nextElementSibling.innerHTML = label;
+                    defaultValue = value;
+                    mainMenu = this.menu.innerHTML;
+                }
             }
         });
     }

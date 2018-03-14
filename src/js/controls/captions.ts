@@ -75,7 +75,7 @@ class Captions {
 
         // Assign event to caption options
         document.addEventListener('click', (e: any) => {
-            if (hasClass(e.target, 'om-subtitles__option')) {
+            if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-subtitles__option')) {
                 const option = e.target;
                 const language = option.getAttribute('data-value').replace('captions-', '');
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();

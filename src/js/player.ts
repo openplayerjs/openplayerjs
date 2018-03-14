@@ -106,6 +106,10 @@ class Player {
         return this.media.src;
     }
 
+    get id() {
+        return this.uid;
+    }
+
     public activeElement() {
         return this.ads && this.ads.adsStarted ? this.ads : this.media;
     }

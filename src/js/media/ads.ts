@@ -172,6 +172,9 @@ class Ads {
     set volume(value) {
         this.adsVolume = value;
         this.adsManager.setVolume(value);
+        this.media.volume = value;
+        this.media.muted = (value === 0);
+        this.adsMuted = (value === 0);
     }
 
     get volume() {
@@ -182,9 +185,13 @@ class Ads {
         if (value === true) {
             this.adsManager.setVolume(0);
             this.adsMuted = true;
+            this.media.muted = true;
+            this.media.volume = 0;
         } else {
             this.adsManager.setVolume(this.adsVolume);
             this.adsMuted = false;
+            this.media.muted = false;
+            this.media.volume = this.adsVolume;
         }
     }
 

@@ -67,10 +67,11 @@ class Volume {
         };
 
         const updateButton = (element: any) => {
-            if (element.volume <= 0.5 && element.volume > 0) {
+            const vol = parseFloat(element.volume);
+            if (vol <= 0.5 && vol > 0) {
                 this.button.classList.remove('om-controls__mute--muted');
                 this.button.classList.add('om-controls__mute--half');
-            } else if (element.volume === 0) {
+            } else if (vol === 0) {
                 this.button.classList.add('om-controls__mute--muted');
                 this.button.classList.remove('om-controls__mute--half');
             } else {
