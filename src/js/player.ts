@@ -190,43 +190,9 @@ class Player {
             if (this.adsUrl) {
                 this.ads = new Ads(this.media, this.adsUrl);
             }
-
-            if (isIframe(this.element)) {
-                this._buildResponsiveIframe();
-            }
         } catch (e) {
             console.error(e);
         }
-    }
-
-    /**
-     * Check for aspect ratio and create responsive behavior on an iframe
-     * @private
-     * @memberof Player
-     */
-    private _buildResponsiveIframe() {
-        const el = this.element;
-        /**
-         * Change dimensions of iframe when resizing window
-         * @private
-         */
-        const resizeIframeCallback = (): void => {
-            const width = (el.parentNode as HTMLElement).offsetWidth;
-            const height = width * parseFloat(el.getAttribute('data-ratio'));
-            (el as HTMLElement).style.width = `${width}px`;
-            (el as HTMLElement).style.height = `${height}px`;
-        };
-
-        // This workflow is used when the aspect ratio of the media is unknown
-        const ratio = parseFloat(el.getAttribute('height')) / parseFloat(el.getAttribute('width'));
-        el.setAttribute('data-ratio', `${ratio}`);
-        el.removeAttribute('width');
-        el.removeAttribute('height');
-
-        // Resize correctly on page load
-        const event = new Event('resize');
-        window.addEventListener('resize', resizeIframeCallback);
-        window.dispatchEvent(event);
     }
 
     private _createUID() {

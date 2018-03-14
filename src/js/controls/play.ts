@@ -46,6 +46,13 @@ class Play {
             } else {
                 this.button.classList.remove('om-controls__playpause--replay');
                 this.button.classList.add('om-controls__playpause--pause');
+
+                Object.keys(Player.instances).forEach(key => {
+                    if (key !== this.player.uid) {
+                        const target = Player.instances[key].activeElement();
+                        target.pause();
+                    }
+                });
             }
         };
         this.events['pause'] = () => {
