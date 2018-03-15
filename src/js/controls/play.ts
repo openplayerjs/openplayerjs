@@ -23,9 +23,12 @@ class Play {
 
         this.button = document.createElement('button');
         this.button.type = 'button';
-        this.button.tabIndex = 0;
-        this.button.setAttribute('aria-pressed', 'false');
         this.button.className = 'om-controls__playpause';
+        this.button.tabIndex = 0;
+        this.button.title = 'Play';
+        this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-pressed', 'false');
+        this.button.setAttribute('aria-label', 'Play');
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
 
         this.events = {};
@@ -46,9 +49,15 @@ class Play {
                 } else {
                     this.button.classList.add('om-controls__playpause--pause');
                 }
+                this.button.title = 'Play';
+                this.button.setAttribute('aria-label', 'Play');
+            
             } else {
                 this.button.classList.remove('om-controls__playpause--replay');
                 this.button.classList.add('om-controls__playpause--pause');
+
+                this.button.title = 'Pause';
+                this.button.setAttribute('aria-label', 'Pause');
 
                 Object.keys(Player.instances).forEach(key => {
                     if (key !== this.player.uid) {
@@ -60,6 +69,8 @@ class Play {
         };
         this.events['pause'] = () => {
             this.button.classList.remove('om-controls__playpause--pause');
+            this.button.title = 'Play';
+            this.button.setAttribute('aria-label', 'Play');
         };
         this.events['ended'] = () => {
             const el = this.player.activeElement();
@@ -70,10 +81,14 @@ class Play {
                 this.button.classList.remove('om-controls__playpause--replay');
                 this.button.classList.add('om-controls__playpause--pause');
             }
+            this.button.title = 'Play';
+            this.button.setAttribute('aria-label', 'Play');
         };
         this.events['ads.ended'] = () => {
             this.button.classList.remove('om-controls__playpause--replay');
             this.button.classList.add('om-controls__playpause--pause');
+            this.button.title = 'Pause Ads';
+            this.button.setAttribute('aria-label', 'Pause Ads');
         };
 
         return this;
