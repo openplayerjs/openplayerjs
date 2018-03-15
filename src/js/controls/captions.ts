@@ -1,4 +1,5 @@
 import IEvent from '../components/interfaces/general/event';
+import Media from '../media';
 import Player from '../player';
 import { getAbsoluteUrl, hasClass, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
@@ -13,6 +14,7 @@ class Captions {
     private trackUrlList: any;
     private hasTracks: boolean;
     private current: any;
+    private default: string;
 
     /**
      * Creates an instance of Captions.
@@ -41,6 +43,10 @@ class Captions {
         for (let i = 0, tracks = video.querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
             this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);
+            if (element.default) {
+                this.default = element.srclang;
+                this.button.classList.add('om-controls__captions--on');
+            }
         }
 
         for (let i = 0, total = this.trackList.length; i < total; i++) {
@@ -54,7 +60,12 @@ class Captions {
         this.captions.innerHTML = '<span></span>';
 
         // Assign by default first track
-        this.current = this.trackList[0];
+        this.current = this.default ? Array.from(this.trackList)
+            .filter(item => item.language === this.default).pop() : this.trackList[0];
+
+        if (this.default) {
+            this._show();
+        }
 
         // Show/hide captions
         this.button.addEventListener('click', (e: any) => {
@@ -139,7 +150,7 @@ class Captions {
         }
         return {
             className: 'om-subtitles__option',
-            default: 'off',
+            default: this.default || 'off',
             key: 'captions',
             name: 'Subtitles/CC',
             subitems,
@@ -216,13 +227,15 @@ class Captions {
                 // Use `timeupdate` to update remote captions
                 this.player.element.addEventListener('timeupdate', () => {
                     const el = this.player.activeElement();
-                    const index = this._search(currentCues, el.currentTime);
-                    container.innerHTML = '';
-                    if (index > -1 && hasClass(this.button, 'om-controls__captions--on')) {
-                        this.captions.classList.add('om-captions--on');
-                        container.innerHTML = this._sanitize(currentCues[index].text);
-                    } else {
-                        this._hide();
+                    if (el instanceof Media) {
+                        const index = this._search(currentCues, el.currentTime);
+                        container.innerHTML = '';
+                        if (index > -1 && hasClass(this.button, 'om-controls__captions--on')) {
+                            this.captions.classList.add('om-captions--on');
+                            container.innerHTML = this._sanitize(currentCues[index].text);
+                        } else {
+                            this._hide();
+                        }
                     }
                 });
             });
@@ -231,7 +244,7 @@ class Captions {
             this.current.oncuechange = function() {
                 const cue = this.activeCues[0];
                 container.innerHTML = '';
-                if (cue && hasClass(this.button, 'om-controls__captions--on')) {
+                if (cue && hasClass(instance.button, 'om-controls__captions--on')) {
                     instance.captions.classList.add('om-captions--on');
                     container.appendChild(cue.getCueAsHTML());
                 } else {

@@ -23,11 +23,14 @@ class Play {
 
         this.button = document.createElement('button');
         this.button.type = 'button';
+        this.button.tabIndex = 0;
+        this.button.setAttribute('aria-pressed', 'false');
         this.button.className = 'om-controls__playpause';
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
 
         this.events = {};
         this.events['click'] = () => {
+            this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             if (el.paused || el.ended) {
                 el.play();
