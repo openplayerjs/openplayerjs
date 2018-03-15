@@ -12,8 +12,12 @@
 /* === General =================== */
 .om-player {
     background: #000;
-    min-height: 32px;
+    font-family: sans-serif;
+    line-height: 1.15;
+    min-height: 30px;
     position: relative;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
 }
 .om-player__video {
     overflow: hidden;
@@ -27,6 +31,7 @@
 }
 .om-player video,
 .om-player audio {
+    display: inline-block;
     height: auto;
     width: 100% !important;
 }
@@ -53,15 +58,15 @@
     color: #fff;
     display: flex;
     font-size: 0.85em;
-    padding: 0 8px 5px;
+    padding: 4px 8px;
     position: absolute;
     -webkit-transition: opacity 0.3s ease;
     transition: opacity 0.3s ease;
     width: 100%;
     z-index: 2;
 }
-.om-player.om-player__audio > .om-controls {
-    bottom: 0;
+.om-player__video .om-controls {
+    padding: 7px 8px 4px;
 }
 .om-controls > * {
     flex-grow: 0;
@@ -77,23 +82,31 @@
     -webkit-user-select: none;
     user-select: none;
 }
+.om-controls progress {
+    display: inline-block;
+    vertical-align: baseline;
+}
 .om-controls > .om-controls__progress {
     flex-grow: 2;
 }
 .om-controls > button {
+    -webkit-appearance: button;
     background: transparent;
     border: none;
     cursor: pointer;
-    margin-top: 5px;
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.15;
+    margin: 0;
+    overflow: visible;
+    text-transform: none;
 }
-.om-player__audio .om-controls > button {
-    margin-top: 0;
+.om-controls > button::-moz-focus-inner {
+    border-style: none;
+    padding: 0;
 }
-.om-control__right {
-    margin-left: auto;
-}
-.om-control__right ~ .om-control__right {
-    margin-left: 0;
+.om-controls > button:-moz-focusring {
+    outline: 1px dotted ButtonText;
 }
 .om-controls > button:before {
     color: #fff;
@@ -116,6 +129,12 @@
     text-transform: none;
     width: 15px;
 }
+.om-controls > .om-control__right {
+    margin-left: auto;
+}
+.om-controls > .om-control__right ~ .om-control__right {
+    margin-left: 0;
+}
 .om-controls button:hover,
 .subtitles-menu li button:hover,
 .subtitles-menu li button[data-state='active'] {
@@ -124,14 +143,10 @@
 
 /* === Time =================== */
 .om-controls > time {
-    margin-top: 8px;
-}
-.om-player__audio .om-controls__time-delimiter,
-.om-player__audio .om-controls > time {
     margin-top: 4px;
 }
 .om-controls__time-delimiter {
-    margin: 8px 3px 0;
+    margin: 4px 3px 0;
 }
 
 /* === Buttons =================== */
@@ -240,11 +255,13 @@
 .om-controls__progress,
 .om-controls__volume {
     display: inline-block;
+    height: 5px;
     margin-left: 10px;
+    margin-top: 2px;
     position: relative;
 }
 .om-player__video .om-controls__progress {
-    bottom: 38px;
+    bottom: 34px;
     margin-left: -8px;
     position: absolute;
     width: 100%;
@@ -262,6 +279,7 @@
     -moz-appearance: none;
     height: 5px;
     left: 0;
+    margin: 0;
     position: absolute;
     top: 0;
     -webkit-transition: none;
@@ -273,7 +291,7 @@
 .om-player__audio .om-controls__progress--played,
 .om-player__audio .om-controls__volume--input,
 .om-player__audio .om-controls__volume--display {
-    margin-top: 8px;
+    margin-top: 6px;
 }
 .om-controls__progress--seek::-webkit-slider-thumb,
 .om-controls__volume--input::-webkit-slider-thumb {
@@ -339,8 +357,11 @@
     margin-left: 0;
     width: 70px;
 }
+.om-controls > .om-controls__mute:before {
+    text-align: left;
+}
 .om-player__video .om-controls__volume {
-    margin-top: 13px;
+    margin-top: 8px;
 }
 .om-controls__volume--input:focus {
     outline: none;

@@ -148,6 +148,7 @@ class Player {
         const wrapper = document.createElement('div');
         wrapper.className = 'om-player om-player__keyboard--inactive';
         wrapper.className += isAudio(this.element) ? ' om-player__audio' : ' om-player__video';
+        wrapper.tabIndex = 0;
 
         this.element.classList.remove('om-player');
         this.element.parentNode.insertBefore(wrapper, this.element);

@@ -92,6 +92,7 @@ class Ads {
     public load() {
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'om-ads';
+        this.adsContainer.tabIndex = -1;
         this.media.element.parentNode.insertBefore(this.adsContainer, this.media.element.nextSibling);
 
         // Create responsive ad
