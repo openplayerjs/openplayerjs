@@ -41,7 +41,7 @@ class Volume {
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__volume--input';
-
+        this.slider.tabIndex = -1;
         this.slider.value = this.player.media.volume;
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('max', '1');
@@ -95,8 +95,8 @@ class Volume {
         const updateVolume = (event: any) => {
             const el = this.player.activeElement();
             el.volume = event.target.value;
+            el.muted = (el.volume === 0);
             this.volume = event.target.value;
-
             const e = addEvent('volumechange');
             this.player.element.dispatchEvent(e);
         };
