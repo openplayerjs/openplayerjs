@@ -29,6 +29,11 @@ class Fullscreen {
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__fullscreen om-control__right';
+        this.button.tabIndex = 0;
+        this.button.title = 'Fullscreen';
+        this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-pressed', 'false');
+        this.button.setAttribute('aria-label', 'Fullscreen');
         this.button.innerHTML = '<span class="om-sr">Fullscreen</span>';
 
         const target = (document as any);
@@ -39,6 +44,7 @@ class Fullscreen {
             target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
 
         this.clickEvent = () => {
+            this.button.setAttribute('aria-pressed', 'true');
             if (this.isFullscreen) {
                 // The video is currently in fullscreen mode
                 if (document.exitFullscreen) {

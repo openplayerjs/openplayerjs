@@ -29,7 +29,11 @@ class Captions {
         this.tracks = {};
         this.button = document.createElement('button');
         this.button.className = 'om-controls__captions om-control__right';
+        this.button.tabIndex = 0;
+        this.button.title = 'Toggle Captions';
         this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-pressed', 'false');
+        this.button.setAttribute('aria-label', 'Toggle Captions');
         this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
         const video = (this.player.element as HTMLVideoElement);
@@ -70,6 +74,7 @@ class Captions {
         // Show/hide captions
         this.button.addEventListener('click', (e: any) => {
             const button = (e.target as HTMLDivElement);
+            button.setAttribute('aria-pressed', 'true');
             if (hasClass(button, 'om-controls__captions--on')) {
                 this._hide();
                 button.classList.remove('om-controls__captions--on');

@@ -1,6 +1,7 @@
 import IEvent from '../components/interfaces/general/event';
 import Media from '../media';
 import Player from '../player';
+import { formatTime } from '../utils/time';
 
 class Progress {
     public player: Player;
@@ -21,6 +22,9 @@ class Progress {
         this.player = player;
         this.progress = document.createElement('div');
         this.progress.className = 'om-controls__progress';
+        this.progress.tabIndex = 0;
+        this.progress.setAttribute('aria-label', 'Time Slider');
+        this.progress.setAttribute('aria-valuemin', '0');
 
         this.slider = document.createElement('input');
         this.slider.type = 'range';
@@ -53,6 +57,7 @@ class Progress {
                 this.slider.setAttribute('max', `${el.duration}`);
                 const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
+                this.progress.setAttribute('aria-valuemax', el.duration);
             }
         };
         this.events['progress'] = (e: any) => {
@@ -65,6 +70,16 @@ class Progress {
                     }
                 }
             }
+        };
+        this.events['pause'] = () => {
+            const el = this.player.activeElement();
+            const current = el.currentTime;
+            this.progress.setAttribute('aria-valuenow', current.toString());
+            this.progress.setAttribute('aria-valuetext', formatTime(current));
+        };
+        this.events['play'] = () => {
+            this.progress.removeAttribute('aria-valuenow');
+            this.progress.removeAttribute('aria-valuetext');
         };
         this.events['timeupdate'] = (e: any) => {
             const el = this.player.activeElement();
@@ -86,6 +101,7 @@ class Progress {
                 }
             }
         };
+
         this.events['ended'] = () => {
             this.slider.style.backgroundSize = '0% 100%';
             this.slider.setAttribute('max', '0');

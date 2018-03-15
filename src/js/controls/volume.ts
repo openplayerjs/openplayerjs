@@ -25,21 +25,27 @@ class Volume {
      */
     constructor(player: Player) {
         this.player = player;
+
+        const volume = Math.floor(this.player.media.volume * 100);
+
         this.volumeContainer = document.createElement('div');
         this.volumeContainer.className = 'om-controls__volume';
+        this.volumeContainer.tabIndex = 0;
+        this.volumeContainer.setAttribute('aria-valuemin', '0');
+        this.volumeContainer.setAttribute('aria-valuemax', '100');
+        this.volumeContainer.setAttribute('aria-valuenow', `${volume}`);
+        this.volumeContainer.setAttribute('aria-valuetext', `${volume}`);
+        this.volumeContainer.setAttribute('aria-orientation', 'vertical');
+        this.volumeContainer.setAttribute('aria-label', 'Volume Slider');
 
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__volume--input';
-        const volume = Math.floor(this.player.media.volume * 100);
 
         this.slider.value = this.player.media.volume;
         this.slider.setAttribute('min', '0');
-        this.slider.setAttribute('aria-valuemin', '0');
         this.slider.setAttribute('max', '1');
-        this.slider.setAttribute('aria-valuemax', '1');
         this.slider.setAttribute('step', '0.1');
-        this.slider.setAttribute('aria-valuetext', `${volume}%`);
 
         this.display = document.createElement('progress');
         this.display.className = 'om-controls__volume--display';
@@ -55,15 +61,21 @@ class Volume {
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__mute';
+        this.button.tabIndex = 0;
+        this.button.title = 'Mute';
+        this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-pressed', 'false');
+        this.button.setAttribute('aria-label', 'Mute');
         this.button.innerHTML = '<span class="om-sr">Mute</span>';
 
         const updateSlider = (element: any) => {
             const mediaVolume = element.volume * 1;
             const vol = Math.floor(mediaVolume * 100);
-            this.slider.setAttribute('aria-valuenow', `${vol}`);
-            this.slider.setAttribute('aria-valuetext', `${vol}%`);
+
             this.slider.value = `${element.volume}`;
             this.display.value = (mediaVolume * 10);
+            this.volumeContainer.setAttribute('aria-valuenow', `${vol}`);
+            this.volumeContainer.setAttribute('aria-valuetext', `${vol}`);
         };
 
         const updateButton = (element: any) => {
@@ -109,13 +121,16 @@ class Volume {
 
         this.buttonEvents = {};
         this.buttonEvents['click'] = () => {
+            this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             el.muted = !el.muted;
 
             if (el.muted) {
                 el.volume = 0;
+                this.button.setAttribute('aria-label', 'Unmute');
             } else {
                 el.volume = this.volume;
+                this.button.setAttribute('aria-label', 'Mute');
             }
             const event = addEvent('volumechange');
             this.player.media.element.dispatchEvent(event);

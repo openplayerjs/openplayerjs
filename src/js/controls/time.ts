@@ -26,6 +26,8 @@ class Time {
         this.player = player;
         this.current = document.createElement('time');
         this.current.className = 'om-controls__current';
+        this.current.setAttribute('role', 'timer');
+		this.current.setAttribute('aria-live', 'off');
         this.current.innerText = '0:00';
 
         this.delimiter = document.createElement('span');

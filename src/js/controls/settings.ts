@@ -26,7 +26,11 @@ class Settings {
         this.player = player;
         this.button = document.createElement('button');
         this.button.className = 'om-controls__settings om-control__right';
+        this.button.tabIndex = 0;
+        this.button.title = 'Player Settings';
         this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-pressed', 'false');
+        this.button.setAttribute('aria-label', 'Player Settings');
         this.button.innerHTML = '<span class="om-sr">Player Settings</span>';
 
         this.menu = document.createElement('div');
@@ -35,6 +39,7 @@ class Settings {
         this.menu.innerHTML = '<div class="om-settings__menu" role="menu"></div>';
 
         this.clickEvent = () => {
+            this.button.setAttribute('aria-pressed', 'true');
             this.menu.style.display = (this.menu.style.display === 'block' ? 'none' : 'block');
         };
 
