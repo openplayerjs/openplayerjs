@@ -2,12 +2,12 @@
     font-family: 'open-player';
     font-style: normal;
     font-weight: normal;
-    src: url('./font/open-player.eot?77449144');
-    src: url('./font/open-player.eot?77449144#iefix') format('embedded-opentype'),
-        url('./font/open-player.woff2?77449144') format('woff2'),
-        url('./font/open-player.woff?77449144') format('woff'),
-        url('./font/open-player.ttf?77449144') format('truetype'),
-        url('./font/open-player.svg?77449144#open-player') format('svg');
+    src: url('./open-player.eot?77449144');
+    src: url('./open-player.eot?77449144#iefix') format('embedded-opentype'),
+        url('./open-player.woff2?77449144') format('woff2'),
+        url('./open-player.woff?77449144') format('woff'),
+        url('./open-player.ttf?77449144') format('truetype'),
+        url('./open-player.svg?77449144#open-player') format('svg');
 }
 /* === General =================== */
 .om-player {
@@ -89,6 +89,7 @@
 .om-controls > .om-controls__progress {
     flex-grow: 2;
 }
+.om-player__play,
 .om-controls > button {
     -webkit-appearance: button;
     background: transparent;
@@ -101,13 +102,28 @@
     overflow: visible;
     text-transform: none;
 }
+.om-player__play {
+    display: block;
+    height: 80px;
+    left: 50%;
+    margin-left: -40px;
+    margin-top: -40px;
+    position: absolute;
+    top: calc(50% - 32px);
+    width: 80px;
+    z-index: 1;
+}
+.om-player__play::-moz-focus-inner,
 .om-controls > button::-moz-focus-inner {
     border-style: none;
     padding: 0;
 }
+.om-player__play:-moz-focusring,
 .om-controls > button:-moz-focusring {
     outline: 1px dotted ButtonText;
 }
+.om-player__play:before,
+.om-player__play--hover:before,
 .om-controls > button:before {
     color: #fff;
     display: inline-block;
@@ -180,7 +196,12 @@
 .om-controls__settings:before { 
     content: '\e800'; 
 }
-
+.om-player__play:before {
+    content: '\e80f';
+}
+.om-player__play--hover:before {
+    content: '\e80e';
+}
 /* === Settings =================== */
 .om-settings {
     background: rgba(28, 28, 28, 0.9);
@@ -445,11 +466,13 @@ video:-webkit-media-text-track-display {
 
 /* === Focus =================== */
 .om-player:focus,
+.om-player__play:focus,
 .om-player > .om-controls > *:focus,
 .om-player > .om-controls .om-controls__progress--seek:focus {
     outline: dotted 1px #999;
 }
 .om-player.om-player__keyboard--inactive:focus,
+.om-player.om-player__keyboard--inactive .om-player__play:focus,
 .om-player.om-player__keyboard--inactive > .om-controls > *:focus,
 .om-player.om-player__keyboard--inactive > .om-controls .om-controls__progress--seek:focus {
     outline: none;
