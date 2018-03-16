@@ -152,6 +152,27 @@ class Player {
 
         this.element.classList.remove('om-player');
         this.element.parentNode.insertBefore(wrapper, this.element);
+
+        if (isVideo(this.element)) {
+            const play = document.createElement('button');
+            play.className = 'om-player__play';
+            play.tabIndex = 0;
+            play.setAttribute('aria-pressed', 'false');
+            play.addEventListener('click', () => {
+                play.setAttribute('aria-pressed', 'true');
+                this.media.play();
+            });
+            this.element.addEventListener('play', () => {
+                play.style.display = 'none';
+            });
+            this.element.addEventListener('pause', () => {
+                const el = this.activeElement();
+                if (el instanceof Media) {
+                    play.style.display = 'block';
+                }
+            });
+            wrapper.appendChild(play);
+        }
         wrapper.appendChild(this.element);
 
         wrapper.addEventListener('keydown', () => {
