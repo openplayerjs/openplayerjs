@@ -44,6 +44,8 @@ class Captions {
             return this;
         }
 
+        this.player.element.parentElement.classList.add('om-captions--detected');
+
         for (let i = 0, tracks = video.querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
             this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);

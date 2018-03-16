@@ -31,21 +31,18 @@ class Controls {
     constructor(player: Player) {
         this.media = player.media;
         this.media.element.controls = false;
+        this.settings = new Settings(player);
         this.controls = [
             new Play(player),
             new Time(player),
             new Progress(player),
             new Volume(player),
+            new Captions(player),
+            this.settings,
         ];
 
-        this.settings = new Settings(player);
-
         if (isVideo(this.media.element)) {
-            this.controls.push(new Captions(player));
-            this.controls.push(this.settings);
             this.controls.push(new Fullscreen(player));
-        } else {
-            this.controls.push(this.settings);
         }
 
         this.container = null;
