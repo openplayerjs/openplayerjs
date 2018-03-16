@@ -403,6 +403,22 @@
     line-height: 150%;
     padding: 3px 10px;
 }
+.om-player__audio.om-captions--detected {
+    background: transparent;
+    min-height: 95px;
+}
+.om-player__audio.om-captions--detected .om-captions {
+    bottom: -10px;
+    padding: 0;
+}
+.om-player__audio.om-captions--detected .om-captions > span {
+    background: transparent;
+    color: #000;
+}
+.om-player__audio.om-captions--detected .om-controls {
+    background: #000;
+    bottom: auto;
+}
 
 /* WebVTT cues */
 ::cue { 
