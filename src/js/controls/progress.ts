@@ -11,6 +11,7 @@ class Progress {
     private buffer: HTMLProgressElement;
     private progress: HTMLDivElement;
     private played: HTMLProgressElement;
+    private tooltip: HTMLSpanElement;
     private events: IEvent;
     private sliderEvents: IEvent;
     private containerEvents: IEvent;
@@ -49,6 +50,11 @@ class Progress {
         this.played.setAttribute('max', '100');
         this.played.setAttribute('role', 'presentation');
         this.played.value = 0;
+
+        this.tooltip = document.createElement('span');
+        this.tooltip.className = 'om-controls__tooltip';
+        this.tooltip.tabIndex = -1;
+        this.tooltip.innerHTML = '00:00';
 
         this.progress.appendChild(this.slider);
         this.progress.appendChild(this.played);
