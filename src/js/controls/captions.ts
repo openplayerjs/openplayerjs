@@ -133,7 +133,7 @@ class Captions {
      */
     public build(controls: HTMLDivElement) {
         if (this.hasTracks) {
-            const target = (this.player.element.parentNode as HTMLElement);
+            const target = this.player.element.parentElement;
             target.insertBefore(this.captions, target.firstChild);
 
             controls.appendChild(this.button);

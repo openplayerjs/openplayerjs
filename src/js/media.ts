@@ -3,7 +3,6 @@ import IFile from './components/interfaces/media/file';
 import DashMedia from './media/dash';
 import HlsMedia from './media/hls';
 import NativeMedia from './media/native';
-import { isIframe } from './utils/general';
 import * as source from './utils/media';
 
 /**
@@ -243,33 +242,25 @@ class Media {
      */
     private _getMediaFiles() {
         const mediaFiles: IFile[] = [];
+        const sourceTags = this.element.querySelectorAll('source');
+        const nodeSource = this.element.src;
 
-        if (isIframe(this.element)) {
+        // Consider if node contains the `src` and `type` attributes
+        if (nodeSource) {
             mediaFiles.push({
-                src: this.element.src,
-                type: source.predictType(this.element.src),
+                src: nodeSource,
+                type: this.element.getAttribute('type') || source.predictType(nodeSource),
             });
-        } else {
-            const sourceTags = this.element.querySelectorAll('source');
-            const nodeSource = this.element.src;
+        }
 
-            // Consider if node contains the `src` and `type` attributes
-            if (nodeSource) {
-                mediaFiles.push({
-                    src: nodeSource,
-                    type: this.element.getAttribute('type') || source.predictType(nodeSource),
-                });
-            }
-
-            // test <source> types to see if they are usable
-            for (let i = 0, total = sourceTags.length; i < total; i++) {
-                const item = sourceTags[i];
-                const src = item.src;
-                mediaFiles.push({
-                    src,
-                    type: item.getAttribute('type') || source.predictType(src),
-                });
-            }
+        // test <source> types to see if they are usable
+        for (let i = 0, total = sourceTags.length; i < total; i++) {
+            const item = sourceTags[i];
+            const src = item.src;
+            mediaFiles.push({
+                src,
+                type: item.getAttribute('type') || source.predictType(src),
+            });
         }
 
         return mediaFiles;
