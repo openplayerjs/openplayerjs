@@ -141,7 +141,7 @@ class Settings {
                 } else if (hasClass(e.target, 'om-settings__submenu-label')) {
                     // Update values in submenu and store
                     this.menu.querySelector('.om-settings__submenu-item[aria-checked=true]').setAttribute('aria-checked', 'false');
-                    e.target.parentNode.setAttribute('aria-checked', 'true');
+                    e.target.parentElement.setAttribute('aria-checked', 'true');
                     this.submenu[key] = this.menu.innerHTML;
                     const value = e.target.getAttribute('data-value').replace(`${key}-`, '');
                     const label = e.target.innerText;
@@ -167,7 +167,7 @@ class Settings {
      */
     public build(controls: HTMLDivElement) {
         controls.appendChild(this.button);
-        this.player.element.parentNode.appendChild(this.menu);
+        this.player.element.parentElement.appendChild(this.menu);
         return this;
     }
 }

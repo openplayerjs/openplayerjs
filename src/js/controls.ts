@@ -76,7 +76,7 @@ class Controls {
     }
 
     public render() {
-        this.media.element.parentNode.appendChild(this.container);
+        this.media.element.parentElement.appendChild(this.container);
     }
 }
 

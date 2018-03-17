@@ -93,7 +93,7 @@ class Ads {
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'om-ads';
         this.adsContainer.tabIndex = -1;
-        this.media.element.parentNode.insertBefore(this.adsContainer, this.media.element.nextSibling);
+        this.media.element.parentElement.insertBefore(this.adsContainer, this.media.element.nextSibling);
 
         // Create responsive ad
         window.addEventListener('resize', this.resizeAds.bind(this));
@@ -151,7 +151,7 @@ class Ads {
 
     public resizeAds(width?: number, height?: number) {
         if (this.adsManager) {
-            const target = (this.media.element.parentNode as HTMLElement);
+            const target = this.media.element.parentElement;
             if (width && height) {
                 const mode = target.getAttribute('data-fullscreen') === 'true' ?
                     google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
@@ -229,15 +229,11 @@ class Ads {
                     if (!this.media.paused) {
                         this.media.pause();
                     }
-                    this.media.element.parentNode.classList.add('om-ads--active');
+                    this.media.element.parentElement.classList.add('om-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
                     const loadedEvent = addEvent('loadedmetadata');
                     this.media.element.dispatchEvent(loadedEvent);
-
-                    this.adsCurrentTime = this.adsManager.getRemainingTime();
-                    const timeEvent = addEvent('timeupdate');
-                    this.media.element.dispatchEvent(timeEvent);
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
@@ -257,7 +253,7 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
-                this.media.element.parentNode.classList.remove('om-ads--active');
+                this.media.element.parentElement.classList.remove('om-ads--active');
                 this.adsActive = false;
                 this.adsEnded = true;
                 if (ad.isLinear()) {
@@ -272,7 +268,7 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
-                this.media.element.parentNode.classList.remove('om-ads--active');
+                this.media.element.parentElement.classList.remove('om-ads--active');
                 break;
         }
     }
@@ -358,7 +354,7 @@ class Ads {
         this.adsStarted = false;
         this.adsDuration = 0;
         this.adsCurrentTime = 0;
-        this.media.element.parentNode.classList.remove('om-ads--active');
+        this.media.element.parentElement.classList.remove('om-ads--active');
 
         if (this.autoplayAllowed && !this.media.ended) {
             setTimeout(() => {
@@ -379,8 +375,8 @@ class Ads {
         this.adsRequest = new google.ima.AdsRequest();
         this.adsRequest.adTagUrl = this.adsUrl;
 
-        const width = (this.media.element.parentNode as HTMLElement).offsetWidth;
-        const height = (this.media.element.parentNode as HTMLElement).offsetWidth;
+        const width = this.media.element.parentElement.offsetWidth;
+        const height = this.media.element.parentElement.offsetWidth;
         this.adsRequest.linearAdSlotWidth = width;
         this.adsRequest.linearAdSlotHeight = height;
         this.adsRequest.nonLinearAdSlotWidth = width;

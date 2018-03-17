@@ -64,13 +64,13 @@ class Fullscreen {
                 this.fullscreenHeight = window.screen.height;
 
                 if (video.requestFullscreen) {
-                    video.parentNode.requestFullscreen();
+                    video.parentElement.requestFullscreen();
                 } else if (video.mozRequestFullScreen) {
-                    video.parentNode.mozRequestFullScreen();
+                    video.parentElement.mozRequestFullScreen();
                 } else if (video.webkitRequestFullScreen) {
-                    video.parentNode.webkitRequestFullScreen();
+                    video.parentElement.webkitRequestFullScreen();
                 } else if (video.msRequestFullscreen) {
-                    video.parentNode.msRequestFullscreen();
+                    video.parentElement.msRequestFullscreen();
                 } else {
                     this._fullscreenChange();
                 }
@@ -142,7 +142,7 @@ class Fullscreen {
     }
 
     private _setFullscreenData(state: boolean) {
-        (this.player.element.parentNode as HTMLElement).setAttribute('data-fullscreen', (!!state).toString());
+        this.player.element.parentElement.setAttribute('data-fullscreen', (!!state).toString());
         if (state) {
             this.button.classList.add('om-controls__fullscreen--out');
         } else {
@@ -151,7 +151,7 @@ class Fullscreen {
     }
 
     private _resize(width?: number, height?: number) {
-        const wrapper = (this.player.element.parentNode as HTMLElement);
+        const wrapper = this.player.element.parentElement;
         const video = (this.player.element as HTMLElement);
         wrapper.style.width = width ? `${width}px` : null;
         wrapper.style.height = height ? `${height}px` : null;

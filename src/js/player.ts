@@ -33,6 +33,7 @@ class Player {
     public adsUrl?: string;
     public ads: Ads;
     public media: Media;
+    public playBtn: HTMLButtonElement;
 
     /**
      * Creates an instance of Player.
@@ -51,6 +52,7 @@ class Player {
         if (this._isValid()) {
             this._prepareMedia();
             this._wrapInstance();
+            this._createPlayButton();
             this._createUID();
 
             // Let QuickTime render its own controls for video in iPhone
@@ -151,28 +153,7 @@ class Player {
         wrapper.tabIndex = 0;
 
         this.element.classList.remove('om-player');
-        this.element.parentNode.insertBefore(wrapper, this.element);
-
-        if (isVideo(this.element)) {
-            const play = document.createElement('button');
-            play.className = 'om-player__play';
-            play.tabIndex = 0;
-            play.setAttribute('aria-pressed', 'false');
-            play.addEventListener('click', () => {
-                play.setAttribute('aria-pressed', 'true');
-                this.media.play();
-            });
-            this.element.addEventListener('play', () => {
-                play.style.display = 'none';
-            });
-            this.element.addEventListener('pause', () => {
-                const el = this.activeElement();
-                if (el instanceof Media) {
-                    play.style.display = 'block';
-                }
-            });
-            wrapper.appendChild(play);
-        }
+        this.element.parentElement.insertBefore(wrapper, this.element);
         wrapper.appendChild(this.element);
 
         wrapper.addEventListener('keydown', () => {
@@ -228,7 +209,32 @@ class Player {
             } while (Player.instances[uid] !== undefined);
             this.uid = uid;
         }
-        (this.element.parentNode as HTMLElement).id = this.uid;
+        this.element.parentElement.id = this.uid;
+    }
+
+    private _createPlayButton() {
+        if (isAudio(this.element)) {
+            return;
+        }
+
+        this.playBtn = document.createElement('button');
+        this.playBtn.className = 'om-player__play';
+        this.playBtn.tabIndex = 0;
+        this.playBtn.setAttribute('aria-pressed', 'false');
+        this.playBtn.addEventListener('click', () => {
+            this.playBtn.setAttribute('aria-pressed', 'true');
+            this.media.play();
+        });
+        this.element.addEventListener('play', () => {
+            this.playBtn.style.display = 'none';
+        });
+        this.element.addEventListener('pause', () => {
+            const el = this.activeElement();
+            if (el instanceof Media) {
+                this.playBtn.style.display = 'block';
+            }
+        });
+        this.element.parentElement.insertBefore(this.playBtn, this.element);
     }
 }
 
