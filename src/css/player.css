@@ -59,7 +59,7 @@
     display: flex;
     font-size: 0.85em;
     padding: 4px 8px;
-    pointer-events: initial;
+    pointer-events: all;
     position: absolute;
     -webkit-transition: bottom 0.3s ease;
     transition: bottom 0.3s ease;
@@ -67,11 +67,12 @@
     z-index: 2;
 }
 .om-controls--hidden .om-controls {
-    bottom: -34px;
+    bottom: -36px;
     pointer-events: none;
 }
 .om-player__video .om-controls {
-    padding: 7px 8px 4px;
+    margin-top: 5px;
+    padding: 12px 8px 4px;
 }
 .om-controls > * {
     flex-grow: 0;
@@ -220,9 +221,9 @@
     position: absolute;
     right: 5px;
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-    -moz-transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
-    -webkit-transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
-    transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
+    -moz-transition: right 0.2s;
+    -webkit-transition: right 0.2s;
+    transition: right 0.2s;
     -moz-user-select: none;
     -ms-user-select: none;
     -webkit-user-select: none;
@@ -235,6 +236,9 @@
 }
 .om-player__audio .om-settings {
     right: 0;
+}
+.om-settings--sliding {
+    right: -999px;
 }
 .om-settings__menu {
     margin: 0;
