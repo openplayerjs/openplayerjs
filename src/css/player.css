@@ -35,6 +35,9 @@
     height: auto;
     width: 100% !important;
 }
+.om-player [aria-hidden='true'] {
+    display: none;
+}
 .om-player__audio {
     background: #000;
 }
@@ -160,9 +163,7 @@
 .om-controls > .om-control__right ~ .om-control__right {
     margin-left: 0;
 }
-.om-controls button:hover,
-.subtitles-menu li button:hover,
-.subtitles-menu li button[data-state='active'] {
+.om-controls button:hover {
     opacity: 0.5;
 }
 
@@ -230,9 +231,6 @@
     user-select: none;
     will-change: width,height;
     z-index: 3;
-}
-.om-settings[aria-hidden='true'] {
-    display: none;
 }
 .om-player__audio .om-settings {
     right: 0;
