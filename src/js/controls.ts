@@ -18,6 +18,7 @@ import { isVideo } from './utils/general';
  */
 class Controls {
     public media: Media;
+    public player: Player;
     public controls: any[];
     public container: HTMLDivElement;
     public settings: Settings;
@@ -29,6 +30,7 @@ class Controls {
      * @memberof Controls
      */
     constructor(player: Player) {
+        this.player = player;
         this.media = player.media;
         this.media.element.controls = false;
         this.settings = new Settings(player);
@@ -53,6 +55,28 @@ class Controls {
     public prepare() {
         this.container = document.createElement('div');
         this.container.className = 'om-controls';
+
+        const videoPointed = isVideo(this.player.element);
+        this.container.addEventListener('mouseover', () => {
+            if (videoPointed) {
+                this.player.element.parentElement.classList.remove('om-controls--hidden');
+
+                setTimeout(() => {
+                    this.player.element.parentElement.classList.add('om-controls--hidden');
+                }, 5000);
+            }
+        });
+        this.container.addEventListener('mouseout', () => {
+            if (videoPointed) {
+                this.player.element.parentElement.classList.add('om-controls--hidden');
+            }
+        });
+
+        setTimeout(() => {
+            if (videoPointed) {
+                this.player.element.parentElement.classList.add('om-controls--hidden');
+            }
+        }, 1500);
 
         // Loop controls to build them and register events
         this.controls.forEach(item => {

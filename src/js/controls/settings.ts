@@ -119,8 +119,7 @@ class Settings {
         if (submenu) {
             const subItems = `
                 <div class="om-settings__header">
-                    <button type="button" class="om-settings__back">Back</button>
-                    <button type="button" class="om-settings__title">${name}</button>
+                    <button type="button" class="om-settings__back">${name}</button>
                 </div>
                 <div class="om-settings__menu" role="menu" id="menu-item-${key}">
                     ${submenu.map((item: any) => `
@@ -155,7 +154,15 @@ class Settings {
                     defaultValue = value;
                     mainMenu = this.menu.innerHTML;
                 }
+            } else {
+                this.menu.style.display = 'none';
+                this.menu.innerHTML = mainMenu;
             }
+        });
+
+        window.addEventListener('resize', () => {
+            this.menu.style.display = 'none';
+            this.menu.innerHTML = mainMenu;
         });
     }
 
