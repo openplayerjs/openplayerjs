@@ -59,11 +59,16 @@
     display: flex;
     font-size: 0.85em;
     padding: 4px 8px;
+    pointer-events: initial;
     position: absolute;
-    -webkit-transition: opacity 0.3s ease;
-    transition: opacity 0.3s ease;
+    -webkit-transition: bottom 0.3s ease;
+    transition: bottom 0.3s ease;
     width: 100%;
     z-index: 2;
+}
+.om-controls--hidden .om-controls {
+    bottom: -34px;
+    pointer-events: none;
 }
 .om-player__video .om-controls {
     padding: 7px 8px 4px;
@@ -90,6 +95,7 @@
     flex-grow: 2;
 }
 .om-player__play,
+.om-settings__back,
 .om-controls > button {
     -webkit-appearance: button;
     background: transparent;
@@ -114,11 +120,13 @@
     z-index: 1;
 }
 .om-player__play::-moz-focus-inner,
+.om-settings__back,
 .om-controls > button::-moz-focus-inner {
     border-style: none;
     padding: 0;
 }
 .om-player__play:-moz-focusring,
+.om-settings__back,
 .om-controls > button:-moz-focusring {
     outline: 1px dotted ButtonText;
 }
@@ -207,6 +215,7 @@
     background: rgba(28, 28, 28, 0.9);
     bottom: 49px;
     color: #fff;
+    font-size: 0.85em;
     overflow: hidden;
     position: absolute;
     right: 5px;
@@ -274,6 +283,20 @@
     padding-right: 38px;
     vertical-align: middle;
 }
+.om-settings__header {
+    padding: 5px;
+}
+.om-settings__back {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMzIgMzIiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJNIDE5LjQxLDIwLjA5IDE0LjgzLDE1LjUgMTkuNDEsMTAuOTEgMTgsOS41IGwgLTYsNiA2LDYgeiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=');
+    background-position: left 0 center;
+    background-repeat: no-repeat;
+    -moz-background-size: 20px 32px;
+    -webkit-background-size: 20px 32px;
+    background-size: 20px 32px;
+    color: inherit;
+    height: 100%;
+    padding: 0 10px 0 20px;
+}
 
 /* === Progress =================== */
 .om-controls__progress,
@@ -330,6 +353,9 @@
     margin-top: -1px;
     position: relative;
     width: 12px;
+}
+.om-controls--hidden .om-controls__progress--seek::-webkit-slider-thumb {
+    background: transparent;
 }
 .om-controls__progress--buffer {
     background: rgba(255, 255, 255, 0.3);
@@ -416,6 +442,9 @@
     transition: transform 0.3s ease;
     transition: transform 0.3s ease,-webkit-transform 0.3s ease;
     width: 100%;
+}
+.om-controls--hidden .om-captions {
+    bottom: -32px;
 }
 .om-captions--on {
     display: block;
