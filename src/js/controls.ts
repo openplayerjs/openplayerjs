@@ -8,7 +8,7 @@ import Time from './controls/time';
 import Volume from './controls/volume';
 import Media from './media';
 import Player from './player';
-import { isVideo } from './utils/general';
+import { hasClass, isVideo } from './utils/general';
 
 /**
  *
@@ -22,6 +22,7 @@ class Controls {
     public controls: any[];
     public container: HTMLDivElement;
     public settings: Settings;
+    private timer: any;
 
     /**
      * Creates an instance of Controls.
@@ -57,26 +58,42 @@ class Controls {
         this.container.className = 'om-controls';
 
         const videoPointed = isVideo(this.player.element);
-        this.container.addEventListener('mouseover', () => {
-            if (videoPointed) {
+        this.player.element.parentElement.addEventListener('mousemove', () => {
+            const el = this.player.activeElement();
+            if ((!el.paused || !el.ended) && videoPointed) {
+                this.player.element.parentElement.classList.remove('om-controls--hidden');
+            }
+        });
+        this.player.element.parentElement.addEventListener('mouseover', () => {
+            const el = this.player.activeElement();
+            if ((!el.paused || !el.ended) && videoPointed && hasClass(this.player.element.parentElement, 'om-controls--hidden')) {
                 this.player.element.parentElement.classList.remove('om-controls--hidden');
 
-                setTimeout(() => {
-                    this.player.element.parentElement.classList.add('om-controls--hidden');
-                }, 5000);
+                this.timer = setTimeout(() => {
+                    if ((!el.paused || !el.ended) && videoPointed) {
+                        this.player.element.parentElement.classList.add('om-controls--hidden');
+                        clearTimeout(this.timer);
+                    }
+                }, 3000);
             }
         });
-        this.container.addEventListener('mouseout', () => {
-            if (videoPointed) {
+        this.player.element.parentElement.addEventListener('mouseout', () => {
+            const el = this.player.activeElement();
+            if ((!el.paused || !el.ended) && videoPointed) {
                 this.player.element.parentElement.classList.add('om-controls--hidden');
             }
+        });
+        this.player.element.addEventListener('pause', () => {
+            this.player.element.parentElement.classList.remove('om-controls--hidden');
+            clearTimeout(this.timer);
         });
 
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
             if (videoPointed) {
                 this.player.element.parentElement.classList.add('om-controls--hidden');
+                clearTimeout(this.timer);
             }
-        }, 1500);
+        }, 3000);
 
         // Loop controls to build them and register events
         this.controls.forEach(item => {

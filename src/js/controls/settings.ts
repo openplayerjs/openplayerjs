@@ -40,7 +40,7 @@ class Settings {
 
         this.clickEvent = () => {
             this.button.setAttribute('aria-pressed', 'true');
-            this.menu.style.display = (this.menu.style.display === 'block' ? 'none' : 'block');
+            this.menu.setAttribute('aria-hidden', (this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false'));
         };
 
         this.events = {};
@@ -134,9 +134,17 @@ class Settings {
         document.addEventListener('click', (e: any) => {
             if (e.target.closest(`#${this.player.id}`)) {
                 if (hasClass(e.target, 'om-settings__back')) {
-                    this.menu.innerHTML = mainMenu;
+                    this.menu.classList.add('om-settings--sliding');
+                    setTimeout(() => {
+                        this.menu.innerHTML = mainMenu;
+                        this.menu.classList.remove('om-settings--sliding');
+                    }, 100);
                 } else if (hasClass(e.target, 'om-settings__menu-content') && typeof this.submenu[key] !== undefined) {
-                    this.menu.innerHTML = this.submenu[key];
+                    this.menu.classList.add('om-settings--sliding');
+                    setTimeout(() => {
+                        this.menu.innerHTML = this.submenu[key];
+                        this.menu.classList.remove('om-settings--sliding');
+                    }, 100);
                 } else if (hasClass(e.target, 'om-settings__submenu-label')) {
                     // Update values in submenu and store
                     this.menu.querySelector('.om-settings__submenu-item[aria-checked=true]').setAttribute('aria-checked', 'false');
@@ -144,24 +152,27 @@ class Settings {
                     this.submenu[key] = this.menu.innerHTML;
                     const value = e.target.getAttribute('data-value').replace(`${key}-`, '');
                     const label = e.target.innerText;
-                    this.menu.style.display = 'none';
 
                     // Restore original menu, and set the new value
-                    this.menu.innerHTML = mainMenu;
-                    const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
-                    prev.setAttribute('data-value', `${key}-${value}`);
-                    prev.nextElementSibling.innerHTML = label;
-                    defaultValue = value;
-                    mainMenu = this.menu.innerHTML;
+                    this.menu.classList.add('om-settings--sliding');
+                    setTimeout(() => {
+                        this.menu.innerHTML = mainMenu;
+                        const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
+                        prev.setAttribute('data-value', `${key}-${value}`);
+                        prev.nextElementSibling.innerHTML = label;
+                        defaultValue = value;
+                        mainMenu = this.menu.innerHTML;
+                        this.menu.classList.remove('om-settings--sliding');
+                    }, 100);
                 }
             } else {
-                this.menu.style.display = 'none';
+                this.menu.setAttribute('aria-hidden', 'true');
                 this.menu.innerHTML = mainMenu;
             }
         });
 
         window.addEventListener('resize', () => {
-            this.menu.style.display = 'none';
+            this.menu.setAttribute('aria-hidden', 'true');
             this.menu.innerHTML = mainMenu;
         });
     }
