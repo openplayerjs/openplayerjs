@@ -221,17 +221,19 @@ class Player {
         this.playBtn.className = 'om-player__play';
         this.playBtn.tabIndex = 0;
         this.playBtn.setAttribute('aria-pressed', 'false');
+        this.playBtn.setAttribute('aria-hidden', 'false');
+
         this.playBtn.addEventListener('click', () => {
             this.playBtn.setAttribute('aria-pressed', 'true');
             this.media.play();
         });
         this.element.addEventListener('play', () => {
-            this.playBtn.style.display = 'none';
+            this.playBtn.setAttribute('aria-hidden', 'true');
         });
         this.element.addEventListener('pause', () => {
             const el = this.activeElement();
             if (el instanceof Media) {
-                this.playBtn.style.display = 'block';
+                this.playBtn.setAttribute('aria-hidden', 'false');
             }
         });
         this.element.parentElement.insertBefore(this.playBtn, this.element);

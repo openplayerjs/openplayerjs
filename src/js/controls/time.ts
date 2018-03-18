@@ -27,15 +27,18 @@ class Time {
         this.current = document.createElement('time');
         this.current.className = 'om-controls__current';
         this.current.setAttribute('role', 'timer');
-		this.current.setAttribute('aria-live', 'off');
+        this.current.setAttribute('aria-live', 'off');
+        this.current.setAttribute('aria-hidden', 'false');
         this.current.innerText = '0:00';
 
         this.delimiter = document.createElement('span');
         this.delimiter.className = 'om-controls__time-delimiter';
+        this.delimiter.setAttribute('aria-hidden', 'false');
         this.delimiter.innerText = '/';
 
         this.duration = document.createElement('time');
         this.duration.className = 'om-controls__duration';
+        this.duration.setAttribute('aria-hidden', 'false');
         this.duration.innerText = '0:00';
 
         this.events = {};
@@ -45,8 +48,8 @@ class Time {
                 this.duration.innerText = formatTime(el.duration);
                 this.current.innerText = formatTime(el.currentTime);
             } else {
-                this.duration.style.display = 'none';
-                this.delimiter.style.display = 'none';
+                this.duration.setAttribute('aria-hidden', 'true');
+                this.delimiter.setAttribute('aria-hidden', 'true');
             }
         };
         this.events['timeupdate'] = () => {
@@ -54,13 +57,13 @@ class Time {
             if (el.duration !== Infinity) {
                 if (!isNaN(el.duration) && el.duration !== this.duration.innerText) {
                     this.duration.innerText = formatTime(el.duration);
-                    this.duration.style.display = 'initial';
-                    this.delimiter.style.display = 'initial';
+                    this.duration.setAttribute('aria-hidden', 'false');
+                    this.delimiter.setAttribute('aria-hidden', 'false');
                 }
                 this.current.innerText = formatTime(el.currentTime);
-            } else if (this.duration.style.display !== 'none') {
-                this.duration.style.display = 'none';
-                this.delimiter.style.display = 'none';
+            } else if (this.duration.getAttribute('aria-hidden') === 'false') {
+                this.duration.setAttribute('aria-hidden', 'true');
+                this.delimiter.setAttribute('aria-hidden', 'true');
                 this.current.innerText = 'Live Broadcast';
             }
         };
