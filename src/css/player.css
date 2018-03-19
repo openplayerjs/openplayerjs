@@ -52,6 +52,90 @@
     top: auto;
     width: 1px;
 }
+.om-player__loader {
+    -moz-animation: spin 1s infinite linear;
+    -o-animation: spin 1s infinite linear;
+    -webkit-animation: spin 1s infinite linear;
+    animation: spin 1s infinite linear;
+    border: 5px solid #fff;
+    border-radius: 50%;
+    border-top: 5px solid #f00;
+}
+@-moz-keyframes spin {
+    0% {
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+  
+    100% {
+        -moz-transform: rotate(359deg);
+        -o-transform: rotate(359deg);
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@-webkit-keyframes spin {
+    0% {
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -moz-transform: rotate(359deg);
+        -o-transform: rotate(359deg);
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@-o-keyframes spin {
+    0% {
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -moz-transform: rotate(359deg);
+        -o-transform: rotate(359deg);
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@-ms-keyframes spin {
+    0% {
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -moz-transform: rotate(359deg);
+        -o-transform: rotate(359deg);
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -moz-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+
+    100% {
+        -moz-transform: rotate(359deg);
+        -o-transform: rotate(359deg);
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
 /* === Controls =================== */
 .om-controls {
     background: rgba(0, 0, 0, 0.2);
@@ -112,16 +196,52 @@
     overflow: visible;
     text-transform: none;
 }
-.om-player__play {
+.om-player__loader {
     display: block;
-    height: 80px;
+    height: 60px;
     left: 50%;
-    margin-left: -40px;
-    margin-top: -40px;
+    margin-left: -30px;
+    margin-top: -30px;
     position: absolute;
-    top: calc(50% - 32px);
-    width: 80px;
+    top: calc(50% - 20px);
+    width: 60px;
     z-index: 1;
+}
+.om-player__play {
+    background: transparent;
+    border: 0;
+    border-color: transparent transparent transparent #fff;
+    border-style: solid;
+    border-width: 26px 0 26px 46px;
+    cursor: pointer;
+    display: block;
+    height: 46px;
+    left: 50%;
+    margin-left: -18px;
+    margin-top: -23px;
+    padding: 0;
+    position: absolute;
+    top: calc(50% - 23px);
+    -webkit-transition: 100ms all ease;
+    -o-transition: 100ms all ease;
+    transition: 100ms all ease;
+    width: 0;
+    will-change: border-width;
+    z-index: 1;
+}
+.om-player__play--paused {
+    border-style: double;
+    border-width: 0 0 0 46px;
+}
+.om-player__play:hover {
+    border-color: transparent transparent transparent #f00;
+}
+.om-controls--hidden .om-player__loader,
+.om-controls--hidden .om-player__play {
+    top: 50%;
+}
+.om-controls--hidden .om-player__play {
+    margin-top: -26px;
 }
 .om-player__play::-moz-focus-inner,
 .om-settings__back,
@@ -134,8 +254,6 @@
 .om-controls > button:-moz-focusring {
     outline: 1px dotted ButtonText;
 }
-.om-player__play:before,
-.om-player__play--hover:before,
 .om-controls > button:before {
     color: #fff;
     display: inline-block;
@@ -206,12 +324,7 @@
 .om-controls__settings:before { 
     content: '\e800'; 
 }
-.om-player__play:before {
-    content: '\e80f';
-}
-.om-player__play--hover:before {
-    content: '\e80e';
-}
+
 /* === Settings =================== */
 .om-settings {
     background: rgba(28, 28, 28, 0.9);
@@ -402,6 +515,22 @@
 }
 .om-ads--active .om-controls__progress--seek::-webkit-slider-runnable-track {
     cursor: default;
+}
+
+/* === Tooltip ================== */
+.om-controls__tooltip {
+    background: #eee;
+    border: 1px solid #333;
+    bottom: 100%;
+    color: #111;
+    left: 0;
+    margin-bottom: 9px;
+    position: absolute;
+    text-align: center;
+    -webkit-transform: translateX(0%);
+    -ms-transform: translateX(0%);
+    transform: translateX(0%);
+    width: 36px;
 }
 
 /* === Volume =================== */

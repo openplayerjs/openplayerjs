@@ -34,6 +34,7 @@ class Player {
     public ads: Ads;
     public media: Media;
     public playBtn: HTMLButtonElement;
+    public loader: HTMLSpanElement;
 
     /**
      * Creates an instance of Player.
@@ -223,9 +224,35 @@ class Player {
         this.playBtn.setAttribute('aria-pressed', 'false');
         this.playBtn.setAttribute('aria-hidden', 'false');
 
+        this.loader = document.createElement('span');
+        this.loader.className = 'om-player__loader';
+        this.loader.tabIndex = -1;
+        this.loader.setAttribute('aria-hidden', 'true');
+
         this.playBtn.addEventListener('click', () => {
             this.playBtn.setAttribute('aria-pressed', 'true');
             this.media.play();
+        });
+        this.element.addEventListener('waiting', () => {
+            const el = this.activeElement();
+            if (el instanceof Media) {
+                this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', 'false');
+            }
+        });
+        this.element.addEventListener('seeking', () => {
+            const el = this.activeElement();
+            if (el instanceof Media) {
+                this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', 'false');
+            }
+        });
+        this.element.addEventListener('seeked', () => {
+            const el = this.activeElement();
+            if (el instanceof Media) {
+                this.playBtn.setAttribute('aria-hidden', 'false');
+                this.loader.setAttribute('aria-hidden', 'true');
+            }
         });
         this.element.addEventListener('play', () => {
             this.playBtn.setAttribute('aria-hidden', 'true');
@@ -236,6 +263,7 @@ class Player {
                 this.playBtn.setAttribute('aria-hidden', 'false');
             }
         });
+        this.element.parentElement.insertBefore(this.loader, this.element);
         this.element.parentElement.insertBefore(this.playBtn, this.element);
     }
 }
