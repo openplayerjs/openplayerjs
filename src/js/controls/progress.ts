@@ -59,6 +59,7 @@ class Progress {
         this.progress.appendChild(this.slider);
         this.progress.appendChild(this.played);
         this.progress.appendChild(this.buffer);
+        this.progress.appendChild(this.tooltip);
 
         this.forcePause = false;
 
