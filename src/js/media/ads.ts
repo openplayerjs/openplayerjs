@@ -108,19 +108,19 @@ class Ads {
             this._playAds();
             this.adsDone = true;
         } else if (this.adsManager) {
+            this.adsActive = true;
             this.adsManager.resume();
             const e = addEvent('play');
             this.media.element.dispatchEvent(e);
-            this.adsActive = true;
         }
     }
 
     public pause() {
         if (this.adsManager) {
+            this.adsActive = false;
             this.adsManager.pause();
             const e = addEvent('pause');
             this.media.element.dispatchEvent(e);
-            this.adsActive = false;
         }
     }
 
@@ -238,8 +238,8 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
+                    this.adsActive = true;
                     if (this.media.ended) {
-                        this.adsActive = true;
                         this.adsEnded = false;
                         const e = addEvent('ads.ended');
                         this.media.element.dispatchEvent(e);
@@ -255,7 +255,6 @@ class Ads {
             case google.ima.AdEvent.Type.SKIPPED:
                 this.media.element.parentElement.classList.remove('om-ads--active');
                 this.adsActive = false;
-                this.adsEnded = true;
                 if (ad.isLinear()) {
                     clearInterval(this.intervalTimer);
                 }
@@ -268,6 +267,8 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
+                this.adsActive = false;
+                this.adsEnded = true;
                 this.media.element.parentElement.classList.remove('om-ads--active');
                 break;
         }
