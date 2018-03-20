@@ -520,18 +520,42 @@
 /* === Tooltip ================== */
 .om-controls__tooltip {
     background: #eee;
-    border: 1px solid #333;
+    border: 1px solid #000;
     bottom: 100%;
-    color: #111;
+    color: #000;
     display: none;
     left: 0;
-    margin-bottom: 9px;
+    margin-bottom: 1px;
+    padding: 1px 4px;
     position: absolute;
     text-align: center;
     -webkit-transform: translateX(0%);
     -ms-transform: translateX(0%);
     transform: translateX(0%);
-    width: 36px;
+}
+.om-player__video .om-controls__tooltip {
+    margin-bottom: 9px;
+}
+.om-controls__tooltip:before,
+.om-controls__tooltip:after {
+    content:'';
+    height: 0;
+    left: 0;
+    margin: 0 auto;    
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 0;
+}
+.om-controls__tooltip:before {
+    border-left: solid 8px transparent;
+    border-right: solid 8px transparent;
+    border-top: solid 8px #000;
+}
+.om-controls__tooltip:after {
+    border-left: solid 7px transparent;
+    border-right: solid 7px transparent;
+    border-top: solid 7px #eee;
 }
 .om-controls__tooltip--visible {
     display: block;
