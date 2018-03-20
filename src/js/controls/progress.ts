@@ -176,15 +176,18 @@ class Progress {
                 e.originalEvent.changedTouches[0].pageX : e.pageX;
 
             let pos = x - offset(this.progress).left;
+            const half = this.tooltip.offsetWidth / 2;
             const percentage = (pos / this.progress.offsetWidth);
             const time = (percentage <= 0.02) ? 0 : percentage * el.duration;
             const mediaContainer = this.player.element.parentElement;
             const limit = mediaContainer.offsetWidth - this.tooltip.offsetWidth;
 
-            if (pos < 0) {
+            if (pos <= 0 || x - offset(mediaContainer).left <= half) {
                 pos = 0;
             } else if (x - offset(mediaContainer).left >= limit) {
                 pos = limit;
+            } else {
+                pos -= half;
             }
 
             if (percentage >= 0 && percentage <= 1) {
@@ -196,6 +199,12 @@ class Progress {
             this.tooltip.style.left = `${pos}px`;
             this.tooltip.innerHTML = formatTime(time);
         };
+
+        document.addEventListener('mousemove', (e: any) => {
+            if (!e.target.closest('.om-controls__progress')) {
+                this.tooltip.classList.remove('om-controls__tooltip--visible');
+            }
+        });
 
         return this;
     }
