@@ -1,3 +1,4 @@
+import IEvent from './components/interfaces/general/event';
 import IFile from './components/interfaces/media/file';
 import Controls from './controls';
 import Media from './media';
@@ -35,6 +36,8 @@ class Player {
     public media: Media;
     public playBtn: HTMLButtonElement;
     public loader: HTMLSpanElement;
+    public controls: Controls;
+    public events: IEvent;
 
     /**
      * Creates an instance of Player.
@@ -46,6 +49,7 @@ class Player {
         this.element = element instanceof Element ? element : document.getElementById(element);
         this.adsUrl = adsUrl;
         this.ads = null;
+        this.events = {};
         return this;
     }
 
@@ -60,6 +64,7 @@ class Player {
             if (!IS_IPHONE && isVideo) {
                 this._createControls();
             }
+            this._setEvents();
             Player.instances[this.uid] = this;
         }
     }
@@ -96,6 +101,10 @@ class Player {
             }
             this.media.destroy();
         }
+
+        Object.keys(this.events).forEach(event => {
+            this.element.removeEventListener(event, this.events[event]);
+        });
     }
 
     set src(media: IFile[]) {
@@ -176,9 +185,9 @@ class Player {
      * @memberof Player
      */
     private _createControls() {
-        const controls = new Controls(this);
-        controls.prepare();
-        controls.render();
+        this.controls = new Controls(this);
+        this.controls.prepare();
+        this.controls.render();
     }
 
     /**
@@ -230,41 +239,117 @@ class Player {
         this.loader.setAttribute('aria-hidden', 'true');
 
         this.playBtn.addEventListener('click', () => {
-            this.playBtn.setAttribute('aria-pressed', 'true');
             this.media.play();
         });
-        this.element.addEventListener('waiting', () => {
-            const el = this.activeElement();
-            if (el instanceof Media) {
-                this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', 'false');
-            }
-        });
-        this.element.addEventListener('seeking', () => {
-            const el = this.activeElement();
-            if (el instanceof Media) {
-                this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', 'false');
-            }
-        });
-        this.element.addEventListener('seeked', () => {
-            const el = this.activeElement();
-            if (el instanceof Media) {
-                this.playBtn.setAttribute('aria-hidden', 'false');
-                this.loader.setAttribute('aria-hidden', 'true');
-            }
-        });
-        this.element.addEventListener('play', () => {
-            this.playBtn.setAttribute('aria-hidden', 'true');
-        });
-        this.element.addEventListener('pause', () => {
-            const el = this.activeElement();
-            if (el instanceof Media) {
-                this.playBtn.setAttribute('aria-hidden', 'false');
-            }
-        });
+
         this.element.parentElement.insertBefore(this.loader, this.element);
         this.element.parentElement.insertBefore(this.playBtn, this.element);
+    }
+
+    private _setEvents() {
+        if (!IS_IPHONE && isVideo(this.element)) {
+            this.events['waiting'] = () => {
+                const el = this.activeElement();
+                if (el instanceof Media) {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'false');
+                } else {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'true');
+                }
+            };
+            this.events['seeking'] = () => {
+                const el = this.activeElement();
+                if (el instanceof Media) {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'false');
+                } else {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'true');
+                }
+            };
+            this.events['seeked'] = () => {
+                const el = this.activeElement();
+                if (el instanceof Media) {
+                    this.playBtn.setAttribute('aria-hidden', 'false');
+                    this.loader.setAttribute('aria-hidden', 'true');
+                } else {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'true');
+                }
+            };
+            this.events['play'] = () => {
+                this.playBtn.classList.add('om-player__play--paused');
+                setTimeout(() => this.playBtn.setAttribute('aria-hidden', 'true'), 350);
+            };
+            this.events['pause'] = () => {
+                this.playBtn.classList.remove('om-player__play--paused');
+                const el = this.activeElement();
+                if (el instanceof Media) {
+                    this.playBtn.setAttribute('aria-hidden', 'false');
+                }
+            };
+        }
+
+        this.events['keydown'] = (e: any) => {
+            const el = this.activeElement();
+            const isAd = el instanceof Ads;
+            if (el instanceof Media) {
+                this.playBtn.setAttribute('aria-hidden', 'false');
+            }
+
+            const key = e.which || e.keyCode || 0;
+            const step = el.duration * 0.05;
+
+            switch (key) {
+                case 13: // Enter
+                case 32: // Space bar
+                    if (el.paused) {
+                        el.play();
+                    } else {
+                        el.pause();
+                    }
+                    break;
+                case 36: // Home
+                    if (!isAd) {
+                        el.currentTime = 0;
+                    }
+                    break;
+                case 37: // Left
+                case 39: // Right
+                    if (!isAd && el.duration !== Infinity) {
+                        el.currentTime += key === 37 ? (step * -1) : step;
+                        if (el.currentTime < 0) {
+                            el.currentTime = 0;
+                        } else if (el.currentTime >= el.duration) {
+                            el.currentTime = el.duration;
+                        }
+                    }
+                    break;
+                case 38: // Up
+                case 40: // Down
+                    const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
+                    el.volume = newVol;
+                    el.muted = !(newVol > 0);
+                    break;
+                case 35: // End
+                    if (!isAd) {
+                        el.currentTime = el.duration;
+                    }
+                    break;
+                case 70: // F
+                    if (!e.ctrlKey && typeof this.controls.fullscreen.fullScreenEnabled !== 'undefined') {
+                        this.controls.fullscreen.toggleFullscreen();
+                    }
+                    break;
+                default:
+                    return true;
+            }
+        };
+
+        Object.keys(this.events).forEach(event => {
+            this.element.addEventListener(event, this.events[event]);
+        });
     }
 }
 

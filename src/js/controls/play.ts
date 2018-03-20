@@ -51,7 +51,6 @@ class Play {
                 }
                 this.button.title = 'Play';
                 this.button.setAttribute('aria-label', 'Play');
-            
             } else {
                 this.button.classList.remove('om-controls__playpause--replay');
                 this.button.classList.add('om-controls__playpause--pause');
