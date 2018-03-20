@@ -22,6 +22,7 @@ class Controls {
     public controls: any[];
     public container: HTMLDivElement;
     public settings: Settings;
+    public fullscreen: Fullscreen;
     private timer: any;
 
     /**
@@ -45,7 +46,8 @@ class Controls {
         ];
 
         if (isVideo(this.media.element)) {
-            this.controls.push(new Fullscreen(player));
+            this.fullscreen = new Fullscreen(player);
+            this.controls.push(this.fullscreen);
         }
 
         this.container = null;

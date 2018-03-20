@@ -523,6 +523,7 @@
     border: 1px solid #333;
     bottom: 100%;
     color: #111;
+    display: none;
     left: 0;
     margin-bottom: 9px;
     position: absolute;
@@ -531,6 +532,9 @@
     -ms-transform: translateX(0%);
     transform: translateX(0%);
     width: 36px;
+}
+.om-controls__tooltip--visible {
+    display: block;
 }
 
 /* === Volume =================== */

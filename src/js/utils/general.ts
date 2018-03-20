@@ -139,3 +139,11 @@ export function request(url: string, dataType: string, success: (n: any) => any,
 export function hasClass(target: any, className: string) {
     return target.className.split(' ').indexOf(className) > -1;
 }
+
+export function offset(el: HTMLElement) {
+    const rect = el.getBoundingClientRect();
+    return {
+        left: rect.left + (window.pageXOffset || document.documentElement.scrollLeft),
+        top: rect.top + (window.pageYOffset || document.documentElement.scrollTop),
+    };
+}

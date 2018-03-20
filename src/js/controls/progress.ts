@@ -1,8 +1,7 @@
 import IEvent from '../components/interfaces/general/event';
 import Media from '../media';
-import Ads from '../media/ads';
 import Player from '../player';
-import { hasClass } from '../utils/general';
+import { hasClass, offset } from '../utils/general';
 import { formatTime } from '../utils/time';
 
 class Progress {
@@ -158,7 +157,7 @@ class Progress {
                 el.play();
             }
             this.forcePause = false;
-        }
+        };
 
         this.sliderEvents['input'] = updateSlider.bind(this);
         this.sliderEvents['change'] = updateSlider.bind(this);
@@ -166,48 +165,36 @@ class Progress {
         this.sliderEvents['touchstart'] = forcePause.bind(this);
         this.sliderEvents['mouseup'] = releasePause.bind(this);
         this.sliderEvents['touchend'] = releasePause.bind(this);
-    
-        this.containerEvents['keydown'] = (e: any) => {
-            const el = this.player.activeElement();
 
-            if (el instanceof Ads) {
+        this.containerEvents['mousemove'] = (e: any) => {
+            const el = this.player.activeElement();
+            if (el.duration === Infinity) {
                 return true;
             }
-            const key = e.which || e.keyCode || 0;
-            const step = el.duration * 0.05;
-            let seekTime = el.currentTime;
 
-            switch (key) {
-                case 37: // Left
-                    if (el.duration !== Infinity) {
-                        seekTime -= step;
-                    }
-                    break;
-                case 39: // Right
-                    if (el.duration !== Infinity) {
-                        seekTime += step;
-                    }
-                    break;
-                case 36: // Home
-                    seekTime = 0;
-                    break;
-                case 35: // end
-                    seekTime = el.duration;
-                    break;
-                case 13: // enter
-                case 32: // space
-                    if (el.paused) {
-                        el.play();
-                    } else {
-                        el.pause();
-                    }
-                    return;
-                default:
-                    return;
+            const x = (e.originalEvent && e.originalEvent.changedTouches) ?
+                e.originalEvent.changedTouches[0].pageX : e.pageX;
+
+            let pos = x - offset(this.progress).left;
+            const percentage = (pos / this.progress.offsetWidth);
+            const time = (percentage <= 0.02) ? 0 : percentage * el.duration;
+            const mediaContainer = this.player.element.parentElement;
+            const limit = mediaContainer.offsetWidth - this.tooltip.offsetWidth;
+
+            if (pos < 0) {
+                pos = 0;
+            } else if (x - offset(mediaContainer).left >= limit) {
+                pos = limit;
             }
 
-            seekTime = seekTime < 0 ? 0 : (seekTime >= el.duration ? e.duration : Math.floor(seekTime));
-            el.currentTime = seekTime;
+            if (percentage >= 0 && percentage <= 1) {
+                this.tooltip.classList.add('om-controls__tooltip--visible');
+            } else {
+                this.tooltip.classList.remove('om-controls__tooltip--visible');
+            }
+
+            this.tooltip.style.left = `${pos}px`;
+            this.tooltip.innerHTML = formatTime(time);
         };
 
         return this;
@@ -227,8 +214,8 @@ class Progress {
             this.slider.addEventListener(event, this.sliderEvents[event]);
         });
 
-        this.progress.addEventListener('keydown', this.containerEvents.keydown);
-
+        this.progress.addEventListener('keydown', this.player.events.keydown);
+        this.progress.addEventListener('mousemove', this.containerEvents.mousemove);
         return this;
     }
 
@@ -240,6 +227,9 @@ class Progress {
         Object.keys(this.sliderEvents).forEach(event => {
             this.slider.removeEventListener(event, this.sliderEvents[event]);
         });
+
+        this.progress.removeEventListener('keydown', this.player.events.keydown);
+        this.progress.removeEventListener('mousemove', this.containerEvents.mousemove);
 
         this.events = {};
         this.sliderEvents = {};

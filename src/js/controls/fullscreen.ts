@@ -9,10 +9,10 @@ import Player from '../player';
 class Fullscreen {
     public player: Player;
     public fullScreenEnabled: boolean;
+    public isFullscreen: boolean;
     private button: HTMLButtonElement;
     private events: IEvent;
     private fullscreenEvents: string[];
-    private isFullscreen: boolean;
     private fullscreenWidth: number;
     private fullscreenHeight: number;
     private clickEvent: any;
@@ -45,36 +45,7 @@ class Fullscreen {
 
         this.clickEvent = () => {
             this.button.setAttribute('aria-pressed', 'true');
-            if (this.isFullscreen) {
-                // The video is currently in fullscreen mode
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (target.mozCancelFullScreen) {
-                    target.mozCancelFullScreen();
-                } else if (document.webkitCancelFullScreen) {
-                    document.webkitCancelFullScreen();
-                } else if (target.msExitFullscreen) {
-                    target.msExitFullscreen();
-                } else {
-                    this._fullscreenChange();
-                }
-            } else {
-                const video = (this.player.element as any);
-                this.fullscreenWidth = window.screen.width;
-                this.fullscreenHeight = window.screen.height;
-
-                if (video.requestFullscreen) {
-                    video.parentElement.requestFullscreen();
-                } else if (video.mozRequestFullScreen) {
-                    video.parentElement.mozRequestFullScreen();
-                } else if (video.webkitRequestFullScreen) {
-                    video.parentElement.webkitRequestFullScreen();
-                } else if (video.msRequestFullscreen) {
-                    video.parentElement.msRequestFullscreen();
-                } else {
-                    this._fullscreenChange();
-                }
-            }
+            this.toggleFullscreen();
         };
 
         this.events = {};
@@ -127,6 +98,40 @@ class Fullscreen {
     public build(controls: HTMLDivElement) {
         controls.appendChild(this.button);
         return this;
+    }
+
+    public toggleFullscreen() {
+        if (this.isFullscreen) {
+            const target = (document as any);
+            // The video is currently in fullscreen mode
+            if (target.exitFullscreen) {
+                target.exitFullscreen();
+            } else if (target.mozCancelFullScreen) {
+                target.mozCancelFullScreen();
+            } else if (document.webkitCancelFullScreen) {
+                target.webkitCancelFullScreen();
+            } else if (target.msExitFullscreen) {
+                target.msExitFullscreen();
+            } else {
+                this._fullscreenChange();
+            }
+        } else {
+            const video = (this.player.element as any);
+            this.fullscreenWidth = window.screen.width;
+            this.fullscreenHeight = window.screen.height;
+
+            if (video.requestFullscreen) {
+                video.parentElement.requestFullscreen();
+            } else if (video.mozRequestFullScreen) {
+                video.parentElement.mozRequestFullScreen();
+            } else if (video.webkitRequestFullScreen) {
+                video.parentElement.webkitRequestFullScreen();
+            } else if (video.msRequestFullscreen) {
+                video.parentElement.msRequestFullscreen();
+            } else {
+                this._fullscreenChange();
+            }
+        }
     }
 
     private _fullscreenChange() {
