@@ -67,7 +67,7 @@ class Progress {
         this.sliderEvents = {};
         this.containerEvents = {};
         this.globalEvents = {};
-        this.events['loadedmetadata'] = () => {
+        this.events.loadedmetadata = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 this.slider.setAttribute('max', `${el.duration}`);
@@ -76,7 +76,7 @@ class Progress {
                 this.progress.setAttribute('aria-valuemax', el.duration);
             }
         };
-        this.events['progress'] = (e: any) => {
+        this.events.progress = (e: any) => {
             const el = e.target;
             if (el.duration > 0) {
                 for (let i = 0, total = el.buffered.length; i < total; i++) {
@@ -87,17 +87,17 @@ class Progress {
                 }
             }
         };
-        this.events['pause'] = () => {
+        this.events.pause = () => {
             const el = this.player.activeElement();
             const current = el.currentTime;
             this.progress.setAttribute('aria-valuenow', current.toString());
             this.progress.setAttribute('aria-valuetext', formatTime(current));
         };
-        this.events['play'] = () => {
+        this.events.play = () => {
             this.progress.removeAttribute('aria-valuenow');
             this.progress.removeAttribute('aria-valuetext');
         };
-        this.events['timeupdate'] = (e: any) => {
+        this.events.timeupdate = (e: any) => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
@@ -118,7 +118,7 @@ class Progress {
             }
         };
 
-        this.events['ended'] = () => {
+        this.events.ended = () => {
             this.slider.style.backgroundSize = '0% 100%';
             this.slider.setAttribute('max', '0');
             this.buffer.value = 0;
@@ -161,14 +161,14 @@ class Progress {
             this.forcePause = false;
         };
 
-        this.sliderEvents['input'] = updateSlider.bind(this);
-        this.sliderEvents['change'] = updateSlider.bind(this);
-        this.sliderEvents['mousedown'] = forcePause.bind(this);
-        this.sliderEvents['touchstart'] = forcePause.bind(this);
-        this.sliderEvents['mouseup'] = releasePause.bind(this);
-        this.sliderEvents['touchend'] = releasePause.bind(this);
+        this.sliderEvents.input = updateSlider.bind(this);
+        this.sliderEvents.change = updateSlider.bind(this);
+        this.sliderEvents.mousedown = forcePause.bind(this);
+        this.sliderEvents.touchstart = forcePause.bind(this);
+        this.sliderEvents.mouseup = releasePause.bind(this);
+        this.sliderEvents.touchend = releasePause.bind(this);
 
-        this.containerEvents['mousemove'] = (e: any) => {
+        this.containerEvents.mousemove = (e: any) => {
             const el = this.player.activeElement();
             if (el.duration === Infinity) {
                 return true;
@@ -202,7 +202,7 @@ class Progress {
             this.tooltip.innerHTML = formatTime(time);
         };
 
-        this.globalEvents['mousemove'] = (e: any) => {
+        this.globalEvents.mousemove = (e: any) => {
             if (!e.target.closest('.om-controls__progress')) {
                 this.tooltip.classList.remove('om-controls__tooltip--visible');
             }

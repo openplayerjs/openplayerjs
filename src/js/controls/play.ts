@@ -32,7 +32,7 @@ class Play {
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
 
         this.events = {};
-        this.events['click'] = () => {
+        this.events.click = () => {
             this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             if (el.paused || el.ended) {
@@ -41,7 +41,7 @@ class Play {
                 el.pause();
             }
         };
-        this.events['play'] = () => {
+        this.events.play = () => {
             const el = this.player.activeElement();
             if (el.ended) {
                 if (el instanceof Media) {
@@ -66,12 +66,12 @@ class Play {
                 });
             }
         };
-        this.events['pause'] = () => {
+        this.events.pause = () => {
             this.button.classList.remove('om-controls__playpause--pause');
             this.button.title = 'Play';
             this.button.setAttribute('aria-label', 'Play');
         };
-        this.events['ended'] = () => {
+        this.events.ended = () => {
             const el = this.player.activeElement();
             if (el.ended && el instanceof Media) {
                 this.button.classList.add('om-controls__playpause--replay');
@@ -103,7 +103,7 @@ class Play {
             this.player.media.element.addEventListener(event, this.events[event]);
         });
 
-        this.button.addEventListener('click', this.events['click']);
+        this.button.addEventListener('click', this.events.click);
 
         return this;
     }
@@ -113,7 +113,7 @@ class Play {
             this.player.media.element.removeEventListener(event, this.events[event]);
         });
 
-        this.button.removeEventListener('click', this.events['click']);
+        this.button.removeEventListener('click', this.events.click);
         this.button.remove();
 
         return this;

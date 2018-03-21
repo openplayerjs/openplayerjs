@@ -257,7 +257,7 @@ class Player {
 
     private _setEvents() {
         if (!IS_IPHONE && isVideo(this.element)) {
-            this.events['waiting'] = () => {
+            this.events.waiting = () => {
                 const el = this.activeElement();
                 if (el instanceof Media) {
                     this.playBtn.setAttribute('aria-hidden', 'true');
@@ -267,7 +267,7 @@ class Player {
                     this.loader.setAttribute('aria-hidden', 'true');
                 }
             };
-            this.events['seeking'] = () => {
+            this.events.seeking = () => {
                 const el = this.activeElement();
                 if (el instanceof Media) {
                     this.playBtn.setAttribute('aria-hidden', 'true');
@@ -277,7 +277,7 @@ class Player {
                     this.loader.setAttribute('aria-hidden', 'true');
                 }
             };
-            this.events['seeked'] = () => {
+            this.events.seeked = () => {
                 const el = this.activeElement();
                 if (el instanceof Media) {
                     this.playBtn.setAttribute('aria-hidden', 'false');
@@ -287,11 +287,11 @@ class Player {
                     this.loader.setAttribute('aria-hidden', 'true');
                 }
             };
-            this.events['play'] = () => {
+            this.events.play = () => {
                 this.playBtn.classList.add('om-player__play--paused');
                 setTimeout(() => this.playBtn.setAttribute('aria-hidden', 'true'), 350);
             };
-            this.events['pause'] = () => {
+            this.events.pause = () => {
                 this.playBtn.classList.remove('om-player__play--paused');
                 const el = this.activeElement();
                 if (el instanceof Media) {
@@ -300,7 +300,7 @@ class Player {
             };
         }
 
-        this.events['keydown'] = (e: any) => {
+        this.events.keydown = (e: any) => {
             const el = this.activeElement();
             const isAd = el instanceof Ads;
             if (el instanceof Media) {

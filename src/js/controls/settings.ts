@@ -16,6 +16,8 @@ class Settings {
     private events: IEvent;
     private globalEvents: IEvent;
     private clickEvent: any;
+    private hideEvent: any;
+    private originalStatus: string;
 
     /**
      *
@@ -44,12 +46,20 @@ class Settings {
             this.menu.setAttribute('aria-hidden', (this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false'));
         };
 
+        this.hideEvent = () => {
+            this.menu.innerHTML = this.originalStatus;
+            this.menu.setAttribute('aria-hidden', 'true');
+        };
+
         this.events = {};
         this.globalEvents = {};
         this.submenu = {};
-        this.events['click'] = this.clickEvent.bind(this);
 
-        this.globalEvents['click'] = (e: any) => {
+        this.events['controls.hide'] = this.hideEvent.bind(this);
+        this.events.play = this.hideEvent.bind(this);
+        this.events.pause = this.hideEvent.bind(this);
+
+        this.globalEvents.click = (e: any) => {
             if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-speed__option')) {
                 const option = e.target;
                 const el = this.player.activeElement();
@@ -58,6 +68,7 @@ class Settings {
                 }
             }
         };
+        this.globalEvents.resize = this.hideEvent.bind(this);
 
         return this;
     }
@@ -68,20 +79,34 @@ class Settings {
      * @memberof Settings
      */
     public register() {
-        this.button.addEventListener('click', this.events['click']);
-
+        this.button.addEventListener('click', this.clickEvent.bind(this));
+        Object.keys(this.events).forEach(event => {
+            this.player.element.addEventListener(event, this.events[event]);
+        });
         document.addEventListener('click', this.globalEvents.click);
+        document.addEventListener('click', this.globalEvents['settings.submenu']);
+        window.addEventListener('resize', this.globalEvents.resize);
 
         return this;
     }
 
     public unregister() {
-        this.button.removeEventListener('click', this.events['click']);
-
+        this.button.removeEventListener('click', this.clickEvent.bind(this));
+        Object.keys(this.events).forEach(event => {
+            this.player.element.removeEventListener(event, this.events[event]);
+        });
         document.removeEventListener('click', this.globalEvents.click);
+        document.removeEventListener('click', this.globalEvents['settings.submenu']);
+        window.removeEventListener('resize', this.globalEvents.resize);
 
         this.menu.remove();
         this.button.remove();
+
+        // Restore original playback rate
+        const el = this.player.activeElement();
+        if (el instanceof Media) {
+            el.playbackRate = 1;
+        }
 
         return this;
     }
@@ -119,7 +144,7 @@ class Settings {
             <div class="om-settings__menu-content">${submenu.find(x => x.key === defaultValue).label}</div>`;
 
         this.menu.querySelector('.om-settings__menu').appendChild(menuItem);
-        let mainMenu = this.menu.innerHTML;
+        this.originalStatus = this.menu.innerHTML;
 
         // Store the submenu to reach all options for current menu item
         if (submenu) {
@@ -137,12 +162,12 @@ class Settings {
             this.submenu[key] = subItems;
         }
 
-        document.addEventListener('click', (e: any) => {
+        this.globalEvents['settings.submenu'] = (e: any) => {
             if (e.target.closest(`#${this.player.id}`)) {
                 if (hasClass(e.target, 'om-settings__back')) {
                     this.menu.classList.add('om-settings--sliding');
                     setTimeout(() => {
-                        this.menu.innerHTML = mainMenu;
+                        this.menu.innerHTML = this.originalStatus;
                         this.menu.classList.remove('om-settings--sliding');
                     }, 100);
                 } else if (hasClass(e.target, 'om-settings__menu-content') && typeof this.submenu[key] !== undefined) {
@@ -162,25 +187,19 @@ class Settings {
                     // Restore original menu, and set the new value
                     this.menu.classList.add('om-settings--sliding');
                     setTimeout(() => {
-                        this.menu.innerHTML = mainMenu;
+                        this.menu.innerHTML = this.originalStatus;
                         const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
                         prev.setAttribute('data-value', `${key}-${value}`);
                         prev.nextElementSibling.innerHTML = label;
                         defaultValue = value;
-                        mainMenu = this.menu.innerHTML;
+                        this.originalStatus = this.menu.innerHTML;
                         this.menu.classList.remove('om-settings--sliding');
                     }, 100);
                 }
             } else {
-                this.menu.setAttribute('aria-hidden', 'true');
-                this.menu.innerHTML = mainMenu;
+                this.hideEvent();
             }
-        });
-
-        window.addEventListener('resize', () => {
-            this.menu.setAttribute('aria-hidden', 'true');
-            this.menu.innerHTML = mainMenu;
-        });
+        };
     }
 
     /**
