@@ -39,6 +39,7 @@
                 <option value="https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd">M(PEG)-DASH</option>
             </select>
             </label>
+            <button class="destroy-player">Destroy player</button>
         </div>
     </div>
 
@@ -55,22 +56,40 @@
                 <option value="http://db3.indexcom.com/bucket/ram/00/05/64k/05.m3u8">HLS</option>
             </select>
             </label>
+            <button class="destroy-player">Destroy player</button>
         </div>
     </div>
 
     <script src="../dist/om_player.js"></script>
     <script>
         var sourcesSelector = document.querySelectorAll('select[name=sources]');
-	    var sourcesTotal = sourcesSelector.length;
+        var destroyBtn = document.querySelectorAll('button.destroy-player');
+        
+        function loadMedia() {
+            var id = this.closest('.players').querySelector('.om-player').id;
+            var player = OpenPlayer.instances[id];
 
-        for (var i = 0; i < sourcesTotal; i++) {
-            sourcesSelector[i].addEventListener('change', function () {
-                const id = this.closest('.players').querySelector('.om-player').id;
-                const player = OpenPlayer.instances[id];
+            player.src = this.value.replace('&amp;', '&');
+            player.load();
+        }
 
-                player.src = this.value.replace('&amp;', '&');
-                player.load();
-            });
+        function destroyPlayer() {
+            var id = this.closest('.players').querySelector('.om-player').id;
+            var player = OpenPlayer.instances[id];
+            player.destroy();
+            this.removeEventListener('click', destroyPlayer);
+
+            for (var i = 0, total = sourcesSelector.length; i < total; i++) {
+                sourcesSelector[i].removeEventListener('change', loadMedia);
+            }
+        }
+
+        for (var i = 0, total = sourcesSelector.length; i < total; i++) {
+            sourcesSelector[i].addEventListener('change', loadMedia);
+        }
+
+        for (var i = 0, total = destroyBtn.length; i < total; i++) {
+            destroyBtn[i].addEventListener('click', destroyPlayer);
         }
     </script>
 </body>

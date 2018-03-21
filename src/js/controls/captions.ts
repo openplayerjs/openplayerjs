@@ -124,8 +124,12 @@ class Captions {
             // Assign event to caption options
             document.removeEventListener('click', this.globalEvents.click);
         }
-        this.button.removeEventListener('click', this.events.click);
-        this.button.remove();
+
+        if (this.hasTracks) {
+            this.button.removeEventListener('click', this.events.click);
+            this.button.remove();
+            this.captions.remove();
+        }
 
         return this;
     }
