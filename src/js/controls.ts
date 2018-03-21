@@ -71,7 +71,7 @@ class Controls {
             if ((!el.paused || !el.ended) && isMediaVideo) {
                 this.player.element.parentElement.classList.remove('om-controls--hidden');
                 this._startControlTimer(2500);
-            }  
+            }
         };
         this.events['mouseleave'] = () => {
             const el = this.player.activeElement();
@@ -130,6 +130,8 @@ class Controls {
         this.controls.forEach(item => {
             item.unregister();
         });
+
+        this.container.remove();
     }
 
     private _startControlTimer(time: number) {

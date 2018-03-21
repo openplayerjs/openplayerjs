@@ -93,18 +93,27 @@ class Player {
 
     public destroy() {
         if (this.ads) {
+            this.ads.pause();
             this.ads.destroy();
-        } else {
-            if (this.element.getAttribute('data-om-file')) {
-                (this.element as HTMLMediaElement).src = this.element.getAttribute('data-om-file');
-                this.element.removeAttribute('data-om-file');
-            }
-            this.media.destroy();
         }
 
+        const el = (this.element as HTMLMediaElement);
+        this.media.destroy();
+
         Object.keys(this.events).forEach(event => {
-            this.element.removeEventListener(event, this.events[event]);
+            el.removeEventListener(event, this.events[event]);
         });
+
+        this.controls.destroy();
+
+        if (isVideo(this.element)) {
+            this.playBtn.remove();
+            this.loader.remove();
+        }
+
+        el.controls = true;
+        const parent = el.parentElement;
+        parent.parentNode.replaceChild(el, parent);
     }
 
     set src(media: IFile[]) {
