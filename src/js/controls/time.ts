@@ -42,7 +42,7 @@ class Time {
         this.duration.innerText = '0:00';
 
         this.events = {};
-        this.events['loadedmetadata'] = () => {
+        this.events.loadedmetadata = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity && !isNaN(el.duration)) {
                 this.duration.innerText = formatTime(el.duration);
@@ -52,7 +52,7 @@ class Time {
                 this.delimiter.setAttribute('aria-hidden', 'true');
             }
         };
-        this.events['timeupdate'] = () => {
+        this.events.timeupdate = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 if (!isNaN(el.duration) && el.duration !== this.duration.innerText) {
@@ -67,7 +67,7 @@ class Time {
                 this.current.innerText = 'Live Broadcast';
             }
         };
-        this.events['ended'] = () => {
+        this.events.ended = () => {
             const el = this.player.activeElement();
             if (el instanceof Media && this.duration.innerText !== '0:00') {
                 this.duration.innerText = formatTime(el.duration);

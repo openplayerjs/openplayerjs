@@ -38,8 +38,8 @@ class Captions {
         this.button.setAttribute('aria-label', 'Toggle Captions');
         this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
-        const video = (this.player.element as HTMLVideoElement);
-        this.trackList = video.textTracks;
+        const mediaEl = (this.player.element as HTMLMediaElement);
+        this.trackList = mediaEl.textTracks;
         this.hasTracks = !!this.trackList.length;
 
         if (!this.hasTracks) {
@@ -48,7 +48,7 @@ class Captions {
 
         this.player.element.parentElement.classList.add('om-captions--detected');
 
-        for (let i = 0, tracks = video.querySelectorAll('track'), total = tracks.length; i < total; i++) {
+        for (let i = 0, tracks = mediaEl.querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
             this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);
             if (element.default) {
@@ -76,7 +76,7 @@ class Captions {
         }
 
         // Show/hide captions
-        this.events['click'] = (e: any) => {
+        this.events.click = (e: any) => {
             const button = (e.target as HTMLDivElement);
             button.setAttribute('aria-pressed', 'true');
             if (hasClass(button, 'om-controls__captions--on')) {
@@ -93,7 +93,7 @@ class Captions {
             return this;
         }
 
-        this.globalEvents['click'] = (e: any) => {
+        this.globalEvents.click = (e: any) => {
             if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-subtitles__option')) {
                 const option = e.target;
                 const language = option.getAttribute('data-value').replace('captions-', '');
@@ -113,7 +113,6 @@ class Captions {
     public register() {
         this.button.addEventListener('click', this.events.click);
         if (typeof this.globalEvents.click !== 'undefined') {
-            // Assign event to caption options
             document.addEventListener('click', this.globalEvents.click);
         }
         return this;
@@ -121,7 +120,6 @@ class Captions {
 
     public unregister() {
         if (typeof this.globalEvents.click !== 'undefined') {
-            // Assign event to caption options
             document.removeEventListener('click', this.globalEvents.click);
         }
 

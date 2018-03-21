@@ -30,7 +30,7 @@ class AirPlay {
             this.media.element.setAttribute('x-webkit-airplay', 'allow');
         }
 
-        this.events['webkitcurrentplaybacktargetiswirelesschanged'] = () => {
+        this.events.webkitcurrentplaybacktargetiswirelesschanged = () => {
             const isWireless = this.media.element.webkitCurrentPlaybackTargetIsWireless;
             const name = isWireless ? 'Started' : 'Stopped';
             const status = isWireless ? 'active' : '';

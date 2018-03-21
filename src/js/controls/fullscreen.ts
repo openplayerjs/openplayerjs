@@ -49,7 +49,7 @@ class Fullscreen {
         };
 
         this.events = {};
-        this.events['click'] = this.clickEvent.bind(this);
+        this.events.click = this.clickEvent.bind(this);
 
         this.fullscreenEvents = [
             'fullscreenchange',
@@ -73,7 +73,7 @@ class Fullscreen {
             document.addEventListener(event, this._fullscreenChange.bind(this));
         });
 
-        this.button.addEventListener('click', this.events['click']);
+        this.button.addEventListener('click', this.events.click);
 
         return this;
     }
@@ -82,7 +82,7 @@ class Fullscreen {
         this.fullscreenEvents.forEach(event => {
             document.removeEventListener(event, this._fullscreenChange.bind(this));
         });
-        this.button.removeEventListener('click', this.events['click']);
+        this.button.removeEventListener('click', this.events.click);
         this.button.remove();
 
         return this;

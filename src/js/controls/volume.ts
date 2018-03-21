@@ -102,12 +102,12 @@ class Volume {
         };
 
         this.events = {};
-        this.events['volumechange'] = () => {
+        this.events.volumechange = () => {
             const el = this.player.activeElement();
             updateSlider(el);
             updateButton(el);
         };
-        this.events['loadedmetadata'] = () => {
+        this.events.loadedmetadata = () => {
             const el = this.player.activeElement();
             if (el.muted) {
                 el.volume = 0;
@@ -116,11 +116,11 @@ class Volume {
             }
         };
         this.sliderEvents = {};
-        this.sliderEvents['input'] = updateVolume.bind(this);
-        this.sliderEvents['change'] = updateVolume.bind(this);
+        this.sliderEvents.input = updateVolume.bind(this);
+        this.sliderEvents.change = updateVolume.bind(this);
 
         this.buttonEvents = {};
-        this.buttonEvents['click'] = () => {
+        this.buttonEvents.click = () => {
             this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             el.muted = !el.muted;
@@ -145,7 +145,7 @@ class Volume {
      * @memberof Volume
      */
     public register() {
-        this.button.addEventListener('click', this.buttonEvents['click']);
+        this.button.addEventListener('click', this.buttonEvents.click);
         Object.keys(this.events).forEach(event => {
             this.player.media.element.addEventListener(event, this.events[event]);
         });
@@ -158,13 +158,14 @@ class Volume {
     }
 
     public unregister() {
-        Object.keys(this.sliderEvents).forEach(event => {
-            this.slider.addEventListener(event, this.sliderEvents[event]);
+        this.button.removeEventListener('click', this.buttonEvents.click);
+        Object.keys(this.events).forEach(event => {
+            this.player.media.element.removeEventListener(event, this.events[event]);
         });
 
-        this.player.media.element.removeEventListener('volumechange', this.events['volumechange']);
-
-        this.button.removeEventListener('click', this.buttonEvents['click']);
+        Object.keys(this.sliderEvents).forEach(event => {
+            this.slider.removeEventListener(event, this.sliderEvents[event]);
+        });
 
         this.slider.remove();
         this.display.remove();

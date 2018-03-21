@@ -1,4 +1,5 @@
 // import AirPlay from './controls/airplay';
+import IEvent from './components/interfaces/general/event';
 import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Play from './controls/play';
@@ -6,10 +7,10 @@ import Progress from './controls/progress';
 import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
+import { addEvent } from './events';
 import Media from './media';
 import Player from './player';
 import { isVideo } from './utils/general';
-import IEvent from './components/interfaces/general/event';
 
 /**
  *
@@ -26,6 +27,7 @@ class Controls {
     public fullscreen: Fullscreen;
     private timer: any;
     private events: IEvent;
+    private mouseEvents: IEvent;
 
     /**
      * Creates an instance of Controls.
@@ -54,32 +56,30 @@ class Controls {
 
         this.container = null;
         this.events = {};
+        this.mouseEvents = {};
         const isMediaVideo = isVideo(this.player.element);
 
         this.container = document.createElement('div');
         this.container.className = 'om-controls';
-        this.events['mouseenter'] = () => {
-            const el = this.player.activeElement();
-            if ((!el.paused || !el.ended) && isMediaVideo) {
+        this.mouseEvents.mouseenter = () => {
+            if (isMediaVideo) {
                 this._stopControlTimer();
                 this.player.element.parentElement.classList.remove('om-controls--hidden');
                 this._startControlTimer(2500);
             }
         };
-        this.events['mousemove'] = () => {
-            const el = this.player.activeElement();
-            if ((!el.paused || !el.ended) && isMediaVideo) {
+        this.mouseEvents.mousemove = () => {
+            if (isMediaVideo) {
                 this.player.element.parentElement.classList.remove('om-controls--hidden');
                 this._startControlTimer(2500);
             }
         };
-        this.events['mouseleave'] = () => {
-            const el = this.player.activeElement();
-            if ((!el.paused || !el.ended) && isMediaVideo) {
+        this.mouseEvents.mouseleave = () => {
+            if (isMediaVideo) {
                 this._startControlTimer(1000);
             }
         };
-        this.events['pause'] = () => {
+        this.events.pause = () => {
             this.player.element.parentElement.classList.remove('om-controls--hidden');
             this._stopControlTimer();
         };
@@ -90,6 +90,10 @@ class Controls {
     public prepare() {
         Object.keys(this.events).forEach(event => {
             this.player.element.addEventListener(event, this.events[event]);
+        });
+
+        Object.keys(this.mouseEvents).forEach(event => {
+            this.player.element.parentElement.addEventListener(event, this.mouseEvents[event]);
         });
 
         // Initial countdown to hide controls
@@ -134,15 +138,33 @@ class Controls {
         this.container.remove();
     }
 
+    /**
+     * Set correctly timer to hide controls
+     *
+     * @private
+     * @param {number} time The time when controls will be hidden in ms
+     * @memberof Controls
+     */
     private _startControlTimer(time: number) {
         const el = this.player.activeElement();
+        this._stopControlTimer();
+
         this.timer = setTimeout(() => {
             if ((!el.paused || !el.ended) && isVideo(this.player.element)) {
                 this.player.element.parentElement.classList.add('om-controls--hidden');
                 this._stopControlTimer();
+                const event = addEvent('controls.hide');
+                this.player.element.dispatchEvent(event);
             }
         }, time);
     }
+
+    /**
+     * Stop timer to hide controls
+     *
+     * @private
+     * @memberof Controls
+     */
     private _stopControlTimer() {
         if (this.timer !== null) {
             clearTimeout(this.timer);
