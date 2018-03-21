@@ -71,8 +71,9 @@ module.exports = {
                                 ident: 'postcss',
                                 plugins: [
                                     require('stylelint')(),
+                                    require('autoprefixer')(),
                                     require('postcss-cssnext')({
-                                        browsers: ['last 3 versions'],
+                                        browsers: ['last 5 versions'],
                                         warnForDuplicates: false
                                     }),
                                 ]

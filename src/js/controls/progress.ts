@@ -199,7 +199,7 @@ class Progress {
             }
 
             this.tooltip.style.left = `${pos}px`;
-            this.tooltip.innerHTML = formatTime(time);
+            this.tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
         };
 
         this.globalEvents.mousemove = (e: any) => {
