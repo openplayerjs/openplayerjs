@@ -95,7 +95,9 @@ class Time {
             this.player.element.removeEventListener(event, this.events[event]);
         });
 
-        this.events = {};
+        this.current.remove();
+        this.delimiter.remove();
+        this.duration.remove();
 
         return this;
     }
