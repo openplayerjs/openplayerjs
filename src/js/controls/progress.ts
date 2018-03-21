@@ -14,6 +14,7 @@ class Progress {
     private events: IEvent;
     private sliderEvents: IEvent;
     private containerEvents: IEvent;
+    private globalEvents: IEvent;
     private forcePause: boolean;
 
     /**
@@ -65,6 +66,7 @@ class Progress {
         this.events = {};
         this.sliderEvents = {};
         this.containerEvents = {};
+        this.globalEvents = {};
         this.events['loadedmetadata'] = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
@@ -200,11 +202,11 @@ class Progress {
             this.tooltip.innerHTML = formatTime(time);
         };
 
-        document.addEventListener('mousemove', (e: any) => {
+        this.globalEvents['mousemove'] = (e: any) => {
             if (!e.target.closest('.om-controls__progress')) {
                 this.tooltip.classList.remove('om-controls__tooltip--visible');
             }
-        });
+        };
 
         return this;
     }
@@ -225,6 +227,8 @@ class Progress {
 
         this.progress.addEventListener('keydown', this.player.events.keydown);
         this.progress.addEventListener('mousemove', this.containerEvents.mousemove);
+
+        document.addEventListener('mousemove', this.globalEvents.mousemove);
         return this;
     }
 
@@ -240,8 +244,13 @@ class Progress {
         this.progress.removeEventListener('keydown', this.player.events.keydown);
         this.progress.removeEventListener('mousemove', this.containerEvents.mousemove);
 
-        this.events = {};
-        this.sliderEvents = {};
+        document.removeEventListener('mousemove', this.globalEvents.mousemove);
+
+        this.buffer.remove();
+        this.played.remove();
+        this.slider.remove();
+        this.tooltip.remove();
+        this.progress.remove();
 
         return this;
     }

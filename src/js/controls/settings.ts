@@ -14,6 +14,7 @@ class Settings {
     private button: HTMLButtonElement;
     private menu: HTMLElement;
     private events: IEvent;
+    private globalEvents: IEvent;
     private clickEvent: any;
 
     /**
@@ -44,11 +45,11 @@ class Settings {
         };
 
         this.events = {};
+        this.globalEvents = {};
         this.submenu = {};
         this.events['click'] = this.clickEvent.bind(this);
 
-        // Assign event to speed options
-        document.addEventListener('click', (e: any) => {
+        this.globalEvents['click'] = (e: any) => {
             if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-speed__option')) {
                 const option = e.target;
                 const el = this.player.activeElement();
@@ -56,7 +57,7 @@ class Settings {
                     el.playbackRate = parseFloat(option.getAttribute('data-value').replace('speed-', ''));
                 }
             }
-        });
+        };
 
         return this;
     }
@@ -69,13 +70,18 @@ class Settings {
     public register() {
         this.button.addEventListener('click', this.events['click']);
 
+        document.addEventListener('click', this.globalEvents.click);
+
         return this;
     }
 
     public unregister() {
         this.button.removeEventListener('click', this.events['click']);
 
-        this.events = {};
+        document.removeEventListener('click', this.globalEvents.click);
+
+        this.menu.remove();
+        this.button.remove();
 
         return this;
     }

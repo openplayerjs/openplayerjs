@@ -166,9 +166,9 @@ class Volume {
 
         this.button.removeEventListener('click', this.buttonEvents['click']);
 
-        this.buttonEvents = {};
-        this.sliderEvents = {};
-        this.events = {};
+        this.slider.remove();
+        this.display.remove();
+        this.volumeContainer.remove();
 
         return this;
     }

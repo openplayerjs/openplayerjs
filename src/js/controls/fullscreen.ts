@@ -83,8 +83,7 @@ class Fullscreen {
             document.removeEventListener(event, this._fullscreenChange.bind(this));
         });
         this.button.removeEventListener('click', this.events['click']);
-
-        this.events = {};
+        this.button.remove();
 
         return this;
     }

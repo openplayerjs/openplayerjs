@@ -8,7 +8,8 @@ import Time from './controls/time';
 import Volume from './controls/volume';
 import Media from './media';
 import Player from './player';
-import { hasClass, isVideo } from './utils/general';
+import { isVideo } from './utils/general';
+import IEvent from './components/interfaces/general/event';
 
 /**
  *
@@ -24,6 +25,7 @@ class Controls {
     public settings: Settings;
     public fullscreen: Fullscreen;
     private timer: any;
+    private events: IEvent;
 
     /**
      * Creates an instance of Controls.
@@ -51,51 +53,47 @@ class Controls {
         }
 
         this.container = null;
+        this.events = {};
+        const isMediaVideo = isVideo(this.player.element);
+
+        this.container = document.createElement('div');
+        this.container.className = 'om-controls';
+        this.events['mouseenter'] = () => {
+            const el = this.player.activeElement();
+            if ((!el.paused || !el.ended) && isMediaVideo) {
+                this._stopControlTimer();
+                this.player.element.parentElement.classList.remove('om-controls--hidden');
+                this._startControlTimer(2500);
+            }
+        };
+        this.events['mousemove'] = () => {
+            const el = this.player.activeElement();
+            if ((!el.paused || !el.ended) && isMediaVideo) {
+                this.player.element.parentElement.classList.remove('om-controls--hidden');
+                this._startControlTimer(2500);
+            }  
+        };
+        this.events['mouseleave'] = () => {
+            const el = this.player.activeElement();
+            if ((!el.paused || !el.ended) && isMediaVideo) {
+                this._startControlTimer(1000);
+            }
+        };
+        this.events['pause'] = () => {
+            this.player.element.parentElement.classList.remove('om-controls--hidden');
+            this._stopControlTimer();
+        };
 
         return this;
     }
 
     public prepare() {
-        this.container = document.createElement('div');
-        this.container.className = 'om-controls';
-
-        const videoPointed = isVideo(this.player.element);
-        this.player.element.parentElement.addEventListener('mousemove', () => {
-            const el = this.player.activeElement();
-            if ((!el.paused || !el.ended) && videoPointed) {
-                this.player.element.parentElement.classList.remove('om-controls--hidden');
-            }
-        });
-        this.player.element.parentElement.addEventListener('mouseover', () => {
-            const el = this.player.activeElement();
-            if ((!el.paused || !el.ended) && videoPointed && hasClass(this.player.element.parentElement, 'om-controls--hidden')) {
-                this.player.element.parentElement.classList.remove('om-controls--hidden');
-
-                this.timer = setTimeout(() => {
-                    if ((!el.paused || !el.ended) && videoPointed) {
-                        this.player.element.parentElement.classList.add('om-controls--hidden');
-                        clearTimeout(this.timer);
-                    }
-                }, 3000);
-            }
-        });
-        this.player.element.parentElement.addEventListener('mouseout', () => {
-            const el = this.player.activeElement();
-            if ((!el.paused || !el.ended) && videoPointed) {
-                this.player.element.parentElement.classList.add('om-controls--hidden');
-            }
-        });
-        this.player.element.addEventListener('pause', () => {
-            this.player.element.parentElement.classList.remove('om-controls--hidden');
-            clearTimeout(this.timer);
+        Object.keys(this.events).forEach(event => {
+            this.player.element.addEventListener(event, this.events[event]);
         });
 
-        this.timer = setTimeout(() => {
-            if (videoPointed) {
-                this.player.element.parentElement.classList.add('om-controls--hidden');
-                clearTimeout(this.timer);
-            }
-        }, 3000);
+        // Initial countdown to hide controls
+        this._startControlTimer(3000);
 
         // Loop controls to build them and register events
         this.controls.forEach(item => {
@@ -120,6 +118,35 @@ class Controls {
 
     public render() {
         this.media.element.parentElement.appendChild(this.container);
+    }
+
+    public destroy() {
+        Object.keys(this.events).forEach(event => {
+            this.player.element.removeEventListener(event, this.events[event]);
+        });
+
+        this._stopControlTimer();
+
+        this.controls.forEach(item => {
+            item.unregister();
+        });
+    }
+
+    private _startControlTimer(time: number) {
+        const el = this.player.activeElement();
+        this.timer = setTimeout(() => {
+            if ((!el.paused || !el.ended) && isVideo(this.player.element)) {
+                this.player.element.parentElement.classList.add('om-controls--hidden');
+                this._stopControlTimer();
+            }
+        }, time);
+    }
+    private _stopControlTimer() {
+        if (this.timer !== null) {
+            clearTimeout(this.timer);
+            delete this.timer;
+            this.timer = null;
+        }
     }
 }
 

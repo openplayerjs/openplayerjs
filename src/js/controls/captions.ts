@@ -9,6 +9,7 @@ class Captions {
     private button: HTMLButtonElement;
     private captions: HTMLDivElement;
     private events: IEvent;
+    private globalEvents: IEvent;
     private tracks: any;
     private trackList: TextTrackList;
     private trackUrlList: any;
@@ -25,6 +26,7 @@ class Captions {
     constructor(player: Player) {
         this.player = player;
         this.events = {};
+        this.globalEvents = {};
         this.trackUrlList = {};
         this.tracks = {};
         this.button = document.createElement('button');
@@ -74,7 +76,7 @@ class Captions {
         }
 
         // Show/hide captions
-        this.button.addEventListener('click', (e: any) => {
+        this.events['click'] = (e: any) => {
             const button = (e.target as HTMLDivElement);
             button.setAttribute('aria-pressed', 'true');
             if (hasClass(button, 'om-controls__captions--on')) {
@@ -84,22 +86,21 @@ class Captions {
                 this._show();
                 button.classList.add('om-controls__captions--on');
             }
-        });
+        };
 
         // For the following workflow it is required to have more than 1 language available
         if (this.trackList.length <= 1) {
             return this;
         }
 
-        // Assign event to caption options
-        document.addEventListener('click', (e: any) => {
+        this.globalEvents['click'] = (e: any) => {
             if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-subtitles__option')) {
                 const option = e.target;
                 const language = option.getAttribute('data-value').replace('captions-', '');
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
                 this._show();
             }
-        });
+        };
 
         return this;
     }
@@ -110,18 +111,22 @@ class Captions {
      * @memberof Captions
      */
     public register() {
-        Object.keys(this.events).forEach(event => {
-            this.player.media.element.addEventListener(event, this.events[event]);
-        });
+        this.button.addEventListener('click', this.events.click);
+        if (typeof this.globalEvents.click !== 'undefined') {
+            // Assign event to caption options
+            document.addEventListener('click', this.globalEvents.click);
+        }
         return this;
     }
 
     public unregister() {
-        Object.keys(this.events).forEach(event => {
-            this.player.media.element.removeEventListener(event, this.events[event]);
-        });
+        if (typeof this.globalEvents.click !== 'undefined') {
+            // Assign event to caption options
+            document.removeEventListener('click', this.globalEvents.click);
+        }
+        this.button.removeEventListener('click', this.events.click);
+        this.button.remove();
 
-        this.events = {};
         return this;
     }
 
@@ -135,7 +140,6 @@ class Captions {
         if (this.hasTracks) {
             const target = this.player.element.parentElement;
             target.insertBefore(this.captions, target.firstChild);
-
             controls.appendChild(this.button);
         }
         return this;

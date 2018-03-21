@@ -114,8 +114,7 @@ class Play {
         });
 
         this.button.removeEventListener('click', this.events['click']);
-
-        this.events = {};
+        this.button.remove();
 
         return this;
     }
