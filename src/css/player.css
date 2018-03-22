@@ -244,7 +244,7 @@
     position: absolute;
     right: 5px;
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-    transition: right 0.2s;
+    transition: right 0.2s ease;
     user-select: none;
     will-change: width,height;
     z-index: 3;
@@ -315,6 +315,7 @@
 .om-controls input[type='range'],
 .om-controls progress {
     appearance: none;
+    border: 0;
     height: 5px;
     left: 0;
     margin: 0;
@@ -330,6 +331,9 @@
 .om-controls input[type='range']:focus,
 .om-controls progress {
     outline: none;
+}
+.om-controls input[type='range']::-moz-focus-outer {
+    border: 0;
 }
 .om-player__audio .om-controls input[type='range'],
 .om-player__audio .om-controls progress {
@@ -364,7 +368,7 @@
     border-radius: 100%;
     box-sizing: border-box;
     height: 12px;
-    margin-top: -1px;
+    margin-top: -2px;
     position: relative;
     width: 12px;
 }
@@ -375,7 +379,7 @@
     border-radius: 100%;
     box-sizing: border-box;
     height: 12px;
-    margin-top: -1px;
+    margin-top: -2px;
     position: relative;
     width: 12px;
 }
@@ -386,7 +390,7 @@
     border-radius: 100%;
     box-sizing: border-box;
     height: 12px;
-    margin-top: -1px;
+    margin-top: -2px;
     position: relative;
     width: 12px;
 }
@@ -426,21 +430,10 @@
     position: absolute;
     width: 100%;
 }
-.om-controls__volume--display {
-    background: rgba(255, 255, 255, 0.35);
-}
-.om-controls__progress--buffer {
-    background: rgba(255, 255, 255, 0.3);
-    color: rgba(255, 255, 255, 0.25);
-}
-.om-controls__progress--played,
-.om-controls__volume--display {
-    background: 0 0;
-    color: #f00;
-    transition: none;
-    z-index: 1;
-}
 .om-controls progress::-webkit-progress-value {
+    background: currentColor;
+}
+.om-controls progress::-moz-progress-bar {
     background: currentColor;
 }
 .om-controls__progress--buffer::-webkit-progress-value {
@@ -450,6 +443,28 @@
 .om-controls__volume--display::-webkit-progress-value {
     max-width: 99%;
     transition: none;
+}
+.om-controls__progress--buffer::-moz-progress-bar {
+    transition: width 0.2s ease;
+}
+.om-controls__progress--played::-moz-progress-bar,
+.om-controls__volume--display::-moz-progress-bar {
+    max-width: 99%;
+    transition: none;
+}
+.om-controls .om-controls__progress--played,
+.om-controls .om-controls__volume--display {
+    background: 0 0;
+    color: #f00;
+    transition: none;
+    z-index: 1;
+}
+.om-controls .om-controls__volume--display {
+    background: rgba(255, 255, 255, 0.35);
+}
+.om-controls .om-controls__progress--buffer {
+    background: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.25);
 }
 .om-ads--active .om-controls__progress--seek {
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fecb2f), color-stop(100%, #fecb2f));
@@ -481,14 +496,14 @@
     color: #000;
     display: none;
     left: 0;
-    margin-bottom: 1px;
+    margin-bottom: 4px;
     padding: 1px 4px;
     position: absolute;
     text-align: center;
     transform: translateX(0%);
 }
 .om-player__video .om-controls__tooltip {
-    margin-bottom: 9px;
+    margin-bottom: 10px;
 }
 .om-controls__tooltip:before,
 .om-controls__tooltip:after {
@@ -525,9 +540,6 @@
 }
 .om-player__video .om-controls__volume {
     margin-top: 8px;
-}
-.om-controls__volume--input:focus {
-    outline: none;
 }
 
 /* == Fullscreen ============= */
