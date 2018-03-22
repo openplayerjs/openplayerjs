@@ -237,7 +237,7 @@
 /* === Settings =================== */
 .om-settings {
     background: rgba(28, 28, 28, 0.9);
-    bottom: 49px;
+    bottom: 48px;
     color: #fff;
     font-size: 0.85em;
     overflow: hidden;
@@ -250,6 +250,7 @@
     z-index: 3;
 }
 .om-player__audio .om-settings {
+    bottom: 32px;
     right: 0;
 }
 .om-settings--sliding {
