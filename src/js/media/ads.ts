@@ -1,5 +1,5 @@
-import { addEvent } from '../events';
 import Media from '../media';
+import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
 import { isAutoplaySupported } from '../utils/media';
 

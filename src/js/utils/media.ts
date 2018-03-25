@@ -5,7 +5,7 @@
  * @param {string} url
  * @returns {string}
  */
-export function getExtension(url: string) {
+export function getExtension(url: string): string {
     if (typeof url !== 'string') {
         throw new Error('`url` argument must be a string');
     }
@@ -22,7 +22,7 @@ export function getExtension(url: string) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isHlsSource(url: string) {
+export function isHlsSource(url: string): boolean {
     return /\.m3u8/i.test(url);
 }
 
@@ -33,63 +33,10 @@ export function isHlsSource(url: string) {
  * @param {string} url
  * @returns {boolean}
  */
-export function isDashSource(url: string) {
+export function isDashSource(url: string): boolean {
     return /\.mpd/i.test(url);
 }
 
-/**
- * Check if URL is a YouTube element
- *
- * @export
- * @param {string} url
- * @returns {boolean}
- */
-export function isYouTubeSource(url: string) {
-    return /\/\/(www\.youtube|youtu\.?be)/i.test(url);
-}
-/**
- * Check if URL is a Vimeo element
- *
- * @export
- * @param {string} url
- * @returns {boolean}
- */
-export function isVimeoSource(url: string) {
-    return /(\/\/player\.vimeo|vimeo\.com)/i.test(url);
-}
-
-/**
- * Check if URL is a Twitch element
- *
- * @export
- * @param {string} url
- * @returns {boolean}
- */
-export function isTwitchSource(url: string) {
-    return /\/\/(www|player).twitch.tv/i.test(url);
-}
-
-/**
- * Check if URL is a Facebook element
- *
- * @export
- * @param {string} url
- * @returns {boolean}
- */
-export function isFacebookSource(url: string) {
-    return url.toLowerCase().indexOf('//www.facebook') > -1;
-}
-
-/**
- * Check if URL is a Dailymotion element
- *
- * @export
- * @param {string} url
- * @returns {boolean}
- */
-export function isDailymotionSource(url: string) {
-    return /\/\/((www\.)?dailymotion\.com|dai\.ly)/i.test(url);
-}
 /**
  * Get a base MIME type using a URL anc hecking its file extension;
  * it will default to `video/mp4` if nothing found
@@ -98,27 +45,12 @@ export function isDailymotionSource(url: string) {
  * @param {string} url
  * @returns {string}
  */
-export function predictType(url: string) {
+export function predictType(url: string): string {
     const extension = getExtension(url);
     let type;
 
     // If no extension found, check if media is a vendor iframe
     if (!extension) {
-        if (isDailymotionSource(url)) {
-            return 'video/x-dailymotion';
-        }
-        if (isFacebookSource(url)) {
-            return 'video/x-facebook';
-        }
-        if (isTwitchSource(url)) {
-            return 'video/x-twitch';
-        }
-        if (isVimeoSource(url)) {
-            return 'video/x-vimeo';
-        }
-        if (isYouTubeSource(url)) {
-            return 'video/x-youtube';
-        }
         return 'video/mp4';
     }
 
@@ -153,7 +85,7 @@ export function predictType(url: string) {
  * @param {function} muted
  * @param {function} callback
  */
-export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any) {
+export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void {
     // try to play video
     const videoContent = document.createElement('video');
     videoContent.src = 'http://techslides.com/demos/sample-videos/small.mp4';

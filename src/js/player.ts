@@ -1,6 +1,7 @@
-import IEvent from './components/interfaces/general/event';
-import IFile from './components/interfaces/media/file';
+
 import Controls from './controls';
+import Event from './interfaces/event';
+import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
 import { IS_IPHONE } from './utils/constants';
@@ -23,37 +24,38 @@ class Player {
         Player.instances = {};
         const targets = document.querySelectorAll('video.om-player, audio.om-player');
         for (let i = 0, total = targets.length; i < total; i++) {
-            const target = targets[i];
+            const target = (targets[i] as HTMLMediaElement);
             const player = new Player(target, target.getAttribute('data-om-ads'));
             player.init();
         }
     }
 
-    public uid: string;
-    public element: Element;
-    public adsUrl?: string;
-    public ads: Ads;
-    public media: Media;
-    public playBtn: HTMLButtonElement;
-    public loader: HTMLSpanElement;
-    public controls: Controls;
-    public events: IEvent;
+    private uid: string;
+    private element: HTMLMediaElement;
+    private adsUrl?: string;
+    private ads: Ads;
+    private media: Media;
+    private playBtn: HTMLButtonElement;
+    private loader: HTMLSpanElement;
+    private controls: Controls;
+    private events: Event;
 
     /**
-     * Creates an instance of Player.
-     * @param {Element|string} element
+     * Create a Player instance.
+     *
+     * @param {HTMLMediaElement|string} element
      * @param {?string} adsUrl
-     * @memberof Player
+     * @returns {Player}
      */
-    constructor(element: Element|string, adsUrl?: string) {
-        this.element = element instanceof Element ? element : document.getElementById(element);
+    constructor(element: HTMLMediaElement|string, adsUrl?: string) {
+        this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         this.adsUrl = adsUrl;
         this.ads = null;
         this.events = {};
         return this;
     }
 
-    public init() {
+    public init(): void {
         if (this._isValid()) {
             this._prepareMedia();
             this._wrapInstance();
@@ -65,17 +67,17 @@ class Player {
                 this._createControls();
             }
             this._setEvents();
-            Player.instances[this.uid] = this;
+            Player.instances[this.id] = this;
         }
     }
 
-    public load() {
+    public load(): void {
         if (this.media instanceof Media) {
             this.media.load();
         }
     }
 
-    public play() {
+    public play(): void {
         if (this.ads) {
             this.ads.play();
         } else {
@@ -83,7 +85,7 @@ class Player {
         }
     }
 
-    public pause() {
+    public pause(): void {
         if (this.ads) {
             this.ads.pause();
         } else {
@@ -91,7 +93,7 @@ class Player {
         }
     }
 
-    public destroy() {
+    public destroy(): void {
         if (this.ads) {
             this.ads.pause();
             this.ads.destroy();
@@ -116,23 +118,55 @@ class Player {
         parent.parentNode.replaceChild(el, parent);
     }
 
-    set src(media: IFile[]) {
+    public getContainer(): HTMLElement {
+        return this.element.parentElement;
+    }
+
+    public getControls(): Controls {
+        return this.controls;
+    }
+
+    public getElement(): HTMLMediaElement {
+        return this.element;
+    }
+
+    public getEvents(): Event {
+        return this.events;
+    }
+
+    public activeElement(): Ads|Media {
+        return this.ads && this.ads.adsStarted ? this.ads : this.media;
+    }
+
+    public isMedia(): boolean {
+        return this.activeElement() instanceof Media;
+    }
+
+    public isAd(): boolean {
+        return this.activeElement() instanceof Ads;
+    }
+
+    public getMedia(): Media {
+        return this.media;
+    }
+
+    public getAd(): Ads {
+        return this.ads;
+    }
+
+    set src(media: Source[]) {
         if (this.media instanceof Media) {
             this.media.mediaFiles = [];
             this.media.src = media;
         }
     }
 
-    get src() {
+    get src(): Source[] {
         return this.media.src;
     }
 
-    get id() {
+    get id(): string {
         return this.uid;
-    }
-
-    public activeElement() {
-        return this.ads && this.ads.adsStarted ? this.ads : this.media;
     }
 
     /**
@@ -142,7 +176,7 @@ class Player {
      * @memberof Player
      * @return {boolean}
      */
-    private _isValid() {
+    private _isValid(): boolean {
         const el = this.element;
 
         if (el instanceof HTMLElement === false) {
@@ -165,7 +199,7 @@ class Player {
      * @private
      * @memberof Player
      */
-    private _wrapInstance() {
+    private _wrapInstance(): void {
         const wrapper = document.createElement('div');
         wrapper.className = 'om-player om-player__keyboard--inactive';
         wrapper.className += isAudio(this.element) ? ' om-player__audio' : ' om-player__video';
@@ -193,10 +227,9 @@ class Player {
      *
      * @memberof Player
      */
-    private _createControls() {
+    private _createControls(): void {
         this.controls = new Controls(this);
-        this.controls.prepare();
-        this.controls.render();
+        this.controls.create();
     }
 
     /**
@@ -204,7 +237,7 @@ class Player {
      *
      * @memberof Player
      */
-    private _prepareMedia() {
+    private _prepareMedia(): void {
         try {
             this.media = new Media(this.element);
             this.media.load();
@@ -217,7 +250,7 @@ class Player {
         }
     }
 
-    private _createUID() {
+    private _createUID(): void {
         if (this.element.id) {
             this.uid = this.element.id;
             this.element.removeAttribute('id');
@@ -231,7 +264,7 @@ class Player {
         this.element.parentElement.id = this.uid;
     }
 
-    private _createPlayButton() {
+    private _createPlayButton(): void {
         if (isAudio(this.element)) {
             return;
         }
@@ -247,15 +280,15 @@ class Player {
         this.loader.tabIndex = -1;
         this.loader.setAttribute('aria-hidden', 'true');
 
+        this.element.parentElement.insertBefore(this.loader, this.element);
+        this.element.parentElement.insertBefore(this.playBtn, this.element);
+
         this.playBtn.addEventListener('click', () => {
             this.media.play();
         });
-
-        this.element.parentElement.insertBefore(this.loader, this.element);
-        this.element.parentElement.insertBefore(this.playBtn, this.element);
     }
 
-    private _setEvents() {
+    private _setEvents(): void {
         if (!IS_IPHONE && isVideo(this.element)) {
             this.events.waiting = () => {
                 const el = this.activeElement();
@@ -347,8 +380,8 @@ class Player {
                     }
                     break;
                 case 70: // F
-                    if (!e.ctrlKey && typeof this.controls.fullscreen.fullScreenEnabled !== 'undefined') {
-                        this.controls.fullscreen.toggleFullscreen();
+                    if (!e.ctrlKey && typeof this.controls.getFullscreen().fullScreenEnabled !== 'undefined') {
+                        this.controls.getFullscreen().toggleFullscreen();
                     }
                     break;
                 default:

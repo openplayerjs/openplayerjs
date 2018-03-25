@@ -467,25 +467,25 @@
     background: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.25);
 }
-.om-ads--active .om-controls__progress--seek {
+.om-ads--active .om-controls .om-controls__progress--seek {
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fecb2f), color-stop(100%, #fecb2f));
 }
-.om-ads--active .om-controls__progress--seek::-webkit-slider-thumb {
+.om-ads--active .om-controls .om-controls__progress--seek::-webkit-slider-thumb {
     display: none;
 }
-.om-ads--active .om-controls__progress--seek::-moz-range-thumb {
+.om-ads--active .om-controls .om-controls__progress--seek::-moz-range-thumb {
     display: none;
 }
-.om-ads--active .om-controls__progress--seek::-ms-thumb {
+.om-ads--active .om-controls .om-controls__progress--seek::-ms-thumb {
     display: none;
 }
-.om-ads--active .om-controls__progress--seek::-webkit-slider-runnable-track {
+.om-ads--active .om-controls .om-controls__progress--seek::-webkit-slider-runnable-track {
     cursor: default;
 }
-.om-ads--active .om-controls__progress--seek::-moz-range-track {
+.om-ads--active .om-controls .om-controls__progress--seek::-moz-range-track {
     cursor: default;
 }
-.om-ads--active .om-controls__progress--seek::-ms-track {
+.om-ads--active .om-controls .om-controls__progress--seek::-ms-track {
     cursor: default;
 }
 

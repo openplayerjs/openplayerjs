@@ -1,5 +1,4 @@
-import IEvent from '../components/interfaces/general/event';
-import Media from '../media';
+import Event from '../interfaces/event';
 import Player from '../player';
 
 /**
@@ -8,9 +7,9 @@ import Player from '../player';
  * @description  Class that renders play/pause/replay button and registers events to update it
  */
 class Play {
-    public player: Player;
+    private player: Player;
     private button: HTMLButtonElement;
-    private events: IEvent;
+    private events: Event = {};
 
     /**
      *
@@ -20,18 +19,26 @@ class Play {
      */
     constructor(player: Player) {
         this.player = player;
+    }
 
+    /**
+     *
+     * @returns {Play}
+     * @memberof Play
+     */
+    public create(): void {
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__playpause';
         this.button.tabIndex = 0;
         this.button.title = 'Play';
-        this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Play');
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
 
-        this.events = {};
+        this.player.getControls().getContainer().appendChild(this.button);
+
         this.events.click = () => {
             this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
@@ -42,9 +49,8 @@ class Play {
             }
         };
         this.events.play = () => {
-            const el = this.player.activeElement();
-            if (el.ended) {
-                if (el instanceof Media) {
+            if (this.player.activeElement().ended) {
+                if (this.player.isMedia()) {
                     this.button.classList.add('om-controls__playpause--replay');
                 } else {
                     this.button.classList.add('om-controls__playpause--pause');
@@ -59,7 +65,7 @@ class Play {
                 this.button.setAttribute('aria-label', 'Pause');
 
                 Object.keys(Player.instances).forEach(key => {
-                    if (key !== this.player.uid) {
+                    if (key !== this.player.id) {
                         const target = Player.instances[key].activeElement();
                         target.pause();
                     }
@@ -72,8 +78,7 @@ class Play {
             this.button.setAttribute('aria-label', 'Play');
         };
         this.events.ended = () => {
-            const el = this.player.activeElement();
-            if (el.ended && el instanceof Media) {
+            if (this.player.activeElement().ended && this.player.isMedia()) {
                 this.button.classList.add('om-controls__playpause--replay');
                 this.button.classList.remove('om-controls__playpause--pause');
             } else {
@@ -90,44 +95,20 @@ class Play {
             this.button.setAttribute('aria-label', 'Pause Ads');
         };
 
-        return this;
-    }
-
-    /**
-     *
-     * @returns {Play}
-     * @memberof Play
-     */
-    public register() {
         Object.keys(this.events).forEach(event => {
-            this.player.media.element.addEventListener(event, this.events[event]);
+            this.player.getElement().addEventListener(event, this.events[event]);
         });
 
         this.button.addEventListener('click', this.events.click);
-
-        return this;
     }
 
-    public unregister() {
+    public destroy(): void {
         Object.keys(this.events).forEach(event => {
-            this.player.media.element.removeEventListener(event, this.events[event]);
+            this.player.getElement().removeEventListener(event, this.events[event]);
         });
 
         this.button.removeEventListener('click', this.events.click);
         this.button.remove();
-
-        return this;
-    }
-
-    /**
-     *
-     * @param {HTMLDivElement} controls
-     * @returns {Play}
-     * @memberof Play
-     */
-    public build(controls: HTMLDivElement) {
-        controls.appendChild(this.button);
-        return this;
     }
 }
 

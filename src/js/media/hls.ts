@@ -1,10 +1,10 @@
-import IEvent from '../components/interfaces/general/event';
-import IFile from '../components/interfaces/media/file';
-import Native from '../components/native';
-import { addEvent } from '../events';
+import Event from '../interfaces/event';
+import Source from '../interfaces/source';
 import { HAS_MSE, SUPPORTS_NATIVE_HLS } from '../utils/constants';
+import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
 import { isHlsSource } from '../utils/media';
+import Native from './native';
 
 declare const Hls: any;
 
@@ -15,7 +15,7 @@ declare const Hls: any;
  */
 class HlsMedia extends Native {
     private player: any;
-    private events: IEvent;
+    private events: Event;
     private recoverDecodingErrorDate: number;
     private recoverSwapAudioCodecDate: number;
 
@@ -23,11 +23,11 @@ class HlsMedia extends Native {
      * Creates an instance of HlsMedia.
      *
      * @param {HTMLMediaElement} element
-     * @param {File} mediaFile
+     * @param {Source} mediaSource
      * @memberof HlsMedia
      */
-    constructor(element: HTMLMediaElement, mediaFile: IFile) {
-        super(element, mediaFile);
+    constructor(element: HTMLMediaElement, mediaSource: Source) {
+        super(element, mediaSource);
         /**
          * @private
          */
@@ -35,7 +35,7 @@ class HlsMedia extends Native {
             this.player = new Hls();
         }
         this.element = element;
-        this.media = mediaFile;
+        this.media = mediaSource;
         this.player = null;
         this.events = null;
         this.promise = (typeof Hls === 'undefined') ?
@@ -82,12 +82,17 @@ class HlsMedia extends Native {
         this._revoke();
     }
 
-    set src(media: IFile) {
+    set src(media: Source) {
         if (isHlsSource(media.src)) {
             this._revoke();
             this.player = new Hls();
-            this.player.loadSource(media.src);
-            this.player.attachMedia(this.player.element);
+            this.player.loadSource(this.media.src);
+            this.player.attachMedia(this.element);
+
+            this.events = Hls.Events;
+            Object.keys(this.events).forEach(event => {
+                this.player.on(this.events[event], this._assign.bind(this));
+            });
         }
     }
 
@@ -127,7 +132,7 @@ class HlsMedia extends Native {
                         break;
                     case 'networkError':
                         const message = 'Network error';
-                        // mediaElement.generateError(message, mediaFiles);
+                        // mediaElement.generateError(message, mediaSources);
                         console.error(message);
                         break;
                     default:

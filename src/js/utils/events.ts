@@ -3,7 +3,7 @@
  * @param {string} event
  * @return {CustomEvent}
  */
-export function addEvent(event: string, details?: object) {
+export function addEvent(event: string, details?: object): CustomEvent {
     if (typeof event !== 'string') {
         throw new Error('Event name must be a string');
     }

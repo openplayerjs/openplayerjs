@@ -1,18 +1,19 @@
-import IEvent from '../components/interfaces/general/event';
-import Media from '../media';
+import Event from '../interfaces/event';
 import Player from '../player';
 import { getAbsoluteUrl, hasClass, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
 class Captions {
-    public player: Player;
+    private player: Player;
     private button: HTMLButtonElement;
     private captions: HTMLDivElement;
-    private events: IEvent;
-    private globalEvents: IEvent;
-    private tracks: any;
+    private events: Event = {
+        button: {},
+        global: {},
+    };
+    private tracks: any = {};
     private trackList: TextTrackList;
-    private trackUrlList: any;
+    private trackUrlList: any = {};
     private hasTracks: boolean;
     private current: any;
     private default: string;
@@ -25,30 +26,32 @@ class Captions {
      */
     constructor(player: Player) {
         this.player = player;
-        this.events = {};
-        this.globalEvents = {};
-        this.trackUrlList = {};
-        this.tracks = {};
+        this.trackList = this.player.getElement().textTracks;
+        this.hasTracks = !!this.trackList.length;
+    }
+
+    /**
+     *
+     * @returns {Captions}
+     * @memberof Captions
+     */
+    public create(): void {
+        if (!this.hasTracks) {
+            return;
+        }
+
         this.button = document.createElement('button');
         this.button.className = 'om-controls__captions om-control__right';
         this.button.tabIndex = 0;
         this.button.title = 'Toggle Captions';
-        this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Toggle Captions');
         this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
-        const mediaEl = (this.player.element as HTMLMediaElement);
-        this.trackList = mediaEl.textTracks;
-        this.hasTracks = !!this.trackList.length;
+        this.player.getContainer().classList.add('om-captions--detected');
 
-        if (!this.hasTracks) {
-            return this;
-        }
-
-        this.player.element.parentElement.classList.add('om-captions--detected');
-
-        for (let i = 0, tracks = mediaEl.querySelectorAll('track'), total = tracks.length; i < total; i++) {
+        for (let i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
             this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);
             if (element.default) {
@@ -76,7 +79,7 @@ class Captions {
         }
 
         // Show/hide captions
-        this.events.click = (e: any) => {
+        this.events.button.click = (e: any) => {
             const button = (e.target as HTMLDivElement);
             button.setAttribute('aria-pressed', 'true');
             if (hasClass(button, 'om-controls__captions--on')) {
@@ -88,12 +91,20 @@ class Captions {
             }
         };
 
-        // For the following workflow it is required to have more than 1 language available
-        if (this.trackList.length <= 1) {
-            return this;
+        this.button.addEventListener('click', this.events.button.click);
+
+        if (this.hasTracks) {
+            const target = this.player.getContainer();
+            target.insertBefore(this.captions, target.firstChild);
+            this.player.getControls().getContainer().appendChild(this.button);
         }
 
-        this.globalEvents.click = (e: any) => {
+        // For the following workflow it is required to have more than 1 language available
+        if (this.trackList.length <= 1) {
+            return;
+        }
+
+        this.events.global.click = (e: any) => {
             if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-subtitles__option')) {
                 const option = e.target;
                 const language = option.getAttribute('data-value').replace('captions-', '');
@@ -102,57 +113,30 @@ class Captions {
             }
         };
 
-        return this;
-    }
-
-    /**
-     *
-     * @returns {Captions}
-     * @memberof Captions
-     */
-    public register() {
-        this.button.addEventListener('click', this.events.click);
-        if (typeof this.globalEvents.click !== 'undefined') {
-            document.addEventListener('click', this.globalEvents.click);
+        if (typeof this.events.global.click !== 'undefined') {
+            document.addEventListener('click', this.events.global.click);
         }
-        return this;
     }
 
-    public unregister() {
-        if (typeof this.globalEvents.click !== 'undefined') {
-            document.removeEventListener('click', this.globalEvents.click);
+    public destroy(): void {
+        if (typeof this.events.global.click !== 'undefined') {
+            document.removeEventListener('click', this.events.global.click);
         }
 
         if (this.hasTracks) {
-            this.button.removeEventListener('click', this.events.click);
+            this.button.removeEventListener('click', this.events.button.click);
             this.button.remove();
             this.captions.remove();
         }
-
-        return this;
     }
 
-    /**
-     *
-     * @param {HTMLDivElement} controls
-     * @returns {Captions}
-     * @memberof Captions
-     */
-    public build(controls: HTMLDivElement) {
-        if (this.hasTracks) {
-            const target = this.player.element.parentElement;
-            target.insertBefore(this.captions, target.firstChild);
-            controls.appendChild(this.button);
-        }
-        return this;
-    }
     /**
      * Add list of available captions in the Settings menu
      *
      * @returns {any}
      * @memberof Captions
      */
-    public addSettingsMenu() {
+    public addSettings(): any {
         if (this.trackList.length <= 1) {
             return {};
         }
@@ -177,7 +161,7 @@ class Captions {
      * @returns {any[]}
      * @memberof Captions
      */
-    private _getCues(webvttText: string) {
+    private _getCues(webvttText: string): any[] {
         const lines = webvttText.split(/\r?\n/);
         const entries = [];
         const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
@@ -224,7 +208,7 @@ class Captions {
      * @returns {void}
      * @memberof Captions
      */
-    private _show() {
+    private _show(): void {
         if (typeof this.current.cues === 'undefined') {
             return;
         }
@@ -238,10 +222,9 @@ class Captions {
                 const currentCues = this.tracks[this.current.language];
 
                 // Use `timeupdate` to update remote captions
-                this.player.element.addEventListener('timeupdate', () => {
-                    const el = this.player.activeElement();
-                    if (el instanceof Media) {
-                        const index = this._search(currentCues, el.currentTime);
+                this.player.getElement().addEventListener('timeupdate', () => {
+                    if (this.player.isMedia()) {
+                        const index = this._search(currentCues, this.player.getMedia().currentTime);
                         container.innerHTML = '';
                         if (index > -1 && hasClass(this.button, 'om-controls__captions--on')) {
                             this.captions.classList.add('om-captions--on');
@@ -273,7 +256,7 @@ class Captions {
      * @private
      * @memberof Captions
      */
-    private _hide() {
+    private _hide(): void {
         this.captions.classList.remove('om-captions--on');
     }
 
@@ -286,7 +269,7 @@ class Captions {
      * @returns {number}
      * @memberof Captions
      */
-    private _search(tracks: any[], currentTime: number) {
+    private _search(tracks: any[], currentTime: number): number {
         let low = 0;
         let high = tracks.length - 1;
         while (low <= high) {
@@ -313,7 +296,7 @@ class Captions {
      * @returns {string}
      * @memberof Captions
      */
-    private _sanitize(html: string) {
+    private _sanitize(html: string): string {
         const div = document.createElement('div');
         div.innerHTML = html;
 

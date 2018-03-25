@@ -1,10 +1,10 @@
 /**
- * Media file
+ * Media source
  *
  * @export
- * @interface IFile
+ * @interface Source
  */
-export default interface IFile {
+export default interface Source {
     src: string;
     type: string;
     drm?: object;

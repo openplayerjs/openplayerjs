@@ -1,10 +1,10 @@
-import IEvent from '../components/interfaces/general/event';
-import IFile from '../components/interfaces/media/file';
-import Native from '../components/native';
-import { addEvent } from '../events';
+import Event from '../interfaces/event';
+import Source from '../interfaces/source';
 import { HAS_MSE } from '../utils/constants';
+import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
 import { isDashSource } from '../utils/media';
+import Native from './native';
 
 declare const dashjs: any;
 
@@ -15,17 +15,17 @@ declare const dashjs: any;
  */
 class DashMedia extends Native {
     private player: any;
-    private events: IEvent;
+    private events: Event;
 
     /**
      * Creates an instance of DashMedia.
      *
      * @param {HTMLMediaElement} element
-     * @param {File} mediaFile
+     * @param {Source} mediaSource
      * @memberof DashMedia
      */
-    constructor(element: HTMLMediaElement, mediaFile: IFile) {
-        super(element, mediaFile);
+    constructor(element: HTMLMediaElement, mediaSource: Source) {
+        super(element, mediaSource);
         /**
          * @private
          */
@@ -78,7 +78,7 @@ class DashMedia extends Native {
         this._revoke();
     }
 
-    set src(media: IFile) {
+    set src(media: Source) {
         if (isDashSource(media.src)) {
             this._revoke();
             this.player = dashjs.MediaPlayer().create();
@@ -87,6 +87,11 @@ class DashMedia extends Native {
                 this.player.setProtectionData(media.drm);
             }
             this.player.attachSource(media.src);
+
+            this.events = dashjs.MediaPlayer.events;
+            Object.keys(this.events).forEach(event => {
+                this.player.on(this.events[event], this._assign.bind(this));
+            });
         }
     }
 
