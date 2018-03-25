@@ -1,50 +1,85 @@
-import IFile from '../components/interfaces/media/file';
-import Native from '../components/native';
-import { isAudio, isVideo } from '../utils/general';
-
+import Source from '../interfaces/source';
 /**
+ * Class that mimics the HTML5 MediaElement's standard methods.
  *
- * @class NativeMedia
- * @description Class that wraps the native HTML5 video/audio tags
+ * All the methods are availabe for the different types of media; the exceptions
+ * are the getter/setter of a source, load it and determine if media can be played,
+ * since each one of the media types handle those in a different way.
+ *
+ * @abstract
+ * @class Native
  */
-class NativeMedia extends Native {
-    /**
-     * Creates an instance of NativeMedia.
-     *
-     * @param {HTMLMediaElement} element
-     * @param {IFile} mediaFile
-     * @returns {NativeMedia}
-     * @memberof NativeMedia
-     */
-    constructor(element: HTMLMediaElement, mediaFile: IFile) {
-        if (!isAudio(element) && !isVideo(element)) {
-            throw new TypeError('Native method only supports video/audio tags');
-        }
-        super(element, mediaFile);
-        return this;
-    }
-    /**
-     *
-     *
-     * @param {string} mimeType
-     * @returns {boolean}
-     * @memberof NativeMedia
-     */
-    public canPlayType(mimeType: string) {
-        return !!(this.element.canPlayType(mimeType).replace('no', ''));
+abstract class Native {
+    public element: HTMLMediaElement;
+    public media: Source;
+    public promise: Promise<any>;
+
+    constructor(element: HTMLMediaElement, media: Source) {
+        this.element = element;
+        this.media = media;
+        this.promise = new Promise(resolve => {
+            resolve();
+        });
     }
 
-    public load() {
-        this.element.load();
+    public abstract canPlayType(mimeType: string): boolean;
+
+    public abstract load(): void;
+
+    public abstract set src(media: Source);
+
+    public abstract get src();
+
+    public play() {
+        this.element.play();
     }
 
-    public destroy() {
-        return this;
+    public pause() {
+        this.element.pause();
     }
 
-    set src(media: IFile) {
-        this.element.src = media.src;
+    set volume(value) {
+        this.element.volume = value;
+    }
+
+    get volume() {
+        return this.element.volume;
+    }
+
+    set muted(value) {
+        this.element.muted = value;
+    }
+
+    get muted() {
+        return this.element.muted;
+    }
+
+    get playbackRate() {
+        return this.element.playbackRate;
+    }
+
+    set playbackRate(value) {
+        this.element.playbackRate = value;
+    }
+
+    set currentTime(value) {
+        this.element.currentTime = value;
+    }
+    get currentTime() {
+        return this.element.currentTime;
+    }
+
+    get duration() {
+        return this.element.duration;
+    }
+
+    get paused() {
+        return this.element.paused;
+    }
+
+    get ended() {
+        return this.element.ended;
     }
 }
 
-export default NativeMedia;
+export default Native;

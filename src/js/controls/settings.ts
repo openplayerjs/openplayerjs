@@ -1,5 +1,4 @@
-import IEvent from '../components/interfaces/general/event';
-import Media from '../media';
+import Event from '../interfaces/event';
 import Player from '../player';
 import { hasClass } from '../utils/general';
 
@@ -9,12 +8,14 @@ import { hasClass } from '../utils/general';
  * @description Class that handles the Settings behavior cross/browsers
  */
 class Settings {
-    public player: Player;
-    public submenu: any;
+    private player: Player;
+    private submenu: any = {};
     private button: HTMLButtonElement;
     private menu: HTMLElement;
-    private events: IEvent;
-    private globalEvents: IEvent;
+    private events: Event = {
+        global: {},
+        media: {},
+    };
     private clickEvent: any;
     private hideEvent: any;
     private originalStatus: string;
@@ -27,11 +28,19 @@ class Settings {
      */
     constructor(player: Player) {
         this.player = player;
+    }
+    /**
+     *
+     *
+     * @returns {Settings}
+     * @memberof Settings
+     */
+    public create(): void {
         this.button = document.createElement('button');
         this.button.className = 'om-controls__settings om-control__right';
         this.button.tabIndex = 0;
         this.button.title = 'Player Settings';
-        this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Player Settings');
         this.button.innerHTML = '<span class="om-sr">Player Settings</span>';
@@ -51,64 +60,44 @@ class Settings {
             this.menu.setAttribute('aria-hidden', 'true');
         };
 
-        this.events = {};
-        this.globalEvents = {};
-        this.submenu = {};
+        this.events.media['controls.hide'] = this.hideEvent.bind(this);
+        this.events.media.play = this.hideEvent.bind(this);
+        this.events.media.pause = this.hideEvent.bind(this);
 
-        this.events['controls.hide'] = this.hideEvent.bind(this);
-        this.events.play = this.hideEvent.bind(this);
-        this.events.pause = this.hideEvent.bind(this);
-
-        this.globalEvents.click = (e: any) => {
+        this.events.global.click = (e: any) => {
             if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-speed__option')) {
-                const option = e.target;
-                const el = this.player.activeElement();
-                if (el instanceof Media) {
-                    el.playbackRate = parseFloat(option.getAttribute('data-value').replace('speed-', ''));
-                }
+                this.player.getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
             }
         };
-        this.globalEvents.resize = this.hideEvent.bind(this);
+        this.events.global.resize = this.hideEvent.bind(this);
 
-        return this;
-    }
-    /**
-     *
-     *
-     * @returns {Settings}
-     * @memberof Settings
-     */
-    public register() {
         this.button.addEventListener('click', this.clickEvent.bind(this));
         Object.keys(this.events).forEach(event => {
-            this.player.element.addEventListener(event, this.events[event]);
+            this.player.getElement().addEventListener(event, this.events.media[event]);
         });
-        document.addEventListener('click', this.globalEvents.click);
-        document.addEventListener('click', this.globalEvents['settings.submenu']);
-        window.addEventListener('resize', this.globalEvents.resize);
+        document.addEventListener('click', this.events.global.click);
+        window.addEventListener('resize', this.events.global.resize);
 
-        return this;
+        this.player.getControls().getContainer().appendChild(this.button);
+        this.player.getContainer().appendChild(this.menu);
     }
 
-    public unregister() {
+    public destroy(): void {
         this.button.removeEventListener('click', this.clickEvent.bind(this));
         Object.keys(this.events).forEach(event => {
-            this.player.element.removeEventListener(event, this.events[event]);
+            this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
-        document.removeEventListener('click', this.globalEvents.click);
-        document.removeEventListener('click', this.globalEvents['settings.submenu']);
-        window.removeEventListener('resize', this.globalEvents.resize);
+        document.removeEventListener('click', this.events.global.click);
+        window.removeEventListener('resize', this.events.global.resize);
+        if (this.events.global['settings.submenu'] !== undefined) {
+            document.removeEventListener('click', this.events.global['settings.submenu']);
+        }
 
         this.menu.remove();
         this.button.remove();
 
         // Restore original playback rate
-        const el = this.player.activeElement();
-        if (el instanceof Media) {
-            el.playbackRate = 1;
-        }
-
-        return this;
+        this.player.getMedia().playbackRate = 1;
     }
     /**
      * By default, Settings will contaim speed adjustments
@@ -116,7 +105,7 @@ class Settings {
      * @returns {any}
      * @memberof Settings
      */
-    public addSettingsMenu() {
+    public addSettings(): any {
         return {
             className: 'om-speed__option',
             default: '1',
@@ -134,7 +123,7 @@ class Settings {
         };
     }
 
-    public addItem(name: string, key: string, defaultValue: string, submenu?: any[], className?: string) {
+    public addItem(name: string, key: string, defaultValue: string, submenu?: any[], className?: string): void {
         // Build the menu entry first
         const menuItem = document.createElement('div');
         menuItem.className = 'om-settings__menu-item';
@@ -162,7 +151,7 @@ class Settings {
             this.submenu[key] = subItems;
         }
 
-        this.globalEvents['settings.submenu'] = (e: any) => {
+        this.events.global['settings.submenu'] = (e: any) => {
             if (e.target.closest(`#${this.player.id}`)) {
                 if (hasClass(e.target, 'om-settings__back')) {
                     this.menu.classList.add('om-settings--sliding');
@@ -200,18 +189,8 @@ class Settings {
                 this.hideEvent();
             }
         };
-    }
 
-    /**
-     *
-     * @param {HTMLDivElement} controls
-     * @returns {Settings}
-     * @memberof Settings
-     */
-    public build(controls: HTMLDivElement) {
-        controls.appendChild(this.button);
-        this.player.element.parentElement.appendChild(this.menu);
-        return this;
+        document.addEventListener('click', this.events.global['settings.submenu']);
     }
 }
 

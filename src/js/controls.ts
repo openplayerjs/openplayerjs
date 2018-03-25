@@ -1,5 +1,3 @@
-// import AirPlay from './controls/airplay';
-import IEvent from './components/interfaces/general/event';
 import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Play from './controls/play';
@@ -7,27 +5,34 @@ import Progress from './controls/progress';
 import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
-import { addEvent } from './events';
-import Media from './media';
+import PlayerComponent from './interfaces/component';
+import Event from './interfaces/event';
 import Player from './player';
+import { addEvent } from './utils/events';
 import { isVideo } from './utils/general';
 
 /**
  *
  * @class Controls
  * @description Class that renders all control elements inside a control bar
- * and appends it in the player container
+ * and appends it in the player controls
  */
-class Controls {
-    public media: Media;
-    public player: Player;
-    public controls: any[];
-    public container: HTMLDivElement;
-    public settings: Settings;
-    public fullscreen: Fullscreen;
+class Controls implements PlayerComponent {
+    private player: Player;
+    private controls: HTMLDivElement;
+    private items: any[];
+    private play: Play;
+    private time: Time;
+    private volume: Volume;
+    private progress: Progress;
+    private settings: Settings;
+    private fullscreen: Fullscreen;
+    private captions: Captions;
     private timer: any;
-    private events: IEvent;
-    private mouseEvents: IEvent;
+    private events: Event = {
+        media: {},
+        mouse: {},
+    };
 
     /**
      * Creates an instance of Controls.
@@ -37,105 +42,118 @@ class Controls {
      */
     constructor(player: Player) {
         this.player = player;
-        this.media = player.media;
-        this.media.element.controls = false;
+
+        this.play = new Play(player);
+        this.time = new Time(player);
+        this.progress = new Progress(player);
+        this.volume = new Volume(player);
+        this.captions = new Captions(player);
         this.settings = new Settings(player);
-        this.controls = [
-            new Play(player),
-            new Time(player),
-            new Progress(player),
-            new Volume(player),
-            new Captions(player),
+        this.items = [
+            this.play,
+            this.time,
+            this.progress,
+            this.volume,
+            this.captions,
             this.settings,
         ];
 
-        if (isVideo(this.media.element)) {
+        if (isVideo(this.player.getElement())) {
             this.fullscreen = new Fullscreen(player);
-            this.controls.push(this.fullscreen);
+            this.items.push(this.fullscreen);
         }
+    }
 
-        this.container = null;
-        this.events = {};
-        this.mouseEvents = {};
-        const isMediaVideo = isVideo(this.player.element);
+    /**
+     *
+     *
+     * @memberof Controls
+     */
+    public create() {
+        this.player.getElement().controls = false;
 
-        this.container = document.createElement('div');
-        this.container.className = 'om-controls';
-        this.mouseEvents.mouseenter = () => {
+        const isMediaVideo = isVideo(this.player.getElement());
+
+        this.controls = document.createElement('div');
+        this.controls.className = 'om-controls';
+
+        this.events.mouse.mouseenter = () => {
             if (isMediaVideo) {
                 this._stopControlTimer();
-                this.player.element.parentElement.classList.remove('om-controls--hidden');
+                this.player.getContainer().classList.remove('om-controls--hidden');
                 this._startControlTimer(2500);
             }
         };
-        this.mouseEvents.mousemove = () => {
+        this.events.mouse.mousemove = () => {
             if (isMediaVideo) {
-                this.player.element.parentElement.classList.remove('om-controls--hidden');
+                this.player.getContainer().classList.remove('om-controls--hidden');
                 this._startControlTimer(2500);
             }
         };
-        this.mouseEvents.mouseleave = () => {
+        this.events.mouse.mouseleave = () => {
             if (isMediaVideo) {
                 this._startControlTimer(1000);
             }
         };
-        this.events.pause = () => {
-            this.player.element.parentElement.classList.remove('om-controls--hidden');
+        this.events.media.pause = () => {
+            this.player.getContainer().classList.remove('om-controls--hidden');
             this._stopControlTimer();
         };
 
-        return this;
-    }
+        this.player.getElement().addEventListener('pause', this.events.media.pause);
 
-    public prepare() {
-        Object.keys(this.events).forEach(event => {
-            this.player.element.addEventListener(event, this.events[event]);
-        });
-
-        Object.keys(this.mouseEvents).forEach(event => {
-            this.player.element.parentElement.addEventListener(event, this.mouseEvents[event]);
+        Object.keys(this.events.mouse).forEach(event => {
+            this.player.getContainer().addEventListener(event, this.events.mouse[event]);
         });
 
         // Initial countdown to hide controls
         this._startControlTimer(3000);
 
         // Loop controls to build them and register events
-        this.controls.forEach(item => {
-            item.build(this.container);
+        this.items.forEach(item => {
+            if (typeof item.create === 'function') {
+                item.create();
 
-            if (typeof item.addSettingsMenu === 'function') {
-                const menuItem = item.addSettingsMenu();
-                if (Object.keys(menuItem).length) {
-                    this.settings.addItem(
-                        menuItem.name,
-                        menuItem.key,
-                        menuItem.default,
-                        menuItem.subitems,
-                        menuItem.className,
-                    );
+                if (typeof item.addSettings === 'function') {
+                    const menuItem = item.addSettings();
+                    if (Object.keys(menuItem).length) {
+                        this.settings.addItem(
+                            menuItem.name,
+                            menuItem.key,
+                            menuItem.default,
+                            menuItem.subitems,
+                            menuItem.className,
+                        );
+                    }
                 }
             }
-
-            item.register();
         });
-    }
 
-    public render() {
-        this.media.element.parentElement.appendChild(this.container);
+        this.player.getContainer().appendChild(this.controls);
     }
 
     public destroy() {
-        Object.keys(this.events).forEach(event => {
-            this.player.element.removeEventListener(event, this.events[event]);
+        Object.keys(this.events.mouse).forEach(event => {
+            this.player.getContainer().removeEventListener(event, this.events.mouse[event]);
         });
+
+        this.player.getElement().removeEventListener('pause', this.events.media.pause);
 
         this._stopControlTimer();
 
-        this.controls.forEach(item => {
-            item.unregister();
+        this.items.forEach(item => {
+            item.destroy();
         });
 
-        this.container.remove();
+        this.controls.remove();
+    }
+
+    public getContainer() {
+        return this.controls;
+    }
+
+    public getFullscreen() {
+        return this.fullscreen;
     }
 
     /**
@@ -150,11 +168,11 @@ class Controls {
         this._stopControlTimer();
 
         this.timer = setTimeout(() => {
-            if ((!el.paused || !el.ended) && isVideo(this.player.element)) {
-                this.player.element.parentElement.classList.add('om-controls--hidden');
+            if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
+                this.player.getContainer().classList.add('om-controls--hidden');
                 this._stopControlTimer();
                 const event = addEvent('controls.hide');
-                this.player.element.dispatchEvent(event);
+                this.player.getElement().dispatchEvent(event);
             }
         }, time);
     }

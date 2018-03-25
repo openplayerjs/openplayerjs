@@ -1,8 +1,8 @@
-import IEvent from './components/interfaces/general/event';
-import IFile from './components/interfaces/media/file';
+import Event from './interfaces/event';
+import Source from './interfaces/source';
 import DashMedia from './media/dash';
 import HlsMedia from './media/hls';
-import NativeMedia from './media/native';
+import HTML5Media from './media/html5';
 import * as source from './utils/media';
 
 /**
@@ -15,9 +15,9 @@ import * as source from './utils/media';
 class Media {
     public element: any;
     public media: any;
-    public mediaFiles: IFile[];
+    public mediaFiles: Source[];
     private promisePlay: Promise<void>;
-    private events: IEvent;
+    private events: Event = {};
 
     /**
      * Creates an instance of Media.
@@ -29,7 +29,6 @@ class Media {
         this.element = element;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
-        this.events = {};
         return this;
     }
 
@@ -165,7 +164,7 @@ class Media {
         this.media.destroy();
     }
 
-    public loadSources(sources: IFile[]) {
+    public loadSources(sources: Source[]) {
         if (!sources.length) {
             throw new TypeError('Media not set');
         }
@@ -175,7 +174,7 @@ class Media {
             try {
                 this.media = this._invoke(media);
             } catch (e) {
-                this.media = new NativeMedia(this.element, media);
+                this.media = new HTML5Media(this.element, media);
             }
 
             return this.canPlayType(media.type);
@@ -241,7 +240,7 @@ class Media {
      * @memberof Media
      */
     private _getMediaFiles() {
-        const mediaFiles: IFile[] = [];
+        const mediaFiles = [];
         const sourceTags = this.element.querySelectorAll('source');
         const nodeSource = this.element.src;
 
@@ -272,14 +271,14 @@ class Media {
      * @returns {*}
      * @memberof Media
      */
-    private _invoke(media: IFile) {
+    private _invoke(media: Source) {
         if (source.isHlsSource(media.src)) {
             return new HlsMedia(this.element, media);
         } else if (source.isDashSource(media.src)) {
             return new DashMedia(this.element, media);
         }
 
-        return new NativeMedia(this.element, media);
+        return new HTML5Media(this.element, media);
     }
 }
 

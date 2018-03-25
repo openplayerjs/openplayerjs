@@ -1,20 +1,21 @@
-import IEvent from '../components/interfaces/general/event';
-import Media from '../media';
+import Event from '../interfaces/event';
 import Player from '../player';
 import { hasClass, offset } from '../utils/general';
 import { formatTime } from '../utils/time';
 
 class Progress {
-    public player: Player;
+    private player: Player;
     private slider: HTMLInputElement;
     private buffer: HTMLProgressElement;
     private progress: HTMLDivElement;
     private played: HTMLProgressElement;
     private tooltip: HTMLSpanElement;
-    private events: IEvent;
-    private sliderEvents: IEvent;
-    private containerEvents: IEvent;
-    private globalEvents: IEvent;
+    private events: Event = {
+        container: {},
+        global: {},
+        media: {},
+        slider: {},
+    };
     private forcePause: boolean;
 
     /**
@@ -25,6 +26,15 @@ class Progress {
      */
     constructor(player: Player) {
         this.player = player;
+        this.forcePause = false;
+    }
+
+    /**
+     *
+     * @returns {Progress}
+     * @memberof Progress
+     */
+    public create(): void {
         this.progress = document.createElement('div');
         this.progress.className = 'om-controls__progress';
         this.progress.tabIndex = 0;
@@ -61,22 +71,16 @@ class Progress {
         this.progress.appendChild(this.buffer);
         this.progress.appendChild(this.tooltip);
 
-        this.forcePause = false;
-
-        this.events = {};
-        this.sliderEvents = {};
-        this.containerEvents = {};
-        this.globalEvents = {};
-        this.events.loadedmetadata = () => {
+        this.events.media.loadedmetadata = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 this.slider.setAttribute('max', `${el.duration}`);
-                const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
+                const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
                 this.progress.setAttribute('aria-valuemax', el.duration);
             }
         };
-        this.events.progress = (e: any) => {
+        this.events.media.progress = (e: any) => {
             const el = e.target;
             if (el.duration > 0) {
                 for (let i = 0, total = el.buffered.length; i < total; i++) {
@@ -87,17 +91,17 @@ class Progress {
                 }
             }
         };
-        this.events.pause = () => {
+        this.events.media.pause = () => {
             const el = this.player.activeElement();
             const current = el.currentTime;
             this.progress.setAttribute('aria-valuenow', current.toString());
             this.progress.setAttribute('aria-valuetext', formatTime(current));
         };
-        this.events.play = () => {
+        this.events.media.play = () => {
             this.progress.removeAttribute('aria-valuenow');
             this.progress.removeAttribute('aria-valuetext');
         };
-        this.events.timeupdate = (e: any) => {
+        this.events.media.timeupdate = (e: any) => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
@@ -105,7 +109,7 @@ class Progress {
                     this.slider.setAttribute('max', `${el.duration}`);
                 }
 
-                const current = el instanceof Media ? el.currentTime : (el.duration - el.currentTime);
+                const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
                 const min = parseFloat(this.slider.min);
                 const max = parseFloat(this.slider.max);
                 this.slider.value = current.toString();
@@ -118,7 +122,7 @@ class Progress {
             }
         };
 
-        this.events.ended = () => {
+        this.events.media.ended = () => {
             this.slider.style.backgroundSize = '0% 100%';
             this.slider.setAttribute('max', '0');
             this.buffer.value = 0;
@@ -137,7 +141,7 @@ class Progress {
             this.slider.classList.remove('.om-progress--pressed');
 
             const el = this.player.activeElement();
-            if (el instanceof Media) {
+            if (this.player.isMedia()) {
                 el.currentTime = val;
             }
         };
@@ -145,7 +149,7 @@ class Progress {
         const forcePause = (e: any) => {
             const el = this.player.activeElement();
             // If current progress is not related to an Ad, manipulate current time
-            if ((e.which === 1 || e.which === 0) && el instanceof Media) {
+            if ((e.which === 1 || e.which === 0) && this.player.isMedia()) {
                 if (!el.paused) {
                     el.pause();
                     this.forcePause = true;
@@ -155,20 +159,20 @@ class Progress {
 
         const releasePause = () => {
             const el = this.player.activeElement();
-            if (this.forcePause === true && el instanceof Media) {
+            if (this.forcePause === true && this.player.isMedia()) {
                 el.play();
             }
             this.forcePause = false;
         };
 
-        this.sliderEvents.input = updateSlider.bind(this);
-        this.sliderEvents.change = updateSlider.bind(this);
-        this.sliderEvents.mousedown = forcePause.bind(this);
-        this.sliderEvents.touchstart = forcePause.bind(this);
-        this.sliderEvents.mouseup = releasePause.bind(this);
-        this.sliderEvents.touchend = releasePause.bind(this);
+        this.events.slider.input = updateSlider.bind(this);
+        this.events.slider.change = updateSlider.bind(this);
+        this.events.slider.mousedown = forcePause.bind(this);
+        this.events.slider.touchstart = forcePause.bind(this);
+        this.events.slider.mouseup = releasePause.bind(this);
+        this.events.slider.touchend = releasePause.bind(this);
 
-        this.containerEvents.mousemove = (e: any) => {
+        this.events.container.mousemove = (e: any) => {
             const el = this.player.activeElement();
             if (el.duration === Infinity) {
                 return true;
@@ -181,7 +185,7 @@ class Progress {
             const half = this.tooltip.offsetWidth / 2;
             const percentage = (pos / this.progress.offsetWidth);
             const time = (percentage <= 0.02) ? 0 : percentage * el.duration;
-            const mediaContainer = this.player.element.parentElement;
+            const mediaContainer = this.player.getContainer();
             const limit = mediaContainer.offsetWidth - this.tooltip.offsetWidth;
 
             if (pos <= 0 || x - offset(mediaContainer).left <= half) {
@@ -202,68 +206,47 @@ class Progress {
             this.tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
         };
 
-        this.globalEvents.mousemove = (e: any) => {
+        this.events.global.mousemove = (e: any) => {
             if (!e.target.closest('.om-controls__progress')) {
                 this.tooltip.classList.remove('om-controls__tooltip--visible');
             }
         };
 
-        return this;
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().addEventListener(event, this.events.media[event]);
+        });
+
+        Object.keys(this.events.slider).forEach(event => {
+            this.slider.addEventListener(event, this.events.slider[event]);
+        });
+
+        this.progress.addEventListener('keydown', this.player.getEvents().keydown);
+        this.progress.addEventListener('mousemove', this.events.container.mousemove);
+
+        document.addEventListener('mousemove', this.events.global.mousemove);
+
+        this.player.getControls().getContainer().appendChild(this.progress);
     }
 
-    /**
-     *
-     * @returns {Progress}
-     * @memberof Progress
-     */
-    public register() {
+    public destroy(): void {
         Object.keys(this.events).forEach(event => {
-            this.player.media.element.addEventListener(event, this.events[event]);
+            this.player.getElement().removeEventListener(event, this.events[event]);
         });
 
-        Object.keys(this.sliderEvents).forEach(event => {
-            this.slider.addEventListener(event, this.sliderEvents[event]);
+        Object.keys(this.events.slider).forEach(event => {
+            this.slider.removeEventListener(event, this.events.slider[event]);
         });
 
-        this.progress.addEventListener('keydown', this.player.events.keydown);
-        this.progress.addEventListener('mousemove', this.containerEvents.mousemove);
+        this.progress.removeEventListener('keydown', this.player.getEvents().keydown);
+        this.progress.removeEventListener('mousemove', this.events.container.mousemove);
 
-        document.addEventListener('mousemove', this.globalEvents.mousemove);
-        return this;
-    }
-
-    public unregister() {
-        Object.keys(this.events).forEach(event => {
-            this.player.media.element.removeEventListener(event, this.events[event]);
-        });
-
-        Object.keys(this.sliderEvents).forEach(event => {
-            this.slider.removeEventListener(event, this.sliderEvents[event]);
-        });
-
-        this.progress.removeEventListener('keydown', this.player.events.keydown);
-        this.progress.removeEventListener('mousemove', this.containerEvents.mousemove);
-
-        document.removeEventListener('mousemove', this.globalEvents.mousemove);
+        document.removeEventListener('mousemove', this.events.global.mousemove);
 
         this.buffer.remove();
         this.played.remove();
         this.slider.remove();
         this.tooltip.remove();
         this.progress.remove();
-
-        return this;
-    }
-
-    /**
-     *
-     * @param {HTMLDivElement} controls
-     * @returns {Progress}
-     * @memberof Progress
-     */
-    public build(controls: HTMLDivElement) {
-        controls.appendChild(this.progress);
-        return this;
     }
 }
 

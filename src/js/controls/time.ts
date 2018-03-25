@@ -1,5 +1,4 @@
-import IEvent from '../components/interfaces/general/event';
-import Media from '../media';
+import Event from '../interfaces/event';
 import Player from '../player';
 import { formatTime } from '../utils/time';
 
@@ -10,11 +9,11 @@ import { formatTime } from '../utils/time';
  * and registers events to update them in the control bar
  */
 class Time {
-    public player: Player;
+    private player: Player;
     private current: HTMLTimeElement;
     private delimiter: HTMLSpanElement;
     private duration: HTMLTimeElement;
-    private events: IEvent;
+    private events: Event = {};
 
     /**
      *
@@ -24,6 +23,14 @@ class Time {
      */
     constructor(player: Player) {
         this.player = player;
+    }
+
+    /**
+     *
+     * @returns {Time}
+     * @memberof Time
+     */
+    public create(): void {
         this.current = document.createElement('time');
         this.current.className = 'om-controls__current';
         this.current.setAttribute('role', 'timer');
@@ -41,7 +48,6 @@ class Time {
         this.duration.setAttribute('aria-hidden', 'false');
         this.duration.innerText = '0:00';
 
-        this.events = {};
         this.events.loadedmetadata = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity && !isNaN(el.duration)) {
@@ -69,50 +75,29 @@ class Time {
         };
         this.events.ended = () => {
             const el = this.player.activeElement();
-            if (el instanceof Media && this.duration.innerText !== '0:00') {
+            if (this.player.isMedia() && this.duration.innerText !== '0:00') {
                 this.duration.innerText = formatTime(el.duration);
             }
         };
 
-        return this;
-    }
-
-    /**
-     *
-     * @returns {Time}
-     * @memberof Time
-     */
-    public register() {
         Object.keys(this.events).forEach(event => {
-            this.player.element.addEventListener(event, this.events[event]);
+            this.player.getElement().addEventListener(event, this.events[event]);
         });
 
-        return this;
+        const controls = this.player.getControls().getContainer();
+        controls.appendChild(this.current);
+        controls.appendChild(this.delimiter);
+        controls.appendChild(this.duration);
     }
 
-    public unregister() {
+    public destroy(): void {
         Object.keys(this.events).forEach(event => {
-            this.player.element.removeEventListener(event, this.events[event]);
+            this.player.getElement().removeEventListener(event, this.events[event]);
         });
 
         this.current.remove();
         this.delimiter.remove();
         this.duration.remove();
-
-        return this;
-    }
-
-    /**
-     *
-     * @param {HTMLDivElement} controls
-     * @returns {Time}
-     * @memberof Time
-     */
-    public build(controls: HTMLDivElement) {
-        controls.appendChild(this.current);
-        controls.appendChild(this.delimiter);
-        controls.appendChild(this.duration);
-        return this;
     }
 }
 

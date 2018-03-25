@@ -1,6 +1,6 @@
-import IEvent from '../components/interfaces/general/event';
-import { addEvent } from '../events';
+import Event from '../interfaces/event';
 import Player from '../player';
+import { addEvent } from '../utils/events';
 
 /**
  *
@@ -8,14 +8,16 @@ import Player from '../player';
  * @description  Class that renders volume slider and mute button, and registers events to update them
  */
 class Volume {
-    public player: Player;
+    private player: Player;
     private button: HTMLButtonElement;
-    private volumeContainer: HTMLDivElement;
+    private container: HTMLDivElement;
     private display: HTMLProgressElement;
     private slider: HTMLInputElement;
-    private buttonEvents: IEvent;
-    private sliderEvents: IEvent;
-    private events: IEvent;
+    private events: Event = {
+        button: {},
+        media: {},
+        slider: {},
+    };
     private volume: number;
 
     /**
@@ -25,24 +27,30 @@ class Volume {
      */
     constructor(player: Player) {
         this.player = player;
+        this.volume = this.player.getMedia().volume;
+    }
 
-        const volume = Math.floor(this.player.media.volume * 100);
-
-        this.volumeContainer = document.createElement('div');
-        this.volumeContainer.className = 'om-controls__volume';
-        this.volumeContainer.tabIndex = 0;
-        this.volumeContainer.setAttribute('aria-valuemin', '0');
-        this.volumeContainer.setAttribute('aria-valuemax', '100');
-        this.volumeContainer.setAttribute('aria-valuenow', `${volume}`);
-        this.volumeContainer.setAttribute('aria-valuetext', `${volume}`);
-        this.volumeContainer.setAttribute('aria-orientation', 'vertical');
-        this.volumeContainer.setAttribute('aria-label', 'Volume Slider');
+    /**
+     *
+     * @returns {Volume}
+     * @memberof Volume
+     */
+    public create(): void {
+        this.container = document.createElement('div');
+        this.container.className = 'om-controls__volume';
+        this.container.tabIndex = 0;
+        this.container.setAttribute('aria-valuemin', '0');
+        this.container.setAttribute('aria-valuemax', '100');
+        this.container.setAttribute('aria-valuenow', `${this.volume}`);
+        this.container.setAttribute('aria-valuetext', `${this.volume}`);
+        this.container.setAttribute('aria-orientation', 'vertical');
+        this.container.setAttribute('aria-label', 'Volume Slider');
 
         this.slider = document.createElement('input');
         this.slider.type = 'range';
         this.slider.className = 'om-controls__volume--input';
         this.slider.tabIndex = -1;
-        this.slider.value = this.player.media.volume;
+        this.slider.value = this.player.getMedia().volume;
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('max', '1');
         this.slider.setAttribute('step', '0.1');
@@ -51,19 +59,18 @@ class Volume {
         this.display.className = 'om-controls__volume--display';
         this.display.setAttribute('max', '10');
         this.display.setAttribute('role', 'presentation');
-        this.display.value = this.player.media.volume * 10;
+        this.display.value = this.player.getMedia().volume * 10;
 
-        this.volumeContainer.appendChild(this.slider);
-        this.volumeContainer.appendChild(this.display);
+        this.container.appendChild(this.slider);
+        this.container.appendChild(this.display);
 
         // Use as backup when mute is clicked
-        this.volume = this.player.media.volume;
         this.button = document.createElement('button');
         this.button.type = 'button';
         this.button.className = 'om-controls__mute';
         this.button.tabIndex = 0;
         this.button.title = 'Mute';
-        this.button.setAttribute('aria-controls', player.uid);
+        this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Mute');
         this.button.innerHTML = '<span class="om-sr">Mute</span>';
@@ -74,8 +81,8 @@ class Volume {
 
             this.slider.value = `${element.volume}`;
             this.display.value = (mediaVolume * 10);
-            this.volumeContainer.setAttribute('aria-valuenow', `${vol}`);
-            this.volumeContainer.setAttribute('aria-valuetext', `${vol}`);
+            this.container.setAttribute('aria-valuenow', `${vol}`);
+            this.container.setAttribute('aria-valuetext', `${vol}`);
         };
 
         const updateButton = (element: any) => {
@@ -98,29 +105,26 @@ class Volume {
             el.muted = (el.volume === 0);
             this.volume = event.target.value;
             const e = addEvent('volumechange');
-            this.player.element.dispatchEvent(e);
+            this.player.getElement().dispatchEvent(e);
         };
 
-        this.events = {};
-        this.events.volumechange = () => {
+        this.events.media.volumechange = () => {
             const el = this.player.activeElement();
             updateSlider(el);
             updateButton(el);
         };
-        this.events.loadedmetadata = () => {
+        this.events.media.loadedmetadata = () => {
             const el = this.player.activeElement();
             if (el.muted) {
                 el.volume = 0;
                 const e = addEvent('volumechange');
-                this.player.element.dispatchEvent(e);
+                this.player.getElement().dispatchEvent(e);
             }
         };
-        this.sliderEvents = {};
-        this.sliderEvents.input = updateVolume.bind(this);
-        this.sliderEvents.change = updateVolume.bind(this);
+        this.events.slider.input = updateVolume.bind(this);
+        this.events.slider.change = updateVolume.bind(this);
 
-        this.buttonEvents = {};
-        this.buttonEvents.click = () => {
+        this.events.button.click = () => {
             this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             el.muted = !el.muted;
@@ -133,57 +137,36 @@ class Volume {
                 this.button.setAttribute('aria-label', 'Mute');
             }
             const event = addEvent('volumechange');
-            this.player.media.element.dispatchEvent(event);
+            this.player.getElement().dispatchEvent(event);
         };
 
-        return this;
+        this.button.addEventListener('click', this.events.button.click);
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().addEventListener(event, this.events.media[event]);
+        });
+
+        Object.keys(this.events.slider).forEach(event => {
+            this.slider.addEventListener(event, this.events.slider[event]);
+        });
+
+        const controls = this.player.getControls().getContainer();
+        controls.appendChild(this.button);
+        controls.appendChild(this.container);
     }
 
-    /**
-     *
-     * @returns {Volume}
-     * @memberof Volume
-     */
-    public register() {
-        this.button.addEventListener('click', this.buttonEvents.click);
-        Object.keys(this.events).forEach(event => {
-            this.player.media.element.addEventListener(event, this.events[event]);
+    public destroy(): void {
+        this.button.removeEventListener('click', this.events.button.click);
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
 
-        Object.keys(this.sliderEvents).forEach(event => {
-            this.slider.addEventListener(event, this.sliderEvents[event]);
-        });
-
-        return this;
-    }
-
-    public unregister() {
-        this.button.removeEventListener('click', this.buttonEvents.click);
-        Object.keys(this.events).forEach(event => {
-            this.player.media.element.removeEventListener(event, this.events[event]);
-        });
-
-        Object.keys(this.sliderEvents).forEach(event => {
-            this.slider.removeEventListener(event, this.sliderEvents[event]);
+        Object.keys(this.events.slider).forEach(event => {
+            this.slider.removeEventListener(event, this.events.slider[event]);
         });
 
         this.slider.remove();
         this.display.remove();
-        this.volumeContainer.remove();
-
-        return this;
-    }
-
-    /**
-     *
-     * @param {HTMLDivElement} controls
-     * @returns {Volume}
-     * @memberof Volume
-     */
-    public build(controls: HTMLDivElement) {
-        controls.appendChild(this.button);
-        controls.appendChild(this.volumeContainer);
-        return this;
+        this.container.remove();
     }
 }
 
