@@ -33,6 +33,8 @@ class Fullscreen {
         this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled ||
             target.msFullscreenEnabled || target.webkitSupportsFullscreen ||
             target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
+
+        return this;
     }
     /**
      *

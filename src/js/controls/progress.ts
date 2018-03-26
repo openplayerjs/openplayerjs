@@ -27,6 +27,7 @@ class Progress {
     constructor(player: Player) {
         this.player = player;
         this.forcePause = false;
+        return this;
     }
 
     /**

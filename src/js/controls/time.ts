@@ -23,6 +23,7 @@ class Time {
      */
     constructor(player: Player) {
         this.player = player;
+        return this;
     }
 
     /**

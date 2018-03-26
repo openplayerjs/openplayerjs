@@ -18,8 +18,8 @@ import { isVideo } from './utils/general';
  * and appends it in the player controls
  */
 class Controls implements PlayerComponent {
-    private player: Player;
     private controls: HTMLDivElement;
+    private player: Player;
     private items: any[];
     private play: Play;
     private time: Time;
@@ -42,26 +42,8 @@ class Controls implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
-
-        this.play = new Play(player);
-        this.time = new Time(player);
-        this.progress = new Progress(player);
-        this.volume = new Volume(player);
-        this.captions = new Captions(player);
-        this.settings = new Settings(player);
-        this.items = [
-            this.play,
-            this.time,
-            this.progress,
-            this.volume,
-            this.captions,
-            this.settings,
-        ];
-
-        if (isVideo(this.player.getElement())) {
-            this.fullscreen = new Fullscreen(player);
-            this.items.push(this.fullscreen);
-        }
+        this._setElements();
+        return this;
     }
 
     /**
@@ -76,6 +58,7 @@ class Controls implements PlayerComponent {
 
         this.controls = document.createElement('div');
         this.controls.className = 'om-controls';
+        this.player.getContainer().appendChild(this.controls);
 
         this.events.mouse.mouseenter = () => {
             if (isMediaVideo) {
@@ -99,6 +82,10 @@ class Controls implements PlayerComponent {
             this.player.getContainer().classList.remove('om-controls--hidden');
             this._stopControlTimer();
         };
+        this.events.media.controlschanged = () => {
+            this._setElements();
+            this._buildElements();
+        };
 
         this.player.getElement().addEventListener('pause', this.events.media.pause);
 
@@ -109,27 +96,7 @@ class Controls implements PlayerComponent {
         // Initial countdown to hide controls
         this._startControlTimer(3000);
 
-        // Loop controls to build them and register events
-        this.items.forEach(item => {
-            if (typeof item.create === 'function') {
-                item.create();
-
-                if (typeof item.addSettings === 'function') {
-                    const menuItem = item.addSettings();
-                    if (Object.keys(menuItem).length) {
-                        this.settings.addItem(
-                            menuItem.name,
-                            menuItem.key,
-                            menuItem.default,
-                            menuItem.subitems,
-                            menuItem.className,
-                        );
-                    }
-                }
-            }
-        });
-
-        this.player.getContainer().appendChild(this.controls);
+        this._buildElements();
     }
 
     public destroy() {
@@ -189,6 +156,50 @@ class Controls implements PlayerComponent {
             delete this.timer;
             this.timer = null;
         }
+    }
+
+    private _setElements() {
+        this.play = new Play(this.player);
+        this.time = new Time(this.player);
+        this.progress = new Progress(this.player);
+        this.volume = new Volume(this.player);
+        this.captions = new Captions(this.player);
+        this.settings = new Settings(this.player);
+        this.items = [
+            this.play,
+            this.time,
+            this.progress,
+            this.volume,
+            this.captions,
+            this.settings,
+        ];
+
+        if (isVideo(this.player.getElement())) {
+            this.fullscreen = new Fullscreen(this.player);
+            this.items.push(this.fullscreen);
+        }
+    }
+
+    private _buildElements() {
+        // Loop controls to build them and register events
+        this.items.forEach(item => {
+            if (typeof item.create === 'function') {
+                item.create();
+
+                if (typeof item.addSettings === 'function') {
+                    const menuItem = item.addSettings();
+                    if (Object.keys(menuItem).length) {
+                        this.settings.addItem(
+                            menuItem.name,
+                            menuItem.key,
+                            menuItem.default,
+                            menuItem.subitems,
+                            menuItem.className,
+                        );
+                    }
+                }
+            }
+        });
     }
 }
 
