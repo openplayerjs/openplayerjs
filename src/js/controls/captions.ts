@@ -28,6 +28,7 @@ class Captions {
         this.player = player;
         this.trackList = this.player.getElement().textTracks;
         this.hasTracks = !!this.trackList.length;
+        return this;
     }
 
     /**

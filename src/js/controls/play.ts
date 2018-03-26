@@ -19,6 +19,7 @@ class Play {
      */
     constructor(player: Player) {
         this.player = player;
+        return this;
     }
 
     /**
@@ -36,7 +37,6 @@ class Play {
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Play');
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
-
         this.player.getControls().getContainer().appendChild(this.button);
 
         this.events.click = () => {

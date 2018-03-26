@@ -5,6 +5,7 @@ import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
 import { IS_IPHONE } from './utils/constants';
+import { addEvent } from './utils/events';
 import { isAudio, isIframe, isVideo } from './utils/general';
 
 /**
@@ -30,6 +31,7 @@ class Player {
         }
     }
 
+    public controls: Controls;
     private uid: string;
     private element: HTMLMediaElement;
     private adsUrl?: string;
@@ -37,7 +39,6 @@ class Player {
     private media: Media;
     private playBtn: HTMLButtonElement;
     private loader: HTMLSpanElement;
-    private controls: Controls;
     private events: Event;
 
     /**
@@ -152,6 +153,33 @@ class Player {
 
     public getAd(): Ads {
         return this.ads;
+    }
+    /**
+     *
+     *
+     * @param {object} args
+     * @memberof Player
+     */
+    public addCaptions(args: any): void {
+        const track = document.createElement('track');
+        track.srclang = args.srclang;
+        track.src = args.src;
+        track.kind = args.kind;
+        track.label = args.label;
+        track.default = args.default || null;
+
+        this.element.appendChild(track);
+        const textTracks = this.element.textTracks;
+        textTracks[textTracks.length - 1].mode = 'showing';
+
+        const el = this.element;
+        // track.addEventListener('load', function() {
+        //     // this.mode = 'showing';
+        //     el.textTracks[0].mode = 'showing';
+        const e = addEvent('controlschanged');
+        el.dispatchEvent(e);
+        //     // conso
+        // });
     }
 
     set src(media: Source[]) {

@@ -28,6 +28,7 @@ class Settings {
      */
     constructor(player: Player) {
         this.player = player;
+        return this;
     }
     /**
      *

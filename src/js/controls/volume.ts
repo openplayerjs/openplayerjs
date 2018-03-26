@@ -28,6 +28,7 @@ class Volume {
     constructor(player: Player) {
         this.player = player;
         this.volume = this.player.getMedia().volume;
+        return this;
     }
 
     /**
