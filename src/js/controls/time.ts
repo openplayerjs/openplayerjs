@@ -1,6 +1,7 @@
 import Event from '../interfaces/event';
 import Player from '../player';
 import { formatTime } from '../utils/time';
+import { addEvent } from '../utils/events';
 
 /**
  *
@@ -79,6 +80,10 @@ class Time {
             if (this.player.isMedia() && this.duration.innerText !== '0:00') {
                 this.duration.innerText = formatTime(el.duration);
             }
+        };
+        this.events.controlschanged = () => {
+            const event = addEvent('timeupdate');
+            this.player.getElement().dispatchEvent(event);
         };
 
         Object.keys(this.events).forEach(event => {

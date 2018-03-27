@@ -170,7 +170,7 @@ class Player {
 
         this.element.appendChild(track);
         const textTracks = this.element.textTracks;
-        textTracks[textTracks.length - 1].mode = 'showing';
+        textTracks[textTracks.length - 1].mode = 'hidden';
 
         const el = this.element;
         // track.addEventListener('load', function() {

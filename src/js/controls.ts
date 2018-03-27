@@ -83,11 +83,14 @@ class Controls implements PlayerComponent {
             this._stopControlTimer();
         };
         this.events.media.controlschanged = () => {
+            this.destroy();
             this._setElements();
-            this._buildElements();
+            this.create();
         };
 
-        this.player.getElement().addEventListener('pause', this.events.media.pause);
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().addEventListener(event, this.events.media[event]);
+        });
 
         Object.keys(this.events.mouse).forEach(event => {
             this.player.getContainer().addEventListener(event, this.events.mouse[event]);
@@ -104,7 +107,9 @@ class Controls implements PlayerComponent {
             this.player.getContainer().removeEventListener(event, this.events.mouse[event]);
         });
 
-        this.player.getElement().removeEventListener('pause', this.events.media.pause);
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().removeEventListener(event, this.events.media[event]);
+        });
 
         this._stopControlTimer();
 
@@ -183,20 +188,28 @@ class Controls implements PlayerComponent {
     private _buildElements() {
         // Loop controls to build them and register events
         this.items.forEach(item => {
-            if (typeof item.create === 'function') {
-                item.create();
+            item.create();
+        });
 
-                if (typeof item.addSettings === 'function') {
-                    const menuItem = item.addSettings();
-                    if (Object.keys(menuItem).length) {
-                        this.settings.addItem(
-                            menuItem.name,
-                            menuItem.key,
-                            menuItem.default,
-                            menuItem.subitems,
-                            menuItem.className,
-                        );
-                    }
+        const el = this.player.getElement();
+        if (!el.paused) {
+            const playEvent = addEvent('playing');
+            el.dispatchEvent(playEvent);
+            const timeEvent = addEvent('timeupdate');
+            el.dispatchEvent(timeEvent);
+        }
+
+        this.items.forEach(item => {
+            if (typeof item.addSettings === 'function') {
+                const menuItem = item.addSettings();
+                if (Object.keys(menuItem).length) {
+                    this.settings.addItem(
+                        menuItem.name,
+                        menuItem.key,
+                        menuItem.default,
+                        menuItem.subitems,
+                        menuItem.className,
+                    );
                 }
             }
         });

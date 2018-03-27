@@ -1,5 +1,7 @@
 import Event from '../interfaces/event';
 import Player from '../player';
+import { addEvent } from '../utils/events';
+import { hasClass } from '../utils/general';
 
 /**
  *
@@ -72,6 +74,14 @@ class Play {
                 });
             }
         };
+        this.events.playing = () => {
+            if (!hasClass(this.button, 'om-controls__playpause--pause')) {
+                this.button.classList.remove('om-controls__playpause--replay');
+                this.button.classList.add('om-controls__playpause--pause');
+                this.button.title = 'Pause';
+                this.button.setAttribute('aria-label', 'Pause');
+            }
+        };
         this.events.pause = () => {
             this.button.classList.remove('om-controls__playpause--pause');
             this.button.title = 'Play';
@@ -94,9 +104,16 @@ class Play {
             this.button.title = 'Pause Ads';
             this.button.setAttribute('aria-label', 'Pause Ads');
         };
+        const element = this.player.getElement();
+        this.events.controlschanged = () => {
+            if (!element.paused) {
+                const event = addEvent('playing');
+                element.dispatchEvent(event);
+            }
+        };
 
         Object.keys(this.events).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events[event]);
+            element.addEventListener(event, this.events[event]);
         });
 
         this.button.addEventListener('click', this.events.click);
