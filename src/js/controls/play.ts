@@ -11,7 +11,10 @@ import { hasClass } from '../utils/general';
 class Play {
     private player: Player;
     private button: HTMLButtonElement;
-    private events: Event = {};
+    private events: Event = {
+        controls: {},
+        media: {},
+    };
 
     /**
      *
@@ -41,7 +44,7 @@ class Play {
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
         this.player.getControls().getContainer().appendChild(this.button);
 
-        this.events.click = () => {
+        this.events.media.click = () => {
             this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             if (el.paused || el.ended) {
@@ -50,7 +53,7 @@ class Play {
                 el.pause();
             }
         };
-        this.events.play = () => {
+        this.events.media.play = () => {
             if (this.player.activeElement().ended) {
                 if (this.player.isMedia()) {
                     this.button.classList.add('om-controls__playpause--replay');
@@ -74,7 +77,7 @@ class Play {
                 });
             }
         };
-        this.events.playing = () => {
+        this.events.media.playing = () => {
             if (!hasClass(this.button, 'om-controls__playpause--pause')) {
                 this.button.classList.remove('om-controls__playpause--replay');
                 this.button.classList.add('om-controls__playpause--pause');
@@ -82,12 +85,12 @@ class Play {
                 this.button.setAttribute('aria-label', 'Pause');
             }
         };
-        this.events.pause = () => {
+        this.events.media.pause = () => {
             this.button.classList.remove('om-controls__playpause--pause');
             this.button.title = 'Play';
             this.button.setAttribute('aria-label', 'Play');
         };
-        this.events.ended = () => {
+        this.events.media.ended = () => {
             if (this.player.activeElement().ended && this.player.isMedia()) {
                 this.button.classList.add('om-controls__playpause--replay');
                 this.button.classList.remove('om-controls__playpause--pause');
@@ -98,33 +101,37 @@ class Play {
             this.button.title = 'Play';
             this.button.setAttribute('aria-label', 'Play');
         };
-        this.events['ads.ended'] = () => {
+        this.events.media['ads.ended'] = () => {
             this.button.classList.remove('om-controls__playpause--replay');
             this.button.classList.add('om-controls__playpause--pause');
             this.button.title = 'Pause Ads';
             this.button.setAttribute('aria-label', 'Pause Ads');
         };
         const element = this.player.getElement();
-        this.events.controlschanged = () => {
+        this.events.controls.controlschanged = () => {
             if (!element.paused) {
                 const event = addEvent('playing');
                 element.dispatchEvent(event);
             }
         };
 
-        Object.keys(this.events).forEach(event => {
-            element.addEventListener(event, this.events[event]);
+        Object.keys(this.events.media).forEach(event => {
+            element.addEventListener(event, this.events.media[event]);
         });
 
-        this.button.addEventListener('click', this.events.click);
+        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
+
+        this.button.addEventListener('click', this.events.media.click);
     }
 
     public destroy(): void {
-        Object.keys(this.events).forEach(event => {
-            this.player.getElement().removeEventListener(event, this.events[event]);
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
 
-        this.button.removeEventListener('click', this.events.click);
+        this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
+
+        this.button.removeEventListener('click', this.events.media.click);
         this.button.remove();
     }
 }

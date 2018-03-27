@@ -1,7 +1,6 @@
 import Event from '../interfaces/event';
 import Player from '../player';
 import { formatTime } from '../utils/time';
-import { addEvent } from '../utils/events';
 
 /**
  *
@@ -14,7 +13,10 @@ class Time {
     private current: HTMLTimeElement;
     private delimiter: HTMLSpanElement;
     private duration: HTMLTimeElement;
-    private events: Event = {};
+    private events: Event = {
+        controls: {},
+        media: {},
+    };
 
     /**
      *
@@ -50,9 +52,9 @@ class Time {
         this.duration.setAttribute('aria-hidden', 'false');
         this.duration.innerText = '0:00';
 
-        this.events.loadedmetadata = () => {
+        const setInitialTime = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity && !isNaN(el.duration)) {
+            if (el.duration !== Infinity && !isNaN(el.duration) && el.duration !== this.duration.innerText) {
                 this.duration.innerText = formatTime(el.duration);
                 this.current.innerText = formatTime(el.currentTime);
             } else {
@@ -60,7 +62,11 @@ class Time {
                 this.delimiter.setAttribute('aria-hidden', 'true');
             }
         };
-        this.events.timeupdate = () => {
+
+        this.events.media.loadedmetadata = setInitialTime.bind(this);
+        this.events.controls.controlschanged = setInitialTime.bind(this);
+
+        this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 if (!isNaN(el.duration) && el.duration !== this.duration.innerText) {
@@ -75,20 +81,18 @@ class Time {
                 this.current.innerText = 'Live Broadcast';
             }
         };
-        this.events.ended = () => {
+        this.events.media.ended = () => {
             const el = this.player.activeElement();
             if (this.player.isMedia() && this.duration.innerText !== '0:00') {
                 this.duration.innerText = formatTime(el.duration);
             }
         };
-        this.events.controlschanged = () => {
-            const event = addEvent('timeupdate');
-            this.player.getElement().dispatchEvent(event);
-        };
 
-        Object.keys(this.events).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events[event]);
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().addEventListener(event, this.events.media[event]);
         });
+
+        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
 
         const controls = this.player.getControls().getContainer();
         controls.appendChild(this.current);
@@ -97,9 +101,11 @@ class Time {
     }
 
     public destroy(): void {
-        Object.keys(this.events).forEach(event => {
-            this.player.getElement().removeEventListener(event, this.events[event]);
+        Object.keys(this.events.media).forEach(event => {
+            this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
+
+        this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
 
         this.current.remove();
         this.delimiter.remove();
