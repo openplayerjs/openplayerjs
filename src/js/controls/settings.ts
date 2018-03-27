@@ -92,6 +92,7 @@ class Settings {
         window.removeEventListener('resize', this.events.global.resize);
         if (this.events.global['settings.submenu'] !== undefined) {
             document.removeEventListener('click', this.events.global['settings.submenu']);
+            this.player.getElement().removeEventListener('controls.hide', this.hideEvent);
         }
 
         this.menu.remove();
@@ -160,31 +161,41 @@ class Settings {
                         this.menu.innerHTML = this.originalStatus;
                         this.menu.classList.remove('om-settings--sliding');
                     }, 100);
-                } else if (hasClass(e.target, 'om-settings__menu-content') && typeof this.submenu[key] !== undefined) {
-                    this.menu.classList.add('om-settings--sliding');
-                    setTimeout(() => {
-                        this.menu.innerHTML = this.submenu[key];
-                        this.menu.classList.remove('om-settings--sliding');
-                    }, 100);
+                } else if (hasClass(e.target, 'om-settings__menu-content')) {
+                    const current = e.target.parentElement.querySelector('.om-settings__menu-label')
+                        .getAttribute('data-value').replace(/(.*?)\-\w+$/, '$1');
+
+                    if (typeof this.submenu[current] !== undefined) {
+                        this.menu.classList.add('om-settings--sliding');
+                        setTimeout(() => {
+                            this.menu.innerHTML = this.submenu[current];
+                            this.menu.classList.remove('om-settings--sliding');
+                        }, 100);
+                    }
                 } else if (hasClass(e.target, 'om-settings__submenu-label')) {
-                    // Update values in submenu and store
-                    this.menu.querySelector('.om-settings__submenu-item[aria-checked=true]').setAttribute('aria-checked', 'false');
-                    e.target.parentElement.setAttribute('aria-checked', 'true');
-                    this.submenu[key] = this.menu.innerHTML;
-                    const value = e.target.getAttribute('data-value').replace(`${key}-`, '');
+                    const current = e.target.getAttribute('data-value');
+                    const value = current.replace(`${key}-`, '');
                     const label = e.target.innerText;
 
-                    // Restore original menu, and set the new value
-                    this.menu.classList.add('om-settings--sliding');
-                    setTimeout(() => {
-                        this.menu.innerHTML = this.originalStatus;
-                        const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
-                        prev.setAttribute('data-value', `${key}-${value}`);
-                        prev.nextElementSibling.innerHTML = label;
-                        defaultValue = value;
-                        this.originalStatus = this.menu.innerHTML;
-                        this.menu.classList.remove('om-settings--sliding');
-                    }, 100);
+                    // Update values in submenu and store
+                    if (this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`)) {
+                        this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`)
+                            .setAttribute('aria-checked', 'false');
+                        e.target.parentElement.setAttribute('aria-checked', 'true');
+                        this.submenu[key] = this.menu.innerHTML;
+
+                        // Restore original menu, and set the new value
+                        this.menu.classList.add('om-settings--sliding');
+                        setTimeout(() => {
+                            this.menu.innerHTML = this.originalStatus;
+                            const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
+                            prev.setAttribute('data-value', `${current}`);
+                            prev.nextElementSibling.innerHTML = label;
+                            defaultValue = value;
+                            this.originalStatus = this.menu.innerHTML;
+                            this.menu.classList.remove('om-settings--sliding');
+                        }, 100);
+                    }
                 }
             } else {
                 this.hideEvent();
@@ -192,6 +203,7 @@ class Settings {
         };
 
         document.addEventListener('click', this.events.global['settings.submenu']);
+        this.player.getElement().addEventListener('controls.hide', this.hideEvent);
     }
 }
 
