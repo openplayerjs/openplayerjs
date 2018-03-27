@@ -178,9 +178,9 @@ class Settings {
                     const label = e.target.innerText;
 
                     // Update values in submenu and store
-                    if (this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`)) {
-                        this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`)
-                            .setAttribute('aria-checked', 'false');
+                    const target = this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`);
+                    if (target) {
+                        target.setAttribute('aria-checked', 'false');
                         e.target.parentElement.setAttribute('aria-checked', 'true');
                         this.submenu[key] = this.menu.innerHTML;
 

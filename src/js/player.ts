@@ -173,13 +173,8 @@ class Player {
         textTracks[textTracks.length - 1].mode = 'hidden';
 
         const el = this.element;
-        // track.addEventListener('load', function() {
-        //     // this.mode = 'showing';
-        //     el.textTracks[0].mode = 'showing';
         const e = addEvent('controlschanged');
         el.dispatchEvent(e);
-        //     // conso
-        // });
     }
 
     set src(media: Source[]) {

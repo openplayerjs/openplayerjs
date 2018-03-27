@@ -191,14 +191,6 @@ class Controls implements PlayerComponent {
             item.create();
         });
 
-        const el = this.player.getElement();
-        if (!el.paused) {
-            const playEvent = addEvent('playing');
-            el.dispatchEvent(playEvent);
-            const timeEvent = addEvent('timeupdate');
-            el.dispatchEvent(timeEvent);
-        }
-
         this.items.forEach(item => {
             if (typeof item.addSettings === 'function') {
                 const menuItem = item.addSettings();
@@ -213,6 +205,9 @@ class Controls implements PlayerComponent {
                 }
             }
         });
+
+        const e = addEvent('controlschanged');
+        this.controls.dispatchEvent(e);
     }
 }
 
