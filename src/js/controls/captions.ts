@@ -10,6 +10,7 @@ class Captions {
     private events: Event = {
         button: {},
         global: {},
+        media: {},
     };
     private tracks: any = {};
     private trackList: TextTrackList;
@@ -17,6 +18,7 @@ class Captions {
     private hasTracks: boolean;
     private current: any;
     private default: string;
+    private renderCaption: any;
 
     /**
      * Creates an instance of Captions.
@@ -75,6 +77,40 @@ class Captions {
         this.current = this.default ? Array.from(this.trackList)
             .filter(item => item.language === this.default).pop() : this.trackList[0];
 
+        const container = this.captions.querySelector('span');
+        this.renderCaption = (cue: any, instance: any) => {
+            container.innerHTML = '';
+            if (cue && hasClass(instance.button, 'om-controls__captions--on')) {
+                instance.captions.classList.add('om-captions--on');
+                container.appendChild(cue.getCueAsHTML());
+            } else {
+                instance._hide();
+            }
+        };
+
+        this.events.media.oncueenter = () => {
+            const time = this.player.getMedia().currentTime;
+            const cue = this.current.cues[0];
+            if (cue && time >= cue.startTime && time <= cue.endTime) {
+                this.renderCaption(cue, this);
+            }
+        };
+        this.events.media.timeupdate = () => {
+            if (this.player.isMedia()) {
+                const currentCues = this.tracks[this.current.language];
+                if (currentCues !== undefined) {
+                    const index = this._search(currentCues, this.player.getMedia().currentTime);
+                    container.innerHTML = '';
+                    if (index > -1 && hasClass(this.button, 'om-controls__captions--on')) {
+                        this.captions.classList.add('om-captions--on');
+                        container.innerHTML = this._sanitize(currentCues[index].text);
+                    } else {
+                        this._hide();
+                    }
+                }
+            }
+        };
+
         if (this.default) {
             this._show();
         }
@@ -126,6 +162,8 @@ class Captions {
 
         if (this.hasTracks) {
             this.button.removeEventListener('click', this.events.button.click);
+            this.player.getElement().removeEventListener('timeupdate', this.events.media.oncueenter);
+            this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
             this.button.remove();
             this.captions.remove();
         }
@@ -191,10 +229,10 @@ class Captions {
                 const initTime = timeToSeconds(timecode[1]);
 
                 entries.push({
+                    endTime: timeToSeconds(timecode[3]),
                     identifier,
                     settings: timecode[5] || {},
-                    start: (initTime === 0) ? 0.200 : initTime,
-                    stop: timeToSeconds(timecode[3]),
+                    startTime: (initTime === 0) ? 0.200 : initTime,
                     text: cue,
                 });
             }
@@ -214,39 +252,23 @@ class Captions {
             return;
         }
 
+        const t = this;
         const container = this.captions.querySelector('span');
+        container.innerHTML = '';
 
         if (!this.current.cues.length) {
             request(getAbsoluteUrl(this.trackUrlList[this.current.language]), 'text', d => {
                 this.tracks[this.current.language] = this._getCues(d);
-
-                const currentCues = this.tracks[this.current.language];
-
                 // Use `timeupdate` to update remote captions
-                this.player.getElement().addEventListener('timeupdate', () => {
-                    if (this.player.isMedia()) {
-                        const index = this._search(currentCues, this.player.getMedia().currentTime);
-                        container.innerHTML = '';
-                        if (index > -1 && hasClass(this.button, 'om-controls__captions--on')) {
-                            this.captions.classList.add('om-captions--on');
-                            container.innerHTML = this._sanitize(currentCues[index].text);
-                        } else {
-                            this._hide();
-                        }
-                    }
-                });
+                this.player.getElement().removeEventListener('timeupdate', this.events.media.oncueenter);
+                this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
             });
         } else {
-            const instance = this;
+            this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
+            this.player.getElement().addEventListener('timeupdate', this.events.media.oncueenter);
             this.current.oncuechange = function() {
                 const cue = this.activeCues[0];
-                container.innerHTML = '';
-                if (cue && hasClass(instance.button, 'om-controls__captions--on')) {
-                    instance.captions.classList.add('om-captions--on');
-                    container.appendChild(cue.getCueAsHTML());
-                } else {
-                    instance._hide();
-                }
+                t.renderCaption(cue, t);
             };
         }
     }
@@ -275,8 +297,8 @@ class Captions {
         let high = tracks.length - 1;
         while (low <= high) {
             const mid = ((low + high) >> 1);
-            const start = tracks[mid].start;
-            const stop = tracks[mid].stop;
+            const start = tracks[mid].startTime;
+            const stop = tracks[mid].endTime;
 
             if (currentTime >= start && currentTime < stop) {
                 return mid;

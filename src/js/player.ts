@@ -161,18 +161,15 @@ class Player {
      * @memberof Player
      */
     public addCaptions(args: any): void {
+        const el = this.element;
         const track = document.createElement('track');
         track.srclang = args.srclang;
         track.src = args.src;
         track.kind = args.kind;
         track.label = args.label;
         track.default = args.default || null;
-
         this.element.appendChild(track);
-        const textTracks = this.element.textTracks;
-        textTracks[textTracks.length - 1].mode = 'hidden';
 
-        const el = this.element;
         const e = addEvent('controlschanged');
         el.dispatchEvent(e);
     }

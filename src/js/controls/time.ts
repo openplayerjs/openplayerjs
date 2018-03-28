@@ -54,8 +54,9 @@ class Time {
 
         const setInitialTime = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity && !isNaN(el.duration) && el.duration !== this.duration.innerText) {
-                this.duration.innerText = formatTime(el.duration);
+            if (el.duration !== Infinity) {
+                const duration = !isNaN(el.duration) ? el.duration : 0;
+                this.duration.innerText = formatTime(duration);
                 this.current.innerText = formatTime(el.currentTime);
             } else {
                 this.duration.setAttribute('aria-hidden', 'true');
