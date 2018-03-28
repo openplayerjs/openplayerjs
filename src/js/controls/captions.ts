@@ -1,13 +1,15 @@
-import Event from '../interfaces/event';
+import PlayerComponent from '../interfaces/component';
+import EventsList from '../interfaces/events-list';
+import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
 import { getAbsoluteUrl, hasClass, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
-class Captions {
+class Captions implements PlayerComponent {
     private player: Player;
     private button: HTMLButtonElement;
     private captions: HTMLDivElement;
-    private events: Event = {
+    private events: EventsList = {
         button: {},
         global: {},
         media: {},
@@ -16,9 +18,9 @@ class Captions {
     private trackList: TextTrackList;
     private trackUrlList: any = {};
     private hasTracks: boolean;
-    private current: any;
+    private current: TextTrack;
     private default: string;
-    private renderCaption: any;
+    private renderCaption: (cue: TextTrackCue, instance: Captions) => void;
 
     /**
      * Creates an instance of Captions.
@@ -64,7 +66,6 @@ class Captions {
         }
 
         for (let i = 0, total = this.trackList.length; i < total; i++) {
-            // Determine default or make first caption visible
             this.trackList[i].mode = 'hidden';
         }
 
@@ -78,7 +79,7 @@ class Captions {
             .filter(item => item.language === this.default).pop() : this.trackList[0];
 
         const container = this.captions.querySelector('span');
-        this.renderCaption = (cue: any, instance: any) => {
+        this.renderCaption = (cue: TextTrackCue, instance: Captions) => {
             container.innerHTML = '';
             if (cue && hasClass(instance.button, 'om-controls__captions--on')) {
                 instance.captions.classList.add('om-captions--on');
@@ -175,7 +176,7 @@ class Captions {
      * @returns {any}
      * @memberof Captions
      */
-    public addSettings(): any {
+    public addSettings(): SettingsItem|object {
         if (this.trackList.length <= 1) {
             return {};
         }

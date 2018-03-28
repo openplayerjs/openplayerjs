@@ -1,16 +1,17 @@
-import Event from '../interfaces/event';
+import PlayerComponent from '../interfaces/component';
+import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { hasClass, offset } from '../utils/general';
 import { formatTime } from '../utils/time';
 
-class Progress {
+class Progress implements PlayerComponent {
     private player: Player;
     private slider: HTMLInputElement;
     private buffer: HTMLProgressElement;
     private progress: HTMLDivElement;
     private played: HTMLProgressElement;
     private tooltip: HTMLSpanElement;
-    private events: Event = {
+    private events: EventsList = {
         container: {},
         global: {},
         media: {},

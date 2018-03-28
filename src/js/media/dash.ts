@@ -1,4 +1,4 @@
-import Event from '../interfaces/event';
+import EventsList from '../interfaces/events-list';
 import Source from '../interfaces/source';
 import { HAS_MSE } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -15,7 +15,7 @@ declare const dashjs: any;
  */
 class DashMedia extends Native {
     private player: any;
-    private events: Event;
+    private events: EventsList = {};
 
     /**
      * Creates an instance of DashMedia.
@@ -32,8 +32,6 @@ class DashMedia extends Native {
         function createInstance() {
             this.player = dashjs.MediaPlayer().create();
         }
-        this.player = null;
-        this.events = null;
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
             loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :

@@ -1,4 +1,5 @@
-import Event from '../interfaces/event';
+import PlayerComponent from '../interfaces/component';
+import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { addEvent } from '../utils/events';
 
@@ -7,13 +8,13 @@ import { addEvent } from '../utils/events';
  * @class Volume
  * @description  Class that renders volume slider and mute button, and registers events to update them
  */
-class Volume {
+class Volume implements PlayerComponent {
     private player: Player;
     private button: HTMLButtonElement;
     private container: HTMLDivElement;
     private display: HTMLProgressElement;
     private slider: HTMLInputElement;
-    private events: Event = {
+    private events: EventsList = {
         button: {},
         media: {},
         slider: {},

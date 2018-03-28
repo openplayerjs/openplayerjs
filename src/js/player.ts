@@ -1,6 +1,6 @@
 
 import Controls from './controls';
-import Event from './interfaces/event';
+import EventsList from './interfaces/events-list';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
@@ -35,11 +35,11 @@ class Player {
     private uid: string;
     private element: HTMLMediaElement;
     private adsUrl?: string;
-    private ads: Ads;
+    private ads?: Ads;
     private media: Media;
     private playBtn: HTMLButtonElement;
     private loader: HTMLSpanElement;
-    private events: Event;
+    private events: EventsList = {};
 
     /**
      * Create a Player instance.
@@ -51,8 +51,6 @@ class Player {
     constructor(element: HTMLMediaElement|string, adsUrl?: string) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         this.adsUrl = adsUrl;
-        this.ads = null;
-        this.events = {};
         return this;
     }
 
@@ -131,7 +129,7 @@ class Player {
         return this.element;
     }
 
-    public getEvents(): Event {
+    public getEvents(): EventsList {
         return this.events;
     }
 

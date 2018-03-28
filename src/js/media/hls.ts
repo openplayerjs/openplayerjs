@@ -1,4 +1,4 @@
-import Event from '../interfaces/event';
+import EventsList from '../interfaces/events-list';
 import Source from '../interfaces/source';
 import { HAS_MSE, SUPPORTS_NATIVE_HLS } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -15,7 +15,7 @@ declare const Hls: any;
  */
 class HlsMedia extends Native {
     private player: any;
-    private events: Event;
+    private events: EventsList = {};
     private recoverDecodingErrorDate: number;
     private recoverSwapAudioCodecDate: number;
 
@@ -36,8 +36,6 @@ class HlsMedia extends Native {
         }
         this.element = element;
         this.media = mediaSource;
-        this.player = null;
-        this.events = null;
         this.promise = (typeof Hls === 'undefined') ?
             // Ever-green script
             loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') :

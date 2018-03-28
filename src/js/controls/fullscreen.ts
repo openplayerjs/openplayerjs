@@ -1,4 +1,5 @@
-import Event from '../interfaces/event';
+import PlayerComponent from '../interfaces/component';
+import EventsList from '../interfaces/events-list';
 import Player from '../player';
 
 /**
@@ -6,16 +7,16 @@ import Player from '../player';
  * @class Fullscreen
  * @description Class that handles the fullscreen behavior cross/browsers
  */
-class Fullscreen {
+class Fullscreen implements PlayerComponent {
     public fullScreenEnabled: boolean;
     private player: Player;
     private isFullscreen: boolean;
     private button: HTMLButtonElement;
-    private events: Event = {};
+    private events: EventsList = {};
     private fullscreenEvents: string[];
     private fullscreenWidth: number;
     private fullscreenHeight: number;
-    private clickEvent: any;
+    private clickEvent: () => void;
 
     /**
      *

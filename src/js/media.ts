@@ -1,4 +1,4 @@
-import Event from './interfaces/event';
+import EventsList from './interfaces/events-list';
 import Source from './interfaces/source';
 import DashMedia from './media/dash';
 import HlsMedia from './media/hls';
@@ -17,7 +17,7 @@ class Media {
     public media: any;
     public mediaFiles: Source[];
     private promisePlay: Promise<void>;
-    private events: Event = {};
+    private events: EventsList = {};
 
     /**
      * Creates an instance of Media.

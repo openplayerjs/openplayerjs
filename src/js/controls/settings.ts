@@ -1,4 +1,8 @@
-import Event from '../interfaces/event';
+import PlayerComponent from '../interfaces/component';
+import EventsList from '../interfaces/events-list';
+import SettingsItem from '../interfaces/settings/item';
+import SettingsSubItem from '../interfaces/settings/subitem';
+import SettingsSubMenu from '../interfaces/settings/submenu';
 import Player from '../player';
 import { hasClass } from '../utils/general';
 
@@ -7,18 +11,18 @@ import { hasClass } from '../utils/general';
  * @class Settings
  * @description Class that handles the Settings behavior cross/browsers
  */
-class Settings {
+class Settings implements PlayerComponent {
     private player: Player;
-    private submenu: any = {};
+    private submenu: SettingsSubMenu = {};
     private button: HTMLButtonElement;
     private menu: HTMLElement;
-    private events: Event = {
+    private events: EventsList = {
         global: {},
         media: {},
     };
-    private clickEvent: any;
-    private hideEvent: any;
     private originalStatus: string;
+    private clickEvent: () => void;
+    private hideEvent: () => void;
 
     /**
      *
@@ -107,7 +111,7 @@ class Settings {
      * @returns {any}
      * @memberof Settings
      */
-    public addSettings(): any {
+    public addSettings(): SettingsItem {
         return {
             className: 'om-speed__option',
             default: '1',
@@ -125,7 +129,7 @@ class Settings {
         };
     }
 
-    public addItem(name: string, key: string, defaultValue: string, submenu?: any[], className?: string): void {
+    public addItem(name: string, key: string, defaultValue: string, submenu?: SettingsSubItem[], className?: string): void {
         // Build the menu entry first
         const menuItem = document.createElement('div');
         menuItem.className = 'om-settings__menu-item';
