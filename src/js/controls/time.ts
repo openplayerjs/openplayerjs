@@ -1,4 +1,5 @@
-import Event from '../interfaces/event';
+import PlayerComponent from '../interfaces/component';
+import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { formatTime } from '../utils/time';
 
@@ -8,12 +9,12 @@ import { formatTime } from '../utils/time';
  * @description Class that renders current and duration times in human-readable format
  * and registers events to update them in the control bar
  */
-class Time {
+class Time implements PlayerComponent {
     private player: Player;
     private current: HTMLTimeElement;
     private delimiter: HTMLSpanElement;
     private duration: HTMLTimeElement;
-    private events: Event = {
+    private events: EventsList = {
         controls: {},
         media: {},
     };

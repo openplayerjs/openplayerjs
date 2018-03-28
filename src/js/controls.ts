@@ -6,7 +6,7 @@ import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
 import PlayerComponent from './interfaces/component';
-import Event from './interfaces/event';
+import EventsList from './interfaces/events-list';
 import Player from './player';
 import { addEvent } from './utils/events';
 import { isVideo } from './utils/general';
@@ -29,7 +29,7 @@ class Controls implements PlayerComponent {
     private fullscreen: Fullscreen;
     private captions: Captions;
     private timer: any;
-    private events: Event = {
+    private events: EventsList = {
         media: {},
         mouse: {},
     };

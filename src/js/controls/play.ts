@@ -1,4 +1,5 @@
-import Event from '../interfaces/event';
+import PlayerComponent from '../interfaces/component';
+import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { addEvent } from '../utils/events';
 import { hasClass } from '../utils/general';
@@ -8,10 +9,10 @@ import { hasClass } from '../utils/general';
  * @class Play
  * @description  Class that renders play/pause/replay button and registers events to update it
  */
-class Play {
+class Play implements PlayerComponent {
     private player: Player;
     private button: HTMLButtonElement;
-    private events: Event = {
+    private events: EventsList = {
         controls: {},
         media: {},
     };
