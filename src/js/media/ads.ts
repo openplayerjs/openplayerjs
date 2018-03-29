@@ -250,7 +250,10 @@ class Ads {
                         this.adsCurrentTime = this.adsManager.getRemainingTime();
                         const e = addEvent('timeupdate');
                         this.element.dispatchEvent(e);
-                    }, 100);
+
+                        const playing = addEvent('playing');
+                        this.element.dispatchEvent(playing);
+                    }, 50);
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
