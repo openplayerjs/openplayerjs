@@ -23,6 +23,7 @@ class Ads {
     public adsCurrentTime: number;
     public adsManager: any;
     private media: Media;
+    private element: HTMLMediaElement;
     private events: any[];
     private adsUrl: string;
     private promise: Promise<any>;
@@ -45,6 +46,7 @@ class Ads {
     constructor(media: Media, adsUrl: string) {
         this.adsUrl = adsUrl;
         this.media = media;
+        this.element = media.element;
         this.adsManager = null;
         this.events = null;
         this.adsEnded = false;
@@ -52,7 +54,7 @@ class Ads {
         this.adsActive = false;
         this.adsStarted = false;
         this.intervalTimer = 0;
-        this.adsVolume = this.media.element.volume;
+        this.adsVolume = this.element.volume;
         this.adsMuted = false;
         this.adsDuration = 0;
         this.adsCurrentTime = 0;
@@ -70,7 +72,7 @@ class Ads {
                 this.media.volume = 0;
 
                 const e = addEvent('volumechange');
-                this.media.element.dispatchEvent(e);
+                this.element.dispatchEvent(e);
             }
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
                 loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -93,7 +95,7 @@ class Ads {
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'om-ads';
         this.adsContainer.tabIndex = -1;
-        this.media.element.parentElement.insertBefore(this.adsContainer, this.media.element.nextSibling);
+        this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
 
         // Create responsive ad
         window.addEventListener('resize', this.resizeAds.bind(this));
@@ -111,7 +113,7 @@ class Ads {
             this.adsActive = true;
             this.adsManager.resume();
             const e = addEvent('play');
-            this.media.element.dispatchEvent(e);
+            this.element.dispatchEvent(e);
         }
     }
 
@@ -120,7 +122,7 @@ class Ads {
             this.adsActive = false;
             this.adsManager.pause();
             const e = addEvent('pause');
-            this.media.element.dispatchEvent(e);
+            this.element.dispatchEvent(e);
         }
     }
 
@@ -144,14 +146,14 @@ class Ads {
             this.adsManager.destroy();
         }
 
-        this.media.element.removeEventListener('ended', this._contentEndedListener.bind(this));
+        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         window.removeEventListener('resize', this.resizeAds.bind(this));
         this.adsContainer.remove();
     }
 
     public resizeAds(width?: number, height?: number) {
         if (this.adsManager) {
-            const target = this.media.element.parentElement;
+            const target = this.element.parentElement;
             if (width && height) {
                 const mode = target.getAttribute('data-fullscreen') === 'true' ?
                     google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
@@ -229,11 +231,11 @@ class Ads {
                     if (!this.media.paused) {
                         this.media.pause();
                     }
-                    this.media.element.parentElement.classList.add('om-ads--active');
+                    this.element.parentElement.classList.add('om-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
                     const loadedEvent = addEvent('loadedmetadata');
-                    this.media.element.dispatchEvent(loadedEvent);
+                    this.element.dispatchEvent(loadedEvent);
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
@@ -242,18 +244,18 @@ class Ads {
                     if (this.media.ended) {
                         this.adsEnded = false;
                         const e = addEvent('ads.ended');
-                        this.media.element.dispatchEvent(e);
+                        this.element.dispatchEvent(e);
                     }
                     this.intervalTimer = window.setInterval(() => {
                         this.adsCurrentTime = this.adsManager.getRemainingTime();
                         const e = addEvent('timeupdate');
-                        this.media.element.dispatchEvent(e);
+                        this.element.dispatchEvent(e);
                     }, 100);
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
-                this.media.element.parentElement.classList.remove('om-ads--active');
+                this.element.parentElement.classList.remove('om-ads--active');
                 this.adsActive = false;
                 if (ad.isLinear()) {
                     clearInterval(this.intervalTimer);
@@ -263,13 +265,13 @@ class Ads {
             case google.ima.AdEvent.Type.VOLUME_MUTED:
                 if (ad.isLinear()) {
                     const e = addEvent('volumechange');
-                    this.media.element.dispatchEvent(e);
+                    this.element.dispatchEvent(e);
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
                 this.adsActive = false;
                 this.adsEnded = true;
-                this.media.element.parentElement.classList.remove('om-ads--active');
+                this.element.parentElement.classList.remove('om-ads--active');
                 break;
         }
     }
@@ -286,7 +288,7 @@ class Ads {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
         // Get the ads manager.
-        this.adsManager = adsManagerLoadedEvent.getAdsManager(this.media.element, adsRenderingSettings);
+        this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
         this._start(this.adsManager);
     }
 
@@ -334,18 +336,18 @@ class Ads {
     }
 
     private _onContentPauseRequested() {
-        this.media.element.removeEventListener('ended', this._contentEndedListener.bind(this));
+        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         if (this.adsStarted) {
             this.media.pause();
         } else {
             this.adsStarted = true;
         }
         const e = addEvent('play');
-        this.media.element.dispatchEvent(e);
+        this.element.dispatchEvent(e);
     }
 
     private _onContentResumeRequested() {
-        this.media.element.addEventListener('ended', this._contentEndedListener.bind(this));
+        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
         this._resumeMedia();
     }
 
@@ -355,17 +357,17 @@ class Ads {
         this.adsStarted = false;
         this.adsDuration = 0;
         this.adsCurrentTime = 0;
-        this.media.element.parentElement.classList.remove('om-ads--active');
+        this.element.parentElement.classList.remove('om-ads--active');
 
         if (this.autoplayAllowed && !this.media.ended) {
             setTimeout(() => {
                 this.media.play();
                 const event = addEvent('play');
-                this.media.element.dispatchEvent(event);
+                this.element.dispatchEvent(event);
             }, 500);
         } else {
             const event = addEvent('ended');
-            this.media.element.dispatchEvent(event);
+            this.element.dispatchEvent(event);
         }
     }
 
@@ -376,8 +378,8 @@ class Ads {
         this.adsRequest = new google.ima.AdsRequest();
         this.adsRequest.adTagUrl = this.adsUrl;
 
-        const width = this.media.element.parentElement.offsetWidth;
-        const height = this.media.element.parentElement.offsetWidth;
+        const width = this.element.parentElement.offsetWidth;
+        const height = this.element.parentElement.offsetWidth;
         this.adsRequest.linearAdSlotWidth = width;
         this.adsRequest.linearAdSlotHeight = height;
         this.adsRequest.nonLinearAdSlotWidth = width;
@@ -393,7 +395,7 @@ class Ads {
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
                 this.adsContainer,
-                this.media.element,
+                this.element,
                 this.adsCompany,
             );
 
@@ -408,7 +410,7 @@ class Ads {
             this._error.bind(this),
         );
 
-        this.media.element.addEventListener('ended', this._contentEndedListener.bind(this));
+        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
     }
 
     private _playAds() {
@@ -419,13 +421,13 @@ class Ads {
             }
             // Initialize the ads manager. Ad rules playlist will start at this time.
             this.adsManager.init(
-                this.media.element.offsetWidth,
-                this.media.element.offsetHeight,
+                this.element.offsetWidth,
+                this.element.offsetHeight,
                 google.ima.ViewMode.NORMAL,
             );
             this.adsManager.start();
             const e = addEvent('play');
-            this.media.element.dispatchEvent(e);
+            this.element.dispatchEvent(e);
             this.adsActive = true;
             this.adsStarted = true;
         } catch (adError) {

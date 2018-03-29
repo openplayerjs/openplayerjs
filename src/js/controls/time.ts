@@ -71,8 +71,9 @@ class Time implements PlayerComponent {
         this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
-                if (!isNaN(el.duration) && el.duration !== this.duration.innerText) {
-                    this.duration.innerText = formatTime(el.duration);
+                const duration = formatTime(el.duration);
+                if (!isNaN(el.duration) && duration !== this.duration.innerText) {
+                    this.duration.innerText = duration;
                     this.duration.setAttribute('aria-hidden', 'false');
                     this.delimiter.setAttribute('aria-hidden', 'false');
                 }
