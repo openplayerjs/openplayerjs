@@ -308,6 +308,14 @@ class Player {
 
     private _setEvents(): void {
         if (!IS_IPHONE && isVideo(this.element)) {
+            this.events.loadedmetadata = () => {
+                const el = this.activeElement();
+                if (el.paused) {
+                    this.playBtn.classList.remove('om-player__play--paused');
+                    this.playBtn.setAttribute('aria-pressed', 'false');
+                    this.playBtn.setAttribute('aria-hidden', 'false');
+                }
+            };
             this.events.waiting = () => {
                 const el = this.activeElement();
                 if (el instanceof Media) {

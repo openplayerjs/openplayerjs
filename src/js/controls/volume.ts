@@ -52,7 +52,7 @@ class Volume implements PlayerComponent {
         this.slider.type = 'range';
         this.slider.className = 'om-controls__volume--input';
         this.slider.tabIndex = -1;
-        this.slider.value = this.player.getMedia().volume;
+        this.slider.value = this.player.getMedia().volume.toString();
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('max', '1');
         this.slider.setAttribute('step', '0.1');
@@ -88,7 +88,7 @@ class Volume implements PlayerComponent {
         };
 
         const updateButton = (element: any) => {
-            const vol = parseFloat(element.volume);
+            const vol = element.volume;
             if (vol <= 0.5 && vol > 0) {
                 this.button.classList.remove('om-controls__mute--muted');
                 this.button.classList.add('om-controls__mute--half');
@@ -101,11 +101,12 @@ class Volume implements PlayerComponent {
             }
         };
 
-        const updateVolume = (event: any) => {
+        const updateVolume = (event: Event) => {
             const el = this.player.activeElement();
-            el.volume = event.target.value;
+            const value = parseFloat((event.target as HTMLInputElement).value);
+            el.volume = value;
             el.muted = (el.volume === 0);
-            this.volume = event.target.value;
+            this.volume = value;
             const e = addEvent('volumechange');
             this.player.getElement().dispatchEvent(e);
         };

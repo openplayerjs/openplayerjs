@@ -136,7 +136,7 @@ export function request(url: string, dataType: string, success: (n: any) => any,
     }
 }
 
-export function hasClass(target: any, className: string) {
+export function hasClass(target: HTMLElement, className: string) {
     return target.className.split(' ').indexOf(className) > -1;
 }
 

@@ -78,6 +78,14 @@ class Play implements PlayerComponent {
                 });
             }
         };
+        this.events.media.loadedmetadata = () => {
+            if (hasClass(this.button, 'om-controls__playpause--pause')) {
+                this.button.classList.remove('om-controls__playpause--replay');
+                this.button.classList.remove('om-controls__playpause--pause');
+                this.button.title = 'Play';
+                this.button.setAttribute('aria-label', 'Play');
+            }
+        };
         this.events.media.playing = () => {
             if (!hasClass(this.button, 'om-controls__playpause--pause')) {
                 this.button.classList.remove('om-controls__playpause--replay');

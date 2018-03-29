@@ -108,7 +108,7 @@ class Settings implements PlayerComponent {
     /**
      * By default, Settings will contaim speed adjustments
      *
-     * @returns {any}
+     * @returns {SettingItem}
      * @memberof Settings
      */
     public addSettings(): SettingsItem {
@@ -148,7 +148,7 @@ class Settings implements PlayerComponent {
                     <button type="button" class="om-settings__back">${name}</button>
                 </div>
                 <div class="om-settings__menu" role="menu" id="menu-item-${key}">
-                    ${submenu.map((item: any) => `
+                    ${submenu.map((item: SettingsSubItem) => `
                     <div class="om-settings__submenu-item" tabindex="0" role="menuitemradio"
                         aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
                         <div class="om-settings__submenu-label ${className || ''}" data-value="${key}-${item.key}">${item.label}</div>
@@ -157,16 +157,17 @@ class Settings implements PlayerComponent {
             this.submenu[key] = subItems;
         }
 
-        this.events.global['settings.submenu'] = (e: any) => {
-            if (e.target.closest(`#${this.player.id}`)) {
-                if (hasClass(e.target, 'om-settings__back')) {
+        this.events.global['settings.submenu'] = (e: Event) => {
+            const target = (e.target as HTMLElement);
+            if (target.closest(`#${this.player.id}`)) {
+                if (hasClass(target, 'om-settings__back')) {
                     this.menu.classList.add('om-settings--sliding');
                     setTimeout(() => {
                         this.menu.innerHTML = this.originalStatus;
                         this.menu.classList.remove('om-settings--sliding');
                     }, 100);
-                } else if (hasClass(e.target, 'om-settings__menu-content')) {
-                    const current = e.target.parentElement.querySelector('.om-settings__menu-label')
+                } else if (hasClass(target, 'om-settings__menu-content')) {
+                    const current = target.parentElement.querySelector('.om-settings__menu-label')
                         .getAttribute('data-value').replace(/(.*?)\-\w+$/, '$1');
 
                     if (typeof this.submenu[current] !== undefined) {
@@ -176,16 +177,16 @@ class Settings implements PlayerComponent {
                             this.menu.classList.remove('om-settings--sliding');
                         }, 100);
                     }
-                } else if (hasClass(e.target, 'om-settings__submenu-label')) {
-                    const current = e.target.getAttribute('data-value');
+                } else if (hasClass(target, 'om-settings__submenu-label')) {
+                    const current = target.getAttribute('data-value');
                     const value = current.replace(`${key}-`, '');
-                    const label = e.target.innerText;
+                    const label = target.innerText;
 
                     // Update values in submenu and store
-                    const target = this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`);
-                    if (target) {
-                        target.setAttribute('aria-checked', 'false');
-                        e.target.parentElement.setAttribute('aria-checked', 'true');
+                    const menuTarget = this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`);
+                    if (menuTarget) {
+                        menuTarget.setAttribute('aria-checked', 'false');
+                        target.parentElement.setAttribute('aria-checked', 'true');
                         this.submenu[key] = this.menu.innerHTML;
 
                         // Restore original menu, and set the new value

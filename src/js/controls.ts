@@ -28,7 +28,7 @@ class Controls implements PlayerComponent {
     private settings: Settings;
     private fullscreen: Fullscreen;
     private captions: Captions;
-    private timer: any;
+    private timer: number;
     private events: EventsList = {
         media: {},
         mouse: {},
@@ -139,7 +139,7 @@ class Controls implements PlayerComponent {
         const el = this.player.activeElement();
         this._stopControlTimer();
 
-        this.timer = setTimeout(() => {
+        this.timer = window.setTimeout(() => {
             if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
                 this.player.getContainer().classList.add('om-controls--hidden');
                 this._stopControlTimer();

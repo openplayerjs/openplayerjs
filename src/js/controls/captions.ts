@@ -1,3 +1,6 @@
+import Cue from '../interfaces/captions/cue';
+import CueList from '../interfaces/captions/cue-list';
+import TrackURL from '../interfaces/captions/track-urls';
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import SettingsItem from '../interfaces/settings/item';
@@ -14,13 +17,12 @@ class Captions implements PlayerComponent {
         global: {},
         media: {},
     };
-    private tracks: any = {};
+    private tracks: CueList = {};
     private trackList: TextTrackList;
-    private trackUrlList: any = {};
+    private trackUrlList: TrackURL = {};
     private hasTracks: boolean;
     private current: TextTrack;
     private default: string;
-    private renderCaption: (cue: TextTrackCue, instance: Captions) => void;
 
     /**
      * Creates an instance of Captions.
@@ -79,23 +81,6 @@ class Captions implements PlayerComponent {
             .filter(item => item.language === this.default).pop() : this.trackList[0];
 
         const container = this.captions.querySelector('span');
-        this.renderCaption = (cue: TextTrackCue, instance: Captions) => {
-            container.innerHTML = '';
-            if (cue && hasClass(instance.button, 'om-controls__captions--on')) {
-                instance.captions.classList.add('om-captions--on');
-                container.appendChild(cue.getCueAsHTML());
-            } else {
-                instance._hide();
-            }
-        };
-
-        this.events.media.oncueenter = () => {
-            const time = this.player.getMedia().currentTime;
-            const cue = this.current.cues[0];
-            if (cue && time >= cue.startTime && time <= cue.endTime) {
-                this.renderCaption(cue, this);
-            }
-        };
         this.events.media.timeupdate = () => {
             if (this.player.isMedia()) {
                 const currentCues = this.tracks[this.current.language];
@@ -117,7 +102,7 @@ class Captions implements PlayerComponent {
         }
 
         // Show/hide captions
-        this.events.button.click = (e: any) => {
+        this.events.button.click = (e: Event) => {
             const button = (e.target as HTMLDivElement);
             button.setAttribute('aria-pressed', 'true');
             if (hasClass(button, 'om-controls__captions--on')) {
@@ -142,9 +127,9 @@ class Captions implements PlayerComponent {
             return;
         }
 
-        this.events.global.click = (e: any) => {
-            if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-subtitles__option')) {
-                const option = e.target;
+        this.events.global.click = (e: Event) => {
+            const option = (e.target as HTMLElement);
+            if (option.closest(`#${this.player.id}`) && hasClass(option, 'om-subtitles__option')) {
                 const language = option.getAttribute('data-value').replace('captions-', '');
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
                 this._show();
@@ -163,7 +148,6 @@ class Captions implements PlayerComponent {
 
         if (this.hasTracks) {
             this.button.removeEventListener('click', this.events.button.click);
-            this.player.getElement().removeEventListener('timeupdate', this.events.media.oncueenter);
             this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
             this.button.remove();
             this.captions.remove();
@@ -173,7 +157,7 @@ class Captions implements PlayerComponent {
     /**
      * Add list of available captions in the Settings menu
      *
-     * @returns {any}
+     * @returns {SettingsItem|object}
      * @memberof Captions
      */
     public addSettings(): SettingsItem|object {
@@ -198,18 +182,33 @@ class Captions implements PlayerComponent {
      *
      * @private
      * @param {string} webvttText
-     * @returns {any[]}
+     * @returns {Cue[]}
      * @memberof Captions
      */
-    private _getCues(webvttText: string): any[] {
+    private _getCues(webvttText: string): Cue[] {
         const lines = webvttText.split(/\r?\n/);
-        const entries = [];
+        const entries: Cue[] = [];
         const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
         let timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
         timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*?)$';
         const regexp = new RegExp(timePattern);
 
         let identifier;
+
+        function isJson(item: any) {
+            item = typeof item !== 'string' ? JSON.stringify(item) : item;
+            try {
+                item = JSON.parse(item);
+            } catch (e) {
+                return false;
+            }
+
+            if (typeof item === 'object' && item !== null) {
+                return true;
+            }
+
+            return false;
+        }
 
         for (let i = 0, total = lines.length; i < total; i++) {
             const timecode = regexp.exec(lines[i]);
@@ -232,7 +231,7 @@ class Captions implements PlayerComponent {
                 entries.push({
                     endTime: timeToSeconds(timecode[3]),
                     identifier,
-                    settings: timecode[5] || {},
+                    settings: isJson(timecode[5]) ? JSON.parse(timecode[5]) : {},
                     startTime: (initTime === 0) ? 0.200 : initTime,
                     text: cue,
                 });
@@ -253,7 +252,7 @@ class Captions implements PlayerComponent {
             return;
         }
 
-        const t = this;
+        // const t = this;
         const container = this.captions.querySelector('span');
         container.innerHTML = '';
 
@@ -261,16 +260,24 @@ class Captions implements PlayerComponent {
             request(getAbsoluteUrl(this.trackUrlList[this.current.language]), 'text', d => {
                 this.tracks[this.current.language] = this._getCues(d);
                 // Use `timeupdate` to update remote captions
-                this.player.getElement().removeEventListener('timeupdate', this.events.media.oncueenter);
                 this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
             });
         } else {
-            this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
-            this.player.getElement().addEventListener('timeupdate', this.events.media.oncueenter);
-            this.current.oncuechange = function() {
-                const cue = this.activeCues[0];
-                t.renderCaption(cue, t);
-            };
+            // To avoid issues with native `oncuechange` event, build new cues and use `timeupdate` event
+            const cues: Cue[] = [];
+            Object.keys(this.current.cues).forEach(index => {
+                const i = parseInt(index, 10);
+                const current = this.current.cues[i];
+                cues.push({
+                    endTime: current.endTime,
+                    identifier: current.id,
+                    settings: {},
+                    startTime: current.startTime,
+                    text: current.text,
+                });
+            });
+            this.tracks[this.current.language] = cues;
+            this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
         }
     }
 
@@ -288,12 +295,12 @@ class Captions implements PlayerComponent {
      * Search for match index using binary search algorithm
      *
      * @private
-     * @param {any[]} tracks
+     * @param {Cue[]} tracks
      * @param {number} currentTime
      * @returns {number}
      * @memberof Captions
      */
-    private _search(tracks: any[], currentTime: number): number {
+    private _search(tracks: Cue[], currentTime: number): number {
         let low = 0;
         let high = tracks.length - 1;
         while (low <= high) {

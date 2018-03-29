@@ -79,15 +79,15 @@ class Progress implements PlayerComponent {
                 this.slider.setAttribute('max', `${el.duration}`);
                 const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
-                this.progress.setAttribute('aria-valuemax', el.duration);
+                this.progress.setAttribute('aria-valuemax', el.duration.toString());
             }
         };
-        this.events.media.progress = (e: any) => {
-            const el = e.target;
+        this.events.media.progress = (e: Event) => {
+            const el = (e.target as HTMLMediaElement);
             if (el.duration > 0) {
                 for (let i = 0, total = el.buffered.length; i < total; i++) {
                     if (el.buffered.start(el.buffered.length - 1 - i) < el.currentTime) {
-                        this.buffer.value = (el.buffered.end(e.target.buffered.length - 1 - i) / el.duration) * 100;
+                        this.buffer.value = (el.buffered.end(el.buffered.length - 1 - i) / el.duration) * 100;
                         break;
                     }
                 }
@@ -103,11 +103,11 @@ class Progress implements PlayerComponent {
             this.progress.removeAttribute('aria-valuenow');
             this.progress.removeAttribute('aria-valuetext');
         };
-        this.events.media.timeupdate = (e: any) => {
+        this.events.media.timeupdate = (e: Event) => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
-                    this.slider.getAttribute('max') !== el.duration) {
+                    parseFloat(this.slider.getAttribute('max')) !== el.duration) {
                     this.slider.setAttribute('max', `${el.duration}`);
                 }
 
@@ -117,7 +117,7 @@ class Progress implements PlayerComponent {
                 this.slider.value = current.toString();
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
 
-                const currentEl = e.target;
+                const currentEl = (e.target as HTMLMediaElement);
                 if (currentEl.duration > 0) {
                     this.played.value = ((currentEl.currentTime / currentEl.duration) * 100);
                 }
@@ -131,14 +131,15 @@ class Progress implements PlayerComponent {
             this.played.value = 0;
         };
 
-        const updateSlider = (e: any) => {
+        const updateSlider = (e: Event) => {
             if (hasClass(this.slider, 'om-progress--pressed')) {
                 return;
             }
+            const target = (e.target as HTMLInputElement);
             this.slider.classList.add('.om-progress--pressed');
-            const min = e.target.min;
-            const max = e.target.max;
-            const val = e.target.value;
+            const min = parseFloat(target.min);
+            const max = parseFloat(target.max);
+            const val = parseFloat(target.value);
             this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
             this.slider.classList.remove('.om-progress--pressed');
 
@@ -148,7 +149,7 @@ class Progress implements PlayerComponent {
             }
         };
 
-        const forcePause = (e: any) => {
+        const forcePause = (e: KeyboardEvent) => {
             const el = this.player.activeElement();
             // If current progress is not related to an Ad, manipulate current time
             if ((e.which === 1 || e.which === 0) && this.player.isMedia()) {
@@ -186,7 +187,7 @@ class Progress implements PlayerComponent {
             let pos = x - offset(this.progress).left;
             const half = this.tooltip.offsetWidth / 2;
             const percentage = (pos / this.progress.offsetWidth);
-            const time = (percentage <= 0.02) ? 0 : percentage * el.duration;
+            const time = percentage * el.duration;
             const mediaContainer = this.player.getContainer();
             const limit = mediaContainer.offsetWidth - this.tooltip.offsetWidth;
 
@@ -208,8 +209,8 @@ class Progress implements PlayerComponent {
             this.tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
         };
 
-        this.events.global.mousemove = (e: any) => {
-            if (!e.target.closest('.om-controls__progress')) {
+        this.events.global.mousemove = (e: MouseEvent) => {
+            if (!(e.target as HTMLElement).closest('.om-controls__progress')) {
                 this.tooltip.classList.remove('om-controls__tooltip--visible');
             }
         };

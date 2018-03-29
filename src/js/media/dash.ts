@@ -64,6 +64,9 @@ class DashMedia extends Native {
         }
         this.player.attachSource(this.media.src);
 
+        const e = addEvent('loadedmetadata');
+        this.element.dispatchEvent(e);
+
         if (!this.events) {
             this.events = dashjs.MediaPlayer.events;
             Object.keys(this.events).forEach(event => {

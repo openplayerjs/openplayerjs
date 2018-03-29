@@ -1,4 +1,3 @@
-import EventsList from './interfaces/events-list';
 import Source from './interfaces/source';
 import DashMedia from './media/dash';
 import HlsMedia from './media/hls';
@@ -13,19 +12,18 @@ import * as source from './utils/media';
  * a valid source (MP4, MP3, M3U8, MPD, etc.)
  */
 class Media {
-    public element: any;
-    public media: any;
+    public element: HTMLMediaElement;
+    public media: HTML5Media|HlsMedia|DashMedia;
     public mediaFiles: Source[];
     private promisePlay: Promise<void>;
-    private events: EventsList = {};
 
     /**
      * Creates an instance of Media.
-     * @param {HTMLMediaElement|HTMLIFrameElement} element
+     * @param {HTMLMediaElement} element
      * @param {object?} ads
      * @memberof Media
      */
-    constructor(element: any) {
+    constructor(element: HTMLMediaElement) {
         this.element = element;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
@@ -195,48 +193,13 @@ class Media {
         }
     }
 
-    public addEventListener(eventName: string, callback: (event: any) => any) {
-        // create or find the array of callbacks for this eventName
-        if (typeof this.events[eventName] === 'undefined') {
-            this.events[eventName] = [];
-        }
-
-        // push the callback into the stack
-        this.events[eventName].push(callback);
-    }
-
-    public removeEventListener(eventName: string, callback: (event: any) => any) {
-        if (!this.events[eventName]) {
-          return;
-        }
-        const stack = this.events[eventName];
-        for (let i = 0, total = stack.length; i < total; i++) {
-            if (stack[i] === callback) {
-                stack.splice(i, 1);
-                return;
-            }
-        }
-    }
-
-    public dispatchEvent(event: any) {
-        if (!this.events[event.type]) {
-          return true;
-        }
-        const stack = this.events[event.type];
-
-        for (let i = 0, total = stack.length; i < total; i++) {
-          stack[i].call(this, event);
-        }
-        return !event.defaultPrevented;
-    }
-
     /**
      * Gather all media sources within the video/audio/iframe tags
      *
      * It will be grouped inside the `mediaFiles` array. This method basically mimics
      * the native behavior when multiple sources are associated with an element, and
      * the browser takes care of selecting the most appropriate one
-     * @returns {Object[]}
+     * @returns {Source[]}
      * @memberof Media
      */
     private _getMediaFiles() {
