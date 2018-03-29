@@ -423,6 +423,7 @@
     height: 5px;
     margin-left: 10px;
     margin-top: 2px;
+    pointer-events: all;
     position: relative;
 }
 .om-player__video .om-controls__progress {
@@ -468,7 +469,10 @@
     color: rgba(255, 255, 255, 0.25);
 }
 .om-ads--active .om-controls .om-controls__progress--seek {
-    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fecb2f), color-stop(100%, #fecb2f));
+    pointer-events: none;
+}
+.om-ads--active .om-controls .om-controls__progress--played {
+    color:#fecb2f;
 }
 .om-ads--active .om-controls .om-controls__progress--seek::-webkit-slider-thumb {
     display: none;

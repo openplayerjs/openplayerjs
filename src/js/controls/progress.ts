@@ -103,7 +103,7 @@ class Progress implements PlayerComponent {
             this.progress.removeAttribute('aria-valuenow');
             this.progress.removeAttribute('aria-valuetext');
         };
-        this.events.media.timeupdate = (e: Event) => {
+        this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
@@ -116,11 +116,8 @@ class Progress implements PlayerComponent {
                 const max = parseFloat(this.slider.max);
                 this.slider.value = current.toString();
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
-
-                const currentEl = (e.target as HTMLMediaElement);
-                if (currentEl.duration > 0) {
-                    this.played.value = ((currentEl.currentTime / currentEl.duration) * 100);
-                }
+                this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
+                    0 : ((current / el.duration) * 100);
             }
         };
 
@@ -144,9 +141,7 @@ class Progress implements PlayerComponent {
             this.slider.classList.remove('.om-progress--pressed');
 
             const el = this.player.activeElement();
-            if (this.player.isMedia()) {
-                el.currentTime = val;
-            }
+            el.currentTime = val;
         };
 
         const forcePause = (e: KeyboardEvent) => {
