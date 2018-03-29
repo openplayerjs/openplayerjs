@@ -239,20 +239,21 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
+            case google.ima.AdEvent.Type.RESUMED:
                 if (ad.isLinear()) {
                     this.adsActive = true;
                     if (this.media.ended) {
                         this.adsEnded = false;
-                        const e = addEvent('ads.ended');
-                        this.element.dispatchEvent(e);
+                        const endEvent = addEvent('ads.ended');
+                        this.element.dispatchEvent(endEvent);
                     }
                     this.intervalTimer = window.setInterval(() => {
                         this.adsCurrentTime = this.adsManager.getRemainingTime();
-                        const e = addEvent('timeupdate');
-                        this.element.dispatchEvent(e);
+                        const timeEvent = addEvent('timeupdate');
+                        this.element.dispatchEvent(timeEvent);
 
-                        const playing = addEvent('playing');
-                        this.element.dispatchEvent(playing);
+                        const playingEvent = addEvent('playing');
+                        this.element.dispatchEvent(playingEvent);
                     }, 50);
                 }
                 break;
@@ -261,14 +262,16 @@ class Ads {
                 this.element.parentElement.classList.remove('om-ads--active');
                 this.adsActive = false;
                 if (ad.isLinear()) {
-                    clearInterval(this.intervalTimer);
+                    setTimeout(() => {
+                        clearInterval(this.intervalTimer);
+                    }, 2000);
                 }
                 break;
             case google.ima.AdEvent.Type.VOLUME_CHANGED:
             case google.ima.AdEvent.Type.VOLUME_MUTED:
                 if (ad.isLinear()) {
-                    const e = addEvent('volumechange');
-                    this.element.dispatchEvent(e);
+                    const volumeEvent = addEvent('volumechange');
+                    this.element.dispatchEvent(volumeEvent);
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
