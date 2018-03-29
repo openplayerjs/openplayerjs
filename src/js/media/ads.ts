@@ -262,9 +262,7 @@ class Ads {
                 this.element.parentElement.classList.remove('om-ads--active');
                 this.adsActive = false;
                 if (ad.isLinear()) {
-                    setTimeout(() => {
-                        clearInterval(this.intervalTimer);
-                    }, 2000);
+                    clearInterval(this.intervalTimer);
                 }
                 break;
             case google.ima.AdEvent.Type.VOLUME_CHANGED:

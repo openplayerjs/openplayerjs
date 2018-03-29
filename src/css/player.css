@@ -446,6 +446,9 @@
     max-width: 99%;
     transition: none;
 }
+.om-player__video .om-controls__progress--played::-webkit-progress-value {
+    max-width: 100%;
+}
 .om-controls__progress--buffer::-moz-progress-bar {
     transition: width 0.2s ease;
 }
@@ -473,6 +476,9 @@
 }
 .om-ads--active .om-controls .om-controls__progress--played {
     color:#fecb2f;
+}
+.om-ads--active .om-controls .om-controls__progress--buffer {
+    color: transparent;
 }
 .om-ads--active .om-controls .om-controls__progress--seek::-webkit-slider-thumb {
     display: none;

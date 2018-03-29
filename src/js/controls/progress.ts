@@ -111,7 +111,12 @@ class Progress implements PlayerComponent {
                     this.slider.setAttribute('max', `${el.duration}`);
                 }
 
-                const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
+                // Adjust current time between Media and Ads; with the latter,
+                // it is convenient to add an extra second to ensure it will
+                // reach the end of the rail
+                const current = this.player.isMedia() ? el.currentTime :
+                    ((el.duration - el.currentTime) + 1 >= 100 ? 100 :
+                    (el.duration - el.currentTime) + 1);
                 const min = parseFloat(this.slider.min);
                 const max = parseFloat(this.slider.max);
                 this.slider.value = current.toString();

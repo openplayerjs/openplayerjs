@@ -313,7 +313,7 @@ class Player {
                 if (el.paused) {
                     this.playBtn.classList.remove('om-player__play--paused');
                     this.playBtn.setAttribute('aria-pressed', 'false');
-                    this.playBtn.setAttribute('aria-hidden', 'false');
+                    this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
                 }
             };
             this.events.waiting = () => {
@@ -353,9 +353,7 @@ class Player {
             this.events.pause = () => {
                 this.playBtn.classList.remove('om-player__play--paused');
                 const el = this.activeElement();
-                if (el instanceof Media) {
-                    this.playBtn.setAttribute('aria-hidden', 'false');
-                }
+                this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
             };
         }
 
