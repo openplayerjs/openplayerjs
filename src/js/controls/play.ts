@@ -118,7 +118,7 @@ class Play implements PlayerComponent {
         };
         const element = this.player.getElement();
         this.events.controls.controlschanged = () => {
-            if (!element.paused) {
+            if (!this.player.activeElement().paused) {
                 const event = addEvent('playing');
                 element.dispatchEvent(event);
             }

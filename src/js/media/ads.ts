@@ -114,6 +114,9 @@ class Ads {
             this.adsManager.resume();
             const e = addEvent('play');
             this.element.dispatchEvent(e);
+
+            const event = addEvent('playing');
+            this.element.dispatchEvent(event);
         }
     }
 
@@ -234,12 +237,15 @@ class Ads {
                     this.element.parentElement.classList.add('om-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
+
                     const loadedEvent = addEvent('loadedmetadata');
                     this.element.dispatchEvent(loadedEvent);
+
+                    const resizeEvent = addEvent('resize');
+                    window.dispatchEvent(resizeEvent);
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
-            case google.ima.AdEvent.Type.RESUMED:
                 if (ad.isLinear()) {
                     this.adsActive = true;
                     if (this.media.ended) {
@@ -247,21 +253,21 @@ class Ads {
                         const endEvent = addEvent('ads.ended');
                         this.element.dispatchEvent(endEvent);
                     }
-                    this.intervalTimer = window.setInterval(() => {
-                        this.adsCurrentTime = this.adsManager.getRemainingTime();
-                        const timeEvent = addEvent('timeupdate');
-                        this.element.dispatchEvent(timeEvent);
 
-                        const playingEvent = addEvent('playing');
-                        this.element.dispatchEvent(playingEvent);
+                    this.intervalTimer = window.setInterval(() => {
+                        if (this.adsActive === true) {
+                            this.adsCurrentTime = this.adsManager.getRemainingTime();
+                            const timeEvent = addEvent('timeupdate');
+                            this.element.dispatchEvent(timeEvent);
+                        }
                     }, 50);
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
-                this.element.parentElement.classList.remove('om-ads--active');
-                this.adsActive = false;
                 if (ad.isLinear()) {
+                    this.element.parentElement.classList.remove('om-ads--active');
+                    this.adsActive = false;
                     clearInterval(this.intervalTimer);
                 }
                 break;
@@ -273,9 +279,11 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
-                this.adsActive = false;
-                this.adsEnded = true;
-                this.element.parentElement.classList.remove('om-ads--active');
+                if (ad.isLinear()) {
+                    this.adsActive = false;
+                    this.adsEnded = true;
+                    this.element.parentElement.classList.remove('om-ads--active');
+                }
                 break;
         }
     }
@@ -432,6 +440,9 @@ class Ads {
             this.adsManager.start();
             const e = addEvent('play');
             this.element.dispatchEvent(e);
+
+            const event = addEvent('playing');
+            this.element.dispatchEvent(event);
             this.adsActive = true;
             this.adsStarted = true;
         } catch (adError) {
