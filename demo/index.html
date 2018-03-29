@@ -89,10 +89,10 @@
             var id = this.closest('.players').querySelector('.om-player').id;
             var player = OpenPlayer.instances[id];
             player.addCaptions({
-                srclang: 'br',
+                srclang: 'br_PT',
                 src: 'http://brenopolanski.com/html5-video-webvtt-example/MIB2-subtitles-pt-BR.vtt',
                 kind: 'subtitles',
-                label: 'Portuguese'
+                label: 'Portuguese (BR)'
             });
             this.removeEventListener('click', loadCaption);
         }
