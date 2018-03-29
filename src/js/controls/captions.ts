@@ -60,10 +60,12 @@ class Captions implements PlayerComponent {
 
         for (let i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
-            this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);
-            if (element.default) {
-                this.default = element.srclang;
-                this.button.classList.add('om-controls__captions--on');
+            if (element.kind === 'subtitles') {
+                this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);
+                if (element.default) {
+                    this.default = element.srclang;
+                    this.button.classList.add('om-controls__captions--on');
+                }
             }
         }
 
@@ -164,10 +166,13 @@ class Captions implements PlayerComponent {
         if (this.trackList.length <= 1) {
             return {};
         }
-        const subitems = [{key: 'off', label: 'Off'}];
+        let subitems = [{key: 'off', label: 'Off'}];
         // Build object based on available languages
         for (let i = 0, total = this.trackList.length; i < total; i++) {
-            subitems.push({key: this.trackList[i].language, label: this.trackList[i].label});
+            const track = this.trackList[i];
+            // Override language item if duplicated when passing list of settings subitems
+            subitems = subitems.filter(el => el.key !== track.language);
+            subitems.push({key: track.language, label: this.trackList[i].label});
         }
         return {
             className: 'om-subtitles__option',

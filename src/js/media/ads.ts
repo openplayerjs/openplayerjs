@@ -156,7 +156,7 @@ class Ads {
 
     public resizeAds(width?: number, height?: number) {
         if (this.adsManager) {
-            const target = this.element.parentElement;
+            const target = this.element;
             if (width && height) {
                 const mode = target.getAttribute('data-fullscreen') === 'true' ?
                     google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
