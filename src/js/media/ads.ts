@@ -256,11 +256,11 @@ class Ads {
 
                     this.intervalTimer = window.setInterval(() => {
                         if (this.adsActive === true) {
-                            this.adsCurrentTime = this.adsManager.getRemainingTime();
+                            this.adsCurrentTime = Math.round(this.adsManager.getRemainingTime());
                             const timeEvent = addEvent('timeupdate');
                             this.element.dispatchEvent(timeEvent);
                         }
-                    }, 50);
+                    }, 250);
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
