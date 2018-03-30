@@ -25,7 +25,7 @@
     "scripts": {
         "setup": "npm install",
         "build": "rm -rf ./dist/ && webpack",
-        "test": "karma start",
+        "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
         "test-only": "mocha ./test/",
         "typedoc": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
     },
