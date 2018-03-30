@@ -1,10 +1,12 @@
 # Open Player
 
-HTML5 video and audio player
+[![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)
 
-Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.io/), this player written in TypeScript mimics the HTML5 video/audio and integrates the most popular libraries to play the different native media, such as MP4/MP3, HLS and M(PEG)-DASH.
+## What is it?
 
-## Features
+Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.io/), this player written in TypeScript mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
+
+## Why OpenPlayer?
 
 * Less than `20KB` using gzip compression and minification.
 * Allows playing Ads using Google IMA SDK library.
