@@ -7,6 +7,7 @@ import Ads from './media/ads';
 import { IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isIframe, isVideo } from './utils/general';
+import { isAutoplaySupported } from './utils/media';
 
 /**
  *
@@ -40,6 +41,10 @@ class Player {
     private playBtn: HTMLButtonElement;
     private loader: HTMLSpanElement;
     private events: EventsList = {};
+    private autoplay: boolean;
+    private volume: number;
+    private canAutoplay: boolean;
+    private canAutoplayMuted: boolean;
 
     /**
      * Create a Player instance.
@@ -51,6 +56,9 @@ class Player {
     constructor(element: HTMLMediaElement|string, adsUrl?: string) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         this.adsUrl = adsUrl;
+        this.autoplay = this.element.autoplay;
+        this.volume = this.element.volume;
+        this.element.autoplay = false;
         return this;
     }
 
@@ -66,12 +74,13 @@ class Player {
                 this._createControls();
             }
             this._setEvents();
+            this._autoplay();
             Player.instances[this.id] = this;
         }
     }
 
     public load(): void {
-        if (this.media instanceof Media) {
+        if (this.isMedia()) {
             this.media.load();
         }
     }
@@ -416,6 +425,50 @@ class Player {
         Object.keys(this.events).forEach(event => {
             this.element.addEventListener(event, this.events[event]);
         });
+    }
+
+    private _autoplay() {
+        if (this.autoplay) {
+            this.autoplay = false;
+            isAutoplaySupported(autoplay => {
+                this.canAutoplay = autoplay;
+            }, muted => {
+                this.canAutoplayMuted = muted;
+            }, () => {
+                if (this.canAutoplayMuted) {
+                    this.activeElement().muted = true;
+                    this.activeElement().volume = 0;
+
+                    const e = addEvent('volumechange');
+                    this.element.dispatchEvent(e);
+
+                    // Insert element to unmute if browser allows autoplay with muted media
+                    const volumeEl = document.createElement('div');
+                    volumeEl.className = 'om-player__unmute';
+                    volumeEl.innerHTML = '<span>Toggle Muted</span>';
+
+                    volumeEl.addEventListener('click', () => {
+                        this.activeElement().muted = false;
+                        this.activeElement().volume = this.volume;
+
+                        const event = addEvent('volumechange');
+                        this.element.dispatchEvent(event);
+
+                        // Remove element
+                        volumeEl.remove();
+                    });
+
+                    const target = this.getContainer();
+                    target.insertBefore(volumeEl, target.firstChild);
+                }
+
+                // Don't attempt to autoplay Ads; the workflow for it has been established
+                // already within Ads
+                if (!this.ads && (this.canAutoplay || this.canAutoplayMuted)) {
+                    this.play();
+                }
+            });
+        }
     }
 }
 
