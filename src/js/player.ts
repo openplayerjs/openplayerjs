@@ -4,7 +4,7 @@ import EventsList from './interfaces/events-list';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { IS_IPHONE } from './utils/constants';
+import { IS_IPHONE, IS_IOS, IS_ANDROID } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isIframe, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
@@ -428,7 +428,7 @@ class Player {
     }
 
     private _autoplay() {
-        if (this.autoplay) {
+        if (this.autoplay || this.ads) {
             this.autoplay = false;
             isAutoplaySupported(autoplay => {
                 this.canAutoplay = autoplay;
@@ -444,8 +444,9 @@ class Player {
 
                     // Insert element to unmute if browser allows autoplay with muted media
                     const volumeEl = document.createElement('div');
+                    const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
                     volumeEl.className = 'om-player__unmute';
-                    volumeEl.innerHTML = '<span>Toggle Muted</span>';
+                    volumeEl.innerHTML = `<span>${action} to unmute</span>`;
 
                     volumeEl.addEventListener('click', () => {
                         this.activeElement().muted = false;
