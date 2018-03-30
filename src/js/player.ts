@@ -4,7 +4,7 @@ import EventsList from './interfaces/events-list';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { IS_IPHONE, IS_IOS, IS_ANDROID } from './utils/constants';
+import { IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isIframe, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
