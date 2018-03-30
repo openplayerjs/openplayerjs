@@ -327,40 +327,29 @@ class Player {
             };
             this.events.waiting = () => {
                 const el = this.activeElement();
-                if (el instanceof Media) {
-                    this.playBtn.setAttribute('aria-hidden', 'true');
-                    this.loader.setAttribute('aria-hidden', 'false');
-                } else {
-                    this.playBtn.setAttribute('aria-hidden', 'true');
-                    this.loader.setAttribute('aria-hidden', 'true');
-                }
+                this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
             };
             this.events.seeking = () => {
                 const el = this.activeElement();
-                if (el instanceof Media) {
-                    this.playBtn.setAttribute('aria-hidden', 'true');
-                    this.loader.setAttribute('aria-hidden', 'false');
-                } else {
-                    this.playBtn.setAttribute('aria-hidden', 'true');
-                    this.loader.setAttribute('aria-hidden', 'true');
-                }
+                this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
             };
             this.events.seeked = () => {
                 const el = this.activeElement();
-                if (el instanceof Media) {
-                    this.playBtn.setAttribute('aria-hidden', 'false');
-                    this.loader.setAttribute('aria-hidden', 'true');
-                } else {
-                    this.playBtn.setAttribute('aria-hidden', 'true');
-                    this.loader.setAttribute('aria-hidden', 'true');
-                }
+                this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
+                this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.play = () => {
                 this.playBtn.classList.add('om-player__play--paused');
-                setTimeout(() => this.playBtn.setAttribute('aria-hidden', 'true'), 350);
+                setTimeout(() => {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'true');
+                }, 350);
             };
             this.events.pause = () => {
                 this.playBtn.classList.remove('om-player__play--paused');
+                this.loader.setAttribute('aria-hidden', 'true');
                 const el = this.activeElement();
                 this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
             };
