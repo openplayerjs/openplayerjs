@@ -2,11 +2,6 @@ language: node_js
 node_js:
   - "iojs"
   - "7"
-dist: trusty,
-addons:
-    chrome: stable
 cache:
   directories:
     - "node_modules"
-script:
-  - npm run test-only
