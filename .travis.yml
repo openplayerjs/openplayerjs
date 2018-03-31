@@ -8,9 +8,5 @@ addons:
 cache:
   directories:
     - "node_modules"
-before_script:
-  - npm install
 script:
-  - npm test
-after_success:
-  - npm run typedoc
+  - npm run test-only
