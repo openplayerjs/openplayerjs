@@ -193,8 +193,12 @@
 .om-controls > .om-control__right ~ .om-control__right {
     margin-left: 0;
 }
-.om-controls button:hover {
+.om-controls > button:hover {
     opacity: 0.5;
+}
+.om-controls input[type='range'],
+.om-controls > button {
+    touch-action: manipulation;
 }
 
 /* === Time =================== */
@@ -431,6 +435,7 @@
 }
 .om-player__video .om-controls__progress {
     bottom: 34px;
+    left: 8px;
     margin-left: -8px;
     position: absolute;
     width: 100%;
