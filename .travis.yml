@@ -10,3 +10,7 @@ before_script:
 cache:
   directories:
     - "node_modules"
+notifications:
+  email:
+    on_success: never
+    on_failure: always
