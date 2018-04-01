@@ -1,7 +1,12 @@
 language: node_js
 node_js:
-  - "iojs"
-  - "7"
+    - "0.10"
+script: node_modules/karma/bin/karma start karma.conf.js --single-run
+before_install:
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+before_script:
+    - npm install
 cache:
   directories:
     - "node_modules"
