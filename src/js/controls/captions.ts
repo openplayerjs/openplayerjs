@@ -111,7 +111,7 @@ class Captions implements PlayerComponent {
      * Initial language to be used to render captions when turned on, and
      * also as a default value in the `Settings` component.
      *
-     * @see [[Captions#addSettings]]
+     * @see [[Captions.addSettings]]
      * @private
      * @type string
      * @memberof Captions
