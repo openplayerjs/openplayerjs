@@ -8,6 +8,7 @@ import { IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isIframe, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
+import Polyfill from './utils/polyfill';
 
 /**
  *
@@ -19,8 +20,7 @@ class Player {
     public static instances: any;
 
     /**
-     * Entry point
-     * Convert all the video/audio tags with `om-player` class in a OpenMedia player
+     * Convert all the video/audio tags with `om-player` class in a OpenMedia player instance.
      */
     public static init() {
         Player.instances = {};
@@ -277,6 +277,12 @@ class Player {
         }
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Player
+     */
     private _createUID(): void {
         if (this.element.id) {
             this.uid = this.element.id;
@@ -291,6 +297,13 @@ class Player {
         this.element.parentElement.id = this.uid;
     }
 
+    /**
+     *
+     *
+     * @private
+     * @returns {void}
+     * @memberof Player
+     */
     private _createPlayButton(): void {
         if (isAudio(this.element)) {
             return;
@@ -314,7 +327,12 @@ class Player {
             this.media.play();
         });
     }
-
+    /**
+     *
+     *
+     * @private
+     * @memberof Player
+     */
     private _setEvents(): void {
         if (!IS_IPHONE && isVideo(this.element)) {
             this.events.loadedmetadata = () => {
@@ -416,6 +434,12 @@ class Player {
         });
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Player
+     */
     private _autoplay() {
         if (this.autoplay || this.ads) {
             this.autoplay = false;
@@ -466,5 +490,4 @@ export default Player;
 
 // Expose element globally
 (window as any).OpenPlayer = Player;
-
-Player.init();
+Polyfill.check(() => Player.init());
