@@ -8,20 +8,114 @@ import Player from '../player';
 import { getAbsoluteUrl, hasClass, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
+/**
+ * Closed Captions element.
+ *
+ * Using `<track>` tags, this class allows the displaying of both local and remote captions
+ * bypassing CORS, and without the use of the `crossorigin` attribute.
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
+ * @see https://www.html5rocks.com/en/tutorials/track/basics/
+ * @class Captions
+ * @implements PlayerComponent
+ */
 class Captions implements PlayerComponent {
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Captions
+     */
     private player: Player;
+
+    /**
+     * Button to toggle captions.
+     *
+     * @private
+     * @type HTMLButtonElement
+     * @memberof Captions
+     */
     private button: HTMLButtonElement;
+
+    /**
+     * Container to display captions.
+     *
+     * @private
+     * @type HTMLDivElement
+     * @memberof Captions
+     */
     private captions: HTMLDivElement;
+
+    /**
+     * Events that will be triggered by Caption elements:
+     *  - button (for the caption toggle element)
+     *  - global (for dynamic elements)
+     *  - media (to update captions on `timeupdate`, instead of using `oncuechanged`)
+     *
+     * @private
+     * @type EventsList
+     * @memberof Captions
+     */
     private events: EventsList = {
         button: {},
         global: {},
         media: {},
     };
+
+    /**
+     * List of cues associated with a specific language.
+     *
+     * @private
+     * @type CueList
+     * @memberof Captions
+     */
     private tracks: CueList = {};
+
+    /**
+     * List of tracks found in current media.
+     *
+     * @private
+     * @type TextTrackList
+     * @memberof Captions
+     */
     private trackList: TextTrackList;
+
+    /**
+     * List of remote/local track sources in case no cues are detected natively.
+     *
+     * @private
+     * @type TrackURL
+     * @memberof Captions
+     */
     private trackUrlList: TrackURL = {};
+
+    /**
+     * Whether tracks were found in current media or not.
+     *
+     * @private
+     * @type boolean
+     * @memberof Captions
+     */
     private hasTracks: boolean;
+
+    /**
+     * Current track (either specified by `default` attribute or chosen by the user).
+     *
+     * @private
+     * @type TextTrack
+     * @memberof Captions
+     */
     private current: TextTrack;
+
+    /**
+     * Initial language to be used to render captions when turned on, and
+     * also as a default value in the `Settings` component.
+     *
+     * @see [[Captions#addSettings]]
+     * @private
+     * @type string
+     * @memberof Captions
+     */
     private default: string;
 
     /**
@@ -29,6 +123,7 @@ class Captions implements PlayerComponent {
      *
      * @param {Player} player
      * @memberof Captions
+     * @returns {Captions}
      */
     constructor(player: Player) {
         this.player = player;
@@ -38,9 +133,9 @@ class Captions implements PlayerComponent {
     }
 
     /**
+     * Create a button and a container to display captions if tracks are detected.
      *
-     * @returns {Captions}
-     * @memberof Captions
+     * @inheritDoc
      */
     public create(): void {
         if (!this.hasTracks) {
@@ -78,7 +173,7 @@ class Captions implements PlayerComponent {
         this.captions.className = 'om-captions';
         this.captions.innerHTML = '<span></span>';
 
-        // Assign by default first track
+        // Assign by default first track or the one with `default` attribute
         this.current = this.default ? Array.from(this.trackList)
             .filter(item => item.language === this.default).pop() : this.trackList[0];
 
@@ -143,6 +238,11 @@ class Captions implements PlayerComponent {
         }
     }
 
+    /**
+     *
+     * @inheritDoc
+     * @memberof Captions
+     */
     public destroy(): void {
         if (typeof this.events.global.click !== 'undefined') {
             document.removeEventListener('click', this.events.global.click);
@@ -157,8 +257,9 @@ class Captions implements PlayerComponent {
     }
 
     /**
-     * Add list of available captions in the Settings menu
+     * Add list of available captions in the `Settings` menu.
      *
+     * @see [[Settings.addSettings]]
      * @returns {SettingsItem|object}
      * @memberof Captions
      */
@@ -246,7 +347,7 @@ class Captions implements PlayerComponent {
         return entries;
     }
     /**
-     * Display current caption checking for cues or parsing remote source
+     * Display current caption checking for cues or parsing remote source.
      *
      * @private
      * @returns {void}
@@ -287,7 +388,9 @@ class Captions implements PlayerComponent {
     }
 
     /**
-     * Remove class to turn captions off
+     * Turn captions off.
+     *
+     * It removed the class from the captions container to hide any text displayed.
      *
      * @private
      * @memberof Captions
@@ -297,8 +400,10 @@ class Captions implements PlayerComponent {
     }
 
     /**
-     * Search for match index using binary search algorithm
+     * Search track text position using binary search algorithm.
      *
+     * It determines the position of the track based on the media's current time.
+     * @see https://www.geeksforgeeks.org/binary-search/
      * @private
      * @param {Cue[]} tracks
      * @param {number} currentTime
@@ -325,7 +430,10 @@ class Captions implements PlayerComponent {
     }
 
     /**
-     * Ensure that caption from remote source has clean output
+     * Clean HTML text.
+     *
+     * Prevents the triggering of script code coming from captions' text, removed styles and
+     * also any potential events prefixed with `on`.
      *
      * @private
      * @param {string} html

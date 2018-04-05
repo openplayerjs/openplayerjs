@@ -73,7 +73,7 @@ module.exports = {
                                     require('stylelint')(),
                                     require('autoprefixer')(),
                                     require('postcss-cssnext')({
-                                        browsers: ['last 5 versions'],
+                                        browsers: ['last 5 versions', 'ie >= 11'],
                                         warnForDuplicates: false
                                     }),
                                 ]

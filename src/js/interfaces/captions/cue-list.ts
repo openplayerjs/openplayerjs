@@ -7,5 +7,5 @@ import Cue from './cue';
  * @interface Cue
  */
 export default interface CueList {
-    [key: string]: Cue[];
+    [language: string]: Cue[];
 }

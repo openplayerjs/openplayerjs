@@ -3,3 +3,4 @@ dist/
 .vscode/
 ts-dist/
 .idea/
+coverage/
