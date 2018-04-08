@@ -1,24 +1,89 @@
 import PlayerComponent from '../interfaces/component';
-import EventsList from '../interfaces/events-list';
 import Player from '../player';
 
 /**
+ * Fullscreen element.
  *
+ * @description Following the Fullscreen API, this class toggles media dimensions to present video
+ * using the user's entire screen, even when the player is playing Ads.
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+ * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
  * @class Fullscreen
- * @description Class that handles the fullscreen behavior cross/browsers
+ * @implements PlayerComponent
  */
 class Fullscreen implements PlayerComponent {
+    /**
+     * Flag to determine if fullscreen is available natively.
+     *
+     * @type boolean
+     * @memberof Fullscreen
+     */
     public fullScreenEnabled: boolean;
+
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Fullscreen
+     */
     private player: Player;
+
+    /**
+     * Flag to determine if media is currently being played in fullscreen mode.
+     *
+     * @private
+     * @type boolean
+     * @memberof Fullscreen
+     */
     private isFullscreen: boolean;
+
+    /**
+     * Button to toggle fullscreen effect.
+     *
+     * @private
+     * @type HTMLButtonElement
+     * @memberof Fullscreen
+     */
     private button: HTMLButtonElement;
-    private events: EventsList = {};
+
+    /**
+     * List of events when fullscreen change is fired.
+     *
+     * @private
+     * @type string[]
+     * @memberof Fullscreen
+     */
     private fullscreenEvents: string[];
+
+    /**
+     * Storage for user's full screen width.
+     *
+     * @private
+     * @type number
+     * @memberof Fullscreen
+     */
     private fullscreenWidth: number;
+
+    /**
+     * Storage for user's full screen height.
+     *
+     * @private
+     * @type number
+     * @memberof Fullscreen
+     */
     private fullscreenHeight: number;
+
+    /**
+     * Callback when user clicks Fullscreen button.
+     *
+     * @private
+     * @memberof Fullscreen
+     */
     private clickEvent: () => void;
 
     /**
+     * Create an instance of Fullscreen.
      *
      * @param {Player} player
      * @returns {Fullscreen}
@@ -37,10 +102,11 @@ class Fullscreen implements PlayerComponent {
 
         return this;
     }
+
     /**
+     * Create a button and set global events to toggle fullscreen.
      *
-     *
-     * @returns {Fullscreen}
+     * @inheritDoc
      * @memberof Fullscreen
      */
     public create(): void {
@@ -59,8 +125,6 @@ class Fullscreen implements PlayerComponent {
             this.toggleFullscreen();
         };
 
-        this.events.click = this.clickEvent.bind(this);
-
         this.fullscreenEvents = [
             'fullscreenchange',
             'mozfullscreenchange',
@@ -74,23 +138,35 @@ class Fullscreen implements PlayerComponent {
             document.addEventListener(event, this._fullscreenChange.bind(this));
         });
 
-        this.button.addEventListener('click', this.events.click);
+        this.button.addEventListener('click', this.clickEvent.bind(this));
 
         this.player.getControls().getContainer().appendChild(this.button);
     }
 
+    /**
+     *
+     * @inheritDoc
+     * @memberof Fullscreen
+     */
     public destroy(): void {
         this.fullscreenEvents.forEach(event => {
             document.removeEventListener(event, this._fullscreenChange.bind(this));
         });
-        this.button.removeEventListener('click', this.events.click);
+        this.button.removeEventListener('click', this.clickEvent.bind(this));
         this.button.remove();
     }
 
+    /**
+     * Enter/cancel fullscreen depending of browser's capabilities.
+     *
+     * If browser does not support native Fullscreen API, player will adjust the video
+     * and its parent container's dimensions via width and height styles.
+     * @memberof Fullscreen
+     */
     public toggleFullscreen(): void {
+        // The video is currently in fullscreen mode
         if (this.isFullscreen) {
             const target = (document as any);
-            // The video is currently in fullscreen mode
             if (target.exitFullscreen) {
                 target.exitFullscreen();
             } else if (target.mozCancelFullScreen) {
@@ -121,6 +197,12 @@ class Fullscreen implements PlayerComponent {
         }
     }
 
+    /**
+     * Callback to toggle fullscreen for browsers thta do not support native Fullscreen API.
+     *
+     * @private
+     * @memberof Fullscreen
+     */
     private _fullscreenChange(): void {
         const width = this.isFullscreen ? 0 : this.fullscreenWidth;
         const height = this.isFullscreen ? 0 : this.fullscreenHeight;
@@ -133,6 +215,14 @@ class Fullscreen implements PlayerComponent {
         this._resize(width, height);
     }
 
+    /**
+     * Update the `data-fullscreen` of the player's container and toggle button's class
+     * depending if player is on fullscreen mode or not.
+     *
+     * @private
+     * @param {boolean} state  Whether media is fullscreen or not
+     * @memberof Fullscreen
+     */
     private _setFullscreenData(state: boolean): void {
         this.player.getContainer().setAttribute('data-fullscreen', (!!state).toString());
         if (state) {
@@ -142,6 +232,14 @@ class Fullscreen implements PlayerComponent {
         }
     }
 
+    /**
+     * Set dimensions for the video tag and player's container.
+     *
+     * @private
+     * @param {number?} width The width of the media
+     * @param {number?} height The height of the media
+     * @memberof Fullscreen
+     */
     private _resize(width?: number, height?: number): void {
         const wrapper = this.player.getContainer();
         const video = this.player.getElement();

@@ -4,24 +4,73 @@ import Player from '../player';
 import { formatTime } from '../utils/time';
 
 /**
+ * Time element.
  *
+ * @description Class that renders media's current time and duration in human-readable format
+ * (hh:mm:ss), and if media is a live streaming, a `Live Broadcast` message will be displayed.
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/duration
  * @class Time
- * @description Class that renders current and duration times in human-readable format
- * and registers events to update them in the control bar
+ * @implements PlayerComponent
  */
 class Time implements PlayerComponent {
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Time
+     */
     private player: Player;
+
+    /**
+     * Element that displays media's current time being played.
+     *
+     * It will change to `Live Broadcast` if duration is Infinity.
+     * @private
+     * @type {HTMLTimeElement}
+     * @memberof Time
+     */
     private current: HTMLTimeElement;
+
+    /**
+     * Element that separates current time and duration labels.
+     *
+     * It will be hidden if duration is Infinity.
+     * @private
+     * @type {HTMLSpanElement}
+     * @memberof Time
+     */
     private delimiter: HTMLSpanElement;
+
+    /**
+     * Element that displays media's total duration.
+     *
+     * It will be hidden if duration is Infinity.
+     * @private
+     * @type {HTMLTimeElement}
+     * @memberof Time
+     */
     private duration: HTMLTimeElement;
+
+    /**
+     * Events that will be triggered in Time element:
+     *  - controls (to reset time properly when `controlschanged` event is triggered).
+     *  - media (to set current time and duration in `loadedmetadata`, `progress` and `timeupdate` events).
+     *
+     * @private
+     * @type EventsList
+     * @memberof Time
+     */
     private events: EventsList = {
         controls: {},
         media: {},
     };
 
     /**
+     * Create an instance of Time.
      *
-     * @param {Media} media
+     * @param {Player} player
      * @returns {Time}
      * @memberof Time
      */
@@ -31,8 +80,9 @@ class Time implements PlayerComponent {
     }
 
     /**
+     * When no duration (Infinity) is detected, the `Live Broadcast` will be displayed.
      *
-     * @returns {Time}
+     * @inheritDoc
      * @memberof Time
      */
     public create(): void {
@@ -103,6 +153,11 @@ class Time implements PlayerComponent {
         controls.appendChild(this.duration);
     }
 
+    /**
+     *
+     * @inheritDoc
+     * @memberof Time
+     */
     public destroy(): void {
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
