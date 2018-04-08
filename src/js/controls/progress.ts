@@ -4,22 +4,102 @@ import Player from '../player';
 import { hasClass, offset } from '../utils/general';
 import { formatTime } from '../utils/time';
 
+/**
+ * Progress bar element.
+ *
+ * @description This class creates a progress bar to track how much time media has been played,
+ * downloaded and its current time, using `semantic markup`, such as input range and progress elements.
+ * @see https://codepen.io/mi-lee/post/an-overview-of-html5-semantics
+ * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Progress
+ * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/buffering_seeking_time_ranges
+ * @class Progress
+ * @implements PlayerComponent
+ */
 class Progress implements PlayerComponent {
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Progress
+     */
     private player: Player;
-    private slider: HTMLInputElement;
-    private buffer: HTMLProgressElement;
+
+    /**
+     * Container for progress bar elements (buffered, played and slider input).
+     *
+     * @private
+     * @type HTMLDivElement
+     * @memberof Progress
+     */
     private progress: HTMLDivElement;
+
+    /**
+     * Element that allows changing media's current position (time).
+     *
+     * @private
+     * @type HTMLInputElement
+     * @memberof Progress
+     */
+    private slider: HTMLInputElement;
+
+    /**
+     * Element that displays the media's downloaded amount.
+     *
+     * @private
+     * @type HTMLProgressElement
+     * @memberof Progress
+     */
+    private buffer: HTMLProgressElement;
+
+    /**
+     * Element that displays the media's played time.
+     *
+     * @private
+     * @type HTMLProgressElement
+     * @memberof Progress
+     */
     private played: HTMLProgressElement;
+
+    /**
+     * Element that displays the current media time when hovering in the progress bar.
+     *
+     * @private
+     * @type HTMLSpanElement
+     * @memberof Progress
+     */
     private tooltip: HTMLSpanElement;
+
+    /**
+     * Events that will be triggered in Progress element:
+     *  - container (to display tooltip when hovering in the progress bar)
+     *  - global (to hide tooltip once user moves out of the progress bar)
+     *  - media (to capture different states of the current time and duration in the time rail)
+     *  - slider (events to be triggered when clicking or sliding time rail)
+     *
+     * @private
+     * @type EventsList
+     * @memberof Progress
+     */
     private events: EventsList = {
         container: {},
         global: {},
         media: {},
         slider: {},
     };
+
+    /**
+     * Flag that pauses and then plays media properly (if media was played) when
+     * clicking in the progress bar.
+     *
+     * @private
+     * @type {boolean}
+     * @memberof Progress
+     */
     private forcePause: boolean;
 
     /**
+     * Create an instance of Progress.
      *
      * @param {Player} player
      * @returns {Progress}
@@ -33,7 +113,7 @@ class Progress implements PlayerComponent {
 
     /**
      *
-     * @returns {Progress}
+     * @inheritDoc
      * @memberof Progress
      */
     public create(): void {
@@ -133,6 +213,10 @@ class Progress implements PlayerComponent {
             this.played.value = 0;
         };
 
+        /**
+         *
+         * @private
+         */
         const updateSlider = (e: Event) => {
             if (hasClass(this.slider, 'om-progress--pressed')) {
                 return;
@@ -149,6 +233,10 @@ class Progress implements PlayerComponent {
             el.currentTime = val;
         };
 
+        /**
+         *
+         * @private
+         */
         const forcePause = (e: KeyboardEvent) => {
             const el = this.player.activeElement();
             // If current progress is not related to an Ad, manipulate current time
@@ -160,6 +248,10 @@ class Progress implements PlayerComponent {
             }
         };
 
+        /**
+         *
+         * @private
+         */
         const releasePause = () => {
             const el = this.player.activeElement();
             if (this.forcePause === true && this.player.isMedia()) {
@@ -231,6 +323,11 @@ class Progress implements PlayerComponent {
         this.player.getControls().getContainer().appendChild(this.progress);
     }
 
+    /**
+     *
+     * @inheritDoc
+     * @memberof Progress
+     */
     public destroy(): void {
         Object.keys(this.events).forEach(event => {
             this.player.getElement().removeEventListener(event, this.events[event]);

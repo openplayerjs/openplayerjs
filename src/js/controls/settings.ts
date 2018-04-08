@@ -7,24 +7,96 @@ import Player from '../player';
 import { hasClass } from '../utils/general';
 
 /**
+ * Settings element.
  *
+ * @description This class creates a menu of options to manipulate media that cannot
+ * be placed in the main control necessarily (such as different captions associated with media,
+ * levels of speed to reproduce media, etc.)
+ * This element is based on YouTube's Settings element.
  * @class Settings
- * @description Class that handles the Settings behavior cross/browsers
+ * @implements PlayerComponent
  */
 class Settings implements PlayerComponent {
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Settings
+     */
     private player: Player;
+
+    /**
+     * Collection of items associated with a specific menu item.
+     *
+     * @private
+     * @type SettingsSubMenu
+     * @memberof Settings
+     */
     private submenu: SettingsSubMenu = {};
+
+    /**
+     * Button to toggle menu's visibility.
+     *
+     * @private
+     * @type HTMLButtonElement
+     * @memberof Settings
+     */
     private button: HTMLButtonElement;
+
+    /**
+     * HTML markup to display Settings options.
+     *
+     * @private
+     * @type HTMLElement
+     * @memberof Settings
+     */
     private menu: HTMLElement;
+
+    /**
+     * Events that will be triggered in Settings element:
+     *  - global (to hide menu on resize and manipulate speed levels, and to manipulate submenu elements)
+     *  - media (to hide menu when media is played/paused or when `controls.hide` is triggered)
+     *
+     * @private
+     * @type EventsList
+     * @memberof Settings
+     */
     private events: EventsList = {
         global: {},
         media: {},
     };
-    private originalStatus: string;
+
+    /**
+     * Storage of the initial state of the menu's markup.
+     *
+     * @private
+     * @type string
+     * @memberof Settings
+     */
+    private originalOutput: string;
+
+    /**
+     * Event that displays main menu when clicking in Settings button.
+     *
+     * @private
+     * @type callback
+     * @memberof Settings
+     */
     private clickEvent: () => void;
+
+    /**
+     * Event that hides Settings main menu when other events occur, such as play/pause media
+     * or when resizing the user's window.
+     *
+     * @private
+     * @type callback
+     * @memberof Settings
+     */
     private hideEvent: () => void;
 
     /**
+     * Create an instance of Settings.
      *
      * @param {Player} player
      * @returns {Settings}
@@ -34,10 +106,10 @@ class Settings implements PlayerComponent {
         this.player = player;
         return this;
     }
+
     /**
      *
-     *
-     * @returns {Settings}
+     * @inheritDoc
      * @memberof Settings
      */
     public create(): void {
@@ -61,7 +133,7 @@ class Settings implements PlayerComponent {
         };
 
         this.hideEvent = () => {
-            this.menu.innerHTML = this.originalStatus;
+            this.menu.innerHTML = this.originalOutput;
             this.menu.setAttribute('aria-hidden', 'true');
         };
 
@@ -87,6 +159,11 @@ class Settings implements PlayerComponent {
         this.player.getContainer().appendChild(this.menu);
     }
 
+    /**
+     *
+     * @inheritDoc
+     * @memberof Settings
+     */
     public destroy(): void {
         this.button.removeEventListener('click', this.clickEvent.bind(this));
         Object.keys(this.events).forEach(event => {
@@ -105,8 +182,9 @@ class Settings implements PlayerComponent {
         // Restore original playback rate
         this.player.getMedia().playbackRate = 1;
     }
+
     /**
-     * By default, Settings will contaim speed adjustments
+     * Build `Settings` default option: media speed levels
      *
      * @returns {SettingItem}
      * @memberof Settings
@@ -129,6 +207,20 @@ class Settings implements PlayerComponent {
         };
     }
 
+    /**
+     * Add a new element and subelements to Setting's menu.
+     *
+     * The subelements will be transformed in HTML output, and this will be cached via
+     * [[Settings.submenu]] element. A global event will be associated with the newly
+     * added elements.
+     *
+     * @param {string} name  The name of the Settings element.
+     * @param {string} key  Identifier to generate unique Settings' items and subitems.
+     * @param {string} defaultValue  It can represent a number or a string.
+     * @param {SettingsSubItem[]?} submenu  A collection of subitems (optional).
+     * @param {string?} className  A specific class to trigger events on submenu items (optional).
+     * @memberof Settings
+     */
     public addItem(name: string, key: string, defaultValue: string, submenu?: SettingsSubItem[], className?: string): void {
         // Build the menu entry first
         const menuItem = document.createElement('div');
@@ -139,7 +231,7 @@ class Settings implements PlayerComponent {
             <div class="om-settings__menu-content">${submenu.find(x => x.key === defaultValue).label}</div>`;
 
         this.menu.querySelector('.om-settings__menu').appendChild(menuItem);
-        this.originalStatus = this.menu.innerHTML;
+        this.originalOutput = this.menu.innerHTML;
 
         // Store the submenu to reach all options for current menu item
         if (submenu) {
@@ -163,7 +255,7 @@ class Settings implements PlayerComponent {
                 if (hasClass(target, 'om-settings__back')) {
                     this.menu.classList.add('om-settings--sliding');
                     setTimeout(() => {
-                        this.menu.innerHTML = this.originalStatus;
+                        this.menu.innerHTML = this.originalOutput;
                         this.menu.classList.remove('om-settings--sliding');
                     }, 100);
                 } else if (hasClass(target, 'om-settings__menu-content')) {
@@ -192,12 +284,12 @@ class Settings implements PlayerComponent {
                         // Restore original menu, and set the new value
                         this.menu.classList.add('om-settings--sliding');
                         setTimeout(() => {
-                            this.menu.innerHTML = this.originalStatus;
+                            this.menu.innerHTML = this.originalOutput;
                             const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
                             prev.setAttribute('data-value', `${current}`);
                             prev.nextElementSibling.innerHTML = label;
                             defaultValue = value;
-                            this.originalStatus = this.menu.innerHTML;
+                            this.originalOutput = this.menu.innerHTML;
                             this.menu.classList.remove('om-settings--sliding');
                         }, 100);
                     }

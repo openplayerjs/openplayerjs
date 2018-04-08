@@ -5,19 +5,50 @@ import { addEvent } from '../utils/events';
 import { hasClass } from '../utils/general';
 
 /**
+ * Play/pause element.
  *
+ * @description This class controls the state of the media, by playing or pausing it, and
+ * when it ends, updates the state to replay the current media.
+ * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#PlayPause
  * @class Play
- * @description  Class that renders play/pause/replay button and registers events to update it
+ * @implements PlayerComponent
  */
 class Play implements PlayerComponent {
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Play
+     */
     private player: Player;
+
+    /**
+     * Button to play/pause media.
+     *
+     * @private
+     * @type HTMLButtonElement
+     * @memberof Play
+     */
     private button: HTMLButtonElement;
+
+    /**
+     * Events that will be triggered in Play element:
+     *  - controls (when `controlschanged` event is being triggered)
+     *  - media (to toggle button's class and play/pause media)
+     *
+     * @private
+     * @see [[Controls._buildElements]]
+     * @type EventsList
+     * @memberof Play
+     */
     private events: EventsList = {
         controls: {},
         media: {},
     };
 
     /**
+     * Create an instance of Play.
      *
      * @param {Player} player
      * @returns {Play}
@@ -30,7 +61,7 @@ class Play implements PlayerComponent {
 
     /**
      *
-     * @returns {Play}
+     * @inheritDoc
      * @memberof Play
      */
     public create(): void {
@@ -116,6 +147,7 @@ class Play implements PlayerComponent {
             this.button.title = 'Pause Ads';
             this.button.setAttribute('aria-label', 'Pause Ads');
         };
+
         const element = this.player.getElement();
         this.events.controls.controlschanged = () => {
             if (!this.player.activeElement().paused) {
@@ -133,6 +165,11 @@ class Play implements PlayerComponent {
         this.button.addEventListener('click', this.events.media.click);
     }
 
+    /**
+     *
+     * @inheritDoc
+     * @memberof Play
+     */
     public destroy(): void {
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().removeEventListener(event, this.events.media[event]);

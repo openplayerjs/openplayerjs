@@ -11,7 +11,7 @@ import { timeToSeconds } from '../utils/time';
 /**
  * Closed Captions element.
  *
- * Using `<track>` tags, this class allows the displaying of both local and remote captions
+ * @description Using `<track>` tags, this class allows the displaying of both local and remote captions
  * bypassing CORS, and without the use of the `crossorigin` attribute.
  * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
  * @see https://www.html5rocks.com/en/tutorials/track/basics/
@@ -47,7 +47,7 @@ class Captions implements PlayerComponent {
     private captions: HTMLDivElement;
 
     /**
-     * Events that will be triggered by Caption elements:
+     * Events that will be triggered in Caption element:
      *  - button (for the caption toggle element)
      *  - global (for dynamic elements)
      *  - media (to update captions on `timeupdate`, instead of using `oncuechanged`)
@@ -119,7 +119,7 @@ class Captions implements PlayerComponent {
     private default: string;
 
     /**
-     * Creates an instance of Captions.
+     * Create an instance of Captions.
      *
      * @param {Player} player
      * @memberof Captions
@@ -136,6 +136,7 @@ class Captions implements PlayerComponent {
      * Create a button and a container to display captions if tracks are detected.
      *
      * @inheritDoc
+     * @memberof Captions
      */
     public create(): void {
         if (!this.hasTracks) {
