@@ -200,6 +200,9 @@
 .om-controls > button {
     touch-action: manipulation;
 }
+.om-controls input[type=range]::-ms-tooltip {
+    display: none;
+}
 
 /* === Time =================== */
 .om-controls > time {
