@@ -1,9 +1,17 @@
+/**
+ * Polyfill loader.
+ *
+ * @description This class checks if browser supports specific methods needed in player's code;
+ * otherwise, loads the Ployfill.io service to include them.
+ * @see
+ * @class Polyfill
+ */
 class Polyfill {
     /**
-     * Verify if all necessary polyfills are available in browser
+     * Verify if all necessary polyfills required by the player are available in current browser.
      *
      * @static
-     * @param {any} callback
+     * @param {function} callback
      * @memberof Polyfill
      */
     public static check(callback: (n?: any) => any) {
