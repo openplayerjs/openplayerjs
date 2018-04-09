@@ -1,8 +1,8 @@
 /**
- * Get media file extension from URL
+ * Get media file extension from a URL.
  *
  * @export
- * @param {string} url
+ * @param {string} url  The target URL.
  * @returns {string}
  */
 export function getExtension(url: string): string {
@@ -16,10 +16,10 @@ export function getExtension(url: string): string {
 }
 
 /**
- * Check if URL is an HLS element
+ * Check if URL is an HLS element.
  *
  * @export
- * @param {string} url
+ * @param {string} url  The target URL.
  * @returns {boolean}
  */
 export function isHlsSource(url: string): boolean {
@@ -27,10 +27,10 @@ export function isHlsSource(url: string): boolean {
 }
 
 /**
- * Check if URL is an MPEG-DASH element
+ * Check if URL is an MPEG-DASH element.
  *
  * @export
- * @param {string} url
+ * @param {string} url  The target URL.
  * @returns {boolean}
  */
 export function isDashSource(url: string): boolean {
@@ -42,7 +42,7 @@ export function isDashSource(url: string): boolean {
  * it will default to `video/mp4` if nothing found
  *
  * @export
- * @param {string} url
+ * @param {string} url  The target URL to check media extension from.
  * @returns {string}
  */
 export function predictType(url: string): string {
@@ -76,14 +76,15 @@ export function predictType(url: string): string {
 }
 
 /**
- * Test if browser supports autoplay (and if so, it it requires to be muted or not)
+ * Test if browser supports autoplay.
  *
- * It combines the techines described in https://raw.githubusercontent.com/googleads/googleads-ima-html5/2.11/attempt_to_autoplay/ads.js
- * and https://github.com/Modernizr/Modernizr/issues/1095#issuecomment-304682473
+ * It also checks if media requires to be muted or not, per browser's constrains.
+ * @see https://raw.githubusercontent.com/googleads/googleads-ima-html5/2.11/attempt_to_autoplay/ads.js
+ * @see https://github.com/Modernizr/Modernizr/issues/1095#issuecomment-304682473
  * @export
- * @param {function} autoplay
- * @param {function} muted
- * @param {function} callback
+ * @param {function} autoplay  Callback to determine if browser can autoplay.
+ * @param {function} muted  Callback to determine if browser requires media to be muted.
+ * @param {function} callback  Custom callback after prior checks have been run.
  */
 export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void {
     // try to play video

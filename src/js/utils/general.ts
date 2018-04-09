@@ -1,5 +1,7 @@
 declare const ActiveXObject: any;
+
 /**
+ * Get the complete URL of a relative path.
  *
  * @export
  * @param {string} url
@@ -15,16 +17,7 @@ export function getAbsoluteUrl(url: string) {
 }
 
 /**
- *
- * @export
- * @param {Element} element
- * @return {boolean}
- */
-export function isIframe(element: Element) {
-    return element.tagName.toLowerCase() === 'iframe';
-}
-
-/**
+ * Determine if element is a video element.
  *
  * @export
  * @param {Element} element
@@ -35,6 +28,7 @@ export function isVideo(element: Element) {
 }
 
 /**
+ * Determine if element is a audio element.
  *
  * @export
  * @param {Element} element
@@ -45,7 +39,7 @@ export function isAudio(element: Element) {
 }
 
 /**
- * Load an external script via Promise
+ * Load an external script using Promises
  *
  * @export
  * @param {string} url
@@ -68,7 +62,7 @@ export function loadScript(url: string) {
     });
 }
 /**
- * Perform an asynchronous request
+ * Perform an asynchronous (AJAX) request.
  *
  * @export
  * @param {string} url
@@ -136,10 +130,25 @@ export function request(url: string, dataType: string, success: (n: any) => any,
     }
 }
 
+/**
+ * Determine if element has a specific class.
+ *
+ * @export
+ * @param {HTMLElement} target  The target element.
+ * @param {string} className   The class to search in the `class` attribute.
+ * @returns {boolean}
+ */
 export function hasClass(target: HTMLElement, className: string) {
-    return target.className.split(' ').indexOf(className) > -1;
+    return !!(target.className.split(' ').indexOf(className) > -1);
 }
 
+/**
+ * Obtain the top/left offset values of an element.
+ *
+ * @export
+ * @param {HTMLElement} el  The target element.
+ * @returns {object}
+ */
 export function offset(el: HTMLElement) {
     const rect = el.getBoundingClientRect();
     return {
