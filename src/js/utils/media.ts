@@ -120,6 +120,7 @@ export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) =
         });
     } else {
         autoplay(!videoContent.paused || 'Promise' in window && playPromise instanceof Promise);
+        videoContent.pause();
         muted(false);
         callback();
     }

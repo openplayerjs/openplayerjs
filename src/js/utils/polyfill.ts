@@ -10,33 +10,33 @@ class Polyfill {
         const features: string[] = [];
         const map: any = {
             CustomEvent: {
+                conditional: (window as any).CustomEvent !== 'function',
                 key: 'window',
-                object: (window as any),
             },
             Promise: {
+                conditional: !(window as any).Promise,
                 key: 'window',
-                object: (window as any),
             },
             closest: {
+                conditional: !Element.prototype.closest,
                 key: 'Element.prototype',
-                object: Element.prototype,
             },
             find: {
+                conditional: !Array.prototype.find,
                 key: 'Array.prototype',
-                object: Array.prototype,
             },
             from: {
+                conditional: !Array.from,
                 key: 'Array',
-                object: Array,
             },
             remove: {
+                conditional: !Element.prototype.remove,
                 key: 'Element.prototype',
-                object: Element.prototype,
             },
         };
 
         Object.keys(map).forEach(method => {
-            if (method in map[method].object !== true) {
+            if (map[method].conditional) {
                 features.push(`${(map[method].key !== 'window' ? `${map[method].key}.` : '')}${method}`);
             }
         });
@@ -44,16 +44,12 @@ class Polyfill {
         if (features.length) {
             const f = features.join(',');
             const s = document.createElement('script');
-            s.type = 'text/javascript';
-            s.async = true;
             s.src = `https://cdn.polyfill.io/v2/polyfill.min.js?features=${f}&flags=gated,always&callback=main`;
-            s.onload = () => {
-                callback();
-            };
+            s.addEventListener('load', callback);
             document.head.appendChild(s);
+        } else {
+            callback();
         }
-
-        callback();
     }
 }
 
