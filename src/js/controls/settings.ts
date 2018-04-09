@@ -217,8 +217,8 @@ class Settings implements PlayerComponent {
      * @param {string} name  The name of the Settings element.
      * @param {string} key  Identifier to generate unique Settings' items and subitems.
      * @param {string} defaultValue  It can represent a number or a string.
-     * @param {SettingsSubItem[]?} submenu  A collection of subitems (optional).
-     * @param {string?} className  A specific class to trigger events on submenu items (optional).
+     * @param {?SettingsSubItem[]} submenu  A collection of subitems (optional).
+     * @param {?string} className  A specific class to trigger events on submenu items (optional).
      * @memberof Settings
      */
     public addItem(name: string, key: string, defaultValue: string, submenu?: SettingsSubItem[], className?: string): void {

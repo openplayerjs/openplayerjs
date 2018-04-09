@@ -236,8 +236,8 @@ class Fullscreen implements PlayerComponent {
      * Set dimensions for the video tag and player's container.
      *
      * @private
-     * @param {number?} width The width of the media
-     * @param {number?} height The height of the media
+     * @param {?number} width The width of the media
+     * @param {?number} height The height of the media
      * @memberof Fullscreen
      */
     private _resize(width?: number, height?: number): void {

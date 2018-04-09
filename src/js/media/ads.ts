@@ -43,7 +43,7 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, adsUrl: string) {
+    public constructor(media: Media, adsUrl: string) {
         this.adsUrl = adsUrl;
         this.media = media;
         this.element = media.element;
