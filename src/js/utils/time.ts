@@ -1,8 +1,9 @@
 /**
- * Generate a human-readable time based on media current time
+ * Generate a human-readable time based on media current time.
  *
  * @export
- * @param {?number} seconds
+ * @param {number} seconds  The time to be converted to a human-readbable format (STMPE).
+ * @param {?number} frameRate  The numbers of frames per second.
  * @returns {string}
  */
 export function formatTime(seconds: number, frameRate?: number) {
@@ -18,8 +19,9 @@ export function formatTime(seconds: number, frameRate?: number) {
 /**
  * Convert STMPE string into seconds
  *
+ * @see https://en.wikipedia.org/wiki/SMPTE_timecode
  * @export
- * @param {string} timecode
+ * @param {string} timecode  The STMPE string to be converted.
  * @returns {number}
  */
 export function timeToSeconds(timecode: string) {
