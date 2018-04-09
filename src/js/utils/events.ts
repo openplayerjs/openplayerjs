@@ -4,7 +4,7 @@
  * @export
  * @see https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent
  * @param {string} event  The name of the event
- * @param {object?} CustomEventInit  If passed, it must contain `detail` (event-dependent value associated with the event).
+ * @param {?object} CustomEventInit  If passed, it must contain `detail` (event-dependent value associated with the event).
  * @returns {CustomEvent}
  */
 export function addEvent(event: string, details?: CustomEventInit): CustomEvent {

@@ -20,7 +20,7 @@ class Media {
     /**
      * Creates an instance of Media.
      * @param {HTMLMediaElement} element
-     * @param {object?} ads
+     * @param {?object} ads
      * @memberof Media
      */
     constructor(element: HTMLMediaElement) {
