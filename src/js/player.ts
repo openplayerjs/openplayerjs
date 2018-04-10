@@ -164,7 +164,7 @@ class Player {
     * @returns {Player}
     * @memberof Player
     */
-   public constructor(element: HTMLMediaElement|string, adsUrl?: string) {
+   constructor(element: HTMLMediaElement|string, adsUrl?: string) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         this.adsUrl = adsUrl;
         this.autoplay = this.element.autoplay;

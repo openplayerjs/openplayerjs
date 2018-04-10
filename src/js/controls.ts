@@ -12,31 +12,130 @@ import { addEvent } from './utils/events';
 import { isVideo } from './utils/general';
 
 /**
+ * Controls element.
  *
+ * @description This class handles the creation/destruction of all player's control elements.
  * @class Controls
- * @description Class that renders all control elements inside a control bar
- * and appends it in the player controls
+ * @implements PlayerComponent
  */
 class Controls implements PlayerComponent {
+    /**
+     * Main container of control elements.
+     *
+     * @private
+     * @type HTMLDivElement
+     * @memberof Controls
+     */
     private controls: HTMLDivElement;
+
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Controls
+     */
     private player: Player;
+
+    /**
+     * Storage for all the control elements.
+     *
+     * @private
+     * @type any[]
+     * @memberof Controls
+     */
     private items: any[];
+
+    /**
+     * Instance of Play object.
+     *
+     * @private
+     * @type Play
+     * @memberof Controls
+     */
     private play: Play;
+
+    /**
+     * Instance of Time object.
+     *
+     * @private
+     * @type Time
+     * @memberof Controls
+     */
     private time: Time;
+
+    /**
+     * Instance of Volume object.
+     *
+     * @private
+     * @type Volume
+     * @memberof Controls
+     */
     private volume: Volume;
+
+    /**
+     * Instance of Progress object.
+     *
+     * @private
+     * @type Progress
+     * @memberof Controls
+     */
     private progress: Progress;
+
+    /**
+     * Instance of Settings object.
+     *
+     * @private
+     * @type Settings
+     * @memberof Controls
+     */
     private settings: Settings;
+
+    /**
+     * Instance of Fullscreen object.
+     *
+     * @private
+     * @type Fullscreen
+     * @memberof Controls
+     */
     private fullscreen: Fullscreen;
+
+    /**
+     * Instance of Captions object.
+     *
+     * @private
+     * @type Captions
+     * @memberof Controls
+     */
     private captions: Captions;
+
+    /**
+     * Element that stores the time to hide controls.
+     *
+     * @private
+     * @type number
+     * @memberof Controls
+     */
     private timer: number;
+
+    /**
+     * Events that will be triggered in Controls element:
+     *  - mouse (to show/hide controls after specific number of seconds)
+     *  - media (to trigger/stop timer that will hide or show controls)
+     *
+     * @private
+     * @type EventsList
+     * @memberof Controls
+     */
     private events: EventsList = {
         media: {},
         mouse: {},
     };
 
     /**
-     * Creates an instance of Controls.
-     * @param {Media} media
+     * Create an instance of Controls.
+     *
+     * @param {Player} player
      * @returns {Controls}
      * @memberof Controls
      */
@@ -48,10 +147,10 @@ class Controls implements PlayerComponent {
 
     /**
      *
-     *
+     * @inheritDoc
      * @memberof Controls
      */
-    public create() {
+    public create(): void {
         this.player.getElement().controls = false;
 
         const isMediaVideo = isVideo(this.player.getElement());
@@ -102,7 +201,12 @@ class Controls implements PlayerComponent {
         this._buildElements();
     }
 
-    public destroy() {
+    /**
+     *
+     * @inheritDoc
+     * @memberof Controls
+     */
+    public destroy(): void {
         Object.keys(this.events.mouse).forEach(event => {
             this.player.getContainer().removeEventListener(event, this.events.mouse[event]);
         });
@@ -120,22 +224,34 @@ class Controls implements PlayerComponent {
         this.controls.remove();
     }
 
-    public getContainer() {
+    /**
+     * Retrieve the main container of all control elements, to add/remove them in latter steps.
+     *
+     * @returns {HTMLDivElement}
+     * @memberof Controls
+     */
+    public getContainer(): HTMLDivElement {
         return this.controls;
     }
 
-    public getFullscreen() {
+    /**
+     * Retrieve an instance of Fullscreen object.
+     *
+     * @returns {Fullscreen}
+     * @memberof Controls
+     */
+    public getFullscreen(): Fullscreen {
         return this.fullscreen;
     }
 
     /**
-     * Set correctly timer to hide controls
+     * Set timer to hide controls.
      *
      * @private
-     * @param {number} time The time when controls will be hidden in ms
+     * @param {number} time The time when controls will be hidden in milliseconds (ms).
      * @memberof Controls
      */
-    private _startControlTimer(time: number) {
+    private _startControlTimer(time: number): void {
         const el = this.player.activeElement();
         this._stopControlTimer();
 
@@ -150,12 +266,12 @@ class Controls implements PlayerComponent {
     }
 
     /**
-     * Stop timer to hide controls
+     * Stop timer to hide controls.
      *
      * @private
      * @memberof Controls
      */
-    private _stopControlTimer() {
+    private _stopControlTimer(): void {
         if (this.timer !== null) {
             clearTimeout(this.timer);
             delete this.timer;
@@ -163,7 +279,14 @@ class Controls implements PlayerComponent {
         }
     }
 
-    private _setElements() {
+    /**
+     * Instantiate all control elements' classes and store them in `items` element.
+     *
+     * @see [[Controls.items]]
+     * @private
+     * @memberof Controls
+     */
+    private _setElements(): void {
         this.play = new Play(this.player);
         this.time = new Time(this.player);
         this.progress = new Progress(this.player);
@@ -185,7 +308,16 @@ class Controls implements PlayerComponent {
         }
     }
 
-    private _buildElements() {
+    /**
+     * Create markup for all control elements and, if available, create entries for Settings element.
+     *
+     * It will dispatch a `controlschanged` event to reload all elements in the control bar.
+     * @see [[Settings.addItem]]
+     * @see [[Settings.addSettings]]
+     * @private
+     * @memberof Controls
+     */
+    private _buildElements(): void {
         // Loop controls to build them and register events
         this.items.forEach(item => {
             item.create();

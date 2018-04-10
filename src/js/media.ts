@@ -5,22 +5,53 @@ import HTML5Media from './media/html5';
 import * as source from './utils/media';
 
 /**
+ * Media element.
  *
- * @class Media
  * @description Class that creates the Media Component in the player.
- * The `Media` is the visual/audio area that results from playing
- * a valid source (MP4, MP3, M3U8, MPD, etc.)
+ * `Media` is the visual/audio entity that results from playing  a valid source (MP4, MP3, M3U8, MPD, etc.)
+ * @class Media
  */
 class Media {
+    /**
+     * The video/audio tag that contains media to be played.
+     *
+     * @type HTMLMediaElement
+     * @memberof Media
+     */
     public element: HTMLMediaElement;
+
+    /**
+     * Object that instantiates class of current media.
+     *
+     * @type (HTML5Media|HlsMedia|DashMedia)
+     * @memberof Media
+     */
     public media: HTML5Media|HlsMedia|DashMedia;
+
+    /**
+     * Collection of media sources available within the video/audio tag.
+     *
+     * @type Source[]
+     * @memberof Media
+     */
     public mediaFiles: Source[];
+
+    /**
+     * Promise to be resolved once media starts playing to avoid race issues.
+     *
+     * @see [[Media.play]]
+     * @see [[Media.pause]]
+     * @private
+     * @type {Promise<void>}
+     * @memberof Media
+     */
     private promisePlay: Promise<void>;
 
     /**
-     * Creates an instance of Media.
+     * Create an instance of Media.
+     *
      * @param {HTMLMediaElement} element
-     * @param {?object} ads
+     * @returns {Media}
      * @memberof Media
      */
     constructor(element: HTMLMediaElement) {
@@ -31,12 +62,13 @@ class Media {
     }
 
     /**
-     * Check if player can play the current media type (MIME type)
+     * Check if player can play the current media type (MIME type).
      *
-     * @param {string} mimeType
+     * @param {string} mimeType  A valid MIME type, that can include codecs.
+     * @see [[Native.canPlayType]]
      * @returns {boolean}
      */
-    public canPlayType(mimeType: string) {
+    public canPlayType(mimeType: string): boolean {
         return this.media.canPlayType(mimeType);
     }
 
@@ -45,15 +77,23 @@ class Media {
      *
      * It requires to run with Promises to avoid racing errors between execution of the action
      * and the time the potential libraries are loaded completely.
-     *
      * It will loop the media list found until it reached the first element that can be played.
-     *
+     * @see [[Native.load]]
      */
-    public load() {
-        this.loadSources(this.mediaFiles);
+    public load(): void {
+        this._loadSources(this.mediaFiles);
     }
 
-    public play() {
+    /**
+     * Wrapper for `play` method.
+     *
+     * It returns a Promise to avoid browser's race issues when attempting to pause media.
+     * @see https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
+     * @see [[Native.play]]
+     * @returns {Promise}
+     * @memberof Media
+     */
+    public play(): Promise<void> {
         this.promisePlay = new Promise(resolve => {
             resolve();
         }).then(() => {
@@ -66,7 +106,16 @@ class Media {
         return this.promisePlay;
     }
 
-    public pause() {
+    /**
+     * Wrapper for `pause` method.
+     *
+     * It checks if play Promise has been resolved in order to trigger pause
+     * to avoid browser's race issues.
+     * @see https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
+     * @see [[Native.pause]]
+     * @memberof Media
+     */
+    public pause(): void {
         if (this.promisePlay) {
             this.promisePlay.then(() => {
                 this.media.pause();
@@ -75,10 +124,12 @@ class Media {
             this.media.pause();
         }
     }
+
     /**
-     * Set one or more media sources
+     * Set one or more media sources.
      *
      * @param {string|object|object[]} media
+     * @see [[Native.src]]
      * @memberof Media
      */
     set src(media) {
@@ -97,72 +148,159 @@ class Media {
             return this.canPlayType(file.type);
         });
 
-        // Save copy of original file
+        // Save copy of original file to restore it when player is destroyed
         if (this.element.src) {
             this.element.setAttribute('data-om-file', this.mediaFiles[0].src);
         }
         this.element.src = this.mediaFiles[0].src;
         this.media.src = this.mediaFiles[0];
     }
+
     /**
      * Get all media associated with element
      *
-     * @returns {object[]}
      * @readonly
+     * @see [[Native.src]]
+     * @type {Source[]}
      * @memberof Media
      */
-    get src() {
+    get src(): Source[] {
         return this.mediaFiles;
     }
 
+    /**
+     *
+     * @see [[Native.volume]]
+     * @memberof Media
+     */
     set volume(value) {
         this.media.volume = value;
     }
 
-    get volume() {
+    /**
+     *
+     * @see [[Native.volume]]
+     * @readonly
+     * @type {number}
+     * @memberof Media
+     */
+    get volume(): number {
         return this.media.volume;
     }
 
+    /**
+     *
+     * @see [[Native.muted]]
+     * @memberof Media
+     */
     set muted(value) {
         this.media.muted = value;
     }
 
-    get muted() {
+    /**
+     *
+     * @see [[Native.muted]]
+     * @readonly
+     * @type {boolean}
+     * @memberof Media
+     */
+    get muted(): boolean {
         return this.media.muted;
     }
 
-    get playbackRate() {
+    /**
+     *
+     * @see [[Native.playbackRate]]
+     * @readonly
+     * @type {number}
+     * @memberof Media
+     */
+    get playbackRate(): number {
         return this.media.playbackRate;
     }
 
+    /**
+     *
+     * @see [[Native.playbackRate]]
+     * @memberof Media
+     */
     set playbackRate(value) {
         this.media.playbackRate = value;
     }
 
+    /**
+     *
+     * @see [[Native.currentTime]]
+     * @memberof Media
+     */
     set currentTime(value: number) {
         this.media.currentTime = value;
     }
-    get currentTime() {
+
+    /**
+     *
+     * @see [[Native.currentTime]]
+     * @readonly
+     * @type {number}
+     * @memberof Media
+     */
+    get currentTime(): number {
         return this.media.currentTime;
     }
 
-    get duration() {
+    /**
+     *
+     * @see [[Native.duration]]
+     * @readonly
+     * @type {number}
+     * @memberof Media
+     */
+    get duration(): number {
         return this.media.duration;
     }
 
-    get paused() {
+    /**
+     *
+     * @see [[Native.paused]]
+     * @readonly
+     * @type {boolean}
+     * @memberof Media
+     */
+    get paused(): boolean {
         return this.media.paused;
     }
 
-    get ended() {
+    /**
+     *
+     * @see [[Native.boolean]]
+     * @readonly
+     * @type {boolean}
+     * @memberof Media
+     */
+    get ended(): boolean {
         return this.media.ended;
     }
 
-    public destroy() {
+    /**
+     * Invoke `destroy` method of current media type.
+     *
+     * Streaming that uses hls.js or dash.js libraries require to destroy their players and
+     * their custom events.
+     * @memberof Media
+     */
+    public destroy(): void {
         this.media.destroy();
     }
 
-    public loadSources(sources: Source[]) {
+    /**
+     * Load the first playable source from one or many sources available in the video/audio tag.
+     *
+     * If none of them can be played, automatically the method destroys the `Media` object.
+     * @param {Source[]} sources
+     * @private
+     * @memberof Media
+     */
+    private _loadSources(sources: Source[]): void {
         if (!sources.length) {
             throw new TypeError('Media not set');
         }
@@ -194,15 +332,15 @@ class Media {
     }
 
     /**
-     * Gather all media sources within the video/audio/iframe tags
+     * Gather all media sources within the video/audio/iframe tags.
      *
      * It will be grouped inside the `mediaFiles` array. This method basically mimics
      * the native behavior when multiple sources are associated with an element, and
-     * the browser takes care of selecting the most appropriate one
+     * the browser takes care of selecting the most appropriate one.
      * @returns {Source[]}
      * @memberof Media
      */
-    private _getMediaFiles() {
+    private _getMediaFiles(): Source[] {
         const mediaFiles = [];
         const sourceTags = this.element.querySelectorAll('source');
         const nodeSource = this.element.src;
@@ -227,14 +365,15 @@ class Media {
 
         return mediaFiles;
     }
+
     /**
-     * Assign class to play iframe (third-party APIs) or "native" media (without the use of iframes)
+     * Instantiate media object according to current media type.
      *
-     * @param {Object} media
-     * @returns {*}
+     * @param {Source} media
+     * @returns {(HlsMedia|DashMedia|HTML5Media)}
      * @memberof Media
      */
-    private _invoke(media: Source) {
+    private _invoke(media: Source): HlsMedia|DashMedia|HTML5Media {
         if (source.isHlsSource(media.src)) {
             return new HlsMedia(this.element, media);
         } else if (source.isDashSource(media.src)) {
