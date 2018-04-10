@@ -397,9 +397,9 @@ class Player {
     /**
      * Retrieve the current Source list associated with the player.
      *
-     * @readonly
-     * @type {Source[]}
+     * @type Source[]
      * @memberof Player
+     * @readonly
      */
     get src(): Source[] {
         return this.media.src;
@@ -408,9 +408,9 @@ class Player {
     /**
      * Retrieve current player's identifier.
      *
-     * @readonly
-     * @type {string}
+     * @type string
      * @memberof Player
+     * @readonly
      */
     get id(): string {
         return this.uid;
