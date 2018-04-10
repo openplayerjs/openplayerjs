@@ -87,31 +87,30 @@ export function predictType(url: string): string {
  * @param {function} callback  Custom callback after prior checks have been run.
  */
 export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void {
-    // try to play video
     const videoContent = document.createElement('video');
+    // Use a video WITH audio to test properly browser's capabilities.
     videoContent.src = 'http://techslides.com/demos/sample-videos/small.mp4';
-    // In browsers that don’t yet support this functionality,
-    // playPromise won’t be defined.
+
     const playPromise = videoContent.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
-            // If we make it here, unmuted autoplay works.
+            // Umuted autoplay works.
             videoContent.pause();
             autoplay(true);
             muted(false);
             callback();
         }).catch(() => {
-            // Unmuted autoplay failed. Now try muted autoplay.
+            // Unmuted autoplay failed. New attempt with muted autoplay.
             videoContent.volume = 0;
             videoContent.muted = true;
             videoContent.play().then(() => {
-                // If we make it here, muted autoplay works but unmuted autoplay does not.
+                // Muted autoplay works.
                 videoContent.pause();
                 autoplay(true);
                 muted(true);
                 callback();
             }).catch(() => {
-                // Both muted and unmuted autoplay failed. Fall back to click to play.
+                // Both muted and unmuted autoplay failed. Fallback to click to play.
                 videoContent.volume = 1;
                 videoContent.muted = false;
                 autoplay(false);
