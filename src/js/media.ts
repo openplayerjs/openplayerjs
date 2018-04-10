@@ -42,7 +42,7 @@ class Media {
      * @see [[Media.play]]
      * @see [[Media.pause]]
      * @private
-     * @type {Promise<void>}
+     * @type Promise<void>
      * @memberof Media
      */
     private promisePlay: Promise<void>;
@@ -159,10 +159,10 @@ class Media {
     /**
      * Get all media associated with element
      *
-     * @readonly
      * @see [[Native.src]]
-     * @type {Source[]}
+     * @type Source[]
      * @memberof Media
+     * @readonly
      */
     get src(): Source[] {
         return this.mediaFiles;
@@ -180,9 +180,9 @@ class Media {
     /**
      *
      * @see [[Native.volume]]
-     * @readonly
-     * @type {number}
+     * @type number
      * @memberof Media
+     * @readonly
      */
     get volume(): number {
         return this.media.volume;
@@ -200,9 +200,9 @@ class Media {
     /**
      *
      * @see [[Native.muted]]
-     * @readonly
-     * @type {boolean}
+     * @type boolean
      * @memberof Media
+     * @readonly
      */
     get muted(): boolean {
         return this.media.muted;
@@ -211,9 +211,9 @@ class Media {
     /**
      *
      * @see [[Native.playbackRate]]
-     * @readonly
-     * @type {number}
+     * @type number
      * @memberof Media
+     * @readonly
      */
     get playbackRate(): number {
         return this.media.playbackRate;
@@ -240,9 +240,9 @@ class Media {
     /**
      *
      * @see [[Native.currentTime]]
-     * @readonly
-     * @type {number}
+     * @type number
      * @memberof Media
+     * @readonly
      */
     get currentTime(): number {
         return this.media.currentTime;
@@ -251,9 +251,9 @@ class Media {
     /**
      *
      * @see [[Native.duration]]
-     * @readonly
-     * @type {number}
+     * @type number
      * @memberof Media
+     * @readonly
      */
     get duration(): number {
         return this.media.duration;
@@ -262,9 +262,9 @@ class Media {
     /**
      *
      * @see [[Native.paused]]
-     * @readonly
-     * @type {boolean}
+     * @type boolean
      * @memberof Media
+     * @readonly
      */
     get paused(): boolean {
         return this.media.paused;
@@ -272,10 +272,10 @@ class Media {
 
     /**
      *
-     * @see [[Native.boolean]]
-     * @readonly
-     * @type {boolean}
+     * @see [[Native.ended]]
+     * @type boolean
      * @memberof Media
+     * @readonly
      */
     get ended(): boolean {
         return this.media.ended;
