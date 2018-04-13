@@ -27,7 +27,7 @@
     "scripts": {
         "build": "rm -rf ./dist/ && webpack",
         "test": "karma start karma.unit.js",
-        "documentation": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/",
+        "docs": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/",
         "coverage": "karma start karma.coverage.js"
     },
     "readme": "https://github.com/rafa8626/openplayer/blob/master/README.md",
