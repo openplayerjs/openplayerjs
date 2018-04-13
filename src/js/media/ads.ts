@@ -154,7 +154,7 @@ class Ads {
         this.adsContainer.remove();
     }
 
-    public resizeAds(width?: number, height?: number) {
+    public resizeAds(width?: number, height?: number, transform?: string) {
         if (this.adsManager) {
             const target = this.element;
             if (width && height) {
@@ -171,6 +171,11 @@ class Ads {
                     target.offsetHeight,
                     google.ima.ViewMode.NORMAL,
                 );
+            }
+
+            if (transform) {
+                this.adsContainer.style.transform = transform;
+                this.adsContainer.style.webkitTransform = transform;
             }
         }
     }

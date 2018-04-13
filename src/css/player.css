@@ -27,10 +27,10 @@
 .om-player ::before {
     box-sizing: border-box;
 }
-.om-player video,
-.om-player audio {
+.om-player__media {
     display: inline-block;
     height: auto;
+    object-fit: contain;
     width: 100% !important;
 }
 .om-player [aria-hidden='true'] {
@@ -79,7 +79,7 @@
     position: absolute;
     transition: bottom 0.3s ease;
     width: 100%;
-    z-index: 2;
+    z-index: 3;
 }
 .om-controls--hidden .om-controls {
     bottom: -36px;
@@ -119,7 +119,7 @@
     position: absolute;
     top: calc(50% - 20px);
     width: 60px;
-    z-index: 1;
+    z-index: 2;
 }
 .om-player__play {
     background: transparent;
@@ -139,7 +139,7 @@
     transition: 100ms all ease;
     width: 0;
     will-change: border-width;
-    z-index: 1;
+    z-index: 2;
 }
 .om-player__play--paused {
     border-style: double;
@@ -257,7 +257,7 @@
     transition: right 0.2s ease;
     user-select: none;
     will-change: width,height;
-    z-index: 3;
+    z-index: 4;
 }
 .om-player__audio .om-settings {
     bottom: 32px;
@@ -337,7 +337,7 @@
 }
 .om-controls input[type='range'] {
     background: transparent;
-    z-index: 2;
+    z-index: 3;
 }
 .om-controls input[type='range']:focus,
 .om-controls progress {
@@ -473,7 +473,7 @@
     background: 0 0;
     color: #f00;
     transition: none;
-    z-index: 1;
+    z-index: 2;
 }
 .om-controls .om-controls__volume--display {
     background: rgba(255, 255, 255, 0.35);
@@ -571,7 +571,7 @@
     padding: 5px;
     position: absolute;
     top: 0;
-    z-index: 2;
+    z-index: 3;
 }
 
 /* == Fullscreen ============= */
@@ -597,6 +597,7 @@
     transition: transform 0.3s ease;
     transition: transform 0.3s ease,-webkit-transform 0.3s ease;
     width: 100%;
+    z-index: 1;
 }
 .om-controls--hidden .om-captions {
     bottom: -32px;
@@ -649,6 +650,7 @@ video:-webkit-media-text-track-display {
     position: absolute;
     top: 0;
     width: 100%;
+    z-index: 1;
 }
 .om-ads--active {
     overflow: hidden;
