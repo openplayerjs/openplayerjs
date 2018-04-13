@@ -190,8 +190,8 @@ class Player {
     * Create an instance of Player.
     *
     * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
-    * @param {?string} adsUrl  A URL to play Ads via Google IMA SDK (optional).
-    * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container (optional).
+    * @param {?string} adsUrl  A URL to play Ads via Google IMA SDK.
+    * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
     * @returns {Player}
     * @memberof Player
     */
