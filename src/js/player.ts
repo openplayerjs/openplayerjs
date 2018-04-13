@@ -6,7 +6,7 @@ import PlayerInstanceList from './interfaces/instance';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
+import { IS_ANDROID, IS_FIREFOX, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
@@ -38,7 +38,7 @@ class Player {
         const targets = document.querySelectorAll('video.om-player, audio.om-player');
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = (targets[i] as HTMLMediaElement);
-            const player = new Player(target, target.getAttribute('data-om-ads'));
+            const player = new Player(target, target.getAttribute('data-om-ads'), !!target.getAttribute('data-om-fill'));
             player.init();
         }
     }
@@ -85,6 +85,16 @@ class Player {
     private ads?: Ads;
 
     /**
+     * Flag to determine if player must be scaled and scrop to fit parent container
+     * (only for video elements)
+     *
+     * @private
+     * @type boolean
+     * @memberof Player
+     */
+    private fill?: boolean;
+
+    /**
      * Instance of Media object.
      *
      * @type Media
@@ -128,7 +138,7 @@ class Player {
     private autoplay: boolean;
 
     /**
-     * Stoage for original volume level vaue, when testing browser's autoplay capabilities
+     * Storage for original volume level vaue, when testing browser's autoplay capabilities
      * to restore it back.
      *
      * @see [[Player._autoplay]]
@@ -156,19 +166,43 @@ class Player {
      */
     private canAutoplayMuted: boolean;
 
+    /**
+     * Storage for media's original width, to be used when calculating media's ratio aspect.
+     *
+     * @see [[Player._fill]]
+     * @private
+     * @type number
+     * @memberof Player
+     */
+    private width: number;
+
+    /**
+     * Storage for media's original height, to be used when calculating media's ratio aspect.
+     *
+     * @see [[Player._fill]]
+     * @private
+     * @type {number}
+     * @memberof Player
+     */
+    private height: number;
+
    /**
     * Create an instance of Player.
     *
     * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
     * @param {?string} adsUrl  A URL to play Ads via Google IMA SDK (optional).
+    * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container (optional).
     * @returns {Player}
     * @memberof Player
     */
-   constructor(element: HTMLMediaElement|string, adsUrl?: string) {
+   constructor(element: HTMLMediaElement|string, adsUrl?: string, fill?: boolean) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         this.adsUrl = adsUrl;
+        this.fill = fill;
         this.autoplay = this.element.autoplay;
         this.volume = this.element.volume;
+        this.width = this.element.offsetWidth;
+        this.height = this.element.offsetHeight;
         this.element.autoplay = false;
         return this;
     }
@@ -470,6 +504,11 @@ class Player {
                 wrapper.classList.add('om-player__keyboard--inactive');
             }
         });
+
+        if (this.fill) {
+            this._fill();
+            window.addEventListener('resize', this._fill.bind(this));
+        }
     }
 
     /**
@@ -709,6 +748,73 @@ class Player {
                     this.play();
                 }
             });
+        }
+    }
+
+    /**
+     * Create fill effect on video, scaling and croping dimensions to its parent.
+     *
+     * This methods centers the video view using pure CSS, and uses algorithm to search for
+     * the next immediate parent.
+     * @see https://www.viget.com/articles/fullscreen-html5-video-with-css-transforms/
+     * @private
+     * @memberof Player
+     */
+    private _fill(): void {
+        if (isAudio(this.element)) {
+            return;
+        }
+
+        const isVisible = (element: HTMLElement) => {
+            if (element.getClientRects !== undefined && typeof element.getClientRects === 'function') {
+                return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
+            }
+            return !!(element.offsetWidth || element.offsetHeight);
+        };
+        const parent = (() => {
+            let parentEl;
+            let el = this.getContainer();
+
+            // traverse parents to find the closest visible one
+            while (el) {
+                try {
+                    // Firefox has an issue calculating dimensions on hidden iframes
+                    if (IS_FIREFOX && el.tagName.toLowerCase() === 'html' && window.self !== window.top && window.frameElement !== null) {
+                        return window.frameElement;
+                    } else {
+                        parentEl = el.parentElement;
+                    }
+                } catch (e) {
+                    parentEl = el.parentElement;
+                }
+
+                if (parentEl && isVisible(parentEl)) {
+                    return parentEl;
+                }
+                el = parentEl;
+            }
+
+            return null;
+        })();
+
+        const height = (parent as HTMLElement).offsetHeight;
+        const width = (parent as HTMLElement).offsetWidth;
+        const viewportRatio = width / height;
+        const videoRatio = this.width / this.height;
+        let scale = 1;
+
+        if (videoRatio < viewportRatio) {
+            scale = viewportRatio / videoRatio;
+        } else if (viewportRatio < videoRatio) {
+            scale = videoRatio / viewportRatio;
+        }
+
+        const transform = `translate(0, 0) scale(${scale})`;
+        this.element.style.transform = transform;
+        this.element.style.webkitTransform = transform;
+
+        if (this.isAd()) {
+            this.getAd().resizeAds(width, height, transform);
         }
     }
 }
