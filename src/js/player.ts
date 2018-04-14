@@ -26,7 +26,7 @@ class Player {
      * @type PlayerInstanceList
      * @memberof Player
      */
-    public static instances: PlayerInstanceList;
+    public static instances: PlayerInstanceList = {};
 
     /**
      * Convert all the video/audio tags with `om-player` class in a OpenMedia player instance.
@@ -452,7 +452,8 @@ class Player {
 
     /**
      * Check if the element passed in the constructor is a valid video/audio tag
-     * with 'om-player' class
+     * with 'om-player__media' class (at the very least, since `om-player` works
+     * for automatic instantiation)
      *
      * @private
      * @memberof Player
@@ -469,7 +470,7 @@ class Player {
             return false;
         }
 
-        if (!el.classList.contains('om-player')) {
+        if (!el.classList.contains('om-player__media')) {
             return false;
         }
 
