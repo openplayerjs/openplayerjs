@@ -24,8 +24,12 @@ describe('OpenPlayer.js', () => {
         expect(player.id).to.equal('player1');
     });
 
-    it('Detects if user is using a mouse or keyboard', () => {
+    it('Detects if user is using a mouse (by default) or keyboard', () => {
         expect(player.getContainer().getAttribute('class').indexOf('om-player__keyboard--inactive') > -1).to.equal(true);
+        const event = new CustomEvent('keydown');
+        event.keyCode = 14;
+        player.getContainer().dispatchEvent(event);
+        expect(player.getContainer().getAttribute('class').indexOf('om-player__keyboard--inactive') === -1).to.equal(true);
     });
 
     it('Detects type of media to be played (i.e., video)', () => {
@@ -78,20 +82,24 @@ describe('OpenPlayer.js', () => {
     });
 
     it('Plays/pauses media correctly', function (done) {
-        this.timeout(2500);
+        this.timeout(3500);
         player.play();
         setTimeout(() => {
+            expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
             player.pause();
-            expect(player.getContainer().querySelector('.om-controls__current').innerText).to.equal('00:01');
-            done();
+            setTimeout(() => {
+                expect(player.getContainer().querySelector('.om-controls__current').innerText).to.equal('00:01');
+                expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
+                done();
+            }, 1000);
         }, 2000);
     });
 
     it('Creates controls if browser is not iOS', () => {
         if (iOS) {
-            expect(player.getContainer().querySelector('.om-controls').length).to.equal(null);
+            expect(player.getContainer().querySelector('.om-controls')).to.equal(null);
         } else {
-            expect(player.getContainer().querySelector('.om-controls').length).to.not.equal(null);
+            expect(player.getContainer().querySelector('.om-controls')).to.not.equal(null);
         }
     });
 
@@ -155,22 +163,22 @@ describe('OpenPlayer.js', () => {
         }
     });
 
-    it('Toggles fullscreen when clicking on `Fullscreen` button', function (done) {
-        this.timeout(3500);
-        const fullscreen = player.getContainer().querySelector('.om-controls__fullscreen');
-        const event = new CustomEvent('click');
-        fullscreen.dispatchEvent(event);
-        done();
-        // setTimeout(() => {
-        //     expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.not.equal(null);
-        //     const e = new CustomEvent('click');
-        //     fullscreen.dispatchEvent(e);
-        //     setTimeout(() => {
-        //         expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.equal(null);
-        //         done();
-        //     }, 1000);
-        // }, 1000);
-    });
+    // it('Toggles fullscreen when clicking on `Fullscreen` button', function (done) {
+    //     this.timeout(3500);
+    //     const fullscreen = player.getContainer().querySelector('.om-controls__fullscreen');
+    //     const event = new CustomEvent('click');
+    //     fullscreen.dispatchEvent(event);
+    //     done();
+    // setTimeout(() => {
+    //     expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.not.equal(null);
+    //     const e = new CustomEvent('click');
+    //     fullscreen.dispatchEvent(e);
+    //     setTimeout(() => {
+    //         expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.equal(null);
+    //         done();
+    //     }, 1000);
+    // }, 1000);
+    // });
 
     it('Changes source correctly (from MP4 to HLS, and viceversa)', function (done) {
         this.timeout(4000);
