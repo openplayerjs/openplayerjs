@@ -1,4 +1,4 @@
-const webpackConfig = require('./webpack.config');
+// const webpackConfig = require('./webpack.config');
 
 module.exports = function (config) {
     config.set({
@@ -6,20 +6,20 @@ module.exports = function (config) {
         basePath: '',
         frameworks: ['mocha', 'chai', 'sinon'],
         files: [
-            'test/**/*.ts'
+            'test/index.html'
         ],
         exclude: [
         ],
-        preprocessors: {
-            'test/**/*.ts': ['webpack']
-        },
-        webpack: {
-            node: {
-                fs: 'empty'
-            },
-            module: webpackConfig.module,
-            resolve: webpackConfig.resolve
-        },
+        // preprocessors: {
+        //     'test/**/*.js': ['webpack']
+        // },
+        // webpack: {
+        //     node: {
+        //         fs: 'empty'
+        //     },
+        //     module: webpackConfig.module,
+        //     resolve: webpackConfig.resolve
+        // },
         reporters: ['progress'],
         port: 9876,
         colors: true,
