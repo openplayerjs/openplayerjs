@@ -40,6 +40,14 @@ describe('OpenPlayer.js', () => {
         expect(player.isAd()).to.equal(false);
     });
 
+    it('Displays the duration of media when player is loaded', function (done) {
+        this.timeout(1500);
+        setTimeout(() => {
+            expect(player.getContainer().querySelector('.om-controls__duration').innerText).to.not.equal('00:00');
+            done();
+        }, 1000);
+    });
+
     it('Autoplays if `autoplay` attribute is present', function (done) {
         this.timeout(1500);
         expect(player.autoplay).to.equal(false);
@@ -169,16 +177,29 @@ describe('OpenPlayer.js', () => {
     //     const event = new CustomEvent('click');
     //     fullscreen.dispatchEvent(event);
     //     done();
-    // setTimeout(() => {
-    //     expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.not.equal(null);
-    //     const e = new CustomEvent('click');
-    //     fullscreen.dispatchEvent(e);
     //     setTimeout(() => {
-    //         expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.equal(null);
-    //         done();
+    //         expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.not.equal(null);
+    //         const e = new CustomEvent('click');
+    //         fullscreen.dispatchEvent(e);
+    //         setTimeout(() => {
+    //             expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.equal(null);
+    //             done();
+    //         }, 1000);
     //     }, 1000);
-    // }, 1000);
     // });
+
+    it('Toggles settings when clicking on button', function (done) {
+        this.timeout(1500);
+        const button = player.getContainer().querySelector('.om-controls__settings');
+        const event = new CustomEvent('click');
+        button.dispatchEvent(event);
+        expect(player.getContainer().querySelector('.om-settings').getAttribute('aria-hidden')).to.equal('false');
+        setTimeout(() => {
+            button.dispatchEvent(event);
+            expect(player.getContainer().querySelector('.om-settings').getAttribute('aria-hidden')).to.equal('true');
+            done();
+        }, 1000);
+    });
 
     it('Changes source correctly (from MP4 to HLS, and viceversa)', function (done) {
         this.timeout(4000);
