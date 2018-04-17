@@ -62,31 +62,34 @@ describe('OpenPlayer.js', () => {
     });
 
     it('Allows user to manipulate player with keyboard', function (done) {
-        this.timeout(3500);
+        this.timeout(3800);
         const event = new CustomEvent('keydown');
         event.keyCode = 39;
         player.element.dispatchEvent(event);
-        expect(player.media.currentTime > 0).to.equal(true);
-        const e = new CustomEvent('keydown');
-        e.keyCode = 37;
-        player.element.dispatchEvent(e);
-        expect(player.media.currentTime === 0).to.equal(true);
-
-        const playEvent = new CustomEvent('keydown');
-        playEvent.keyCode = 13;
-        player.element.dispatchEvent(playEvent);
-
         setTimeout(() => {
-            expect(player.media.paused).to.equal(false);
-            const pauseEvent = new CustomEvent('keydown');
-            pauseEvent.keyCode = 13;
-            player.element.dispatchEvent(pauseEvent);
+            expect(player.media.currentTime > 0).to.equal(true);
+            const e = new CustomEvent('keydown');
+            e.keyCode = 37;
+            player.element.dispatchEvent(e);
+
             setTimeout(() => {
-                expect(player.media.paused).to.equal(true);
-                player.media.currentTime = 0;
-                done();
-            }, 1000);
-        }, 2000);
+                expect(player.media.currentTime === 0).to.equal(true);
+                const playEvent = new CustomEvent('keydown');
+                playEvent.keyCode = 13;
+                player.element.dispatchEvent(playEvent);
+                setTimeout(() => {
+                    expect(player.media.paused).to.equal(false);
+                    const pauseEvent = new CustomEvent('keydown');
+                    pauseEvent.keyCode = 13;
+                    player.element.dispatchEvent(pauseEvent);
+                    setTimeout(() => {
+                        expect(player.media.paused).to.equal(true);
+                        player.media.currentTime = 0;
+                        done();
+                    }, 1000);
+                }, 100);
+            }, 2000);
+        }, 100);
     });
 
     it('Plays/pauses media correctly', function (done) {
