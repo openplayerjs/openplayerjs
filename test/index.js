@@ -94,9 +94,9 @@ describe('OpenPlayer.js', () => {
         player.play();
         setTimeout(() => {
             expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
+            player.pause();
             setTimeout(() => {
-                player.pause();
-                expect(player.getContainer().querySelector('.om-controls__current').innerText).to.not.equal('00:00');
+                expect(player.getContainer().querySelector('.om-controls__current').innerText).to.equal('00:01');
                 expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
                 done();
             }, 1000);
