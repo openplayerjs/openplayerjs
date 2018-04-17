@@ -18,4 +18,4 @@ Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.
 * Support for **local and remote captions**.
 * **No dependencies**, since this player is written in Typescript.
 
-## How to use it?##
+## How to use it?
