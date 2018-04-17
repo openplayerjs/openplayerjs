@@ -61,47 +61,47 @@ describe('OpenPlayer.js', () => {
         }, 1000);
     });
 
-    // it('Allows user to manipulate player with keyboard', function (done) {
-    //     this.timeout(3500);
-    //     const event = new CustomEvent('keydown');
-    //     event.keyCode = 39;
-    //     player.element.dispatchEvent(event);
-    //     expect(player.media.currentTime > 0).to.equal(true);
-    //     const e = new CustomEvent('keydown');
-    //     e.keyCode = 37;
-    //     player.element.dispatchEvent(e);
-    //     expect(player.media.currentTime === 0).to.equal(true);
+    it('Allows user to manipulate player with keyboard', function (done) {
+        this.timeout(3500);
+        const event = new CustomEvent('keydown');
+        event.keyCode = 39;
+        player.element.dispatchEvent(event);
+        expect(player.media.currentTime > 0).to.equal(true);
+        const e = new CustomEvent('keydown');
+        e.keyCode = 37;
+        player.element.dispatchEvent(e);
+        expect(player.media.currentTime === 0).to.equal(true);
 
-    //     const playEvent = new CustomEvent('keydown');
-    //     playEvent.keyCode = 13;
-    //     player.element.dispatchEvent(playEvent);
+        const playEvent = new CustomEvent('keydown');
+        playEvent.keyCode = 13;
+        player.element.dispatchEvent(playEvent);
 
-    //     setTimeout(() => {
-    //         expect(player.media.paused).to.equal(false);
-    //         const pauseEvent = new CustomEvent('keydown');
-    //         pauseEvent.keyCode = 13;
-    //         player.element.dispatchEvent(pauseEvent);
-    //         setTimeout(() => {
-    //             expect(player.media.paused).to.equal(true);
-    //             player.media.currentTime = 0;
-    //             done();
-    //         }, 1000);
-    //     }, 2000);
-    // });
+        setTimeout(() => {
+            expect(player.media.paused).to.equal(false);
+            const pauseEvent = new CustomEvent('keydown');
+            pauseEvent.keyCode = 13;
+            player.element.dispatchEvent(pauseEvent);
+            setTimeout(() => {
+                expect(player.media.paused).to.equal(true);
+                player.media.currentTime = 0;
+                done();
+            }, 1000);
+        }, 2000);
+    });
 
-    // it('Plays/pauses media correctly', function (done) {
-    //     this.timeout(3500);
-    //     player.play();
-    //     setTimeout(() => {
-    //         expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
-    //         player.pause();
-    //         setTimeout(() => {
-    //             expect(player.getContainer().querySelector('.om-controls__current').innerText).to.equal('00:01');
-    //             expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
-    //             done();
-    //         }, 1000);
-    //     }, 2000);
-    // });
+    it('Plays/pauses media correctly', function (done) {
+        this.timeout(3500);
+        player.play();
+        setTimeout(() => {
+            expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
+            player.pause();
+            setTimeout(() => {
+                expect(player.getContainer().querySelector('.om-controls__current').innerText).to.equal('00:01');
+                expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
+                done();
+            }, 1000);
+        }, 2000);
+    });
 
     it('Creates controls if browser is not iOS', () => {
         if (iOS) {
@@ -121,21 +121,21 @@ describe('OpenPlayer.js', () => {
         expect(player.getContainer().getAttribute('class').indexOf('om-captions--detected') > -1).to.equal(!!trackTags.length);
     });
 
-    // it('Displays captions automatically if `track` tag(s) present', function (done) {
-    //     this.timeout(2500);
-    //     if (iOS) {
-    //         expect(player.getContainer().querySelector('.om-controls__captions')).to.equal(null);
-    //         done();
-    //     } else {
-    //         expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on') > -1).to.equal(true);
-    //         player.play();
-    //         setTimeout(() => {
-    //             expect(!!player.getContainer().querySelector('.om-captions>span').innerHTML.length).to.equal(true);
-    //             player.pause();
-    //             done();
-    //         }, 2000);
-    //     }
-    // });
+    it('Displays captions automatically if `track` tag(s) present', function (done) {
+        this.timeout(2500);
+        if (iOS) {
+            expect(player.getContainer().querySelector('.om-controls__captions')).to.equal(null);
+            done();
+        } else {
+            expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on') > -1).to.equal(true);
+            player.play();
+            setTimeout(() => {
+                expect(!!player.getContainer().querySelector('.om-captions>span').innerHTML.length).to.equal(true);
+                player.pause();
+                done();
+            }, 2000);
+        }
+    });
 
     it('Adds caption dynamically and renders it if `default` attribute is passed in object', () => {
         player.addCaptions({
