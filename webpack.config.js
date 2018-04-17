@@ -21,11 +21,15 @@ module.exports = {
                 enforce: 'pre',
                 test: /src\/*\.js$/,
                 exclude: /node_modules/,
-                loader: 'eslint-loader',
-                options: {
-                    failOnWarning: true,
-                    failOnError: true
-                }
+
+                use: [{
+                    loader: 'eslint-loader',
+
+                    options: {
+                        failOnWarning: true,
+                        failOnError: true
+                    }
+                }]
             },
             {
                 test: /\.tsx?$/,
@@ -54,7 +58,13 @@ module.exports = {
             },
             {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                loader: 'url-loader?limit=100000'
+                use: [{
+                    loader: 'url-loader',
+
+                    options: {
+                        limit: 100000
+                    }
+                }]
             },
             {
                 test: /\.css$/,
