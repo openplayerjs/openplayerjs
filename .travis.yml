@@ -1,19 +1,20 @@
 language: node_js
 node_js:
   - "0.10"
-script: node_modules/karma/bin/karma start karma.conf.js --single-run
-before_install:
-  - npm install
-  - export CHROME_BIN=/usr/bin/google-chrome
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-after_success:
-- npm run coveralls
+addons:
+  chrome: stable
+branches:
+  only:
+    - master
+git:
+  depth: 1
 dist: trusty
 sudo: required
 cache:
   directories:
     - node_modules
+script:
+  - npm run test
 notifications:
   email:
     on_success: never
