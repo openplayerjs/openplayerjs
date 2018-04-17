@@ -1,5 +1,7 @@
 # OpenPlayer.js
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/rafa8626/openplayer.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)
 
 ## What is it?
