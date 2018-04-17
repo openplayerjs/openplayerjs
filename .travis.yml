@@ -3,11 +3,6 @@ node_js:
   - "7"
 addons:
   chrome: stable
-branches:
-  only:
-    - master
-git:
-  depth: 1
 dist: trusty
 sudo: required
 cache:
