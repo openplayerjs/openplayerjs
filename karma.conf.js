@@ -13,13 +13,7 @@ module.exports = config => {
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
-        browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessNoSandbox'],
-        customLaunchers: {
-            ChromeHeadlessNoSandbox: {
-                base: 'ChromeHeadless',
-                flags: ['--no-sandbox']
-            }
-        },
+        browsers: ['ChromeHeadless'],
         proxies: {
             '/dist/': '/base/dist/',
             '/test/': '/base/test/',
