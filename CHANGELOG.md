@@ -17,16 +17,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * **tests:** Added browser tests with Mocha/Chai and support for Travis CI ([e43b197](https://github.com/rafa8626/openplayer/commit/e43b197))
-
-
-
-<a name="1.0.0"></a>
-# 1.0.0 (2018-04-17)
-
-### Bug Fixes
-
-* **test:** Removed elements from Travis CI config to allow Greenkeeper to work ([8ba5e73](https://github.com/rafa8626/openplayer/commit/8ba5e73))
-
-### Features
-
-* **test:** Added browser tests with Mocha/Chai and support for Travis CI ([e43b197](https://github.com/rafa8626/openplayer/commit/e43b197))
