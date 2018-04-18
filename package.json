@@ -27,7 +27,7 @@
     "scripts": {
         "build": "rm -rf ./dist/ && webpack",
         "version": "conventional-changelog -p angular -i CHANGELOG.md -s",
-        "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
+        "test": "karma start --single-run --browsers ChromeHeadlessNoSandbox karma.conf.js",
         "docs": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
     },
     "readme": "https://github.com/rafa8626/openplayer/blob/master/README.md",
