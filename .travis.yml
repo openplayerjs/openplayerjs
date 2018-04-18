@@ -1,10 +1,10 @@
 language: node_js
 node_js:
   - "7"
+env:
+  - MOZ_HEADLESS=1
 addons:
-  chrome: stable
-dist: trusty
-sudo: required
+  firefox: latest
 cache:
   directories:
     - node_modules
