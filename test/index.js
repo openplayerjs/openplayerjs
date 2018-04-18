@@ -2,17 +2,9 @@ describe('OpenPlayer.js', () => {
     let player;
     const iOS = /ipad|iphone|ipod/i.test(window.navigator.userAgent) && !window.MSStream;
 
-    before(() => {
+    it('Creates an OpenPlayer instance', () => {
         player = new OpenPlayer('player1');
         player.init();
-    });
-
-    after(() => {
-        player.destroy();
-        player = null;
-    });
-
-    it('Creates an OpenPlayer instance', () => {
         expect(player instanceof OpenPlayer).to.equal(true);
     });
 
@@ -61,8 +53,7 @@ describe('OpenPlayer.js', () => {
         }, 1000);
     });
 
-    it('Allows user to manipulate player with keyboard', function (done) {
-        this.timeout(3500);
+    it('Allows user to manipulate player with keyboard', () => {
         const event = new CustomEvent('keydown');
         event.keyCode = 39;
         player.element.dispatchEvent(event);
@@ -75,32 +66,22 @@ describe('OpenPlayer.js', () => {
         const playEvent = new CustomEvent('keydown');
         playEvent.keyCode = 13;
         player.element.dispatchEvent(playEvent);
-
-        setTimeout(() => {
-            expect(player.media.paused).to.equal(false);
-            const pauseEvent = new CustomEvent('keydown');
-            pauseEvent.keyCode = 13;
-            player.element.dispatchEvent(pauseEvent);
-            setTimeout(() => {
-                expect(player.media.paused).to.equal(true);
-                player.media.currentTime = 0;
-                done();
-            }, 1000);
-        }, 2000);
+        expect(player.media.paused).to.equal(true);
+        player.media.currentTime = 0;
     });
 
-    it('Plays/pauses media correctly', function (done) {
-        this.timeout(3500);
-        player.play();
+    it('Plays/pauses media correctly', done => {
+        player.pause();
         setTimeout(() => {
-            expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
-            player.pause();
+            expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
+            player.play();
+
             setTimeout(() => {
-                expect(player.getContainer().querySelector('.om-controls__current').innerText).to.equal('00:01');
-                expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
+                expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
+                player.pause();
                 done();
-            }, 1000);
-        }, 2000);
+            }, 300);
+        }, 1000);
     });
 
     it('Creates controls if browser is not iOS', () => {
@@ -121,20 +102,16 @@ describe('OpenPlayer.js', () => {
         expect(player.getContainer().getAttribute('class').indexOf('om-captions--detected') > -1).to.equal(!!trackTags.length);
     });
 
-    it('Displays captions automatically if `track` tag(s) present', function (done) {
-        this.timeout(2500);
-        if (iOS) {
-            expect(player.getContainer().querySelector('.om-controls__captions')).to.equal(null);
-            done();
-        } else {
-            expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on') > -1).to.equal(true);
-            player.play();
+    it('Displays captions automatically if `track` tag(s) present', done => {
+        expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on') > -1).to.equal(true);
+        player.play();
+        setTimeout(() => {
+            expect(player.getContainer().querySelector('.om-captions>span').innerHTML).to.not.equal('');
             setTimeout(() => {
-                expect(!!player.getContainer().querySelector('.om-captions>span').innerHTML.length).to.equal(true);
                 player.pause();
                 done();
-            }, 2000);
-        }
+            }, 500);
+        }, 1000);
     });
 
     it('Adds caption dynamically and renders it if `default` attribute is passed in object', () => {
@@ -149,18 +126,14 @@ describe('OpenPlayer.js', () => {
         expect(player.getContainer().querySelector('.om-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
     });
 
-    it('Mutes/unmutes media when clicking on `Mute` button', function (done) {
-        this.timeout(1500);
+    it('Unmutes/mutes media when clicking on `Mute` button', () => {
         const mute = player.getContainer().querySelector('.om-controls__mute');
         const event = new CustomEvent('click');
+        const isMuted = player.media.muted;
         mute.dispatchEvent(event);
-        expect(player.getContainer().querySelector('.om-controls__mute--muted')).to.not.equal(null);
-        setTimeout(() => {
-            const e = new CustomEvent('click');
-            mute.dispatchEvent(e);
-            expect(player.getContainer().querySelector('.om-controls__mute--muted')).to.equal(null);
-            done();
-        }, 1000);
+        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label')).to.equal((isMuted ? 'Mute' : 'Unmute'));
+        mute.dispatchEvent(event);
+        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label')).to.equal((isMuted ? 'Unmute' : 'Mute'));
     });
 
     it('Renders a `fullscreen` button only for video', () => {
@@ -188,38 +161,37 @@ describe('OpenPlayer.js', () => {
     //     }, 1000);
     // });
 
-    it('Toggles settings when clicking on button', function (done) {
-        this.timeout(1500);
+    it('Toggles settings when clicking on button', () => {
         const button = player.getContainer().querySelector('.om-controls__settings');
         const event = new CustomEvent('click');
         button.dispatchEvent(event);
         expect(player.getContainer().querySelector('.om-settings').getAttribute('aria-hidden')).to.equal('false');
-        setTimeout(() => {
-            button.dispatchEvent(event);
-            expect(player.getContainer().querySelector('.om-settings').getAttribute('aria-hidden')).to.equal('true');
-            done();
-        }, 1000);
+        button.dispatchEvent(event);
+        expect(player.getContainer().querySelector('.om-settings').getAttribute('aria-hidden')).to.equal('true');
     });
 
     it('Changes source correctly (from MP4 to HLS, and viceversa)', function (done) {
-        this.timeout(4000);
+        this.timeout(2500);
         player.src = 'https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8';
         player.load();
         player.play();
+        expect(player.src[0].src).to.equal('https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8');
+        expect(player.src[0].type).to.equal('application/x-mpegURL');
         setTimeout(() => {
-            expect(player.src[0].src).to.equal('https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8');
-            expect(player.src[0].type).to.equal('application/x-mpegURL');
             player.pause();
             player.src = 'http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4';
             player.load();
             expect(player.src[0].src).to.equal('http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4');
             expect(player.src[0].type).to.equal('video/mp4');
             done();
-        }, 3000);
+        }, 2000);
     });
 
-    it('Destroys player correctly', () => {
-        player.destroy();
-        expect(player.getContainer().getAttribute('class').indexOf('.om-player') > -1).to.equal(false);
+    it('Destroys player correctly', done => {
+        setTimeout(() => {
+            player.destroy();
+            expect(player.getContainer().getAttribute('class').indexOf('.om-player') > -1).to.equal(false);
+            done();
+        }, 1000);
     });
 });
