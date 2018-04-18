@@ -66,10 +66,12 @@ describe('OpenPlayer.js', () => {
         const event = new CustomEvent('keydown');
         event.keyCode = 39;
         player.element.dispatchEvent(event);
+        console.log(player.media.currentTime);
         expect(player.media.currentTime > 0).to.equal(true);
         const e = new CustomEvent('keydown');
         e.keyCode = 37;
         player.element.dispatchEvent(e);
+        console.log(player.media.currentTime);
         expect(player.media.currentTime === 0).to.equal(true);
 
         const playEvent = new CustomEvent('keydown');
@@ -77,11 +79,13 @@ describe('OpenPlayer.js', () => {
         player.element.dispatchEvent(playEvent);
 
         setTimeout(() => {
+            console.log(player.media.paused);
             expect(player.media.paused).to.equal(false);
             const pauseEvent = new CustomEvent('keydown');
             pauseEvent.keyCode = 13;
             player.element.dispatchEvent(pauseEvent);
             setTimeout(() => {
+                console.log(player.media.paused);
                 expect(player.media.paused).to.equal(true);
                 player.media.currentTime = 0;
                 done();
