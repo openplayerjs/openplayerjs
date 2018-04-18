@@ -72,7 +72,8 @@ That's it!
 There are other elements that can be included, such as Captions and multiple sources. Also, the `data-om-*` attributes can be used to enhance Ads or the `fill` mode.
 
 ```html
-<video class="om-player om-player__media" poster="/path/to/poster.jpg" controls playsinline autoplay muted data-om-ads="[valid VAST/VPAID URL]" data-om-fill="[true|false]">
+<video class="om-player om-player__media" poster="/path/to/poster.jpg" controls playsinline
+    autoplay muted data-om-ads="[valid VAST/VPAID URL]" data-om-fill="[true|false]">
     <source src="/path/to/video.m3u8" type="application/x-mpegURL">
     <source src="/path/to/video.mp4" type="video/mp4">
     <track label="English" kind="subtitles" srclang="en" src="/path/to/captions.vtt" default>

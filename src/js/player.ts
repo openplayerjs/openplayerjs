@@ -753,7 +753,7 @@ class Player {
     }
 
     /**
-     * Create fill effect on video, scaling and croping dimensions to its parent.
+     * Create fill effect on video, scaling and croping dimensions relative to its parent.
      *
      * This methods centers the video view using pure CSS, and uses algorithm to search for
      * the next immediate parent.
