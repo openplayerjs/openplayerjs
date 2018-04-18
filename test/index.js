@@ -75,27 +75,13 @@ describe('OpenPlayer.js', () => {
         const playEvent = new CustomEvent('keydown');
         playEvent.keyCode = 32;
         player.element.dispatchEvent(playEvent);
-
-        setTimeout(() => {
-            console.log(player.media.paused);
-            expect(player.media.paused).to.equal(false);
-            const pauseEvent = new CustomEvent('keydown');
-            pauseEvent.keyCode = 32;
-            player.element.dispatchEvent(pauseEvent);
-            setTimeout(() => {
-                console.log(player.media.paused);
-                expect(player.media.paused).to.equal(true);
-                player.media.currentTime = 0;
-                done();
-            }, 1000);
-        }, 2000);
     });
 
     it('Plays/pauses media correctly', function (done) {
         this.timeout(3500);
         player.play();
         setTimeout(() => {
-            console.log(player.getContainer().querySelector('.om-player__play--paused'));
+            console.log(player.getContainer());
             expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
             player.pause();
             setTimeout(() => {
@@ -132,15 +118,13 @@ describe('OpenPlayer.js', () => {
             expect(player.getContainer().querySelector('.om-controls__captions')).to.equal(null);
             done();
         } else {
-            console.log(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on'));
             expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on') > -1).to.equal(true);
             player.play();
             setTimeout(() => {
-                console.log(!!player.getContainer().querySelector('.om-captions>span').innerHTML.length);
-                expect(!!player.getContainer().querySelector('.om-captions>span').innerHTML.length).to.equal(true);
+                expect(player.getContainer().querySelector('.om-captions>span').innerHTML).to.not.equal('');
                 player.pause();
                 done();
-            }, 2000);
+            }, 1000);
         }
     });
 
