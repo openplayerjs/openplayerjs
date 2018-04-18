@@ -62,7 +62,6 @@ describe('OpenPlayer.js', () => {
     });
 
     it('Allows user to manipulate player with keyboard', () => {
-        this.timeout(3500);
         const event = new CustomEvent('keydown');
         event.keyCode = 39;
         player.element.dispatchEvent(event);
@@ -71,7 +70,6 @@ describe('OpenPlayer.js', () => {
         e.keyCode = 37;
         player.element.dispatchEvent(e);
         expect(player.media.currentTime === 0).to.equal(true);
-        done();
     });
 
     it('Plays/pauses media correctly', function (done) {
@@ -140,9 +138,9 @@ describe('OpenPlayer.js', () => {
         const event = new CustomEvent('click');
         mute.dispatchEvent(event);
         expect(player.getContainer().querySelector('.om-controls__mute--muted')).to.not.equal(null);
+        const e = new CustomEvent('click');
+        mute.dispatchEvent(e);
         setTimeout(() => {
-            const e = new CustomEvent('click');
-            mute.dispatchEvent(e);
             expect(player.getContainer().querySelector('.om-controls__mute--muted')).to.equal(null);
             done();
         }, 1000);
