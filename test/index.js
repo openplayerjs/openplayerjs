@@ -61,7 +61,7 @@ describe('OpenPlayer.js', () => {
         }, 1000);
     });
 
-    it('Allows user to manipulate player with keyboard', function (done) {
+    it('Allows user to manipulate player with keyboard', () => {
         this.timeout(3500);
         const event = new CustomEvent('keydown');
         event.keyCode = 39;
@@ -71,10 +71,7 @@ describe('OpenPlayer.js', () => {
         e.keyCode = 37;
         player.element.dispatchEvent(e);
         expect(player.media.currentTime === 0).to.equal(true);
-
-        const playEvent = new CustomEvent('keydown');
-        playEvent.keyCode = 32;
-        player.element.dispatchEvent(playEvent);
+        done();
     });
 
     it('Plays/pauses media correctly', function (done) {
