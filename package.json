@@ -1,6 +1,6 @@
 {
     "name": "openplayer",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "author": {
         "name": "Rafael Miranda",
         "email": "rafa8626@gmail.com"
@@ -26,7 +26,7 @@
     ],
     "scripts": {
         "build": "rm -rf ./dist/ && webpack",
-        "version": "conventional-changelog -p angular -i CHANGELOG.md -s",
+        "release": "standard-version",
         "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
         "docs": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
     },
@@ -63,6 +63,7 @@
         "postcss-cssnext": "^3.1.0",
         "postcss-import": "^11.1.0",
         "postcss-loader": "^2.1.3",
+        "standard-version": "^4.3.0",
         "style-loader": "^0.20.3",
         "stylelint": "^9.2.0",
         "stylelint-order": "^0.8.1",
