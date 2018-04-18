@@ -131,9 +131,11 @@ describe('OpenPlayer.js', () => {
         const event = new CustomEvent('click');
         const isMuted = player.media.muted;
         mute.dispatchEvent(event);
-        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label')).to.equal((isMuted ? 'Mute' : 'Unmute'));
+        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label'))
+            .to.equal((isMuted ? 'Mute' : 'Unmute'));
         mute.dispatchEvent(event);
-        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label')).to.equal((isMuted ? 'Unmute' : 'Mute'));
+        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label'))
+            .to.equal((isMuted ? 'Unmute' : 'Mute'));
     });
 
     it('Renders a `fullscreen` button only for video', () => {
