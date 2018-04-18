@@ -66,23 +66,21 @@ describe('OpenPlayer.js', () => {
         const event = new CustomEvent('keydown');
         event.keyCode = 39;
         player.element.dispatchEvent(event);
-        console.log(player.media.currentTime);
         expect(player.media.currentTime > 0).to.equal(true);
         const e = new CustomEvent('keydown');
         e.keyCode = 37;
         player.element.dispatchEvent(e);
-        console.log(player.media.currentTime);
         expect(player.media.currentTime === 0).to.equal(true);
 
         const playEvent = new CustomEvent('keydown');
-        playEvent.keyCode = 13;
+        playEvent.keyCode = 32;
         player.element.dispatchEvent(playEvent);
 
         setTimeout(() => {
             console.log(player.media.paused);
             expect(player.media.paused).to.equal(false);
             const pauseEvent = new CustomEvent('keydown');
-            pauseEvent.keyCode = 13;
+            pauseEvent.keyCode = 32;
             player.element.dispatchEvent(pauseEvent);
             setTimeout(() => {
                 console.log(player.media.paused);
@@ -97,9 +95,12 @@ describe('OpenPlayer.js', () => {
         this.timeout(3500);
         player.play();
         setTimeout(() => {
+            console.log(player.getContainer().querySelector('.om-player__play--paused'));
             expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
             player.pause();
             setTimeout(() => {
+                console.log(player.getContainer().querySelector('.om-controls__current').innerText);
+                console.log(player.getContainer().querySelector('.om-player__play--paused'));
                 expect(player.getContainer().querySelector('.om-controls__current').innerText).to.equal('00:01');
                 expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
                 done();
@@ -131,9 +132,11 @@ describe('OpenPlayer.js', () => {
             expect(player.getContainer().querySelector('.om-controls__captions')).to.equal(null);
             done();
         } else {
+            console.log(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on'));
             expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on') > -1).to.equal(true);
             player.play();
             setTimeout(() => {
+                console.log(!!player.getContainer().querySelector('.om-captions>span').innerHTML.length);
                 expect(!!player.getContainer().querySelector('.om-captions>span').innerHTML.length).to.equal(true);
                 player.pause();
                 done();
