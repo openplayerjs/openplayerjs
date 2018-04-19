@@ -36,7 +36,7 @@ npm run build
 
 ### HTML
 
-Include the OpenPlayer stylesheet inside the `<head>` tag, and the script at the bottom of the `<body>` tag. The bundles will contain both minified and uncompressed files, so use the one that fits the best your needs.
+Include the OpenPlayer stylesheet inside the `<head>` tag, and the script at the bottom of the `<body>` tag (both of them located in the `dist` folder). The bundles will contain both minified and uncompressed files, so use the one that fits the best your needs.
 
 #### Stylesheet
 
@@ -55,7 +55,7 @@ Include the OpenPlayer stylesheet inside the `<head>` tag, and the script at the
 Since this player uses HTML5 markup, all the attributes for video/audio tags are available. The only 3 requirements to invoke the player are:
 
 * A valid media source (such as MP4, MP3, HLS, M(PEG)-DASH).
-* `controls` and `playsinline` properties (to use the player in iPhone).
+* `controls` and `playsinline` properties (to give cross-browser support).
 * The `om-player om-player__media` class names to invoke the player.
 
 That's it!
@@ -100,12 +100,15 @@ var player = OpenPlayer.instances[id];
 
 The methods supported by the OpenPlayer instance are:
 
+Method | Description
 --- | ---
 play | xx
 
 ### Events
 
-Since OpenPlayer is based on HTML5 media, the way to trigger events is using the video/audio tag. Using the code above, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
+Since OpenPlayer is based on HTML5 media, the way to trigger events is using the video/audio tag. 
+
+Using the code above, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
 
 ```javascript
 player.element.addEventListener('ended', function() {
@@ -116,8 +119,9 @@ var event = new CustomEvent('ended');
 player.element.dispatchEvent(event);
 ```
 
-The custom events supported by the OpenPlayer instance are:
+All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayer, and it incorporates some custom ones:
 
+Event | Description
 --- | ---
 controlshidden | xx
 controlschanged | xx
