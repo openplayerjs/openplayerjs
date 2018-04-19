@@ -9,12 +9,29 @@ import Native from './native';
 declare const dashjs: any;
 
 /**
+ * M(PEG)-DASH Media.
  *
+ * @description Class that handles MPD files using dash.js within the player
+ * @see https://github.com/Dash-Industry-Forum/dash.js/
  * @class DashMedia
- * @description Class that handles the dash.js API within the player
  */
 class DashMedia extends Native {
+    /**
+     *
+     *
+     * @private
+     * @type {*}
+     * @memberof DashMedia
+     */
     private player: any;
+
+    /**
+     *
+     *
+     * @private
+     * @type {EventsList}
+     * @memberof DashMedia
+     */
     private events: EventsList = {};
 
     /**
@@ -43,10 +60,22 @@ class DashMedia extends Native {
         return this;
     }
 
+    /**
+     *
+     *
+     * @param {string} mimeType
+     * @returns
+     * @memberof DashMedia
+     */
     public canPlayType(mimeType: string) {
         return HAS_MSE && mimeType === 'application/dash+xml';
     }
 
+    /**
+     *
+     *
+     * @memberof DashMedia
+     */
     public load() {
         this.player.getDebug().setLogToBrowserConsole(false);
         this.player.initialize();
@@ -75,10 +104,20 @@ class DashMedia extends Native {
         }
     }
 
+    /**
+     *
+     *
+     * @memberof DashMedia
+     */
     public destroy() {
         this._revoke();
     }
 
+    /**
+     *
+     *
+     * @memberof DashMedia
+     */
     set src(media: Source) {
         if (isDashSource(media.src)) {
             this._revoke();

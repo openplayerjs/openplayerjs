@@ -11,7 +11,7 @@ import { hasClass } from '../utils/general';
  *
  * @description This class creates a menu of options to manipulate media that cannot
  * be placed in the main control necessarily (such as different captions associated with media,
- * levels of speed to reproduce media, etc.)
+ * levels of speed to play media, etc.)
  * This element is based on YouTube's Settings element.
  * @class Settings
  * @implements PlayerComponent
@@ -137,7 +137,7 @@ class Settings implements PlayerComponent {
             this.menu.setAttribute('aria-hidden', 'true');
         };
 
-        this.events.media['controls.hide'] = this.hideEvent.bind(this);
+        this.events.media['controlshidden'] = this.hideEvent.bind(this);
         this.events.media.play = this.hideEvent.bind(this);
         this.events.media.pause = this.hideEvent.bind(this);
 
@@ -173,7 +173,7 @@ class Settings implements PlayerComponent {
         window.removeEventListener('resize', this.events.global.resize);
         if (this.events.global['settings.submenu'] !== undefined) {
             document.removeEventListener('click', this.events.global['settings.submenu']);
-            this.player.getElement().removeEventListener('controls.hide', this.hideEvent);
+            this.player.getElement().removeEventListener('controlshidden', this.hideEvent);
         }
 
         this.menu.remove();
@@ -300,7 +300,7 @@ class Settings implements PlayerComponent {
         };
 
         document.addEventListener('click', this.events.global['settings.submenu']);
-        this.player.getElement().addEventListener('controls.hide', this.hideEvent);
+        this.player.getElement().addEventListener('controlshidden', this.hideEvent);
     }
 }
 

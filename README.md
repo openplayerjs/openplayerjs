@@ -20,6 +20,7 @@ Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.
 * Support for **local and remote captions**, even without including the `crossorigin` attribute. 
 * Captions **in audio tag**!.
 * **No dependencies**, since this player is written in Typescript.
+* **Auto injects polyfills** using [Polyfill.io library](https://polyfill.io/v2/docs/examples).
 * **Supports IE11+ and all modern browsers**.
 
 ## How to use it?
@@ -94,6 +95,32 @@ If you need more control over the player, OpenPlayer stores instances of each pl
 
 ```javascript
 // Selects the first video/audio that uses OpenPlayer
+// The above code works for video/audio tags with no `ID` attribute.
 var id = document.querySelector('.om-player').id;
 var player = OpenPlayer.instances[id];
 ```
+
+The methods supported by the OpenPlayer instance are:
+
+--- | ---
+play | xx
+
+### Events
+
+Since OpenPlayer is based on HTML5 media, the way to trigger events is using the video/audio tag. Using the code above, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
+
+```javascript
+player.element.addEventListener('ended', function() {
+    console.log('Your code when media ends playing');
+});
+
+var event = new CustomEvent('ended');
+player.element.dispatchEvent(event);
+```
+
+The custom events supported by the OpenPlayer instance are:
+
+--- | ---
+controlshidden | xx
+controlschanged | xx
+adsended | xx

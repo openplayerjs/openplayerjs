@@ -7,5 +7,8 @@ import Cue from './cue';
  * @interface Cue
  */
 export default interface CueList {
+    /**
+     * @type object
+     */
     [language: string]: Cue[];
 }
