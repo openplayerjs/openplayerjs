@@ -8,7 +8,7 @@ Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.
 
 ## Why OpenPlayer?
 
-* **Less than `20KB`** using gzip compression and minification.
+* **Less than `20KB`** when gzipped.
 * **Monetize video and audio content** with video advertising using [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA) library.
 * **Simplified markup** and **highly customizable CSS** (even specific styling for high contrast mode). See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
 * IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **ever-green scripts** from their recommended CDN sources to always obtain the latest upgrades.
@@ -129,4 +129,4 @@ adsended | xx
 
 ## Contributions
 
-All notable changes to this project will be documented in this file. Make sur you check [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+Make sure you check [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
