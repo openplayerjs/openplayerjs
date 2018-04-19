@@ -126,3 +126,7 @@ Event | Description
 controlshidden | xx
 controlschanged | xx
 adsended | xx
+
+## Contributions
+
+All notable changes to this project will be documented in this file. Make sur you check [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
