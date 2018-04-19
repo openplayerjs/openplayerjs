@@ -259,7 +259,7 @@ class Controls implements PlayerComponent {
             if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
                 this.player.getContainer().classList.add('om-controls--hidden');
                 this._stopControlTimer();
-                const event = addEvent('controls.hide');
+                const event = addEvent('controlshidden');
                 this.player.getElement().dispatchEvent(event);
             }
         }, time);

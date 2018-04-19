@@ -141,7 +141,7 @@ class Play implements PlayerComponent {
             this.button.title = 'Play';
             this.button.setAttribute('aria-label', 'Play');
         };
-        this.events.media['ads.ended'] = () => {
+        this.events.media['adsended'] = () => {
             this.button.classList.remove('om-controls__playpause--replay');
             this.button.classList.add('om-controls__playpause--pause');
             this.button.title = 'Pause Ads';

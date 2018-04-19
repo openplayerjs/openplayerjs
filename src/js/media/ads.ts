@@ -5,41 +5,206 @@ import { isAutoplaySupported } from '../utils/media';
 
 declare const google: any;
 /**
- * Ads
+ * Ads Media.
  *
- * @description This class implements Google IMA SDK v3.0 to display VAST and VPAID advertisement
+ * @description This class implements Google IMA SDK v3.0 to display VAST and VPAID advertisements
  * @see https://developers.google.com/interactive-media-ads/
  * @class Ads
  */
 class Ads {
+    /**
+     *
+     *
+     * @type {boolean}
+     * @memberof Ads
+     */
     public adsEnded: boolean;
+
+    /**
+     *
+     *
+     * @type {boolean}
+     * @memberof Ads
+     */
     public adsDone: boolean;
+
+    /**
+     *
+     *
+     * @type {boolean}
+     * @memberof Ads
+     */
     public adsActive: boolean;
+
+    /**
+     *
+     *
+     * @type {boolean}
+     * @memberof Ads
+     */
     public adsStarted: boolean;
+
+    /**
+     *
+     *
+     * @type {number}
+     * @memberof Ads
+     */
     public intervalTimer: number;
+
+    /**
+     *
+     *
+     * @type {number}
+     * @memberof Ads
+     */
     public adsVolume: number;
+
+    /**
+     *
+     *
+     * @type {boolean}
+     * @memberof Ads
+     */
     public adsMuted: boolean;
+
+    /**
+     *
+     *
+     * @type {number}
+     * @memberof Ads
+     */
     public adsDuration: number;
+
+    /**
+     *
+     *
+     * @type {number}
+     * @memberof Ads
+     */
     public adsCurrentTime: number;
+
+    /**
+     *
+     *
+     * @type {*}
+     * @memberof Ads
+     */
     public adsManager: any;
+
+    /**
+     *
+     *
+     * @private
+     * @type {Media}
+     * @memberof Ads
+     */
     private media: Media;
+
+    /**
+     *
+     *
+     * @private
+     * @type {HTMLMediaElement}
+     * @memberof Ads
+     */
     private element: HTMLMediaElement;
+
+    /**
+     *
+     *
+     * @private
+     * @type {any[]}
+     * @memberof Ads
+     */
     private events: any[];
+
+    /**
+     *
+     *
+     * @private
+     * @type {string}
+     * @memberof Ads
+     */
     private adsUrl: string;
+
+    /**
+     *
+     *
+     * @private
+     * @type {Promise<any>}
+     * @memberof Ads
+     */
     private promise: Promise<any>;
+
+    /**
+     *
+     *
+     * @private
+     * @type {*}
+     * @memberof Ads
+     */
     private adsLoader: any;
+
+    /**
+     *
+     *
+     * @private
+     * @type {HTMLDivElement}
+     * @memberof Ads
+     */
     private adsContainer: HTMLDivElement;
+
+    /**
+     *
+     *
+     * @private
+     * @type {HTMLDivElement}
+     * @memberof Ads
+     */
     private adsCompany: HTMLDivElement;
+
+    /**
+     *
+     *
+     * @private
+     * @type {*}
+     * @memberof Ads
+     */
     private adDisplayContainer: any;
+
+    /**
+     *
+     *
+     * @private
+     * @type {*}
+     * @memberof Ads
+     */
     private adsRequest: any;
+
+    /**
+     *
+     *
+     * @private
+     * @type {boolean}
+     * @memberof Ads
+     */
     private autoplayAllowed: boolean;
+
+    /**
+     *
+     *
+     * @private
+     * @type {boolean}
+     * @memberof Ads
+     */
     private autoplayRequiresMuted: boolean;
 
     /**
-     * Creates an media of Google IMA SDK.
+     * Create an instance of Ads.
      *
      * @param {Media} media
-     * @param {object} file
+     * @param {string} adsUrl
      * @returns {Ads}
      * @memberof Ads
      */
@@ -61,7 +226,7 @@ class Ads {
         this.autoplayAllowed = false;
         this.autoplayRequiresMuted = false;
 
-        // Test browser capabilities to autoplay add
+        // Test browser capabilities to autoplay Ad
         isAutoplaySupported(autoplay => {
             this.autoplayAllowed = autoplay;
         }, muted => {
@@ -91,7 +256,7 @@ class Ads {
      *
      * @memberof Ads
      */
-    public load() {
+    public load(): void {
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'om-ads';
         this.adsContainer.tabIndex = -1;
@@ -104,7 +269,12 @@ class Ads {
         this._requestAds();
     }
 
-    public play() {
+    /**
+     *
+     *
+     * @memberof Ads
+     */
+    public play(): void {
         if (!this.adsDone) {
             this.adDisplayContainer.initialize();
             this._playAds();
@@ -120,7 +290,12 @@ class Ads {
         }
     }
 
-    public pause() {
+    /**
+     *
+     *
+     * @memberof Ads
+     */
+    public pause(): void {
         if (this.adsManager) {
             this.adsActive = false;
             this.adsManager.pause();
@@ -129,7 +304,12 @@ class Ads {
         }
     }
 
-    public destroy() {
+    /**
+     *
+     *
+     * @memberof Ads
+     */
+    public destroy(): void {
         this.events.forEach(event => {
             this.adsManager.removeEventListener(event, this._assign.bind(this));
         });
@@ -154,7 +334,15 @@ class Ads {
         this.adsContainer.remove();
     }
 
-    public resizeAds(width?: number, height?: number, transform?: string) {
+    /**
+     *
+     *
+     * @param {?number} [width]
+     * @param {?number} [height]
+     * @param {?string} [transform]
+     * @memberof Ads
+     */
+    public resizeAds(width?: number, height?: number, transform?: string): void {
         if (this.adsManager) {
             const target = this.element;
             if (width && height) {
@@ -180,6 +368,11 @@ class Ads {
         }
     }
 
+    /**
+     *
+     *
+     * @memberof Ads
+     */
     set volume(value) {
         this.adsVolume = value;
         this.adsManager.setVolume(value);
@@ -188,10 +381,20 @@ class Ads {
         this.adsMuted = (value === 0);
     }
 
+    /**
+     *
+     *
+     * @memberof Ads
+     */
     get volume() {
         return this.adsVolume;
     }
 
+    /**
+     *
+     *
+     * @memberof Ads
+     */
     set muted(value) {
         if (value === true) {
             this.adsManager.setVolume(0);
@@ -206,29 +409,70 @@ class Ads {
         }
     }
 
+    /**
+     *
+     *
+     * @memberof Ads
+     */
     get muted() {
         return this.adsMuted;
     }
 
+    /**
+     *
+     *
+     * @memberof Ads
+     */
     set currentTime(value: number) {
         this.adsCurrentTime = value;
     }
+
+    /**
+     *
+     *
+     * @memberof Ads
+     */
     get currentTime() {
         return this.adsCurrentTime;
     }
 
+    /**
+     *
+     *
+     * @readonly
+     * @memberof Ads
+     */
     get duration() {
         return this.adsDuration;
     }
 
+    /**
+     *
+     *
+     * @readonly
+     * @memberof Ads
+     */
     get paused() {
         return !this.adsActive;
     }
 
+    /**
+     *
+     *
+     * @readonly
+     * @memberof Ads
+     */
     get ended() {
         return this.adsEnded;
     }
 
+    /**
+     *
+     *
+     * @private
+     * @param {*} event
+     * @memberof Ads
+     */
     private _assign(event: any) {
         const ad = event.getAd();
         switch (event.type) {
@@ -255,7 +499,7 @@ class Ads {
                     this.adsActive = true;
                     if (this.media.ended) {
                         this.adsEnded = false;
-                        const endEvent = addEvent('ads.ended');
+                        const endEvent = addEvent('adsended');
                         this.element.dispatchEvent(endEvent);
                     }
 
@@ -293,6 +537,13 @@ class Ads {
         }
     }
 
+    /**
+     *
+     *
+     * @private
+     * @param {*} event
+     * @memberof Ads
+     */
     private _error(event: any) {
         console.error(`Ad error: ${event.getError().toString()}`);
         if (this.adsManager) {
@@ -301,6 +552,13 @@ class Ads {
         this._resumeMedia();
     }
 
+    /**
+     *
+     *
+     * @private
+     * @param {*} adsManagerLoadedEvent
+     * @memberof Ads
+     */
     private _loaded(adsManagerLoadedEvent: any) {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
@@ -309,6 +567,13 @@ class Ads {
         this._start(this.adsManager);
     }
 
+    /**
+     *
+     *
+     * @private
+     * @param {*} manager
+     * @memberof Ads
+     */
     private _start(manager: any) {
         // Add listeners to the required events.
         manager.addEventListener(
@@ -345,6 +610,12 @@ class Ads {
         }
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Ads
+     */
     private _contentEndedListener() {
         this.adsEnded = true;
         this.adsActive = false;
@@ -352,6 +623,12 @@ class Ads {
         this.adsLoader.contentComplete();
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Ads
+     */
     private _onContentPauseRequested() {
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         if (this.adsStarted) {
@@ -363,11 +640,23 @@ class Ads {
         this.element.dispatchEvent(e);
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Ads
+     */
     private _onContentResumeRequested() {
         this.element.addEventListener('ended', this._contentEndedListener.bind(this));
         this._resumeMedia();
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Ads
+     */
     private _resumeMedia() {
         this.intervalTimer = 0;
         this.adsMuted = false;
@@ -388,6 +677,12 @@ class Ads {
         }
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Ads
+     */
     private _requestAds() {
         if (this.adsLoader) {
             this.adsLoader.contentComplete();
@@ -407,6 +702,12 @@ class Ads {
         this.adsLoader.requestAds(this.adsRequest);
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Ads
+     */
     private _setup() {
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         this.adDisplayContainer =
@@ -430,6 +731,12 @@ class Ads {
         this.element.addEventListener('ended', this._contentEndedListener.bind(this));
     }
 
+    /**
+     *
+     *
+     * @private
+     * @memberof Ads
+     */
     private _playAds() {
         try {
             if (!this.adsDone) {

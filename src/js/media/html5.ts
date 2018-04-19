@@ -3,9 +3,10 @@ import { isAudio, isVideo } from '../utils/general';
 import Native from './native';
 
 /**
+ * HTML5 Media.
  *
+ * @description Class that wraps the native HTML5 media methods
  * @class NativeMedia
- * @description Class that wraps the native HTML5 video/audio tags
  */
 class HTML5Media extends Native  {
     /**
@@ -30,15 +31,26 @@ class HTML5Media extends Native  {
      * @returns {boolean}
      * @memberof NativeMedia
      */
-    public canPlayType(mimeType: string) {
+    public canPlayType(mimeType: string): boolean {
         return !!(this.element.canPlayType(mimeType).replace('no', ''));
     }
 
-    public load() {
+    /**
+     *
+     * @inheritDoc
+     * @memberof HTML5Media
+     */
+    public load(): void {
         this.element.load();
     }
 
-    public destroy() {
+    /**
+     *
+     * @inheritDoc
+     * @returns {HTML5Media}
+     * @memberof HTML5Media
+     */
+    public destroy(): HTML5Media {
         return this;
     }
 

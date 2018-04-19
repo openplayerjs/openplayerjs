@@ -1,12 +1,11 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const path = require('path');
-const BabiliPlugin = require('babili-webpack-plugin');
+const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 module.exports = {
     context: __dirname,
     entry: {
-        'om_player.js': './src/js/player.ts',
         'om_player.min.js': './src/js/player.ts',
         'om_player.css': './src/css/player.css',
         'om_player.min.css': './src/css/player.css',
@@ -99,8 +98,9 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin('[name]'),
-        new BabiliPlugin({}, {
-            test: /\.min\.js$/,
+        new UnminifiedWebpackPlugin({
+            postfix: ' ',
+            exclude: /\.css$/
         }),
         new OptimizeCssAssetsPlugin({
             assetNameRegExp: /\.min\.css$/,

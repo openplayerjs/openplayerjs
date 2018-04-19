@@ -9,14 +9,44 @@ import Native from './native';
 declare const Hls: any;
 
 /**
+ * HLS Media.
  *
+ * @description Class that handles M3U8 files using hls.js within the player
+ * @see https://github.com/video-dev/hls.js/
  * @class HlsMedia
- * @description Class that handles the hls.js API within the player
  */
 class HlsMedia extends Native {
+    /**
+     *
+     *
+     * @private
+     * @type {*}
+     * @memberof HlsMedia
+     */
     private player: any;
+    /**
+     *
+     *
+     * @private
+     * @type {EventsList}
+     * @memberof HlsMedia
+     */
     private events: EventsList = {};
+    /**
+     *
+     *
+     * @private
+     * @type {number}
+     * @memberof HlsMedia
+     */
     private recoverDecodingErrorDate: number;
+    /**
+     *
+     *
+     * @private
+     * @type {number}
+     * @memberof HlsMedia
+     */
     private recoverSwapAudioCodecDate: number;
 
     /**
@@ -60,10 +90,10 @@ class HlsMedia extends Native {
 
     /**
      *
-     *
+     * @inheritDoc
      * @memberof HlsMedia
      */
-    public load() {
+    public load(): void {
         this.player.detachMedia();
         this.player.loadSource(this.media.src);
         this.player.attachMedia(this.element);
@@ -76,10 +106,20 @@ class HlsMedia extends Native {
         }
     }
 
-    public destroy() {
+    /**
+     *
+     *
+     * @memberof HlsMedia
+     */
+    public destroy(): void {
         this._revoke();
     }
 
+    /**
+     *
+     *
+     * @memberof HlsMedia
+     */
     set src(media: Source) {
         if (isHlsSource(media.src)) {
             this._revoke();
@@ -104,7 +144,7 @@ class HlsMedia extends Native {
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#runtime-events
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#errors
      */
-    private _assign(event: string, data: any) {
+    private _assign(event: string, data: any): void {
         if (name === 'hlsError') {
             console.warn(data);
             data = data[1];
@@ -148,7 +188,7 @@ class HlsMedia extends Native {
      *
      * @memberof HlsMedia
      */
-    private _revoke() {
+    private _revoke(): void {
         if (this.events) {
             Object.keys(this.events).forEach(event => {
                 this.player.off(this.events[event], this._assign.bind(this));

@@ -7,5 +7,8 @@ import Player from '../player';
  * @interface PlayerInstanceList
  */
 export default interface PlayerInstanceList {
+    /**
+     * @type object
+     */
     [id: string]: Player;
 }
