@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/rafa8626/openplayer/compare/v0.3.0...v0.2.0) (2018-04-23)
 
+* **docs**: Completed work on API and methods sections; added new NPM commands
+
 
 
 <a name="0.1.0"></a>
@@ -12,7 +14,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **test:** Changed version of NodeJS ([9877597](https://github.com/rafa8626/openplayer/commit/9877597))
+* **tests:** Changed version of NodeJS ([9877597](https://github.com/rafa8626/openplayer/commit/9877597))
 * **tests:** Added missing elements to Travis config file ([8c9ec21](https://github.com/rafa8626/openplayer/commit/8c9ec21))
 * **tests:** Removed elements from Travis CI config to allow Greenkeeper to work ([8ba5e73](https://github.com/rafa8626/openplayer/commit/8ba5e73))
 * **tests:** Removed unnecessary task from Travis CI ([b58b6db](https://github.com/rafa8626/openplayer/commit/b58b6db))
