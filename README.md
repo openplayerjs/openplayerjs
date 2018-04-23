@@ -102,7 +102,23 @@ The methods supported by the OpenPlayer instance are:
 
 Method | Description
 --- | ---
-play | xx
+`play` | Play media. If Ads are detected, different methods than the native ones are triggered with this operation.
+`pause` | Pause media. If Ads are detected, different methods than the native ones are triggered with this operation.
+`load` | Load media. HLS and M(PEG)-DASH perform more operations during loading if browser does not support them natively.
+`addCaptions` | Append a new `<track>` tag to the video/audio tag and dispatch event so it gets registered/loaded in the player, via `controlschanged` event. Uses 
+`destroy` | Destroy OpenMedia Player instance (including all events associated) and return the video/audio ta` to its original state.
+`getAd` | Retrieve an instance of the `Ads` object.
+`getMedia` | Retrieve an instance of the `Media` object.
+`activeElement` | Retrieve the current media object (could be `Ads` or any other media type).
+`getContainer` | Retrieve the parent element (with `om-player` class) of the native video/audio tag.
+`getControls` | Retrieve an instance of the controls object used in the player instance.
+`getElement` | Retrieve the original video/audio tag.
+`getEvents` | Retrieve the events attached to the player.
+`init` | Create all the markup and events needed for the player.
+`isAd` | Check if current media is an instance of an `Ad`.
+`isMedia` | Check if current media is an instance of a native media type.
+`id` | Retrieve current player's unique identifier.
+`src` | Retrieve/set the current Source list associated with the player.
 
 ### Events
 
@@ -123,9 +139,9 @@ All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Even
 
 Event | Description
 --- | ---
-controlshidden | xx
-controlschanged | xx
-adsended | xx
+`controlshidden` | Event executed when controls timer stops and hides control bar (video only)
+`controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new cpation)
+`adsended` | Event executed when an Ad ends playing (currently used to change the Replay icon to Pause when playing a postroll Ad)
 
 ## Contributions
 
