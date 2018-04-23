@@ -302,7 +302,7 @@ class Player {
     }
 
     /**
-     * Retrieve the parent element of the native video/audio tag.
+     * Retrieve the parent element (with `om-player` class) of the native video/audio tag.
      *
      * This element is mostly useful to attach other player component's markup in a place
      * different than the controls bar.
@@ -396,7 +396,7 @@ class Player {
         return this.ads;
     }
     /**
-     * Append a new TRACK tag to the video/audio tag and dispatch event
+     * Append a new `<track>` tag to the video/audio tag and dispatch event
      * so it gets registered/loaded in the player, via `controlschanged` event.
      *
      * @param {Track} args
@@ -440,7 +440,7 @@ class Player {
     }
 
     /**
-     * Retrieve current player's identifier.
+     * Retrieve current player's unique identifier.
      *
      * @type string
      * @memberof Player
