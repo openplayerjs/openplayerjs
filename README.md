@@ -1,6 +1,6 @@
 # OpenPlayer.js
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/rafa8626/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)
+[![Greenkeeper badge](https://badges.greenkeeper.io/rafa8626/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 ## What is it?
 
@@ -9,14 +9,13 @@ Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.
 ## Why OpenPlayer?
 
 * **Less than `20KB`** when gzipped.
-* **Monetize video and audio content** with video advertising using [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA) library.
+* **Monetize video and audio content** with video advertising using [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
 * **Simplified markup** and **highly customizable CSS** (even specific styling for high contrast mode). See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
 * IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **ever-green scripts** from their recommended CDN sources to always obtain the latest upgrades.
 * **Smart `autoplay`** by detecting browser's capabilities.
 * **Responsive** by default, for both video/audio tags.
 * A new **`fill`** mode to scale and crop media relative to its parent container.
-* Support for **local and remote captions**, even without including the `crossorigin` attribute. 
-* Captions **in audio tag**!.
+* Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 * **No dependencies**, since this player is written in Typescript.
 * **Auto injects polyfills** using [Polyfill.io library](https://polyfill.io/v2/docs/examples).
 * **Supports IE11+ and all modern browsers**.
@@ -145,4 +144,4 @@ Event | Description
 
 ## Contributions
 
-Make sure you check [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+Make sure you check [Conventional Commits Standards](https://conventionalcommits.org/) for commit guidelines.
