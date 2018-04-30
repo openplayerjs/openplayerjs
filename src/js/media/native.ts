@@ -74,7 +74,7 @@ abstract class Native {
      * Execute any callbacks to destroy the current media element.
      *
      * @abstract
-     * @returns {*}
+     * @returns {any}
      * @memberof Native
      */
     public abstract destroy(): any;
@@ -98,7 +98,7 @@ abstract class Native {
     public abstract get src(): Source;
 
     /**
-     * Wrapper for `play` method.
+     * Play current media.
      *
      * @returns {void}
      * @memberof Native
@@ -108,7 +108,7 @@ abstract class Native {
     }
 
     /**
-     * Wrapper for `pause` method.
+     * Pause current media.
      *
      * @returns {void}
      * @memberof Native
@@ -120,6 +120,7 @@ abstract class Native {
     /**
      * Set the current media's volume level.
      *
+     * @returns {void}
      * @memberof Native
      */
     set volume(value: number) {

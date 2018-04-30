@@ -394,6 +394,7 @@ class Ads {
     /**
      * Retrieve the current Ad's muted status.
      *
+     * @returns {boolean}
      * @memberof Ads
      */
     get muted(): boolean {
@@ -403,6 +404,7 @@ class Ads {
     /**
      * Set the current Ad's current time position.
      *
+     * @returns {void}
      * @memberof Ads
      */
     set currentTime(value: number) {
@@ -412,36 +414,40 @@ class Ads {
     /**
      * Retrieve the current Ad's current time position.
      *
+     * @returns {number}
      * @memberof Ads
      */
-    get currentTime() {
+    get currentTime(): number {
         return this.adsCurrentTime;
     }
 
     /**
      * Retrieve the current Ad's duration.
      *
+     * @returns {number}
      * @memberof Ads
      */
-    get duration() {
+    get duration(): number {
         return this.adsDuration;
     }
 
     /**
      * Retrieve the current Ad's paused status.
      *
+     * @returns {boolean}
      * @memberof Ads
      */
-    get paused() {
+    get paused(): boolean {
         return !this.adsActive;
     }
 
     /**
      * Retrieve the current Ad's ended status.
      *
+     * @returns {boolean}
      * @memberof Ads
      */
-    get ended() {
+    get ended(): boolean {
         return this.adsEnded;
     }
 
@@ -452,7 +458,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _assign(event: any) {
+    private _assign(event: any): void {
         const ad = event.getAd();
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
@@ -520,9 +526,10 @@ class Ads {
      * Dispatch an IMA SDK error that will destroy the Ads instance and resume original media.
      *
      * @param {any} event
+     * @returns {void}
      * @memberof Ads
      */
-    private _error(event: any) {
+    private _error(event: any): void {
         console.error(`Ad error: ${event.getError().toString()}`);
         if (this.adsManager) {
             this.adsManager.destroy();
@@ -533,11 +540,11 @@ class Ads {
     /**
      * Callback to be executed once IMA SDK manager is loaded.
      *
-     * @private
      * @param {any} adsManagerLoadedEvent
+     * @returns {void}
      * @memberof Ads
      */
-    private _loaded(adsManagerLoadedEvent: any) {
+    private _loaded(adsManagerLoadedEvent: any): void {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
         // Get the ads manager.
@@ -549,9 +556,10 @@ class Ads {
      * Callback to be executed to start playing Ad.
      *
      * @param {any} manager
+     * @returns {void}
      * @memberof Ads
      */
-    private _start(manager: any) {
+    private _start(manager: any): void {
         // Add listeners to the required events.
         manager.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
@@ -593,7 +601,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _contentEndedListener() {
+    private _contentEndedListener(): void {
         this.adsEnded = true;
         this.adsActive = false;
         this.adsStarted = false;
@@ -606,7 +614,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _onContentPauseRequested() {
+    private _onContentPauseRequested(): void {
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         if (this.adsStarted) {
             this.media.pause();
@@ -623,7 +631,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _onContentResumeRequested() {
+    private _onContentResumeRequested(): void {
         this.element.addEventListener('ended', this._contentEndedListener.bind(this));
         this._resumeMedia();
     }
@@ -635,7 +643,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _resumeMedia() {
+    private _resumeMedia(): void {
         this.intervalTimer = 0;
         this.adsMuted = false;
         this.adsStarted = false;
@@ -662,7 +670,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _requestAds() {
+    private _requestAds(): void {
         if (this.adsLoader) {
             this.adsLoader.contentComplete();
         }
@@ -687,7 +695,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _setup() {
+    private _setup(): void {
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
@@ -715,7 +723,7 @@ class Ads {
      * @returns {void}
      * @memberof Ads
      */
-    private _playAds() {
+    private _playAds(): void {
         try {
             if (!this.adsDone) {
                 this.adDisplayContainer.initialize();

@@ -16,7 +16,7 @@ import Polyfill from './utils/polyfill';
  * OpenMedia Player.
  *
  * @description This class generates controls to play native media (such as MP4, MP3, HLS, M(PEG-DASH),
- * and have a unified lok-and-feel on all modern browsers (including IE11)
+ * and have a unified look-and-feel on all modern browsers (including IE11)
  * @class Player
  */
 class Player {
