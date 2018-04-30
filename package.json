@@ -13,7 +13,7 @@
   },
   "main": "./dist/om-player.js",
   "style": "./dist/om-player.css",
-  "types": "./dist/om-player.d.js",
+  "types": "./om-player.d.ts",
   "keywords": [
     "media",
     "video",

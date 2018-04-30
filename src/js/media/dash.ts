@@ -17,19 +17,18 @@ declare const dashjs: any;
  */
 class DashMedia extends Native {
     /**
+     * Instance of dashjs player.
      *
-     *
-     * @private
-     * @type {*}
+     * @type dashjs
      * @memberof DashMedia
      */
     private player: any;
 
     /**
+     * DashJS events that will be triggered in Player.
      *
-     *
-     * @private
-     * @type {EventsList}
+     * @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html
+     * @type EventsList
      * @memberof DashMedia
      */
     private events: EventsList = {};
@@ -62,9 +61,7 @@ class DashMedia extends Native {
 
     /**
      *
-     *
-     * @param {string} mimeType
-     * @returns
+     * @inheritDoc
      * @memberof DashMedia
      */
     public canPlayType(mimeType: string) {
@@ -73,7 +70,7 @@ class DashMedia extends Native {
 
     /**
      *
-     *
+     * @inheritDoc
      * @memberof DashMedia
      */
     public load() {
@@ -106,7 +103,7 @@ class DashMedia extends Native {
 
     /**
      *
-     *
+     * @inheritDoc
      * @memberof DashMedia
      */
     public destroy() {
@@ -115,7 +112,7 @@ class DashMedia extends Native {
 
     /**
      *
-     *
+     * @inheritDoc
      * @memberof DashMedia
      */
     set src(media: Source) {
@@ -143,7 +140,7 @@ class DashMedia extends Native {
      * @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html
      * @param {dashjs.MediaPlayerEvents.events} event
      */
-    private _assign(event: any) {
+    private _assign(event: any): void {
         if (event.type === 'error') {
             console.error(event);
         } else {
@@ -153,11 +150,11 @@ class DashMedia extends Native {
     }
 
     /**
-     *
+     * Remove all dash.js events and destroy dashjs player instance.
      *
      * @memberof DashMedia
      */
-    private _revoke() {
+    private _revoke(): void {
         if (this.events) {
             Object.keys(this.events).forEach(event => {
                 this.player.off(this.events[event], this._assign.bind(this));

@@ -1,7 +1,9 @@
 /**
  * Player Component
  *
+ * @description List of methods to be integrated on most of the player's elements.
  * @interface PlayerComponent
+ * @export
  */
 export default interface PlayerComponent {
     /**

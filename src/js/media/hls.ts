@@ -17,34 +17,34 @@ declare const Hls: any;
  */
 class HlsMedia extends Native {
     /**
+     * Instance of hls.js player.
      *
-     *
-     * @private
-     * @type {*}
+     * @type Hls
      * @memberof HlsMedia
      */
     private player: any;
+
     /**
+     * Hls events that will be triggered in Player.
      *
-     *
-     * @private
-     * @type {EventsList}
+     * @see https://github.com/video-dev/hls.js/blob/master/src/events.js
+     * @type EventsList
      * @memberof HlsMedia
      */
     private events: EventsList = {};
+
     /**
+     * Time in milliseconds to attempt to recover media after an error.
      *
-     *
-     * @private
-     * @type {number}
+     * @type number
      * @memberof HlsMedia
      */
     private recoverDecodingErrorDate: number;
+
     /**
+     * Time in milliseconds to attempt to swap audio codec after an error.
      *
-     *
-     * @private
-     * @type {number}
+     * @type number
      * @memberof HlsMedia
      */
     private recoverSwapAudioCodecDate: number;
@@ -80,8 +80,7 @@ class HlsMedia extends Native {
     /**
      * Provide support via hls.js if browser does not have native support for HLS
      *
-     * @param {string} mimeType
-     * @returns {boolean}
+     * @inheritDoc
      * @memberof HlsMedia
      */
     public canPlayType(mimeType: string) {
@@ -108,7 +107,7 @@ class HlsMedia extends Native {
 
     /**
      *
-     *
+     * @inheritDoc
      * @memberof HlsMedia
      */
     public destroy(): void {
@@ -117,7 +116,7 @@ class HlsMedia extends Native {
 
     /**
      *
-     *
+     * @inheritDoc
      * @memberof HlsMedia
      */
     set src(media: Source) {
@@ -164,13 +163,11 @@ class HlsMedia extends Native {
                             this.player.recoverMediaError();
                         } else {
                             const msg = 'Cannot recover, last media error recovery failed';
-                            // mediaElement.generateError(message, node.src);
                             console.error(msg);
                         }
                         break;
                     case 'networkError':
                         const message = 'Network error';
-                        // mediaElement.generateError(message, mediaSources);
                         console.error(message);
                         break;
                     default:
@@ -184,7 +181,7 @@ class HlsMedia extends Native {
         }
     }
     /**
-     *
+     * Remove all hls.js events and destroy hlsjs player instance.
      *
      * @memberof HlsMedia
      */

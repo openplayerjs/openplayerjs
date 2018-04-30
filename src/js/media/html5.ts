@@ -24,11 +24,10 @@ class HTML5Media extends Native  {
         super(element, mediaFile);
         return this;
     }
+
     /**
      *
-     *
-     * @param {string} mimeType
-     * @returns {boolean}
+     * @inheritDoc
      * @memberof NativeMedia
      */
     public canPlayType(mimeType: string): boolean {
@@ -54,6 +53,10 @@ class HTML5Media extends Native  {
         return this;
     }
 
+    /**
+     *
+     * @inheritDoc
+     */
     set src(media: Source) {
         this.element.src = media.src;
     }

@@ -4,6 +4,7 @@ import { loadScript } from '../utils/general';
 import { isAutoplaySupported } from '../utils/media';
 
 declare const google: any;
+
 /**
  * Ads Media.
  *
@@ -13,192 +14,177 @@ declare const google: any;
  */
 class Ads {
     /**
+     * Flag to indicate when player has finished playing all Ads.
      *
-     *
-     * @type {boolean}
+     * Type of Ads could be: pre-roll, mid-roll, post-roll or combination of them.
+     * @type boolean
      * @memberof Ads
      */
-    public adsEnded: boolean;
+    public adsEnded: boolean = false;
 
     /**
+     * Flag to indicate that individual Ad has been played.
      *
-     *
-     * @type {boolean}
+     * @type boolean
      * @memberof Ads
      */
-    public adsDone: boolean;
+    public adsDone: boolean = false;
 
     /**
+     * Flag to indicate that current Ad is being played.
      *
-     *
-     * @type {boolean}
+     * @type boolean
      * @memberof Ads
      */
-    public adsActive: boolean;
+    public adsActive: boolean = false;
 
     /**
+     * Flag to indicate that Ads are ready to being played.
      *
-     *
-     * @type {boolean}
+     * @type boolean
      * @memberof Ads
      */
-    public adsStarted: boolean;
+    public adsStarted: boolean = false;
 
     /**
+     * Element to present changes in current time while Ad is being played.
      *
-     *
-     * @type {number}
+     * @type number
      * @memberof Ads
      */
-    public intervalTimer: number;
+    public intervalTimer: number = 0;
 
     /**
+     * Store the current Ad's volume level.
      *
-     *
-     * @type {number}
+     * @type number
      * @memberof Ads
      */
     public adsVolume: number;
 
     /**
+     * Flag to indicate if Ad is currently muted or not.
      *
-     *
-     * @type {boolean}
+     * @type boolean
      * @memberof Ads
      */
-    public adsMuted: boolean;
+    public adsMuted: boolean = false;
 
     /**
+     * Store the current Ad's duration.
      *
-     *
-     * @type {number}
+     * @type number
      * @memberof Ads
      */
-    public adsDuration: number;
+    public adsDuration: number = 0;
 
     /**
+     * Store the current Ad's current time position to be passed in the `timeupdate` event.
      *
-     *
-     * @type {number}
+     * @type number
      * @memberof Ads
      */
-    public adsCurrentTime: number;
+    public adsCurrentTime: number = 0;
 
     /**
+     * Object which handles playing ads after they've been received from the server.
      *
-     *
-     * @type {*}
+     * @see https://tinyurl.com/ybjas4ut
+     * @type google.ima.AdsManager
      * @memberof Ads
      */
-    public adsManager: any;
+    public adsManager: any = null;
 
     /**
+     * Instance of Media object to execute actions once Ad has ended/skipped.
      *
-     *
-     * @private
-     * @type {Media}
+     * @type Media
      * @memberof Ads
      */
     private media: Media;
 
     /**
+     * Native video/audio tag to execute native events.
      *
-     *
-     * @private
-     * @type {HTMLMediaElement}
+     * @type HTMLMediaElement
      * @memberof Ads
      */
     private element: HTMLMediaElement;
 
     /**
+     * List of IMA SDK events to be executed.
      *
-     *
-     * @private
-     * @type {any[]}
+     * @type string[]
      * @memberof Ads
      */
-    private events: any[];
+    private events: string[];
 
     /**
+     * The VAST/VPAID URL to play Ads.
      *
-     *
-     * @private
-     * @type {string}
+     * @type string
      * @memberof Ads
      */
     private adsUrl: string;
 
     /**
+     * Promise to start all IMA SDK elements, once the library has been loaded.
      *
-     *
-     * @private
-     * @type {Promise<any>}
+     * @type Promise<any>
      * @memberof Ads
      */
     private promise: Promise<any>;
 
     /**
+     * Object which allows to request ads from ad servers or a dynamic ad insertion stream.
      *
-     *
-     * @private
-     * @type {*}
+     * @see https://tinyurl.com/ycwp4ufd
+     * @type google.ima.AdsLoader
      * @memberof Ads
      */
     private adsLoader: any;
 
     /**
+     * Element in which Ads will be created.
      *
-     *
-     * @private
-     * @type {HTMLDivElement}
+     * @type HTMLDivElement
      * @memberof Ads
      */
     private adsContainer: HTMLDivElement;
 
     /**
+     * Container to display Ads.
      *
-     *
-     * @private
-     * @type {HTMLDivElement}
-     * @memberof Ads
-     */
-    private adsCompany: HTMLDivElement;
-
-    /**
-     *
-     *
-     * @private
-     * @type {*}
+     * @see https://tinyurl.com/ya3zksso
+     * @type google.ima.adDisplayContainer
      * @memberof Ads
      */
     private adDisplayContainer: any;
 
     /**
+     * Object containing the data used to request ads from the server.
      *
-     *
-     * @private
-     * @type {*}
+     * @see https://tinyurl.com/ya8bxjf4
+     * @type google.ima.adsRequest
      * @memberof Ads
      */
     private adsRequest: any;
 
     /**
+     * Flag to indicate if Ad can be played via `autoplay` attribute.
      *
-     *
-     * @private
-     * @type {boolean}
+     * @type boolean
      * @memberof Ads
      */
-    private autoplayAllowed: boolean;
+    private autoplayAllowed: boolean = false;
 
     /**
+     * Flag to indicate if Ad can autoplayed while muted.
      *
-     *
-     * @private
-     * @type {boolean}
+     * @type boolean
      * @memberof Ads
      */
-    private autoplayRequiresMuted: boolean;
+    private autoplayRequiresMuted: boolean = false;
 
     /**
      * Create an instance of Ads.
@@ -212,19 +198,7 @@ class Ads {
         this.adsUrl = adsUrl;
         this.media = media;
         this.element = media.element;
-        this.adsManager = null;
-        this.events = null;
-        this.adsEnded = false;
-        this.adsDone = false;
-        this.adsActive = false;
-        this.adsStarted = false;
-        this.intervalTimer = 0;
         this.adsVolume = this.element.volume;
-        this.adsMuted = false;
-        this.adsDuration = 0;
-        this.adsCurrentTime = 0;
-        this.autoplayAllowed = false;
-        this.autoplayRequiresMuted = false;
 
         // Test browser capabilities to autoplay Ad
         isAutoplaySupported(autoplay => {
@@ -254,6 +228,7 @@ class Ads {
     /**
      * Create the Ads container and loader to process the Ads URL provided.
      *
+     * @returns {void}
      * @memberof Ads
      */
     public load(): void {
@@ -270,8 +245,9 @@ class Ads {
     }
 
     /**
+     * Start playing/resume Ad if `adsManager` is active.
      *
-     *
+     * @returns {void}
      * @memberof Ads
      */
     public play(): void {
@@ -291,8 +267,9 @@ class Ads {
     }
 
     /**
+     * Pause Ad if `adsManager` is active.
      *
-     *
+     * @returns {void}
      * @memberof Ads
      */
     public pause(): void {
@@ -305,8 +282,9 @@ class Ads {
     }
 
     /**
+     * Execute any callbacks to destroy Ads.
      *
-     *
+     * @returns {void}
      * @memberof Ads
      */
     public destroy(): void {
@@ -335,11 +313,12 @@ class Ads {
     }
 
     /**
+     * Change dimensions of Ad.
      *
-     *
-     * @param {?number} [width]
-     * @param {?number} [height]
-     * @param {?string} [transform]
+     * @param {?number} width       The new width of the Ad's container.
+     * @param {?number} height      The new height of the Ad's container.
+     * @param {?string} transform   CSS `transform` property to align Ad if `fill` mode is enabled.
+     * @returns {void}
      * @memberof Ads
      */
     public resizeAds(width?: number, height?: number, transform?: string): void {
@@ -369,11 +348,12 @@ class Ads {
     }
 
     /**
+     * Set the current Ad's volume level.
      *
-     *
+     * @returns {void}
      * @memberof Ads
      */
-    set volume(value) {
+    set volume(value: number) {
         this.adsVolume = value;
         this.adsManager.setVolume(value);
         this.media.volume = value;
@@ -382,20 +362,22 @@ class Ads {
     }
 
     /**
+     * Retrieve current Ad's volume level.
      *
-     *
+     * @returns {number}
      * @memberof Ads
      */
-    get volume() {
+    get volume(): number {
         return this.adsVolume;
     }
 
     /**
+     * Set the current Ad's muted status.
      *
-     *
+     * @returns {void}
      * @memberof Ads
      */
-    set muted(value) {
+    set muted(value: boolean) {
         if (value === true) {
             this.adsManager.setVolume(0);
             this.adsMuted = true;
@@ -410,16 +392,16 @@ class Ads {
     }
 
     /**
-     *
+     * Retrieve the current Ad's muted status.
      *
      * @memberof Ads
      */
-    get muted() {
+    get muted(): boolean {
         return this.adsMuted;
     }
 
     /**
-     *
+     * Set the current Ad's current time position.
      *
      * @memberof Ads
      */
@@ -428,7 +410,7 @@ class Ads {
     }
 
     /**
-     *
+     * Retrieve the current Ad's current time position.
      *
      * @memberof Ads
      */
@@ -437,9 +419,8 @@ class Ads {
     }
 
     /**
+     * Retrieve the current Ad's duration.
      *
-     *
-     * @readonly
      * @memberof Ads
      */
     get duration() {
@@ -447,9 +428,8 @@ class Ads {
     }
 
     /**
+     * Retrieve the current Ad's paused status.
      *
-     *
-     * @readonly
      * @memberof Ads
      */
     get paused() {
@@ -457,9 +437,8 @@ class Ads {
     }
 
     /**
+     * Retrieve the current Ad's ended status.
      *
-     *
-     * @readonly
      * @memberof Ads
      */
     get ended() {
@@ -467,10 +446,10 @@ class Ads {
     }
 
     /**
+     * Dispatch IMA SDK's events via OpenPlayer.
      *
-     *
-     * @private
-     * @param {*} event
+     * @param {any} event
+     * @returns {void}
      * @memberof Ads
      */
     private _assign(event: any) {
@@ -538,10 +517,9 @@ class Ads {
     }
 
     /**
+     * Dispatch an IMA SDK error that will destroy the Ads instance and resume original media.
      *
-     *
-     * @private
-     * @param {*} event
+     * @param {any} event
      * @memberof Ads
      */
     private _error(event: any) {
@@ -553,10 +531,10 @@ class Ads {
     }
 
     /**
-     *
+     * Callback to be executed once IMA SDK manager is loaded.
      *
      * @private
-     * @param {*} adsManagerLoadedEvent
+     * @param {any} adsManagerLoadedEvent
      * @memberof Ads
      */
     private _loaded(adsManagerLoadedEvent: any) {
@@ -568,10 +546,9 @@ class Ads {
     }
 
     /**
+     * Callback to be executed to start playing Ad.
      *
-     *
-     * @private
-     * @param {*} manager
+     * @param {any} manager
      * @memberof Ads
      */
     private _start(manager: any) {
@@ -611,9 +588,9 @@ class Ads {
     }
 
     /**
+     * Callback to be executed once the Ad has ended.
      *
-     *
-     * @private
+     * @returns {void}
      * @memberof Ads
      */
     private _contentEndedListener() {
@@ -624,9 +601,9 @@ class Ads {
     }
 
     /**
+     * Callback to be executed once the Ad has been paused.
      *
-     *
-     * @private
+     * @returns {void}
      * @memberof Ads
      */
     private _onContentPauseRequested() {
@@ -641,9 +618,9 @@ class Ads {
     }
 
     /**
+     * Callback to be executed once the Ad has been resumed.
      *
-     *
-     * @private
+     * @returns {void}
      * @memberof Ads
      */
     private _onContentResumeRequested() {
@@ -652,9 +629,10 @@ class Ads {
     }
 
     /**
+     * Callback to resume original media.
      *
-     *
-     * @private
+     * This can happen when Ad is being skipped or has ended.
+     * @returns {void}
      * @memberof Ads
      */
     private _resumeMedia() {
@@ -678,9 +656,10 @@ class Ads {
     }
 
     /**
+     * Setup final attributes to the Ad before playing it, which include initial dimensions and capabilities
+     * to autoplay Ad or not.
      *
-     *
-     * @private
+     * @returns {void}
      * @memberof Ads
      */
     private _requestAds() {
@@ -703,9 +682,9 @@ class Ads {
     }
 
     /**
+     * Prepare container and request loader so Ads can be played.
      *
-     *
-     * @private
+     * @returns {void}
      * @memberof Ads
      */
     private _setup() {
@@ -714,7 +693,6 @@ class Ads {
             new google.ima.AdDisplayContainer(
                 this.adsContainer,
                 this.element,
-                this.adsCompany,
             );
 
         this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
@@ -732,9 +710,9 @@ class Ads {
     }
 
     /**
+     * Internal callback to start playing Ads or resume media if error is detected.
      *
-     *
-     * @private
+     * @returns {void}
      * @memberof Ads
      */
     private _playAds() {
