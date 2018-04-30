@@ -92,7 +92,6 @@ If you need more control over the player, OpenPlayer stores instances of each pl
 
 ```javascript
 // Selects the first video/audio that uses OpenPlayer
-// The above code works for video/audio tags with no `ID` attribute.
 var id = document.querySelector('.om-player').id;
 var player = OpenPlayer.instances[id];
 ```

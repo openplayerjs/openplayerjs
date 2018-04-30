@@ -1,4 +1,5 @@
 import Source from '../interfaces/source';
+
 /**
  * Native Media.
  *
@@ -12,27 +13,36 @@ import Source from '../interfaces/source';
  */
 abstract class Native {
     /**
+     * Native video/audio tag.
      *
-     *
-     * @type {HTMLMediaElement}
+     * @type HTMLMediaElement
      * @memberof Native
      */
     public element: HTMLMediaElement;
+
     /**
+     * The current media source element.
      *
-     *
-     * @type {Source}
+     * @type Source
      * @memberof Native
      */
     public media: Source;
+
     /**
+     * Promise to be resolved once media starts playing to avoid race issues.
      *
-     *
-     * @type {Promise<any>}
+     * @type Promise<any>
      * @memberof Native
      */
     public promise: Promise<any>;
 
+    /**
+     * Create an instance of Native.
+     *
+     * @param {HTMLMediaElement} element The `video/audio` source.
+     * @param {Source} media The `Media` instance.
+     * @memberof Native
+     */
     constructor(element: HTMLMediaElement, media: Source) {
         this.element = element;
         this.media = media;
@@ -42,7 +52,7 @@ abstract class Native {
     }
 
     /**
-     *
+     * Check if player can play the current media type (MIME type).
      *
      * @abstract
      * @param {string} mimeType
@@ -52,146 +62,167 @@ abstract class Native {
     public abstract canPlayType(mimeType: string): boolean;
 
     /**
-     *
+     * Prepare current media to be played.
      *
      * @abstract
+     * @returns {void}
      * @memberof Native
      */
     public abstract load(): void;
 
     /**
-     *
+     * Execute any callbacks to destroy the current media element.
      *
      * @abstract
+     * @returns {*}
+     * @memberof Native
+     */
+    public abstract destroy(): any;
+
+    /**
+     * Set a new media source.
+     *
+     * @abstract
+     * @returns {void}
      * @memberof Native
      */
     public abstract set src(media: Source);
 
     /**
-     *
+     * Return the current media source.
      *
      * @abstract
+     * @returns {Source}
      * @memberof Native
      */
-    public abstract get src();
+    public abstract get src(): Source;
 
     /**
+     * Wrapper for `play` method.
      *
-     *
+     * @returns {void}
      * @memberof Native
      */
-    public play() {
+    public play(): void {
         this.element.play();
     }
 
     /**
+     * Wrapper for `pause` method.
      *
-     *
+     * @returns {void}
      * @memberof Native
      */
-    public pause() {
+    public pause(): void {
         this.element.pause();
     }
 
     /**
-     *
+     * Set the current media's volume level.
      *
      * @memberof Native
      */
-    set volume(value) {
+    set volume(value: number) {
         this.element.volume = value;
     }
 
     /**
+     * Retrieve current media's volume level.
      *
-     *
+     * @returns {number}
      * @memberof Native
      */
-    get volume() {
+    get volume(): number {
         return this.element.volume;
     }
 
     /**
+     * Set the current media's muted status.
      *
-     *
+     * @returns {void}
      * @memberof Native
      */
-    set muted(value) {
+    set muted(value: boolean) {
         this.element.muted = value;
     }
 
     /**
+     * Retrieve the current media's muted status.
      *
-     *
+     * @returns {boolean}
      * @memberof Native
      */
-    get muted() {
+    get muted(): boolean {
         return this.element.muted;
     }
 
     /**
+     * Set the current media's playback rate.
      *
-     *
+     * @returns {void}
      * @memberof Native
      */
-    get playbackRate() {
-        return this.element.playbackRate;
-    }
-
-    /**
-     *
-     *
-     * @memberof Native
-     */
-    set playbackRate(value) {
+    set playbackRate(value: number) {
         this.element.playbackRate = value;
     }
 
     /**
+     * Retrieve the current media's playback rate.
      *
-     *
+     * @returns {number}
      * @memberof Native
      */
-    set currentTime(value) {
+    get playbackRate(): number {
+        return this.element.playbackRate;
+    }
+
+    /**
+     * Set the current media's current time position.
+     *
+     * @returns {void}
+     * @memberof Native
+     */
+    set currentTime(value: number) {
         this.element.currentTime = value;
     }
 
     /**
+     * Retrieve the current media's current time position.
      *
-     *
+     * @returns {number}
      * @memberof Native
      */
-    get currentTime() {
+    get currentTime(): number {
         return this.element.currentTime;
     }
 
     /**
+     * Retrieve the current media's current duration.
      *
-     *
-     * @readonly
+     * @returns {number}
      * @memberof Native
      */
-    get duration() {
+    get duration(): number {
         return this.element.duration;
     }
 
     /**
+     * Retrieve the current media's paused status.
      *
-     *
-     * @readonly
+     * @returns {boolean}
      * @memberof Native
      */
-    get paused() {
+    get paused(): boolean {
         return this.element.paused;
     }
 
     /**
+     * * Retrieve the current media's ended status.
      *
-     *
-     * @readonly
+     * @returns {boolean}
      * @memberof Native
      */
-    get ended() {
+    get ended(): boolean {
         return this.element.ended;
     }
 }
