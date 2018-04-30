@@ -9,7 +9,7 @@ declare namespace OpenPlayer {
      *
      * @description Object that mimics the native HTML5 Cue.
      */
-    export interface Cue {
+    interface Cue {
         /**
          * Time in STMP format to indicate when cue must be hidden.
          *
@@ -51,7 +51,7 @@ declare namespace OpenPlayer {
      *
      * @description A collection of cues per language code.
      */
-    export interface CueList {
+    interface CueList {
         /**
          * @type object
          */
@@ -63,7 +63,7 @@ declare namespace OpenPlayer {
      *
      * @description A collection of track `src` URLs identified by its language code.
      */
-    export interface TrackURL {
+    interface TrackURL {
         /**
          * @type object
          */
@@ -75,7 +75,7 @@ declare namespace OpenPlayer {
      *
      * @description An object that mimics the `track` tag attributes.
      */
-    export interface Track {
+    interface Track {
         /**
          * The language short code of the track (`en`, `es`, `pt`, etc.)
          *
@@ -108,7 +108,6 @@ declare namespace OpenPlayer {
         /**
          * Human-friendly name for the track to be displayed in `Settings` menu.
          *
-         * @see [[Settings.addItem]]
          * @type string
          */
         label: string;
@@ -127,7 +126,7 @@ declare namespace OpenPlayer {
      * @description An element that contains a key identifier and a human-readable label
      * in the `Settings` submenus.
      */
-    export interface SettingsSubItem {
+    interface SettingsSubItem {
         /**
          *
          * @type string
@@ -147,7 +146,7 @@ declare namespace OpenPlayer {
      * @description An element that stores the submenu identified by a unique identifier,
      * provided by the `Settings` item.
      */
-    export interface SettingsSubMenu {
+    interface SettingsSubMenu {
         /**
          * @type object
          */
@@ -161,7 +160,7 @@ declare namespace OpenPlayer {
      * @description An element to create elements in the `Settings` menu and submenus linked
      * to them.
      */
-    export interface SettingsItem {
+    interface SettingsItem {
         /**
          * Specific class name to be used for:
          * - event listeners and dispatchers
@@ -204,7 +203,7 @@ declare namespace OpenPlayer {
     /**
      * Player Component
      */
-    export interface PlayerComponent {
+    interface PlayerComponent {
         /**
          * Create HTML and insert it into OpenPlayer's DOM.
          *
@@ -225,7 +224,7 @@ declare namespace OpenPlayer {
      * @export
      * @interface EventsList
      */
-    export interface EventsList {
+    interface EventsList {
         /**
          * @type object
          */
@@ -235,7 +234,7 @@ declare namespace OpenPlayer {
     /**
      * Player instance list
      */
-    export interface PlayerInstanceList {
+    interface PlayerInstanceList {
         /**
          * @type object
          */
@@ -245,7 +244,7 @@ declare namespace OpenPlayer {
     /**
      * Media source
      */
-    export interface Source {
+    interface Source {
         /**
          *
          * @type string
@@ -274,9 +273,16 @@ declare namespace OpenPlayer {
      * @abstract
      */
     abstract class Native {
+        /**
+         * Create an instance of Native.
+         *
+         * @param {HTMLMediaElement} element The `video/audio` source.
+         * @param {Source} media The `Media` instance.
+         */
         constructor(element: HTMLMediaElement, media: Source);
 
         /**
+         * Check if player can play the current media type (MIME type).
          *
          * @abstract
          * @param {string} mimeType
@@ -285,42 +291,127 @@ declare namespace OpenPlayer {
         abstract canPlayType(mimeType: string): boolean;
 
         /**
+         * Prepare current media to be played.
          *
          * @abstract
+         * @returns {void}
          */
         abstract load(): void;
 
         /**
-         *
+         * Execute any callbacks to destroy the current media element.
          *
          * @abstract
+         * @returns {any}
          */
-        public abstract destroy(): void;
+        abstract destroy(): any;
 
         /**
+         * Set a new media source.
          *
          * @abstract
+         * @returns {void}
          */
-        abstract set src(media: Source): void;
+        abstract set src(media: Source);
 
         /**
+         * Return the current media source.
          *
          * @abstract
+         * @returns {Source}
          */
         abstract get src(): Source;
 
+        /**
+         * Play current media.
+         *
+         * @returns {void}
+         */
         play(): void;
+
+        /**
+         * Pause current media.
+         *
+         * @returns {void}
+         */
         pause(): void;
+
+        /**
+         * Set the current media's volume level.
+         *
+         * @returns {void}
+         */
         set volume(value: number): void;
+
+        /**
+         * Retrieve current media's volume level.
+         *
+         * @returns {number}
+         * @memberof Native
+         */
         get volume(): number;
+
+        /**
+         * Set the current media's muted status.
+         *
+         * @returns {void}
+         */
         set muted(value: boolean): void;
+
+        /**
+         * Retrieve the current media's muted status.
+         *
+         * @returns {boolean}
+         */
         get muted(): boolean;
-        get playbackRate(): number;
+
+        /**
+         * Set the current media's playback rate.
+         *
+         * @returns {void}
+         */
         set playbackRate(value: number): void;
+
+        /**
+         * Retrieve the current media's playback rate.
+         *
+         * @returns {number}
+         */
+        get playbackRate(): number;
+
+        /**
+         * Set the current media's current time position.
+         *
+         * @returns {void}
+         */
         set currentTime(value: number): void;
+
+        /**
+         * Retrieve the current media's current time position.
+         *
+         * @returns {number}
+         */
         get currentTime(): number;
+
+        /**
+         * Retrieve the current media's current duration.
+         *
+         * @returns {number}
+         */
         get duration(): number;
+
+        /**
+         * Retrieve the current media's paused status.
+         *
+         * @returns {boolean}
+         */
         get paused(): boolean;
+
+        /**
+         * * Retrieve the current media's ended status.
+         *
+         * @returns {boolean}
+         */
         get ended(): boolean;
     }
 
@@ -371,7 +462,6 @@ declare namespace OpenPlayer {
      *
      * @description Class that handles M3U8 files using hls.js within the player
      * @see https://github.com/video-dev/hls.js/
-     * @class HlsMedia
      */
     class HlsMedia extends Native {
         /**
@@ -419,9 +509,7 @@ declare namespace OpenPlayer {
 
         /**
          *
-         *
-         * @param {string} mimeType
-         * @returns {boolean}
+         * @inheritDoc
          */
         canPlayType(mimeType: string): boolean;
 
@@ -449,7 +537,6 @@ declare namespace OpenPlayer {
      *
      * @description This class implements Google IMA SDK v3.0 to display VAST and VPAID advertisements
      * @see https://developers.google.com/interactive-media-ads/
-     * @class Ads
      */
     class Ads {
         /**
@@ -463,87 +550,116 @@ declare namespace OpenPlayer {
 
         /**
          * Create the Ads container and loader to process the Ads URL provided.
+         *
+         * @returns {void}
          */
         load(): void;
 
         /**
+         * Start playing/resume Ad if `adsManager` is active.
          *
+         * @returns {void}
          */
         play(): void;
 
         /**
+         * Pause Ad if `adsManager` is active.
          *
+         * @returns {void}
          */
         pause(): void;
 
         /**
+         * Execute any callbacks to destroy Ads.
          *
+         * @returns {void}
          */
         destroy(): void;
 
         /**
+         * Change dimensions of Ad.
          *
-         *
-         * @param {?number} [width]
-         * @param {?number} [height]
-         * @param {?string} [transform]
+         * @param {?number} width       The new width of the Ad's container.
+         * @param {?number} height      The new height of the Ad's container.
+         * @param {?string} transform   CSS `transform` property to align Ad if `fill` mode is enabled.
+         * @returns {void}
          */
         resizeAds(width?: number, height?: number, transform?: string): void;
 
         /**
+         * Set the current Ad's volume level.
          *
-         *
+         * @returns {void}
          */
         set volume(value: number): void;
 
         /**
+         * Retrieve current Ad's volume level.
          *
+         * @returns {number}
          */
         get volume(): number;
 
         /**
+         * Set the current Ad's muted status.
          *
+         * @returns {void}
          */
         set muted(value: boolean): void;
 
         /**
+         * Retrieve the current Ad's muted status.
          *
+         * @returns {boolean}
          */
         get muted(): boolean;
 
         /**
+         * Set the current Ad's current time position.
          *
+         * @returns {void}
          */
         set currentTime(value: number): void;
 
         /**
+         * Retrieve the current Ad's current time position.
          *
+         * @returns {number}
+         * @memberof Ads
          */
         get currentTime(): number;
 
         /**
+         * Retrieve the current Ad's duration.
          *
-         *
-         * @readonly
+         * @returns {number}
          */
         get duration(): number;
 
         /**
+         * Retrieve the current Ad's paused status.
          *
-         *
-         * @readonly
+         * @returns {boolean}
          */
         get paused(): boolean;
 
         /**
+         * Retrieve the current Ad's ended status.
          *
-         *
-         * @readonly
+         * @returns {boolean}
          */
         get ended(): boolean;
     }
 
-    class Captions implements PlayerComponent {    
+    /**
+     * Closed Captions element.
+     *
+     * @description Using `<track>` tags, this class allows the displaying of both local and remote captions
+     * bypassing CORS, and without the use of the `crossorigin` attribute.
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
+     * @see https://www.html5rocks.com/en/tutorials/track/basics/
+     */
+    class Captions implements PlayerComponent {
         /**
          * Create an instance of Captions.
          *
@@ -551,29 +667,36 @@ declare namespace OpenPlayer {
          * @returns {Captions}
          */
         constructor(player: Player);
-    
+
         /**
          * Create a button and a container to display captions if tracks are detected.
          *
          * @inheritDoc
          */
         create(): void;
-    
+
         /**
          *
          * @inheritDoc
          */
         destroy(): void;
-    
+
         /**
          * Add list of available captions in the `Settings` menu.
          *
-         * @see [[Settings.addSettings]]
          * @returns {SettingsItem|object}
          */
-        addSettings(): SettingsItem|object;
+        addSettings(): SettingsItem | object;
     }
 
+    /**
+     * Fullscreen element.
+     *
+     * @description Following the Fullscreen API, this class toggles media dimensions to present video
+     * using the user's entire screen, even when the player is playing Ads.
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API
+     * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
+     */
     class Fullscreen implements PlayerComponent {
         /**
          * Create an instance of Fullscreen.
@@ -582,20 +705,20 @@ declare namespace OpenPlayer {
          * @returns {Fullscreen}
          */
         constructor(player: Player);
-    
+
         /**
          * Create a button and set global events to toggle fullscreen.
          *
          * @inheritDoc
          */
         create(): void;
-    
+
         /**
          *
          * @inheritDoc
          */
         destroy(): void;
-    
+
         /**
          * Enter/cancel fullscreen depending of browser's capabilities.
          *
@@ -605,7 +728,14 @@ declare namespace OpenPlayer {
         toggleFullscreen(): void;
     }
 
-    class Play implements PlayerComponent {    
+    /**
+     * Play/pause element.
+     *
+     * @description This class controls the state of the media, by playing or pausing it, and
+     * when it ends, updates the state to replay the current media.
+     * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#PlayPause
+     */
+    class Play implements PlayerComponent {
         /**
          * Create an instance of Play.
          *
@@ -613,7 +743,7 @@ declare namespace OpenPlayer {
          * @returns {Play}
          */
         constructor(player: Player);
-    
+
         /**
          *
          * @inheritDoc
@@ -627,6 +757,15 @@ declare namespace OpenPlayer {
         destroy(): void;
     }
 
+    /**
+     * Progress bar element.
+     *
+     * @description This class creates a progress bar to track how much time media has been played,
+     * downloaded and its current time, using `semantic markup`, such as input range and progress elements.
+     * @see https://codepen.io/mi-lee/post/an-overview-of-html5-semantics
+     * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Progress
+     * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/buffering_seeking_time_ranges
+    */
     class Progress implements PlayerComponent {
         /**
          * Create an instance of Progress.
@@ -635,13 +774,13 @@ declare namespace OpenPlayer {
          * @returns {Progress}
          */
         constructor(player: Player);
-    
+
         /**
          *
          * @inheritDoc
          */
         create(): void;
-    
+
         /**
          *
          * @inheritDoc
@@ -649,7 +788,15 @@ declare namespace OpenPlayer {
         destroy(): void;
     }
 
-    class Settings implements PlayerComponent {    
+    /**
+     * Settings element.
+     *
+     * @description This class creates a menu of options to manipulate media that cannot
+     * be placed in the main control necessarily (such as different captions associated with media,
+     * levels of speed to play media, etc.)
+     * This element is based on YouTube's Settings element.
+     */
+    class Settings implements PlayerComponent {
         /**
          * Create an instance of Settings.
          *
@@ -657,31 +804,31 @@ declare namespace OpenPlayer {
          * @returns {Settings}
          */
         constructor(player: Player);
-    
+
         /**
          *
          * @inheritDoc
          */
         create(): void;
-    
+
         /**
          *
          * @inheritDoc
          */
         destroy(): void;
-    
+
         /**
          * Build `Settings` default option: media speed levels
          *
          * @returns {SettingItem}
          */
         addSettings(): SettingsItem;
-    
+
         /**
          * Add a new element and subelements to Setting's menu.
          *
          * The subelements will be transformed in HTML output, and this will be cached via
-         * [[Settings.submenu]] element. A global event will be associated with the newly
+         * `Settings.submenu` element. A global event will be associated with the newly
          * added elements.
          *
          * @param {string} name  The name of the Settings element.
@@ -693,7 +840,15 @@ declare namespace OpenPlayer {
         addItem(name: string, key: string, defaultValue: string, submenu?: SettingsSubItem[], className?: string): void;
     }
 
-    class Time implements PlayerComponent {  
+    /**
+     * Time element.
+     *
+     * @description Class that renders media's current time and duration in human-readable format
+     * (hh:mm:ss), and if media is a live streaming, a `Live Broadcast` message will be displayed.
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/duration
+     */
+    class Time implements PlayerComponent {
         /**
          * Create an instance of Time.
          *
@@ -701,14 +856,14 @@ declare namespace OpenPlayer {
          * @returns {Time}
          */
         constructor(player: Player);
-    
+
         /**
          * When no duration (Infinity) is detected, the `Live Broadcast` will be displayed.
          *
          * @inheritDoc
          */
         create(): void;
-    
+
         /**
          *
          * @inheritDoc
@@ -717,7 +872,16 @@ declare namespace OpenPlayer {
         destroy(): void;
     }
 
-    class Volume implements PlayerComponent {    
+    /**
+     * Volume controller element.
+     *
+     * @description This class controls the media's volume level using `semantic markup`,
+     * such as input range and progress elements.
+     * @see https://codepen.io/mi-lee/post/an-overview-of-html5-semantics
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/volume
+     * @see https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Volume
+     */
+    class Volume implements PlayerComponent {
         /**
          * Create an instance of Volume.
          *
@@ -725,13 +889,13 @@ declare namespace OpenPlayer {
          * @returns {Volume}
          */
         constructor(player: Player);
-    
+
         /**
          *
          * @inheritDoc
          */
         create(): void;
-    
+
         /**
          *
          * @inheritDoc
@@ -739,6 +903,11 @@ declare namespace OpenPlayer {
         destroy(): void;
     }
 
+    /**
+     * Controls element.
+     *
+     * @description This class handles the creation/destruction of all player's control elements.
+     */
     class Controls implements PlayerComponent {
         /**
          * Create an instance of Controls.
@@ -775,7 +944,13 @@ declare namespace OpenPlayer {
         getFullscreen(): Fullscreen;
     }
 
-    export class Media {
+    /**
+     * Media element.
+     *
+     * @description Class that creates the Media Component in the player.
+     * `Media` is the visual/audio entity that results from playing  a valid source (MP4, MP3, M3U8, MPD, etc.)
+     */
+    class Media {
         /**
          * Create an instance of Media.
          *
@@ -842,10 +1017,15 @@ declare namespace OpenPlayer {
         get ended(): boolean;
     }
 
-    export class Player {
+    /**
+     * OpenMedia Player.
+     *
+     * @description This class generates controls to play native media (such as MP4, MP3, HLS, M(PEG-DASH),
+     * and have a unified look-and-feel on all modern browsers (including IE11)
+     */
+    class Player {
         /**
          * Convert all the video/audio tags with `om-player` class in a OpenMedia player instance.
-         *
          */
         static init(): void;
 
@@ -991,5 +1171,4 @@ declare namespace OpenPlayer {
          */
         get id(): string;
     }
-
 }
