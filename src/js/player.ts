@@ -6,7 +6,7 @@ import PlayerInstanceList from './interfaces/instance';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { IS_ANDROID, IS_FIREFOX, IS_IOS, IS_IPHONE } from './utils/constants';
+import { IS_ANDROID, IS_FIREFOX, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
@@ -220,10 +220,7 @@ class Player {
             this._wrapInstance();
             this._createPlayButton();
             this._createUID();
-
-            if (!IS_IPHONE && isVideo) {
-                this._createControls();
-            }
+            this._createControls();
             this._setEvents();
             this._autoplay();
             Player.instances[this.id] = this;
