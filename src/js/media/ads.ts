@@ -228,7 +228,6 @@ class Ads {
     /**
      * Create the Ads container and loader to process the Ads URL provided.
      *
-     * @returns {void}
      * @memberof Ads
      */
     public load(): void {
@@ -247,7 +246,6 @@ class Ads {
     /**
      * Start playing/resume Ad if `adsManager` is active.
      *
-     * @returns {void}
      * @memberof Ads
      */
     public play(): void {
@@ -269,7 +267,6 @@ class Ads {
     /**
      * Pause Ad if `adsManager` is active.
      *
-     * @returns {void}
      * @memberof Ads
      */
     public pause(): void {
@@ -284,7 +281,6 @@ class Ads {
     /**
      * Execute any callbacks to destroy Ads.
      *
-     * @returns {void}
      * @memberof Ads
      */
     public destroy(): void {
@@ -318,7 +314,6 @@ class Ads {
      * @param {?number} width       The new width of the Ad's container.
      * @param {?number} height      The new height of the Ad's container.
      * @param {?string} transform   CSS `transform` property to align Ad if `fill` mode is enabled.
-     * @returns {void}
      * @memberof Ads
      */
     public resizeAds(width?: number, height?: number, transform?: string): void {
@@ -350,7 +345,6 @@ class Ads {
     /**
      * Set the current Ad's volume level.
      *
-     * @returns {void}
      * @memberof Ads
      */
     set volume(value: number) {
@@ -374,7 +368,6 @@ class Ads {
     /**
      * Set the current Ad's muted status.
      *
-     * @returns {void}
      * @memberof Ads
      */
     set muted(value: boolean) {
@@ -404,7 +397,6 @@ class Ads {
     /**
      * Set the current Ad's current time position.
      *
-     * @returns {void}
      * @memberof Ads
      */
     set currentTime(value: number) {
@@ -455,7 +447,6 @@ class Ads {
      * Dispatch IMA SDK's events via OpenPlayer.
      *
      * @param {any} event
-     * @returns {void}
      * @memberof Ads
      */
     private _assign(event: any): void {
@@ -526,7 +517,6 @@ class Ads {
      * Dispatch an IMA SDK error that will destroy the Ads instance and resume original media.
      *
      * @param {any} event
-     * @returns {void}
      * @memberof Ads
      */
     private _error(event: any): void {
@@ -541,7 +531,6 @@ class Ads {
      * Callback to be executed once IMA SDK manager is loaded.
      *
      * @param {any} adsManagerLoadedEvent
-     * @returns {void}
      * @memberof Ads
      */
     private _loaded(adsManagerLoadedEvent: any): void {
@@ -556,7 +545,6 @@ class Ads {
      * Callback to be executed to start playing Ad.
      *
      * @param {any} manager
-     * @returns {void}
      * @memberof Ads
      */
     private _start(manager: any): void {
@@ -598,7 +586,6 @@ class Ads {
     /**
      * Callback to be executed once the Ad has ended.
      *
-     * @returns {void}
      * @memberof Ads
      */
     private _contentEndedListener(): void {
@@ -611,7 +598,6 @@ class Ads {
     /**
      * Callback to be executed once the Ad has been paused.
      *
-     * @returns {void}
      * @memberof Ads
      */
     private _onContentPauseRequested(): void {
@@ -628,7 +614,6 @@ class Ads {
     /**
      * Callback to be executed once the Ad has been resumed.
      *
-     * @returns {void}
      * @memberof Ads
      */
     private _onContentResumeRequested(): void {
@@ -640,7 +625,6 @@ class Ads {
      * Callback to resume original media.
      *
      * This can happen when Ad is being skipped or has ended.
-     * @returns {void}
      * @memberof Ads
      */
     private _resumeMedia(): void {
@@ -667,7 +651,6 @@ class Ads {
      * Setup final attributes to the Ad before playing it, which include initial dimensions and capabilities
      * to autoplay Ad or not.
      *
-     * @returns {void}
      * @memberof Ads
      */
     private _requestAds(): void {
@@ -692,7 +675,6 @@ class Ads {
     /**
      * Prepare container and request loader so Ads can be played.
      *
-     * @returns {void}
      * @memberof Ads
      */
     private _setup(): void {
@@ -720,7 +702,6 @@ class Ads {
     /**
      * Internal callback to start playing Ads or resume media if error is detected.
      *
-     * @returns {void}
      * @memberof Ads
      */
     private _playAds(): void {

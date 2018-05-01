@@ -564,8 +564,6 @@ class Player {
      * Create a Play button in the main player's container.
      *
      * Also, it creates a loader element, that will be displayed when seeking/waiting for media.
-     * @private
-     * @returns {void}
      * @memberof Player
      */
     private _createPlayButton(): void {
@@ -600,7 +598,7 @@ class Player {
      * @memberof Player
      */
     private _setEvents(): void {
-        if (!IS_IPHONE && isVideo(this.element)) {
+        if (isVideo(this.element)) {
             this.events.loadedmetadata = () => {
                 const el = this.activeElement();
                 if (el.paused) {
@@ -686,8 +684,8 @@ class Player {
                     }
                     break;
                 case 70: // F
-                    if (!e.ctrlKey && typeof this.controls.getFullscreen().fullScreenEnabled !== 'undefined') {
-                        this.controls.getFullscreen().toggleFullscreen();
+                    if (!e.ctrlKey && typeof this.controls.fullscreen.fullScreenEnabled !== 'undefined') {
+                        this.controls.fullscreen.toggleFullscreen();
                     }
                     break;
                 default:

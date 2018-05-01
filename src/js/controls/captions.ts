@@ -350,8 +350,6 @@ class Captions implements PlayerComponent {
     /**
      * Display current caption checking for cues or parsing remote source.
      *
-     * @private
-     * @returns {void}
      * @memberof Captions
      */
     private _show(): void {

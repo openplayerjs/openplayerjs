@@ -65,7 +65,6 @@ abstract class Native {
      * Prepare current media to be played.
      *
      * @abstract
-     * @returns {void}
      * @memberof Native
      */
     public abstract load(): void;
@@ -83,7 +82,6 @@ abstract class Native {
      * Set a new media source.
      *
      * @abstract
-     * @returns {void}
      * @memberof Native
      */
     public abstract set src(media: Source);
@@ -100,7 +98,6 @@ abstract class Native {
     /**
      * Play current media.
      *
-     * @returns {void}
      * @memberof Native
      */
     public play(): void {
@@ -110,7 +107,6 @@ abstract class Native {
     /**
      * Pause current media.
      *
-     * @returns {void}
      * @memberof Native
      */
     public pause(): void {
@@ -120,7 +116,6 @@ abstract class Native {
     /**
      * Set the current media's volume level.
      *
-     * @returns {void}
      * @memberof Native
      */
     set volume(value: number) {
@@ -140,7 +135,6 @@ abstract class Native {
     /**
      * Set the current media's muted status.
      *
-     * @returns {void}
      * @memberof Native
      */
     set muted(value: boolean) {
@@ -160,7 +154,6 @@ abstract class Native {
     /**
      * Set the current media's playback rate.
      *
-     * @returns {void}
      * @memberof Native
      */
     set playbackRate(value: number) {
@@ -180,7 +173,6 @@ abstract class Native {
     /**
      * Set the current media's current time position.
      *
-     * @returns {void}
      * @memberof Native
      */
     set currentTime(value: number) {
