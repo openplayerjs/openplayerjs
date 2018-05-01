@@ -109,6 +109,7 @@
 }
 .om-controls > button {
     padding: 2px 6px 3px;
+    z-index: 4;
 }
 .om-player__loader {
     display: block;
