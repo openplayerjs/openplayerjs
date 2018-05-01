@@ -20,6 +20,78 @@ import { isVideo } from './utils/general';
  */
 class Controls implements PlayerComponent {
     /**
+     * Instance of Play object.
+     *
+     * @public
+     * @type Play
+     * @memberof Controls
+     */
+    public play: Play;
+
+    /**
+     * Instance of Time object.
+     *
+     * @public
+     * @type Time
+     * @memberof Controls
+     */
+    public time: Time;
+
+    /**
+     * Instance of Volume object.
+     *
+     * @public
+     * @type Volume
+     * @memberof Controls
+     */
+    public volume: Volume;
+
+    /**
+     * Instance of Progress object.
+     *
+     * @public
+     * @type Progress
+     * @memberof Controls
+     */
+    public progress: Progress;
+
+    /**
+     * Instance of Settings object.
+     *
+     * @public
+     * @type Settings
+     * @memberof Controls
+     */
+    public settings: Settings;
+
+    /**
+     * Instance of Fullscreen object.
+     *
+     * @public
+     * @type Fullscreen
+     * @memberof Controls
+     */
+    public fullscreen: Fullscreen;
+
+    /**
+     * Instance of Captions object.
+     *
+     * @public
+     * @type Captions
+     * @memberof Controls
+     */
+    public captions: Captions;
+
+    /**
+     * Element that stores the time to hide controls.
+     *
+     * @public
+     * @type number
+     * @memberof Controls
+     */
+    public timer: number;
+
+    /**
      * Main container of control elements.
      *
      * @private
@@ -45,78 +117,6 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private items: any[];
-
-    /**
-     * Instance of Play object.
-     *
-     * @private
-     * @type Play
-     * @memberof Controls
-     */
-    private play: Play;
-
-    /**
-     * Instance of Time object.
-     *
-     * @private
-     * @type Time
-     * @memberof Controls
-     */
-    private time: Time;
-
-    /**
-     * Instance of Volume object.
-     *
-     * @private
-     * @type Volume
-     * @memberof Controls
-     */
-    private volume: Volume;
-
-    /**
-     * Instance of Progress object.
-     *
-     * @private
-     * @type Progress
-     * @memberof Controls
-     */
-    private progress: Progress;
-
-    /**
-     * Instance of Settings object.
-     *
-     * @private
-     * @type Settings
-     * @memberof Controls
-     */
-    private settings: Settings;
-
-    /**
-     * Instance of Fullscreen object.
-     *
-     * @private
-     * @type Fullscreen
-     * @memberof Controls
-     */
-    private fullscreen: Fullscreen;
-
-    /**
-     * Instance of Captions object.
-     *
-     * @private
-     * @type Captions
-     * @memberof Controls
-     */
-    private captions: Captions;
-
-    /**
-     * Element that stores the time to hide controls.
-     *
-     * @private
-     * @type number
-     * @memberof Controls
-     */
-    private timer: number;
 
     /**
      * Events that will be triggered in Controls element:
@@ -232,16 +232,6 @@ class Controls implements PlayerComponent {
      */
     public getContainer(): HTMLDivElement {
         return this.controls;
-    }
-
-    /**
-     * Retrieve an instance of Fullscreen object.
-     *
-     * @returns {Fullscreen}
-     * @memberof Controls
-     */
-    public getFullscreen(): Fullscreen {
-        return this.fullscreen;
     }
 
     /**

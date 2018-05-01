@@ -126,6 +126,17 @@ class Media {
     }
 
     /**
+     * Invoke `destroy` method of current media type.
+     *
+     * Streaming that uses hls.js or dash.js libraries require to destroy their players and
+     * their custom events.
+     * @memberof Media
+     */
+    public destroy(): void {
+        this.media.destroy();
+    }
+
+    /**
      * Set one or more media sources.
      *
      * @param {string|object|object[]} media
@@ -279,17 +290,6 @@ class Media {
      */
     get ended(): boolean {
         return this.media.ended;
-    }
-
-    /**
-     * Invoke `destroy` method of current media type.
-     *
-     * Streaming that uses hls.js or dash.js libraries require to destroy their players and
-     * their custom events.
-     * @memberof Media
-     */
-    public destroy(): void {
-        this.media.destroy();
     }
 
     /**
