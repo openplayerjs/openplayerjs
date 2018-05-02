@@ -5,6 +5,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
+import { addEvent } from '../utils/events';
 import { getAbsoluteUrl, hasClass, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
@@ -231,6 +232,8 @@ class Captions implements PlayerComponent {
                 const language = option.getAttribute('data-value').replace('captions-', '');
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
                 this._show();
+                const event = addEvent('captionschanged');
+                this.player.getElement().dispatchEvent(event);
             }
         };
 
