@@ -1,0 +1,15 @@
+{
+    "increment": "conventional:angular",
+    "beforeChangelogCommand": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "changelogCommand": "conventional-changelog -p angular | tail -n +3",
+    "safeBump": false,
+    "buildCommand": "tar -czvf ${src.tagName}.tar.gz",
+    "afterReleaseCommand": "echo Successfully released ${version} to ${dist.repo}.",
+    "src": {
+        "tagName": "v%s"
+    },
+    "github": {
+        "release": true,
+        "releaseName": "%s"
+    }
+}
