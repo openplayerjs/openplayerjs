@@ -473,6 +473,9 @@ class Ads {
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
                     this.adsActive = true;
+                    const playEvent = addEvent('play');
+                    this.element.dispatchEvent(playEvent);
+
                     if (this.media.ended) {
                         this.adsEnded = false;
                         const endEvent = addEvent('adsended');

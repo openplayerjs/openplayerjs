@@ -137,9 +137,10 @@ All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Even
 
 Event | Description
 --- | ---
-`controlshidden` | Event executed when controls timer stops and hides control bar (video only)
-`controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new cpation)
-`adsended` | Event executed when an Ad ends playing (currently used to change the Replay icon to Pause when playing a postroll Ad)
+`controlshidden` | Event executed when controls timer stops and hides control bar (video only).
+`controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new caption).
+`captionschanged` | Event triggered when user changes the current caption by selecting a new one from the `Settings` menu.
+`adsended` | Event executed when an Ad ends playing (currently used to change the Replay icon to Pause when playing a postroll Ad).
 
 ## Contributions
 
