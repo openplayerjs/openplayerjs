@@ -1,6 +1,6 @@
 {
   "name": "openplayer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "Rafael Miranda",
     "email": "rafa8626@gmail.com"
@@ -26,8 +26,7 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist/ && webpack",
-    "release": "release-it",
-    "release-major": "npm run release major",
+    "release": "npm run build && npm run docs && release-it",
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "docs": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
   },
