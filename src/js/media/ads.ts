@@ -1,4 +1,5 @@
 import Media from '../media';
+import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
 import { isAutoplaySupported } from '../utils/media';
@@ -198,7 +199,10 @@ class Ads {
         this.adsUrl = adsUrl;
         this.media = media;
         this.element = media.element;
-        this.adsVolume = this.element.volume;
+
+        const originalVolume = this.element.volume;
+        this.adsVolume = IS_IOS ? 0 : originalVolume;
+        this.adsMuted = IS_IOS ? true : this.adsMuted;
 
         // Test browser capabilities to autoplay Ad
         isAutoplaySupported(autoplay => {
@@ -206,12 +210,36 @@ class Ads {
         }, muted => {
             this.autoplayRequiresMuted = muted;
         }, () => {
-            if (this.autoplayRequiresMuted) {
+            if (this.autoplayRequiresMuted || IS_IOS) {
+                this.adsMuted = true;
                 this.media.muted = true;
+                this.adsVolume = 0;
                 this.media.volume = 0;
 
                 const e = addEvent('volumechange');
                 this.element.dispatchEvent(e);
+
+                // Insert element to unmute if browser allows autoplay with muted media
+                const volumeEl = document.createElement('div');
+                const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
+                volumeEl.className = 'om-player__unmute';
+                volumeEl.innerHTML = `<span>${action} to unmute</span>`;
+
+                volumeEl.addEventListener('click', () => {
+                    this.adsMuted = false;
+                    this.media.muted = false;
+                    this.adsVolume = originalVolume;
+                    this.media.volume = originalVolume;
+
+                    const event = addEvent('volumechange');
+                    this.element.dispatchEvent(event);
+
+                    // Remove element
+                    volumeEl.remove();
+                });
+
+                const target = this.element.parentElement;
+                target.insertBefore(volumeEl, target.firstChild);
             }
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
                 loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
@@ -250,9 +278,9 @@ class Ads {
      */
     public play(): void {
         if (!this.adsDone) {
+            this.adsDone = true;
             this.adDisplayContainer.initialize();
             this._playAds();
-            this.adsDone = true;
         } else if (this.adsManager) {
             this.adsActive = true;
             this.adsManager.resume();
@@ -581,9 +609,7 @@ class Ads {
             manager.addEventListener(event, this._assign.bind(this));
         });
 
-        if (this.autoplayAllowed) {
-            this._playAds();
-        }
+        this._playAds();
     }
 
     /**
@@ -638,11 +664,11 @@ class Ads {
         this.adsCurrentTime = 0;
         this.element.parentElement.classList.remove('om-ads--active');
 
-        if (this.autoplayAllowed && !this.media.ended) {
+        if (!this.media.ended) {
             setTimeout(() => {
                 this.media.play();
-                const event = addEvent('play');
-                this.element.dispatchEvent(event);
+                const playEvent = addEvent('play');
+                this.element.dispatchEvent(playEvent);
             }, 500);
         } else {
             const event = addEvent('ended');
@@ -710,8 +736,8 @@ class Ads {
     private _playAds(): void {
         try {
             if (!this.adsDone) {
-                this.adDisplayContainer.initialize();
                 this.adsDone = true;
+                this.adDisplayContainer.initialize();
             }
             // Initialize the ads manager. Ad rules playlist will start at this time.
             this.adsManager.init(
