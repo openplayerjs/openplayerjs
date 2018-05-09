@@ -184,6 +184,9 @@ class Volume implements PlayerComponent {
             el.volume = value;
             el.muted = (el.volume === 0);
             this.volume = value;
+            if (!el.muted && this.player.getContainer().querySelector('.om-player__unmute')) {
+                this.player.getContainer().querySelector('.om-player__unmute').remove();
+            }
             const e = addEvent('volumechange');
             this.player.getElement().dispatchEvent(e);
         };

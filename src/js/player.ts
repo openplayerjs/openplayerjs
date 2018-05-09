@@ -216,8 +216,8 @@ class Player {
      */
     public init(): void {
         if (this._isValid()) {
-            this._prepareMedia();
             this._wrapInstance();
+            this._prepareMedia();
             this._createPlayButton();
             this._createUID();
             this._createControls();
