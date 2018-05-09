@@ -3,13 +3,19 @@
     "beforeChangelogCommand": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "changelogCommand": "conventional-changelog -p angular | tail -n +3",
     "safeBump": false,
-    "buildCommand": "tar -czvf ${src.tagName}.tar.gz",
-    "afterReleaseCommand": "echo Successfully released ${version} to ${dist.repo}.",
+    "buildCommand": "tar -czvf dist-${src.tagName}.tar.gz ./dist && tar -czvf docs-${src.tagName}.tar.gz ./docs ",
+    "afterReleaseCommand": "echo Successfully released ${version}.",
+    "requireCleanWorkingDir": false,
     "src": {
-        "tagName": "v%s"
+        "tagName": "v%s",
+        "afterReleaseCommand": "rm ./*.gz",
+        "githubAssets": [
+            "*.gz"
+        ]
     },
     "github": {
         "release": true,
         "releaseName": "%s"
-    }
+    },
+    "dist": {}
 }

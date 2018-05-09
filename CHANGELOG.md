@@ -1,3 +1,51 @@
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/rafa8626/openplayer/compare/v1.0.1...v1.0.2) (2018-05-09)
+
+
+### Bug Fixes
+
+* **ads:** Fixed workflow to autoplay Ads in iOS by playing them muted initially ([45e00aa](https://github.com/rafa8626/openplayer/commit/45e00aa))
+* **controls:** Added missing workflow for mobile devices to avoid hiding controls ([32d8f36](https://github.com/rafa8626/openplayer/commit/32d8f36))
+
+
+### Features
+
+* **release:** Added `release-it` package to simplify release tasks ([7f7be84](https://github.com/rafa8626/openplayer/commit/7f7be84))
+
+
+
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/rafa8626/openplayer/compare/v1.0.1...v1.0.2) (2018-05-09)
+
+
+### Bug Fixes
+
+* **ads:** Fixed workflow to autoplay Ads in iOS by playing them muted initially ([45e00aa](https://github.com/rafa8626/openplayer/commit/45e00aa))
+* **controls:** Added missing workflow for mobile devices to avoid hiding controls ([32d8f36](https://github.com/rafa8626/openplayer/commit/32d8f36))
+
+
+### Features
+
+* **release:** Added `release-it` package to simplify release tasks ([7f7be84](https://github.com/rafa8626/openplayer/commit/7f7be84))
+
+
+
+<a name="1.0.2"></a>
+## [1.0.2](https://github.com/rafa8626/openplayer/compare/v1.0.1...v1.0.2) (2018-05-09)
+
+
+### Bug Fixes
+
+* **ads:** Fixed workflow to autoplay Ads in iOS by playing them muted initially ([45e00aa](https://github.com/rafa8626/openplayer/commit/45e00aa))
+* **controls:** Added missing workflow for mobile devices to avoid hiding controls ([32d8f36](https://github.com/rafa8626/openplayer/commit/32d8f36))
+
+
+### Features
+
+* **release:** Added `release-it` package to simplify release tasks ([7f7be84](https://github.com/rafa8626/openplayer/commit/7f7be84))
+
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/rafa8626/openplayer/compare/v1.0.0...v1.0.1) (2018-05-02)
 
