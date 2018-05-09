@@ -8,6 +8,7 @@ import Volume from './controls/volume';
 import PlayerComponent from './interfaces/component';
 import EventsList from './interfaces/events-list';
 import Player from './player';
+import { IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isVideo } from './utils/general';
 
@@ -159,44 +160,46 @@ class Controls implements PlayerComponent {
         this.controls.className = 'om-controls';
         this.player.getContainer().appendChild(this.controls);
 
-        this.events.mouse.mouseenter = () => {
-            if (isMediaVideo) {
+        if (!IS_ANDROID && !IS_IOS) {
+            this.events.mouse.mouseenter = () => {
+                if (isMediaVideo) {
+                    this._stopControlTimer();
+                    this.player.getContainer().classList.remove('om-controls--hidden');
+                    this._startControlTimer(2500);
+                }
+            };
+            this.events.mouse.mousemove = () => {
+                if (isMediaVideo) {
+                    this.player.getContainer().classList.remove('om-controls--hidden');
+                    this._startControlTimer(2500);
+                }
+            };
+            this.events.mouse.mouseleave = () => {
+                if (isMediaVideo) {
+                    this._startControlTimer(1000);
+                }
+            };
+            this.events.media.pause = () => {
+                this.player.getContainer().classList.remove('om-controls--hidden');
                 this._stopControlTimer();
-                this.player.getContainer().classList.remove('om-controls--hidden');
-                this._startControlTimer(2500);
-            }
-        };
-        this.events.mouse.mousemove = () => {
-            if (isMediaVideo) {
-                this.player.getContainer().classList.remove('om-controls--hidden');
-                this._startControlTimer(2500);
-            }
-        };
-        this.events.mouse.mouseleave = () => {
-            if (isMediaVideo) {
-                this._startControlTimer(1000);
-            }
-        };
-        this.events.media.pause = () => {
-            this.player.getContainer().classList.remove('om-controls--hidden');
-            this._stopControlTimer();
-        };
-        this.events.media.controlschanged = () => {
-            this.destroy();
-            this._setElements();
-            this.create();
-        };
+            };
+            this.events.media.controlschanged = () => {
+                this.destroy();
+                this._setElements();
+                this.create();
+            };
 
-        Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event]);
-        });
+            Object.keys(this.events.media).forEach(event => {
+                this.player.getElement().addEventListener(event, this.events.media[event]);
+            });
 
-        Object.keys(this.events.mouse).forEach(event => {
-            this.player.getContainer().addEventListener(event, this.events.mouse[event]);
-        });
+            Object.keys(this.events.mouse).forEach(event => {
+                this.player.getContainer().addEventListener(event, this.events.mouse[event]);
+            });
 
-        // Initial countdown to hide controls
-        this._startControlTimer(3000);
+            // Initial countdown to hide controls
+            this._startControlTimer(3000);
+        }
 
         this._buildElements();
     }
@@ -207,15 +210,17 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     public destroy(): void {
-        Object.keys(this.events.mouse).forEach(event => {
-            this.player.getContainer().removeEventListener(event, this.events.mouse[event]);
-        });
+        if (!IS_ANDROID && !IS_IOS) {
+            Object.keys(this.events.mouse).forEach(event => {
+                this.player.getContainer().removeEventListener(event, this.events.mouse[event]);
+            });
 
-        Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().removeEventListener(event, this.events.media[event]);
-        });
+            Object.keys(this.events.media).forEach(event => {
+                this.player.getElement().removeEventListener(event, this.events.media[event]);
+            });
 
-        this._stopControlTimer();
+            this._stopControlTimer();
+        }
 
         this.items.forEach(item => {
             item.destroy();
