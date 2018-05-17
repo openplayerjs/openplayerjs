@@ -6,13 +6,17 @@ const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 module.exports = {
     context: __dirname,
     entry: {
-        'om_player.min.js': './src/js/player.ts',
-        'om_player.css': './src/css/player.css',
-        'om_player.min.css': './src/css/player.css',
+        'openplayer.min.js': './src/js/player.ts',
+        'openplayer.css': './src/css/player.css',
+        'openplayer.min.css': './src/css/player.css',
     },
     output: {
         path: path.resolve(__dirname, './dist'),
-        filename: '[name]'
+        filename: '[name]',
+        publicPath: '/dist/',
+        library: 'OpenPlayer',
+        libraryTarget: 'umd',
+        libraryExport: 'default'
     },
     module: {
         rules: [

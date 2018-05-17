@@ -1,7 +1,5 @@
 node_modules/
-dist/
 .vscode/
 ts-dist/
 .idea/
 coverage/
-docs/

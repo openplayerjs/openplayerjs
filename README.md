@@ -24,13 +24,14 @@ Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.
 
 ### Obtain the files
 
-Currently, no `dist` folder or CDN reference is available. With the following steps, the `dist` folder and the bundles will be generated:
+The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can use one of the following methods:
 
+#### Direct download
+Download the repository from `https://github.com/rafa8626/openplayer.git`
+
+#### NPM
 ```
-git clone https://github.com/rafa8626/openplayer.git
-cd openplayer
-npm install
-npm run build
+npm install openplayer
 ```
 
 ### HTML
@@ -40,13 +41,23 @@ Include the OpenPlayer stylesheet inside the `<head>` tag, and the script at the
 #### Stylesheet
 
 ```html
-<link rel="stylesheet" href="/path/to/om_player.css">
+<link rel="stylesheet" href="/path/to/openplayer.css">
 ```
 
 #### Script
 
 ```html
-<script src="/path/to/om_player.js"></script>
+<script src="/path/to/openplayer.js"></script>
+```
+
+If you plan to use the library in a Node project:
+
+```javascript
+// Using as module
+var openplayer = require('/path/to/openplayer');
+
+// Importing library
+import OpenPlayer from 'openplayer';
 ```
 
 ### Minimal example
