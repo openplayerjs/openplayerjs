@@ -1,3 +1,15 @@
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/rafa8626/openplayer/compare/v1.1.0...v1.1.1) (2018-05-17)
+
+
+### Bug Fixes
+
+* **package:** Updated packages and fixed names for `main`, `style` and `types` elements ([d73aa68](https://github.com/rafa8626/openplayer/commit/d73aa68))
+* **test:** Fixed bundle path in Karma config ([7e16e0c](https://github.com/rafa8626/openplayer/commit/7e16e0c))
+* **test:** Fixed path for bundles in test file ([9b5f0e5](https://github.com/rafa8626/openplayer/commit/9b5f0e5))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/rafa8626/openplayer/compare/v1.0.2...v1.1.0) (2018-05-17)
 
