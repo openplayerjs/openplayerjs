@@ -4,7 +4,7 @@ module.exports = config => {
         browserNoActivityTimeout: 20000,
         frameworks: ['mocha', 'chai'],
         files: [
-            './dist/om_player.*',
+            './dist/openplayer.*',
             './test/*.js',
         ],
         customContextFile: 'test/context.html',
