@@ -85,18 +85,25 @@
 				</ul>
 				<h2 id="how-to-use-it-">How to use it?</h2>
 				<h3 id="obtain-the-files">Obtain the files</h3>
-				<p>Currently, no <code>dist</code> folder or CDN reference is available. With the following steps, the <code>dist</code> folder and the bundles will be generated:</p>
-				<pre><code>git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/rafa8626/openplayer.git
-cd openplayer
-npm install
-npm run build
+				<p>The <code>dist</code> folder contains the files you will need yo use this awesome library. To obtain it, you can use one of the following methods:</p>
+				<h4 id="direct-download">Direct download</h4>
+				<p>Download the repository from <code>https://github.com/rafa8626/openplayer.git</code></p>
+				<h4 id="npm">NPM</h4>
+				<pre><code>npm <span class="hljs-keyword">install</span> openplayer
 </code></pre><h3 id="html">HTML</h3>
 				<p>Include the OpenPlayer stylesheet inside the <code>&lt;head&gt;</code> tag, and the script at the bottom of the <code>&lt;body&gt;</code> tag (both of them located in the <code>dist</code> folder). The bundles will contain both minified and uncompressed files, so use the one that fits the best your needs.</p>
 				<h4 id="stylesheet">Stylesheet</h4>
-				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"/path/to/om_player.css"</span>&gt;</span>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"/path/to/openplayer.css"</span>&gt;</span>
 </code></pre>
 				<h4 id="script">Script</h4>
-				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/path/to/om_player.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+				<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/path/to/openplayer.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+				<p>If you plan to use the library in a Node project:</p>
+				<pre><code class="lang-javascript"><span class="hljs-comment">// Using as module</span>
+<span class="hljs-keyword">var</span> openplayer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/openplayer'</span>);
+
+<span class="hljs-comment">// Importing library</span>
+<span class="hljs-keyword">import</span> OpenPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'openplayer'</span>;
 </code></pre>
 				<h3 id="minimal-example">Minimal example</h3>
 				<p>Since this player uses HTML5 markup, all the attributes for video/audio tags are available. The only 3 requirements to invoke the player are:</p>

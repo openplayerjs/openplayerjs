@@ -1,3 +1,13 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/rafa8626/openplayer/compare/v1.0.2...v1.1.0) (2018-05-17)
+
+
+### Bug Fixes
+
+* **config:** modified config elements to create bundles correctly ([03e23c2](https://github.com/rafa8626/openplayer/commit/03e23c2))
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/rafa8626/openplayer/compare/v1.0.1...v1.0.2) (2018-05-09)
 
