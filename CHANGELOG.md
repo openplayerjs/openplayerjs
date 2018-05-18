@@ -1,3 +1,13 @@
+<a name="1.1.2"></a>
+## [1.1.2](https://github.com/rafa8626/openplayer/compare/v1.1.1...v1.1.2) (2018-05-18)
+
+
+### Bug Fixes
+
+* **player:** Added missing conditional to avoid attempting to build player when element does not exist ([20c65cb](https://github.com/rafa8626/openplayer/commit/20c65cb))
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/rafa8626/openplayer/compare/v1.1.0...v1.1.1) (2018-05-17)
 
