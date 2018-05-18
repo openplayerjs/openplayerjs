@@ -197,13 +197,15 @@ class Player {
     */
    constructor(element: HTMLMediaElement|string, adsUrl?: string, fill?: boolean) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
-        this.adsUrl = adsUrl;
-        this.fill = fill;
-        this.autoplay = this.element.autoplay;
-        this.volume = this.element.volume;
-        this.width = this.element.offsetWidth;
-        this.height = this.element.offsetHeight;
-        this.element.autoplay = false;
+        if (this.element) {
+            this.adsUrl = adsUrl;
+            this.fill = fill;
+            this.autoplay = this.element.autoplay;
+            this.volume = this.element.volume;
+            this.width = this.element.offsetWidth;
+            this.height = this.element.offsetHeight;
+            this.element.autoplay = false;
+        }
         return this;
     }
 
