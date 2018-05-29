@@ -295,6 +295,10 @@ class Player {
             this.loader.remove();
         }
 
+        if (this.fill) {
+            window.removeEventListener('resize', this._fill.bind(this));
+        }
+
         el.controls = true;
         const parent = el.parentElement;
         parent.parentNode.replaceChild(el, parent);
