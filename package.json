@@ -39,7 +39,7 @@
     "babel-preset-minify": "^0.4.3",
     "babili-webpack-plugin": "^0.1.2",
     "chai": "^4.1.2",
-    "conventional-changelog": "^1.1.24",
+    "conventional-changelog": "^2.0.0",
     "coveralls": "^3.0.1",
     "css-loader": "^0.28.11",
     "cssnano": "^3.10.0",
