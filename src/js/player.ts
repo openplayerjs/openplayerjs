@@ -799,6 +799,10 @@ class Player {
             return null;
         })();
 
+        if (!parent) {
+            return;
+        }
+
         const height = (parent as HTMLElement).offsetHeight;
         const width = (parent as HTMLElement).offsetWidth;
         const viewportRatio = width / height;
