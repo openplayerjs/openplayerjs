@@ -6,6 +6,28 @@
 
 * **documentation:** Fixed typos ([122742d](https://github.com/rafa8626/openplayer/commit/122742d))
 * **player:** Added missing conditional to remove event correctly ([11fb824](https://github.com/rafa8626/openplayer/commit/11fb824))
+* **release:** Removed unnecessary commands ([c521bca](https://github.com/rafa8626/openplayer/commit/c521bca))
+
+
+
+<a name="1.1.5"></a>
+## [1.1.5](https://github.com/rafa8626/openplayer/compare/v1.1.4...v1.1.5) (2018-06-18)
+
+
+### Bug Fixes
+
+* **release:** Removed unnecessary commands ([c521bca](https://github.com/rafa8626/openplayer/commit/c521bca))
+
+
+
+<a name="1.1.4"></a>
+## [1.1.4](https://github.com/rafa8626/openplayer/compare/v1.1.3...v1.1.4) (2018-06-18)
+
+
+### Bug Fixes
+
+* **documentation:** Fixed typos ([122742d](https://github.com/rafa8626/openplayer/commit/122742d))
+* **player:** Added missing conditional to remove event correctly ([11fb824](https://github.com/rafa8626/openplayer/commit/11fb824))
 
 
 
