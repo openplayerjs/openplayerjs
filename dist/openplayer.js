@@ -866,6 +866,9 @@ var Player = function () {
                 }
                 return null;
             }();
+            if (!parent) {
+                return;
+            }
             var height = parent.offsetHeight;
             var width = parent.offsetWidth;
             var viewportRatio = width / height;
