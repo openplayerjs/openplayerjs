@@ -1,3 +1,14 @@
+<a name="1.1.4"></a>
+## [1.1.4](https://github.com/rafa8626/openplayer/compare/v1.1.3...v1.1.4) (2018-06-18)
+
+
+### Bug Fixes
+
+* **documentation:** Fixed typos ([122742d](https://github.com/rafa8626/openplayer/commit/122742d))
+* **player:** Added missing conditional to remove event correctly ([11fb824](https://github.com/rafa8626/openplayer/commit/11fb824))
+
+
+
 <a name="1.1.3"></a>
 ## [1.1.3](https://github.com/rafa8626/openplayer/compare/v1.1.2...v1.1.3) (2018-05-31)
 
