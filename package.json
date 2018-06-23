@@ -45,7 +45,7 @@
     "cssnano": "^3.10.0",
     "eslint": "^5.0.0",
     "eslint-config-airbnb": "^17.0.0",
-    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-airbnb-base": "^13.0.0",
     "eslint-loader": "^2.0.0",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
