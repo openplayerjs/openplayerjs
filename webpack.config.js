@@ -115,7 +115,7 @@ module.exports = {
             },
             cssProcessor: require('cssnano')({
                 zindex: false
-            }),
-        }),
+            })
+        })
     ]
 };
