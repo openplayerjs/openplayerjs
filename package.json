@@ -32,7 +32,7 @@
   },
   "readme": "https://github.com/rafa8626/openplayer/blob/master/README.md",
   "devDependencies": {
-    "autoprefixer": "^8.6.3",
+    "autoprefixer": "^9.0.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.7.0",
