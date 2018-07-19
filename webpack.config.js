@@ -113,9 +113,7 @@ module.exports = {
                     removeAll: true
                 }
             },
-            cssProcessor: require('cssnano')({
-                zindex: false
-            })
+            cssProcessor: require('cssnano')
         })
     ]
 };
