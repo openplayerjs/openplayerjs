@@ -472,7 +472,7 @@ var media_2 = __webpack_require__(2);
 var polyfill_1 = __webpack_require__(7);
 
 var Player = function () {
-    function Player(element, adsUrl, fill) {
+    function Player(element, adsUrl, fill, options) {
         _classCallCheck(this, Player);
 
         this.events = {};
@@ -484,6 +484,7 @@ var Player = function () {
             this.volume = this.element.volume;
             this.width = this.element.offsetWidth;
             this.height = this.element.offsetHeight;
+            this.options = options;
             this.element.autoplay = false;
         }
         return this;
@@ -663,7 +664,7 @@ var Player = function () {
         key: "_prepareMedia",
         value: function _prepareMedia() {
             try {
-                this.media = new media_1.default(this.element);
+                this.media = new media_1.default(this.element, this.options);
                 this.media.load();
                 if (this.adsUrl) {
                     this.ads = new ads_1.default(this.media, this.adsUrl);
@@ -903,7 +904,7 @@ var Player = function () {
             var targets = document.querySelectorAll('video.om-player, audio.om-player');
             for (var i = 0, total = targets.length; i < total; i++) {
                 var target = targets[i];
-                var player = new Player(target, target.getAttribute('data-om-ads'), !!target.getAttribute('data-om-fill'));
+                var player = new Player(target, target.getAttribute('data-om-ads'), !!target.getAttribute('data-om-fill'), JSON.parse(target.getAttribute('data-om-options')));
                 player.init();
             }
         }
@@ -1479,7 +1480,7 @@ var native_1 = __webpack_require__(4);
 var HlsMedia = function (_native_1$default) {
     _inherits(HlsMedia, _native_1$default);
 
-    function HlsMedia(element, mediaSource) {
+    function HlsMedia(element, mediaSource, options) {
         var _ret;
 
         _classCallCheck(this, HlsMedia);
@@ -1487,8 +1488,9 @@ var HlsMedia = function (_native_1$default) {
         var _this = _possibleConstructorReturn(this, (HlsMedia.__proto__ || Object.getPrototypeOf(HlsMedia)).call(this, element, mediaSource));
 
         _this.events = {};
+        _this.options = options;
         function createInstance() {
-            this.player = new Hls();
+            this.player = new Hls(options);
         }
         _this.element = element;
         _this.media = mediaSource;
@@ -1581,7 +1583,7 @@ var HlsMedia = function (_native_1$default) {
 
             if (media_1.isHlsSource(media.src)) {
                 this._revoke();
-                this.player = new Hls();
+                this.player = new Hls(this.options);
                 this.player.loadSource(this.media.src);
                 this.player.attachMedia(this.element);
                 this.events = Hls.Events;
@@ -1624,7 +1626,7 @@ var native_1 = __webpack_require__(4);
 var DashMedia = function (_native_1$default) {
     _inherits(DashMedia, _native_1$default);
 
-    function DashMedia(element, mediaSource) {
+    function DashMedia(element, mediaSource, options) {
         var _ret;
 
         _classCallCheck(this, DashMedia);
@@ -1632,6 +1634,7 @@ var DashMedia = function (_native_1$default) {
         var _this = _possibleConstructorReturn(this, (DashMedia.__proto__ || Object.getPrototypeOf(DashMedia)).call(this, element, mediaSource));
 
         _this.events = {};
+        _this.options = options;
         function createInstance() {
             this.player = dashjs.MediaPlayer().create();
         }
@@ -1660,6 +1663,9 @@ var DashMedia = function (_native_1$default) {
             this.player.setAutoPlay(false);
             if (_typeof(this.media.drm) === 'object' && Object.keys(this.media.drm).length) {
                 this.player.setProtectionData(this.media.drm);
+                if (this.options.robustnessLevel && this.options.robustnessLevel) {
+                    this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
+                }
             }
             this.player.attachSource(this.media.src);
             var e = events_1.addEvent('loadedmetadata');
@@ -1709,6 +1715,9 @@ var DashMedia = function (_native_1$default) {
                 this.player = dashjs.MediaPlayer().create();
                 if (_typeof(media.drm) === 'object' && Object.keys(this.media.drm).length) {
                     this.player.setProtectionData(media.drm);
+                    if (this.options.robustnessLevel && this.options.robustnessLevel) {
+                        this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
+                    }
                 }
                 this.player.attachSource(media.src);
                 this.events = dashjs.MediaPlayer.events;
@@ -1744,10 +1753,11 @@ var html5_1 = __webpack_require__(9);
 var source = __webpack_require__(2);
 
 var Media = function () {
-    function Media(element) {
+    function Media(element, options) {
         _classCallCheck(this, Media);
 
         this.element = element;
+        this.options = options;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
         return this;
@@ -1849,9 +1859,9 @@ var Media = function () {
         key: "_invoke",
         value: function _invoke(media) {
             if (source.isHlsSource(media.src)) {
-                return new hls_1.default(this.element, media);
+                return new hls_1.default(this.element, media, this.options.hls);
             } else if (source.isDashSource(media.src)) {
-                return new dash_1.default(this.element, media);
+                return new dash_1.default(this.element, media, this.options.dash);
             }
             return new html5_1.default(this.element, media);
         }

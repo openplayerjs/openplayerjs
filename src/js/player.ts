@@ -3,6 +3,7 @@ import Controls from './controls';
 import Track from './interfaces/captions/track';
 import EventsList from './interfaces/events-list';
 import PlayerInstanceList from './interfaces/instance';
+import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
@@ -38,7 +39,8 @@ class Player {
         const targets = document.querySelectorAll('video.om-player, audio.om-player');
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = (targets[i] as HTMLMediaElement);
-            const player = new Player(target, target.getAttribute('data-om-ads'), !!target.getAttribute('data-om-fill'));
+            const player = new Player(target, target.getAttribute('data-om-ads'),
+                !!target.getAttribute('data-om-fill'), JSON.parse(target.getAttribute('data-om-options')));
             player.init();
         }
     }
@@ -186,16 +188,26 @@ class Player {
      */
     private height: number;
 
+    /**
+     * Container for other player options.
+     *
+     * @private
+     * @type {object}
+     * @memberof Player
+     */
+    private options: PlayerOptions;
+
    /**
     * Create an instance of Player.
     *
     * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
     * @param {?string} adsUrl  A URL to play Ads via Google IMA SDK.
     * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
+    * @param {?PlayerOptions} options  Options to enhance Hls and Dash players.
     * @returns {Player}
     * @memberof Player
     */
-   constructor(element: HTMLMediaElement|string, adsUrl?: string, fill?: boolean) {
+   constructor(element: HTMLMediaElement|string, adsUrl?: string, fill?: boolean, options?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
             this.adsUrl = adsUrl;
@@ -204,6 +216,7 @@ class Player {
             this.volume = this.element.volume;
             this.width = this.element.offsetWidth;
             this.height = this.element.offsetHeight;
+            this.options = options;
             this.element.autoplay = false;
         }
         return this;
@@ -532,7 +545,7 @@ class Player {
      */
     private _prepareMedia(): void {
         try {
-            this.media = new Media(this.element);
+            this.media = new Media(this.element, this.options);
             this.media.load();
 
             if (this.adsUrl) {

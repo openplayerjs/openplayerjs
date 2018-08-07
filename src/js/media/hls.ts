@@ -50,19 +50,30 @@ class HlsMedia extends Native {
     private recoverSwapAudioCodecDate: number;
 
     /**
+     * Hls options to be passed to the Hls instance.
+     *
+     * @see https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning
+     * @private
+     * @type {object}
+     * @memberof HlsMedia
+     */
+    private options: object;
+
+    /**
      * Creates an instance of HlsMedia.
      *
      * @param {HTMLMediaElement} element
      * @param {Source} mediaSource
      * @memberof HlsMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source) {
+    constructor(element: HTMLMediaElement, mediaSource: Source, options: {}) {
         super(element, mediaSource);
+        this.options = options;
         /**
          * @private
          */
         function createInstance() {
-            this.player = new Hls();
+            this.player = new Hls(options);
         }
         this.element = element;
         this.media = mediaSource;
@@ -122,7 +133,7 @@ class HlsMedia extends Native {
     set src(media: Source) {
         if (isHlsSource(media.src)) {
             this._revoke();
-            this.player = new Hls();
+            this.player = new Hls(this.options);
             this.player.loadSource(this.media.src);
             this.player.attachMedia(this.element);
 
