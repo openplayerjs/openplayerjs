@@ -1,3 +1,4 @@
+import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import DashMedia from './media/dash';
 import HlsMedia from './media/hls';
@@ -48,14 +49,25 @@ class Media {
     private promisePlay: Promise<void>;
 
     /**
+     * Media options to be passed to Hls and/or Dash players.
+     *
+     * @private
+     * @type PlayerOptions
+     * @memberof Media
+     */
+    private options: PlayerOptions;
+
+    /**
      * Create an instance of Media.
      *
      * @param {HTMLMediaElement} element
+     * @param {object} options
      * @returns {Media}
      * @memberof Media
      */
-    constructor(element: HTMLMediaElement) {
+    constructor(element: HTMLMediaElement, options?: PlayerOptions) {
         this.element = element;
+        this.options = options;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
         return this;
@@ -375,9 +387,9 @@ class Media {
      */
     private _invoke(media: Source): HlsMedia|DashMedia|HTML5Media {
         if (source.isHlsSource(media.src)) {
-            return new HlsMedia(this.element, media);
+            return new HlsMedia(this.element, media, this.options.hls);
         } else if (source.isDashSource(media.src)) {
-            return new DashMedia(this.element, media);
+            return new DashMedia(this.element, media, this.options.dash);
         }
 
         return new HTML5Media(this.element, media);

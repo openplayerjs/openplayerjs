@@ -1,3 +1,4 @@
+import DashOptions from '../interfaces/dash-options';
 import EventsList from '../interfaces/events-list';
 import Source from '../interfaces/source';
 import { HAS_MSE } from '../utils/constants';
@@ -33,6 +34,8 @@ class DashMedia extends Native {
      */
     private events: EventsList = {};
 
+    private options: DashOptions;
+
     /**
      * Creates an instance of DashMedia.
      *
@@ -40,8 +43,10 @@ class DashMedia extends Native {
      * @param {Source} mediaSource
      * @memberof DashMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source) {
+    constructor(element: HTMLMediaElement, mediaSource: Source, options?: DashOptions) {
         super(element, mediaSource);
+        this.options = options;
+
         /**
          * @private
          */
@@ -84,9 +89,9 @@ class DashMedia extends Native {
         // If DRM is set, load protection data
         if (typeof this.media.drm === 'object' && Object.keys(this.media.drm).length) {
             this.player.setProtectionData(this.media.drm);
-            // if (isString(options.dash.robustnessLevel) && options.dash.robustnessLevel) {
-            //     this.player.getProtectionController().setRobustnessLevel(options.dash.robustnessLevel);
-            // }
+            if (this.options.robustnessLevel && this.options.robustnessLevel) {
+                this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
+            }
         }
         this.player.attachSource(this.media.src);
 
@@ -122,6 +127,9 @@ class DashMedia extends Native {
             // If DRM is set, load protection data
             if (typeof media.drm === 'object' && Object.keys(this.media.drm).length) {
                 this.player.setProtectionData(media.drm);
+                if (this.options.robustnessLevel && this.options.robustnessLevel) {
+                    this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
+                }
             }
             this.player.attachSource(media.src);
 
