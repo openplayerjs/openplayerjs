@@ -850,37 +850,11 @@ var Player = function () {
     }, {
         key: "_fill",
         value: function _fill() {
-            var _this5 = this;
-
             if (general_1.isAudio(this.element)) {
                 return;
             }
-            var isVisible = function isVisible(element) {
-                if (element.getClientRects !== undefined && typeof element.getClientRects === 'function') {
-                    return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-                }
-                return !!(element.offsetWidth || element.offsetHeight);
-            };
-            var parent = function () {
-                var parentEl = void 0;
-                var el = _this5.getContainer();
-                while (el) {
-                    try {
-                        if (constants_1.IS_FIREFOX && el.tagName.toLowerCase() === 'html' && window.self !== window.top && window.frameElement !== null) {
-                            return window.frameElement;
-                        } else {
-                            parentEl = el.parentElement;
-                        }
-                    } catch (e) {
-                        parentEl = el.parentElement;
-                    }
-                    if (parentEl && isVisible(parentEl)) {
-                        return parentEl;
-                    }
-                    el = parentEl;
-                }
-                return null;
-            }();
+            var parentEl = this.getContainer().parentNode;
+            var parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
             if (!parent) {
                 return;
             }
@@ -889,12 +863,17 @@ var Player = function () {
             var viewportRatio = width / height;
             var videoRatio = this.width / this.height;
             var scale = 1;
-            if (videoRatio < viewportRatio) {
-                scale = viewportRatio / videoRatio;
-            } else if (viewportRatio < videoRatio) {
-                scale = videoRatio / viewportRatio;
+            var clip = void 0;
+            var transform = void 0;
+            if (viewportRatio > videoRatio) {
+                scale = width / this.width;
+                clip = this.width / viewportRatio;
+                transform = "scale(" + scale + ") translateY(" + -((this.height - clip) / this.height) + "px)";
+            } else {
+                scale = height / this.height;
+                clip = this.height / viewportRatio;
+                transform = "scale(" + scale + ") translateX(" + -((this.width - clip) / this.width) + "px)";
             }
-            var transform = "translate(0, 0) scale(" + scale + ")";
             this.element.style.transform = transform;
             this.element.style.webkitTransform = transform;
             if (this.isAd()) {

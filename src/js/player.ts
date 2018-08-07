@@ -6,7 +6,7 @@ import PlayerInstanceList from './interfaces/instance';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { IS_ANDROID, IS_FIREFOX, IS_IOS } from './utils/constants';
+import { IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
@@ -767,37 +767,8 @@ class Player {
             return;
         }
 
-        const isVisible = (element: HTMLElement) => {
-            if (element.getClientRects !== undefined && typeof element.getClientRects === 'function') {
-                return !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-            }
-            return !!(element.offsetWidth || element.offsetHeight);
-        };
-        const parent = (() => {
-            let parentEl;
-            let el = this.getContainer();
-
-            // traverse parents to find the closest visible one
-            while (el) {
-                try {
-                    // Firefox has an issue calculating dimensions on hidden iframes
-                    if (IS_FIREFOX && el.tagName.toLowerCase() === 'html' && window.self !== window.top && window.frameElement !== null) {
-                        return window.frameElement;
-                    } else {
-                        parentEl = el.parentElement;
-                    }
-                } catch (e) {
-                    parentEl = el.parentElement;
-                }
-
-                if (parentEl && isVisible(parentEl)) {
-                    return parentEl;
-                }
-                el = parentEl;
-            }
-
-            return null;
-        })();
+        const parentEl = this.getContainer().parentNode;
+        const parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
 
         if (!parent) {
             return;
@@ -808,14 +779,19 @@ class Player {
         const viewportRatio = width / height;
         const videoRatio = this.width / this.height;
         let scale = 1;
+        let clip;
+        let transform;
 
-        if (videoRatio < viewportRatio) {
-            scale = viewportRatio / videoRatio;
-        } else if (viewportRatio < videoRatio) {
-            scale = videoRatio / viewportRatio;
+        if (viewportRatio > videoRatio) {
+            scale = width / this.width;
+            clip = this.width / viewportRatio;
+            transform = `scale(${scale}) translateY(${-((this.height - clip) / this.height)}px)`;
+        } else {
+            scale = height / this.height;
+            clip = this.height / viewportRatio;
+            transform = `scale(${scale}) translateX(${-((this.width - clip) / this.width)}px)`;
         }
 
-        const transform = `translate(0, 0) scale(${scale})`;
         this.element.style.transform = transform;
         this.element.style.webkitTransform = transform;
 
