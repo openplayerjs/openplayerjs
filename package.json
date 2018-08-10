@@ -67,7 +67,7 @@
     "standard-version": "^4.3.0",
     "style-loader": "^0.22.0",
     "stylelint": "^9.2.1",
-    "stylelint-order": "^0.8.1",
+    "stylelint-order": "^1.0.0",
     "ts-loader": "^4.4.1",
     "tslint": "^5.10.0",
     "typedoc": "^0.11.1",
