@@ -275,7 +275,7 @@ function predictType(url) {
 exports.predictType = predictType;
 function isAutoplaySupported(autoplay, muted, callback) {
     var videoContent = document.createElement('video');
-    videoContent.src = 'http://techslides.com/demos/sample-videos/small.mp4';
+    videoContent.src = 'https://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4';
     var playPromise = videoContent.play();
     if (playPromise !== undefined) {
         playPromise.then(function () {
@@ -1859,9 +1859,11 @@ var Media = function () {
         key: "_invoke",
         value: function _invoke(media) {
             if (source.isHlsSource(media.src)) {
-                return new hls_1.default(this.element, media, this.options.hls);
+                var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
+                return new hls_1.default(this.element, media, hlsOptions);
             } else if (source.isDashSource(media.src)) {
-                return new dash_1.default(this.element, media, this.options.dash);
+                var dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
+                return new dash_1.default(this.element, media, dashOptions);
             }
             return new html5_1.default(this.element, media);
         }
