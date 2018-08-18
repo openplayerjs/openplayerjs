@@ -136,12 +136,12 @@ Since OpenPlayer is based on HTML5 media, the way to trigger events is using the
 Using the code above, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
 
 ```javascript
-player.element.addEventListener('ended', function() {
+player.getElement().addEventListener('ended', function() {
     console.log('Your code when media ends playing');
 });
 
 var event = new CustomEvent('ended');
-player.element.dispatchEvent(event);
+player.getElement().dispatchEvent(event);
 ```
 
 All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayer, and it incorporates some custom ones:
