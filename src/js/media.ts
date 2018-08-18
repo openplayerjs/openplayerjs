@@ -387,9 +387,11 @@ class Media {
      */
     private _invoke(media: Source): HlsMedia|DashMedia|HTML5Media {
         if (source.isHlsSource(media.src)) {
-            return new HlsMedia(this.element, media, this.options.hls);
+            const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
+            return new HlsMedia(this.element, media, hlsOptions);
         } else if (source.isDashSource(media.src)) {
-            return new DashMedia(this.element, media, this.options.dash);
+            const dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
+            return new DashMedia(this.element, media, dashOptions);
         }
 
         return new HTML5Media(this.element, media);
