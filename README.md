@@ -95,6 +95,16 @@ In the example above, the player will:
 2. Make media item fit its parent container.
 3. Display Captions during media playback (it will hide them when Ads are played).
 
+### Using Javascript
+
+Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL). So for that case, remove the `om-player` class from the video/audio tag (just leave `om-player__media` to preserve styles), and in Javascript use the following snippet:
+
+```javascript
+var player = new OpenPlayer('player ID', [ads URL], [fullscreen effect], [HLS/Dash player options]);
+```
+
+Only caveat here is that the video/audio tags need an ID ahead of time.
+
 ## API
 
 If you need more control over the player, OpenPlayer stores instances of each player in the document. To have access to a specific instance, use video/audio's `id` and use `OpenPlayer.instances` element.
