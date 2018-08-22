@@ -4,7 +4,7 @@
 
 ## What is it?
 
-Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.io/), this player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
+This player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
 
 ## Why OpenPlayer?
 
@@ -17,7 +17,6 @@ Inspired by [MediaElementJS](http://mediaelementjs.com) and [Plyr](https://plyr.
 * A new **`fill`** mode to scale and crop media relative to its parent container.
 * Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 * **No dependencies**, since this player is written in Typescript.
-* **Auto injects polyfills** using [Polyfill.io library](https://polyfill.io/v2/docs/examples).
 * **Supports IE11+ and all modern browsers**.
 
 ## How to use it?
