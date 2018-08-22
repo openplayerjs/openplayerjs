@@ -201,17 +201,17 @@ class Player {
      */
     private options: PlayerOptions;
 
-   /**
-    * Create an instance of Player.
-    *
-    * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
-    * @param {?string} adsUrl  A URL to play Ads via Google IMA SDK.
-    * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
-    * @param {?PlayerOptions} options  Options to enhance Hls and Dash players.
-    * @returns {Player}
-    * @memberof Player
-    */
-   constructor(element: HTMLMediaElement|string, adsUrl?: string, fill?: boolean, options?: PlayerOptions) {
+    /**
+     * Create an instance of Player.
+     *
+     * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
+     * @param {?string} adsUrl  A URL to play Ads via Google IMA SDK.
+     * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
+     * @param {?PlayerOptions} options  Options to enhance Hls and Dash players.
+     * @returns {Player}
+     * @memberof Player
+     */
+    constructor(element: HTMLMediaElement | string, adsUrl?: string, fill?: boolean, options?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
             this.adsUrl = adsUrl;
@@ -372,7 +372,7 @@ class Player {
      * @returns {(Ads|Media)}
      * @memberof Player
      */
-    public activeElement(): Ads|Media {
+    public activeElement(): Ads | Media {
         return this.ads && this.ads.adsStarted ? this.ads : this.media;
     }
 
@@ -572,7 +572,7 @@ class Player {
             this.element.removeAttribute('id');
         } else {
             let uid;
-            do  {
+            do {
                 uid = `om_${Math.random().toString(36).substr(2, 9)}`;
             } while (Player.instances[uid] !== undefined);
             this.uid = uid;
@@ -784,37 +784,44 @@ class Player {
             return;
         }
 
-        const parentEl = this.getContainer().parentNode;
-        const parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
-
-        if (!parent) {
-            return;
+        let timeout;
+        if (timeout) {
+            window.cancelAnimationFrame(timeout);
         }
 
-        const height = (parent as HTMLElement).offsetHeight;
-        const width = (parent as HTMLElement).offsetWidth;
-        const viewportRatio = width / height;
-        const videoRatio = this.width / this.height;
-        let scale = 1;
-        let clip;
-        let transform;
+        timeout = window.requestAnimationFrame(() => {
+            const parentEl = this.getContainer().parentNode;
+            const parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
 
-        if (viewportRatio > videoRatio) {
-            scale = width / this.width;
-            clip = this.width / viewportRatio;
-            transform = `scale(${scale}) translateY(${-((this.height - clip) / this.height)}px)`;
-        } else {
-            scale = height / this.height;
-            clip = this.height / viewportRatio;
-            transform = `scale(${scale}) translateX(${-((this.width - clip) / this.width)}px)`;
-        }
+            if (!parent) {
+                return;
+            }
 
-        this.element.style.transform = transform;
-        this.element.style.webkitTransform = transform;
+            const height = (parent as HTMLElement).offsetHeight;
+            const width = (parent as HTMLElement).offsetWidth;
+            const viewportRatio = width / height;
+            const videoRatio = this.width / this.height;
+            let scale = 1;
+            let clip;
+            let transform;
 
-        if (this.isAd()) {
-            this.getAd().resizeAds(width, height, transform);
-        }
+            if (viewportRatio > videoRatio) {
+                scale = width / this.width;
+                clip = this.width / viewportRatio;
+                transform = `scale(${scale}) translateY(${-((this.height - clip) / this.height)}px)`;
+            } else {
+                scale = height / this.height;
+                clip = this.height / viewportRatio;
+                transform = `scale(${scale}) translateX(${-((this.width - clip) / this.width)}px)`;
+            }
+
+            this.element.style.transform = transform;
+            this.element.style.webkitTransform = transform;
+
+            if (this.isAd()) {
+                this.getAd().resizeAds(width, height, transform);
+            }
+        });
     }
 }
 

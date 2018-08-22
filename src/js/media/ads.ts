@@ -345,29 +345,36 @@ class Ads {
      * @memberof Ads
      */
     public resizeAds(width?: number, height?: number, transform?: string): void {
-        if (this.adsManager) {
-            const target = this.element;
-            if (width && height) {
-                const mode = target.getAttribute('data-fullscreen') === 'true' ?
-                    google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
-                this.adsManager.resize(
-                    width,
-                    height,
-                    mode,
-                );
-            } else {
-                this.adsManager.resize(
-                    target.offsetWidth,
-                    target.offsetHeight,
-                    google.ima.ViewMode.NORMAL,
-                );
-            }
-
-            if (transform) {
-                this.adsContainer.style.transform = transform;
-                this.adsContainer.style.webkitTransform = transform;
-            }
+        let timeout;
+        if (timeout) {
+            window.cancelAnimationFrame(timeout);
         }
+
+        timeout = window.requestAnimationFrame(() => {
+            if (this.adsManager) {
+                const target = this.element;
+                if (width && height) {
+                    const mode = target.getAttribute('data-fullscreen') === 'true' ?
+                        google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
+                    this.adsManager.resize(
+                        width,
+                        height,
+                        mode,
+                    );
+                } else {
+                    this.adsManager.resize(
+                        target.offsetWidth,
+                        target.offsetHeight,
+                        google.ima.ViewMode.NORMAL,
+                    );
+                }
+
+                if (transform) {
+                    this.adsContainer.style.transform = transform;
+                    this.adsContainer.style.webkitTransform = transform;
+                }
+            }
+        });
     }
 
     /**

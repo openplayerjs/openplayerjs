@@ -1869,35 +1869,43 @@ var Player = function () {
     }, {
         key: "_fill",
         value: function _fill() {
+            var _this5 = this;
+
             if (general_1.isAudio(this.element)) {
                 return;
             }
-            var parentEl = this.getContainer().parentNode;
-            var parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
-            if (!parent) {
-                return;
+            var timeout = void 0;
+            if (timeout) {
+                window.cancelAnimationFrame(timeout);
             }
-            var height = parent.offsetHeight;
-            var width = parent.offsetWidth;
-            var viewportRatio = width / height;
-            var videoRatio = this.width / this.height;
-            var scale = 1;
-            var clip = void 0;
-            var transform = void 0;
-            if (viewportRatio > videoRatio) {
-                scale = width / this.width;
-                clip = this.width / viewportRatio;
-                transform = "scale(" + scale + ") translateY(" + -((this.height - clip) / this.height) + "px)";
-            } else {
-                scale = height / this.height;
-                clip = this.height / viewportRatio;
-                transform = "scale(" + scale + ") translateX(" + -((this.width - clip) / this.width) + "px)";
-            }
-            this.element.style.transform = transform;
-            this.element.style.webkitTransform = transform;
-            if (this.isAd()) {
-                this.getAd().resizeAds(width, height, transform);
-            }
+            timeout = window.requestAnimationFrame(function () {
+                var parentEl = _this5.getContainer().parentNode;
+                var parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
+                if (!parent) {
+                    return;
+                }
+                var height = parent.offsetHeight;
+                var width = parent.offsetWidth;
+                var viewportRatio = width / height;
+                var videoRatio = _this5.width / _this5.height;
+                var scale = 1;
+                var clip = void 0;
+                var transform = void 0;
+                if (viewportRatio > videoRatio) {
+                    scale = width / _this5.width;
+                    clip = _this5.width / viewportRatio;
+                    transform = "scale(" + scale + ") translateY(" + -((_this5.height - clip) / _this5.height) + "px)";
+                } else {
+                    scale = height / _this5.height;
+                    clip = _this5.height / viewportRatio;
+                    transform = "scale(" + scale + ") translateX(" + -((_this5.width - clip) / _this5.width) + "px)";
+                }
+                _this5.element.style.transform = transform;
+                _this5.element.style.webkitTransform = transform;
+                if (_this5.isAd()) {
+                    _this5.getAd().resizeAds(width, height, transform);
+                }
+            });
         }
     }, {
         key: "src",
@@ -2070,24 +2078,32 @@ var Ads = function () {
     }, {
         key: "resizeAds",
         value: function resizeAds(width, height, transform) {
-            if (this.adsManager) {
-                var target = this.element;
-                if (width && height) {
-                    var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
-                    this.adsManager.resize(width, height, mode);
-                } else {
-                    this.adsManager.resize(target.offsetWidth, target.offsetHeight, google.ima.ViewMode.NORMAL);
-                }
-                if (transform) {
-                    this.adsContainer.style.transform = transform;
-                    this.adsContainer.style.webkitTransform = transform;
-                }
+            var _this3 = this;
+
+            var timeout = void 0;
+            if (timeout) {
+                window.cancelAnimationFrame(timeout);
             }
+            timeout = window.requestAnimationFrame(function () {
+                if (_this3.adsManager) {
+                    var target = _this3.element;
+                    if (width && height) {
+                        var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
+                        _this3.adsManager.resize(width, height, mode);
+                    } else {
+                        _this3.adsManager.resize(target.offsetWidth, target.offsetHeight, google.ima.ViewMode.NORMAL);
+                    }
+                    if (transform) {
+                        _this3.adsContainer.style.transform = transform;
+                        _this3.adsContainer.style.webkitTransform = transform;
+                    }
+                }
+            });
         }
     }, {
         key: "_assign",
         value: function _assign(event) {
-            var _this3 = this;
+            var _this4 = this;
 
             var ad = event.getAd();
             switch (event.type) {
@@ -2118,10 +2134,10 @@ var Ads = function () {
                             this.element.dispatchEvent(endEvent);
                         }
                         this.intervalTimer = window.setInterval(function () {
-                            if (_this3.adsActive === true) {
-                                _this3.adsCurrentTime = Math.round(_this3.adsManager.getRemainingTime());
+                            if (_this4.adsActive === true) {
+                                _this4.adsCurrentTime = Math.round(_this4.adsManager.getRemainingTime());
                                 var timeEvent = events_1.addEvent('timeupdate');
-                                _this3.element.dispatchEvent(timeEvent);
+                                _this4.element.dispatchEvent(timeEvent);
                             }
                         }, 250);
                     }
@@ -2170,14 +2186,14 @@ var Ads = function () {
     }, {
         key: "_start",
         value: function _start(manager) {
-            var _this4 = this;
+            var _this5 = this;
 
             manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
             manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this));
             manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this));
             this.events = [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED];
             this.events.forEach(function (event) {
-                manager.addEventListener(event, _this4._assign.bind(_this4));
+                manager.addEventListener(event, _this5._assign.bind(_this5));
             });
             this._playAds();
         }
@@ -2210,7 +2226,7 @@ var Ads = function () {
     }, {
         key: "_resumeMedia",
         value: function _resumeMedia() {
-            var _this5 = this;
+            var _this6 = this;
 
             this.intervalTimer = 0;
             this.adsMuted = false;
@@ -2220,9 +2236,9 @@ var Ads = function () {
             this.element.parentElement.classList.remove('om-ads--active');
             if (!this.media.ended) {
                 setTimeout(function () {
-                    _this5.media.play();
+                    _this6.media.play();
                     var playEvent = events_1.addEvent('play');
-                    _this5.element.dispatchEvent(playEvent);
+                    _this6.element.dispatchEvent(playEvent);
                 }, 500);
             } else {
                 var event = events_1.addEvent('ended');
@@ -3217,8 +3233,14 @@ var Settings = function () {
                 _this.menu.setAttribute('aria-hidden', _this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false');
             };
             this.hideEvent = function () {
-                _this.menu.innerHTML = _this.originalOutput;
-                _this.menu.setAttribute('aria-hidden', 'true');
+                var timeout = void 0;
+                if (timeout) {
+                    window.cancelAnimationFrame(timeout);
+                }
+                timeout = window.requestAnimationFrame(function () {
+                    _this.menu.innerHTML = _this.originalOutput;
+                    _this.menu.setAttribute('aria-hidden', 'true');
+                });
             };
             this.events.media['controlshidden'] = this.hideEvent.bind(this);
             this.events.media.play = this.hideEvent.bind(this);
