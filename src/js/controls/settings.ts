@@ -133,8 +133,15 @@ class Settings implements PlayerComponent {
         };
 
         this.hideEvent = () => {
-            this.menu.innerHTML = this.originalOutput;
-            this.menu.setAttribute('aria-hidden', 'true');
+            let timeout;
+            if (timeout) {
+                window.cancelAnimationFrame(timeout);
+            }
+
+            timeout = window.requestAnimationFrame(() => {
+                this.menu.innerHTML = this.originalOutput;
+                this.menu.setAttribute('aria-hidden', 'true');
+            });
         };
 
         this.events.media['controlshidden'] = this.hideEvent.bind(this);
@@ -196,13 +203,13 @@ class Settings implements PlayerComponent {
             key: 'speed',
             name: 'Speed',
             subitems: [
-                {key: '0.25', label: '0.25'},
-                {key: '0.5', label: '0.5'},
-                {key: '0.75', label: '0.75'},
-                {key: '1', label: 'Normal'},
-                {key: '1.25', label: '1.25'},
-                {key: '1.5', label: '1.5'},
-                {key: '2', label: '2'},
+                { key: '0.25', label: '0.25' },
+                { key: '0.5', label: '0.5' },
+                { key: '0.75', label: '0.75' },
+                { key: '1', label: 'Normal' },
+                { key: '1.25', label: '1.25' },
+                { key: '1.5', label: '1.5' },
+                { key: '2', label: '2' },
             ],
         };
     }
