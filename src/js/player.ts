@@ -1,3 +1,8 @@
+import 'core-js/es6/array';
+import 'core-js/es6/promise';
+import 'custom-event-polyfill';
+import 'element-closest';
+import 'element-remove';
 
 import Controls from './controls';
 import Track from './interfaces/captions/track';
@@ -11,7 +16,6 @@ import { IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
-import Polyfill from './utils/polyfill';
 
 /**
  * OpenMedia Player.
@@ -818,5 +822,4 @@ export default Player;
 
 // Expose element globally.
 (window as any).OpenPlayer = Player;
-// Check if browser supports all required polyfills, and then init player.
-Polyfill.check(() => Player.init());
+Player.init();
