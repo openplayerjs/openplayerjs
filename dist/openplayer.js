@@ -1987,39 +1987,46 @@ var Ads = function () {
         var originalVolume = this.element.volume;
         this.adsVolume = constants_1.IS_IOS ? 0 : originalVolume;
         this.adsMuted = constants_1.IS_IOS ? true : this.adsMuted;
-        media_1.isAutoplaySupported(function (autoplay) {
-            _this.autoplayAllowed = autoplay;
-        }, function (muted) {
-            _this.autoplayRequiresMuted = muted;
-        }, function () {
-            if (_this.autoplayRequiresMuted || constants_1.IS_IOS) {
-                _this.adsMuted = true;
-                _this.media.muted = true;
-                _this.adsVolume = 0;
-                _this.media.volume = 0;
-                var e = events_1.addEvent('volumechange');
-                _this.element.dispatchEvent(e);
-                var volumeEl = document.createElement('div');
-                var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? 'Tap' : 'Click';
-                volumeEl.className = 'om-player__unmute';
-                volumeEl.innerHTML = "<span>" + action + " to unmute</span>";
-                volumeEl.addEventListener('click', function () {
-                    _this.adsMuted = false;
-                    _this.media.muted = false;
-                    _this.adsVolume = originalVolume;
-                    _this.media.volume = originalVolume;
-                    var event = events_1.addEvent('volumechange');
-                    _this.element.dispatchEvent(event);
-                    volumeEl.remove();
+        if (this.autoStart === true) {
+            media_1.isAutoplaySupported(function (autoplay) {
+                _this.autoplayAllowed = autoplay;
+            }, function (muted) {
+                _this.autoplayRequiresMuted = muted;
+            }, function () {
+                if (_this.autoplayRequiresMuted || constants_1.IS_IOS) {
+                    _this.adsMuted = true;
+                    _this.media.muted = true;
+                    _this.adsVolume = 0;
+                    _this.media.volume = 0;
+                    var e = events_1.addEvent('volumechange');
+                    _this.element.dispatchEvent(e);
+                    var volumeEl = document.createElement('div');
+                    var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? 'Tap' : 'Click';
+                    volumeEl.className = 'om-player__unmute';
+                    volumeEl.innerHTML = "<span>" + action + " to unmute</span>";
+                    volumeEl.addEventListener('click', function () {
+                        _this.adsMuted = false;
+                        _this.media.muted = false;
+                        _this.adsVolume = originalVolume;
+                        _this.media.volume = originalVolume;
+                        var event = events_1.addEvent('volumechange');
+                        _this.element.dispatchEvent(event);
+                        volumeEl.remove();
+                    });
+                    var target = _this.element.parentElement;
+                    target.insertBefore(volumeEl, target.firstChild);
+                }
+                _this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') : new Promise(function (resolve) {
+                    resolve();
                 });
-                var target = _this.element.parentElement;
-                target.insertBefore(volumeEl, target.firstChild);
-            }
-            _this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') : new Promise(function (resolve) {
+                _this.promise.then(_this.load.bind(_this));
+            });
+        } else {
+            this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') : new Promise(function (resolve) {
                 resolve();
             });
-            _this.promise.then(_this.load.bind(_this));
-        });
+            this.promise.then(this.load.bind(this));
+        }
         return this;
     }
 
