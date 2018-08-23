@@ -141,7 +141,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    private autoplay: boolean;
+    private autoplay: boolean = false;
 
     /**
      * Storage for original volume level vaue, when testing browser's autoplay capabilities
@@ -216,7 +216,7 @@ class Player {
         if (this.element) {
             this.adsUrl = adsUrl;
             this.fill = fill;
-            this.autoplay = this.element.autoplay;
+            this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
             this.width = this.element.offsetWidth;
             this.height = this.element.offsetHeight;
@@ -553,7 +553,7 @@ class Player {
             this.media.load();
 
             if (this.adsUrl) {
-                this.ads = new Ads(this.media, this.adsUrl);
+                this.ads = new Ads(this.media, this.adsUrl, this.autoplay);
             }
         } catch (e) {
             console.error(e);
@@ -606,7 +606,7 @@ class Player {
         this.element.parentElement.insertBefore(this.playBtn, this.element);
 
         this.playBtn.addEventListener('click', () => {
-            this.media.play();
+            this.activeElement().play();
         });
     }
 
@@ -728,7 +728,7 @@ class Player {
      * @memberof Player
      */
     private _autoplay() {
-        if (this.autoplay || this.ads) {
+        if (this.autoplay) {
             this.autoplay = false;
             isAutoplaySupported(autoplay => {
                 this.canAutoplay = autoplay;

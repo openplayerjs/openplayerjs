@@ -1494,11 +1494,12 @@ var Player = function () {
         _classCallCheck(this, Player);
 
         this.events = {};
+        this.autoplay = false;
         this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
         if (this.element) {
             this.adsUrl = adsUrl;
             this.fill = fill;
-            this.autoplay = this.element.autoplay;
+            this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
             this.width = this.element.offsetWidth;
             this.height = this.element.offsetHeight;
@@ -1685,7 +1686,7 @@ var Player = function () {
                 this.media = new media_1.default(this.element, this.options);
                 this.media.load();
                 if (this.adsUrl) {
-                    this.ads = new ads_1.default(this.media, this.adsUrl);
+                    this.ads = new ads_1.default(this.media, this.adsUrl, this.autoplay);
                 }
             } catch (e) {
                 console.error(e);
@@ -1726,7 +1727,7 @@ var Player = function () {
             this.element.parentElement.insertBefore(this.loader, this.element);
             this.element.parentElement.insertBefore(this.playBtn, this.element);
             this.playBtn.addEventListener('click', function () {
-                _this2.media.play();
+                _this2.activeElement().play();
             });
         }
     }, {
@@ -1834,7 +1835,7 @@ var Player = function () {
         value: function _autoplay() {
             var _this4 = this;
 
-            if (this.autoplay || this.ads) {
+            if (this.autoplay) {
                 this.autoplay = false;
                 media_2.isAutoplaySupported(function (autoplay) {
                     _this4.canAutoplay = autoplay;
@@ -1962,7 +1963,7 @@ var general_1 = __webpack_require__(4);
 var media_1 = __webpack_require__(17);
 
 var Ads = function () {
-    function Ads(media, adsUrl) {
+    function Ads(media, adsUrl, autoStart) {
         var _this = this;
 
         _classCallCheck(this, Ads);
@@ -1978,9 +1979,11 @@ var Ads = function () {
         this.adsManager = null;
         this.autoplayAllowed = false;
         this.autoplayRequiresMuted = false;
+        this.autoStart = false;
         this.adsUrl = adsUrl;
         this.media = media;
         this.element = media.element;
+        this.autoStart = autoStart || false;
         var originalVolume = this.element.volume;
         this.adsVolume = constants_1.IS_IOS ? 0 : originalVolume;
         this.adsMuted = constants_1.IS_IOS ? true : this.adsMuted;
@@ -2195,7 +2198,12 @@ var Ads = function () {
             this.events.forEach(function (event) {
                 manager.addEventListener(event, _this5._assign.bind(_this5));
             });
-            this._playAds();
+            if (this.autoStart === true) {
+                this._playAds();
+            } else {
+                this.adDisplayContainer.initialize();
+                this.adsStarted = true;
+            }
         }
     }, {
         key: "_contentEndedListener",

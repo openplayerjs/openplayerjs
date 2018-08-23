@@ -188,6 +188,14 @@ class Ads {
     private autoplayRequiresMuted: boolean = false;
 
     /**
+     * Flag to indicate if Ad should be played automatically
+     *
+     * @type boolean
+     * @memberof Ads
+     */
+    private autoStart: boolean = false;
+
+    /**
      * Create an instance of Ads.
      *
      * @param {Media} media
@@ -195,10 +203,11 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, adsUrl: string) {
+    constructor(media: Media, adsUrl: string, autoStart?: boolean) {
         this.adsUrl = adsUrl;
         this.media = media;
         this.element = media.element;
+        this.autoStart = autoStart || false;
 
         const originalVolume = this.element.volume;
         this.adsVolume = IS_IOS ? 0 : originalVolume;
@@ -616,7 +625,12 @@ class Ads {
             manager.addEventListener(event, this._assign.bind(this));
         });
 
-        this._playAds();
+        if (this.autoStart === true) {
+            this._playAds();
+        } else {
+            this.adDisplayContainer.initialize();
+            this.adsStarted = true;
+        }
     }
 
     /**
