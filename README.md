@@ -99,10 +99,15 @@ In the example above, the player will:
 Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL). So for that case, remove the `om-player` class from the video/audio tag (just leave `om-player__media` to preserve styles), and in Javascript use the following snippet:
 
 ```javascript
-var player = new OpenPlayer('player ID', [ads URL], [fullscreen effect], [HLS/Dash player options]);
+var player = new OpenPlayer('[player ID]', [VAST/VPAID URL], [`true|false` for fullscreen effect], {
+    hls: {}, // full HLS options are in https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
+    dash: {}, // For now, only `robustnessLevel`; more information in http://cdn.dashjs.org/latest/jsdoc/index.html
+});
+// Don't forget to start the player
+player.init();
 ```
 
-Only caveat here is that the video/audio tags need an ID ahead of time.
+**NOTE**: Only caveat here is that the video/audio tags need an ID ahead of time.
 
 ## API
 
