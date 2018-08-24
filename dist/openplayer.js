@@ -2183,7 +2183,9 @@ var Ads = function () {
             if (this.adsManager) {
                 this.adsManager.destroy();
             }
-            this._resumeMedia();
+            if (this.autoStart === true) {
+                this._resumeMedia();
+            }
         }
     }, {
         key: "_loaded",
