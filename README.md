@@ -4,7 +4,9 @@
 
 ## What is it?
 
-This player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
+This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
+
+It also has the ability to play VAST and VPAID Ads in an effortless way!
 
 ## Why OpenPlayer?
 
