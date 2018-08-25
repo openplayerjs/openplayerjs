@@ -56,16 +56,16 @@ describe('OpenPlayer.js', () => {
     it('Allows user to manipulate player with keyboard', () => {
         const event = new CustomEvent('keydown');
         event.keyCode = 39;
-        player.element.dispatchEvent(event);
+        player.getContainer().dispatchEvent(event);
         expect(player.media.currentTime > 0).to.equal(true);
         const e = new CustomEvent('keydown');
         e.keyCode = 37;
-        player.element.dispatchEvent(e);
+        player.getContainer().dispatchEvent(e);
         expect(player.media.currentTime === 0).to.equal(true);
 
         const playEvent = new CustomEvent('keydown');
         playEvent.keyCode = 13;
-        player.element.dispatchEvent(playEvent);
+        player.getContainer().dispatchEvent(playEvent);
         expect(player.media.paused).to.equal(true);
         player.media.currentTime = 0;
     });
