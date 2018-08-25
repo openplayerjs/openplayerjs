@@ -657,6 +657,10 @@ class Player {
             };
         }
 
+        Object.keys(this.events).forEach(event => {
+            this.element.addEventListener(event, this.events[event]);
+        });
+
         this.events.keydown = (e: any) => {
             const el = this.activeElement();
             const isAd = el instanceof Ads;
@@ -713,9 +717,7 @@ class Player {
             }
         };
 
-        Object.keys(this.events).forEach(event => {
-            this.element.addEventListener(event, this.events[event]);
-        });
+        this.getContainer().addEventListener('keydown', this.events.keydown);
     }
 
     /**

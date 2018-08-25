@@ -1773,6 +1773,9 @@ var Player = function () {
                     _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
                 };
             }
+            Object.keys(this.events).forEach(function (event) {
+                _this3.element.addEventListener(event, _this3.events[event]);
+            });
             this.events.keydown = function (e) {
                 var el = _this3.activeElement();
                 var isAd = el instanceof ads_1.default;
@@ -1826,9 +1829,7 @@ var Player = function () {
                         return true;
                 }
             };
-            Object.keys(this.events).forEach(function (event) {
-                _this3.element.addEventListener(event, _this3.events[event]);
-            });
+            this.getContainer().addEventListener('keydown', this.events.keydown);
         }
     }, {
         key: "_autoplay",
