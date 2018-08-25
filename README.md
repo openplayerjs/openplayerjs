@@ -6,12 +6,12 @@
 
 This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
 
-It also has the ability to play VAST and VPAID Ads in an effortless way!
+It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 
 ## Why OpenPlayer?
 
 * **Less than `20KB`** when gzipped.
-* **Monetize video and audio content** with video advertising using [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
+* **Monetize video and audio content** with video advertising (VAST/VPAID/VMAP) using [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
 * **Simplified markup** and **highly customizable CSS** (even specific styling for high contrast mode). See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
 * IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **ever-green scripts** from their recommended CDN sources to always obtain the latest upgrades.
 * **Smart `autoplay`** by detecting browser's capabilities.
