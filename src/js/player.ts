@@ -649,6 +649,9 @@ class Player {
                     this.loader.setAttribute('aria-hidden', 'true');
                 }, 350);
             };
+            this.events.playing = () => {
+                this.playBtn.setAttribute('aria-hidden', 'true');
+            };
             this.events.pause = () => {
                 this.playBtn.classList.remove('om-player__play--paused');
                 this.loader.setAttribute('aria-hidden', 'true');
@@ -664,10 +667,6 @@ class Player {
         this.events.keydown = (e: any) => {
             const el = this.activeElement();
             const isAd = el instanceof Ads;
-            if (el instanceof Media) {
-                this.playBtn.setAttribute('aria-hidden', 'false');
-            }
-
             const key = e.which || e.keyCode || 0;
             const step = el.duration * 0.05;
 
@@ -715,6 +714,7 @@ class Player {
                 default:
                     return true;
             }
+            e.preventDefault();
         };
 
         this.getContainer().addEventListener('keydown', this.events.keydown);
