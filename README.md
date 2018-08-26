@@ -2,6 +2,12 @@
 [![NPM](https://nodei.co/npm/openplayer.png)](https://nodei.co/npm/openplayer/)
 [![Greenkeeper badge](https://badges.greenkeeper.io/rafa8626/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)  [![Known Vulnerabilities](https://snyk.io/test/github/rafa8626/openplayer/badge.svg?targetFile=package.json)](https://snyk.io/test/github/rafa8626/openplayer?targetFile=package.json)
 
+**********************************************************************************
+ > **Help OpenPlayer to reach the first thousand stars to be hosted in a CDN!**
+ 
+ *Help us staring the project and help the project to reach more and more people.*
+**********************************************************************************
+
 ## What is it?
 
 This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
