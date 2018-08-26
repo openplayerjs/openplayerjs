@@ -76,7 +76,7 @@ class Play implements PlayerComponent {
         this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
         this.player.getControls().getContainer().appendChild(this.button);
 
-        this.events.media.click = () => {
+        this.events.media.click = (e: any) => {
             this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             if (el.paused || el.ended) {
@@ -84,6 +84,8 @@ class Play implements PlayerComponent {
             } else {
                 el.pause();
             }
+
+            e.preventDefault();
         };
         this.events.media.play = () => {
             if (this.player.activeElement().ended) {

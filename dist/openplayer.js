@@ -1766,6 +1766,9 @@ var Player = function () {
                         _this3.loader.setAttribute('aria-hidden', 'true');
                     }, 350);
                 };
+                this.events.playing = function () {
+                    _this3.playBtn.setAttribute('aria-hidden', 'true');
+                };
                 this.events.pause = function () {
                     _this3.playBtn.classList.remove('om-player__play--paused');
                     _this3.loader.setAttribute('aria-hidden', 'true');
@@ -1779,9 +1782,6 @@ var Player = function () {
             this.events.keydown = function (e) {
                 var el = _this3.activeElement();
                 var isAd = el instanceof ads_1.default;
-                if (el instanceof media_1.default) {
-                    _this3.playBtn.setAttribute('aria-hidden', 'false');
-                }
                 var key = e.which || e.keyCode || 0;
                 var step = el.duration * 0.05;
                 switch (key) {
@@ -1828,6 +1828,7 @@ var Player = function () {
                     default:
                         return true;
                 }
+                e.preventDefault();
             };
             this.getContainer().addEventListener('keydown', this.events.keydown);
         }
@@ -3645,7 +3646,7 @@ var Play = function () {
             this.button.setAttribute('aria-label', 'Play');
             this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
             this.player.getControls().getContainer().appendChild(this.button);
-            this.events.media.click = function () {
+            this.events.media.click = function (e) {
                 _this.button.setAttribute('aria-pressed', 'true');
                 var el = _this.player.activeElement();
                 if (el.paused || el.ended) {
@@ -3653,6 +3654,7 @@ var Play = function () {
                 } else {
                     el.pause();
                 }
+                e.preventDefault();
             };
             this.events.media.play = function () {
                 if (_this.player.activeElement().ended) {
