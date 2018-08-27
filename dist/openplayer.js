@@ -2185,7 +2185,8 @@ var Ads = function () {
             if (this.adsManager) {
                 this.adsManager.destroy();
             }
-            if (this.autoStart === true) {
+            if (this.autoStart === true || this.adsStarted === true) {
+                this.adsActive = false;
                 this._resumeMedia();
             }
         }
