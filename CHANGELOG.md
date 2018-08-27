@@ -1,3 +1,19 @@
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/rafa8626/openplayer/compare/v1.2.0...v1.2.1) (2018-08-27)
+
+
+### Bug Fixes
+
+* **ads:** Added conditional to avoid autoplay when an error occurs attempting to play Ads ([0d67fe5](https://github.com/rafa8626/openplayer/commit/0d67fe5))
+* **ads:** Added new conditional to play media if error was detected on Ads; added missing docs ([786a104](https://github.com/rafa8626/openplayer/commit/786a104))
+* **ads:** Test autoplay capabilities inside Ads only if `autoStart` is set to `true` ([694544d](https://github.com/rafa8626/openplayer/commit/694544d))
+* **documentation:** More verbosity in JS snippet to clarify possible values ([9c709d4](https://github.com/rafa8626/openplayer/commit/9c709d4))
+* **player:** Added missing event and avoid default behavior on play button ([eafc260](https://github.com/rafa8626/openplayer/commit/eafc260))
+* **player:** Changed target to execute keydown event to main wrapper to use keyboard successfully ([c67c595](https://github.com/rafa8626/openplayer/commit/c67c595))
+* **tests:** Fixed unit tests due changes on event ([f48c0a7](https://github.com/rafa8626/openplayer/commit/f48c0a7))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/rafa8626/openplayer/compare/v1.1.4...v1.2.0) (2018-08-22)
 
