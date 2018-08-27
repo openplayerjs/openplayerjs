@@ -122,6 +122,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_media_ads_.ads.html#adsstarted" class="tsd-kind-icon">ads<wbr>Started</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_media_ads_.ads.html#adsurl" class="tsd-kind-icon">ads<wbr>Url</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_media_ads_.ads.html#adsvolume" class="tsd-kind-icon">ads<wbr>Volume</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_media_ads_.ads.html#autostart" class="tsd-kind-icon">auto<wbr>Start</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_media_ads_.ads.html#autoplayallowed" class="tsd-kind-icon">autoplay<wbr>Allowed</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_media_ads_.ads.html#autoplayrequiresmuted" class="tsd-kind-icon">autoplay<wbr>Requires<wbr>Muted</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_media_ads_.ads.html#element" class="tsd-kind-icon">element</a></li>
@@ -172,13 +173,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Ads<span class="tsd-signature-symbol">(</span>media<span class="tsd-signature-symbol">: </span><a href="_media_.media.html" class="tsd-signature-type">Media</a>, adsUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_ads_.ads.html" class="tsd-signature-type">Ads</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Ads<span class="tsd-signature-symbol">(</span>media<span class="tsd-signature-symbol">: </span><a href="_media_.media.html" class="tsd-signature-type">Media</a>, adsUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, autoStart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_ads_.ads.html" class="tsd-signature-type">Ads</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L188">media/ads.ts:188</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L196">media/ads.ts:196</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -199,6 +200,9 @@
 								<li>
 									<h5>adsUrl: <span class="tsd-signature-type">string</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> autoStart: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_media_ads_.ads.html" class="tsd-signature-type">Ads</a></h4>
 						</li>
@@ -213,7 +217,7 @@
 					<div class="tsd-signature tsd-kind-icon">ad<wbr>Display<wbr>Container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L163">media/ads.ts:163</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L163">media/ads.ts:163</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -239,7 +243,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Active<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L40">media/ads.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L40">media/ads.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -262,7 +266,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLDivElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L154">media/ads.ts:154</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L154">media/ads.ts:154</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -285,7 +289,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Current<wbr>Time<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L88">media/ads.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L88">media/ads.ts:88</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -308,7 +312,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Done<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L32">media/ads.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L32">media/ads.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -331,7 +335,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Duration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L80">media/ads.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L80">media/ads.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -354,7 +358,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Ended<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L24">media/ads.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L24">media/ads.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -378,7 +382,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Loader<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L146">media/ads.ts:146</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L146">media/ads.ts:146</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -404,7 +408,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Manager<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L97">media/ads.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L97">media/ads.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -430,7 +434,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Muted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L72">media/ads.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L72">media/ads.ts:72</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -453,7 +457,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Request<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L172">media/ads.ts:172</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L172">media/ads.ts:172</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -479,7 +483,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L48">media/ads.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L48">media/ads.ts:48</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -502,7 +506,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L129">media/ads.ts:129</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L129">media/ads.ts:129</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -525,7 +529,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Volume<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L64">media/ads.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L64">media/ads.ts:64</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -543,12 +547,35 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="autostart" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> auto<wbr>Start</h3>
+					<div class="tsd-signature tsd-kind-icon">auto<wbr>Start<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L196">media/ads.ts:196</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag to indicate if Ad should be played automatically</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>type</dt>
+							<dd><p>boolean</p>
+							</dd>
+							<dt>memberof</dt>
+							<dd><p>Ads</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="autoplayallowed" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> autoplay<wbr>Allowed</h3>
 					<div class="tsd-signature tsd-kind-icon">autoplay<wbr>Allowed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L180">media/ads.ts:180</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L180">media/ads.ts:180</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -571,7 +598,7 @@
 					<div class="tsd-signature tsd-kind-icon">autoplay<wbr>Requires<wbr>Muted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L188">media/ads.ts:188</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L188">media/ads.ts:188</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -594,7 +621,7 @@
 					<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLMediaElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L113">media/ads.ts:113</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L113">media/ads.ts:113</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -617,7 +644,7 @@
 					<div class="tsd-signature tsd-kind-icon">events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L121">media/ads.ts:121</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L121">media/ads.ts:121</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -640,7 +667,7 @@
 					<div class="tsd-signature tsd-kind-icon">interval<wbr>Timer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L56">media/ads.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L56">media/ads.ts:56</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -663,7 +690,7 @@
 					<div class="tsd-signature tsd-kind-icon">media<span class="tsd-signature-symbol">:</span> <a href="_media_.media.html" class="tsd-signature-type">Media</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L105">media/ads.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L105">media/ads.ts:105</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -686,7 +713,7 @@
 					<div class="tsd-signature tsd-kind-icon">promise<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L137">media/ads.ts:137</a></li>
+							<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L137">media/ads.ts:137</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -717,7 +744,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L447">media/ads.ts:447</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L467">media/ads.ts:467</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -735,7 +762,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L437">media/ads.ts:437</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L457">media/ads.ts:457</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -768,7 +795,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L457">media/ads.ts:457</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L477">media/ads.ts:477</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -795,7 +822,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L477">media/ads.ts:477</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L497">media/ads.ts:497</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -823,7 +850,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L428">media/ads.ts:428</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L448">media/ads.ts:448</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -841,7 +868,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L408">media/ads.ts:408</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L428">media/ads.ts:428</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -874,7 +901,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L467">media/ads.ts:467</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L487">media/ads.ts:487</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -902,7 +929,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L399">media/ads.ts:399</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L419">media/ads.ts:419</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -920,7 +947,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L385">media/ads.ts:385</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L405">media/ads.ts:405</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -956,7 +983,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L487">media/ads.ts:487</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L507">media/ads.ts:507</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -989,7 +1016,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L627">media/ads.ts:627</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L655">media/ads.ts:655</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1016,7 +1043,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L560">media/ads.ts:560</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L580">media/ads.ts:580</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1049,7 +1076,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L574">media/ads.ts:574</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L597">media/ads.ts:597</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1082,7 +1109,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L639">media/ads.ts:639</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L667">media/ads.ts:667</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1109,7 +1136,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L655">media/ads.ts:655</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L683">media/ads.ts:683</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1136,7 +1163,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L743">media/ads.ts:743</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L771">media/ads.ts:771</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1163,7 +1190,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L692">media/ads.ts:692</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L720">media/ads.ts:720</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1191,7 +1218,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L666">media/ads.ts:666</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L694">media/ads.ts:694</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1219,7 +1246,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L716">media/ads.ts:716</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L744">media/ads.ts:744</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1246,7 +1273,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L588">media/ads.ts:588</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L611">media/ads.ts:611</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1279,7 +1306,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L314">media/ads.ts:314</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L334">media/ads.ts:334</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1306,7 +1333,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L261">media/ads.ts:261</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L281">media/ads.ts:281</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1333,7 +1360,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L300">media/ads.ts:300</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L320">media/ads.ts:320</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1360,7 +1387,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L279">media/ads.ts:279</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L299">media/ads.ts:299</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1387,7 +1414,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/01da7f7/src/js/media/ads.ts#L347">media/ads.ts:347</a></li>
+									<li>Defined in <a href="https://github.com/rafa8626/openplayer/blob/6428200/src/js/media/ads.ts#L367">media/ads.ts:367</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1489,6 +1516,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_media_ads_.ads.html#adsvolume" class="tsd-kind-icon">ads<wbr>Volume</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_media_ads_.ads.html#autostart" class="tsd-kind-icon">auto<wbr>Start</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_media_ads_.ads.html#autoplayallowed" class="tsd-kind-icon">autoplay<wbr>Allowed</a>

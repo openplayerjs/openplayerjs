@@ -67,12 +67,19 @@
 				<h1 id="openplayer-js">OpenPlayer.js</h1>
 				<p><a href="https://nodei.co/npm/openplayer/"><img src="https://nodei.co/npm/openplayer.png" alt="NPM"></a>
 				<a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/rafa8626/openplayer.svg" alt="Greenkeeper badge"></a>   <a href="https://travis-ci.org/rafa8626/openplayer"><img src="https://travis-ci.org/rafa8626/openplayer.svg?branch=master" alt="Build Status"></a>  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Conventional Commits"></a>  <a href="https://snyk.io/test/github/rafa8626/openplayer?targetFile=package.json"><img src="https://snyk.io/test/github/rafa8626/openplayer/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a></p>
+				<hr>
+				<blockquote>
+					<p><strong>Help OpenPlayer to reach the first thousand stars to be hosted in a CDN!</strong></p>
+				</blockquote>
+				<p> <em>Help us staring the project and help the project to reach more and more people.</em></p>
+				<hr>
 				<h2 id="what-is-it-">What is it?</h2>
-				<p>This player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.</p>
+				<p>This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.</p>
+				<p>It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!</p>
 				<h2 id="why-openplayer-">Why OpenPlayer?</h2>
 				<ul>
 					<li><strong>Less than <code>20KB</code></strong> when gzipped.</li>
-					<li><strong>Monetize video and audio content</strong> with video advertising using <a href="https://developers.google.com/interactive-media-ads/">Interactive Media Ads SDK</a> (IMA SDK) library.</li>
+					<li><strong>Monetize video and audio content</strong> with video advertising (VAST/VPAID/VMAP) using <a href="https://developers.google.com/interactive-media-ads/">Interactive Media Ads SDK</a> (IMA SDK) library.</li>
 					<li><strong>Simplified markup</strong> and <strong>highly customizable CSS</strong> (even specific styling for high contrast mode). See <a href="https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/">https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/</a> for more details.</li>
 					<li>IMA SDK, <a href="https://github.com/video-dev/hls.js/">hls.js</a> and <a href="https://github.com/Dash-Industry-Forum/dash.js/">dash.js</a> use <strong>ever-green scripts</strong> from their recommended CDN sources to always obtain the latest upgrades.</li>
 					<li><strong>Smart <code>autoplay</code></strong> by detecting browser&#39;s capabilities.</li>
@@ -127,8 +134,13 @@
 				</ol>
 				<h3 id="using-javascript">Using Javascript</h3>
 				<p>Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL). So for that case, remove the <code>om-player</code> class from the video/audio tag (just leave <code>om-player__media</code> to preserve styles), and in Javascript use the following snippet:</p>
-				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'player ID'</span>, [ads URL], [fullscreen effect], [HLS/Dash player options]);</code></pre>
-				<p>Only caveat here is that the video/audio tags need an ID ahead of time.</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'[player ID]'</span>, [VAST/VPAID URL], [<span class="hljs-string">`true|false`</span> <span class="hljs-keyword">for</span> fullscreen effect], {
+    <span class="hljs-attr">hls</span>: {}, <span class="hljs-comment">// full HLS options are in https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.</span>
+    dash: {}, <span class="hljs-comment">// For now, only `robustnessLevel`; more information in http://cdn.dashjs.org/latest/jsdoc/index.html</span>
+});
+<span class="hljs-comment">// Don't forget to start the player</span>
+player.init();</code></pre>
+				<p><strong>NOTE</strong>: Only caveat here is that the video/audio tags need an ID ahead of time.</p>
 				<h2 id="api">API</h2>
 				<p>If you need more control over the player, OpenPlayer stores instances of each player in the document. To have access to a specific instance, use video/audio&#39;s <code>id</code> and use <code>OpenPlayer.instances</code> element.</p>
 				<p><strong>NOTE</strong>: if an <code>id</code> attribute is not detected, OpenPlayer will autogenerate one.</p>
