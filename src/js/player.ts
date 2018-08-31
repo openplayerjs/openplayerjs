@@ -792,6 +792,9 @@ class Player {
         }
 
         timeout = window.requestAnimationFrame(() => {
+            if (!this.getContainer()) {
+                return;
+            }
             const parentEl = this.getContainer().parentNode;
             const parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
 
