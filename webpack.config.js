@@ -41,7 +41,7 @@ module.exports = {
                     {
                         loader: 'babel-loader',
                         options: {
-                            presets: ['babel-preset-env']
+                            presets: ['@babel/preset-env']
                         }
                     },
                     {
@@ -55,7 +55,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['babel-preset-env']
+                        presets: ['@babel/preset-env']
                     }
                 }
             },

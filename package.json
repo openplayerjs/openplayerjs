@@ -25,13 +25,15 @@
     "openplayer"
   ],
   "scripts": {
-    "build": "rm -rf ./dist/ && webpack",
+    "build": "rm -rf ./dist/ && webpack --mode=production",
     "release": "npm run build && npm run docs && release-it",
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "docs": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
   },
   "readme": "https://github.com/rafa8626/openplayer/blob/master/README.md",
   "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
     "autoprefixer": "^9.0.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.0",
@@ -78,7 +80,7 @@
     "typescript": "^2.9.2",
     "unminified-webpack-plugin": "^2.0.0",
     "url-loader": "^1.0.1",
-    "webpack": "^4.12.0",
+    "webpack": "^4.17.1",
     "webpack-cli": "^3.0.8"
   }
 }
