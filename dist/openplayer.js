@@ -728,7 +728,7 @@ exports.predictType = predictType;
 
 function isAutoplaySupported(autoplay, muted, callback) {
   var videoContent = document.createElement('video');
-  videoContent.src = 'https://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4';
+  videoContent.src = 'https://platform.galio.nl/op/media/xsmall.mp4';
   var playPromise = videoContent.play();
 
   if (playPromise !== undefined) {

@@ -89,7 +89,7 @@ export function predictType(url: string): string {
 export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void {
     const videoContent = document.createElement('video');
     // Use a video WITH audio to test properly browser's capabilities.
-    videoContent.src = 'https://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4';
+    videoContent.src = 'https://platform.galio.nl/op/media/xsmall.mp4';
 
     const playPromise = videoContent.play();
     if (playPromise !== undefined) {
