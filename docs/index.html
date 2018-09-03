@@ -24,45 +24,39 @@
     iframe {
         border: none;
     }
-
+    .nav-tabs {
+        border-bottom: none;
+    }
     .masthead {
         background: #161616;
         padding: 15rem 0 5rem;
     }
-
     .about-section {
         padding-top: 5rem;
     }
-
     .bg-red {
         background: #e80c19 !important;
     }
-
     .bg-red hr {
         border-color: yellow !important;
     }
-
     .bg-blue {
         background: #b1c4dd !important;
     }
-
     #download {
         background: #ec7906
     }
-
     #mainNav .navbar-toggler {
         border: 1px solid #e80c19;
         color: #e80c19;
     }
-
-    #autoplay-check {
+    #autoplay-check,
+    #types {
         text-align: left;
     }
-
     #permalink {
         text-align: left;
     }
-
     #permalink a {
         -webkit-hyphens: auto;
         -moz-hyphens: auto;
@@ -132,13 +126,13 @@
           <h2 class="text-white mb-4">Why another media player? And why OpenPlayer?</h2>
           <ul class="nav nav-tabs" id="media-tabs" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="video-tab" data-toggle="tab" href="#video" role="tab" aria-controls="home" aria-selected="true">Video</a>
+              <a class="nav-link active" id="video-tab" data-toggle="tab" href="#video" role="tab" aria-controls="video" aria-selected="true">Video</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="audio-tab" data-toggle="tab" href="#audio" role="tab" aria-controls="profile" aria-selected="false">Audio</a>
+              <a class="nav-link" id="audio-tab" data-toggle="tab" href="#audio" role="tab" aria-controls="audio" aria-selected="false">Audio</a>
             </li>
           </ul>
-          <div class="tab-content" id="myTabContent">
+          <div class="tab-content" id="showcase">
             <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
               <video class="om-player om-player__media" controls playsinline data-om-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator=">
                 <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4" type="video/mp4">
@@ -228,6 +222,25 @@
                 <input type="url" class="form-control" id="url" value="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4">
               </div>
             </div>
+            <fieldset class="form-group text-white">
+                <div class="row">
+                  <legend class="col-form-label col-sm-2 pt-0">Media type</legend>
+                  <div class="col-sm-10" id="types">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
+                      <label class="form-check-label" for="video-type">
+                        Video
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
+                      <label class="form-check-label" for="audio-type">
+                        Audio
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
             <div class="form-group row">
               <label for="ads" class="text-white col-sm-2 col-form-label">Ads URL</label>
               <div class="col-sm-10">
@@ -277,12 +290,13 @@
     var form = document.getElementById('settings');
 
     function loadMedia() {
-      var url = window.location.protocol + '//' + window.location.host + '/openplayer/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '');
+      var url = window.location.protocol + '//' + window.location.host + '/openplayer/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
+      url += form.querySelector('#video-type').checked ? 'video' : 'audio';
       var ads = form.querySelector('#ads').value;
       if (ads) {
         url += '&ads=' + encodeURIComponent(ads);
       }
-      if (form.querySelector('#autoplay').getAttribute('checked')) {
+      if (form.querySelector('#autoplay').checked) {
         url += '&autoplay=true';
       }
       document.getElementById('media').src = url;
