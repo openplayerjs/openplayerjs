@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="OpenPlayer is an ever-green lightweight media player that supports the most common video/audio files for the web">
@@ -18,10 +19,12 @@
             position: absolute;
             width: 100%;
         }
+
         #media {
             height: 100%;
             width: 100%;
         }
+
         .om-player {
             height: 100%;
             outline: 0;
@@ -29,13 +32,16 @@
             position: relative;
             width: 100%;
         }
-        video {
-            height: 100%;
+
+        @media (min-width: 800px) {
+            .om-player__media {
+                height: 100%;
+            }
         }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <div id="media"></div>
     <script src="js/openplayer.min.js"></script>
     <script>
@@ -62,6 +68,6 @@
         var player = new OpenPlayer('media1', ads);
         player.init();
     </script>
-  </body>
+</body>
 
 </html>

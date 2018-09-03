@@ -22,64 +22,76 @@
 
   <style>
     iframe {
-        border: none;
-        min-height: 360px;
+      border: none;
+      min-height: 360px;
     }
+
     .text-white-50 {
-        color: #fff;
+      color: #fff;
     }
+
     .nav-tabs {
-        border-bottom: none;
+      border-bottom: none;
     }
+
     .masthead {
-        background: #161616;
-        padding: 15rem 0 5rem;
+      background: #161616;
+      padding: 15rem 0 5rem;
     }
+
     .about-section {
-        padding-top: 5rem;
+      padding-top: 5rem;
     }
+
     .bg-red {
-        background: #e80c19 !important;
+      background: #e80c19 !important;
     }
+
     .bg-red hr {
-        border-color: yellow !important;
+      border-color: yellow !important;
     }
+
     .bg-blue {
-        background: #b1c4dd !important;
+      background: #b1c4dd !important;
     }
+
     #download {
-        background: #ec7906
+      background: #ec7906
     }
+
     #mainNav .navbar-toggler {
-        border: 1px solid #e80c19;
-        color: #e80c19;
+      border: 1px solid #e80c19;
+      color: #e80c19;
     }
+
     #autoplay-check,
     #types {
-        text-align: left;
+      text-align: left;
     }
+
     #permalink {
-        text-align: left;
+      text-align: left;
     }
+
     #permalink a {
-        -webkit-hyphens: auto;
-        -moz-hyphens: auto;
-        hyphens: auto;
-        text-transform: lowercase;
-        white-space: pre-wrap;
-        -ms-word-break: break-all;
-        word-break: break-all;
-        word-break: break-word;
+      -webkit-hyphens: auto;
+      -moz-hyphens: auto;
+      hyphens: auto;
+      text-transform: lowercase;
+      white-space: pre-wrap;
+      -ms-word-break: break-all;
+      word-break: break-all;
+      word-break: break-word;
     }
 
     @media (min-width: 992px) {
-        .projects-section .featured-text {
-            border-left-color: #6c8d2c;
-        }
-        #mainNav.navbar-shrink .nav-link.active {
-            border-bottom: 0.25rem solid #e80c19;
-            color: #e80c19;
-        }
+      .projects-section .featured-text {
+        border-left-color: #6c8d2c;
+      }
+      #mainNav.navbar-shrink .nav-link.active {
+        border-bottom: 0.25rem solid #e80c19;
+        color: #e80c19;
+      }
     }
   </style>
 
@@ -227,24 +239,24 @@
               </div>
             </div>
             <fieldset class="form-group text-white">
-                <div class="row">
-                  <legend class="col-form-label col-sm-2 pt-0">Media type</legend>
-                  <div class="col-sm-10" id="types">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
-                      <label class="form-check-label" for="video-type">
-                        Video
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
-                      <label class="form-check-label" for="audio-type">
-                        Audio
-                      </label>
-                    </div>
+              <div class="row">
+                <legend class="col-form-label col-sm-2 pt-0">Media type</legend>
+                <div class="col-sm-10" id="types">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
+                    <label class="form-check-label" for="video-type">
+                      Video
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
+                    <label class="form-check-label" for="audio-type">
+                      Audio
+                    </label>
                   </div>
                 </div>
-              </fieldset>
+              </div>
+            </fieldset>
             <div class="form-group row">
               <label for="ads" class="text-white col-sm-2 col-form-label">Ads URL</label>
               <div class="col-sm-10">
@@ -252,11 +264,11 @@
               </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2 text-white">Autoplay?</div>
-                <div class="col-sm-10">
-                  <div class="form-check" id="autoplay-check">
-                      <input class="form-check-input position-static" type="checkbox" id="autoplay" value="1" aria-label="Autoplay media">
-                  </div>
+              <div class="col-sm-2 text-white">Autoplay?</div>
+              <div class="col-sm-10">
+                <div class="form-check" id="autoplay-check">
+                  <input class="form-check-input position-static" type="checkbox" id="autoplay" value="1" aria-label="Autoplay media">
+                </div>
               </div>
             </div>
             <div class="form-group row">
@@ -267,8 +279,8 @@
             </div>
             <button class="btn btn-primary mb-4 text-center" type="submit">Load</button>
           </form>
-          <div class="row"></div>
-            <iframe title="Inline OpenPlayer" id="media" width="100%" allowfullscreen></iframe>
+          <div class="embed-responsive embed-responsive-4by3">
+            <iframe class="embed-responsive-item" title="Inline OpenPlayer" id="media" allowfullscreen></iframe>
           </div>
         </div>
       </div>
@@ -283,7 +295,8 @@
 
   <script src="js/openplayer.min.js"></script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
     crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
@@ -330,4 +343,5 @@
     window.addEventListener('load', loadMedia);
   </script>
 </body>
+
 </html>
