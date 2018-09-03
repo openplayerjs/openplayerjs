@@ -48,7 +48,7 @@
         var media = document.createElement(type);
         media.id = 'media1';
 
-        media.src = decodeURIComponent(getUrlParameter('url')) || 'http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4';
+        media.src = decodeURIComponent(getUrlParameter('file')) || 'http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4';
 
         media.autoplay = !!getUrlParameter('autoplay') || false;
         media.controls = true;
