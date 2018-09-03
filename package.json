@@ -28,7 +28,7 @@
     "build": "rm -rf ./dist/ && webpack --mode=production",
     "release": "npm run build && npm run docs && release-it",
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-    "docs": "typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
+    "docs": "[ -d ./player-docs ] && rm -R ./player-docs; typedoc --out ./playerdocs --mode modules --tsconfig ./tsconfig.json ./src/js/"
   },
   "readme": "https://github.com/rafa8626/openplayer/blob/master/README.md",
   "devDependencies": {
