@@ -1,9 +1,8 @@
 # OpenPlayer.js
-[![NPM](https://nodei.co/npm/openplayer.png)](https://nodei.co/npm/openplayer/)
-[![Greenkeeper badge](https://badges.greenkeeper.io/rafa8626/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![Greenkeeper badge](https://badges.greenkeeper.io/openplayerjs/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/openplayerjs/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 **********************************************************************************
- > **Help OpenPlayer to reach the first thousand stars to be hosted in a CDN!**
+ **Help OpenPlayer to reach the first thousand stars to be hosted in a CDN!**
  
  *Help us staring the project and help the project to reach more and more people.*
 **********************************************************************************
