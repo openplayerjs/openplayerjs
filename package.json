@@ -1,5 +1,5 @@
 {
-  "name": "openplayer",
+  "name": "openplayerjs",
   "version": "1.2.1",
   "author": {
     "name": "Rafael Miranda",
@@ -8,7 +8,7 @@
   "license": "MIT",
   "description": "HTML5 video and audio player",
   "repository": {
-    "url": "https://github.com/openplayerjs/openplayer.git",
+    "url": "https://github.com/openplayerjs/openplayerjs.git",
     "type": "git"
   },
   "main": "./dist/openplayer.js",
