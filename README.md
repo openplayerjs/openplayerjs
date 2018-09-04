@@ -1,5 +1,5 @@
 # OpenPlayer.js
-[![Greenkeeper badge](https://badges.greenkeeper.io/openplayerjs/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/openplayerjs/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![Greenkeeper badge](https://badges.greenkeeper.io/openplayerjs/openplayerjs.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/openplayerjs/openplayer.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 **********************************************************************************
  **Help OpenPlayer to reach the first thousand stars to be hosted in a CDN!**
