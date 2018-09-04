@@ -1,3 +1,19 @@
+<a name="1.2.2"></a>
+## [1.2.2](https://github.com/openplayerjs/openplayerjs/compare/v1.2.1...v1.2.2) (2018-09-04)
+
+
+### Bug Fixes
+
+* **docs:** Added CSS rule for text ([1836685](https://github.com/openplayerjs/openplayerjs/commit/1836685))
+* **docs:** Added missing form element and integrated workflow to consider audio in embed iframe ([900b5fe](https://github.com/openplayerjs/openplayerjs/commit/900b5fe))
+* **docs:** Added missing URL element to obtain proper permalink ([faf3a98](https://github.com/openplayerjs/openplayerjs/commit/faf3a98))
+* **docs:** Fixed style for iframe ([578ca79](https://github.com/openplayerjs/openplayerjs/commit/578ca79))
+* **docs:** Re-added old folder for player docs and fixed NPM commands ([25f3f89](https://github.com/openplayerjs/openplayerjs/commit/25f3f89))
+* **player:** Added conditional to test if container of player exists to remove callback effectively ([2b96bd4](https://github.com/openplayerjs/openplayerjs/commit/2b96bd4))
+* **webpack:** Fixed webpack and babelrc config after babel-loader upgrade ([c896c75](https://github.com/openplayerjs/openplayerjs/commit/c896c75))
+
+
+
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/rafa8626/openplayer/compare/v1.2.0...v1.2.1) (2018-08-27)
 
