@@ -33,7 +33,7 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can use one of the following methods:
 
 #### Direct download
-Download the repository from `https://github.com/rafa8626/openplayer.git`
+Download the repository from `https://github.com/openplayerjs/openplayerjs.git`
 
 #### NPM
 ```
