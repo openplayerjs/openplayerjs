@@ -309,7 +309,7 @@
     var form = document.getElementById('settings');
 
     function loadMedia() {
-      var url = window.location.protocol + '//' + window.location.host + '/openplayer/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
+      var url = window.location.protocol + '//' + window.location.host + '/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
       url += form.querySelector('#video-type').checked ? 'video' : 'audio';
       var ads = form.querySelector('#ads').value;
       if (ads) {
