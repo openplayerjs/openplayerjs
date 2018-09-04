@@ -8,7 +8,7 @@
   "license": "MIT",
   "description": "HTML5 video and audio player",
   "repository": {
-    "url": "https://github.com/rafa8626/openplayer.git",
+    "url": "https://github.com/openplayerjs/openplayer.git",
     "type": "git"
   },
   "main": "./dist/openplayer.js",
