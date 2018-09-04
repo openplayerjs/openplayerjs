@@ -1,6 +1,6 @@
 # OpenPlayer.js
 [![NPM](https://nodei.co/npm/openplayer.png)](https://nodei.co/npm/openplayer/)
-[![Greenkeeper badge](https://badges.greenkeeper.io/rafa8626/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)  [![Known Vulnerabilities](https://snyk.io/test/github/rafa8626/openplayer/badge.svg?targetFile=package.json)](https://snyk.io/test/github/rafa8626/openplayer?targetFile=package.json)
+[![Greenkeeper badge](https://badges.greenkeeper.io/rafa8626/openplayer.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/rafa8626/openplayer.svg?branch=master)](https://travis-ci.org/rafa8626/openplayer)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
 **********************************************************************************
  > **Help OpenPlayer to reach the first thousand stars to be hosted in a CDN!**
