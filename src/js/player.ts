@@ -12,7 +12,7 @@ import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { IS_ANDROID, IS_IOS } from './utils/constants';
+import { IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
@@ -173,26 +173,6 @@ class Player {
     private canAutoplayMuted: boolean;
 
     /**
-     * Storage for media's original width, to be used when calculating media's ratio aspect.
-     *
-     * @see [[Player._fill]]
-     * @private
-     * @type number
-     * @memberof Player
-     */
-    private width: number;
-
-    /**
-     * Storage for media's original height, to be used when calculating media's ratio aspect.
-     *
-     * @see [[Player._fill]]
-     * @private
-     * @type {number}
-     * @memberof Player
-     */
-    private height: number;
-
-    /**
      * Container for other player options.
      *
      * @private
@@ -218,8 +198,6 @@ class Player {
             this.fill = fill;
             this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
-            this.width = this.element.offsetWidth;
-            this.height = this.element.offsetHeight;
             this.options = options;
             this.element.autoplay = false;
         }
@@ -310,10 +288,6 @@ class Player {
         if (isVideo(this.element)) {
             this.playBtn.remove();
             this.loader.remove();
-        }
-
-        if (this.fill) {
-            window.removeEventListener('resize', this._fill.bind(this));
         }
 
         el.controls = true;
@@ -528,7 +502,6 @@ class Player {
 
         if (this.fill) {
             this._fill();
-            window.addEventListener('resize', this._fill.bind(this));
         }
     }
 
@@ -773,60 +746,17 @@ class Player {
     }
 
     /**
-     * Create fill effect on video, scaling and croping dimensions relative to its parent.
+     * Create fill effect on video, scaling and croping dimensions relative to its parent, setting just a class.
      *
-     * This methods centers the video view using pure CSS, and uses algorithm to search for
-     * the next immediate parent.
-     * @see https://www.viget.com/articles/fullscreen-html5-video-with-css-transforms/
+     * This methods centers the video view using pure CSS in both Ads and Media.
+     * @see https://slicejack.com/fullscreen-html5-video-background-css/
      * @private
      * @memberof Player
      */
     private _fill(): void {
-        if (isAudio(this.element)) {
-            return;
+        if (!isAudio(this.element) && !IS_IPHONE) {
+            this.getContainer().classList.add('om-player__full');
         }
-
-        let timeout;
-        if (timeout) {
-            window.cancelAnimationFrame(timeout);
-        }
-
-        timeout = window.requestAnimationFrame(() => {
-            if (!this.getContainer()) {
-                return;
-            }
-            const parentEl = this.getContainer().parentNode;
-            const parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
-
-            if (!parent) {
-                return;
-            }
-
-            const height = (parent as HTMLElement).offsetHeight;
-            const width = (parent as HTMLElement).offsetWidth;
-            const viewportRatio = width / height;
-            const videoRatio = this.width / this.height;
-            let scale = 1;
-            let clip;
-            let transform;
-
-            if (viewportRatio > videoRatio) {
-                scale = width / this.width;
-                clip = this.width / viewportRatio;
-                transform = `scale(${scale}) translateY(${-((this.height - clip) / this.height)}px)`;
-            } else {
-                scale = height / this.height;
-                clip = this.height / viewportRatio;
-                transform = `scale(${scale}) translateX(${-((this.width - clip) / this.width)}px)`;
-            }
-
-            this.element.style.transform = transform;
-            this.element.style.webkitTransform = transform;
-
-            if (this.isAd()) {
-                this.getAd().resizeAds(width, height, transform);
-            }
-        });
     }
 }
 

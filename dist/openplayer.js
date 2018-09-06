@@ -1111,8 +1111,6 @@ var Player = function () {
       this.fill = fill;
       this.autoplay = this.element.autoplay || false;
       this.volume = this.element.volume;
-      this.width = this.element.offsetWidth;
-      this.height = this.element.offsetHeight;
       this.options = options;
       this.element.autoplay = false;
     }
@@ -1186,10 +1184,6 @@ var Player = function () {
       if (general_1.isVideo(this.element)) {
         this.playBtn.remove();
         this.loader.remove();
-      }
-
-      if (this.fill) {
-        window.removeEventListener('resize', this._fill.bind(this));
       }
 
       el.controls = true;
@@ -1297,8 +1291,6 @@ var Player = function () {
 
       if (this.fill) {
         this._fill();
-
-        window.addEventListener('resize', this._fill.bind(this));
       }
     }
   }, {
@@ -1550,56 +1542,9 @@ var Player = function () {
   }, {
     key: "_fill",
     value: function _fill() {
-      var _this5 = this;
-
-      if (general_1.isAudio(this.element)) {
-        return;
+      if (!general_1.isAudio(this.element) && !constants_1.IS_IPHONE) {
+        this.getContainer().classList.add('om-player__full');
       }
-
-      var timeout;
-
-      if (timeout) {
-        window.cancelAnimationFrame(timeout);
-      }
-
-      timeout = window.requestAnimationFrame(function () {
-        if (!_this5.getContainer()) {
-          return;
-        }
-
-        var parentEl = _this5.getContainer().parentNode;
-
-        var parent = parentEl && parentEl.nodeType !== 11 ? parentEl : null;
-
-        if (!parent) {
-          return;
-        }
-
-        var height = parent.offsetHeight;
-        var width = parent.offsetWidth;
-        var viewportRatio = width / height;
-        var videoRatio = _this5.width / _this5.height;
-        var scale = 1;
-        var clip;
-        var transform;
-
-        if (viewportRatio > videoRatio) {
-          scale = width / _this5.width;
-          clip = _this5.width / viewportRatio;
-          transform = "scale(".concat(scale, ") translateY(").concat(-((_this5.height - clip) / _this5.height), "px)");
-        } else {
-          scale = height / _this5.height;
-          clip = _this5.height / viewportRatio;
-          transform = "scale(".concat(scale, ") translateX(").concat(-((_this5.width - clip) / _this5.width), "px)");
-        }
-
-        _this5.element.style.transform = transform;
-        _this5.element.style.webkitTransform = transform;
-
-        if (_this5.isAd()) {
-          _this5.getAd().resizeAds(width, height, transform);
-        }
-      });
     }
   }, {
     key: "src",
@@ -6093,7 +6038,7 @@ var Ads = function () {
     }
   }, {
     key: "resizeAds",
-    value: function resizeAds(width, height, transform) {
+    value: function resizeAds(width, height) {
       var _this3 = this;
 
       var timeout;
@@ -6112,11 +6057,6 @@ var Ads = function () {
             _this3.adsManager.resize(width, height, mode);
           } else {
             _this3.adsManager.resize(target.offsetWidth, target.offsetHeight, google.ima.ViewMode.NORMAL);
-          }
-
-          if (transform) {
-            _this3.adsContainer.style.transform = transform;
-            _this3.adsContainer.style.webkitTransform = transform;
           }
         }
       });
