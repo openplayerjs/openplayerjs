@@ -361,10 +361,9 @@ class Ads {
      *
      * @param {?number} width       The new width of the Ad's container.
      * @param {?number} height      The new height of the Ad's container.
-     * @param {?string} transform   CSS `transform` property to align Ad if `fill` mode is enabled.
      * @memberof Ads
      */
-    public resizeAds(width?: number, height?: number, transform?: string): void {
+    public resizeAds(width?: number, height?: number): void {
         let timeout;
         if (timeout) {
             window.cancelAnimationFrame(timeout);
@@ -387,11 +386,6 @@ class Ads {
                         target.offsetHeight,
                         google.ima.ViewMode.NORMAL,
                     );
-                }
-
-                if (transform) {
-                    this.adsContainer.style.transform = transform;
-                    this.adsContainer.style.webkitTransform = transform;
                 }
             }
         });
