@@ -1,3 +1,13 @@
+<a name="1.2.3"></a>
+## [1.2.3](https://github.com/openplayerjs/openplayerjs/compare/v1.2.2...v1.2.3) (2018-09-06)
+
+
+### Bug Fixes
+
+* **player:** Simplified workflow to generate fullscreen video by relying only in CSS ([8e9d3a6](https://github.com/openplayerjs/openplayerjs/commit/8e9d3a6))
+
+
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/openplayerjs/openplayerjs/compare/v1.2.1...v1.2.2) (2018-09-04)
 
