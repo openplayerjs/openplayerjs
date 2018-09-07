@@ -58,6 +58,15 @@ class Media {
     private options: PlayerOptions;
 
     /**
+     * Flag to indicate if `autoplay` attribute was set
+     *
+     * @private
+     * @type boolean
+     * @memberof HlsMedia
+     */
+    private autoplay: boolean;
+
+    /**
      * Create an instance of Media.
      *
      * @param {HTMLMediaElement} element
@@ -65,11 +74,12 @@ class Media {
      * @returns {Media}
      * @memberof Media
      */
-    constructor(element: HTMLMediaElement, options?: PlayerOptions) {
+    constructor(element: HTMLMediaElement, options?: PlayerOptions, autoplay: boolean = false) {
         this.element = element;
         this.options = options;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
+        this.autoplay = autoplay;
         return this;
     }
 
@@ -317,6 +327,11 @@ class Media {
             throw new TypeError('Media not set');
         }
 
+        // Remove previous media if any is detected
+        if (this.media && typeof this.media.destroy === 'function') {
+            this.media.destroy();
+        }
+
         // Loop until first playable source is found
         sources.some(media => {
             try {
@@ -388,7 +403,7 @@ class Media {
     private _invoke(media: Source): HlsMedia|DashMedia|HTML5Media {
         if (source.isHlsSource(media.src)) {
             const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
-            return new HlsMedia(this.element, media, hlsOptions);
+            return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
         } else if (source.isDashSource(media.src)) {
             const dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
             return new DashMedia(this.element, media, dashOptions);
