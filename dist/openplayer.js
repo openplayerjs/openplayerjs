@@ -360,7 +360,9 @@ function addEvent(event, details) {
     throw new Error('Event name must be a string');
   }
 
-  return new CustomEvent(event, details);
+  return new CustomEvent(event, {
+    detail: details
+  });
 }
 
 exports.addEvent = addEvent;
@@ -5677,18 +5679,13 @@ var HlsMedia = function (_native_1$default) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(HlsMedia).call(this, element, mediaSource));
     _this.events = {};
     _this.options = options;
-
-    function createInstance() {
-      this.player = new Hls(options);
-    }
-
     _this.element = element;
     _this.media = mediaSource;
     _this.promise = typeof Hls === 'undefined' ? general_1.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') : new Promise(function (resolve) {
       resolve();
     });
 
-    _this.promise.then(createInstance.bind(_assertThisInitialized(_assertThisInitialized(_this))));
+    _this.promise.then(_this._create.bind(_assertThisInitialized(_assertThisInitialized(_this))));
 
     return _possibleConstructorReturn(_this, _assertThisInitialized(_assertThisInitialized(_this)));
   }
@@ -5710,7 +5707,13 @@ var HlsMedia = function (_native_1$default) {
       if (!this.events) {
         this.events = Hls.Events;
         Object.keys(this.events).forEach(function (event) {
-          _this2.player.on(_this2.events[event], _this2._assign.bind(_this2));
+          _this2.player.on(_this2.events[event], function () {
+            for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+              args[_key] = arguments[_key];
+            }
+
+            return _this2._assign(_this2.events[event], args);
+          });
         });
       }
     }
@@ -5720,9 +5723,26 @@ var HlsMedia = function (_native_1$default) {
       this._revoke();
     }
   }, {
+    key: "_create",
+    value: function _create() {
+      var _this3 = this;
+
+      this.player = new Hls(this.options);
+      this.events = Hls.Events;
+      Object.keys(this.events).forEach(function (event) {
+        _this3.player.on(_this3.events[event], function () {
+          for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            args[_key2] = arguments[_key2];
+          }
+
+          return _this3._assign(_this3.events[event], args);
+        });
+      });
+    }
+  }, {
     key: "_assign",
     value: function _assign(event, data) {
-      if (name === 'hlsError') {
+      if (event === 'hlsError') {
         console.warn(data);
         data = data[1];
 
@@ -5757,18 +5777,24 @@ var HlsMedia = function (_native_1$default) {
           }
         }
       } else {
-        var e = events_1.addEvent(event, data);
+        var e = events_1.addEvent(event, data[1]);
         this.element.dispatchEvent(e);
       }
     }
   }, {
     key: "_revoke",
     value: function _revoke() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.events) {
         Object.keys(this.events).forEach(function (event) {
-          _this3.player.off(_this3.events[event], _this3._assign.bind(_this3));
+          _this4.player.off(_this4.events[event], function () {
+            for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+              args[_key3] = arguments[_key3];
+            }
+
+            return _this4._assign(_this4.events[event], args);
+          });
         });
         this.events = null;
       }
@@ -5778,7 +5804,7 @@ var HlsMedia = function (_native_1$default) {
   }, {
     key: "src",
     set: function set(media) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (media_1.isHlsSource(media.src)) {
         this._revoke();
@@ -5788,7 +5814,13 @@ var HlsMedia = function (_native_1$default) {
         this.player.attachMedia(this.element);
         this.events = Hls.Events;
         Object.keys(this.events).forEach(function (event) {
-          _this4.player.on(_this4.events[event], _this4._assign.bind(_this4));
+          _this5.player.on(_this5.events[event], function () {
+            for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+              args[_key4] = arguments[_key4];
+            }
+
+            return _this5._assign(_this5.events[event], args);
+          });
         });
       }
     }

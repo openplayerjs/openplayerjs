@@ -580,6 +580,12 @@
 .om-player[data-fullscreen='true'] .om-controls {
     z-index: 2147483648;
 }
+.om-player[data-fullscreen='true'].om-controls--hidden {
+    cursor: none;
+}
+.om-player[data-fullscreen='true'].om-controls--hidden .om-controls {
+    bottom: -40px;
+}
 .om-player video::-webkit-media-controls { 
     display: none !important;
 }
@@ -661,6 +667,9 @@ video:-webkit-media-text-track-display {
     z-index: 1;
 }
 .om-player[data-fullscreen='true'] #om-ads {
+    z-index: 2147483645;
+}
+.om-player[data-fullscreen='true'] .om-player__play {
     z-index: 2147483647;
 }
 
