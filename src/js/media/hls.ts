@@ -69,12 +69,6 @@ class HlsMedia extends Native {
     constructor(element: HTMLMediaElement, mediaSource: Source, options: {}) {
         super(element, mediaSource);
         this.options = options;
-        /**
-         * @private
-         */
-        function createInstance() {
-            this.player = new Hls(options);
-        }
         this.element = element;
         this.media = mediaSource;
         this.promise = (typeof Hls === 'undefined') ?
@@ -84,7 +78,7 @@ class HlsMedia extends Native {
                 resolve();
             });
 
-        this.promise.then(createInstance.bind(this));
+        this.promise.then(this._create.bind(this));
         return this;
     }
 
@@ -111,7 +105,7 @@ class HlsMedia extends Native {
         if (!this.events) {
             this.events = Hls.Events;
             Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], this._assign.bind(this));
+                this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
             });
         }
     }
@@ -139,9 +133,29 @@ class HlsMedia extends Native {
 
             this.events = Hls.Events;
             Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], this._assign.bind(this));
+                this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
             });
         }
+    }
+
+    /**
+     *
+     *
+     * @private
+     * @memberof HlsMedia
+     */
+    private _create() {
+        // let { options } = this;
+        // if (!options) {
+        //     options = {};
+        // }
+        // (options as any).autoStartLoad = this.element.autoplay || false;
+
+        this.player = new Hls(this.options);
+        this.events = Hls.Events;
+        Object.keys(this.events).forEach(event => {
+            this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
+        });
     }
 
     /**
@@ -153,9 +167,12 @@ class HlsMedia extends Native {
      * @see https://github.com/video-dev/hls.js/blob/master/src/errors.js
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#runtime-events
      * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#errors
+     * @param {string} event The name of the HLS event
+     * @param {any} data The data passed to the event, could be an object or an array
+     * @memberof HlsMedia
      */
     private _assign(event: string, data: any): void {
-        if (name === 'hlsError') {
+        if (event === 'hlsError') {
             console.warn(data);
             data = data[1];
 
@@ -187,7 +204,7 @@ class HlsMedia extends Native {
                 }
             }
         } else {
-            const e = addEvent(event, data);
+            const e = addEvent(event, data[1]);
             this.element.dispatchEvent(e);
         }
     }
@@ -199,7 +216,7 @@ class HlsMedia extends Native {
     private _revoke(): void {
         if (this.events) {
             Object.keys(this.events).forEach(event => {
-                this.player.off(this.events[event], this._assign.bind(this));
+                this.player.off(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
             });
             this.events = null;
         }

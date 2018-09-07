@@ -12,7 +12,7 @@ export function addEvent(event: string, details?: CustomEventInit): CustomEvent 
         throw new Error('Event name must be a string');
     }
 
-    return new CustomEvent(event, details);
+    return new CustomEvent(event, { detail: details });
 }
 
 /**
@@ -24,6 +24,6 @@ export function addEvent(event: string, details?: CustomEventInit): CustomEvent 
 export const events: string[] = [
     'loadstart', 'durationchange', 'loadedmetadata', 'loadeddata',
     'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error',
-    'emptied', 'stalled', 'play', 'playing',  'pause', 'waiting', 'seeking',
+    'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking',
     'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange',
 ];
