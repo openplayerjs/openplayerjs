@@ -18,19 +18,32 @@
         select:last-child {
             margin-bottom: 20px;
         }
+        #stream-info {
+            min-height: 300px;
+        }
+        #stream-info.hidden {
+            min-height: 0;
+        }
+        #stream-info > img {
+            float: left;
+            width: 300px;
+        }
+        #stream-info > p {
+            margin-left: 315px;
+        }
     </style>
 </head>
 <body>
-    <div class="players">
+    <div class="players video-player">
         <h1>Video Sample</h1>
         <video class="om-player om-player__media" controls playsinline data-om-options='{"hls": {"startLevel": -1} }'
             data-om-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator=">
-            <source src="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4" type="video/mp4">
+            <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
             <track label="English" kind="subtitles" srclang="en" src="http://www.mediaelementjs.com/dist/mediaelement.vtt" default>
         </video>
         <div>
             <label>Change source <select name="sources">
-                <option value="http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4">MP4</option>
+                <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">MP4</option>
                 <option value="http://ep-lin-upload.s3.amazonaws.com/vupl_lin/F64/CDF/F64CDF3B0348471E95C244DE2DDDD3F3">MP4 (no ext.)</option>
                 <option value="https://upload.wikimedia.org/wikipedia/commons/2/22/Volcano_Lava_Sample.webm">WebM</option>
                 <option value="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8">HLS</option>
@@ -44,13 +57,13 @@
 
     <div class="players audio-player">
         <h1>Audio Sample</h1>
-        <div id="stream-info"></div>
+        <div id="stream-info" class="hidden"></div>
         <audio class="om-player om-player__media" controls>
-            <source src="http://db3.indexcom.com/bucket/ram/00/05/64k/05.m3u8">
+            <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
         </audio>
         <div>
             <label>Change source <select name="sources">
-                <option value="http://www.largesound.com/ashborytour/sound/AshboryBYU.mp3">MP3</option>
+                <option value="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3">MP3</option>
                 <option value="http://db3.indexcom.com/bucket/ram/00/05/64k/05.m3u8">HLS</option>
             </select>
             </label>
@@ -66,9 +79,14 @@
         var captionBtn = document.querySelectorAll('button.load-caption');
         
         function loadMedia() {
-            document.getElementById('stream-info').innerHTML = '';
             var id = this.closest('.players').querySelector('.om-player').id;
             var player = OpenPlayer.instances[id];
+            var isAudio = !!this.closest('.audio-player');
+
+            if (isAudio) {
+                document.getElementById('stream-info').innerHTML = '';
+                document.getElementById('stream-info').classList.add('hidden');
+            }
 
             player.src = this.value.replace('&amp;', '&');
             player.load();
@@ -111,17 +129,17 @@
         var id = document.querySelector('.om-player__audio').id;
         var audioPlayer = OpenPlayer.instances[id];
 
-        audioPlayer.getElement().addEventListener('hlsFragParsingMetadata', function (event) {
-            var encodedTag = event.detail.samples[0].data;
-            var parsedTag = [];
+        // audioPlayer.getElement().addEventListener('hlsFragParsingMetadata', function (event) {
+        //     var encodedTag = event.detail.samples[0].data;
+        //     var parsedTag = [];
 
-            encodedTag.forEach(function (element) {
-                parsedTag.push(String.fromCharCode(element));
-            });
+        //     encodedTag.forEach(function (element) {
+        //         parsedTag.push(String.fromCharCode(element));
+        //     });
 
-            var tagAsString = parsedTag.toString().replace(/,/g, '');
-            extractMeta(tagAsString, audioPlayer.getElement());
-        });
+        //     var tagAsString = parsedTag.toString().replace(/,/g, '');
+        //     extractMeta(tagAsString, audioPlayer.getElement());
+        // });
 
         function extractMeta (data, audio) {
             var name, desc, title, artist, image, infoArea, metaInfo, startLoc, endLoc;
@@ -150,9 +168,10 @@
             // image
             image = data.match('(http:\/\/|https:\/\/).*\.(jpg|png|svg)')[0];
             infoArea = document.getElementById('stream-info');
-            metaInfo = '<p>Name: ' + name + '</p>' + '<p>Desc: ' + desc + '</p>' + '<p>Artist: ' + artist + '</p>' + '<p>Title: ' + title + '</p>' + '<img src="' + image + '" width="300" />';
+            metaInfo = '<img src="' + image + '" alt="' + title + ', by ' + artist + ' width="300"/><p>Name: ' + name + '</p>' + '<p>Desc: ' + desc + '</p>' + '<p>Artist: ' + artist + '</p>' + '<p>Title: ' + title + '</p>';
 
             infoArea.innerHTML = metaInfo;
+            infoArea.classList.remove('hidden');
             audio.poster = image;
         }
     </script>
