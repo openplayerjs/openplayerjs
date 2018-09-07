@@ -522,7 +522,7 @@ class Player {
      */
     private _prepareMedia(): void {
         try {
-            this.media = new Media(this.element, this.options);
+            this.media = new Media(this.element, this.options, this.autoplay);
             this.media.load();
 
             if (this.adsUrl) {

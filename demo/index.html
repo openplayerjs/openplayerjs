@@ -58,7 +58,7 @@
     <div class="players audio-player">
         <h1>Audio Sample</h1>
         <div id="stream-info" class="hidden"></div>
-        <audio class="om-player om-player__media" controls>
+        <audio class="om-player om-player__media" controls data-om-options='{"hls": {"startLevel": -1} }'>
             <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
         </audio>
         <div>
@@ -129,17 +129,17 @@
         var id = document.querySelector('.om-player__audio').id;
         var audioPlayer = OpenPlayer.instances[id];
 
-        // audioPlayer.getElement().addEventListener('hlsFragParsingMetadata', function (event) {
-        //     var encodedTag = event.detail.samples[0].data;
-        //     var parsedTag = [];
+        audioPlayer.getElement().addEventListener('hlsFragParsingMetadata', function (event) {
+            var encodedTag = event.detail.samples[0].data;
+            var parsedTag = [];
 
-        //     encodedTag.forEach(function (element) {
-        //         parsedTag.push(String.fromCharCode(element));
-        //     });
+            encodedTag.forEach(function (element) {
+                parsedTag.push(String.fromCharCode(element));
+            });
 
-        //     var tagAsString = parsedTag.toString().replace(/,/g, '');
-        //     extractMeta(tagAsString, audioPlayer.getElement());
-        // });
+            var tagAsString = parsedTag.toString().replace(/,/g, '');
+            extractMeta(tagAsString, audioPlayer.getElement());
+        });
 
         function extractMeta (data, audio) {
             var name, desc, title, artist, image, infoArea, metaInfo, startLoc, endLoc;

@@ -667,10 +667,10 @@ video:-webkit-media-text-track-display {
     z-index: 1;
 }
 .om-player[data-fullscreen='true'] #om-ads {
-    z-index: 2147483645;
+    z-index: -1;
 }
-.om-player[data-fullscreen='true'] .om-player__play {
-    z-index: 2147483647;
+.om-player[data-fullscreen='true'].om-ads--active #om-ads {
+    z-index: 2147483645;
 }
 
 /* === Focus =================== */

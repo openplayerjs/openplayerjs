@@ -54,10 +54,19 @@ class HlsMedia extends Native {
      *
      * @see https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning
      * @private
-     * @type {object}
+     * @type object
      * @memberof HlsMedia
      */
     private options: object;
+
+    /**
+     * Flag to indicate if `autoplay` attribute was set
+     *
+     * @private
+     * @type boolean
+     * @memberof HlsMedia
+     */
+    private autoplay: boolean;
 
     /**
      * Creates an instance of HlsMedia.
@@ -66,11 +75,12 @@ class HlsMedia extends Native {
      * @param {Source} mediaSource
      * @memberof HlsMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source, options: {}) {
+    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean = false, options: {}) {
         super(element, mediaSource);
         this.options = options;
         this.element = element;
         this.media = mediaSource;
+        this.autoplay = autoplay;
         this.promise = (typeof Hls === 'undefined') ?
             // Ever-green script
             loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') :
@@ -139,23 +149,40 @@ class HlsMedia extends Native {
     }
 
     /**
+     * Setup Hls player with options.
      *
+     * Some of the options/events will be overriden to improve performance and user's experience.
      *
      * @private
      * @memberof HlsMedia
      */
     private _create() {
-        // let { options } = this;
-        // if (!options) {
-        //     options = {};
-        // }
-        // (options as any).autoStartLoad = this.element.autoplay || false;
+        let { options } = this;
+        if (!options) {
+            options = {};
+        }
+        const autoplay = !!(this.element.preload === 'auto' || this.autoplay);
+        (options as any).autoStartLoad = autoplay;
 
         this.player = new Hls(this.options);
         this.events = Hls.Events;
         Object.keys(this.events).forEach(event => {
             this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
         });
+
+        if (!autoplay) {
+            this.element.addEventListener('play', () => {
+                if (this.player) {
+                    this.player.startLoad();
+                }
+            });
+
+            this.element.addEventListener('pause', () => {
+                if (this.player) {
+                    this.player.stopLoad();
+                }
+            });
+        }
     }
 
     /**
@@ -214,12 +241,23 @@ class HlsMedia extends Native {
      * @memberof HlsMedia
      */
     private _revoke(): void {
+        this.player.stopLoad();
         if (this.events) {
             Object.keys(this.events).forEach(event => {
                 this.player.off(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
             });
-            this.events = null;
         }
+        this.element.removeEventListener('play', () => {
+            if (this.player) {
+                this.player.startLoad();
+            }
+        });
+
+        this.element.removeEventListener('pause', () => {
+            if (this.player) {
+                this.player.stopLoad();
+            }
+        });
         this.player.destroy();
     }
 }

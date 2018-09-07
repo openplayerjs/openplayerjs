@@ -1305,7 +1305,7 @@ var Player = function () {
     key: "_prepareMedia",
     value: function _prepareMedia() {
       try {
-        this.media = new media_1.default(this.element, this.options);
+        this.media = new media_1.default(this.element, this.options, this.autoplay);
         this.media.load();
 
         if (this.adsUrl) {
@@ -5263,12 +5263,15 @@ var source = __webpack_require__(24);
 
 var Media = function () {
   function Media(element, options) {
+    var autoplay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
     _classCallCheck(this, Media);
 
     this.element = element;
     this.options = options;
     this.mediaFiles = this._getMediaFiles();
     this.promisePlay = null;
+    this.autoplay = autoplay;
     return this;
   }
 
@@ -5321,6 +5324,10 @@ var Media = function () {
 
       if (!sources.length) {
         throw new TypeError('Media not set');
+      }
+
+      if (this.media && typeof this.media.destroy === 'function') {
+        this.media.destroy();
       }
 
       sources.some(function (media) {
@@ -5376,7 +5383,7 @@ var Media = function () {
     value: function _invoke(media) {
       if (source.isHlsSource(media.src)) {
         var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
-        return new hls_1.default(this.element, media, hlsOptions);
+        return new hls_1.default(this.element, media, this.autoplay, hlsOptions);
       } else if (source.isDashSource(media.src)) {
         var dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
         return new dash_1.default(this.element, media, dashOptions);
@@ -5671,8 +5678,11 @@ var native_1 = __webpack_require__(39);
 var HlsMedia = function (_native_1$default) {
   _inherits(HlsMedia, _native_1$default);
 
-  function HlsMedia(element, mediaSource, options) {
+  function HlsMedia(element, mediaSource) {
     var _this;
+
+    var autoplay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var options = arguments.length > 3 ? arguments[3] : undefined;
 
     _classCallCheck(this, HlsMedia);
 
@@ -5681,6 +5691,7 @@ var HlsMedia = function (_native_1$default) {
     _this.options = options;
     _this.element = element;
     _this.media = mediaSource;
+    _this.autoplay = autoplay;
     _this.promise = typeof Hls === 'undefined' ? general_1.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') : new Promise(function (resolve) {
       resolve();
     });
@@ -5727,6 +5738,14 @@ var HlsMedia = function (_native_1$default) {
     value: function _create() {
       var _this3 = this;
 
+      var options = this.options;
+
+      if (!options) {
+        options = {};
+      }
+
+      var autoplay = !!(this.element.preload === 'auto' || this.autoplay);
+      options.autoStartLoad = autoplay;
       this.player = new Hls(this.options);
       this.events = Hls.Events;
       Object.keys(this.events).forEach(function (event) {
@@ -5738,6 +5757,19 @@ var HlsMedia = function (_native_1$default) {
           return _this3._assign(_this3.events[event], args);
         });
       });
+
+      if (!autoplay) {
+        this.element.addEventListener('play', function () {
+          if (_this3.player) {
+            _this3.player.startLoad();
+          }
+        });
+        this.element.addEventListener('pause', function () {
+          if (_this3.player) {
+            _this3.player.stopLoad();
+          }
+        });
+      }
     }
   }, {
     key: "_assign",
@@ -5786,6 +5818,8 @@ var HlsMedia = function (_native_1$default) {
     value: function _revoke() {
       var _this4 = this;
 
+      this.player.stopLoad();
+
       if (this.events) {
         Object.keys(this.events).forEach(function (event) {
           _this4.player.off(_this4.events[event], function () {
@@ -5796,9 +5830,18 @@ var HlsMedia = function (_native_1$default) {
             return _this4._assign(_this4.events[event], args);
           });
         });
-        this.events = null;
       }
 
+      this.element.removeEventListener('play', function () {
+        if (_this4.player) {
+          _this4.player.startLoad();
+        }
+      });
+      this.element.removeEventListener('pause', function () {
+        if (_this4.player) {
+          _this4.player.stopLoad();
+        }
+      });
       this.player.destroy();
     }
   }, {
