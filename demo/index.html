@@ -42,10 +42,11 @@
         </div>
     </div>
 
-    <div class="players">
+    <div class="players audio-player">
         <h1>Audio Sample</h1>
+        <div id="stream-info"></div>
         <audio class="om-player om-player__media" controls>
-            <source src="http://www.largesound.com/ashborytour/sound/AshboryBYU.mp3" type="audio/mp3">
+            <source src="http://db3.indexcom.com/bucket/ram/00/05/64k/05.m3u8">
         </audio>
         <div>
             <label>Change source <select name="sources">
@@ -65,6 +66,7 @@
         var captionBtn = document.querySelectorAll('button.load-caption');
         
         function loadMedia() {
+            document.getElementById('stream-info').innerHTML = '';
             var id = this.closest('.players').querySelector('.om-player').id;
             var player = OpenPlayer.instances[id];
 
@@ -104,6 +106,54 @@
         }
         for (var i = 0, total = captionBtn.length; i < total; i++) {
             captionBtn[i].addEventListener('click', loadCaption);
+        }
+
+        var id = document.querySelector('.om-player__audio').id;
+        var audioPlayer = OpenPlayer.instances[id];
+
+        audioPlayer.getElement().addEventListener('hlsFragParsingMetadata', function (event) {
+            var encodedTag = event.detail.samples[0].data;
+            var parsedTag = [];
+
+            encodedTag.forEach(function (element) {
+                parsedTag.push(String.fromCharCode(element));
+            });
+
+            var tagAsString = parsedTag.toString().replace(/,/g, '');
+            extractMeta(tagAsString, audioPlayer.getElement());
+        });
+
+        function extractMeta (data, audio) {
+            var name, desc, title, artist, image, infoArea, metaInfo, startLoc, endLoc;
+
+            // name
+            startLoc = data.indexOf("TRSN") + 11;
+            endLoc = data.indexOf("TRSO");
+            name = data.substring(startLoc, endLoc);
+
+            // desc
+            startLoc = data.indexOf("TRSO") + 11;
+            endLoc = data.indexOf("TIT2");
+            desc = data.substring(startLoc, endLoc);
+
+            // artist
+            startLoc = data.indexOf("TPE1") + 11;
+            endLoc = data.indexOf("TPE2");
+            artist = data.substring(startLoc, endLoc);
+            
+            // title
+            startLoc = data.indexOf("TIT2") + 11;
+            endLoc = data.indexOf("TPE1");
+            title = data.substring(startLoc, endLoc);
+
+
+            // image
+            image = data.match('(http:\/\/|https:\/\/).*\.(jpg|png|svg)')[0];
+            infoArea = document.getElementById('stream-info');
+            metaInfo = '<p>Name: ' + name + '</p>' + '<p>Desc: ' + desc + '</p>' + '<p>Artist: ' + artist + '</p>' + '<p>Title: ' + title + '</p>' + '<img src="' + image + '" width="300" />';
+
+            infoArea.innerHTML = metaInfo;
+            audio.poster = image;
         }
     </script>
 </body>
