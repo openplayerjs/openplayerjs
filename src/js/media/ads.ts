@@ -364,31 +364,24 @@ class Ads {
      * @memberof Ads
      */
     public resizeAds(width?: number, height?: number): void {
-        let timeout;
-        if (timeout) {
-            window.cancelAnimationFrame(timeout);
-        }
+        if (this.adsManager) {
+            const target = this.element;
+            const mode = target.getAttribute('data-fullscreen') === 'true' ?
+                google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
 
-        timeout = window.requestAnimationFrame(() => {
-            if (this.adsManager) {
-                const target = this.element;
-                if (width && height) {
-                    const mode = target.getAttribute('data-fullscreen') === 'true' ?
-                        google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
-                    this.adsManager.resize(
-                        width,
-                        height,
-                        mode,
-                    );
-                } else {
-                    this.adsManager.resize(
-                        target.offsetWidth,
-                        target.offsetHeight,
-                        google.ima.ViewMode.NORMAL,
-                    );
-                }
+            let timeout;
+
+            if (timeout) {
+                window.cancelAnimationFrame(timeout);
             }
-        });
+            timeout = window.requestAnimationFrame(() => {
+                this.adsManager.resize(
+                    width && height ? width : target.offsetWidth,
+                    width && height ? height : target.offsetHeight,
+                    mode,
+                );
+            });
+        }
     }
 
     /**
@@ -514,9 +507,6 @@ class Ads {
 
                     const loadedEvent = addEvent('loadedmetadata');
                     this.element.dispatchEvent(loadedEvent);
-
-                    const resizeEvent = addEvent('resize');
-                    window.dispatchEvent(resizeEvent);
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
@@ -537,7 +527,7 @@ class Ads {
                             const timeEvent = addEvent('timeupdate');
                             this.element.dispatchEvent(timeEvent);
                         }
-                    }, 250);
+                    }, 300);
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
@@ -772,7 +762,8 @@ class Ads {
             this.adsManager.init(
                 this.element.offsetWidth,
                 this.element.offsetHeight,
-                google.ima.ViewMode.NORMAL,
+                this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
+                    google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL,
             );
             this.adsManager.start();
             const e = addEvent('play');
