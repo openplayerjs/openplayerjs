@@ -1305,7 +1305,7 @@ var Player = function () {
     key: "_prepareMedia",
     value: function _prepareMedia() {
       try {
-        this.media = new media_1.default(this.element, this.options, this.autoplay);
+        this.media = new media_1.default(this.element, this.options, this.autoplay, Player.customMedia);
         this.media.load();
 
         if (this.adsUrl) {
@@ -1576,12 +1576,24 @@ var Player = function () {
         player.init();
       }
     }
+  }, {
+    key: "addMedia",
+    value: function addMedia(name, mimeType, valid, media) {
+      Player.customMedia.media[mimeType] = media;
+      Player.customMedia.optionsKey[mimeType] = name;
+      Player.customMedia.rules.push(valid);
+    }
   }]);
 
   return Player;
 }();
 
 Player.instances = {};
+Player.customMedia = {
+  media: {},
+  optionsKey: {},
+  rules: []
+};
 exports.default = Player;
 window.OpenPlayer = Player;
 Player.init();
@@ -5264,13 +5276,20 @@ var source = __webpack_require__(24);
 var Media = function () {
   function Media(element, options) {
     var autoplay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    var customMedia = arguments.length > 3 ? arguments[3] : undefined;
 
     _classCallCheck(this, Media);
 
+    this.customMedia = {
+      media: {},
+      optionsKey: {},
+      rules: []
+    };
     this.element = element;
     this.options = options;
     this.mediaFiles = this._getMediaFiles();
     this.promisePlay = null;
+    this.customMedia = customMedia;
     this.autoplay = autoplay;
     return this;
   }
@@ -5381,7 +5400,25 @@ var Media = function () {
   }, {
     key: "_invoke",
     value: function _invoke(media) {
-      if (source.isHlsSource(media.src)) {
+      var _this4 = this;
+
+      if (Object.keys(this.customMedia.media).length) {
+        this.customMedia.rules.forEach(function (rule) {
+          var type = rule(media.src);
+
+          if (type) {
+            var customMedia = _this4.customMedia.media[type];
+            var customOptions = _this4.options[_this4.customMedia.optionsKey[type]] || undefined;
+            customMedia.autoplay = _this4.autoplay;
+            customMedia.element = _this4.element;
+            customMedia.media = media;
+            customMedia.options = customOptions;
+            return customMedia;
+          } else {
+            return new html5_1.default(_this4.element, media);
+          }
+        });
+      } else if (source.isHlsSource(media.src)) {
         var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
         return new hls_1.default(this.element, media, this.autoplay, hlsOptions);
       } else if (source.isDashSource(media.src)) {
@@ -5394,7 +5431,7 @@ var Media = function () {
   }, {
     key: "src",
     set: function set(media) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (typeof media === 'string') {
         this.mediaFiles.push({
@@ -5408,7 +5445,7 @@ var Media = function () {
       }
 
       this.mediaFiles.some(function (file) {
-        return _this4.canPlayType(file.type);
+        return _this5.canPlayType(file.type);
       });
 
       if (this.element.src) {
@@ -6116,25 +6153,19 @@ var Ads = function () {
     value: function resizeAds(width, height) {
       var _this3 = this;
 
-      var timeout;
+      if (this.adsManager) {
+        var target = this.element;
+        var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
+        var timeout;
 
-      if (timeout) {
-        window.cancelAnimationFrame(timeout);
-      }
-
-      timeout = window.requestAnimationFrame(function () {
-        if (_this3.adsManager) {
-          var target = _this3.element;
-
-          if (width && height) {
-            var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
-
-            _this3.adsManager.resize(width, height, mode);
-          } else {
-            _this3.adsManager.resize(target.offsetWidth, target.offsetHeight, google.ima.ViewMode.NORMAL);
-          }
+        if (timeout) {
+          window.cancelAnimationFrame(timeout);
         }
-      });
+
+        timeout = window.requestAnimationFrame(function () {
+          _this3.adsManager.resize(width && height ? width : target.offsetWidth, width && height ? height : target.offsetHeight, mode);
+        });
+      }
     }
   }, {
     key: "_assign",
@@ -6157,8 +6188,6 @@ var Ads = function () {
             this.adsCurrentTime = ad.getDuration();
             var loadedEvent = events_1.addEvent('loadedmetadata');
             this.element.dispatchEvent(loadedEvent);
-            var resizeEvent = events_1.addEvent('resize');
-            window.dispatchEvent(resizeEvent);
           }
 
           break;
@@ -6182,7 +6211,7 @@ var Ads = function () {
 
                 _this4.element.dispatchEvent(timeEvent);
               }
-            }, 250);
+            }, 300);
           }
 
           break;
@@ -6353,7 +6382,7 @@ var Ads = function () {
           this.adDisplayContainer.initialize();
         }
 
-        this.adsManager.init(this.element.offsetWidth, this.element.offsetHeight, google.ima.ViewMode.NORMAL);
+        this.adsManager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
         this.adsManager.start();
         var e = events_1.addEvent('play');
         this.element.dispatchEvent(e);
