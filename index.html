@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
     crossorigin="anonymous">
 
-  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
-    crossorigin="anonymous">
+  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
     rel="stylesheet">
@@ -21,6 +21,27 @@
   <link href="css/grayscale.min.css" rel="stylesheet">
 
   <style>
+    @font-face {
+      font-family: "Arrival";
+      src: url("./fonts/arrival/arrival.eot"); /* IE9 Compat Modes */
+      src: url("./fonts/arrival/arrival.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
+        url("./fonts/arrival/arrival.otf") format("opentype"), /* Open Type Font */
+        url("./fonts/arrival/arrival.svg") format("svg"), /* Legacy iOS */
+        url("./fonts/arrival/arrival.ttf") format("truetype"), /* Safari, Android, iOS */
+        url("./fonts/arrival/arrival.woff") format("woff"), /* Modern Browsers */
+        url("./fonts/arrival/arrival.woff2") format("woff2"); /* Modern Browsers */
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    html, body, .masthead h1 {
+      font-family: 'Arrival', Times, serif;
+    }
+
+    .masthead h1 {
+      font-size: 1.9rem;
+    }
+
     iframe {
       border: none;
       min-height: 360px;
@@ -56,7 +77,9 @@
     }
 
     .signup-section {
-      background: #161616;
+      background-color: #444444;
+      background-image: -webkit-linear-gradient(bottom, #444444, #999999); /* Chrome 10-25, iOS 5+, Safari 5.1+ */
+      background-image:         linear-gradient(to top, #444444, #999999);
     }
 
     #download {
@@ -78,6 +101,8 @@
     }
 
     #permalink a {
+      color: yellow;
+      font-size: 0.85em;
       -webkit-hyphens: auto;
       -moz-hyphens: auto;
       hyphens: auto;
@@ -95,6 +120,12 @@
       #mainNav.navbar-shrink .nav-link.active {
         border-bottom: 0.25rem solid #e80c19;
         color: #e80c19;
+      }
+      #mainNav.navbar-shrink .nav-link:hover {
+        color: #e80c19;
+      }
+      .masthead h1 {
+        font-size: 4.5rem;
       }
     }
   </style>
@@ -131,10 +162,10 @@
       <div class="mx-auto text-center">
         <h1 class="mx-auto my-0 text-uppercase">OpenPlayer</h1>
         <h2 class="text-white-50 mx-auto mt-2 mb-5">The lightweight player for the Web.</h2>
-        <p><a id="download" class="btn btn-primary" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip" data-size="medium"
-            aria-label="Download openplayerjs/openplayerjs on GitHub">Download</a></p>
-        <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large" data-show-count="true"
-          aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
+        <p><a id="download" class="btn btn-primary" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip"
+            data-size="medium" aria-label="Download openplayerjs/openplayerjs on GitHub">Download</a></p>
+        <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
+          data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
       </div>
     </div>
   </header>
@@ -146,10 +177,12 @@
           <h2 class="text-white mb-4">Why another media player? And why OpenPlayer?</h2>
           <ul class="nav nav-tabs" id="media-tabs" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="video-tab" data-toggle="tab" href="#video" role="tab" aria-controls="video" aria-selected="true">Video</a>
+              <a class="nav-link active" id="video-tab" data-toggle="tab" href="#video" role="tab" aria-controls="video"
+                aria-selected="true">Video</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" id="audio-tab" data-toggle="tab" href="#audio" role="tab" aria-controls="audio" aria-selected="false">Audio</a>
+              <a class="nav-link" id="audio-tab" data-toggle="tab" href="#audio" role="tab" aria-controls="audio"
+                aria-selected="false">Audio</a>
             </li>
           </ul>
           <div class="tab-content" id="showcase">
@@ -164,8 +197,10 @@
               </audio>
             </div>
           </div>
-          <p class="text-white text-white-50">Technologies are evolving at fast pace. Having a player that plays the most
-            popular content in all browsers and devices, keeps itself ever-green, and can be customized easily is a no-brainer
+          <p class="text-white text-white-50">Technologies are evolving at fast pace. Having a player that plays the
+            most
+            popular content in all browsers and devices, keeps itself ever-green, and can be customized easily is a
+            no-brainer
             for everyone that wants the best.</p>
         </div>
       </div>
@@ -184,8 +219,9 @@
         <div class="col-xl-4 col-lg-5">
           <div class="featured-text text-center text-lg-left">
             <h4>Easily configured</h4>
-            <p class="text-black-50 mb-0">Either setting up the player through the video/audio tags or via Javascript, you
-              just need a pair of class names and up to 3 data-attributes and you are all set!</p>
+            <p class="text-black-50 mb-0">Either setting up the player through the video/audio tags or via Javascript,
+              you
+              just need a pair of class names and up to 3 configuration options... and you are all set!</p>
           </div>
         </div>
       </div>
@@ -199,8 +235,10 @@
             <div class="d-flex h-100">
               <div class="project-text w-100 my-auto text-center text-lg-left">
                 <h4 class="text-white">Smart Autoplay</h4>
-                <p class="mb-0 text-white-50">Giving the constant changes of policies on different browsers, OpenPlayer integrates
-                  a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's quirks
+                <p class="mb-0 text-white-50">Giving the constant changes of policies on different browsers, OpenPlayer
+                  integrates
+                  a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's
+                  quirks
                   or workarounds for that.</p>
                 <hr class="d-none d-lg-block mb-0 ml-0">
               </div>
@@ -218,8 +256,10 @@
             <div class="d-flex h-100">
               <div class="project-text w-100 my-auto text-center text-lg-right">
                 <h4 class="text-white">VAST/VPAID/VMAP support</h4>
-                <p class="mb-0 text-white-50">OpenPlayer integrates Google IMA SDK so users have full support for all the
-                  types of specifications for Ads in the current market. Just provide a valid URL and let OpenPlayer to take
+                <p class="mb-0 text-white-50">OpenPlayer integrates Google IMA SDK so users have full support for all
+                  the
+                  types of specifications for Ads in the current market. Just provide a valid URL and let OpenPlayer to
+                  take
                   care of the rest!</p>
                 <hr class="d-none d-lg-block mb-0 mr-0">
               </div>
