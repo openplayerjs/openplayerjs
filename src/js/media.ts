@@ -25,10 +25,10 @@ class Media {
     /**
      * Object that instantiates class of current media.
      *
-     * @type (HTML5Media|HlsMedia|DashMedia)
+     * @type (HTML5Media|HlsMedia|DashMedia|any)
      * @memberof Media
      */
-    public media: HTML5Media | HlsMedia | DashMedia;
+    public media: HTML5Media | HlsMedia | DashMedia | any;
 
     /**
      * Collection of media sources available within the video/audio tag.
