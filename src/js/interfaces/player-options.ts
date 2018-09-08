@@ -16,4 +16,8 @@ export default interface PlayerOptions {
      * @type object
      */
     hls: object;
+    /**
+     * @type object
+     */
+    [key: string]: object;
 }

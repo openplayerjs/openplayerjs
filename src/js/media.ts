@@ -1,3 +1,4 @@
+import CustomMedia from './interfaces/custom-media';
 import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import DashMedia from './media/dash';
@@ -27,7 +28,7 @@ class Media {
      * @type (HTML5Media|HlsMedia|DashMedia)
      * @memberof Media
      */
-    public media: HTML5Media|HlsMedia|DashMedia;
+    public media: HTML5Media | HlsMedia | DashMedia;
 
     /**
      * Collection of media sources available within the video/audio tag.
@@ -67,18 +68,33 @@ class Media {
     private autoplay: boolean;
 
     /**
+     * Collection of additional (non-native) media
+     *
+     * @type CustomMedia
+     * @memberof Player
+     */
+    private customMedia: CustomMedia = {
+        media: {},
+        optionsKey: {},
+        rules: [],
+    };
+
+    /**
      * Create an instance of Media.
      *
      * @param {HTMLMediaElement} element
      * @param {object} options
+     * @param {boolean} autoplay
+     * @param {CustomMedia} customMedia
      * @returns {Media}
      * @memberof Media
      */
-    constructor(element: HTMLMediaElement, options?: PlayerOptions, autoplay: boolean = false) {
+    constructor(element: HTMLMediaElement, options?: PlayerOptions, autoplay: boolean = false, customMedia?: CustomMedia) {
         this.element = element;
         this.options = options;
         this.mediaFiles = this._getMediaFiles();
         this.promisePlay = null;
+        this.customMedia = customMedia;
         this.autoplay = autoplay;
         return this;
     }
@@ -397,11 +413,28 @@ class Media {
      * Instantiate media object according to current media type.
      *
      * @param {Source} media
-     * @returns {(HlsMedia|DashMedia|HTML5Media)}
+     * @returns {(HlsMedia|DashMedia|HTML5Media|any)}
      * @memberof Media
      */
-    private _invoke(media: Source): HlsMedia|DashMedia|HTML5Media {
-        if (source.isHlsSource(media.src)) {
+    private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
+        if (Object.keys(this.customMedia.media).length) {
+            this.customMedia.rules.forEach((rule: any) => {
+                const type = rule(media.src);
+                if (type) {
+                    const customMedia = (this.customMedia.media[type] as any);
+                    const customOptions = this.options[this.customMedia.optionsKey[type]] || undefined;
+
+                    // Setup player items in object to mimic native sources classes
+                    customMedia.autoplay = this.autoplay;
+                    customMedia.element = this.element;
+                    customMedia.media = media;
+                    customMedia.options = customOptions;
+                    return customMedia;
+                } else {
+                    return new HTML5Media(this.element, media);
+                }
+            });
+        } else if (source.isHlsSource(media.src)) {
             const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
             return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
         } else if (source.isDashSource(media.src)) {
