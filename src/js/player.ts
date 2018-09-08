@@ -6,6 +6,7 @@ import 'element-remove';
 
 import Controls from './controls';
 import Track from './interfaces/captions/track';
+import CustomMedia from './interfaces/custom-media';
 import EventsList from './interfaces/events-list';
 import PlayerInstanceList from './interfaces/instance';
 import PlayerOptions from './interfaces/player-options';
@@ -34,6 +35,18 @@ class Player {
     public static instances: PlayerInstanceList = {};
 
     /**
+     * Collection of additional (non-native) media
+     *
+     * @type CustomMedia
+     * @memberof Player
+     */
+    public static customMedia: CustomMedia = {
+        media: {},
+        optionsKey: {},
+        rules: [],
+    };
+
+    /**
      * Convert all the video/audio tags with `om-player` class in a OpenMedia player instance.
      *
      * @memberof Player
@@ -47,6 +60,21 @@ class Player {
                 !!target.getAttribute('data-om-fill'), JSON.parse(target.getAttribute('data-om-options')));
             player.init();
         }
+    }
+
+    /**
+     * Add new media types, such as iframe API players (YouTube, Vimeo, Dailymotion, etc.)
+     *
+     * @param {string} name  The name of the media, which will be used to determine options when configuring player
+     * @param {string} mimeType  The pseudo MIME type associated with media (generally, will be `video/x-[name]`)
+     * @param {(url: string) => string} valid  A callback to determine if a match was found between the MIME type and media source
+     * @param {object} media  The object that will contain all the native methods/setters/getters to play media
+     * @memberof Player
+     */
+    public static addMedia(name: string, mimeType: string, valid: (url: string) => string, media: any) {
+        Player.customMedia.media[mimeType] = media;
+        Player.customMedia.optionsKey[mimeType] = name;
+        Player.customMedia.rules.push(valid);
     }
 
     /**
@@ -522,7 +550,7 @@ class Player {
      */
     private _prepareMedia(): void {
         try {
-            this.media = new Media(this.element, this.options, this.autoplay);
+            this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
             this.media.load();
 
             if (this.adsUrl) {
