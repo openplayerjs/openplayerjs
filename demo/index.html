@@ -36,14 +36,14 @@
 <body>
     <div class="players video-player">
         <h1>Video Sample</h1>
-        <video class="om-player om-player__media" controls playsinline data-om-options='{"hls": {"startLevel": -1} }'
+        <video class="om-player__media" id="video" controls playsinline
             data-om-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator=">
             <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
             <track label="English" kind="subtitles" srclang="en" src="http://www.mediaelementjs.com/dist/mediaelement.vtt" default>
         </video>
         <div>
             <label>Change source <select name="sources">
-                <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">MP4</option>
+                <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" selected>MP4</option>
                 <option value="http://ep-lin-upload.s3.amazonaws.com/vupl_lin/F64/CDF/F64CDF3B0348471E95C244DE2DDDD3F3">MP4 (no ext.)</option>
                 <option value="https://upload.wikimedia.org/wikipedia/commons/2/22/Volcano_Lava_Sample.webm">WebM</option>
                 <option value="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8">HLS</option>
@@ -58,12 +58,12 @@
     <div class="players audio-player">
         <h1>Audio Sample</h1>
         <div id="stream-info" class="hidden"></div>
-        <audio class="om-player om-player__media" controls data-om-options='{"hls": {"startLevel": -1} }'>
+        <audio class="om-player__media" id="audio" controls>
             <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
         </audio>
         <div>
             <label>Change source <select name="sources">
-                <option value="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3">MP3</option>
+                <option value="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" selected>MP3</option>
                 <option value="http://db3.indexcom.com/bucket/ram/00/05/64k/05.m3u8">HLS</option>
             </select>
             </label>
@@ -77,6 +77,17 @@
         var sourcesSelector = document.querySelectorAll('select[name=sources]');
         var destroyBtn = document.querySelectorAll('button.destroy-player');
         var captionBtn = document.querySelectorAll('button.load-caption');
+        var players = document.querySelectorAll('.om-player__media');
+        var instances = [];
+
+         for (var i = 0, total = players.length; i < total; i++) {
+            instances[i] = new OpenPlayer(players[i].id, players[i].getAttribute('data-om-ads'), false, {
+                hls: {
+                    startLevel: -1
+                }
+            });
+            instances[i].init();
+        }
         
         function loadMedia() {
             var id = this.closest('.players').querySelector('.om-player').id;
@@ -126,10 +137,7 @@
             captionBtn[i].addEventListener('click', loadCaption);
         }
 
-        var id = document.querySelector('.om-player__audio').id;
-        var audioPlayer = OpenPlayer.instances[id];
-
-        audioPlayer.getElement().addEventListener('hlsFragParsingMetadata', function (event) {
+        instances[1].getElement().addEventListener('hlsFragParsingMetadata', function (event) {
             var encodedTag = event.detail.samples[0].data;
             var parsedTag = [];
 
@@ -138,7 +146,7 @@
             });
 
             var tagAsString = parsedTag.toString().replace(/,/g, '');
-            extractMeta(tagAsString, audioPlayer.getElement());
+            extractMeta(tagAsString, instances[1].getElement());
         });
 
         function extractMeta (data, audio) {

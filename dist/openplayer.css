@@ -742,9 +742,6 @@ video:-webkit-media-text-track-display {
 .om-ads--active #om-ads {
     z-index: 1;
 }
-.om-player[data-fullscreen='true'] #om-ads {
-    z-index: -1;
-}
 .om-player[data-fullscreen='true'].om-ads--active #om-ads {
     z-index: 2147483645;
 }
