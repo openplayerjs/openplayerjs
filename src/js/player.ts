@@ -607,6 +607,9 @@ class Player {
         this.element.parentElement.insertBefore(this.playBtn, this.element);
 
         this.playBtn.addEventListener('click', () => {
+            if (this.ads) {
+                this.ads.playRequested = true;
+            }
             this.activeElement().play();
         });
     }

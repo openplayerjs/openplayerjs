@@ -1354,6 +1354,10 @@ var Player = function () {
       this.element.parentElement.insertBefore(this.loader, this.element);
       this.element.parentElement.insertBefore(this.playBtn, this.element);
       this.playBtn.addEventListener('click', function () {
+        if (_this2.ads) {
+          _this2.ads.playRequested = true;
+        }
+
         _this2.activeElement().play();
       });
     }
@@ -6030,10 +6034,12 @@ var Ads = function () {
     this.autoplayAllowed = false;
     this.autoplayRequiresMuted = false;
     this.autoStart = false;
+    this.playTriggered = false;
     this.adsUrl = adsUrl;
     this.media = media;
     this.element = media.element;
     this.autoStart = autoStart || false;
+    this.playTriggered = false;
     var originalVolume = this.element.volume;
     this.adsVolume = constants_1.IS_IOS ? 0 : originalVolume;
     this.adsMuted = constants_1.IS_IOS ? true : this.adsMuted;
@@ -6282,8 +6288,10 @@ var Ads = function () {
         manager.addEventListener(event, _this5._assign.bind(_this5));
       });
 
-      if (this.autoStart === true) {
+      if (this.autoStart === true || this.playTriggered === true) {
         this._playAds();
+
+        this.playTriggered = false;
       } else {
         this.adDisplayContainer.initialize();
         this.adsStarted = true;
@@ -6391,8 +6399,15 @@ var Ads = function () {
         this.adsActive = true;
         this.adsStarted = true;
       } catch (adError) {
+        console.error(adError);
+
         this._resumeMedia();
       }
+    }
+  }, {
+    key: "playRequested",
+    set: function set(value) {
+      this.playTriggered = value;
     }
   }, {
     key: "volume",
