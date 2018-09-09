@@ -196,6 +196,16 @@ class Ads {
     private autoStart: boolean = false;
 
     /**
+     * Flag to indicate if player requested play.
+     *
+     * This will help if the play was triggered before Ads were ready.
+     * @private
+     * @type boolean
+     * @memberof Ads
+     */
+    private playTriggered: boolean = false;
+
+    /**
      * Create an instance of Ads.
      *
      * @param {Media} media
@@ -208,6 +218,8 @@ class Ads {
         this.media = media;
         this.element = media.element;
         this.autoStart = autoStart || false;
+
+        this.playTriggered = false;
 
         const originalVolume = this.element.volume;
         this.adsVolume = IS_IOS ? 0 : originalVolume;
@@ -385,6 +397,15 @@ class Ads {
     }
 
     /**
+     * Update the `playTriggered` flag
+     *
+     * @memberof Ads
+     */
+    set playRequested(value: boolean) {
+        this.playTriggered = value;
+    }
+
+    /**
      * Set the current Ad's volume level.
      *
      * @memberof Ads
@@ -493,6 +514,7 @@ class Ads {
      */
     private _assign(event: any): void {
         const ad = event.getAd();
+
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 if (!ad.isLinear()) {
@@ -623,8 +645,9 @@ class Ads {
             manager.addEventListener(event, this._assign.bind(this));
         });
 
-        if (this.autoStart === true) {
+        if (this.autoStart === true || this.playTriggered === true) {
             this._playAds();
+            this.playTriggered = false;
         } else {
             this.adDisplayContainer.initialize();
             this.adsStarted = true;
@@ -774,6 +797,7 @@ class Ads {
             this.adsActive = true;
             this.adsStarted = true;
         } catch (adError) {
+            console.error(adError);
             this._resumeMedia();
         }
     }
