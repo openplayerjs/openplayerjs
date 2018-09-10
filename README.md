@@ -165,14 +165,23 @@ var event = new CustomEvent('ended');
 player.getElement().dispatchEvent(event);
 ```
 
-All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayer, and it incorporates some custom ones:
+All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayer, and it incorporates some custom ones, mostly related to Ads:
 
 Event | Description
 --- | ---
 `controlshidden` | Event executed when controls timer stops and hides control bar (video only).
 `controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new caption).
 `captionschanged` | Event triggered when user changes the current caption by selecting a new one from the `Settings` menu.
-`adsended` | Event executed when an Ad ends playing (currently used to change the Replay icon to Pause when playing a postroll Ad).
+`adsloaded` | Event when Ads have been loaded successfully and can be played.
+`adsstart` | Event when Ads start being played.
+`adsfirstquartile` | Event triggered when Ad reached the first quarter of its length.
+`adsmidpoint` | Event triggered when Ad reached half of its length.
+`adsthirdquartile` | Event triggered when Ad reached the third quarter of its length.
+`adscomplete` | Event triggered when Ad reached the end of its length.
+`adsskipped` | Event triggered when user skips the Ad.
+`adsvolumeChange` | Event triggered when user increases/decreases the volume of Ad.
+`adsallAdsCompleted` | Event triggered when all Ads have been played.
+`adsmediaended` | Event executed when an Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad).
 
 ## Contributions
 

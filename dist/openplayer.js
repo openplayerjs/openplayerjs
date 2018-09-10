@@ -4377,7 +4377,7 @@ var Play = function () {
         _this.button.setAttribute('aria-label', 'Play');
       };
 
-      this.events.media['adsended'] = function () {
+      this.events.media['adsmediaended'] = function () {
         _this.button.classList.remove('om-controls__playpause--replay');
 
         _this.button.classList.add('om-controls__playpause--pause');
@@ -6206,7 +6206,7 @@ var Ads = function () {
 
             if (this.media.ended) {
               this.adsEnded = false;
-              var endEvent = events_1.addEvent('adsended');
+              var endEvent = events_1.addEvent('adsmediaended');
               this.element.dispatchEvent(endEvent);
             }
 
@@ -6250,6 +6250,9 @@ var Ads = function () {
 
           break;
       }
+
+      var e = events_1.addEvent("ads".concat(event.type));
+      this.element.dispatchEvent(e);
     }
   }, {
     key: "_error",
