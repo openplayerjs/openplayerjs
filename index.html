@@ -39,17 +39,39 @@
 
     html, body, .masthead h1 {
       font-family: 'Arrival', Times, serif;
+      overflow-x: hidden;
     }
-
-    .masthead h1 {
-      font-size: 1.9rem;
+    
+    #logo {
+      display: none;
+      overflow: auto;
+    }
+    #logo:after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+    #logo > img {
+      margin-left: -120px;
+    }
+    #logo-min {
+      display: block;
     }
 
     iframe {
       border: none;
       min-height: 360px;
     }
+    .logo {
+      display: inline-block;
+      float: left;
+    }
 
+    .logo + h1 {
+      float: right;
+      margin-top: 110px;
+      margin-left: -135px;
+    }
     .text-white-50 {
       color: #fff;
     }
@@ -60,7 +82,10 @@
 
     .masthead {
       background: #161616;
-      padding: 15rem 0 5rem;
+      padding: 10rem 0 5rem;
+    }
+    .masthead h1 {
+      font-size: 1.9rem;
     }
 
     .about-section {
@@ -132,7 +157,13 @@
         color: #e80c19;
       }
       .masthead h1 {
-        font-size: 4.5rem;
+        font-size: 2.5rem;
+      }
+      #logo {
+        display: block;
+      }
+      #logo-min {
+        display: none;
       }
     }
   </style>
@@ -167,15 +198,23 @@
   <header class="masthead">
     <div class="container d-flex h-100 align-items-center">
       <div class="mx-auto text-center">
-        <h1 class="mx-auto my-0 text-uppercase">OpenPlayer</h1>
-        <h2 class="text-white-50 mx-auto mt-2 mb-5">The lightweight player for the Web.</h2>
-        <p><a id="download" class="btn btn-primary" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip"
-            data-size="medium" aria-label="Download openplayerjs/openplayerjs on GitHub">Download</a></p>
-        <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
-          data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
-        <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large" aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a>
+        <div class="mx-auto text-center" id="logo-min">
+          <img src="img/openplayer.png" class="img-fluid" width="450" alt="OpenPlayer">
+        </div>
+        <div class="mx-auto text-center" id="logo">
+          <img src="img/openplayer-clean.png" class="logo" width="450" alt="OpenPlayer">
+          <h1 class="text-uppercase">OpenPlayer</h1>
+        </div>
+        <div class="mx-auto text-center">
+          <h2 class="text-white-50 mx-auto mt-2 mb-5">The lightweight player for the Web.</h2>
+          <p><a id="download" class="btn btn-primary" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip"
+              data-size="medium" aria-label="Download openplayerjs/openplayerjs on GitHub">Download</a></p>
+          <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
+            data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
+          <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
+            aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a>
+        </div>
       </div>
-    </div>
   </header>
 
   <section id="about" class="about-section text-center">
