@@ -539,7 +539,7 @@ class Ads {
 
                     if (this.media.ended) {
                         this.adsEnded = false;
-                        const endEvent = addEvent('adsended');
+                        const endEvent = addEvent('adsmediaended');
                         this.element.dispatchEvent(endEvent);
                     }
 
@@ -575,6 +575,11 @@ class Ads {
                 }
                 break;
         }
+
+        // Assign events prefixed with `ads` to main element so user
+        // can listen to these events
+        const e = addEvent(`ads${event.type}`);
+        this.element.dispatchEvent(e);
     }
 
     /**
