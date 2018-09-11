@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href="https://cdn.rawgit.com/openplayerjs/openplayerjs/548dc96a/dist/openplayer.min.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openplayerjs/openplayerjs/82dd0c1/dist/openplayer.min.css">
     <style>
         body {
             background-color: #000;
@@ -46,7 +46,7 @@
 
 <body>
     <div id="media"></div>
-    <script src="https://cdn.rawgit.com/openplayerjs/openplayerjs/548dc96a/dist/openplayer.min.js"></script>
+    <script src="https://cdn.rawgit.com/openplayerjs/openplayerjs/82dd0c1/dist/openplayer.min.js"></script>
     <script>
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -60,7 +60,7 @@
         var media = document.createElement(type);
         media.id = 'media1';
 
-        media.src = decodeURIComponent(getUrlParameter('file')) || 'http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4';
+        media.src = decodeURIComponent(getUrlParameter('file')) || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
 
         media.autoplay = !!getUrlParameter('autoplay') || false;
         media.controls = true;
