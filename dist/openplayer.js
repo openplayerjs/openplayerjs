@@ -1316,7 +1316,7 @@ var Player = function () {
         this.media.load();
 
         if (this.adsUrl) {
-          this.ads = new ads_1.default(this.media, this.adsUrl, this.autoplay);
+          this.ads = new ads_1.default(this.media, this.adsUrl, this.autoplay, this.options.ads);
         }
       } catch (e) {
         console.error(e);
@@ -6051,7 +6051,7 @@ var general_1 = __webpack_require__(4);
 var media_1 = __webpack_require__(24);
 
 var Ads = function () {
-  function Ads(media, adsUrl, autoStart) {
+  function Ads(media, adsUrl, autoStart, options) {
     var _this = this;
 
     _classCallCheck(this, Ads);
@@ -6073,6 +6073,14 @@ var Ads = function () {
     this.media = media;
     this.element = media.element;
     this.autoStart = autoStart || false;
+    this.adsOptions = options;
+
+    if (!this.adsOptions) {
+      this.adsOptions = {
+        url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js'
+      };
+    }
+
     this.playTriggered = false;
     var originalVolume = this.element.volume;
     this.adsVolume = constants_1.IS_IOS ? 0 : originalVolume;
@@ -6112,14 +6120,14 @@ var Ads = function () {
           target.insertBefore(volumeEl, target.firstChild);
         }
 
-        _this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') : new Promise(function (resolve) {
+        _this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(_this.adsOptions.url) : new Promise(function (resolve) {
           resolve();
         });
 
         _this.promise.then(_this.load.bind(_this));
       });
     } else {
-      this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') : new Promise(function (resolve) {
+      this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(this.adsOptions.url) : new Promise(function (resolve) {
         resolve();
       });
       this.promise.then(this.load.bind(this));

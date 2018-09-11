@@ -554,7 +554,7 @@ class Player {
             this.media.load();
 
             if (this.adsUrl) {
-                this.ads = new Ads(this.media, this.adsUrl, this.autoplay);
+                this.ads = new Ads(this.media, this.adsUrl, this.autoplay, this.options.ads);
             }
         } catch (e) {
             console.error(e);
