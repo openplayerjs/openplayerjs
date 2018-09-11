@@ -204,8 +204,9 @@ class HlsMedia extends Native {
             data = data[1];
 
             // borrowed from https://video-dev.github.io/hls.js/demo
-            if (data.fatal) {
-                switch (data.type) {
+            const { type, fatal, ...details } = data;
+            if (fatal) {
+                switch (type) {
                     case 'mediaError':
                         const now = new Date().getTime();
                         if (!this.recoverDecodingErrorDate || (now - this.recoverDecodingErrorDate) > 3000) {
@@ -219,16 +220,25 @@ class HlsMedia extends Native {
                         } else {
                             const msg = 'Cannot recover, last media error recovery failed';
                             console.error(msg);
+                            const mediaEvent = addEvent(type, details);
+                            this.element.dispatchEvent(mediaEvent);
                         }
                         break;
                     case 'networkError':
                         const message = 'Network error';
                         console.error(message);
+                        const networkEvent = addEvent(type, details);
+                        this.element.dispatchEvent(networkEvent);
                         break;
                     default:
                         this.player.destroy();
+                        const fatalEvent = addEvent(type, details);
+                        this.element.dispatchEvent(fatalEvent);
                         break;
                 }
+            } else {
+                const errorEvent = addEvent(type, details);
+                this.element.dispatchEvent(errorEvent);
             }
         } else {
             const e = addEvent(event, data[1]);

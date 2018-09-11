@@ -183,6 +183,8 @@ Event | Description
 `adsallAdsCompleted` | Event triggered when all Ads have been played.
 `adsmediaended` | Event executed when an Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad).
 
+In addition to the list above, [HLS errors](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are being supported by OpenPlayer, including all their details. These errors are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
+
 ## Contributions
 
 Make sure you check [Conventional Commits Standards](https://conventionalcommits.org/) for commit guidelines.
