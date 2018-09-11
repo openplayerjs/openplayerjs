@@ -656,7 +656,14 @@ exports.IS_FIREFOX = /firefox/i.test(exports.UA);
 exports.IS_SAFARI = /safari/i.test(exports.UA) && !exports.IS_CHROME;
 exports.IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA);
 exports.HAS_MSE = 'MediaSource' in window;
-exports.SUPPORTS_NATIVE_HLS = exports.IS_SAFARI || exports.IS_ANDROID && (exports.IS_CHROME || exports.IS_STOCK_ANDROID) || exports.IS_IE && /edge/i.test(exports.UA);
+
+exports.SUPPORTS_HLS = function () {
+  var mediaSource = window.MediaSource || window.WebKitMediaSource;
+  var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
+  var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
+  var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
+  return !!isTypeSupported && !!sourceBufferValidAPI;
+};
 
 /***/ }),
 /* 24 */
@@ -5758,7 +5765,7 @@ var HlsMedia = function (_native_1$default) {
   _createClass(HlsMedia, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
-      return !constants_1.SUPPORTS_NATIVE_HLS && constants_1.HAS_MSE && mimeType === 'application/x-mpegURL';
+      return constants_1.SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
     }
   }, {
     key: "load",

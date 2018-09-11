@@ -112,10 +112,22 @@ export const IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA);
 export const HAS_MSE = ('MediaSource' in (window as any));
 
 /**
- * Check if current browser supports natively HLS streaming.
+ * Check if current browser supports HLS streaming.
  *
- * @see https://developer.jwplayer.com/articles/html5-report/adaptive-streaming/hls.html
+ * @see https://github.com/video-dev/hls.js/blob/master/src/is-supported.js
  * @type boolean
  * @default
  */
-export const SUPPORTS_NATIVE_HLS = (IS_SAFARI || (IS_ANDROID && (IS_CHROME || IS_STOCK_ANDROID)) || (IS_IE && /edge/i.test(UA)));
+export const SUPPORTS_HLS = () => {
+    const mediaSource = (window as any).MediaSource || (window as any).WebKitMediaSource;
+    const sourceBuffer = (window as any).SourceBuffer || (window as any).WebKitSourceBuffer;
+    const isTypeSupported = mediaSource &&
+        typeof mediaSource.isTypeSupported === 'function' &&
+        mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
+
+    const sourceBufferValidAPI = !sourceBuffer ||
+        (sourceBuffer.prototype &&
+        typeof sourceBuffer.prototype.appendBuffer === 'function' &&
+        typeof sourceBuffer.prototype.remove === 'function');
+    return !!isTypeSupported && !!sourceBufferValidAPI;
+};
