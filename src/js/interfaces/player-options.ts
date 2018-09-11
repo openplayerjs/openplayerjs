@@ -1,3 +1,4 @@
+import AdsOptions from './ads-options';
 import DashOptions from './dash-options';
 
 /**
@@ -11,11 +12,13 @@ export default interface PlayerOptions {
     /**
      * @type DashOptions
      */
-    dash: DashOptions;
+    dash?: DashOptions;
     /**
      * @type object
      */
-    hls: object;
+    hls?: object;
+
+    ads?: AdsOptions;
     /**
      * @type object
      */

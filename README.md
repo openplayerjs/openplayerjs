@@ -107,6 +107,7 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [VAST/VPAID URL], [`true|false` for fullscreen effect], {
+    ads: {}, // For now, only `url` to IMA SDK in the event you need to set up a custom URL for it
     hls: {}, // full HLS options are in https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
     dash: {}, // For now, only `robustnessLevel`; more information in http://cdn.dashjs.org/latest/jsdoc/index.html
 });

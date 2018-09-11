@@ -1,3 +1,4 @@
+import AdsOptions from '../interfaces/ads-options';
 import Media from '../media';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -206,6 +207,15 @@ class Ads {
     private playTriggered: boolean = false;
 
     /**
+     * Configuration elements passed to Ads, including IMA SDK location
+     *
+     * @private
+     * @type AdsOptions
+     * @memberof Ads
+     */
+    private adsOptions: AdsOptions;
+
+    /**
      * Create an instance of Ads.
      *
      * @param {Media} media
@@ -213,11 +223,17 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, adsUrl: string, autoStart?: boolean) {
+    constructor(media: Media, adsUrl: string, autoStart?: boolean, options?: AdsOptions) {
         this.adsUrl = adsUrl;
         this.media = media;
         this.element = media.element;
         this.autoStart = autoStart || false;
+        this.adsOptions = options;
+        if (!this.adsOptions) {
+            this.adsOptions = {
+                url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+            };
+        }
 
         this.playTriggered = false;
 
@@ -265,7 +281,7 @@ class Ads {
                 }
 
                 this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-                    loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
+                    loadScript(this.adsOptions.url) :
                     new Promise(resolve => {
                         resolve();
                     });
@@ -274,7 +290,7 @@ class Ads {
             });
         } else {
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-                loadScript('https://imasdk.googleapis.com/js/sdkloader/ima3.js') :
+                loadScript(this.adsOptions.url) :
                 new Promise(resolve => {
                     resolve();
                 });
