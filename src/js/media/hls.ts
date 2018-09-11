@@ -1,6 +1,6 @@
 import EventsList from '../interfaces/events-list';
 import Source from '../interfaces/source';
-import { HAS_MSE, SUPPORTS_NATIVE_HLS } from '../utils/constants';
+import { SUPPORTS_HLS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
 import { isHlsSource } from '../utils/media';
@@ -99,7 +99,7 @@ class HlsMedia extends Native {
      * @memberof HlsMedia
      */
     public canPlayType(mimeType: string) {
-        return !SUPPORTS_NATIVE_HLS && HAS_MSE && mimeType === 'application/x-mpegURL';
+        return SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
     }
 
     /**
