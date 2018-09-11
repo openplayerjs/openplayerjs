@@ -5702,6 +5702,19 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+var __rest = this && this.__rest || function (s, e) {
+  var t = {};
+
+  for (var p in s) {
+    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  }
+
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -5819,8 +5832,13 @@ var HlsMedia = function (_native_1$default) {
         console.warn(data);
         data = data[1];
 
-        if (data.fatal) {
-          switch (data.type) {
+        var _data = data,
+            type = _data.type,
+            fatal = _data.fatal,
+            details = __rest(data, ["type", "fatal"]);
+
+        if (fatal) {
+          switch (type) {
             case 'mediaError':
               var now = new Date().getTime();
 
@@ -5835,6 +5853,8 @@ var HlsMedia = function (_native_1$default) {
               } else {
                 var msg = 'Cannot recover, last media error recovery failed';
                 console.error(msg);
+                var mediaEvent = events_1.addEvent(type, details);
+                this.element.dispatchEvent(mediaEvent);
               }
 
               break;
@@ -5842,12 +5862,19 @@ var HlsMedia = function (_native_1$default) {
             case 'networkError':
               var message = 'Network error';
               console.error(message);
+              var networkEvent = events_1.addEvent(type, details);
+              this.element.dispatchEvent(networkEvent);
               break;
 
             default:
               this.player.destroy();
+              var fatalEvent = events_1.addEvent(type, details);
+              this.element.dispatchEvent(fatalEvent);
               break;
           }
+        } else {
+          var errorEvent = events_1.addEvent(type, details);
+          this.element.dispatchEvent(errorEvent);
         }
       } else {
         var e = events_1.addEvent(event, data[1]);
