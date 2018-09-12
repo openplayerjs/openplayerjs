@@ -1108,7 +1108,7 @@ var general_1 = __webpack_require__(4);
 var media_2 = __webpack_require__(24);
 
 var Player = function () {
-  function Player(element, adsUrl, fill, options) {
+  function Player(element, ads, fill, options) {
     _classCallCheck(this, Player);
 
     this.events = {};
@@ -1116,7 +1116,7 @@ var Player = function () {
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
     if (this.element) {
-      this.adsUrl = adsUrl;
+      this.ads = ads;
       this.fill = fill;
       this.autoplay = this.element.autoplay || false;
       this.volume = this.element.volume;
@@ -1158,8 +1158,8 @@ var Player = function () {
   }, {
     key: "play",
     value: function play() {
-      if (this.ads) {
-        this.ads.play();
+      if (this.adsInstance) {
+        this.adsInstance.play();
       } else {
         this.media.play();
       }
@@ -1167,8 +1167,8 @@ var Player = function () {
   }, {
     key: "pause",
     value: function pause() {
-      if (this.ads) {
-        this.ads.pause();
+      if (this.adsInstance) {
+        this.adsInstance.pause();
       } else {
         this.media.pause();
       }
@@ -1178,9 +1178,9 @@ var Player = function () {
     value: function destroy() {
       var _this = this;
 
-      if (this.ads) {
-        this.ads.pause();
-        this.ads.destroy();
+      if (this.adsInstance) {
+        this.adsInstance.pause();
+        this.adsInstance.destroy();
       }
 
       var el = this.element;
@@ -1222,7 +1222,7 @@ var Player = function () {
   }, {
     key: "activeElement",
     value: function activeElement() {
-      return this.ads && this.ads.adsStarted ? this.ads : this.media;
+      return this.adsInstance && this.adsInstance.adsStarted ? this.adsInstance : this.media;
     }
   }, {
     key: "isMedia",
@@ -1242,7 +1242,7 @@ var Player = function () {
   }, {
     key: "getAd",
     value: function getAd() {
-      return this.ads;
+      return this.adsInstance;
     }
   }, {
     key: "addCaptions",
@@ -1315,8 +1315,8 @@ var Player = function () {
         this.media = new media_1.default(this.element, this.options, this.autoplay, Player.customMedia);
         this.media.load();
 
-        if (this.adsUrl) {
-          this.ads = new ads_1.default(this.media, this.adsUrl, this.autoplay, this.options.ads);
+        if (this.ads) {
+          this.adsInstance = new ads_1.default(this.media, this.ads, this.autoplay, this.options.ads);
         }
       } catch (e) {
         console.error(e);
@@ -1362,8 +1362,8 @@ var Player = function () {
       this.element.parentElement.insertBefore(this.loader, this.element);
       this.element.parentElement.insertBefore(this.playBtn, this.element);
       this.playBtn.addEventListener('click', function () {
-        if (_this2.ads) {
-          _this2.ads.playRequested = true;
+        if (_this2.adsInstance) {
+          _this2.adsInstance.playRequested = true;
         }
 
         _this2.activeElement().play();
@@ -1388,11 +1388,9 @@ var Player = function () {
         };
 
         this.events.waiting = function () {
-          var el = _this3.activeElement();
-
           _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
+          _this3.loader.setAttribute('aria-hidden', 'true');
         };
 
         this.events.seeking = function () {
@@ -1547,7 +1545,7 @@ var Player = function () {
             target.insertBefore(volumeEl, target.firstChild);
           }
 
-          if (!_this4.ads && (_this4.canAutoplay || _this4.canAutoplayMuted)) {
+          if (!_this4.adsInstance && (_this4.canAutoplay || _this4.canAutoplayMuted)) {
             _this4.play();
           }
         });
@@ -6050,7 +6048,7 @@ var general_1 = __webpack_require__(4);
 var media_1 = __webpack_require__(24);
 
 var Ads = function () {
-  function Ads(media, adsUrl, autoStart, options) {
+  function Ads(media, ads, autoStart, options) {
     var _this = this;
 
     _classCallCheck(this, Ads);
@@ -6068,7 +6066,8 @@ var Ads = function () {
     this.autoplayRequiresMuted = false;
     this.autoStart = false;
     this.playTriggered = false;
-    this.adsUrl = adsUrl;
+    this.currentAdsIndex = 0;
+    this.ads = ads;
     this.media = media;
     this.element = media.element;
     this.autoStart = autoStart || false;
@@ -6180,14 +6179,18 @@ var Ads = function () {
     value: function destroy() {
       var _this2 = this;
 
-      this.events.forEach(function (event) {
-        _this2.adsManager.removeEventListener(event, _this2._assign.bind(_this2));
-      });
+      if (this.events) {
+        this.events.forEach(function (event) {
+          _this2.adsManager.removeEventListener(event, _this2._assign.bind(_this2));
+        });
+      }
+
       this.events = [];
       this.adsLoader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
       this.adsLoader.removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
+      var destroy = !Array.isArray(this.ads) || this.currentAdsIndex > this.ads.length;
 
-      if (this.adsManager) {
+      if (this.adsManager && destroy) {
         this.adsManager.destroy();
       }
 
@@ -6300,14 +6303,22 @@ var Ads = function () {
     value: function _error(event) {
       console.error("Ad error: ".concat(event.getError().toString()));
 
-      if (this.adsManager) {
-        this.adsManager.destroy();
-      }
+      if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length) {
+        this.currentAdsIndex++;
+        this.playTriggered = true;
+        this.adsStarted = true;
+        this.destroy();
+        this.load();
+      } else {
+        if (this.adsManager) {
+          this.adsManager.destroy();
+        }
 
-      if (this.autoStart === true || this.adsStarted === true) {
-        this.adsActive = false;
+        if (this.autoStart === true || this.adsStarted === true) {
+          this.adsActive = false;
 
-        this._resumeMedia();
+          this._resumeMedia();
+        }
       }
     }
   }, {
@@ -6403,7 +6414,7 @@ var Ads = function () {
       }
 
       this.adsRequest = new google.ima.AdsRequest();
-      this.adsRequest.adTagUrl = this.adsUrl;
+      this.adsRequest.adTagUrl = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
       var width = this.element.parentElement.offsetWidth;
       var height = this.element.parentElement.offsetWidth;
       this.adsRequest.linearAdSlotWidth = width;
@@ -6434,18 +6445,27 @@ var Ads = function () {
           this.adDisplayContainer.initialize();
         }
 
-        this.adsManager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
-        this.adsManager.start();
-        var e = events_1.addEvent('play');
-        this.element.dispatchEvent(e);
-        var event = events_1.addEvent('playing');
-        this.element.dispatchEvent(event);
+        if (this.adsManager) {
+          this.adsManager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
+          this.adsManager.start();
+          var e = events_1.addEvent('play');
+          this.element.dispatchEvent(e);
+          var event = events_1.addEvent('playing');
+          this.element.dispatchEvent(event);
+        } else {
+          var _e = events_1.addEvent('waiting');
+
+          this.element.dispatchEvent(_e);
+        }
+
         this.adsActive = true;
         this.adsStarted = true;
       } catch (adError) {
         console.error(adError);
 
-        this._resumeMedia();
+        if (this.playRequested) {
+          this._resumeMedia();
+        }
       }
     }
   }, {
