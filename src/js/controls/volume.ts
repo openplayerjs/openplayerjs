@@ -121,6 +121,7 @@ class Volume implements PlayerComponent {
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('max', '1');
         this.slider.setAttribute('step', '0.1');
+        this.slider.setAttribute('aria-label', 'Volume Control');
 
         this.display = document.createElement('progress');
         this.display.className = 'om-controls__volume--display';
@@ -136,7 +137,6 @@ class Volume implements PlayerComponent {
         this.button.type = 'button';
         this.button.className = 'om-controls__mute';
         this.button.tabIndex = 0;
-        this.button.title = 'Mute';
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Mute');

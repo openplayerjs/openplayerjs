@@ -131,6 +131,7 @@ class Progress implements PlayerComponent {
         this.slider.setAttribute('max', '0');
         this.slider.setAttribute('step', '0.1');
         this.slider.value = '0';
+        this.slider.setAttribute('aria-label', 'Time Rail');
 
         this.buffer = document.createElement('progress');
         this.buffer.className = 'om-controls__progress--buffer';

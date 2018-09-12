@@ -147,7 +147,6 @@ class Captions implements PlayerComponent {
         this.button = document.createElement('button');
         this.button.className = 'om-controls__captions om-control__right';
         this.button.tabIndex = 0;
-        this.button.title = 'Toggle Captions';
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Toggle Captions');

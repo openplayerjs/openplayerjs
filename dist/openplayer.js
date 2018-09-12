@@ -1352,6 +1352,7 @@ var Player = function () {
       this.playBtn = document.createElement('button');
       this.playBtn.className = 'om-player__play';
       this.playBtn.tabIndex = 0;
+      this.playBtn.innerHTML = '<span>Play</span>';
       this.playBtn.setAttribute('aria-pressed', 'false');
       this.playBtn.setAttribute('aria-hidden', 'false');
       this.loader = document.createElement('span');
@@ -3780,7 +3781,6 @@ var Captions = function () {
       this.button = document.createElement('button');
       this.button.className = 'om-controls__captions om-control__right';
       this.button.tabIndex = 0;
-      this.button.title = 'Toggle Captions';
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Toggle Captions');
@@ -4130,7 +4130,6 @@ var Fullscreen = function () {
       this.button.type = 'button';
       this.button.className = 'om-controls__fullscreen om-control__right';
       this.button.tabIndex = 0;
-      this.button.title = 'Fullscreen';
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Fullscreen');
@@ -4482,6 +4481,7 @@ var Progress = function () {
       this.slider.setAttribute('max', '0');
       this.slider.setAttribute('step', '0.1');
       this.slider.value = '0';
+      this.slider.setAttribute('aria-label', 'Time Rail');
       this.buffer = document.createElement('progress');
       this.buffer.className = 'om-controls__progress--buffer';
       this.buffer.setAttribute('max', '100');
@@ -4738,7 +4738,6 @@ var Settings = function () {
       this.button = document.createElement('button');
       this.button.className = 'om-controls__settings om-control__right';
       this.button.tabIndex = 0;
-      this.button.title = 'Player Settings';
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Player Settings');
@@ -5116,6 +5115,7 @@ var Volume = function () {
       this.slider.setAttribute('min', '0');
       this.slider.setAttribute('max', '1');
       this.slider.setAttribute('step', '0.1');
+      this.slider.setAttribute('aria-label', 'Volume Control');
       this.display = document.createElement('progress');
       this.display.className = 'om-controls__volume--display';
       this.display.setAttribute('max', '10');
@@ -5127,7 +5127,6 @@ var Volume = function () {
       this.button.type = 'button';
       this.button.className = 'om-controls__mute';
       this.button.tabIndex = 0;
-      this.button.title = 'Mute';
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Mute');

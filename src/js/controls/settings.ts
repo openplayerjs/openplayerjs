@@ -116,7 +116,6 @@ class Settings implements PlayerComponent {
         this.button = document.createElement('button');
         this.button.className = 'om-controls__settings om-control__right';
         this.button.tabIndex = 0;
-        this.button.title = 'Player Settings';
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Player Settings');
