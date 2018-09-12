@@ -38,9 +38,12 @@
       font-style: normal;
     }
 
-    html, body, .masthead h1 {
-      font-family: 'Arrival', Times, serif;
+    html, body {
       overflow-x: hidden;
+    }
+
+    .masthead h1, h2, h3, h4 {
+      font-family: 'Arrival', Times, serif;
     }
     
     #logo {
@@ -58,14 +61,22 @@
     #logo-min {
       display: block;
     }
+    #top-logo {
+      display: none;
+    }
+    #mainNav.navbar-shrink #top-logo {
+      display: block;
+    }
 
     iframe {
       border: none;
       min-height: 360px;
     }
+    a {
+      color: #9a9a9a;
+    }
     .logo {
       display: inline-block;
-      float: left;
     }
 
     .logo + h1 {
@@ -75,6 +86,9 @@
     }
     .text-white-50 {
       color: #fff;
+    }
+    .btn-primary {
+      background-color: #335553;
     }
 
     .nav-tabs {
@@ -87,9 +101,12 @@
     }
     .masthead h1 {
       font-size: 1.9rem;
+      background: -webkit-linear-gradient(rgba(255,255,255,.9),rgba(255,255,255,.4));
+      -webkit-background-clip: text;
     }
 
     .about-section {
+      background: #161616;
       padding-top: 5rem;
     }
 
@@ -102,7 +119,7 @@
     }
 
     .bg-blue {
-      background: #b1c4dd !important;
+      background: #0d51aa !important;
     }
 
     .projects-section {
@@ -113,28 +130,33 @@
       background-color: #444444;
       background-image: -webkit-linear-gradient(bottom, #444444, #999999); /* Chrome 10-25, iOS 5+, Safari 5.1+ */
       background-image:         linear-gradient(to top, #444444, #999999);
+      padding: 5rem 0 2rem;
     }
 
     #download {
-      background: #ec7906
+      background: #C90000;
     }
 
     #mainNav .navbar-toggler {
-      border: 1px solid #e80c19;
-      color: #e80c19;
+      border: 1px solid #ad0914;
+      color: #ad0914;
     }
 
     #autoplay-check,
     #types {
       text-align: left;
     }
+    #autoplay {
+      margin-top: -1.3rem;
+    }
 
     #permalink {
       text-align: left;
+      margin-bottom: 20px;
     }
 
     #permalink a {
-      color: yellow;
+      color: #bee0ff;
       font-size: 0.85em;
       -webkit-hyphens: auto;
       -moz-hyphens: auto;
@@ -147,8 +169,10 @@
     }
 
     @media (min-width: 992px) {
-      .projects-section .featured-text {
-        border-left-color: #6c8d2c;
+      .projects-section .featured-text.text-lg-right {
+        border-left: none;
+        border-right: .5rem solid #64a19d;
+        padding: 0 2rem 0 0;
       }
       #mainNav.navbar-shrink .nav-link.active {
         border-bottom: 0.25rem solid #e80c19;
@@ -174,7 +198,7 @@
 <body id="page-top">
   <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
     <div class="container">
-      <a class="navbar-brand js-scroll-trigger" href="#page-top">Back to Top</a>
+      <img src="img/openplayer.png" id="top-logo" width="100" alt="OpenPlayer - The lightweight player">
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive"
         aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
         Menu
@@ -189,7 +213,7 @@
             <a class="nav-link js-scroll-trigger" href="#features">Features</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#start">Use it Now!</a>
+            <a class="nav-link js-scroll-trigger" href="#start">Try it Now!</a>
           </li>
         </ul>
       </div>
@@ -200,10 +224,10 @@
     <div class="container d-flex h-100 align-items-center">
       <div class="mx-auto text-center">
         <div class="mx-auto text-center" id="logo-min">
-          <img src="img/openplayer.png" class="img-fluid" width="450" alt="OpenPlayer">
+          <img src="img/openplayer.png" class="img-fluid" width="450" alt="OpenPlayer - full presentation">
         </div>
         <div class="mx-auto text-center" id="logo">
-          <img src="img/openplayer-clean.png" class="logo" width="450" alt="OpenPlayer">
+          <img src="img/openplayer-clean.png" class="logo" width="450" alt="OpenPlayer - clean presentation">
           <h1 class="text-uppercase">OpenPlayer</h1>
         </div>
         <div class="mx-auto text-center">
@@ -252,7 +276,6 @@
             for everyone that wants the best.</p>
         </div>
       </div>
-      <!-- <img src="img/ipad.png" class="img-fluid" alt=""> -->
     </div>
   </section>
 
@@ -266,7 +289,7 @@
         </div>
         <div class="col-xl-4 col-lg-5">
           <div class="featured-text text-center text-lg-left">
-            <h4>Easily configured</h4>
+            <h3>Easily configured</h3>
             <p class="text-black-50 mb-0">Either setting up the player through the video/audio tags or via Javascript,
               you
               just need a pair of class names and a small set of configuration options... and you are all set!</p>
@@ -274,43 +297,38 @@
         </div>
       </div>
 
-      <div id="autoplay" class="row justify-content-center no-gutters mb-5 mb-lg-0">
-        <div class="col-lg-6">
-          <img class="img-fluid" src="img/browsers.jpg" alt="Cross-browser/cross-device player">
+      <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+        <div class="col-xl-8 col-lg-7">
+          <div class="img-fluid">
+            <img class="img-fluid" src="img/browsers.jpg" alt="Cross-browser/cross-device player">
+          </div>
         </div>
-        <div class="col-lg-6">
-          <div class="bg-blue text-center h-100 project">
-            <div class="d-flex h-100">
-              <div class="project-text w-100 my-auto text-center text-lg-left">
-                <h4 class="text-white">Smart Autoplay</h4>
-                <p class="mb-0 text-white-50">Giving the constant changes of policies on different browsers, OpenPlayer
-                  integrates
-                  a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's
-                  quirks or workarounds for that.</p>
-                <hr class="d-none d-lg-block mb-0 ml-0">
-              </div>
-            </div>
+        <div class="col-xl-4 col-lg-5 order-lg-first">
+          <div class="featured-text text-center text-lg-right">
+            <h3>Smart Autoplay</h3>
+            <p class="text-black-50 mb-0">Giving the constant changes of policies on different browsers, OpenPlayer
+              integrates
+              a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's
+              quirks or workarounds for that.</p>
           </div>
         </div>
       </div>
 
-      <div class="row justify-content-center no-gutters">
-        <div class="col-lg-6">
-          <img class="img-fluid" src="img/ads.png" alt="Capable of monetizing with Ads">
+      <div class="row align-items-center no-gutters mb-4 mb-lg-5">
+        <div class="col-xl-8 col-lg-7">
+          <div class="img-fluid">
+              <img class="img-fluid" src="img/ads.png" alt="Capable of monetizing with Ads">
+          </div>
         </div>
-        <div class="col-lg-6 order-lg-first">
-          <div class="bg-red text-center h-100 project">
-            <div class="d-flex h-100">
-              <div class="project-text w-100 my-auto text-center text-lg-right">
-                <h4 class="text-white">VAST/VPAID/VMAP support</h4>
-                <p class="mb-0 text-white-50">OpenPlayer integrates Google IMA SDK so users have full support for all
-                  the
-                  types of specifications for Ads in the current market. Just provide a valid Ads URL and let OpenPlayer to
-                  take
-                  care of the rest!</p>
-                <hr class="d-none d-lg-block mb-0 mr-0">
-              </div>
-            </div>
+        <div class="col-xl-4 col-lg-5">
+          <div class="featured-text text-center text-lg-left">
+              <h3>VAST/VPAID/VMAP support</h3>
+              <p class="mb-0 text-black-50 ">OpenPlayer integrates Google IMA SDK so users have full support for all
+                the
+                types of specifications for Ads in the current market. Just provide a valid Ads URL and let
+                OpenPlayer to
+                take
+                care of the rest!</p>
           </div>
         </div>
       </div>
@@ -320,14 +338,12 @@
   <section id="start" class="signup-section">
     <div class="container">
       <div class="row">
-        <div class="col-md-10 col-lg-8 mx-auto text-center">
-          <h2 class="text-white mb-5">Are you ready to use it?</h2>
+        <div class="col-md-10 col-lg-8 mx-auto">
+          <h2 class="text-white mb-5 text-center">Try it Now!</h2>
           <form id="settings" action="#" method="POST">
-            <div class="form-group row">
-              <label for="url" class="text-white col-sm-2 col-form-label">Your media URL</label>
-              <div class="col-sm-10">
-                <input type="url" class="form-control" id="url" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
-              </div>
+            <div class="form-group">
+              <label for="url" class="text-white col-form-label">Your media URL</label>
+              <input type="url" class="form-control" id="url" name="url" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
             </div>
             <fieldset class="form-group text-white">
               <div class="row">
@@ -348,27 +364,24 @@
                 </div>
               </div>
             </fieldset>
-            <div class="form-group row">
-              <label for="ads" class="text-white col-sm-2 col-form-label">Ads URL</label>
-              <div class="col-sm-10">
-                <input type="url" class="form-control" id="ads" placeholder="(Optional)">
+            <div class="form-group">
+              <label for="ads" class="text-white col-form-label">Ads URL</label>
+              <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
+            </div>
+            <div class="form-group">
+              <div class="form-check" id="autoplay-check">
+                <label for="autoplay" class="form-check-label text-white">Autoplay?
+                  <input class="form-check-input" type="checkbox" name="autoplay" id="autoplay" value="1" aria-label="Autoplay media">
+                </label>
               </div>
             </div>
-            <div class="form-group row">
-              <div class="col-sm-2 text-white">Autoplay?</div>
-              <div class="col-sm-10">
-                <div class="form-check" id="autoplay-check">
-                  <input class="form-check-input position-static" type="checkbox" id="autoplay" value="1" aria-label="Autoplay media">
-                </div>
-              </div>
+            <div class="form-group">
+              <p class="text-white-50">Your permalink</p>
+              <div id="permalink"></div>
             </div>
-            <div class="form-group row">
-              <label for="ads" class="text-white col-sm-2 col-form-label">Your permalink</label>
-              <div class="col-sm-10">
-                <div id="permalink"></div>
-              </div>
+            <div class="text-center">
+              <button class="btn btn-primary mb-4" type="submit">Load</button>
             </div>
-            <button class="btn btn-primary mb-4 text-center" type="submit">Load</button>
           </form>
           <div class="embed-responsive embed-responsive-4by3">
             <iframe class="embed-responsive-item" title="Inline OpenPlayer" id="media" allowfullscreen></iframe>
