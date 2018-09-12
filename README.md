@@ -103,10 +103,10 @@ In the example above, the player will:
 
 ### Using Javascript
 
-Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL). So for that case, remove the `om-player` class from the video/audio tag (just leave `om-player__media` to preserve styles), and in Javascript use the following snippet:
+Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the `om-player` class from the video/audio tag (just leave `om-player__media` to preserve styles), and in Javascript use the following snippet:
 
 ```javascript
-var player = new OpenPlayer('[player ID]', [VAST/VPAID URL], [`true|false` for fullscreen effect], {
+var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
     ads: {}, // For now, only `url` to IMA SDK in the event you need to set up a custom URL for it
     hls: {}, // full HLS options are in https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
     dash: {}, // For now, only `robustnessLevel`; more information in http://cdn.dashjs.org/latest/jsdoc/index.html
