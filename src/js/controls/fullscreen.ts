@@ -114,7 +114,6 @@ class Fullscreen implements PlayerComponent {
         this.button.type = 'button';
         this.button.className = 'om-controls__fullscreen om-control__right';
         this.button.tabIndex = 0;
-        this.button.title = 'Fullscreen';
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Fullscreen');

@@ -595,6 +595,7 @@ class Player {
         this.playBtn = document.createElement('button');
         this.playBtn.className = 'om-player__play';
         this.playBtn.tabIndex = 0;
+        this.playBtn.innerHTML = '<span>Play</span>';
         this.playBtn.setAttribute('aria-pressed', 'false');
         this.playBtn.setAttribute('aria-hidden', 'false');
 
