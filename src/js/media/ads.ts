@@ -215,6 +215,13 @@ class Ads {
      */
     private adsOptions: AdsOptions;
 
+    /**
+     * Current Ad; used when passing a list of Ads
+     *
+     * @private
+     * @type number
+     * @memberof Ads
+     */
     private currentAdsIndex: number = 0;
 
     /**
