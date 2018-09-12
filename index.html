@@ -42,7 +42,7 @@
       overflow-x: hidden;
     }
 
-    .masthead h1, h2, h3, h4 {
+    nav, .masthead h1, h2, h3, h4 {
       font-family: 'Arrival', Times, serif;
     }
     
@@ -110,18 +110,6 @@
       padding-top: 5rem;
     }
 
-    .bg-red {
-      background: #e80c19 !important;
-    }
-
-    .bg-red hr {
-      border-color: yellow !important;
-    }
-
-    .bg-blue {
-      background: #0d51aa !important;
-    }
-
     .projects-section {
       padding: 5rem 0;
     }
@@ -133,13 +121,16 @@
       padding: 5rem 0 2rem;
     }
 
-    #download {
+    #download, #load {
       background: #C90000;
     }
 
     #mainNav .navbar-toggler {
-      border: 1px solid #ad0914;
-      color: #ad0914;
+      border: 1px solid #e80c19;
+      color: #e80c19;
+    }
+    .navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
+      color: #e80c19;
     }
 
     #autoplay-check,
@@ -380,7 +371,7 @@
               <div id="permalink"></div>
             </div>
             <div class="text-center">
-              <button class="btn btn-primary mb-4" type="submit">Load</button>
+              <button class="btn btn-primary mb-4" id="load" type="submit">Load</button>
             </div>
           </form>
           <div class="embed-responsive embed-responsive-4by3">
