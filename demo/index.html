@@ -81,7 +81,10 @@
         var instances = [];
 
          for (var i = 0, total = players.length; i < total; i++) {
-            instances[i] = new OpenPlayer(players[i].id, players[i].getAttribute('data-om-ads'), false, {
+            var ads = i === 0 ? [
+                players[i].getAttribute('data-om-ads'),
+            ] : null;
+            instances[i] = new OpenPlayer(players[i].id, ads, false, {
                 hls: {
                     startLevel: -1
                 }

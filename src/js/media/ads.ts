@@ -124,10 +124,10 @@ class Ads {
     /**
      * The VAST/VPAID URL to play Ads.
      *
-     * @type string
+     * @type string|string[]
      * @memberof Ads
      */
-    private adsUrl: string;
+    private ads: string|string[];
 
     /**
      * Promise to start all IMA SDK elements, once the library has been loaded.
@@ -215,16 +215,18 @@ class Ads {
      */
     private adsOptions: AdsOptions;
 
+    private currentAdsIndex: number = 0;
+
     /**
      * Create an instance of Ads.
      *
      * @param {Media} media
-     * @param {string} adsUrl
+     * @param {string} ads
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, adsUrl: string, autoStart?: boolean, options?: AdsOptions) {
-        this.adsUrl = adsUrl;
+    constructor(media: Media, ads: string|string[], autoStart?: boolean, options?: AdsOptions) {
+        this.ads = ads;
         this.media = media;
         this.element = media.element;
         this.autoStart = autoStart || false;
@@ -360,9 +362,11 @@ class Ads {
      * @memberof Ads
      */
     public destroy(): void {
-        this.events.forEach(event => {
-            this.adsManager.removeEventListener(event, this._assign.bind(this));
-        });
+        if (this.events) {
+            this.events.forEach(event => {
+                this.adsManager.removeEventListener(event, this._assign.bind(this));
+            });
+        }
 
         this.events = [];
 
@@ -375,7 +379,8 @@ class Ads {
             this._loaded.bind(this),
         );
 
-        if (this.adsManager) {
+        const destroy = !Array.isArray(this.ads) || this.currentAdsIndex > this.ads.length;
+        if (this.adsManager && destroy) {
             this.adsManager.destroy();
         }
 
@@ -601,17 +606,28 @@ class Ads {
     /**
      * Dispatch an IMA SDK error that will destroy the Ads instance and resume original media.
      *
+     * If more than one URL for Ads was found, attempt to play it.
+     *
+     * @see https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdError.ErrorCode
      * @param {any} event
      * @memberof Ads
      */
     private _error(event: any): void {
         console.error(`Ad error: ${event.getError().toString()}`);
-        if (this.adsManager) {
-            this.adsManager.destroy();
-        }
-        if (this.autoStart === true || this.adsStarted === true) {
-            this.adsActive = false;
-            this._resumeMedia();
+        if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length) {
+            this.currentAdsIndex++;
+            this.playTriggered = true;
+            this.adsStarted = true;
+            this.destroy();
+            this.load();
+        } else {
+            if (this.adsManager) {
+                this.adsManager.destroy();
+            }
+            if (this.autoStart === true || this.adsStarted === true) {
+                this.adsActive = false;
+                this._resumeMedia();
+            }
         }
     }
 
@@ -750,7 +766,7 @@ class Ads {
             this.adsLoader.contentComplete();
         }
         this.adsRequest = new google.ima.AdsRequest();
-        this.adsRequest.adTagUrl = this.adsUrl;
+        this.adsRequest.adTagUrl = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
 
         const width = this.element.parentElement.offsetWidth;
         const height = this.element.parentElement.offsetWidth;
@@ -802,24 +818,32 @@ class Ads {
                 this.adsDone = true;
                 this.adDisplayContainer.initialize();
             }
-            // Initialize the ads manager. Ad rules playlist will start at this time.
-            this.adsManager.init(
-                this.element.offsetWidth,
-                this.element.offsetHeight,
-                this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
-                    google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL,
-            );
-            this.adsManager.start();
-            const e = addEvent('play');
-            this.element.dispatchEvent(e);
 
-            const event = addEvent('playing');
-            this.element.dispatchEvent(event);
+            if (this.adsManager) {
+                // Initialize the ads manager. Ad rules playlist will start at this time.
+                this.adsManager.init(
+                    this.element.offsetWidth,
+                    this.element.offsetHeight,
+                    this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
+                        google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL,
+                );
+                this.adsManager.start();
+                const e = addEvent('play');
+                this.element.dispatchEvent(e);
+                const event = addEvent('playing');
+                this.element.dispatchEvent(event);
+            } else {
+                const e = addEvent('waiting');
+                this.element.dispatchEvent(e);
+            }
+
             this.adsActive = true;
             this.adsStarted = true;
         } catch (adError) {
             console.error(adError);
-            this._resumeMedia();
+            if (this.playRequested) {
+                this._resumeMedia();
+            }
         }
     }
 }

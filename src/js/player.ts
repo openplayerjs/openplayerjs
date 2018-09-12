@@ -105,10 +105,10 @@ class Player {
      * URL that defines a valid Ad XML file to be read by Google IMA SDK
      *
      * @see https://developers.google.com/interactive-media-ads/docs/sdks/html5/tags
-     * @type string
+     * @type string|string[]
      * @memberof Player
      */
-    private adsUrl?: string;
+    private ads?: string|string[];
 
     /**
      * Instance of Ads object.
@@ -116,7 +116,7 @@ class Player {
      * @type Ads
      * @memberof Player
      */
-    private ads?: Ads;
+    private adsInstance?: Ads;
 
     /**
      * Flag to determine if player must be scaled and scrop to fit parent container
@@ -213,16 +213,16 @@ class Player {
      * Create an instance of Player.
      *
      * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
-     * @param {?string} adsUrl  A URL to play Ads via Google IMA SDK.
+     * @param {?string} ads  A URL or collection of URLs to play Ads via Google IMA SDK.
      * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
      * @param {?PlayerOptions} options  Options to enhance Hls and Dash players.
      * @returns {Player}
      * @memberof Player
      */
-    constructor(element: HTMLMediaElement | string, adsUrl?: string, fill?: boolean, options?: PlayerOptions) {
+    constructor(element: HTMLMediaElement | string, ads?: string|string[], fill?: boolean, options?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
-            this.adsUrl = adsUrl;
+            this.ads = ads;
             this.fill = fill;
             this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
@@ -271,8 +271,8 @@ class Player {
      * @memberof Player
      */
     public play(): void {
-        if (this.ads) {
-            this.ads.play();
+        if (this.adsInstance) {
+            this.adsInstance.play();
         } else {
             this.media.play();
         }
@@ -285,8 +285,8 @@ class Player {
      * @memberof Player
      */
     public pause(): void {
-        if (this.ads) {
-            this.ads.pause();
+        if (this.adsInstance) {
+            this.adsInstance.pause();
         } else {
             this.media.pause();
         }
@@ -299,9 +299,9 @@ class Player {
      * @memberof Player
      */
     public destroy(): void {
-        if (this.ads) {
-            this.ads.pause();
-            this.ads.destroy();
+        if (this.adsInstance) {
+            this.adsInstance.pause();
+            this.adsInstance.destroy();
         }
 
         const el = (this.element as HTMLMediaElement);
@@ -375,7 +375,7 @@ class Player {
      * @memberof Player
      */
     public activeElement(): Ads | Media {
-        return this.ads && this.ads.adsStarted ? this.ads : this.media;
+        return this.adsInstance && this.adsInstance.adsStarted ? this.adsInstance : this.media;
     }
 
     /**
@@ -415,7 +415,7 @@ class Player {
      * @memberof Player
      */
     public getAd(): Ads {
-        return this.ads;
+        return this.adsInstance;
     }
     /**
      * Append a new `<track>` tag to the video/audio tag and dispatch event
@@ -553,8 +553,8 @@ class Player {
             this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
             this.media.load();
 
-            if (this.adsUrl) {
-                this.ads = new Ads(this.media, this.adsUrl, this.autoplay, this.options.ads);
+            if (this.ads) {
+                this.adsInstance = new Ads(this.media, this.ads, this.autoplay, this.options.ads);
             }
         } catch (e) {
             console.error(e);
@@ -608,8 +608,8 @@ class Player {
         this.element.parentElement.insertBefore(this.playBtn, this.element);
 
         this.playBtn.addEventListener('click', () => {
-            if (this.ads) {
-                this.ads.playRequested = true;
+            if (this.adsInstance) {
+                this.adsInstance.playRequested = true;
             }
             this.activeElement().play();
         });
@@ -633,9 +633,8 @@ class Player {
                 }
             };
             this.events.waiting = () => {
-                const el = this.activeElement();
                 this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
+                this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.seeking = () => {
                 const el = this.activeElement();
@@ -770,7 +769,7 @@ class Player {
                     target.insertBefore(volumeEl, target.firstChild);
                 }
 
-                if (!this.ads && (this.canAutoplay || this.canAutoplayMuted)) {
+                if (!this.adsInstance && (this.canAutoplay || this.canAutoplayMuted)) {
                     this.play();
                 }
             });
