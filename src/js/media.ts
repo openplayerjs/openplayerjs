@@ -418,22 +418,21 @@ class Media {
      */
     private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
         if (Object.keys(this.customMedia.media).length) {
+            let customRef: any;
             this.customMedia.rules.forEach((rule: any) => {
                 const type = rule(media.src);
                 if (type) {
-                    const customMedia = (this.customMedia.media[type] as any);
+                    const customMedia = this.customMedia.media[type] as any;
                     const customOptions = this.options[this.customMedia.optionsKey[type]] || undefined;
-
-                    // Setup player items in object to mimic native sources classes
-                    customMedia.autoplay = this.autoplay;
-                    customMedia.element = this.element;
-                    customMedia.media = media;
-                    customMedia.options = customOptions;
-                    return customMedia;
-                } else {
-                    return new HTML5Media(this.element, media);
+                    customRef = customMedia(this.element, media, this.autoplay, customOptions);
                 }
             });
+            if (customRef) {
+                customRef.create();
+                return customRef;
+            } else {
+                return new HTML5Media(this.element, media);
+            }
         } else if (source.isHlsSource(media.src)) {
             const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
             return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
