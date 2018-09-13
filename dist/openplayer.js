@@ -4873,7 +4873,9 @@ var Settings = function () {
               _this3.menu.classList.remove('om-settings--sliding');
             }, 100);
           } else if (general_1.hasClass(target, 'om-settings__menu-content')) {
-            var current = target.parentElement.querySelector('.om-settings__menu-label').getAttribute('data-value').replace(/(.*?)\-\w+$/, '$1');
+            var fragments = target.parentElement.querySelector('.om-settings__menu-label').getAttribute('data-value').split('-');
+            fragments.pop();
+            var current = fragments.join('-');
 
             if (_typeof(_this3.submenu[current]) !== undefined) {
               _this3.menu.classList.add('om-settings--sliding');
@@ -5411,21 +5413,23 @@ var Media = function () {
       var _this4 = this;
 
       if (Object.keys(this.customMedia.media).length) {
+        var customRef;
         this.customMedia.rules.forEach(function (rule) {
           var type = rule(media.src);
 
           if (type) {
             var customMedia = _this4.customMedia.media[type];
             var customOptions = _this4.options[_this4.customMedia.optionsKey[type]] || undefined;
-            customMedia.autoplay = _this4.autoplay;
-            customMedia.element = _this4.element;
-            customMedia.media = media;
-            customMedia.options = customOptions;
-            return customMedia;
-          } else {
-            return new html5_1.default(_this4.element, media);
+            customRef = customMedia(_this4.element, media, _this4.autoplay, customOptions);
           }
         });
+
+        if (customRef) {
+          customRef.create();
+          return customRef;
+        } else {
+          return new html5_1.default(this.element, media);
+        }
       } else if (source.isHlsSource(media.src)) {
         var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
         return new hls_1.default(this.element, media, this.autoplay, hlsOptions);
