@@ -30,7 +30,7 @@
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
     "docs": "[ -d ./docs ] && rm -R ./docs; typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
   },
-  "readme": "https://github.com/rafa8626/openplayer/blob/master/README.md",
+  "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
