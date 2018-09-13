@@ -265,8 +265,10 @@ class Settings implements PlayerComponent {
                         this.menu.classList.remove('om-settings--sliding');
                     }, 100);
                 } else if (hasClass(target, 'om-settings__menu-content')) {
-                    const current = target.parentElement.querySelector('.om-settings__menu-label')
-                        .getAttribute('data-value').replace(/(.*?)\-\w+$/, '$1');
+                    const fragments = target.parentElement.querySelector('.om-settings__menu-label')
+                        .getAttribute('data-value').split('-');
+                    fragments.pop();
+                    const current = fragments.join('-');
 
                     if (typeof this.submenu[current] !== undefined) {
                         this.menu.classList.add('om-settings--sliding');
