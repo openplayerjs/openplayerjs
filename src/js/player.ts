@@ -554,7 +554,8 @@ class Player {
             this.media.load();
 
             if (this.ads) {
-                this.adsInstance = new Ads(this.media, this.ads, this.autoplay, this.options.ads);
+                const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
+                this.adsInstance = new Ads(this.media, this.ads, this.autoplay, adsOptions);
             }
         } catch (e) {
             console.error(e);
