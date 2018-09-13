@@ -1316,7 +1316,8 @@ var Player = function () {
         this.media.load();
 
         if (this.ads) {
-          this.adsInstance = new ads_1.default(this.media, this.ads, this.autoplay, this.options.ads);
+          var adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
+          this.adsInstance = new ads_1.default(this.media, this.ads, this.autoplay, adsOptions);
         }
       } catch (e) {
         console.error(e);
