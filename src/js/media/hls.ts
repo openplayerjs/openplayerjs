@@ -192,8 +192,8 @@ class HlsMedia extends Native {
      * using or not Hls.Events object
      * @see https://github.com/video-dev/hls.js/blob/master/src/events.js
      * @see https://github.com/video-dev/hls.js/blob/master/src/errors.js
-     * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#runtime-events
-     * @see https://github.com/video-dev/hls.js/blob/master/doc/API.md#errors
+     * @see https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events
+     * @see https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors
      * @param {string} event The name of the HLS event
      * @param {any} data The data passed to the event, could be an object or an array
      * @memberof HlsMedia
