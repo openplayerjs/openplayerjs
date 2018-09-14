@@ -662,7 +662,7 @@ exports.SUPPORTS_HLS = function () {
   var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
   var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
   var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
-  return !!isTypeSupported && !!sourceBufferValidAPI;
+  return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
 };
 
 /***/ }),
