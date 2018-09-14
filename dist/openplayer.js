@@ -4404,7 +4404,6 @@ var Play = function () {
       Object.keys(this.events.media).forEach(function (event) {
         element.addEventListener(event, _this.events.media[event]);
       });
-      element.parentElement.addEventListener('touchstart', this.events.media.click);
       this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
       this.button.addEventListener('click', this.events.media.click);
     }
