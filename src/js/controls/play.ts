@@ -161,6 +161,7 @@ class Play implements PlayerComponent {
         Object.keys(this.events.media).forEach(event => {
             element.addEventListener(event, this.events.media[event]);
         });
+        element.parentElement.addEventListener('touchstart', this.events.media.click);
 
         this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
 

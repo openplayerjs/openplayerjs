@@ -4228,10 +4228,10 @@ var Fullscreen = function () {
     value: function _resize(width, height) {
       var wrapper = this.player.getContainer();
       var video = this.player.getElement();
-      wrapper.style.width = width ? "".concat(width, "px") : null;
-      wrapper.style.height = height ? "".concat(height, "px") : null;
-      video.style.width = width ? "".concat(width, "px") : null;
-      video.style.height = height ? "".concat(height, "px") : null;
+      wrapper.style.width = width ? '100%' : null;
+      wrapper.style.height = height ? '100%' : null;
+      video.style.width = width ? '100%' : null;
+      video.style.height = height ? '100%' : null;
     }
   }]);
 
@@ -4404,6 +4404,7 @@ var Play = function () {
       Object.keys(this.events.media).forEach(function (event) {
         element.addEventListener(event, _this.events.media[event]);
       });
+      element.parentElement.addEventListener('touchstart', this.events.media.click);
       this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
       this.button.addEventListener('click', this.events.media.click);
     }
