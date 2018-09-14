@@ -242,10 +242,10 @@ class Fullscreen implements PlayerComponent {
     private _resize(width?: number, height?: number): void {
         const wrapper = this.player.getContainer();
         const video = this.player.getElement();
-        wrapper.style.width = width ? `${width}px` : null;
-        wrapper.style.height = height ? `${height}px` : null;
-        video.style.width = width ? `${width}px` : null;
-        video.style.height = height ? `${height}px` : null;
+        wrapper.style.width = width ? '100%' : null;
+        wrapper.style.height = height ? '100%' : null;
+        video.style.width = width ? '100%' : null;
+        video.style.height = height ? '100%' : null;
     }
 }
 
