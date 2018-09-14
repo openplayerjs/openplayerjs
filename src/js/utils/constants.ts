@@ -129,5 +129,8 @@ export const SUPPORTS_HLS = () => {
         (sourceBuffer.prototype &&
         typeof sourceBuffer.prototype.appendBuffer === 'function' &&
         typeof sourceBuffer.prototype.remove === 'function');
-    return !!isTypeSupported && !!sourceBufferValidAPI;
+
+    // Safari is still an exception since it has built-in HLS support; currently HLS.js
+    // is still in beta to support Safari
+    return !!isTypeSupported && !!sourceBufferValidAPI && !IS_SAFARI;
 };
