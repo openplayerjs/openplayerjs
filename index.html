@@ -408,7 +408,7 @@
       url += form.querySelector('#video-type').checked ? 'video' : 'audio';
       var ads = form.querySelector('#ads').value;
       if (ads) {
-        url += '&ads=' + encodeURIComponent(ads);
+        url += '&ads=' + encodeURIComponent(ads.replace(/%/g, '~'));
       }
       if (form.querySelector('#autoplay').checked) {
         url += '&autoplay=true';

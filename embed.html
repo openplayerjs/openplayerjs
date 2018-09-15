@@ -57,7 +57,9 @@
         };
 
         var type = getUrlParameter('type');
-        var ads = decodeURIComponent(getUrlParameter('ads'));
+        var ads = getUrlParameter('ads');
+        ads = ads.replace(/~/g, '%')
+        console.log(ads);
         var media = document.createElement(type);
         media.id = 'media1';
 
