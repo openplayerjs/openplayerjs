@@ -350,6 +350,7 @@
 }
 .om-controls input[type='range'] {
     background: transparent;
+    -webkit-tap-highlight-color: transparent;
     z-index: 3;
 }
 .om-controls input[type='range']:focus,

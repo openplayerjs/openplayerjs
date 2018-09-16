@@ -31,15 +31,13 @@
         #stream-info > p {
             margin-left: 315px;
         }
-        input[type='range'] {
-            -webkit-tap-highlight-color: transparent;
-        }
     </style>
 </head>
 <body>
     <div class="players video-player">
         <h1>Video Sample</h1>
-        <video class="om-player__media" id="video" controls playsinline>
+        <video class="om-player__media" id="video" controls playsinline
+            data-om-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator=">
             <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
             <track label="English" kind="subtitles" srclang="en" src="http://www.mediaelementjs.com/dist/mediaelement.vtt" default>
         </video>
@@ -86,7 +84,7 @@
             var ads = i === 0 ? [
                 players[i].getAttribute('data-om-ads'),
             ] : null;
-            instances[i] = new OpenPlayer(players[i].id, null, false, {
+            instances[i] = new OpenPlayer(players[i].id, ads, false, {
                 hls: {
                     startLevel: -1
                 }
