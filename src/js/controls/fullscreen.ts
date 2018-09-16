@@ -190,6 +190,8 @@ class Fullscreen implements PlayerComponent {
                 video.parentElement.webkitRequestFullScreen();
             } else if (video.msRequestFullscreen) {
                 video.parentElement.msRequestFullscreen();
+            } else if (video.webkitEnterFullscreen) {
+                video.webkitEnterFullscreen();
             } else {
                 this._fullscreenChange();
             }
