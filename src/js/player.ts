@@ -539,6 +539,9 @@ class Player {
      * @memberof Player
      */
     private _createControls(): void {
+        if (IS_IPHONE && isVideo(this.element)) {
+            return;
+        }
         this.controls = new Controls(this);
         this.controls.create();
     }

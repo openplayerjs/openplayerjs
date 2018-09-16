@@ -2,6 +2,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { addEvent } from '../utils/events';
+import { IS_ANDROID, IS_IOS } from '../utils/constants';
 
 /**
  * Volume controller element.
@@ -233,9 +234,11 @@ class Volume implements PlayerComponent {
             this.slider.addEventListener(event, this.events.slider[event]);
         });
 
-        const controls = this.player.getControls().getContainer();
-        controls.appendChild(this.button);
-        controls.appendChild(this.container);
+        if (!IS_ANDROID && !IS_IOS) {
+            const controls = this.player.getControls().getContainer();
+            controls.appendChild(this.button);
+            controls.appendChild(this.container);
+        }
     }
 
     /**

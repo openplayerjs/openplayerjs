@@ -1,6 +1,7 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
+import { IS_IOS, IS_IPAD } from '../utils/constants';
 import { hasClass, offset } from '../utils/general';
 import { formatTime } from '../utils/time';
 
@@ -218,19 +219,33 @@ class Progress implements PlayerComponent {
          *
          * @private
          */
-        const updateSlider = (e: Event) => {
+        const updateSlider = (e: any) => {
             if (hasClass(this.slider, 'om-progress--pressed')) {
                 return;
             }
             const target = (e.target as HTMLInputElement);
             this.slider.classList.add('.om-progress--pressed');
+
+            const el = this.player.activeElement();
+
+            if (IS_IOS) {
+                target.focus();
+                const x = (e.originalEvent && e.originalEvent.changedTouches) ?
+                    e.originalEvent.changedTouches[0].pageX : e.pageX;
+                const pos = x - offset(this.progress).left;
+                const percentage = (pos / this.progress.offsetWidth);
+                const time = percentage * el.duration;
+
+                if (time !== parseFloat(target.value)) {
+                    target.value = time.toString();
+                }
+            }
+
             const min = parseFloat(target.min);
             const max = parseFloat(target.max);
             const val = parseFloat(target.value);
             this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
             this.slider.classList.remove('.om-progress--pressed');
-
-            const el = this.player.activeElement();
             el.currentTime = val;
         };
 
@@ -261,6 +276,9 @@ class Progress implements PlayerComponent {
             this.forcePause = false;
         };
 
+        if (IS_IPAD) {
+            this.events.slider.click = updateSlider.bind(this);
+        }
         this.events.slider.input = updateSlider.bind(this);
         this.events.slider.change = updateSlider.bind(this);
         this.events.slider.mousedown = forcePause.bind(this);
