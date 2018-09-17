@@ -158,6 +158,9 @@ class Captions implements PlayerComponent {
         for (let i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
             if (element.kind === 'subtitles') {
+                if (element.default) {
+                    this.default = element.srclang;
+                }
                 const trackUrl = getAbsoluteUrl(element.src);
                 if (this.trackList[i].language === element.srclang) {
                     if (this.trackList[i].cues && this.trackList[i].cues.length) {
@@ -501,7 +504,7 @@ class Captions implements PlayerComponent {
             this.current = this.trackList[0];
         }
         this._show();
-        if (this.player.getContainer().classList.contains('om-captions--detected')) {
+        if (!this.player.getContainer().classList.contains('om-captions--detected')) {
             this.player.getContainer().classList.add('om-captions--detected');
         }
     }

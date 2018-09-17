@@ -1247,6 +1247,14 @@ var Player = function () {
   }, {
     key: "addCaptions",
     value: function addCaptions(args) {
+      if (args.default) {
+        var tracks = this.element.querySelectorAll('tracks');
+
+        for (var i = 0, total = tracks.length; i < total; i++) {
+          tracks[i].default = false;
+        }
+      }
+
       var el = this.element;
       var track = document.createElement('track');
       track.srclang = args.srclang;
@@ -3794,6 +3802,10 @@ var Captions = function () {
         var element = tracks[i];
 
         if (element.kind === 'subtitles') {
+          if (element.default) {
+            _this.default = element.srclang;
+          }
+
           var trackUrl = general_1.getAbsoluteUrl(element.src);
 
           if (_this.trackList[i].language === element.srclang) {
@@ -4115,7 +4127,7 @@ var Captions = function () {
 
       this._show();
 
-      if (this.player.getContainer().classList.contains('om-captions--detected')) {
+      if (!this.player.getContainer().classList.contains('om-captions--detected')) {
         this.player.getContainer().classList.add('om-captions--detected');
       }
     }

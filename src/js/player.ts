@@ -425,6 +425,13 @@ class Player {
      * @memberof Player
      */
     public addCaptions(args: Track): void {
+        if (args.default) {
+            const tracks = this.element.querySelectorAll('tracks');
+            for (let i = 0, total = tracks.length; i < total; i++) {
+                (tracks[i] as HTMLTrackElement).default = false;
+            }
+        }
+
         const el = this.element;
         const track = document.createElement('track');
         track.srclang = args.srclang;
