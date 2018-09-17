@@ -3787,32 +3787,44 @@ var Captions = function () {
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Toggle Captions');
+      this.button.setAttribute('data-active-captions', 'none');
       this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
-      this.player.getContainer().classList.add('om-captions--detected');
 
-      for (var i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
+      var _loop = function _loop(i, tracks, total) {
         var element = tracks[i];
 
         if (element.kind === 'subtitles') {
-          this.trackUrlList[element.srclang] = general_1.getAbsoluteUrl(element.src);
+          var trackUrl = general_1.getAbsoluteUrl(element.src);
 
-          if (element.default) {
-            this.default = element.srclang;
-            this.button.classList.add('om-controls__captions--on');
+          if (_this.trackList[i].language === element.srclang) {
+            if (_this.trackList[i].cues && _this.trackList[i].cues.length) {
+              _this.tracks[element.srclang] = _this._getNativeCues(_this.trackList[i]);
+
+              _this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
+            } else {
+              general_1.request(trackUrl, 'text', function (d) {
+                _this.tracks[element.srclang] = _this._getCuesFromText(d);
+
+                _this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
+              }, function () {
+                delete _this.trackList[i];
+                element.remove();
+                var e = events_1.addEvent('controlschanged');
+
+                _this.player.getElement().dispatchEvent(e);
+              });
+            }
           }
         }
-      }
+      };
 
-      for (var _i = 0, _total = this.trackList.length; _i < _total; _i++) {
-        this.trackList[_i].mode = 'hidden';
+      for (var i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
+        _loop(i, tracks, total);
       }
 
       this.captions = document.createElement('div');
       this.captions.className = 'om-captions';
       this.captions.innerHTML = '<span></span>';
-      this.current = this.default ? Array.from(this.trackList).filter(function (item) {
-        return item.language === _this.default;
-      }).pop() : this.trackList[0];
       var container = this.captions.querySelector('span');
 
       this.events.media.timeupdate = function () {
@@ -3834,10 +3846,6 @@ var Captions = function () {
           }
         }
       };
-
-      if (this.default) {
-        this._show();
-      }
 
       this.events.button.click = function (e) {
         var button = e.target;
@@ -3877,6 +3885,8 @@ var Captions = function () {
 
           _this._show();
 
+          _this.button.setAttribute('data-active-captions', language);
+
           var event = events_1.addEvent('captionschanged');
 
           _this.player.getElement().dispatchEvent(event);
@@ -3915,7 +3925,7 @@ var Captions = function () {
         label: 'Off'
       }];
 
-      var _loop = function _loop(i, total) {
+      var _loop2 = function _loop2(i, total) {
         var track = _this2.trackList[i];
         subitems = subitems.filter(function (el) {
           return el.key !== track.language;
@@ -3927,7 +3937,7 @@ var Captions = function () {
       };
 
       for (var i = 0, total = this.trackList.length; i < total; i++) {
-        _loop(i, total);
+        _loop2(i, total);
       }
 
       return {
@@ -3939,8 +3949,8 @@ var Captions = function () {
       };
     }
   }, {
-    key: "_getCues",
-    value: function _getCues(webvttText) {
+    key: "_getCuesFromText",
+    value: function _getCuesFromText(webvttText) {
       var lines = webvttText.split(/\r?\n/);
       var entries = [];
       var urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
@@ -3999,44 +4009,38 @@ var Captions = function () {
       return entries;
     }
   }, {
+    key: "_getNativeCues",
+    value: function _getNativeCues(track) {
+      var cues = [];
+      Object.keys(track.cues).forEach(function (index) {
+        var j = parseInt(index, 10);
+        var current = track.cues[j];
+        cues.push({
+          endTime: current.endTime,
+          identifier: current.id,
+          settings: {},
+          startTime: current.startTime,
+          text: current.text
+        });
+      });
+      return cues;
+    }
+  }, {
     key: "_show",
     value: function _show() {
-      var _this3 = this;
-
-      if (typeof this.current.cues === 'undefined') {
+      if (!this.current || this.current.cues === undefined) {
         return;
       }
 
       var container = this.captions.querySelector('span');
       container.innerHTML = '';
-
-      if (!this.current.cues.length) {
-        general_1.request(general_1.getAbsoluteUrl(this.trackUrlList[this.current.language]), 'text', function (d) {
-          _this3.tracks[_this3.current.language] = _this3._getCues(d);
-
-          _this3.player.getElement().addEventListener('timeupdate', _this3.events.media.timeupdate);
-        });
-      } else {
-        var cues = [];
-        Object.keys(this.current.cues).forEach(function (index) {
-          var i = parseInt(index, 10);
-          var current = _this3.current.cues[i];
-          cues.push({
-            endTime: current.endTime,
-            identifier: current.id,
-            settings: {},
-            startTime: current.startTime,
-            text: current.text
-          });
-        });
-        this.tracks[this.current.language] = cues;
-        this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
-      }
+      this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
     }
   }, {
     key: "_hide",
     value: function _hide() {
       this.captions.classList.remove('om-captions--on');
+      this.button.setAttribute('data-active-captions', 'none');
     }
   }, {
     key: "_search",
@@ -4088,6 +4092,32 @@ var Captions = function () {
       }
 
       return div.innerHTML;
+    }
+  }, {
+    key: "_prepareTrack",
+    value: function _prepareTrack(index, language, trackUrl) {
+      var _this3 = this;
+
+      var defaultTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      this.trackUrlList[language] = trackUrl;
+      this.trackList[index].mode = 'hidden';
+
+      if (defaultTrack) {
+        this.default = language;
+        this.button.classList.add('om-controls__captions--on');
+        this.button.setAttribute('data-active-captions', language);
+        this.current = Array.from(this.trackList).filter(function (item) {
+          return item.language === _this3.default;
+        }).pop();
+      } else {
+        this.current = this.trackList[0];
+      }
+
+      this._show();
+
+      if (this.player.getContainer().classList.contains('om-captions--detected')) {
+        this.player.getContainer().classList.add('om-captions--detected');
+      }
     }
   }]);
 
