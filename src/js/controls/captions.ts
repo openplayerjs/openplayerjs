@@ -150,33 +150,40 @@ class Captions implements PlayerComponent {
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Toggle Captions');
+        this.button.setAttribute('data-active-captions', 'none');
         this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
-        this.player.getContainer().classList.add('om-captions--detected');
-
+        // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
+        // Otherwise, remove the markup asscoiated with them
         for (let i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
             if (element.kind === 'subtitles') {
-                this.trackUrlList[element.srclang] = getAbsoluteUrl(element.src);
-                if (element.default) {
-                    this.default = element.srclang;
-                    this.button.classList.add('om-controls__captions--on');
+                const trackUrl = getAbsoluteUrl(element.src);
+                if (this.trackList[i].language === element.srclang) {
+                    if (this.trackList[i].cues && this.trackList[i].cues.length) {
+                        this.tracks[element.srclang] = this._getNativeCues(this.trackList[i]);
+                        this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
+                    } else {
+                        request(trackUrl, 'text', d => {
+                            this.tracks[element.srclang] = this._getCuesFromText(d);
+                            this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
+                        }, () => {
+                            delete this.trackList[i];
+                            element.remove();
+                            // This will allow the recreation of Settings elements and the caption button
+                            // if none of the captions are valid
+                            const e = addEvent('controlschanged');
+                            this.player.getElement().dispatchEvent(e);
+                        });
+                    }
                 }
             }
-        }
-
-        for (let i = 0, total = this.trackList.length; i < total; i++) {
-            this.trackList[i].mode = 'hidden';
         }
 
         // Build container to display captions to mitigate cross browser inconsistencies
         this.captions = document.createElement('div');
         this.captions.className = 'om-captions';
         this.captions.innerHTML = '<span></span>';
-
-        // Assign by default first track or the one with `default` attribute
-        this.current = this.default ? Array.from(this.trackList)
-            .filter(item => item.language === this.default).pop() : this.trackList[0];
 
         const container = this.captions.querySelector('span');
         this.events.media.timeupdate = () => {
@@ -194,10 +201,6 @@ class Captions implements PlayerComponent {
                 }
             }
         };
-
-        if (this.default) {
-            this._show();
-        }
 
         // Show/hide captions
         this.events.button.click = (e: Event) => {
@@ -231,6 +234,7 @@ class Captions implements PlayerComponent {
                 const language = option.getAttribute('data-value').replace('captions-', '');
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
                 this._show();
+                this.button.setAttribute('data-active-captions', language);
                 const event = addEvent('captionschanged');
                 this.player.getElement().dispatchEvent(event);
             }
@@ -294,7 +298,7 @@ class Captions implements PlayerComponent {
      * @returns {Cue[]}
      * @memberof Captions
      */
-    private _getCues(webvttText: string): Cue[] {
+    private _getCuesFromText(webvttText: string): Cue[] {
         const lines = webvttText.split(/\r?\n/);
         const entries: Cue[] = [];
         const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
@@ -349,43 +353,44 @@ class Captions implements PlayerComponent {
         }
         return entries;
     }
+
     /**
-     * Display current caption checking for cues or parsing remote source.
+     * Store native cues in new container to be read by player.
+     *
+     * @private
+     * @param {TextTrack} track
+     * @returns {Cue[]}
+     * @memberof Captions
+     */
+    private _getNativeCues(track: TextTrack): Cue[] {
+        const cues: Cue[] = [];
+        Object.keys(track.cues).forEach(index => {
+            const j = parseInt(index, 10);
+            const current = track.cues[j];
+            cues.push({
+                endTime: current.endTime,
+                identifier: current.id,
+                settings: {},
+                startTime: current.startTime,
+                text: current.text,
+            });
+        });
+        return cues;
+    }
+
+    /**
+     * Display current caption based on the current timestamp.
      *
      * @memberof Captions
      */
     private _show(): void {
-        if (typeof this.current.cues === 'undefined') {
+        if (!this.current || this.current.cues === undefined) {
             return;
         }
 
-        // const t = this;
         const container = this.captions.querySelector('span');
         container.innerHTML = '';
-
-        if (!this.current.cues.length) {
-            request(getAbsoluteUrl(this.trackUrlList[this.current.language]), 'text', d => {
-                this.tracks[this.current.language] = this._getCues(d);
-                // Use `timeupdate` to update remote captions
-                this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
-            });
-        } else {
-            // To avoid issues with native `oncuechange` event, build new cues and use `timeupdate` event
-            const cues: Cue[] = [];
-            Object.keys(this.current.cues).forEach(index => {
-                const i = parseInt(index, 10);
-                const current = this.current.cues[i];
-                cues.push({
-                    endTime: current.endTime,
-                    identifier: current.id,
-                    settings: {},
-                    startTime: current.startTime,
-                    text: current.text,
-                });
-            });
-            this.tracks[this.current.language] = cues;
-            this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
-        }
+        this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
     }
 
     /**
@@ -398,6 +403,7 @@ class Captions implements PlayerComponent {
      */
     private _hide(): void {
         this.captions.classList.remove('om-captions--on');
+        this.button.setAttribute('data-active-captions', 'none');
     }
 
     /**
@@ -468,6 +474,36 @@ class Captions implements PlayerComponent {
             }
         }
         return div.innerHTML;
+    }
+
+    /**
+     * Store valid URL and cues from `track` tags that returned content.
+     *
+     * If a `track` element has a `default` value, make sure it is being displayed.
+     *
+     * @private
+     * @param {number} index
+     * @param {string} language
+     * @param {string} trackUrl
+     * @param {boolean} [defaultTrack=false]
+     * @memberof Captions
+     */
+    private _prepareTrack(index: number, language: string, trackUrl: string, defaultTrack: boolean = false) {
+        this.trackUrlList[language] = trackUrl;
+        this.trackList[index].mode = 'hidden';
+        if (defaultTrack) {
+            this.default = language;
+            this.button.classList.add('om-controls__captions--on');
+            this.button.setAttribute('data-active-captions', language);
+            this.current = Array.from(this.trackList)
+                .filter(item => item.language === this.default).pop();
+        } else {
+            this.current = this.trackList[0];
+        }
+        this._show();
+        if (this.player.getContainer().classList.contains('om-captions--detected')) {
+            this.player.getContainer().classList.add('om-captions--detected');
+        }
     }
 }
 
