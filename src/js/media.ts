@@ -305,7 +305,12 @@ class Media {
      * @readonly
      */
     get duration(): number {
-        return this.media.duration;
+        const duration = this.media.duration;
+        // To seek backwards in a live streaming (mobile devices)
+        if (duration === Infinity && this.element.seekable && this.element.seekable.length) {
+            return this.element.seekable.end(0);
+        }
+        return duration;
     }
 
     /**
