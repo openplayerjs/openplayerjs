@@ -150,7 +150,7 @@ class Captions implements PlayerComponent {
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Toggle Captions');
-        this.button.setAttribute('data-active-captions', 'none');
+        this.button.setAttribute('data-active-captions', 'off');
         this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
         // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
@@ -160,6 +160,7 @@ class Captions implements PlayerComponent {
             if (element.kind === 'subtitles') {
                 if (element.default) {
                     this.default = element.srclang;
+                    this.button.setAttribute('data-active-captions', element.srclang);
                 }
                 const trackUrl = getAbsoluteUrl(element.src);
                 if (this.trackList[i].language === element.srclang) {
