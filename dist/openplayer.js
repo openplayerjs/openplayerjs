@@ -1448,7 +1448,7 @@ var Player = function () {
 
         var isAd = el instanceof ads_1.default;
         var key = e.which || e.keyCode || 0;
-        var step = el.duration * 0.05;
+        var step = el.duration !== Infinity ? el.duration * 0.05 : 0;
 
         switch (key) {
           case 13:
@@ -5537,7 +5537,13 @@ var Media = function () {
   }, {
     key: "duration",
     get: function get() {
-      return this.media.duration;
+      var duration = this.media.duration;
+
+      if (duration === Infinity && this.element.seekable && this.element.seekable.length) {
+        return this.element.seekable.end(0);
+      }
+
+      return duration;
     }
   }, {
     key: "paused",

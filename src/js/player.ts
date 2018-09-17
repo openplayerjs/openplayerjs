@@ -676,7 +676,7 @@ class Player {
             const el = this.activeElement();
             const isAd = el instanceof Ads;
             const key = e.which || e.keyCode || 0;
-            const step = el.duration * 0.05;
+            const step = el.duration !== Infinity ? el.duration * 0.05 : 0;
 
             switch (key) {
                 case 13: // Enter
