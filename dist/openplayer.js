@@ -3795,7 +3795,7 @@ var Captions = function () {
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Toggle Captions');
-      this.button.setAttribute('data-active-captions', 'none');
+      this.button.setAttribute('data-active-captions', 'off');
       this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
       var _loop = function _loop(i, tracks, total) {
@@ -3804,6 +3804,8 @@ var Captions = function () {
         if (element.kind === 'subtitles') {
           if (element.default) {
             _this.default = element.srclang;
+
+            _this.button.setAttribute('data-active-captions', element.srclang);
           }
 
           var trackUrl = general_1.getAbsoluteUrl(element.src);
