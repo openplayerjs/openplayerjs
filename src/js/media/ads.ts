@@ -225,6 +225,15 @@ class Ads {
     private currentAdsIndex: number = 0;
 
     /**
+     * Store original volume from media.
+     *
+     * @private
+     * @type number
+     * @memberof Ads
+     */
+    private originalVolume: number;
+
+    /**
      * Create an instance of Ads.
      *
      * @param {Media} media
@@ -246,8 +255,8 @@ class Ads {
 
         this.playTriggered = false;
 
-        const originalVolume = this.element.volume;
-        this.adsVolume = IS_IOS ? 0 : originalVolume;
+        this.originalVolume = this.element.volume;
+        this.adsVolume = IS_IOS ? 0 : this.originalVolume;
         this.adsMuted = IS_IOS ? true : this.adsMuted;
 
         // Test browser capabilities to autoplay Ad if `autoStart` is flagged as true
@@ -265,28 +274,7 @@ class Ads {
 
                     const e = addEvent('volumechange');
                     this.element.dispatchEvent(e);
-
-                    // Insert element to unmute if browser allows autoplay with muted media
-                    const volumeEl = document.createElement('div');
-                    const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
-                    volumeEl.className = 'om-player__unmute';
-                    volumeEl.innerHTML = `<span>${action} to unmute</span>`;
-
-                    volumeEl.addEventListener('click', () => {
-                        this.adsMuted = false;
-                        this.media.muted = false;
-                        this.adsVolume = originalVolume;
-                        this.media.volume = originalVolume;
-
-                        const event = addEvent('volumechange');
-                        this.element.dispatchEvent(event);
-
-                        // Remove element
-                        volumeEl.remove();
-                    });
-
-                    const target = this.element.parentElement;
-                    target.insertBefore(volumeEl, target.firstChild);
+                    this._createUnmuteButton();
                 }
 
                 this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
@@ -298,6 +286,10 @@ class Ads {
                 this.promise.then(this.load.bind(this));
             });
         } else {
+            if (this.adsMuted) {
+                this._createUnmuteButton();
+            }
+
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
                 loadScript(this.adsOptions.url) :
                 new Promise(resolve => {
@@ -532,6 +524,37 @@ class Ads {
      */
     get ended(): boolean {
         return this.adsEnded;
+    }
+
+    /**
+     * Insert an `Unmute` element to start Ads
+     *
+     * This is necessary with iOS due more restrictive play policies
+     *
+     * @memberof Ads
+     */
+    private _createUnmuteButton(): void {
+        const volumeEl = document.createElement('div');
+        const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
+        volumeEl.className = 'om-player__unmute';
+        volumeEl.innerHTML = `<span>${action} to unmute</span>`;
+
+        volumeEl.addEventListener('click', () => {
+            this.adsMuted = false;
+            this.media.muted = false;
+            this.adsVolume = this.originalVolume;
+            this.media.volume = this.originalVolume;
+            this.adsManager.setVolume(this.originalVolume);
+
+            const event = addEvent('volumechange');
+            this.element.dispatchEvent(event);
+
+            // Remove element
+            volumeEl.remove();
+        });
+
+        const target = this.element.parentElement;
+        target.insertBefore(volumeEl, target.firstChild);
     }
 
     /**

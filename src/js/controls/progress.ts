@@ -1,7 +1,6 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
-import { IS_IOS, IS_IPAD } from '../utils/constants';
 import { hasClass, offset } from '../utils/general';
 import { formatTime } from '../utils/time';
 
@@ -133,6 +132,7 @@ class Progress implements PlayerComponent {
         this.slider.setAttribute('step', '0.1');
         this.slider.value = '0';
         this.slider.setAttribute('aria-label', 'Time Rail');
+        this.slider.setAttribute('role', 'slider');
 
         this.buffer = document.createElement('progress');
         this.buffer.className = 'om-controls__progress--buffer';
@@ -227,26 +227,13 @@ class Progress implements PlayerComponent {
             this.slider.classList.add('.om-progress--pressed');
 
             const el = this.player.activeElement();
-
-            if (IS_IOS) {
-                target.focus();
-                const x = (e.originalEvent && e.originalEvent.changedTouches) ?
-                    e.originalEvent.changedTouches[0].pageX : e.pageX;
-                const pos = x - offset(this.progress).left;
-                const percentage = (pos / this.progress.offsetWidth);
-                const time = percentage * el.duration;
-
-                if (time !== parseFloat(target.value)) {
-                    target.value = time.toString();
-                }
-            }
-
             const min = parseFloat(target.min);
             const max = parseFloat(target.max);
             const val = parseFloat(target.value);
             this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
             this.slider.classList.remove('.om-progress--pressed');
             el.currentTime = val;
+            e.preventDefault();
         };
 
         /**
@@ -271,19 +258,42 @@ class Progress implements PlayerComponent {
         const releasePause = () => {
             const el = this.player.activeElement();
             if (this.forcePause === true && this.player.isMedia()) {
-                el.play();
+                if (el.paused) {
+                    el.play();
+                    this.forcePause = false;
+                }
             }
-            this.forcePause = false;
         };
 
-        if (IS_IPAD) {
-            this.events.slider.click = updateSlider.bind(this);
-        }
+        /**
+         * When tapping on mobile, it will update the time and force pause
+         *
+         * @private
+         * @param {any} e Event to calculate new time when user taps on time rail
+         */
+        const mobileForcePause = (e: any) => {
+            const el = this.player.activeElement();
+            if (el.duration === Infinity) {
+                return true;
+            }
+            const x = (e.originalEvent && e.originalEvent.changedTouches) ?
+                e.originalEvent.changedTouches[0].pageX : e.pageX;
+
+            const pos = x - offset(this.progress).left;
+            const percentage = (pos / this.progress.offsetWidth);
+            const time = percentage * el.duration;
+            this.slider.value = time.toString();
+            updateSlider(e);
+            forcePause(e);
+            e.preventDefault();
+        };
+
         this.events.slider.input = updateSlider.bind(this);
         this.events.slider.change = updateSlider.bind(this);
         this.events.slider.mousedown = forcePause.bind(this);
-        this.events.slider.touchstart = forcePause.bind(this);
         this.events.slider.mouseup = releasePause.bind(this);
+
+        this.events.slider.touchstart = mobileForcePause.bind(this);
         this.events.slider.touchend = releasePause.bind(this);
 
         this.events.container.mousemove = (e: any) => {
@@ -336,9 +346,7 @@ class Progress implements PlayerComponent {
 
         this.progress.addEventListener('keydown', this.player.getEvents().keydown);
         this.progress.addEventListener('mousemove', this.events.container.mousemove);
-
         document.addEventListener('mousemove', this.events.global.mousemove);
-
         this.player.getControls().getContainer().appendChild(this.progress);
     }
 

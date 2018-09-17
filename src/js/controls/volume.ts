@@ -1,8 +1,8 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
-import { addEvent } from '../utils/events';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { addEvent } from '../utils/events';
 
 /**
  * Volume controller element.
