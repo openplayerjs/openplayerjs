@@ -11,7 +11,7 @@
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
 
-    <link rel="stylesheet" href="https://cdn.rawgit.com/openplayerjs/openplayerjs/65119c3/dist/openplayer.min.css">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openplayerjs/openplayerjs/2676fe1/dist/openplayer.min.css">
     <style>
         body {
             background-color: #000;
@@ -36,6 +36,10 @@
             position: relative;
             width: 100%;
         }
+        
+        .om-player video {
+            height: 100%;
+        }
 
         @media (min-width: 800px) {
             .om-player__media {
@@ -47,7 +51,7 @@
 
 <body>
     <div id="media"></div>
-    <script src="https://cdn.rawgit.com/openplayerjs/openplayerjs/65119c3/dist/openplayer.min.js"></script>
+    <script src="https://cdn.rawgit.com/openplayerjs/openplayerjs/2676fe1/dist/openplayer.min.js"></script>
     <script>
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
