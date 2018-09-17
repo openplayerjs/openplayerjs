@@ -97,9 +97,13 @@ describe('OpenPlayer.js', () => {
         expect(player.getContainer().querySelector('.om-player__loader')).to.not.equal(null);
     });
 
-    it('Detects captions if `track` tag(s) present', () => {
+    it('Detects captions if `track` tag(s) present', function (done) {
+        this.timeout(1500);
         const trackTags = player.element.querySelectorAll('track');
-        expect(player.getContainer().getAttribute('class').indexOf('om-captions--detected') > -1).to.equal(!!trackTags.length);
+        setTimeout(() => {
+            expect(player.getContainer().getAttribute('class').indexOf('om-captions--detected') > -1).to.equal(!!trackTags.length);
+            done();
+        }, 1000);
     });
 
     it('Displays captions automatically if `track` tag(s) present', done => {
@@ -114,7 +118,8 @@ describe('OpenPlayer.js', () => {
         }, 1000);
     });
 
-    it('Adds caption dynamically and renders it if `default` attribute is passed in object', () => {
+    it('Adds caption dynamically and renders it if `default` attribute is passed in object', function (done) {
+        this.timeout(1500);
         player.addCaptions({
             srclang: 'br_PT',
             src: 'http://brenopolanski.com/html5-video-webvtt-example/MIB2-subtitles-pt-BR.vtt',
@@ -123,7 +128,10 @@ describe('OpenPlayer.js', () => {
             default: true
         });
 
-        expect(player.getContainer().querySelector('.om-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
+        setTimeout(() => {
+            expect(player.getContainer().querySelector('.om-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
+            done();
+        }, 1000);
     });
 
     it('Unmutes/mutes media when clicking on `Mute` button', () => {
