@@ -4049,7 +4049,7 @@ var Captions = function () {
   }, {
     key: "_show",
     value: function _show() {
-      if (!this.current || this.current.cues === undefined) {
+      if (!this.captions || !this.current || this.current.cues === undefined) {
         return;
       }
 
