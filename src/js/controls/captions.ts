@@ -284,15 +284,19 @@ class Captions implements PlayerComponent {
             const track = this.trackList[i];
             // Override language item if duplicated when passing list of settings subitems
             subitems = subitems.filter(el => el.key !== track.language);
-            subitems.push({key: track.language, label: this.trackList[i].label});
+            if (this.trackList[i].cues) {
+                subitems.push({key: track.language, label: this.trackList[i].label});
+            }
         }
-        return {
+
+        // Avoid implementing submenu for captions if only 2 options were available
+        return subitems.length > 2 ? {
             className: 'om-subtitles__option',
             default: this.default || 'off',
             key: 'captions',
             name: 'Subtitles/CC',
             subitems,
-        };
+        } : {};
     }
     /**
      * Parse WebVTT text from external domain to emulate native cues
