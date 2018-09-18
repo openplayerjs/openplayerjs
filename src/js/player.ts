@@ -204,10 +204,21 @@ class Player {
      * Container for other player options.
      *
      * @private
-     * @type {object}
+     * @type PlayerOptions
      * @memberof Player
      */
     private options: PlayerOptions;
+
+    /**
+     * Default configuration for player.
+     *
+     * @private
+     * @type PlayerOptions
+     * @memberof Player
+     */
+    private defaultOptions: PlayerOptions = {
+        step: 0,
+    };
 
     /**
      * Create an instance of Player.
@@ -226,7 +237,7 @@ class Player {
             this.fill = fill;
             this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
-            this.options = options;
+            this.options = { ...this.defaultOptions, ...options };
             this.element.autoplay = false;
         }
         return this;
@@ -683,7 +694,9 @@ class Player {
             const el = this.activeElement();
             const isAd = el instanceof Ads;
             const key = e.which || e.keyCode || 0;
-            const step = el.duration !== Infinity ? el.duration * 0.05 : 0;
+            // By default, if no `step` set, it will skip 5% of the duration of the media
+            const newStep = this.options.step ? this.options.step : el.duration * 0.05;
+            const step = el.duration !== Infinity ? newStep : 0;
 
             switch (key) {
                 case 13: // Enter

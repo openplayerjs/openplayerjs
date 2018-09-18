@@ -1113,6 +1113,9 @@ var Player = function () {
 
     this.events = {};
     this.autoplay = false;
+    this.defaultOptions = {
+      step: 0
+    };
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
     if (this.element) {
@@ -1120,7 +1123,7 @@ var Player = function () {
       this.fill = fill;
       this.autoplay = this.element.autoplay || false;
       this.volume = this.element.volume;
-      this.options = options;
+      this.options = Object.assign({}, this.defaultOptions, options);
       this.element.autoplay = false;
     }
 
@@ -1456,7 +1459,8 @@ var Player = function () {
 
         var isAd = el instanceof ads_1.default;
         var key = e.which || e.keyCode || 0;
-        var step = el.duration !== Infinity ? el.duration * 0.05 : 0;
+        var newStep = _this3.options.step ? _this3.options.step : el.duration * 0.05;
+        var step = el.duration !== Infinity ? newStep : 0;
 
         switch (key) {
           case 13:
