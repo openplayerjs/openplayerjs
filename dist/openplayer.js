@@ -3592,6 +3592,18 @@ var Controls = function () {
       this.controls.className = 'om-controls';
       this.player.getContainer().appendChild(this.controls);
 
+      this._buildElements();
+
+      this.events.controlschanged = function () {
+        _this.destroy();
+
+        _this._setElements();
+
+        _this.create();
+      };
+
+      this.player.getElement().addEventListener('controlschanged', this.events.controlschanged);
+
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         this.events.mouse.mouseenter = function () {
           if (isMediaVideo) {
@@ -3623,14 +3635,6 @@ var Controls = function () {
           _this._stopControlTimer();
         };
 
-        this.events.media.controlschanged = function () {
-          _this.destroy();
-
-          _this._setElements();
-
-          _this.create();
-        };
-
         Object.keys(this.events.media).forEach(function (event) {
           _this.player.getElement().addEventListener(event, _this.events.media[event]);
         });
@@ -3640,8 +3644,6 @@ var Controls = function () {
 
         this._startControlTimer(3000);
       }
-
-      this._buildElements();
     }
   }, {
     key: "destroy",
@@ -3659,6 +3661,7 @@ var Controls = function () {
         this._stopControlTimer();
       }
 
+      this.player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
       this.items.forEach(function (item) {
         item.destroy();
       });
