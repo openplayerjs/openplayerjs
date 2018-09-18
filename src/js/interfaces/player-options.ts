@@ -22,5 +22,5 @@ export default interface PlayerOptions {
     /**
      * @type object
      */
-    [key: string]: object;
+    [key: string]: any;
 }
