@@ -160,6 +160,16 @@ class Controls implements PlayerComponent {
         this.controls.className = 'om-controls';
         this.player.getContainer().appendChild(this.controls);
 
+        this._buildElements();
+
+        this.events.controlschanged = () => {
+            this.destroy();
+            this._setElements();
+            this.create();
+        };
+
+        this.player.getElement().addEventListener('controlschanged', this.events.controlschanged);
+
         if (!IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
                 if (isMediaVideo) {
@@ -183,12 +193,6 @@ class Controls implements PlayerComponent {
                 this.player.getContainer().classList.remove('om-controls--hidden');
                 this._stopControlTimer();
             };
-            this.events.media.controlschanged = () => {
-                this.destroy();
-                this._setElements();
-                this.create();
-            };
-
             Object.keys(this.events.media).forEach(event => {
                 this.player.getElement().addEventListener(event, this.events.media[event]);
             });
@@ -200,8 +204,6 @@ class Controls implements PlayerComponent {
             // Initial countdown to hide controls
             this._startControlTimer(3000);
         }
-
-        this._buildElements();
     }
 
     /**
@@ -221,6 +223,8 @@ class Controls implements PlayerComponent {
 
             this._stopControlTimer();
         }
+
+        this.player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
 
         this.items.forEach(item => {
             item.destroy();
