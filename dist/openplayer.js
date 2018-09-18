@@ -3951,23 +3951,26 @@ var Captions = function () {
         subitems = subitems.filter(function (el) {
           return el.key !== track.language;
         });
-        subitems.push({
-          key: track.language,
-          label: _this2.trackList[i].label
-        });
+
+        if (_this2.trackList[i].cues) {
+          subitems.push({
+            key: track.language,
+            label: _this2.trackList[i].label
+          });
+        }
       };
 
       for (var i = 0, total = this.trackList.length; i < total; i++) {
         _loop2(i, total);
       }
 
-      return {
+      return subitems.length > 2 ? {
         className: 'om-subtitles__option',
         default: this.default || 'off',
         key: 'captions',
         name: 'Subtitles/CC',
         subitems: subitems
-      };
+      } : {};
     }
   }, {
     key: "_getCuesFromText",
