@@ -388,7 +388,7 @@ class Captions implements PlayerComponent {
      * @memberof Captions
      */
     private _show(): void {
-        if (!this.current || this.current.cues === undefined) {
+        if (!this.captions || !this.current || this.current.cues === undefined) {
             return;
         }
 
