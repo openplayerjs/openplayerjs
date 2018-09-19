@@ -3830,9 +3830,21 @@ var Captions = function () {
               }, function () {
                 delete _this.trackList[i];
                 element.remove();
-                var e = events_1.addEvent('controlschanged');
+                var details = {
+                  detail: {
+                    id: element.srclang,
+                    type: 'captions'
+                  }
+                };
+                var e = events_1.addEvent('settingremoved', details);
 
                 _this.player.getElement().dispatchEvent(e);
+
+                setTimeout(function () {
+                  var ev = events_1.addEvent('controlschanged');
+
+                  _this.player.getElement().dispatchEvent(ev);
+                }, 200);
               });
             }
           }
@@ -3951,13 +3963,10 @@ var Captions = function () {
         subitems = subitems.filter(function (el) {
           return el.key !== track.language;
         });
-
-        if (_this2.trackList[i].cues) {
-          subitems.push({
-            key: track.language,
-            label: _this2.trackList[i].label
-          });
-        }
+        subitems.push({
+          key: track.language,
+          label: _this2.trackList[i].label
+        });
       };
 
       for (var i = 0, total = this.trackList.length; i < total; i++) {
@@ -4846,7 +4855,16 @@ var Settings = function () {
         });
       };
 
-      this.events.media['controlshidden'] = this.hideEvent.bind(this);
+      this.removeEvent = function (e) {
+        var _e$detail = e.detail,
+            id = _e$detail.id,
+            type = _e$detail.type;
+
+        _this.removeItem(id, type);
+      };
+
+      this.events.media.controlshidden = this.hideEvent.bind(this);
+      this.events.media.settingremoved = this.removeEvent.bind(this);
       this.events.media.play = this.hideEvent.bind(this);
       this.events.media.pause = this.hideEvent.bind(this);
 
@@ -5004,6 +5022,21 @@ var Settings = function () {
 
       document.addEventListener('click', this.events.global['settings.submenu']);
       this.player.getElement().addEventListener('controlshidden', this.hideEvent);
+    }
+  }, {
+    key: "removeItem",
+    value: function removeItem(id, type) {
+      var minItems = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
+      var target = this.player.getElement().querySelector(".om-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
+
+      if (target) {
+        target.remove();
+      }
+
+      if (this.player.getElement().querySelectorAll(".om-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
+        delete this.submenu[type];
+        this.player.getElement().querySelector(".om-settings__menu-label[data-value^=".concat(type, "]")).closest('.om-settings__menu-item').remove();
+      }
     }
   }]);
 
@@ -5672,7 +5705,7 @@ var DashMedia = function (_native_1$default) {
     }
 
     _this.promise = typeof dashjs === 'undefined' ? general_1.loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') : new Promise(function (resolve) {
-      resolve();
+      return resolve();
     });
 
     _this.promise.then(createInstance.bind(_assertThisInitialized(_assertThisInitialized(_this))));
@@ -5847,7 +5880,7 @@ var HlsMedia = function (_native_1$default) {
     _this.media = mediaSource;
     _this.autoplay = autoplay;
     _this.promise = typeof Hls === 'undefined' ? general_1.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') : new Promise(function (resolve) {
-      resolve();
+      return resolve();
     });
 
     _this.promise.then(_this._create.bind(_assertThisInitialized(_assertThisInitialized(_this))));
@@ -6199,7 +6232,7 @@ var Ads = function () {
         }
 
         _this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(_this.adsOptions.url) : new Promise(function (resolve) {
-          resolve();
+          return resolve();
         });
 
         _this.promise.then(_this.load.bind(_this));
@@ -6210,7 +6243,7 @@ var Ads = function () {
       }
 
       this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(this.adsOptions.url) : new Promise(function (resolve) {
-        resolve();
+        return resolve();
       });
       this.promise.then(this.load.bind(this));
     }

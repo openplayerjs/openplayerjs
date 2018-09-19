@@ -129,6 +129,7 @@ describe('OpenPlayer.js', () => {
         });
 
         setTimeout(() => {
+            expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('data-active-captions')).to.equal('br_PT');
             expect(player.getContainer().querySelector('.om-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
             done();
         }, 1000);

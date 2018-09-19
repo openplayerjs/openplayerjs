@@ -154,7 +154,7 @@ class Captions implements PlayerComponent {
         this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
 
         // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
-        // Otherwise, remove the markup asscoiated with them
+        // Otherwise, remove the markup associated with them
         for (let i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
             if (element.kind === 'subtitles') {
@@ -174,10 +174,21 @@ class Captions implements PlayerComponent {
                         }, () => {
                             delete this.trackList[i];
                             element.remove();
-                            // This will allow the recreation of Settings elements and the caption button
-                            // if none of the captions are valid
-                            const e = addEvent('controlschanged');
+
+                            // Remove element from Settings menu
+                            const details = {
+                                detail: {
+                                    id: element.srclang,
+                                    type: 'captions',
+                                },
+                            };
+                            const e = addEvent('settingremoved', details);
                             this.player.getElement().dispatchEvent(e);
+
+                            setTimeout(() => {
+                                const ev = addEvent('controlschanged');
+                                this.player.getElement().dispatchEvent(ev);
+                            }, 200);
                         });
                     }
                 }
@@ -284,9 +295,7 @@ class Captions implements PlayerComponent {
             const track = this.trackList[i];
             // Override language item if duplicated when passing list of settings subitems
             subitems = subitems.filter(el => el.key !== track.language);
-            if (this.trackList[i].cues) {
-                subitems.push({key: track.language, label: this.trackList[i].label});
-            }
+            subitems.push({key: track.language, label: this.trackList[i].label});
         }
 
         // Avoid implementing submenu for captions if only 2 options were available
