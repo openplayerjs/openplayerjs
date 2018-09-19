@@ -95,6 +95,8 @@ class Settings implements PlayerComponent {
      */
     private hideEvent: () => void;
 
+    private removeEvent: (e: CustomEvent) => void;
+
     /**
      * Create an instance of Settings.
      *
@@ -143,7 +145,13 @@ class Settings implements PlayerComponent {
             });
         };
 
-        this.events.media['controlshidden'] = this.hideEvent.bind(this);
+        this.removeEvent = (e: CustomEvent) => {
+            const { id, type } = e.detail;
+            this.removeItem(id, type);
+        };
+
+        this.events.media.controlshidden = this.hideEvent.bind(this);
+        this.events.media.settingremoved = this.removeEvent.bind(this);
         this.events.media.play = this.hideEvent.bind(this);
         this.events.media.pause = this.hideEvent.bind(this);
 
@@ -309,6 +317,27 @@ class Settings implements PlayerComponent {
 
         document.addEventListener('click', this.events.global['settings.submenu']);
         this.player.getElement().addEventListener('controlshidden', this.hideEvent);
+    }
+
+    /**
+     *
+     *
+     * @param {(string|number)} id
+     * @param {string} type
+     * @param {number} [minItems=2]
+     * @memberof Settings
+     */
+    public removeItem(id: string|number, type: string, minItems: number = 2) {
+        const target = this.player.getElement().querySelector(`.om-settings__submenu-label[data-value=${type}-${id}]`);
+        if (target) {
+            target.remove();
+        }
+
+        if (this.player.getElement().querySelectorAll(`.om-settings__submenu-label[data-value^=${type}]`).length < minItems) {
+            delete this.submenu[type];
+            this.player.getElement().querySelector(`.om-settings__menu-label[data-value^=${type}]`)
+                .closest('.om-settings__menu-item').remove();
+        }
     }
 }
 

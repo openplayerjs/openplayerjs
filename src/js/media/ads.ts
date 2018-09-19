@@ -279,9 +279,7 @@ class Ads {
 
                 this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
                     loadScript(this.adsOptions.url) :
-                    new Promise(resolve => {
-                        resolve();
-                    });
+                    new Promise(resolve => resolve());
 
                 this.promise.then(this.load.bind(this));
             });
@@ -292,9 +290,7 @@ class Ads {
 
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
                 loadScript(this.adsOptions.url) :
-                new Promise(resolve => {
-                    resolve();
-                });
+                new Promise(resolve => resolve());
 
             this.promise.then(this.load.bind(this));
         }

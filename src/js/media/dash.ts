@@ -56,9 +56,7 @@ class DashMedia extends Native {
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
             loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
-            new Promise(resolve => {
-                resolve();
-            });
+            new Promise(resolve => resolve());
 
         this.promise.then(createInstance.bind(this));
         return this;
