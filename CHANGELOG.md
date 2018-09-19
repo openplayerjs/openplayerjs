@@ -1,3 +1,36 @@
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/openplayerjs/openplayerjs/compare/v1.2.3...v1.3.0) (2018-09-19)
+
+
+### Bug Fixes
+
+* **ads:** Added workflow to prevent video to starts playing before the Ad ([548dc96](https://github.com/openplayerjs/openplayerjs/commit/548dc96))
+* **ads:** Cleaned up styles for Ads, simplified method to resize Ads and added missing conditional to indicate their view mode ([f9046b0](https://github.com/openplayerjs/openplayerjs/commit/f9046b0))
+* **ads:** Updated documentation for Ads ([d924611](https://github.com/openplayerjs/openplayerjs/commit/d924611))
+* **captions:** Added missing conditional to avoid issues if caption layer is not ready to show captions ([192a33f](https://github.com/openplayerjs/openplayerjs/commit/192a33f))
+* **captions:** Added workflow to only include tracks with captions and subitems in the Settings element if there are more than 2 captions available ([febb456](https://github.com/openplayerjs/openplayerjs/commit/febb456))
+* **css:** Fixed minor style for time rail to get correct focus on audio player ([9a2aff5](https://github.com/openplayerjs/openplayerjs/commit/9a2aff5))
+* **media:** Fixed workflow to enhance custom media to a more reduced approach ([c63d85e](https://github.com/openplayerjs/openplayerjs/commit/c63d85e))
+* **media:** Improved the workflow to start and stop loading of HLS sources depending of autoplay/preload attributes ([a1fa8eb](https://github.com/openplayerjs/openplayerjs/commit/a1fa8eb))
+* **package:** Fixed README URL ([40060fe](https://github.com/openplayerjs/openplayerjs/commit/40060fe))
+* **player:** Borrowed snippet to test if HLS.js is truly supported on browser ([f34938b](https://github.com/openplayerjs/openplayerjs/commit/f34938b))
+* **player:** Fix data-* attribute to indicate active caption language ([f68c43c](https://github.com/openplayerjs/openplayerjs/commit/f68c43c))
+* **player:** Fixed Accessibility issues found in the player via Wave ([ce4306c](https://github.com/openplayerjs/openplayerjs/commit/ce4306c))
+* **player:** Fixed duration issues when duration is Infinity ([81941fc](https://github.com/openplayerjs/openplayerjs/commit/81941fc))
+* **player:** Fixed issue with non-existing Ads options ([98f6f9d](https://github.com/openplayerjs/openplayerjs/commit/98f6f9d))
+* **player:** Fixed issue with not being able to pause video by touching screen on iPad and fixed fullscreen presentation ([df2f3d8](https://github.com/openplayerjs/openplayerjs/commit/df2f3d8))
+* **player:** Fixed typo when checking for captions detected and added assignment of default caption at higher level ([e8da4c7](https://github.com/openplayerjs/openplayerjs/commit/e8da4c7))
+* **player:** Fixed way to attach/dispatch HLS events for hls.js ([4b3747c](https://github.com/openplayerjs/openplayerjs/commit/4b3747c))
+* **player:** Refactor workflow to add captions based on validation and existance of cues ahead of time to avoid rendering languages with no valid captions ([f602d1b](https://github.com/openplayerjs/openplayerjs/commit/f602d1b))
+* **player:** Refined support for HLS.js by not including Safari as part of the supported browsers ([aefb6a8](https://github.com/openplayerjs/openplayerjs/commit/aefb6a8))
+* **player:** Refined touch event on time rail to prevent default behavior; fixed issue with Ads not playing correctly on iOS ([47cbd88](https://github.com/openplayerjs/openplayerjs/commit/47cbd88))
+* **player:** Reordered operation to ensure proper creation of markup when `controlschanged` event is dispatched ([3dde2ab](https://github.com/openplayerjs/openplayerjs/commit/3dde2ab))
+* **settings:** Added new event to remove items from settings; implemented event in captions when no cues are detected ([cd045a5](https://github.com/openplayerjs/openplayerjs/commit/cd045a5))
+* **settings:** Fixed issue with Settings not retrieving the proper submenu after selecting an option from it ([3afe609](https://github.com/openplayerjs/openplayerjs/commit/3afe609))
+* **styles:** Added missing CSS rule for input range ([2676fe1](https://github.com/openplayerjs/openplayerjs/commit/2676fe1))
+
+
+
 <a name="1.2.3"></a>
 ## [1.2.3](https://github.com/openplayerjs/openplayerjs/compare/v1.2.2...v1.2.3) (2018-09-06)
 

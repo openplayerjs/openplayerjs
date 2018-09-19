@@ -106,6 +106,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_media_.media.html#autoplay" class="tsd-kind-icon">autoplay</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_media_.media.html#element" class="tsd-kind-icon">element</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_media_.media.html#media" class="tsd-kind-icon">media</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_media_.media.html#mediafiles" class="tsd-kind-icon">media<wbr>Files</a></li>
@@ -139,6 +140,12 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_media_.media.html#play" class="tsd-kind-icon">play</a></li>
 							</ul>
 						</section>
+						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
+							<h3>Object literals</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-object-literal tsd-parent-kind-class tsd-is-private"><a href="_media_.media.html#custommedia" class="tsd-kind-icon">custom<wbr>Media</a></li>
+							</ul>
+						</section>
 					</div>
 				</section>
 			</section>
@@ -148,13 +155,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Media<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLMediaElement</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_interfaces_player_options_.playeroptions.html" class="tsd-signature-type">PlayerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_.media.html" class="tsd-signature-type">Media</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Media<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLMediaElement</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_interfaces_player_options_.playeroptions.html" class="tsd-signature-type">PlayerOptions</a>, autoplay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, customMedia<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_interfaces_custom_media_.custommedia.html" class="tsd-signature-type">CustomMedia</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_.media.html" class="tsd-signature-type">Media</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L58">media.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L80">media.ts:80</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -175,6 +182,12 @@
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/_interfaces_player_options_.playeroptions.html" class="tsd-signature-type">PlayerOptions</a></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> autoplay: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> customMedia: <a href="../interfaces/_interfaces_custom_media_.custommedia.html" class="tsd-signature-type">CustomMedia</a></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_media_.media.html" class="tsd-signature-type">Media</a></h4>
 						</li>
@@ -183,13 +196,36 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="autoplay" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> autoplay</h3>
+					<div class="tsd-signature tsd-kind-icon">autoplay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L68">media.ts:68</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flag to indicate if <code>autoplay</code> attribute was set</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>type</dt>
+							<dd><p>boolean</p>
+							</dd>
+							<dt>memberof</dt>
+							<dd><p>HlsMedia</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="element" class="tsd-anchor"></a>
 					<h3>element</h3>
 					<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLMediaElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L22">media.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L23">media.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -209,10 +245,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="media" class="tsd-anchor"></a>
 					<h3>media</h3>
-					<div class="tsd-signature tsd-kind-icon">media<span class="tsd-signature-symbol">:</span> <a href="_media_html5_.html5media.html" class="tsd-signature-type">HTML5Media</a><span class="tsd-signature-symbol"> | </span><a href="_media_hls_.hlsmedia.html" class="tsd-signature-type">HlsMedia</a><span class="tsd-signature-symbol"> | </span><a href="_media_dash_.dashmedia.html" class="tsd-signature-type">DashMedia</a></div>
+					<div class="tsd-signature tsd-kind-icon">media<span class="tsd-signature-symbol">:</span> <a href="_media_html5_.html5media.html" class="tsd-signature-type">HTML5Media</a><span class="tsd-signature-symbol"> | </span><a href="_media_hls_.hlsmedia.html" class="tsd-signature-type">HlsMedia</a><span class="tsd-signature-symbol"> | </span><a href="_media_dash_.dashmedia.html" class="tsd-signature-type">DashMedia</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L30">media.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L31">media.ts:31</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -221,7 +257,7 @@
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>type</dt>
-							<dd><p>(HTML5Media|HlsMedia|DashMedia)</p>
+							<dd><p>(HTML5Media|HlsMedia|DashMedia|any)</p>
 							</dd>
 							<dt>memberof</dt>
 							<dd><p>Media</p>
@@ -235,7 +271,7 @@
 					<div class="tsd-signature tsd-kind-icon">media<wbr>Files<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interfaces_source_.source.html" class="tsd-signature-type">Source</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L38">media.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L39">media.ts:39</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -258,7 +294,7 @@
 					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interfaces_player_options_.playeroptions.html" class="tsd-signature-type">PlayerOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L58">media.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L59">media.ts:59</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -281,7 +317,7 @@
 					<div class="tsd-signature tsd-kind-icon">promise<wbr>Play<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L49">media.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L50">media.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -318,7 +354,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L270">media.ts:270</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L296">media.ts:296</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -341,7 +377,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L259">media.ts:259</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L285">media.ts:285</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -374,7 +410,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L281">media.ts:281</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L307">media.ts:307</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -406,7 +442,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L303">media.ts:303</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L334">media.ts:334</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -439,7 +475,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L230">media.ts:230</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L256">media.ts:256</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -462,7 +498,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L219">media.ts:219</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L245">media.ts:245</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -495,7 +531,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L292">media.ts:292</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L323">media.ts:323</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -528,7 +564,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L241">media.ts:241</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L267">media.ts:267</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -551,7 +587,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L250">media.ts:250</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L276">media.ts:276</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -585,7 +621,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L190">media.ts:190</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L216">media.ts:216</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -611,7 +647,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L158">media.ts:158</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L184">media.ts:184</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -648,7 +684,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L210">media.ts:210</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L236">media.ts:236</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -671,7 +707,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L199">media.ts:199</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L225">media.ts:225</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -707,7 +743,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L355">media.ts:355</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L391">media.ts:391</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -731,13 +767,13 @@
 					<a name="_invoke" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> _invoke</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-						<li class="tsd-signature tsd-kind-icon">_invoke<span class="tsd-signature-symbol">(</span>media<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_source_.source.html" class="tsd-signature-type">Source</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_hls_.hlsmedia.html" class="tsd-signature-type">HlsMedia</a><span class="tsd-signature-symbol"> | </span><a href="_media_dash_.dashmedia.html" class="tsd-signature-type">DashMedia</a><span class="tsd-signature-symbol"> | </span><a href="_media_html5_.html5media.html" class="tsd-signature-type">HTML5Media</a></li>
+						<li class="tsd-signature tsd-kind-icon">_invoke<span class="tsd-signature-symbol">(</span>media<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_source_.source.html" class="tsd-signature-type">Source</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_hls_.hlsmedia.html" class="tsd-signature-type">HlsMedia</a><span class="tsd-signature-symbol"> | </span><a href="_media_dash_.dashmedia.html" class="tsd-signature-type">DashMedia</a><span class="tsd-signature-symbol"> | </span><a href="_media_html5_.html5media.html" class="tsd-signature-type">HTML5Media</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L388">media.ts:388</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L424">media.ts:424</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -761,6 +797,8 @@
 								<a href="_media_dash_.dashmedia.html" class="tsd-signature-type">DashMedia</a>
 								<span class="tsd-signature-symbol"> | </span>
 								<a href="_media_html5_.html5media.html" class="tsd-signature-type">HTML5Media</a>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">any</span>
 							</h4>
 						</li>
 					</ul>
@@ -775,7 +813,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L315">media.ts:315</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L346">media.ts:346</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -809,7 +847,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L83">media.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L109">media.ts:109</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -845,7 +883,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L147">media.ts:147</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L173">media.ts:173</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -874,7 +912,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L95">media.ts:95</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L121">media.ts:121</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -904,7 +942,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L130">media.ts:130</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L156">media.ts:156</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -939,7 +977,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2e116e0/src/js/media.ts#L108">media.ts:108</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L134">media.ts:134</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -964,6 +1002,72 @@
 					</ul>
 				</section>
 			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
+				<h2>Object literals</h2>
+				<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-class tsd-is-private">
+					<a name="custommedia" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> custom<wbr>Media</h3>
+					<div class="tsd-signature tsd-kind-icon">custom<wbr>Media<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L76">media.ts:76</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Collection of additional (non-native) media</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>type</dt>
+							<dd><p>CustomMedia</p>
+							</dd>
+							<dt>memberof</dt>
+							<dd><p>Player</p>
+							</dd>
+						</dl>
+					</div>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="custommedia.media-1" class="tsd-anchor"></a>
+						<h3>media</h3>
+						<div class="tsd-signature tsd-kind-icon">media<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L77">media.ts:77</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-type-declaration">
+							<h4>Type declaration</h4>
+							<ul class="tsd-parameters">
+							</ul>
+						</div>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="custommedia.optionskey" class="tsd-anchor"></a>
+						<h3>options<wbr>Key</h3>
+						<div class="tsd-signature tsd-kind-icon">options<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L78">media.ts:78</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-type-declaration">
+							<h4>Type declaration</h4>
+							<ul class="tsd-parameters">
+							</ul>
+						</div>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+						<a name="custommedia.rules" class="tsd-anchor"></a>
+						<h3>rules</h3>
+						<div class="tsd-signature tsd-kind-icon">rules<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd045a5/src/js/media.ts#L79">media.ts:79</a></li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -985,6 +1089,9 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="_media_.media.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_media_.media.html#autoplay" class="tsd-kind-icon">autoplay</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_media_.media.html#element" class="tsd-kind-icon">element</a>
@@ -1048,6 +1155,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_media_.media.html#play" class="tsd-kind-icon">play</a>
+							</li>
+							<li class=" tsd-kind-object-literal tsd-parent-kind-class tsd-is-private">
+								<a href="_media_.media.html#custommedia" class="tsd-kind-icon">custom<wbr>Media</a>
 							</li>
 						</ul>
 					</li>

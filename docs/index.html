@@ -130,9 +130,10 @@
 					<li>Display Captions during media playback (it will hide them when Ads are played).</li>
 				</ol>
 				<h3 id="using-javascript">Using Javascript</h3>
-				<p>Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL). So for that case, remove the <code>om-player</code> class from the video/audio tag (just leave <code>om-player__media</code> to preserve styles), and in Javascript use the following snippet:</p>
-				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'[player ID]'</span>, [VAST/VPAID URL], [<span class="hljs-string">`true|false`</span> <span class="hljs-keyword">for</span> fullscreen effect], {
-    <span class="hljs-attr">hls</span>: {}, <span class="hljs-comment">// full HLS options are in https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.</span>
+				<p>Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the <code>om-player</code> class from the video/audio tag (just leave <code>om-player__media</code> to preserve styles), and in Javascript use the following snippet:</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'[player ID]'</span>, [valid VAST/VPAID URL|List <span class="hljs-keyword">of</span> VAST/VPAID URLs], [<span class="hljs-string">`true|false`</span> <span class="hljs-keyword">for</span> fullscreen effect by <span class="hljs-keyword">default</span>], {
+    <span class="hljs-attr">ads</span>: {}, <span class="hljs-comment">// For now, only `url` to IMA SDK in the event you need to set up a custom URL for it</span>
+    hls: {}, <span class="hljs-comment">// full HLS options are in https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.</span>
     dash: {}, <span class="hljs-comment">// For now, only `robustnessLevel`; more information in http://cdn.dashjs.org/latest/jsdoc/index.html</span>
 });
 <span class="hljs-comment">// Don't forget to start the player</span>
@@ -230,7 +231,7 @@ player.init();</code></pre>
 
 <span class="hljs-keyword">var</span> event = <span class="hljs-keyword">new</span> CustomEvent(<span class="hljs-string">'ended'</span>);
 player.getElement().dispatchEvent(event);</code></pre>
-				<p>All <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events">HTML5 media events</a> are supported by OpenPlayer, and it incorporates some custom ones:</p>
+				<p>All <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events">HTML5 media events</a> are supported by OpenPlayer, and it incorporates some custom ones, mostly related to Ads:</p>
 				<table>
 					<thead>
 						<tr>
@@ -251,10 +252,47 @@ player.getElement().dispatchEvent(event);</code></pre>
 							<td>Event triggered when user changes the current caption by selecting a new one from the <code>Settings</code> menu.</td>
 						</tr>
 						<tr>
-							<td><code>adsended</code></td>
-							<td>Event executed when an Ad ends playing (currently used to change the Replay icon to Pause when playing a postroll Ad).</td>
+							<td><code>adsloaded</code></td>
+							<td>Event when Ads have been loaded successfully and can be played.</td>
+						</tr>
+						<tr>
+							<td><code>adsstart</code></td>
+							<td>Event when Ads start being played.</td>
+						</tr>
+						<tr>
+							<td><code>adsfirstquartile</code></td>
+							<td>Event triggered when Ad reached the first quarter of its length.</td>
+						</tr>
+						<tr>
+							<td><code>adsmidpoint</code></td>
+							<td>Event triggered when Ad reached half of its length.</td>
+						</tr>
+						<tr>
+							<td><code>adsthirdquartile</code></td>
+							<td>Event triggered when Ad reached the third quarter of its length.</td>
+						</tr>
+						<tr>
+							<td><code>adscomplete</code></td>
+							<td>Event triggered when Ad reached the end of its length.</td>
+						</tr>
+						<tr>
+							<td><code>adsskipped</code></td>
+							<td>Event triggered when user skips the Ad.</td>
+						</tr>
+						<tr>
+							<td><code>adsvolumeChange</code></td>
+							<td>Event triggered when user increases/decreases the volume of Ad.</td>
+						</tr>
+						<tr>
+							<td><code>adsallAdsCompleted</code></td>
+							<td>Event triggered when all Ads have been played.</td>
+						</tr>
+						<tr>
+							<td><code>adsmediaended</code></td>
+							<td>Event executed when an Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad).</td>
 						</tr>
 				</tbody></table>
+				<p>In addition to the list above, <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events">HLS events</a> and <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors">HLS error events</a> are being supported by OpenPlayer, including all their details. For the error ones, they are classified as <code>networkError</code>, <code>mediaError</code>, <code>muxError</code> and <code>otherError</code>.</p>
 				<h2 id="contributions">Contributions</h2>
 				<p>Make sure you check <a href="https://conventionalcommits.org/">Conventional Commits Standards</a> for commit guidelines.</p>
 			</div>
@@ -290,6 +328,9 @@ player.getElement().dispatchEvent(event);</code></pre>
 						<a href="modules/_controls_volume_.html">"controls/volume"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_ads_options_.html">"interfaces/ads-<wbr>options"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_captions_cue_.html">"interfaces/captions/cue"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
@@ -303,6 +344,9 @@ player.getElement().dispatchEvent(event);</code></pre>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_component_.html">"interfaces/component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_custom_media_.html">"interfaces/custom-<wbr>media"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_dash_options_.html">"interfaces/dash-<wbr>options"</a>
