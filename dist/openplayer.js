@@ -5879,7 +5879,7 @@ var HlsMedia = function (_native_1$default) {
     _this.element = element;
     _this.media = mediaSource;
     _this.autoplay = autoplay;
-    _this.promise = typeof Hls === 'undefined' ? general_1.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest') : new Promise(function (resolve) {
+    _this.promise = typeof Hls === 'undefined' ? general_1.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') : new Promise(function (resolve) {
       return resolve();
     });
 
