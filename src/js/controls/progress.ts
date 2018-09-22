@@ -1,6 +1,7 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
+import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { hasClass, offset } from '../utils/general';
 import { formatTime } from '../utils/time';
 
@@ -145,10 +146,12 @@ class Progress implements PlayerComponent {
         this.played.setAttribute('role', 'presentation');
         this.played.value = 0;
 
-        this.tooltip = document.createElement('span');
-        this.tooltip.className = 'om-controls__tooltip';
-        this.tooltip.tabIndex = -1;
-        this.tooltip.innerHTML = '00:00';
+        if (!IS_IOS && !IS_ANDROID) {
+            this.tooltip = document.createElement('span');
+            this.tooltip.className = 'om-controls__tooltip';
+            this.tooltip.tabIndex = -1;
+            this.tooltip.innerHTML = '00:00';
+        }
 
         this.progress.appendChild(this.slider);
         this.progress.appendChild(this.played);
@@ -296,45 +299,46 @@ class Progress implements PlayerComponent {
         this.events.slider.touchstart = mobileForcePause.bind(this);
         this.events.slider.touchend = releasePause.bind(this);
 
-        this.events.container.mousemove = (e: any) => {
-            const el = this.player.activeElement();
-            if (el.duration === Infinity) {
-                return true;
-            }
+        if (!IS_IOS && !IS_ANDROID) {
+            this.events.container.mousemove = (e: any) => {
+                const el = this.player.activeElement();
+                if (el.duration === Infinity) {
+                    return true;
+                }
 
-            const x = (e.originalEvent && e.originalEvent.changedTouches) ?
-                e.originalEvent.changedTouches[0].pageX : e.pageX;
+                const x = (e.originalEvent && e.originalEvent.changedTouches) ?
+                    e.originalEvent.changedTouches[0].pageX : e.pageX;
 
-            let pos = x - offset(this.progress).left;
-            const half = this.tooltip.offsetWidth / 2;
-            const percentage = (pos / this.progress.offsetWidth);
-            const time = percentage * el.duration;
-            const mediaContainer = this.player.getContainer();
-            const limit = mediaContainer.offsetWidth - this.tooltip.offsetWidth;
+                let pos = x - offset(this.progress).left;
+                const half = this.tooltip.offsetWidth / 2;
+                const percentage = (pos / this.progress.offsetWidth);
+                const time = percentage * el.duration;
+                const mediaContainer = this.player.getContainer();
+                const limit = mediaContainer.offsetWidth - this.tooltip.offsetWidth;
 
-            if (pos <= 0 || x - offset(mediaContainer).left <= half) {
-                pos = 0;
-            } else if (x - offset(mediaContainer).left >= limit) {
-                pos = limit;
-            } else {
-                pos -= half;
-            }
+                if (pos <= 0 || x - offset(mediaContainer).left <= half) {
+                    pos = 0;
+                } else if (x - offset(mediaContainer).left >= limit) {
+                    pos = limit;
+                } else {
+                    pos -= half;
+                }
 
-            if (percentage >= 0 && percentage <= 1) {
-                this.tooltip.classList.add('om-controls__tooltip--visible');
-            } else {
-                this.tooltip.classList.remove('om-controls__tooltip--visible');
-            }
+                if (percentage >= 0 && percentage <= 1) {
+                    this.tooltip.classList.add('om-controls__tooltip--visible');
+                } else {
+                    this.tooltip.classList.remove('om-controls__tooltip--visible');
+                }
 
-            this.tooltip.style.left = `${pos}px`;
-            this.tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
-        };
-
-        this.events.global.mousemove = (e: MouseEvent) => {
-            if (!(e.target as HTMLElement).closest('.om-controls__progress')) {
-                this.tooltip.classList.remove('om-controls__tooltip--visible');
-            }
-        };
+                this.tooltip.style.left = `${pos}px`;
+                this.tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
+            };
+            this.events.global.mousemove = (e: MouseEvent) => {
+                if (!(e.target as HTMLElement).closest('.om-controls__progress')) {
+                    this.tooltip.classList.remove('om-controls__tooltip--visible');
+                }
+            };
+        }
 
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().addEventListener(event, this.events.media[event]);
@@ -372,7 +376,9 @@ class Progress implements PlayerComponent {
         this.buffer.remove();
         this.played.remove();
         this.slider.remove();
-        this.tooltip.remove();
+        if (!IS_IOS && !IS_ANDROID) {
+            this.tooltip.remove();
+        }
         this.progress.remove();
     }
 }

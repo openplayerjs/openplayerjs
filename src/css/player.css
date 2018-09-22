@@ -711,3 +711,14 @@ video:-webkit-media-text-track-display {
     transform: translate(-50%, -50%);
     width: auto !important;
 }
+
+/* === Device-specific rules ========= */
+.om-player__ios--iphone .om-player__play {
+    margin-top: -5px;
+}
+.om-player__ios--iphone .om-controls {
+    display: none;
+}
+.om-player__ios--iphone.om-ads--active .om-controls {
+    display: block;
+}

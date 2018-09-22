@@ -535,6 +535,12 @@ class Ads {
         volumeEl.className = 'om-player__unmute';
         volumeEl.innerHTML = `<span>${action} to unmute</span>`;
 
+        // Ensure native media is muted as well
+        this.adsMuted = true;
+        this.media.muted = true;
+        this.adsVolume = 0;
+        this.media.volume = 0;
+
         volumeEl.addEventListener('click', () => {
             this.adsMuted = false;
             this.media.muted = false;
@@ -650,6 +656,10 @@ class Ads {
             if (this.adsManager) {
                 this.adsManager.destroy();
             }
+            const unmuteEl = this.element.parentElement.querySelector('.om-player__unmute');
+            if (unmuteEl) {
+                unmuteEl.remove();
+            }
             if (this.autoStart === true || this.adsStarted === true) {
                 this.adsActive = false;
                 this._resumeMedia();
@@ -735,7 +745,6 @@ class Ads {
      * @memberof Ads
      */
     private _onContentPauseRequested(): void {
-        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         if (this.adsStarted) {
             this.media.pause();
         } else {
@@ -743,6 +752,7 @@ class Ads {
         }
         const e = addEvent('play');
         this.element.dispatchEvent(e);
+        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
     }
 
     /**
