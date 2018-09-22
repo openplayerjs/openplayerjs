@@ -558,7 +558,7 @@ class Player {
      */
     private _createControls(): void {
         if (IS_IPHONE && isVideo(this.element)) {
-            return;
+            this.getContainer().classList.add('om-player__ios--iphone');
         }
         this.controls = new Controls(this);
         this.controls.create();
@@ -651,7 +651,7 @@ class Player {
                 if (el.paused) {
                     this.playBtn.classList.remove('om-player__play--paused');
                     this.playBtn.setAttribute('aria-pressed', 'false');
-                    this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
+                    this.playBtn.setAttribute('aria-hidden', 'false');
                 }
             };
             this.events.waiting = () => {
