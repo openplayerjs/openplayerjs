@@ -671,6 +671,10 @@ video:-webkit-media-text-track-display {
 .om-ads--active {
     overflow: hidden;
 }
+.om-ads--active .om-controls__captions,
+.om-ads--active .om-controls__settings {
+    display: none;
+}
 .om-ads--active #om-ads {
     z-index: 1;
 }
