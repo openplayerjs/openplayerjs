@@ -10,4 +10,6 @@ export default interface DashOptions {
      * @type string
      */
     robustnessLevel: string;
+
+    drm?: any;
 }

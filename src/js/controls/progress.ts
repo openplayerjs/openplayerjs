@@ -302,7 +302,7 @@ class Progress implements PlayerComponent {
         if (!IS_IOS && !IS_ANDROID) {
             this.events.container.mousemove = (e: any) => {
                 const el = this.player.activeElement();
-                if (el.duration === Infinity) {
+                if (el.duration === Infinity || this.player.isAd()) {
                     return true;
                 }
 
@@ -334,7 +334,7 @@ class Progress implements PlayerComponent {
                 this.tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
             };
             this.events.global.mousemove = (e: MouseEvent) => {
-                if (!(e.target as HTMLElement).closest('.om-controls__progress')) {
+                if (!(e.target as HTMLElement).closest('.om-controls__progress') || this.player.isAd()) {
                     this.tooltip.classList.remove('om-controls__tooltip--visible');
                 }
             };

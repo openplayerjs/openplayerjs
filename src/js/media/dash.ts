@@ -123,8 +123,8 @@ class DashMedia extends Native {
             this._revoke();
             this.player = dashjs.MediaPlayer().create();
             // If DRM is set, load protection data
-            if (typeof media.drm === 'object' && Object.keys(this.media.drm).length) {
-                this.player.setProtectionData(media.drm);
+            if (typeof this.options.drm === 'object' && Object.keys(this.options.drm).length) {
+                this.player.setProtectionData(this.options.drm);
                 if (this.options.robustnessLevel && this.options.robustnessLevel) {
                     this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
                 }
