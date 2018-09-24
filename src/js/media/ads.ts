@@ -1,8 +1,9 @@
 import AdsOptions from '../interfaces/ads-options';
+import Source from '../interfaces/source';
 import Media from '../media';
-import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { loadScript } from '../utils/general';
+import { isVideo, loadScript } from '../utils/general';
 import { isAutoplaySupported } from '../utils/media';
 
 declare const google: any;
@@ -233,6 +234,14 @@ class Ads {
      */
     private originalVolume: number;
 
+    private preloadContent: any;
+
+    private lastTimePaused: number = 0;
+
+    private mediaSources: Source[];
+
+    private mediaStarted: boolean = false;
+
     /**
      * Create an instance of Ads.
      *
@@ -256,8 +265,7 @@ class Ads {
         this.playTriggered = false;
 
         this.originalVolume = this.element.volume;
-        this.adsVolume = IS_IOS ? 0 : this.originalVolume;
-        this.adsMuted = IS_IOS ? true : this.adsMuted;
+        this.adsVolume = this.originalVolume;
 
         // Test browser capabilities to autoplay Ad if `autoStart` is flagged as true
         if (this.autoStart === true) {
@@ -274,7 +282,27 @@ class Ads {
 
                     const e = addEvent('volumechange');
                     this.element.dispatchEvent(e);
-                    this._createUnmuteButton();
+
+                    const volumeEl = document.createElement('div');
+                    const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
+                    volumeEl.className = 'om-player__unmute';
+                    volumeEl.innerHTML = `<span>${action} to unmute</span>`;
+                    volumeEl.addEventListener('click', () => {
+                        this.adsMuted = false;
+                        this.media.muted = false;
+                        this.adsVolume = this.originalVolume;
+                        this.media.volume = this.originalVolume;
+                        this.adsManager.setVolume(this.originalVolume);
+
+                        const event = addEvent('volumechange');
+                        this.element.dispatchEvent(event);
+
+                        // Remove element
+                        volumeEl.remove();
+                    });
+
+                    const target = this.element.parentElement;
+                    target.insertBefore(volumeEl, target.firstChild);
                 }
 
                 this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
@@ -284,10 +312,6 @@ class Ads {
                 this.promise.then(this.load.bind(this));
             });
         } else {
-            if (this.adsMuted) {
-                this._createUnmuteButton();
-            }
-
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
                 loadScript(this.adsOptions.url) :
                 new Promise(resolve => resolve());
@@ -304,16 +328,35 @@ class Ads {
      * @memberof Ads
      */
     public load(): void {
+        this.adsStarted = true;
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'om-ads';
         this.adsContainer.tabIndex = -1;
         this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
+        this.mediaSources = this.media.src;
+
+        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+        this.adDisplayContainer =
+            new google.ima.AdDisplayContainer(
+                this.adsContainer,
+                this.element,
+            );
+
+        this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
+        this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
+        this.adsLoader.addEventListener(
+            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+            this._loaded.bind(this),
+        );
+        this.adsLoader.addEventListener(
+            google.ima.AdErrorEvent.Type.AD_ERROR,
+            this._error.bind(this),
+        );
+
+        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
 
         // Create responsive ad
         window.addEventListener('resize', this.resizeAds.bind(this));
-
-        this._setup();
-        this._requestAds();
     }
 
     /**
@@ -325,15 +368,26 @@ class Ads {
         if (!this.adsDone) {
             this.adsDone = true;
             this.adDisplayContainer.initialize();
-            this._playAds();
-        } else if (this.adsManager) {
+            this.media.load();
+
+            if (IS_IOS || IS_ANDROID) {
+                this.preloadContent = this._contentLoadedAction;
+                this.element.addEventListener(
+                    'loadedmetadata',
+                    this._contentLoadedAction.bind(this),
+                    false);
+                this.media.load();
+              } else {
+                this._contentLoadedAction();
+              }
+            return;
+        }
+
+        if (this.adsManager) {
             this.adsActive = true;
             this.adsManager.resume();
             const e = addEvent('play');
             this.element.dispatchEvent(e);
-
-            const event = addEvent('playing');
-            this.element.dispatchEvent(event);
         }
     }
 
@@ -523,43 +577,6 @@ class Ads {
     }
 
     /**
-     * Insert an `Unmute` element to start Ads
-     *
-     * This is necessary with iOS due more restrictive play policies
-     *
-     * @memberof Ads
-     */
-    private _createUnmuteButton(): void {
-        const volumeEl = document.createElement('div');
-        const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
-        volumeEl.className = 'om-player__unmute';
-        volumeEl.innerHTML = `<span>${action} to unmute</span>`;
-
-        // Ensure native media is muted as well
-        this.adsMuted = true;
-        this.media.muted = true;
-        this.adsVolume = 0;
-        this.media.volume = 0;
-
-        volumeEl.addEventListener('click', () => {
-            this.adsMuted = false;
-            this.media.muted = false;
-            this.adsVolume = this.originalVolume;
-            this.media.volume = this.originalVolume;
-            this.adsManager.setVolume(this.originalVolume);
-
-            const event = addEvent('volumechange');
-            this.element.dispatchEvent(event);
-
-            // Remove element
-            volumeEl.remove();
-        });
-
-        const target = this.element.parentElement;
-        target.insertBefore(volumeEl, target.firstChild);
-    }
-
-    /**
      * Dispatch IMA SDK's events via OpenPlayer.
      *
      * @param {any} event
@@ -579,9 +596,11 @@ class Ads {
                     this.element.parentElement.classList.add('om-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
-
-                    const loadedEvent = addEvent('loadedmetadata');
-                    this.element.dispatchEvent(loadedEvent);
+                    if (!this.mediaStarted) {
+                        const loadedEvent = addEvent('loadedmetadata');
+                        this.element.dispatchEvent(loadedEvent);
+                        this.mediaStarted = true;
+                    }
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
@@ -675,7 +694,7 @@ class Ads {
      */
     private _loaded(adsManagerLoadedEvent: any): void {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
-        adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+        adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
         // Get the ads manager.
         this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
         this._start(this.adsManager);
@@ -719,11 +738,18 @@ class Ads {
         });
 
         if (this.autoStart === true || this.playTriggered === true) {
-            this._playAds();
             this.playTriggered = false;
-        } else {
-            this.adDisplayContainer.initialize();
-            this.adsStarted = true;
+            manager.init(
+                this.element.offsetWidth,
+                this.element.offsetHeight,
+                this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
+                    google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL,
+            );
+            manager.start();
+            const e = addEvent('play');
+            this.element.dispatchEvent(e);
+            const event = addEvent('playing');
+            this.element.dispatchEvent(event);
         }
     }
 
@@ -745,6 +771,9 @@ class Ads {
      * @memberof Ads
      */
     private _onContentPauseRequested(): void {
+        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
+        this.lastTimePaused = this.media.currentTime;
+
         if (this.adsStarted) {
             this.media.pause();
         } else {
@@ -752,7 +781,6 @@ class Ads {
         }
         const e = addEvent('play');
         this.element.dispatchEvent(e);
-        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
     }
 
     /**
@@ -762,7 +790,23 @@ class Ads {
      */
     private _onContentResumeRequested(): void {
         this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-        this._resumeMedia();
+        this.media.src = this.mediaSources;
+        this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+        this.media.load();
+    }
+
+    private _loadedMetadataHandler() {
+        if (this.element.seekable.length) {
+            if (this.element.seekable.end(0) > this.lastTimePaused) {
+                this.element.currentTime = this.lastTimePaused;
+                this.element.controls = !!(IS_IPHONE && isVideo(this.element));
+                this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+                this.media.currentTime = this.element.currentTime;
+                this._resumeMedia();
+            }
+        } else {
+            setTimeout(this._loadedMetadataHandler.bind(this), 100);
+        }
     }
 
     /**
@@ -784,7 +828,7 @@ class Ads {
                 this.media.play();
                 const playEvent = addEvent('play');
                 this.element.dispatchEvent(playEvent);
-            }, 500);
+            }, 50);
         } else {
             const event = addEvent('ended');
             this.element.dispatchEvent(event);
@@ -798,9 +842,6 @@ class Ads {
      * @memberof Ads
      */
     private _requestAds(): void {
-        if (this.adsLoader) {
-            this.adsLoader.contentComplete();
-        }
         this.adsRequest = new google.ima.AdsRequest();
         this.adsRequest.adTagUrl = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
 
@@ -817,70 +858,16 @@ class Ads {
     }
 
     /**
-     * Prepare container and request loader so Ads can be played.
+     * Internal callback to request Ads.
      *
      * @memberof Ads
      */
-    private _setup(): void {
-        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
-        this.adDisplayContainer =
-            new google.ima.AdDisplayContainer(
-                this.adsContainer,
-                this.element,
-            );
-
-        this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
-        this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
-        this.adsLoader.addEventListener(
-            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-            this._loaded.bind(this),
-        );
-        this.adsLoader.addEventListener(
-            google.ima.AdErrorEvent.Type.AD_ERROR,
-            this._error.bind(this),
-        );
-
-        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-    }
-
-    /**
-     * Internal callback to start playing Ads or resume media if error is detected.
-     *
-     * @memberof Ads
-     */
-    private _playAds(): void {
-        try {
-            if (!this.adsDone) {
-                this.adsDone = true;
-                this.adDisplayContainer.initialize();
-            }
-
-            if (this.adsManager) {
-                // Initialize the ads manager. Ad rules playlist will start at this time.
-                this.adsManager.init(
-                    this.element.offsetWidth,
-                    this.element.offsetHeight,
-                    this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
-                        google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL,
-                );
-                this.adsManager.start();
-                const e = addEvent('play');
-                this.element.dispatchEvent(e);
-                const event = addEvent('playing');
-                this.element.dispatchEvent(event);
-            } else {
-                const e = addEvent('waiting');
-                this.element.dispatchEvent(e);
-            }
-
-            this.adsActive = true;
-            this.adsStarted = true;
-        } catch (adError) {
-            console.error(adError);
-            if (this.playRequested) {
-                this._resumeMedia();
-            }
+    private _contentLoadedAction() {
+        if (this.preloadContent) {
+            this.element.removeEventListener('loadedmetadata', this.preloadContent.bind(this));
+            this.preloadContent = null;
         }
+        this._requestAds();
     }
 }
 
