@@ -146,17 +146,17 @@ class Progress implements PlayerComponent {
         this.played.setAttribute('role', 'presentation');
         this.played.value = 0;
 
+        this.progress.appendChild(this.slider);
+        this.progress.appendChild(this.played);
+        this.progress.appendChild(this.buffer);
+
         if (!IS_IOS && !IS_ANDROID) {
             this.tooltip = document.createElement('span');
             this.tooltip.className = 'om-controls__tooltip';
             this.tooltip.tabIndex = -1;
             this.tooltip.innerHTML = '00:00';
+            this.progress.appendChild(this.tooltip);
         }
-
-        this.progress.appendChild(this.slider);
-        this.progress.appendChild(this.played);
-        this.progress.appendChild(this.buffer);
-        this.progress.appendChild(this.tooltip);
 
         this.events.media.loadedmetadata = () => {
             const el = this.player.activeElement();
