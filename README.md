@@ -107,9 +107,24 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
-    ads: {}, // For now, only `url` to IMA SDK in the event you need to set up a custom URL for it
-    hls: {}, // full HLS options are in https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
-    dash: {}, // For now, only `robustnessLevel`; more information in http://cdn.dashjs.org/latest/jsdoc/index.html
+    ads: {
+        // Custom path/URL to IMA SDK
+        url,
+        // If set to `true`, load `ima3_debug.js` file for debugging purposes
+        debug
+    },
+    hls: {
+        // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
+    },
+    dash: {
+        // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,
+        // HW_SECURE_DECODE, HW_SECURE_ALL
+        robustnessLevel,
+        // object containing property names corresponding to key system name strings (e.g. "org.w3.clearkey") and
+        // associated values being instances of ProtectionData
+        // (http://vm2.dashif.org/dash.js/docs/jsdocs/MediaPlayer.vo.protection.ProtectionData.html)
+        drm
+    },
 });
 // Don't forget to start the player
 player.init();
