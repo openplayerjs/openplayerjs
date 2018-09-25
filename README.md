@@ -107,6 +107,9 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
+    // Number of seconds to rewind/forward media
+    // (by default, player will rewind/forward  5% of the total duration of media)
+    step,
     ads: {
         // Custom path/URL to IMA SDK
         url,
