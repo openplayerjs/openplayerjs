@@ -251,21 +251,20 @@ class Ads {
      * @memberof Ads
      */
     constructor(media: Media, ads: string|string[], autoStart?: boolean, options?: AdsOptions) {
+        const defaultOpts = {
+            debug: false,
+            url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+        };
         this.ads = ads;
         this.media = media;
         this.element = media.element;
         this.autoStart = autoStart || false;
-        this.adsOptions = options;
-        if (!this.adsOptions) {
-            this.adsOptions = {
-                url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-            };
-        }
-
+        this.adsOptions = { ...defaultOpts, ...options };
         this.playTriggered = false;
-
         this.originalVolume = this.element.volume;
         this.adsVolume = this.originalVolume;
+
+        const path = this.adsOptions.debug ? this.adsOptions.url.replace(/(\.js$)/, '_debug.js') : this.adsOptions.url;
 
         // Test browser capabilities to autoplay Ad if `autoStart` is flagged as true
         if (this.autoStart === true) {
@@ -306,15 +305,13 @@ class Ads {
                 }
 
                 this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-                    loadScript(this.adsOptions.url) :
-                    new Promise(resolve => resolve());
+                    loadScript(path) : new Promise(resolve => resolve());
 
                 this.promise.then(this.load.bind(this));
             });
         } else {
             this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-                loadScript(this.adsOptions.url) :
-                new Promise(resolve => resolve());
+                loadScript(path) : new Promise(resolve => resolve());
 
             this.promise.then(this.load.bind(this));
         }
@@ -795,6 +792,12 @@ class Ads {
         this.media.load();
     }
 
+    /**
+     * Update the current time to mimic the default Ad Playback.
+     *
+     * @private
+     * @memberof Ads
+     */
     private _loadedMetadataHandler() {
         if (this.element.seekable.length) {
             if (this.element.seekable.end(0) > this.lastTimePaused) {
@@ -849,9 +852,6 @@ class Ads {
         const height = this.element.parentElement.offsetWidth;
         this.adsRequest.linearAdSlotWidth = width;
         this.adsRequest.linearAdSlotHeight = height;
-        this.adsRequest.nonLinearAdSlotWidth = width;
-        this.adsRequest.nonLinearAdSlotHeight = 150;
-
         this.adsRequest.setAdWillAutoPlay(this.autoplayAllowed);
         this.adsRequest.setAdWillPlayMuted(this.autoplayRequiresMuted);
         this.adsLoader.requestAds(this.adsRequest);

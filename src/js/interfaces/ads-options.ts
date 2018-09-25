@@ -10,4 +10,8 @@ export default interface AdsOptions {
      * @type string
      */
     url: string;
+    /**
+     * @type boolean
+     */
+    debug: boolean;
 }

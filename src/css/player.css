@@ -678,6 +678,9 @@ video:-webkit-media-text-track-display {
 .om-ads--active .om-controls__fullscreen {
     float: right;
 }
+.om-ads--active .om-controls > .om-control__right ~ .om-control__right {
+    margin-left: auto;
+}
 .om-ads--active #om-ads {
     z-index: 1;
 }
