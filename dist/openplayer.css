@@ -665,7 +665,7 @@
     bottom: -40px;
 }
 .om-player video::-webkit-media-controls { 
-    display: none !important;
+    display: none;
 }
 
 /* == Captions =============== */
@@ -748,6 +748,16 @@ video:-webkit-media-text-track-display {
 .om-ads--active {
     overflow: hidden;
 }
+.om-ads--active .om-controls__captions,
+.om-ads--active .om-controls__settings {
+    display: none;
+}
+.om-ads--active .om-controls__fullscreen {
+    float: right;
+}
+.om-ads--active .om-controls > .om-control__right ~ .om-control__right {
+    margin-left: auto;
+}
 .om-ads--active #om-ads {
     z-index: 1;
 }
@@ -789,4 +799,15 @@ video:-webkit-media-text-track-display {
                 -ms-transform: translate(-50%, -50%);
             transform: translate(-50%, -50%);
     width: auto !important;
+}
+
+/* === Device-specific rules ========= */
+.om-player__ios--iphone .om-player__play {
+    margin-top: -5px;
+}
+.om-player__ios--iphone .om-controls {
+    display: none;
+}
+.om-player__ios--iphone.om-ads--active .om-controls {
+    display: block;
 }
