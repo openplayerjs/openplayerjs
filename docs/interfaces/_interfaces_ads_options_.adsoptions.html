@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SettingsItem | openplayerjs</title>
+	<title>AdsOptions | openplayerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_interfaces_settings_item_.html">&quot;interfaces/settings/item&quot;</a>
+					<a href="../modules/_interfaces_ads_options_.html">&quot;interfaces/ads-options&quot;</a>
 				</li>
 				<li>
-					<a href="_interfaces_settings_item_.settingsitem.html">SettingsItem</a>
+					<a href="_interfaces_ads_options_.adsoptions.html">AdsOptions</a>
 				</li>
 			</ul>
-			<h1>Interface SettingsItem</h1>
+			<h1>Interface AdsOptions</h1>
 		</div>
 	</div>
 </header>
@@ -72,18 +72,14 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Settings Item.</p>
+						<p>Ads options</p>
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>description</dt>
-						<dd><p>An element to create elements in the <code>Settings</code> menu and submenus linked
-							to them.</p>
-						</dd>
-						<dt>see</dt>
-						<dd><p><a href="../classes/_controls_settings_.settings.html#addsettings">Settings.addSettings</a></p>
+						<dd><p>An object that stores configuration for Google IMA SDK</p>
 						</dd>
 						<dt>interface</dt>
-						<dd><p>SettingsItem</p>
+						<dd><p>PlayerOptions</p>
 						</dd>
 						<dt>export</dt>
 						<dd></dd>
@@ -94,7 +90,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SettingsItem</span>
+						<span class="target">AdsOptions</span>
 					</li>
 				</ul>
 			</section>
@@ -105,11 +101,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_settings_item_.settingsitem.html#classname" class="tsd-kind-icon">class<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_settings_item_.settingsitem.html#default" class="tsd-kind-icon">default</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_settings_item_.settingsitem.html#key" class="tsd-kind-icon">key</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_settings_item_.settingsitem.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_settings_item_.settingsitem.html#subitems" class="tsd-kind-icon">subitems</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_ads_options_.adsoptions.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
 					</div>
@@ -118,121 +110,18 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="classname" class="tsd-anchor"></a>
-					<h3>class<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">class<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="url" class="tsd-anchor"></a>
+					<h3>url</h3>
+					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2f1ab57/src/js/interfaces/settings/item.ts#L21">interfaces/settings/item.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2f1ab57/src/js/interfaces/ads-options.ts#L12">interfaces/ads-options.ts:12</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Specific class name to be used for:</p>
-							<ul>
-								<li>event listeners and dispatchers</li>
-								<li>specific styling</li>
-							</ul>
-						</div>
 						<dl class="tsd-comment-tags">
 							<dt>type</dt>
 							<dd><p>string</p>
-							</dd>
-							<dt>memberof</dt>
-							<dd><p>SettingsItem</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="default" class="tsd-anchor"></a>
-					<h3>default</h3>
-					<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2f1ab57/src/js/interfaces/settings/item.ts#L30">interfaces/settings/item.ts:30</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Identifier to indicate the initial value of <code>Settings</code> element when created.</p>
-						</div>
-						<p>This element must exist in the <code>submenu</code> attribute (if not empty).</p>
-						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>string</p>
-							</dd>
-							<dt>memberof</dt>
-							<dd><p>SettingsItem</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="key" class="tsd-anchor"></a>
-					<h3>key</h3>
-					<div class="tsd-signature tsd-kind-icon">key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2f1ab57/src/js/interfaces/settings/item.ts#L38">interfaces/settings/item.ts:38</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Unique identifier to avoid collisions with other items.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>string</p>
-							</dd>
-							<dt>memberof</dt>
-							<dd><p>SettingsItem</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="name" class="tsd-anchor"></a>
-					<h3>name</h3>
-					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2f1ab57/src/js/interfaces/settings/item.ts#L46">interfaces/settings/item.ts:46</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Human-readable name of the item.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>string</p>
-							</dd>
-							<dt>memberof</dt>
-							<dd><p>SettingsItem</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="subitems" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> subitems</h3>
-					<div class="tsd-signature tsd-kind-icon">subitems<span class="tsd-signature-symbol">:</span> <a href="_interfaces_settings_subitem_.settingssubitem.html" class="tsd-signature-type">SettingsSubItem</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/2f1ab57/src/js/interfaces/settings/item.ts#L54">interfaces/settings/item.ts:54</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>List of elements to generate a submenu linked to item.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>SettingsSubItem[]</p>
-							</dd>
-							<dt>memberof</dt>
-							<dd><p>SettingsItem</p>
 							</dd>
 						</dl>
 					</div>
@@ -246,7 +135,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/_interfaces_settings_item_.html">"interfaces/settings/item"</a>
+						<a href="../modules/_interfaces_ads_options_.html">"interfaces/ads-<wbr>options"</a>
 					</li>
 				</ul>
 			</nav>
@@ -255,22 +144,10 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="_interfaces_settings_item_.settingsitem.html" class="tsd-kind-icon">Settings<wbr>Item</a>
+						<a href="_interfaces_ads_options_.adsoptions.html" class="tsd-kind-icon">Ads<wbr>Options</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_settings_item_.settingsitem.html#classname" class="tsd-kind-icon">class<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_settings_item_.settingsitem.html#default" class="tsd-kind-icon">default</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_settings_item_.settingsitem.html#key" class="tsd-kind-icon">key</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_settings_item_.settingsitem.html#name" class="tsd-kind-icon">name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_settings_item_.settingsitem.html#subitems" class="tsd-kind-icon">subitems</a>
+								<a href="_interfaces_ads_options_.adsoptions.html#url" class="tsd-kind-icon">url</a>
 							</li>
 						</ul>
 					</li>
