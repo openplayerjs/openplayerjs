@@ -3877,6 +3877,8 @@ var Captions = function () {
               _this._hide();
             }
           }
+        } else {
+          _this._hide();
         }
       };
 
@@ -6291,7 +6293,6 @@ var Ads = function () {
       this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
       this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
-      this.element.addEventListener('ended', this._contentEndedListener.bind(this));
       window.addEventListener('resize', this.resizeAds.bind(this));
     }
   }, {
@@ -6396,6 +6397,8 @@ var Ads = function () {
             if (!this.mediaStarted) {
               var loadedEvent = events_1.addEvent('loadedmetadata');
               this.element.dispatchEvent(loadedEvent);
+              var resizeEvent = events_1.addEvent('resize');
+              window.dispatchEvent(resizeEvent);
               this.mediaStarted = true;
             }
           }
@@ -6555,10 +6558,9 @@ var Ads = function () {
     value: function _loadedMetadataHandler() {
       if (this.element.seekable.length) {
         if (this.element.seekable.end(0) > this.lastTimePaused) {
-          this.element.currentTime = this.lastTimePaused;
+          this.media.currentTime = this.lastTimePaused;
           this.element.controls = !!(constants_1.IS_IPHONE && general_1.isVideo(this.element));
           this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-          this.media.currentTime = this.element.currentTime;
 
           this._resumeMedia();
         }
@@ -6603,6 +6605,7 @@ var Ads = function () {
       this.adsRequest.setAdWillAutoPlay(this.autoplayAllowed);
       this.adsRequest.setAdWillPlayMuted(this.autoplayRequiresMuted);
       this.adsLoader.requestAds(this.adsRequest);
+      this.element.controls = !(constants_1.IS_IPHONE && general_1.isVideo(this.element));
     }
   }, {
     key: "_contentLoadedAction",

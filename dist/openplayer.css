@@ -749,6 +749,7 @@ video:-webkit-media-text-track-display {
     overflow: hidden;
 }
 .om-ads--active .om-controls__captions,
+.om-ads--active .om-captions,
 .om-ads--active .om-controls__settings {
     display: none;
 }

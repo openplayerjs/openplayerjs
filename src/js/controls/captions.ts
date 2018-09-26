@@ -214,6 +214,8 @@ class Captions implements PlayerComponent {
                         this._hide();
                     }
                 }
+            } else {
+                this._hide();
             }
         };
 
