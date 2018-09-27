@@ -49,7 +49,7 @@
         var media = document.createElement(type);
         media.id = 'media1';
         media.src = decodeURIComponent(getUrlParameter('file')) || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
-        media.setAttribute('playsinline', true);
+        media.setAttribute('playsinline', null);
         media.autoplay = !!getUrlParameter('autoplay') || false;
         media.controls = true;
         media.playsinline = true;
