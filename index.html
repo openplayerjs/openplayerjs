@@ -11,16 +11,13 @@
 
   <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
   <link rel="icon" href="img/favicon.png" type="image/x-icon">
-
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
     crossorigin="anonymous">
-
   <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
     integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
     rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdn.rawgit.com/openplayerjs/openplayerjs/334c650/dist/openplayer.min.css">
   <link href="css/grayscale.min.css" rel="stylesheet">
 
@@ -69,8 +66,8 @@
     }
 
     iframe {
-      border: none;
-      min-height: 360px;
+      width: 100%;
+      min-height: 250px;
     }
     a {
       color: #9a9a9a;
@@ -138,9 +135,9 @@
       text-align: left;
     }
     #autoplay {
-      margin-top: 3px;
-      margin-left: -6.25rem;
-    }
+        margin-top: -1.25rem;
+        margin-left: -1.25rem;
+      }
 
     #permalink {
       text-align: left;
@@ -158,13 +155,6 @@
       -ms-word-break: break-all;
       word-break: break-all;
       word-break: break-word;
-    }
-
-    @media (min-width: 700px) {
-      #autoplay {
-        margin-top: -0.3rem;
-        margin-left: -1.25rem;
-      }
     }
 
     @media (min-width: 992px) {
@@ -378,9 +368,7 @@
               <button class="btn btn-primary mb-4" id="load" type="submit">Load</button>
             </div>
           </form>
-          <div class="embed-responsive embed-responsive-16by9">
-            <iframe class="embed-responsive-item" title="Inline OpenPlayer" id="media" allowfullscreen></iframe>
-          </div>
+          <iframe title="Inline OpenPlayer" id="media" allowfullscreen scrolling="no" frameborder="0"></iframe>
         </div>
       </div>
     </div>
@@ -403,12 +391,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
   <script src="js/grayscale.min.js"></script>
+  <script src="js/iframeResizer.min.js"></script>
 
   <script>
     var form = document.getElementById('settings');
 
     function loadMedia() {
-      var url = window.location.protocol + '//' + window.location.host + '/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
+      var url = window.location.protocol + '//' + window.location.host + '/openplayerjs/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
       url += form.querySelector('#video-type').checked ? 'video' : 'audio';
       var ads = form.querySelector('#ads').value;
       if (ads) {
@@ -440,6 +429,10 @@
       return false;
     });
     window.addEventListener('load', loadMedia);
+    iFrameResize({
+      checkOrigin: false,
+      interval: 450,
+    });
   </script>
 </body>
 

@@ -8,51 +8,33 @@
     <meta name="google-site-verification" content="Desj0WKx8CJ5bVxUndGN6WP9k80dxk7fZg0ChsKmIno" />
     <title>OpenPlayer - The Lighweight Media Player for Web</title>
 
-    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-
+    <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
+    <link rel="icon" href="img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.rawgit.com/openplayerjs/openplayerjs/334c650/dist/openplayer.min.css">
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-            padding: 0;
-            position: absolute;
-            width: 100%;
-        }
-
-        #media {
-            height: calc(100%-36px);
-            width: 100%;
-        }
-
-        .om-player {
-            height: 100%;
-            outline: 0;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-        }
-        
-        .om-player video {
-            height: 100%;
-        }
-
-        @media (min-width: 800px) {
-            .om-player__media {
-                height: 100%;
-            }
-        }
-    </style>
 </head>
 
 <body>
     <div id="media"></div>
+    <script src="js/iframeResizer.contentWindow.min.js"></script>
     <script src="https://cdn.rawgit.com/openplayerjs/openplayerjs/334c650/dist/openplayer.min.js"></script>
     <script>
+        if(window.top === window.self) {
+            document.body.style.background = '#000';
+            document.body.style.color = '#fff';
+            document.body.style.height = '100%';
+            document.body.style.margin = 0;
+            document.body.style.overflow = 'hidden';
+            document.body.style.padding = 0;
+            document.body.style.position = 'absolute';
+            document.body.style.width = '100%';
+
+            var media = document.getElementById('media');
+            media.style.left = '50%';
+            media.style.position = 'absolute';
+            media.style.top = '50%';
+            media.style.transform = 'translate(-50%, -50%)';
+            media.style.width = '100%';
+        }
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
