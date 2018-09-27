@@ -2,10 +2,10 @@
  * Ads options
  *
  * @description An object that stores configuration for Google IMA SDK
- * @interface AdsOptions
+ * @interface Options
  * @export
  */
-export default interface AdsOptions {
+export default interface Options {
     /**
      * @type string
      */

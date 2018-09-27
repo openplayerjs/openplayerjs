@@ -6466,7 +6466,7 @@ var Ads = function () {
     value: function _error(event) {
       console.error("Ad error: ".concat(event.getError().toString()));
 
-      if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length) {
+      if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {
         this.currentAdsIndex++;
         this.playTriggered = true;
         this.adsStarted = true;

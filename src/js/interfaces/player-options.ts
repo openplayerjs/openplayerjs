@@ -1,4 +1,4 @@
-import AdsOptions from './ads-options';
+import { default as AdsOptions } from './ads/options';
 import DashOptions from './dash-options';
 
 /**
