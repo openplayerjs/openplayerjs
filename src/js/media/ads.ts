@@ -1,4 +1,4 @@
-import AdsOptions from '../interfaces/ads-options';
+import Options from '../interfaces/ads/options';
 import Source from '../interfaces/source';
 import Media from '../media';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
@@ -211,10 +211,10 @@ class Ads {
      * Configuration elements passed to Ads, including IMA SDK location
      *
      * @private
-     * @type AdsOptions
+     * @type Options
      * @memberof Ads
      */
-    private adsOptions: AdsOptions;
+    private adsOptions: Options;
 
     /**
      * Current Ad; used when passing a list of Ads
@@ -234,12 +234,40 @@ class Ads {
      */
     private originalVolume: number;
 
+    /**
+     *
+     *
+     * @private
+     * @type {*}
+     * @memberof Ads
+     */
     private preloadContent: any;
 
+    /**
+     * Timer to update media's `currentTime`
+     *
+     * @private
+     * @type number
+     * @memberof Ads
+     */
     private lastTimePaused: number = 0;
 
+    /**
+     * List of media sources from the `media` element.
+     *
+     * @private
+     * @type Source[]
+     * @memberof Ads
+     */
     private mediaSources: Source[];
 
+    /**
+     * Flag to execute `loadedmetadata` and `resize` once.
+     *
+     * @private
+     * @type boolean
+     * @memberof Ads
+     */
     private mediaStarted: boolean = false;
 
     /**
@@ -250,7 +278,7 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, ads: string|string[], autoStart?: boolean, options?: AdsOptions) {
+    constructor(media: Media, ads: string|string[], autoStart?: boolean, options?: Options) {
         const defaultOpts = {
             debug: false,
             url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
@@ -662,7 +690,7 @@ class Ads {
      */
     private _error(event: any): void {
         console.error(`Ad error: ${event.getError().toString()}`);
-        if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length) {
+        if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {
             this.currentAdsIndex++;
             this.playTriggered = true;
             this.adsStarted = true;
