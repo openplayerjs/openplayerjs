@@ -32,7 +32,7 @@ These instructions will get you a copy of the project up and running on your loc
 The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can either download the repository from `https://github.com/openplayerjs/openplayerjs.git` or use NPM to get it:
 
 ```
-npm install openplayer
+npm install openplayerjs
 ```
 
 ### Installation
