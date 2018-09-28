@@ -199,7 +199,7 @@ class Media {
 
         // Save copy of original file to restore it when player is destroyed
         if (this.element.src) {
-            this.element.setAttribute('data-om-file', this.mediaFiles[0].src);
+            this.element.setAttribute('data-op-file', this.mediaFiles[0].src);
         }
         this.element.src = this.mediaFiles[0].src;
         this.media.src = this.mediaFiles[0];

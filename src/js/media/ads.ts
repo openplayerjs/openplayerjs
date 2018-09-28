@@ -379,6 +379,16 @@ class Ads {
         );
         // Create responsive ad
         window.addEventListener('resize', this.resizeAds.bind(this));
+
+        // Request Ads automatically if `autoplay` was set
+        if (this.autoStart === true) {
+            if (!this.adsDone) {
+                this.adsDone = true;
+                this.adDisplayContainer.initialize();
+                this.media.load();
+            }
+            this._requestAds();
+        }
     }
 
     /**
