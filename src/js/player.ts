@@ -1,4 +1,5 @@
 import 'core-js/es6/array';
+import 'core-js/es6/object';
 import 'core-js/es6/promise';
 import 'custom-event-polyfill';
 import 'element-closest';
@@ -57,7 +58,7 @@ class Player {
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = (targets[i] as HTMLMediaElement);
             const player = new Player(target, target.getAttribute('data-op-ads'),
-                !!target.getAttribute('data-om-fill'), JSON.parse(target.getAttribute('data-om-options')));
+                !!target.getAttribute('data-op-fill'), JSON.parse(target.getAttribute('data-op-options')));
             player.init();
         }
     }

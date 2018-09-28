@@ -77,20 +77,7 @@ class DashMedia extends Native {
      * @memberof DashMedia
      */
     public load() {
-        this.player.getDebug().setLogToBrowserConsole(false);
-        this.player.initialize();
-        this.player.setScheduleWhilePaused(false);
-        this.player.setFastSwitchEnabled(true);
-        this.player.attachView(this.element);
-        this.player.setAutoPlay(false);
-
-        // If DRM is set, load protection data
-        if (typeof this.media.drm === 'object' && Object.keys(this.media.drm).length) {
-            this.player.setProtectionData(this.media.drm);
-            if (this.options.robustnessLevel && this.options.robustnessLevel) {
-                this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
-            }
-        }
+        this._preparePlayer();
         this.player.attachSource(this.media.src);
 
         const e = addEvent('loadedmetadata');
@@ -122,13 +109,7 @@ class DashMedia extends Native {
         if (isDashSource(media.src)) {
             this._revoke();
             this.player = dashjs.MediaPlayer().create();
-            // If DRM is set, load protection data
-            if (typeof this.options.drm === 'object' && Object.keys(this.options.drm).length) {
-                this.player.setProtectionData(this.options.drm);
-                if (this.options.robustnessLevel && this.options.robustnessLevel) {
-                    this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
-                }
-            }
+            this._preparePlayer();
             this.player.attachSource(media.src);
 
             this.events = dashjs.MediaPlayer.events;
@@ -168,6 +149,30 @@ class DashMedia extends Native {
             this.events = null;
         }
         this.player.reset();
+    }
+
+    /**
+     * Set player with proper configuration to have better performance.
+     *
+     * Also, considers the addition of DRM settings.
+     *
+     * @memberof DashMedia
+     */
+    private _preparePlayer() {
+        this.player.getDebug().setLogToBrowserConsole(false);
+        this.player.initialize();
+        this.player.setScheduleWhilePaused(false);
+        this.player.setFastSwitchEnabled(true);
+        this.player.attachView(this.element);
+        this.player.setAutoPlay(false);
+
+        // If DRM is set, load protection data
+        if (this.options && typeof this.options.drm === 'object' && Object.keys(this.options.drm).length) {
+            this.player.setProtectionData(this.options.drm);
+            if (this.options.robustnessLevel && this.options.robustnessLevel) {
+                this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
+            }
+        }
     }
 }
 

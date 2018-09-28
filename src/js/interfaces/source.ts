@@ -21,12 +21,4 @@ export default interface Source {
      * @memberof Source
      */
     type: string;
-
-    /**
-     * Digital rights management object to allow play restricted media.
-     *
-     * @type object
-     * @memberof Source
-     */
-    drm?: object;
 }
