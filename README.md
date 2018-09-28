@@ -1,4 +1,4 @@
-![openplayer](https://user-images.githubusercontent.com/910829/46180936-2ca72c80-c291-11e8-825f-c079dafc9233.png)
+![openplayer](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
 
 # [OpenPlayer.js](https://openplayerjs.com)
 
