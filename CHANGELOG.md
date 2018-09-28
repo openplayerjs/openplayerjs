@@ -1,3 +1,13 @@
+<a name="1.3.2"></a>
+## [1.3.2](https://github.com/openplayerjs/openplayerjs/compare/v1.3.1...v1.3.2) (2018-09-28)
+
+
+### Bug Fixes
+
+* **readme:** Added correct way to install package via NPM ([bc48d1f](https://github.com/openplayerjs/openplayerjs/commit/bc48d1f))
+
+
+
 <a name="1.3.1"></a>
 ## [1.3.1](https://github.com/openplayerjs/openplayerjs/compare/v1.3.0...v1.3.1) (2018-09-28)
 
