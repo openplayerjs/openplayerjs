@@ -1,6 +1,6 @@
 ![openplayer](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
 
-# [OpenPlayer.js](https://openplayerjs.com)
+# [OpenPlayer.js](https://www.openplayerjs.com)
 
 [![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
 <br>
