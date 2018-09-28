@@ -47,16 +47,16 @@ class Player {
     };
 
     /**
-     * Convert all the video/audio tags with `om-player` class in a OpenMedia player instance.
+     * Convert all the video/audio tags with `op-player` class in a OpenMedia player instance.
      *
      * @memberof Player
      */
     public static init(): void {
         Player.instances = {};
-        const targets = document.querySelectorAll('video.om-player, audio.om-player');
+        const targets = document.querySelectorAll('video.op-player, audio.op-player');
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = (targets[i] as HTMLMediaElement);
-            const player = new Player(target, target.getAttribute('data-om-ads'),
+            const player = new Player(target, target.getAttribute('data-op-ads'),
                 !!target.getAttribute('data-om-fill'), JSON.parse(target.getAttribute('data-om-options')));
             player.init();
         }
@@ -335,7 +335,7 @@ class Player {
     }
 
     /**
-     * Retrieve the parent element (with `om-player` class) of the native video/audio tag.
+     * Retrieve the parent element (with `op-player` class) of the native video/audio tag.
      *
      * This element is mostly useful to attach other player component's markup in a place
      * different than the controls bar.
@@ -492,7 +492,7 @@ class Player {
 
     /**
      * Check if the element passed in the constructor is a valid video/audio tag
-     * with 'om-player__media' class (at the very least, since `om-player` works
+     * with 'op-player__media' class (at the very least, since `op-player` works
      * for automatic instantiation)
      *
      * @private
@@ -510,7 +510,7 @@ class Player {
             return false;
         }
 
-        if (!el.classList.contains('om-player__media')) {
+        if (!el.classList.contains('op-player__media')) {
             return false;
         }
 
@@ -526,23 +526,23 @@ class Player {
      */
     private _wrapInstance(): void {
         const wrapper = document.createElement('div');
-        wrapper.className = 'om-player om-player__keyboard--inactive';
-        wrapper.className += isAudio(this.element) ? ' om-player__audio' : ' om-player__video';
+        wrapper.className = 'op-player op-player__keyboard--inactive';
+        wrapper.className += isAudio(this.element) ? ' op-player__audio' : ' op-player__video';
         wrapper.tabIndex = 0;
 
-        this.element.classList.remove('om-player');
+        this.element.classList.remove('op-player');
         this.element.parentElement.insertBefore(wrapper, this.element);
         wrapper.appendChild(this.element);
 
         wrapper.addEventListener('keydown', () => {
-            if (wrapper.classList.contains('om-player__keyboard--inactive')) {
-                wrapper.classList.remove('om-player__keyboard--inactive');
+            if (wrapper.classList.contains('op-player__keyboard--inactive')) {
+                wrapper.classList.remove('op-player__keyboard--inactive');
             }
         });
 
         wrapper.addEventListener('click', () => {
-            if (!wrapper.classList.contains('om-player__keyboard--inactive')) {
-                wrapper.classList.add('om-player__keyboard--inactive');
+            if (!wrapper.classList.contains('op-player__keyboard--inactive')) {
+                wrapper.classList.add('op-player__keyboard--inactive');
             }
         });
 
@@ -558,7 +558,7 @@ class Player {
      */
     private _createControls(): void {
         if (IS_IPHONE && isVideo(this.element)) {
-            this.getContainer().classList.add('om-player__ios--iphone');
+            this.getContainer().classList.add('op-player__ios--iphone');
         }
         this.controls = new Controls(this);
         this.controls.create();
@@ -615,14 +615,14 @@ class Player {
         }
 
         this.playBtn = document.createElement('button');
-        this.playBtn.className = 'om-player__play';
+        this.playBtn.className = 'op-player__play';
         this.playBtn.tabIndex = 0;
         this.playBtn.innerHTML = '<span>Play</span>';
         this.playBtn.setAttribute('aria-pressed', 'false');
         this.playBtn.setAttribute('aria-hidden', 'false');
 
         this.loader = document.createElement('span');
-        this.loader.className = 'om-player__loader';
+        this.loader.className = 'op-player__loader';
         this.loader.tabIndex = -1;
         this.loader.setAttribute('aria-hidden', 'true');
 
@@ -649,7 +649,7 @@ class Player {
             this.events.loadedmetadata = () => {
                 const el = this.activeElement();
                 if (el.paused) {
-                    this.playBtn.classList.remove('om-player__play--paused');
+                    this.playBtn.classList.remove('op-player__play--paused');
                     this.playBtn.setAttribute('aria-pressed', 'false');
                     this.playBtn.setAttribute('aria-hidden', 'false');
                 }
@@ -669,7 +669,7 @@ class Player {
                 this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.play = () => {
-                this.playBtn.classList.add('om-player__play--paused');
+                this.playBtn.classList.add('op-player__play--paused');
                 setTimeout(() => {
                     this.playBtn.setAttribute('aria-hidden', 'true');
                     this.loader.setAttribute('aria-hidden', 'true');
@@ -679,7 +679,7 @@ class Player {
                 this.playBtn.setAttribute('aria-hidden', 'true');
             };
             this.events.pause = () => {
-                this.playBtn.classList.remove('om-player__play--paused');
+                this.playBtn.classList.remove('op-player__play--paused');
                 this.loader.setAttribute('aria-hidden', 'true');
                 const el = this.activeElement();
                 this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
@@ -775,7 +775,7 @@ class Player {
                     // Insert element to unmute if browser allows autoplay with muted media
                     const volumeEl = document.createElement('div');
                     const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
-                    volumeEl.className = 'om-player__unmute';
+                    volumeEl.className = 'op-player__unmute';
                     volumeEl.innerHTML = `<span>${action} to unmute</span>`;
 
                     volumeEl.addEventListener('click', () => {
@@ -810,7 +810,7 @@ class Player {
      */
     private _fill(): void {
         if (!isAudio(this.element) && !IS_IPHONE) {
-            this.getContainer().classList.add('om-player__full');
+            this.getContainer().classList.add('op-player__full');
         }
     }
 }

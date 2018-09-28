@@ -1,13 +1,11 @@
-# OpenPlayer.js
+![openplayer](https://user-images.githubusercontent.com/910829/46180936-2ca72c80-c291-11e8-825f-c079dafc9233.png)
+
+# [OpenPlayer.js](https://openplayerjs.com)
+
+[![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
+<br>
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Try%20the%20best%20open%20source%20player%20and%20give%20it%20a%20star&url=https://www.openplayerjs.com&hashtags=openplayerjs,vast,vpaid,rocks,streaming)
 [![Greenkeeper badge](https://badges.greenkeeper.io/openplayerjs/openplayerjs.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
-
-**********************************************************************************
- **Help OpenPlayer to reach the first thousand stars to be hosted in a CDN!**
- 
- *Help us staring the project and help the project to reach more and more people.*
-**********************************************************************************
-
-## What is it?
 
 This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
 
@@ -15,95 +13,67 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 
 ## Why OpenPlayer?
 
-* **Less than `20KB`** when gzipped.
-* **Monetize video and audio content** with video advertising (VAST/VPAID/VMAP) using [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
-* **Simplified markup** and **highly customizable CSS** (even specific styling for high contrast mode). See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
-* IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **ever-green scripts** from their recommended CDN sources to always obtain the latest upgrades.
-* **Smart `autoplay`** by detecting browser's capabilities.
-* **Responsive** by default, for both video/audio tags.
-* A new **`fill`** mode to scale and crop media relative to its parent container.
+* **Supports IE11+ and all modern browsers**: its CSS and code is compatible with all modern browsers.
+* **Lightweight library**: Less than `20kb` when gzipped.
+* **Monetize video and audio content** with video advertising using VAST, VPAID or VMAP Ads, supported by the amazing [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
+* **Accessibility is a priority for OpenPlayerJS**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
+* **Always up-to-date**: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayer.
+* **Smart `autoplay`**: Special algorithm to detect browser's autoplay capabilities.
+* **Responsive**: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 * Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 * **No dependencies**, since this player is written in Typescript.
-* **Supports IE11+ and all modern browsers**.
 
-## How to use it?
+## Getting Started
 
-### Obtain the files
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can use one of the following methods:
+### Prerequisites
 
-#### Direct download
-Download the repository from `https://github.com/openplayerjs/openplayerjs.git`
+The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can either download the repository from `https://github.com/openplayerjs/openplayerjs.git` or use NPM to get it:
 
-#### NPM
 ```
 npm install openplayer
 ```
 
-### HTML
+### Installation
 
-Include the OpenPlayer stylesheet inside the `<head>` tag, and the script at the bottom of the `<body>` tag (both of them located in the `dist` folder). The bundles will contain both minified and uncompressed files, so use the one that fits the best your needs.
+Include OpenPlayer's stylesheet inside the `<head>` tag, and the script at the bottom of the `<body>` tag (both of them located in the `dist` folder). The bundles will contain both minified and uncompressed files, so use the one that fits the best your needs.
 
-#### Stylesheet
+Since this player uses HTML5 markup, all the attributes for video/audio tags are available. The only 3 requirements to invoke the player are:
+
+* A valid media source, such as MP4, MP3, HLS, M(PEG)-DASH.
+* The `controls` and `playsinline` attributes to provide cross-browser support.
+* The `op-player op-player__media` class names to invoke the player.
+
+That's it!
 
 ```html
-<link rel="stylesheet" href="/path/to/openplayer.css">
+<html>
+    <head>
+        <link rel="stylesheet" href="/path/to/openplayer.css">
+    </head>
+    <body>
+        <video class="op-player op-player__media" controls playsinline>
+            <source src="/path/to/video.mp4" type="video/mp4">
+        </video>
+        <script src="/path/to/openplayer.js"></script>
+    </body>
+</html>
 ```
 
-#### Script
-
-```html
-<script src="/path/to/openplayer.js"></script>
-```
-
-If you plan to use the library in a Node project:
+If you are planning to use OpenPlayer in a Node project, you can:
 
 ```javascript
 // Using as module
 var openplayer = require('/path/to/openplayer');
 
-// Importing library
+// or importing the library (ES6)
 import OpenPlayer from 'openplayer';
 ```
 
-### Minimal example
+## Usage with Javascript
 
-Since this player uses HTML5 markup, all the attributes for video/audio tags are available. The only 3 requirements to invoke the player are:
-
-* A valid media source (such as MP4, MP3, HLS, M(PEG)-DASH).
-* `controls` and `playsinline` properties (to give cross-browser support).
-* The `om-player om-player__media` class names to invoke the player.
-
-That's it!
-
-```html
-<video class="om-player om-player__media" controls playsinline>
-    <source src="/path/to/video.mp4" type="video/mp4">
-</video>
-```
-
-### A more complex example
-
-There are other elements that can be included, such as Captions and multiple sources. Also, the `data-om-*` attributes can be used to enhance Ads or the `fill` mode.
-
-```html
-<video class="om-player om-player__media" poster="/path/to/poster.jpg" controls playsinline
-    autoplay muted data-om-ads="[valid VAST/VPAID URL]" data-om-fill="[true|false]">
-    <source src="/path/to/video.m3u8" type="application/x-mpegURL">
-    <source src="/path/to/video.mp4" type="video/mp4">
-    <track label="English" kind="subtitles" srclang="en" src="/path/to/captions.vtt" default>
-</video>
-```
-
-In the example above, the player will:
-
-1. Play muted Ads, followed by the first playable media source, depending of browser's capabilities.
-2. Make media item fit its parent container.
-3. Display Captions during media playback (it will hide them when Ads are played).
-
-### Using Javascript
-
-Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the `om-player` class from the video/audio tag (just leave `om-player__media` to preserve styles), and in Javascript use the following snippet:
+Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the `op-player` class from the video/audio tag (just leave `op-player__media` to preserve styles), and in Javascript use the following snippet:
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
@@ -143,7 +113,7 @@ If you need more control over the player, OpenPlayer stores instances of each pl
 
 ```javascript
 // Selects the first video/audio that uses OpenPlayer
-var id = document.querySelector('.om-player').id;
+var id = document.querySelector('.op-player').id;
 var player = OpenPlayer.instances[id];
 ```
 
@@ -159,7 +129,7 @@ Method | Description
 `getAd` | Retrieve an instance of the `Ads` object.
 `getMedia` | Retrieve an instance of the `Media` object.
 `activeElement` | Retrieve the current media object (could be `Ads` or any other media type).
-`getContainer` | Retrieve the parent element (with `om-player` class) of the native video/audio tag.
+`getContainer` | Retrieve the parent element (with `op-player` class) of the native video/audio tag.
 `getControls` | Retrieve an instance of the controls object used in the player instance.
 `getElement` | Retrieve the original video/audio tag.
 `getEvents` | Retrieve the events attached to the player.
@@ -171,7 +141,7 @@ Method | Description
 
 ### Events
 
-Since OpenPlayer is based on HTML5 media, the way to trigger events is using the video/audio tag. 
+Since OpenPlayer is based on HTML5 media, the way to trigger events is using the video/audio tag.
 
 Using the code above, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
 
@@ -204,6 +174,30 @@ Event | Description
 
 In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are being supported by OpenPlayer, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
 
-## Contributions
+## Examples
+
+THe following list shows OpenPlayer under different scenarios:
+
+1. [Minimal configuration]()
+2. [Using Ads with Autoplay]()
+3. [Using Ads with No Autoplay]()
+4. [Playing HLS streaming]()
+5. [Playing M(PEG-DASH) streaming with DRM]()
+
+## Built With
+
+* [Typescript](https://www.typescriptlang.org/docs/home.html) - The Javascript for Pros.
+
+## Contributing
 
 Make sure you check [Conventional Commits Standards](https://conventionalcommits.org/) for commit guidelines.
+
+## Authors
+
+* **Rafael Miranda** - *Initial work* - [rafa8626](https://github.com/rafa8626)
+
+See also the list of [contributors](https://github.com/openplayerjs/openplayerjs/contributors) who participated in this project.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.

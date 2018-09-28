@@ -157,7 +157,7 @@ class Controls implements PlayerComponent {
         const isMediaVideo = isVideo(this.player.getElement());
 
         this.controls = document.createElement('div');
-        this.controls.className = 'om-controls';
+        this.controls.className = 'op-controls';
         this.player.getContainer().appendChild(this.controls);
 
         this._buildElements();
@@ -174,13 +174,13 @@ class Controls implements PlayerComponent {
             this.events.mouse.mouseenter = () => {
                 if (isMediaVideo) {
                     this._stopControlTimer();
-                    this.player.getContainer().classList.remove('om-controls--hidden');
+                    this.player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mousemove = () => {
                 if (isMediaVideo) {
-                    this.player.getContainer().classList.remove('om-controls--hidden');
+                    this.player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
@@ -190,7 +190,7 @@ class Controls implements PlayerComponent {
                 }
             };
             this.events.media.pause = () => {
-                this.player.getContainer().classList.remove('om-controls--hidden');
+                this.player.getContainer().classList.remove('op-controls--hidden');
                 this._stopControlTimer();
             };
             Object.keys(this.events.media).forEach(event => {
@@ -256,7 +256,7 @@ class Controls implements PlayerComponent {
 
         this.timer = window.setTimeout(() => {
             if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
-                this.player.getContainer().classList.add('om-controls--hidden');
+                this.player.getContainer().classList.add('op-controls--hidden');
                 this._stopControlTimer();
                 const event = addEvent('controlshidden');
                 this.player.getElement().dispatchEvent(event);

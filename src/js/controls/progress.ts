@@ -119,14 +119,14 @@ class Progress implements PlayerComponent {
      */
     public create(): void {
         this.progress = document.createElement('div');
-        this.progress.className = 'om-controls__progress';
+        this.progress.className = 'op-controls__progress';
         this.progress.tabIndex = 0;
         this.progress.setAttribute('aria-label', 'Time Slider');
         this.progress.setAttribute('aria-valuemin', '0');
 
         this.slider = document.createElement('input');
         this.slider.type = 'range';
-        this.slider.className = 'om-controls__progress--seek';
+        this.slider.className = 'op-controls__progress--seek';
         this.slider.tabIndex = -1;
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('max', '0');
@@ -136,12 +136,12 @@ class Progress implements PlayerComponent {
         this.slider.setAttribute('role', 'slider');
 
         this.buffer = document.createElement('progress');
-        this.buffer.className = 'om-controls__progress--buffer';
+        this.buffer.className = 'op-controls__progress--buffer';
         this.buffer.setAttribute('max', '100');
         this.buffer.value = 0;
 
         this.played = document.createElement('progress');
-        this.played.className = 'om-controls__progress--played';
+        this.played.className = 'op-controls__progress--played';
         this.played.setAttribute('max', '100');
         this.played.setAttribute('role', 'presentation');
         this.played.value = 0;
@@ -152,7 +152,7 @@ class Progress implements PlayerComponent {
 
         if (!IS_IOS && !IS_ANDROID) {
             this.tooltip = document.createElement('span');
-            this.tooltip.className = 'om-controls__tooltip';
+            this.tooltip.className = 'op-controls__tooltip';
             this.tooltip.tabIndex = -1;
             this.tooltip.innerHTML = '00:00';
             this.progress.appendChild(this.tooltip);
@@ -223,18 +223,18 @@ class Progress implements PlayerComponent {
          * @private
          */
         const updateSlider = (e: any) => {
-            if (hasClass(this.slider, 'om-progress--pressed')) {
+            if (hasClass(this.slider, 'op-progress--pressed')) {
                 return;
             }
             const target = (e.target as HTMLInputElement);
-            this.slider.classList.add('.om-progress--pressed');
+            this.slider.classList.add('.op-progress--pressed');
 
             const el = this.player.activeElement();
             const min = parseFloat(target.min);
             const max = parseFloat(target.max);
             const val = parseFloat(target.value);
             this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
-            this.slider.classList.remove('.om-progress--pressed');
+            this.slider.classList.remove('.op-progress--pressed');
             el.currentTime = val;
             e.preventDefault();
         };
@@ -325,17 +325,17 @@ class Progress implements PlayerComponent {
                 }
 
                 if (percentage >= 0 && percentage <= 1) {
-                    this.tooltip.classList.add('om-controls__tooltip--visible');
+                    this.tooltip.classList.add('op-controls__tooltip--visible');
                 } else {
-                    this.tooltip.classList.remove('om-controls__tooltip--visible');
+                    this.tooltip.classList.remove('op-controls__tooltip--visible');
                 }
 
                 this.tooltip.style.left = `${pos}px`;
                 this.tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
             };
             this.events.global.mousemove = (e: MouseEvent) => {
-                if (!(e.target as HTMLElement).closest('.om-controls__progress') || this.player.isAd()) {
-                    this.tooltip.classList.remove('om-controls__tooltip--visible');
+                if (!(e.target as HTMLElement).closest('.op-controls__progress') || this.player.isAd()) {
+                    this.tooltip.classList.remove('op-controls__tooltip--visible');
                 }
             };
         }

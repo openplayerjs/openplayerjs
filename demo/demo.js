@@ -2,11 +2,11 @@
     var sourcesSelector = document.querySelectorAll('select[name=sources]');
     var destroyBtn = document.querySelectorAll('button.destroy-player');
     var captionBtn = document.querySelectorAll('button.load-caption');
-    var players = document.querySelectorAll('.om-player__media');
+    var players = document.querySelectorAll('.op-player__media');
     var instances = [];
 
     for (var i = 0, total = players.length; i < total; i++) {
-        var ads = i === 0 ? [players[i].getAttribute('data-om-ads'),] : null;
+        var ads = i === 0 ? [players[i].getAttribute('data-op-ads'),] : null;
         instances[i] = new OpenPlayer(players[i].id, ads, false, {
             ads: {
                 debug: false,
@@ -19,7 +19,7 @@
     }
 
     function loadMedia() {
-        var id = this.closest('.players').querySelector('.om-player').id;
+        var id = this.closest('.players').querySelector('.op-player').id;
         var player = OpenPlayer.instances[id];
         var isAudio = !!this.closest('.audio-player');
 
@@ -33,7 +33,7 @@
     }
 
     function destroyPlayer() {
-        var id = this.closest('.players').querySelector('.om-player').id;
+        var id = this.closest('.players').querySelector('.op-player').id;
         var player = OpenPlayer.instances[id];
         player.destroy();
         this.removeEventListener('click', destroyPlayer);
@@ -44,7 +44,7 @@
     }
 
     function loadCaption() {
-        var id = this.closest('.players').querySelector('.om-player').id;
+        var id = this.closest('.players').querySelector('.op-player').id;
         var player = OpenPlayer.instances[id];
         player.addCaptions({
             srclang: 'br_PT',

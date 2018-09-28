@@ -17,15 +17,15 @@ describe('OpenPlayer.js', () => {
     });
 
     it('Detects if user is using a mouse (by default) or keyboard', () => {
-        expect(player.getContainer().getAttribute('class').indexOf('om-player__keyboard--inactive') > -1).to.equal(true);
+        expect(player.getContainer().getAttribute('class').indexOf('op-player__keyboard--inactive') > -1).to.equal(true);
         const event = new CustomEvent('keydown');
         event.keyCode = 14;
         player.getContainer().dispatchEvent(event);
-        expect(player.getContainer().getAttribute('class').indexOf('om-player__keyboard--inactive') === -1).to.equal(true);
+        expect(player.getContainer().getAttribute('class').indexOf('op-player__keyboard--inactive') === -1).to.equal(true);
     });
 
     it('Detects type of media to be played (i.e., video)', () => {
-        expect(player.getContainer().getAttribute('class').indexOf('om-player__video') > -1).to.equal(true);
+        expect(player.getContainer().getAttribute('class').indexOf('op-player__video') > -1).to.equal(true);
     });
 
     it('Detects if no Ads should to be played', () => {
@@ -35,7 +35,7 @@ describe('OpenPlayer.js', () => {
     it('Displays the duration of media when player is loaded', function (done) {
         this.timeout(1500);
         setTimeout(() => {
-            expect(player.getContainer().querySelector('.om-controls__duration').innerText).to.not.equal('00:00');
+            expect(player.getContainer().querySelector('.op-controls__duration').innerText).to.not.equal('00:00');
             done();
         }, 1000);
     });
@@ -73,11 +73,11 @@ describe('OpenPlayer.js', () => {
     it('Plays/pauses media correctly', done => {
         player.pause();
         setTimeout(() => {
-            expect(player.getContainer().querySelector('.om-player__play--paused')).to.equal(null);
+            expect(player.getContainer().querySelector('.op-player__play--paused')).to.equal(null);
             player.play();
 
             setTimeout(() => {
-                expect(player.getContainer().querySelector('.om-player__play--paused')).to.not.equal(null);
+                expect(player.getContainer().querySelector('.op-player__play--paused')).to.not.equal(null);
                 player.pause();
                 done();
             }, 300);
@@ -86,31 +86,31 @@ describe('OpenPlayer.js', () => {
 
     it('Creates controls if browser is not iOS', () => {
         if (iOS) {
-            expect(player.getContainer().querySelector('.om-controls')).to.equal(null);
+            expect(player.getContainer().querySelector('.op-controls')).to.equal(null);
         } else {
-            expect(player.getContainer().querySelector('.om-controls')).to.not.equal(null);
+            expect(player.getContainer().querySelector('.op-controls')).to.not.equal(null);
         }
     });
 
     it('Creates play/loader button at the level of media display element', () => {
-        expect(player.getContainer().querySelector('.om-player__play')).to.not.equal(null);
-        expect(player.getContainer().querySelector('.om-player__loader')).to.not.equal(null);
+        expect(player.getContainer().querySelector('.op-player__play')).to.not.equal(null);
+        expect(player.getContainer().querySelector('.op-player__loader')).to.not.equal(null);
     });
 
     it('Detects captions if `track` tag(s) present', function (done) {
         this.timeout(1500);
         const trackTags = player.element.querySelectorAll('track');
         setTimeout(() => {
-            expect(player.getContainer().getAttribute('class').indexOf('om-captions--detected') > -1).to.equal(!!trackTags.length);
+            expect(player.getContainer().getAttribute('class').indexOf('op-captions--detected') > -1).to.equal(!!trackTags.length);
             done();
         }, 1000);
     });
 
     it('Displays captions automatically if `track` tag(s) present', done => {
-        expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('class').indexOf('om-controls__captions--on') > -1).to.equal(true);
+        expect(player.getContainer().querySelector('.op-controls__captions').getAttribute('class').indexOf('op-controls__captions--on') > -1).to.equal(true);
         player.play();
         setTimeout(() => {
-            expect(player.getContainer().querySelector('.om-captions>span').innerHTML).to.not.equal('');
+            expect(player.getContainer().querySelector('.op-captions>span').innerHTML).to.not.equal('');
             setTimeout(() => {
                 player.pause();
                 done();
@@ -129,56 +129,56 @@ describe('OpenPlayer.js', () => {
         });
 
         setTimeout(() => {
-            expect(player.getContainer().querySelector('.om-controls__captions').getAttribute('data-active-captions')).to.equal('br_PT');
-            expect(player.getContainer().querySelector('.om-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
+            expect(player.getContainer().querySelector('.op-controls__captions').getAttribute('data-active-captions')).to.equal('br_PT');
+            expect(player.getContainer().querySelector('.op-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
             done();
         }, 1000);
     });
 
     it('Unmutes/mutes media when clicking on `Mute` button', () => {
-        const mute = player.getContainer().querySelector('.om-controls__mute');
+        const mute = player.getContainer().querySelector('.op-controls__mute');
         const event = new CustomEvent('click');
         const isMuted = player.media.muted;
         mute.dispatchEvent(event);
-        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label'))
+        expect(player.getContainer().querySelector('.op-controls__mute').getAttribute('aria-label'))
             .to.equal((isMuted ? 'Mute' : 'Unmute'));
         mute.dispatchEvent(event);
-        expect(player.getContainer().querySelector('.om-controls__mute').getAttribute('aria-label'))
+        expect(player.getContainer().querySelector('.op-controls__mute').getAttribute('aria-label'))
             .to.equal((isMuted ? 'Unmute' : 'Mute'));
     });
 
     it('Renders a `fullscreen` button only for video', () => {
         if (iOS) {
-            expect(player.getContainer().querySelector('.om-controls__fullscreen')).to.equal(null);
+            expect(player.getContainer().querySelector('.op-controls__fullscreen')).to.equal(null);
         } else {
-            expect(player.getContainer().querySelector('.om-controls__fullscreen')).to.not.equal(null);
+            expect(player.getContainer().querySelector('.op-controls__fullscreen')).to.not.equal(null);
         }
     });
 
     // it('Toggles fullscreen when clicking on `Fullscreen` button', function (done) {
     //     this.timeout(3500);
-    //     const fullscreen = player.getContainer().querySelector('.om-controls__fullscreen');
+    //     const fullscreen = player.getContainer().querySelector('.op-controls__fullscreen');
     //     const event = new CustomEvent('click');
     //     fullscreen.dispatchEvent(event);
     //     done();
     //     setTimeout(() => {
-    //         expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.not.equal(null);
+    //         expect(player.getContainer().querySelector('.op-controls__fullscreen--out')).to.not.equal(null);
     //         const e = new CustomEvent('click');
     //         fullscreen.dispatchEvent(e);
     //         setTimeout(() => {
-    //             expect(player.getContainer().querySelector('.om-controls__fullscreen--out')).to.equal(null);
+    //             expect(player.getContainer().querySelector('.op-controls__fullscreen--out')).to.equal(null);
     //             done();
     //         }, 1000);
     //     }, 1000);
     // });
 
     it('Toggles settings when clicking on button', () => {
-        const button = player.getContainer().querySelector('.om-controls__settings');
+        const button = player.getContainer().querySelector('.op-controls__settings');
         const event = new CustomEvent('click');
         button.dispatchEvent(event);
-        expect(player.getContainer().querySelector('.om-settings').getAttribute('aria-hidden')).to.equal('false');
+        expect(player.getContainer().querySelector('.op-settings').getAttribute('aria-hidden')).to.equal('false');
         button.dispatchEvent(event);
-        expect(player.getContainer().querySelector('.om-settings').getAttribute('aria-hidden')).to.equal('true');
+        expect(player.getContainer().querySelector('.op-settings').getAttribute('aria-hidden')).to.equal('true');
     });
 
     it('Changes source correctly (from MP4 to HLS, and viceversa)', function (done) {
@@ -201,7 +201,7 @@ describe('OpenPlayer.js', () => {
     it('Destroys player correctly', done => {
         setTimeout(() => {
             player.destroy();
-            expect(player.getContainer().getAttribute('class').indexOf('.om-player') > -1).to.equal(false);
+            expect(player.getContainer().getAttribute('class').indexOf('.op-player') > -1).to.equal(false);
             done();
         }, 1000);
     });

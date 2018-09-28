@@ -145,13 +145,13 @@ class Captions implements PlayerComponent {
         }
 
         this.button = document.createElement('button');
-        this.button.className = 'om-controls__captions om-control__right';
+        this.button.className = 'op-controls__captions op-control__right';
         this.button.tabIndex = 0;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Toggle Captions');
         this.button.setAttribute('data-active-captions', 'off');
-        this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
+        this.button.innerHTML = '<span class="op-sr">Toggle Captions</span>';
 
         // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
         // Otherwise, remove the markup associated with them
@@ -197,7 +197,7 @@ class Captions implements PlayerComponent {
 
         // Build container to display captions to mitigate cross browser inconsistencies
         this.captions = document.createElement('div');
-        this.captions.className = 'om-captions';
+        this.captions.className = 'op-captions';
         this.captions.innerHTML = '<span></span>';
 
         const container = this.captions.querySelector('span');
@@ -207,8 +207,8 @@ class Captions implements PlayerComponent {
                 if (currentCues !== undefined) {
                     const index = this._search(currentCues, this.player.getMedia().currentTime);
                     container.innerHTML = '';
-                    if (index > -1 && hasClass(this.button, 'om-controls__captions--on')) {
-                        this.captions.classList.add('om-captions--on');
+                    if (index > -1 && hasClass(this.button, 'op-controls__captions--on')) {
+                        this.captions.classList.add('op-captions--on');
                         container.innerHTML = this._sanitize(currentCues[index].text);
                     } else {
                         this._hide();
@@ -223,12 +223,12 @@ class Captions implements PlayerComponent {
         this.events.button.click = (e: Event) => {
             const button = (e.target as HTMLDivElement);
             button.setAttribute('aria-pressed', 'true');
-            if (hasClass(button, 'om-controls__captions--on')) {
+            if (hasClass(button, 'op-controls__captions--on')) {
                 this._hide();
-                button.classList.remove('om-controls__captions--on');
+                button.classList.remove('op-controls__captions--on');
             } else {
                 this._show();
-                button.classList.add('om-controls__captions--on');
+                button.classList.add('op-controls__captions--on');
             }
         };
 
@@ -247,7 +247,7 @@ class Captions implements PlayerComponent {
 
         this.events.global.click = (e: Event) => {
             const option = (e.target as HTMLElement);
-            if (option.closest(`#${this.player.id}`) && hasClass(option, 'om-subtitles__option')) {
+            if (option.closest(`#${this.player.id}`) && hasClass(option, 'op-subtitles__option')) {
                 const language = option.getAttribute('data-value').replace('captions-', '');
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
                 this._show();
@@ -302,7 +302,7 @@ class Captions implements PlayerComponent {
 
         // Avoid implementing submenu for captions if only 2 options were available
         return subitems.length > 2 ? {
-            className: 'om-subtitles__option',
+            className: 'op-subtitles__option',
             default: this.default || 'off',
             key: 'captions',
             name: 'Subtitles/CC',
@@ -421,7 +421,7 @@ class Captions implements PlayerComponent {
      * @memberof Captions
      */
     private _hide(): void {
-        this.captions.classList.remove('om-captions--on');
+        this.captions.classList.remove('op-captions--on');
         this.button.setAttribute('data-active-captions', 'none');
     }
 
@@ -512,7 +512,7 @@ class Captions implements PlayerComponent {
         this.trackList[index].mode = 'hidden';
         if (defaultTrack) {
             this.default = language;
-            this.button.classList.add('om-controls__captions--on');
+            this.button.classList.add('op-controls__captions--on');
             this.button.setAttribute('data-active-captions', language);
             this.current = Array.from(this.trackList)
                 .filter(item => item.language === this.default).pop();
@@ -520,8 +520,8 @@ class Captions implements PlayerComponent {
             this.current = this.trackList[0];
         }
         this._show();
-        if (!this.player.getContainer().classList.contains('om-captions--detected')) {
-            this.player.getContainer().classList.add('om-captions--detected');
+        if (!this.player.getContainer().classList.contains('op-captions--detected')) {
+            this.player.getContainer().classList.add('op-captions--detected');
         }
     }
 }

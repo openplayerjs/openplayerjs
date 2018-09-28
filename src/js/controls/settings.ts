@@ -116,17 +116,17 @@ class Settings implements PlayerComponent {
      */
     public create(): void {
         this.button = document.createElement('button');
-        this.button.className = 'om-controls__settings om-control__right';
+        this.button.className = 'op-controls__settings op-control__right';
         this.button.tabIndex = 0;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Player Settings');
-        this.button.innerHTML = '<span class="om-sr">Player Settings</span>';
+        this.button.innerHTML = '<span class="op-sr">Player Settings</span>';
 
         this.menu = document.createElement('div');
-        this.menu.className = 'om-settings';
+        this.menu.className = 'op-settings';
         this.menu.setAttribute('aria-hidden', 'true');
-        this.menu.innerHTML = '<div class="om-settings__menu" role="menu"></div>';
+        this.menu.innerHTML = '<div class="op-settings__menu" role="menu"></div>';
 
         this.clickEvent = () => {
             this.button.setAttribute('aria-pressed', 'true');
@@ -156,7 +156,7 @@ class Settings implements PlayerComponent {
         this.events.media.pause = this.hideEvent.bind(this);
 
         this.events.global.click = (e: any) => {
-            if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'om-speed__option')) {
+            if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'op-speed__option')) {
                 this.player.getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
             }
         };
@@ -205,7 +205,7 @@ class Settings implements PlayerComponent {
      */
     public addSettings(): SettingsItem {
         return {
-            className: 'om-speed__option',
+            className: 'op-speed__option',
             default: '1',
             key: 'speed',
             name: 'Speed',
@@ -238,26 +238,26 @@ class Settings implements PlayerComponent {
     public addItem(name: string, key: string, defaultValue: string, submenu?: SettingsSubItem[], className?: string): void {
         // Build the menu entry first
         const menuItem = document.createElement('div');
-        menuItem.className = 'om-settings__menu-item';
+        menuItem.className = 'op-settings__menu-item';
         menuItem.tabIndex = 0;
         menuItem.setAttribute('role', 'menuitemradio');
-        menuItem.innerHTML = `<div class="om-settings__menu-label" data-value="${key}-${defaultValue}">${name}</div>
-            <div class="om-settings__menu-content">${submenu.find(x => x.key === defaultValue).label}</div>`;
+        menuItem.innerHTML = `<div class="op-settings__menu-label" data-value="${key}-${defaultValue}">${name}</div>
+            <div class="op-settings__menu-content">${submenu.find(x => x.key === defaultValue).label}</div>`;
 
-        this.menu.querySelector('.om-settings__menu').appendChild(menuItem);
+        this.menu.querySelector('.op-settings__menu').appendChild(menuItem);
         this.originalOutput = this.menu.innerHTML;
 
         // Store the submenu to reach all options for current menu item
         if (submenu) {
             const subItems = `
-                <div class="om-settings__header">
-                    <button type="button" class="om-settings__back">${name}</button>
+                <div class="op-settings__header">
+                    <button type="button" class="op-settings__back">${name}</button>
                 </div>
-                <div class="om-settings__menu" role="menu" id="menu-item-${key}">
+                <div class="op-settings__menu" role="menu" id="menu-item-${key}">
                     ${submenu.map((item: SettingsSubItem) => `
-                    <div class="om-settings__submenu-item" tabindex="0" role="menuitemradio"
+                    <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio"
                         aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
-                        <div class="om-settings__submenu-label ${className || ''}" data-value="${key}-${item.key}">${item.label}</div>
+                        <div class="op-settings__submenu-label ${className || ''}" data-value="${key}-${item.key}">${item.label}</div>
                     </div>`).join('')}
                 </div>`;
             this.submenu[key] = subItems;
@@ -266,47 +266,47 @@ class Settings implements PlayerComponent {
         this.events.global['settings.submenu'] = (e: Event) => {
             const target = (e.target as HTMLElement);
             if (target.closest(`#${this.player.id}`)) {
-                if (hasClass(target, 'om-settings__back')) {
-                    this.menu.classList.add('om-settings--sliding');
+                if (hasClass(target, 'op-settings__back')) {
+                    this.menu.classList.add('op-settings--sliding');
                     setTimeout(() => {
                         this.menu.innerHTML = this.originalOutput;
-                        this.menu.classList.remove('om-settings--sliding');
+                        this.menu.classList.remove('op-settings--sliding');
                     }, 100);
-                } else if (hasClass(target, 'om-settings__menu-content')) {
-                    const fragments = target.parentElement.querySelector('.om-settings__menu-label')
+                } else if (hasClass(target, 'op-settings__menu-content')) {
+                    const fragments = target.parentElement.querySelector('.op-settings__menu-label')
                         .getAttribute('data-value').split('-');
                     fragments.pop();
                     const current = fragments.join('-');
 
                     if (typeof this.submenu[current] !== undefined) {
-                        this.menu.classList.add('om-settings--sliding');
+                        this.menu.classList.add('op-settings--sliding');
                         setTimeout(() => {
                             this.menu.innerHTML = this.submenu[current];
-                            this.menu.classList.remove('om-settings--sliding');
+                            this.menu.classList.remove('op-settings--sliding');
                         }, 100);
                     }
-                } else if (hasClass(target, 'om-settings__submenu-label')) {
+                } else if (hasClass(target, 'op-settings__submenu-label')) {
                     const current = target.getAttribute('data-value');
                     const value = current.replace(`${key}-`, '');
                     const label = target.innerText;
 
                     // Update values in submenu and store
-                    const menuTarget = this.menu.querySelector(`#menu-item-${key} .om-settings__submenu-item[aria-checked=true]`);
+                    const menuTarget = this.menu.querySelector(`#menu-item-${key} .op-settings__submenu-item[aria-checked=true]`);
                     if (menuTarget) {
                         menuTarget.setAttribute('aria-checked', 'false');
                         target.parentElement.setAttribute('aria-checked', 'true');
                         this.submenu[key] = this.menu.innerHTML;
 
                         // Restore original menu, and set the new value
-                        this.menu.classList.add('om-settings--sliding');
+                        this.menu.classList.add('op-settings--sliding');
                         setTimeout(() => {
                             this.menu.innerHTML = this.originalOutput;
-                            const prev = this.menu.querySelector(`.om-settings__menu-label[data-value="${key}-${defaultValue}"]`);
+                            const prev = this.menu.querySelector(`.op-settings__menu-label[data-value="${key}-${defaultValue}"]`);
                             prev.setAttribute('data-value', `${current}`);
                             prev.nextElementSibling.innerHTML = label;
                             defaultValue = value;
                             this.originalOutput = this.menu.innerHTML;
-                            this.menu.classList.remove('om-settings--sliding');
+                            this.menu.classList.remove('op-settings--sliding');
                         }, 100);
                     }
                 }
@@ -328,15 +328,15 @@ class Settings implements PlayerComponent {
      * @memberof Settings
      */
     public removeItem(id: string|number, type: string, minItems: number = 2) {
-        const target = this.player.getElement().querySelector(`.om-settings__submenu-label[data-value=${type}-${id}]`);
+        const target = this.player.getElement().querySelector(`.op-settings__submenu-label[data-value=${type}-${id}]`);
         if (target) {
             target.remove();
         }
 
-        if (this.player.getElement().querySelectorAll(`.om-settings__submenu-label[data-value^=${type}]`).length < minItems) {
+        if (this.player.getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length < minItems) {
             delete this.submenu[type];
-            this.player.getElement().querySelector(`.om-settings__menu-label[data-value^=${type}]`)
-                .closest('.om-settings__menu-item').remove();
+            this.player.getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`)
+                .closest('.op-settings__menu-item').remove();
         }
     }
 }

@@ -112,12 +112,12 @@ class Fullscreen implements PlayerComponent {
     public create(): void {
         this.button = document.createElement('button');
         this.button.type = 'button';
-        this.button.className = 'om-controls__fullscreen om-control__right';
+        this.button.className = 'op-controls__fullscreen op-control__right';
         this.button.tabIndex = 0;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Fullscreen');
-        this.button.innerHTML = '<span class="om-sr">Fullscreen</span>';
+        this.button.innerHTML = '<span class="op-sr">Fullscreen</span>';
 
         this.clickEvent = () => {
             this.button.setAttribute('aria-pressed', 'true');
@@ -227,9 +227,9 @@ class Fullscreen implements PlayerComponent {
     private _setFullscreenData(state: boolean): void {
         this.player.getContainer().setAttribute('data-fullscreen', (!!state).toString());
         if (state) {
-            this.button.classList.add('om-controls__fullscreen--out');
+            this.button.classList.add('op-controls__fullscreen--out');
         } else {
-            this.button.classList.remove('om-controls__fullscreen--out');
+            this.button.classList.remove('op-controls__fullscreen--out');
         }
     }
 
