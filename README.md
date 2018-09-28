@@ -25,7 +25,7 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisites
 
@@ -176,13 +176,10 @@ In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/
 
 ## Examples
 
-THe following list shows OpenPlayer under different scenarios:
-
-1. [Minimal configuration]()
-2. [Using Ads with Autoplay]()
-3. [Using Ads with No Autoplay]()
-4. [Playing HLS streaming]()
-5. [Playing M(PEG-DASH) streaming with DRM]()
+1. [No configuration (only using classes)](https://codepen.io/rafa8626/pen/WaNxNB)
+2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
+4. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
+5. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
 
 ## Built With
 
