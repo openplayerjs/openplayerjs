@@ -1,3 +1,53 @@
+<a name="1.3.1"></a>
+## [1.3.1](https://github.com/openplayerjs/openplayerjs/compare/v1.3.0...v1.3.1) (2018-09-28)
+
+
+### Bug Fixes
+
+* **ads:** Added missing conditional to destroy correctly Ads when single URL is being passed via an array ([b3c6a6f](https://github.com/openplayerjs/openplayerjs/commit/b3c6a6f))
+* **ads:** Addressed first issues with iOS when playing Ads inline ([cebd42e](https://github.com/openplayerjs/openplayerjs/commit/cebd42e))
+* **ads:** Fixed issue with DASH not setting sources properly when interacting with Ads; fixed autoplay workflow with Ads ([9fee3b9](https://github.com/openplayerjs/openplayerjs/commit/9fee3b9))
+* **ads:** Refactor workflow on Ads to ensure they will play in mobile devices correctly; fixed styles for Ads and removed tooltip from mobile devices ([2f1ab57](https://github.com/openplayerjs/openplayerjs/commit/2f1ab57))
+* **ads:** Removed event that caused only one Ad to be played in iOS; hid captions when Ads are playing in mobile devices and improved loading of sources in demo ([334c650](https://github.com/openplayerjs/openplayerjs/commit/334c650))
+* **ads:** Removed event that caused only one Ad to be played in iOS; hid captions when Ads are playing in mobile devices and improved loading of sources in demo ([47f8b79](https://github.com/openplayerjs/openplayerjs/commit/47f8b79))
+* **demo:** Removed ES6 arrow function for better compatibility ([c02b303](https://github.com/openplayerjs/openplayerjs/commit/c02b303))
+* **hls:** Use long URL to avoid 404 in source map for HLS.js ([e18fefe](https://github.com/openplayerjs/openplayerjs/commit/e18fefe))
+* **player:** Hid buttons not needed for Ads ([7761ef0](https://github.com/openplayerjs/openplayerjs/commit/7761ef0))
+* **progress:** Removed tooltip completely from mobile devices ([ad63445](https://github.com/openplayerjs/openplayerjs/commit/ad63445))
+* **readme:** Updated logo ([aeb7a31](https://github.com/openplayerjs/openplayerjs/commit/aeb7a31))
+
+
+### Features
+
+* **player:** Renamed classes for entire project; fixed Type Definition file ([f646d69](https://github.com/openplayerjs/openplayerjs/commit/f646d69))
+
+
+
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/openplayerjs/openplayerjs/compare/v1.3.0...v1.4.0) (2018-09-28)
+
+
+### Bug Fixes
+
+* **ads:** Added missing conditional to destroy correctly Ads when single URL is being passed via an array ([b3c6a6f](https://github.com/openplayerjs/openplayerjs/commit/b3c6a6f))
+* **ads:** Addressed first issues with iOS when playing Ads inline ([cebd42e](https://github.com/openplayerjs/openplayerjs/commit/cebd42e))
+* **ads:** Fixed issue with DASH not setting sources properly when interacting with Ads; fixed autoplay workflow with Ads ([9fee3b9](https://github.com/openplayerjs/openplayerjs/commit/9fee3b9))
+* **ads:** Refactor workflow on Ads to ensure they will play in mobile devices correctly; fixed styles for Ads and removed tooltip from mobile devices ([2f1ab57](https://github.com/openplayerjs/openplayerjs/commit/2f1ab57))
+* **ads:** Removed event that caused only one Ad to be played in iOS; hid captions when Ads are playing in mobile devices and improved loading of sources in demo ([334c650](https://github.com/openplayerjs/openplayerjs/commit/334c650))
+* **ads:** Removed event that caused only one Ad to be played in iOS; hid captions when Ads are playing in mobile devices and improved loading of sources in demo ([47f8b79](https://github.com/openplayerjs/openplayerjs/commit/47f8b79))
+* **demo:** Removed ES6 arrow function for better compatibility ([c02b303](https://github.com/openplayerjs/openplayerjs/commit/c02b303))
+* **hls:** Use long URL to avoid 404 in source map for HLS.js ([e18fefe](https://github.com/openplayerjs/openplayerjs/commit/e18fefe))
+* **player:** Hid buttons not needed for Ads ([7761ef0](https://github.com/openplayerjs/openplayerjs/commit/7761ef0))
+* **progress:** Removed tooltip completely from mobile devices ([ad63445](https://github.com/openplayerjs/openplayerjs/commit/ad63445))
+* **readme:** Updated logo ([aeb7a31](https://github.com/openplayerjs/openplayerjs/commit/aeb7a31))
+
+
+### Features
+
+* **player:** Renamed classes for entire project; fixed Type Definition file ([f646d69](https://github.com/openplayerjs/openplayerjs/commit/f646d69))
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/openplayerjs/openplayerjs/compare/v1.2.3...v1.3.0) (2018-09-19)
 
