@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>OpenPlayer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="https://www.openplayerjs.com/img/favicon.png" type="image/x-icon">
+    <link rel="icon" href="https://www.openplayerjs.com/img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="../dist/openplayer.css">
     <style>
         body {
@@ -76,7 +76,7 @@
         var script = document.createElement('script');
         script.src = '../dist/openplayer.js?rand=' + new Date().getTime();
         script.async = true;
-        script.onload = () => {
+        script.onload = function () {
             var script = document.createElement('script');
             script.src = 'demo.js?rand=' + new Date().getTime();
             script.async = true;
