@@ -1,3 +1,13 @@
+<a name="1.3.3"></a>
+## [1.3.3](https://github.com/openplayerjs/openplayerjs/compare/v1.3.2...v1.3.3) (2018-09-28)
+
+
+### Bug Fixes
+
+* **readme:** Added correct way to use package for Node projects ([671f179](https://github.com/openplayerjs/openplayerjs/commit/671f179))
+
+
+
 <a name="1.3.2"></a>
 ## [1.3.2](https://github.com/openplayerjs/openplayerjs/compare/v1.3.1...v1.3.2) (2018-09-28)
 

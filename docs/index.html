@@ -110,10 +110,10 @@
 <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></code></pre>
 				<p>If you are planning to use OpenPlayer in a Node project, you can:</p>
 				<pre><code class="language-javascript"><span class="hljs-comment">// Using as module</span>
-<span class="hljs-keyword">var</span> openplayer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/openplayer'</span>);
+<span class="hljs-keyword">var</span> openplayer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'/path/to/openplayerjs'</span>);
 
 <span class="hljs-comment">// or importing the library (ES6)</span>
-<span class="hljs-keyword">import</span> OpenPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'openplayer'</span>;</code></pre>
+<span class="hljs-keyword">import</span> OpenPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'openplayerjs'</span>;</code></pre>
 				<h2 id="usage-with-javascript">Usage with Javascript</h2>
 				<p>Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the <code>op-player</code> class from the video/audio tag (just leave <code>op-player__media</code> to preserve styles), and in Javascript use the following snippet:</p>
 				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'[player ID]'</span>, [valid VAST/VPAID URL|List <span class="hljs-keyword">of</span> VAST/VPAID URLs], [<span class="hljs-string">`true|false`</span> <span class="hljs-keyword">for</span> fullscreen effect by <span class="hljs-keyword">default</span>], {
