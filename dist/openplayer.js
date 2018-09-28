@@ -1282,7 +1282,7 @@ var Player = function () {
         return false;
       }
 
-      if (!el.classList.contains('om-player__media')) {
+      if (!el.classList.contains('op-player__media')) {
         return false;
       }
 
@@ -1292,20 +1292,20 @@ var Player = function () {
     key: "_wrapInstance",
     value: function _wrapInstance() {
       var wrapper = document.createElement('div');
-      wrapper.className = 'om-player om-player__keyboard--inactive';
-      wrapper.className += general_1.isAudio(this.element) ? ' om-player__audio' : ' om-player__video';
+      wrapper.className = 'op-player op-player__keyboard--inactive';
+      wrapper.className += general_1.isAudio(this.element) ? ' op-player__audio' : ' op-player__video';
       wrapper.tabIndex = 0;
-      this.element.classList.remove('om-player');
+      this.element.classList.remove('op-player');
       this.element.parentElement.insertBefore(wrapper, this.element);
       wrapper.appendChild(this.element);
       wrapper.addEventListener('keydown', function () {
-        if (wrapper.classList.contains('om-player__keyboard--inactive')) {
-          wrapper.classList.remove('om-player__keyboard--inactive');
+        if (wrapper.classList.contains('op-player__keyboard--inactive')) {
+          wrapper.classList.remove('op-player__keyboard--inactive');
         }
       });
       wrapper.addEventListener('click', function () {
-        if (!wrapper.classList.contains('om-player__keyboard--inactive')) {
-          wrapper.classList.add('om-player__keyboard--inactive');
+        if (!wrapper.classList.contains('op-player__keyboard--inactive')) {
+          wrapper.classList.add('op-player__keyboard--inactive');
         }
       });
 
@@ -1317,7 +1317,7 @@ var Player = function () {
     key: "_createControls",
     value: function _createControls() {
       if (constants_1.IS_IPHONE && general_1.isVideo(this.element)) {
-        this.getContainer().classList.add('om-player__ios--iphone');
+        this.getContainer().classList.add('op-player__ios--iphone');
       }
 
       this.controls = new controls_1.default(this);
@@ -1366,13 +1366,13 @@ var Player = function () {
       }
 
       this.playBtn = document.createElement('button');
-      this.playBtn.className = 'om-player__play';
+      this.playBtn.className = 'op-player__play';
       this.playBtn.tabIndex = 0;
       this.playBtn.innerHTML = '<span>Play</span>';
       this.playBtn.setAttribute('aria-pressed', 'false');
       this.playBtn.setAttribute('aria-hidden', 'false');
       this.loader = document.createElement('span');
-      this.loader.className = 'om-player__loader';
+      this.loader.className = 'op-player__loader';
       this.loader.tabIndex = -1;
       this.loader.setAttribute('aria-hidden', 'true');
       this.element.parentElement.insertBefore(this.loader, this.element);
@@ -1395,7 +1395,7 @@ var Player = function () {
           var el = _this3.activeElement();
 
           if (el.paused) {
-            _this3.playBtn.classList.remove('om-player__play--paused');
+            _this3.playBtn.classList.remove('op-player__play--paused');
 
             _this3.playBtn.setAttribute('aria-pressed', 'false');
 
@@ -1426,7 +1426,7 @@ var Player = function () {
         };
 
         this.events.play = function () {
-          _this3.playBtn.classList.add('om-player__play--paused');
+          _this3.playBtn.classList.add('op-player__play--paused');
 
           setTimeout(function () {
             _this3.playBtn.setAttribute('aria-hidden', 'true');
@@ -1440,7 +1440,7 @@ var Player = function () {
         };
 
         this.events.pause = function () {
-          _this3.playBtn.classList.remove('om-player__play--paused');
+          _this3.playBtn.classList.remove('op-player__play--paused');
 
           _this3.loader.setAttribute('aria-hidden', 'true');
 
@@ -1545,7 +1545,7 @@ var Player = function () {
 
             var volumeEl = document.createElement('div');
             var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? 'Tap' : 'Click';
-            volumeEl.className = 'om-player__unmute';
+            volumeEl.className = 'op-player__unmute';
             volumeEl.innerHTML = "<span>".concat(action, " to unmute</span>");
             volumeEl.addEventListener('click', function () {
               _this4.activeElement().muted = false;
@@ -1572,7 +1572,7 @@ var Player = function () {
     key: "_fill",
     value: function _fill() {
       if (!general_1.isAudio(this.element) && !constants_1.IS_IPHONE) {
-        this.getContainer().classList.add('om-player__full');
+        this.getContainer().classList.add('op-player__full');
       }
     }
   }, {
@@ -1595,11 +1595,11 @@ var Player = function () {
     key: "init",
     value: function init() {
       Player.instances = {};
-      var targets = document.querySelectorAll('video.om-player, audio.om-player');
+      var targets = document.querySelectorAll('video.op-player, audio.op-player');
 
       for (var i = 0, total = targets.length; i < total; i++) {
         var target = targets[i];
-        var player = new Player(target, target.getAttribute('data-om-ads'), !!target.getAttribute('data-om-fill'), JSON.parse(target.getAttribute('data-om-options')));
+        var player = new Player(target, target.getAttribute('data-op-ads'), !!target.getAttribute('data-om-fill'), JSON.parse(target.getAttribute('data-om-options')));
         player.init();
       }
     }
@@ -3589,7 +3589,7 @@ var Controls = function () {
       this.player.getElement().controls = false;
       var isMediaVideo = general_1.isVideo(this.player.getElement());
       this.controls = document.createElement('div');
-      this.controls.className = 'om-controls';
+      this.controls.className = 'op-controls';
       this.player.getContainer().appendChild(this.controls);
 
       this._buildElements();
@@ -3609,7 +3609,7 @@ var Controls = function () {
           if (isMediaVideo) {
             _this._stopControlTimer();
 
-            _this.player.getContainer().classList.remove('om-controls--hidden');
+            _this.player.getContainer().classList.remove('op-controls--hidden');
 
             _this._startControlTimer(2500);
           }
@@ -3617,7 +3617,7 @@ var Controls = function () {
 
         this.events.mouse.mousemove = function () {
           if (isMediaVideo) {
-            _this.player.getContainer().classList.remove('om-controls--hidden');
+            _this.player.getContainer().classList.remove('op-controls--hidden');
 
             _this._startControlTimer(2500);
           }
@@ -3630,7 +3630,7 @@ var Controls = function () {
         };
 
         this.events.media.pause = function () {
-          _this.player.getContainer().classList.remove('om-controls--hidden');
+          _this.player.getContainer().classList.remove('op-controls--hidden');
 
           _this._stopControlTimer();
         };
@@ -3683,7 +3683,7 @@ var Controls = function () {
 
       this.timer = window.setTimeout(function () {
         if ((!el.paused || !el.ended) && general_1.isVideo(_this3.player.getElement())) {
-          _this3.player.getContainer().classList.add('om-controls--hidden');
+          _this3.player.getContainer().classList.add('op-controls--hidden');
 
           _this3._stopControlTimer();
 
@@ -3797,13 +3797,13 @@ var Captions = function () {
       }
 
       this.button = document.createElement('button');
-      this.button.className = 'om-controls__captions om-control__right';
+      this.button.className = 'op-controls__captions op-control__right';
       this.button.tabIndex = 0;
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Toggle Captions');
       this.button.setAttribute('data-active-captions', 'off');
-      this.button.innerHTML = '<span class="om-sr">Toggle Captions</span>';
+      this.button.innerHTML = '<span class="op-sr">Toggle Captions</span>';
 
       var _loop = function _loop(i, tracks, total) {
         var element = tracks[i];
@@ -3856,7 +3856,7 @@ var Captions = function () {
       }
 
       this.captions = document.createElement('div');
-      this.captions.className = 'om-captions';
+      this.captions.className = 'op-captions';
       this.captions.innerHTML = '<span></span>';
       var container = this.captions.querySelector('span');
 
@@ -3869,8 +3869,8 @@ var Captions = function () {
 
             container.innerHTML = '';
 
-            if (index > -1 && general_1.hasClass(_this.button, 'om-controls__captions--on')) {
-              _this.captions.classList.add('om-captions--on');
+            if (index > -1 && general_1.hasClass(_this.button, 'op-controls__captions--on')) {
+              _this.captions.classList.add('op-captions--on');
 
               container.innerHTML = _this._sanitize(currentCues[index].text);
             } else {
@@ -3886,14 +3886,14 @@ var Captions = function () {
         var button = e.target;
         button.setAttribute('aria-pressed', 'true');
 
-        if (general_1.hasClass(button, 'om-controls__captions--on')) {
+        if (general_1.hasClass(button, 'op-controls__captions--on')) {
           _this._hide();
 
-          button.classList.remove('om-controls__captions--on');
+          button.classList.remove('op-controls__captions--on');
         } else {
           _this._show();
 
-          button.classList.add('om-controls__captions--on');
+          button.classList.add('op-controls__captions--on');
         }
       };
 
@@ -3912,7 +3912,7 @@ var Captions = function () {
       this.events.global.click = function (e) {
         var option = e.target;
 
-        if (option.closest("#".concat(_this.player.id)) && general_1.hasClass(option, 'om-subtitles__option')) {
+        if (option.closest("#".concat(_this.player.id)) && general_1.hasClass(option, 'op-subtitles__option')) {
           var language = option.getAttribute('data-value').replace('captions-', '');
           _this.current = Array.from(_this.trackList).filter(function (item) {
             return item.language === language;
@@ -3976,7 +3976,7 @@ var Captions = function () {
       }
 
       return subitems.length > 2 ? {
-        className: 'om-subtitles__option',
+        className: 'op-subtitles__option',
         default: this.default || 'off',
         key: 'captions',
         name: 'Subtitles/CC',
@@ -4074,7 +4074,7 @@ var Captions = function () {
   }, {
     key: "_hide",
     value: function _hide() {
-      this.captions.classList.remove('om-captions--on');
+      this.captions.classList.remove('op-captions--on');
       this.button.setAttribute('data-active-captions', 'none');
     }
   }, {
@@ -4139,7 +4139,7 @@ var Captions = function () {
 
       if (defaultTrack) {
         this.default = language;
-        this.button.classList.add('om-controls__captions--on');
+        this.button.classList.add('op-controls__captions--on');
         this.button.setAttribute('data-active-captions', language);
         this.current = Array.from(this.trackList).filter(function (item) {
           return item.language === _this3.default;
@@ -4150,8 +4150,8 @@ var Captions = function () {
 
       this._show();
 
-      if (!this.player.getContainer().classList.contains('om-captions--detected')) {
-        this.player.getContainer().classList.add('om-captions--detected');
+      if (!this.player.getContainer().classList.contains('op-captions--detected')) {
+        this.player.getContainer().classList.add('op-captions--detected');
       }
     }
   }]);
@@ -4196,12 +4196,12 @@ var Fullscreen = function () {
 
       this.button = document.createElement('button');
       this.button.type = 'button';
-      this.button.className = 'om-controls__fullscreen om-control__right';
+      this.button.className = 'op-controls__fullscreen op-control__right';
       this.button.tabIndex = 0;
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Fullscreen');
-      this.button.innerHTML = '<span class="om-sr">Fullscreen</span>';
+      this.button.innerHTML = '<span class="op-sr">Fullscreen</span>';
 
       this.clickEvent = function () {
         _this.button.setAttribute('aria-pressed', 'true');
@@ -4289,9 +4289,9 @@ var Fullscreen = function () {
       this.player.getContainer().setAttribute('data-fullscreen', (!!state).toString());
 
       if (state) {
-        this.button.classList.add('om-controls__fullscreen--out');
+        this.button.classList.add('op-controls__fullscreen--out');
       } else {
-        this.button.classList.remove('om-controls__fullscreen--out');
+        this.button.classList.remove('op-controls__fullscreen--out');
       }
     }
   }, {
@@ -4353,13 +4353,13 @@ var Play = function () {
 
       this.button = document.createElement('button');
       this.button.type = 'button';
-      this.button.className = 'om-controls__playpause';
+      this.button.className = 'op-controls__playpause';
       this.button.tabIndex = 0;
       this.button.title = 'Play';
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Play');
-      this.button.innerHTML = '<span class="om-sr">Play/Pause</span>';
+      this.button.innerHTML = '<span class="op-sr">Play/Pause</span>';
       this.player.getControls().getContainer().appendChild(this.button);
 
       this.events.media.click = function (e) {
@@ -4379,18 +4379,18 @@ var Play = function () {
       this.events.media.play = function () {
         if (_this.player.activeElement().ended) {
           if (_this.player.isMedia()) {
-            _this.button.classList.add('om-controls__playpause--replay');
+            _this.button.classList.add('op-controls__playpause--replay');
           } else {
-            _this.button.classList.add('om-controls__playpause--pause');
+            _this.button.classList.add('op-controls__playpause--pause');
           }
 
           _this.button.title = 'Play';
 
           _this.button.setAttribute('aria-label', 'Play');
         } else {
-          _this.button.classList.remove('om-controls__playpause--replay');
+          _this.button.classList.remove('op-controls__playpause--replay');
 
-          _this.button.classList.add('om-controls__playpause--pause');
+          _this.button.classList.add('op-controls__playpause--pause');
 
           _this.button.title = 'Pause';
 
@@ -4406,10 +4406,10 @@ var Play = function () {
       };
 
       this.events.media.loadedmetadata = function () {
-        if (general_1.hasClass(_this.button, 'om-controls__playpause--pause')) {
-          _this.button.classList.remove('om-controls__playpause--replay');
+        if (general_1.hasClass(_this.button, 'op-controls__playpause--pause')) {
+          _this.button.classList.remove('op-controls__playpause--replay');
 
-          _this.button.classList.remove('om-controls__playpause--pause');
+          _this.button.classList.remove('op-controls__playpause--pause');
 
           _this.button.title = 'Play';
 
@@ -4418,10 +4418,10 @@ var Play = function () {
       };
 
       this.events.media.playing = function () {
-        if (!general_1.hasClass(_this.button, 'om-controls__playpause--pause')) {
-          _this.button.classList.remove('om-controls__playpause--replay');
+        if (!general_1.hasClass(_this.button, 'op-controls__playpause--pause')) {
+          _this.button.classList.remove('op-controls__playpause--replay');
 
-          _this.button.classList.add('om-controls__playpause--pause');
+          _this.button.classList.add('op-controls__playpause--pause');
 
           _this.button.title = 'Pause';
 
@@ -4430,7 +4430,7 @@ var Play = function () {
       };
 
       this.events.media.pause = function () {
-        _this.button.classList.remove('om-controls__playpause--pause');
+        _this.button.classList.remove('op-controls__playpause--pause');
 
         _this.button.title = 'Play';
 
@@ -4439,13 +4439,13 @@ var Play = function () {
 
       this.events.media.ended = function () {
         if (_this.player.activeElement().ended && _this.player.isMedia()) {
-          _this.button.classList.add('om-controls__playpause--replay');
+          _this.button.classList.add('op-controls__playpause--replay');
 
-          _this.button.classList.remove('om-controls__playpause--pause');
+          _this.button.classList.remove('op-controls__playpause--pause');
         } else {
-          _this.button.classList.remove('om-controls__playpause--replay');
+          _this.button.classList.remove('op-controls__playpause--replay');
 
-          _this.button.classList.add('om-controls__playpause--pause');
+          _this.button.classList.add('op-controls__playpause--pause');
         }
 
         _this.button.title = 'Play';
@@ -4454,9 +4454,9 @@ var Play = function () {
       };
 
       this.events.media['adsmediaended'] = function () {
-        _this.button.classList.remove('om-controls__playpause--replay');
+        _this.button.classList.remove('op-controls__playpause--replay');
 
-        _this.button.classList.add('om-controls__playpause--pause');
+        _this.button.classList.add('op-controls__playpause--pause');
 
         _this.button.title = 'Pause Ads';
 
@@ -4541,13 +4541,13 @@ var Progress = function () {
       var _this = this;
 
       this.progress = document.createElement('div');
-      this.progress.className = 'om-controls__progress';
+      this.progress.className = 'op-controls__progress';
       this.progress.tabIndex = 0;
       this.progress.setAttribute('aria-label', 'Time Slider');
       this.progress.setAttribute('aria-valuemin', '0');
       this.slider = document.createElement('input');
       this.slider.type = 'range';
-      this.slider.className = 'om-controls__progress--seek';
+      this.slider.className = 'op-controls__progress--seek';
       this.slider.tabIndex = -1;
       this.slider.setAttribute('min', '0');
       this.slider.setAttribute('max', '0');
@@ -4556,11 +4556,11 @@ var Progress = function () {
       this.slider.setAttribute('aria-label', 'Time Rail');
       this.slider.setAttribute('role', 'slider');
       this.buffer = document.createElement('progress');
-      this.buffer.className = 'om-controls__progress--buffer';
+      this.buffer.className = 'op-controls__progress--buffer';
       this.buffer.setAttribute('max', '100');
       this.buffer.value = 0;
       this.played = document.createElement('progress');
-      this.played.className = 'om-controls__progress--played';
+      this.played.className = 'op-controls__progress--played';
       this.played.setAttribute('max', '100');
       this.played.setAttribute('role', 'presentation');
       this.played.value = 0;
@@ -4570,7 +4570,7 @@ var Progress = function () {
 
       if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
         this.tooltip = document.createElement('span');
-        this.tooltip.className = 'om-controls__tooltip';
+        this.tooltip.className = 'op-controls__tooltip';
         this.tooltip.tabIndex = -1;
         this.tooltip.innerHTML = '00:00';
         this.progress.appendChild(this.tooltip);
@@ -4645,13 +4645,13 @@ var Progress = function () {
       };
 
       var updateSlider = function updateSlider(e) {
-        if (general_1.hasClass(_this.slider, 'om-progress--pressed')) {
+        if (general_1.hasClass(_this.slider, 'op-progress--pressed')) {
           return;
         }
 
         var target = e.target;
 
-        _this.slider.classList.add('.om-progress--pressed');
+        _this.slider.classList.add('.op-progress--pressed');
 
         var el = _this.player.activeElement();
 
@@ -4660,7 +4660,7 @@ var Progress = function () {
         var val = parseFloat(target.value);
         _this.slider.style.backgroundSize = "".concat((val - min) * 100 / (max - min), "% 100%");
 
-        _this.slider.classList.remove('.om-progress--pressed');
+        _this.slider.classList.remove('.op-progress--pressed');
 
         el.currentTime = val;
         e.preventDefault();
@@ -4739,9 +4739,9 @@ var Progress = function () {
           }
 
           if (percentage >= 0 && percentage <= 1) {
-            _this.tooltip.classList.add('om-controls__tooltip--visible');
+            _this.tooltip.classList.add('op-controls__tooltip--visible');
           } else {
-            _this.tooltip.classList.remove('om-controls__tooltip--visible');
+            _this.tooltip.classList.remove('op-controls__tooltip--visible');
           }
 
           _this.tooltip.style.left = "".concat(pos, "px");
@@ -4749,8 +4749,8 @@ var Progress = function () {
         };
 
         this.events.global.mousemove = function (e) {
-          if (!e.target.closest('.om-controls__progress') || _this.player.isAd()) {
-            _this.tooltip.classList.remove('om-controls__tooltip--visible');
+          if (!e.target.closest('.op-controls__progress') || _this.player.isAd()) {
+            _this.tooltip.classList.remove('op-controls__tooltip--visible');
           }
         };
       }
@@ -4837,16 +4837,16 @@ var Settings = function () {
       var _this = this;
 
       this.button = document.createElement('button');
-      this.button.className = 'om-controls__settings om-control__right';
+      this.button.className = 'op-controls__settings op-control__right';
       this.button.tabIndex = 0;
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Player Settings');
-      this.button.innerHTML = '<span class="om-sr">Player Settings</span>';
+      this.button.innerHTML = '<span class="op-sr">Player Settings</span>';
       this.menu = document.createElement('div');
-      this.menu.className = 'om-settings';
+      this.menu.className = 'op-settings';
       this.menu.setAttribute('aria-hidden', 'true');
-      this.menu.innerHTML = '<div class="om-settings__menu" role="menu"></div>';
+      this.menu.innerHTML = '<div class="op-settings__menu" role="menu"></div>';
 
       this.clickEvent = function () {
         _this.button.setAttribute('aria-pressed', 'true');
@@ -4882,7 +4882,7 @@ var Settings = function () {
       this.events.media.pause = this.hideEvent.bind(this);
 
       this.events.global.click = function (e) {
-        if (e.target.closest("#".concat(_this.player.id)) && general_1.hasClass(e.target, 'om-speed__option')) {
+        if (e.target.closest("#".concat(_this.player.id)) && general_1.hasClass(e.target, 'op-speed__option')) {
           _this.player.getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
         }
       };
@@ -4922,7 +4922,7 @@ var Settings = function () {
     key: "addSettings",
     value: function addSettings() {
       return {
-        className: 'om-speed__option',
+        className: 'op-speed__option',
         default: '1',
         key: 'speed',
         name: 'Speed',
@@ -4956,18 +4956,18 @@ var Settings = function () {
       var _this3 = this;
 
       var menuItem = document.createElement('div');
-      menuItem.className = 'om-settings__menu-item';
+      menuItem.className = 'op-settings__menu-item';
       menuItem.tabIndex = 0;
       menuItem.setAttribute('role', 'menuitemradio');
-      menuItem.innerHTML = "<div class=\"om-settings__menu-label\" data-value=\"".concat(key, "-").concat(defaultValue, "\">").concat(name, "</div>\n            <div class=\"om-settings__menu-content\">").concat(submenu.find(function (x) {
+      menuItem.innerHTML = "<div class=\"op-settings__menu-label\" data-value=\"".concat(key, "-").concat(defaultValue, "\">").concat(name, "</div>\n            <div class=\"op-settings__menu-content\">").concat(submenu.find(function (x) {
         return x.key === defaultValue;
       }).label, "</div>");
-      this.menu.querySelector('.om-settings__menu').appendChild(menuItem);
+      this.menu.querySelector('.op-settings__menu').appendChild(menuItem);
       this.originalOutput = this.menu.innerHTML;
 
       if (submenu) {
-        var subItems = "\n                <div class=\"om-settings__header\">\n                    <button type=\"button\" class=\"om-settings__back\">".concat(name, "</button>\n                </div>\n                <div class=\"om-settings__menu\" role=\"menu\" id=\"menu-item-").concat(key, "\">\n                    ").concat(submenu.map(function (item) {
-          return "\n                    <div class=\"om-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(defaultValue === item.key ? 'true' : 'false', "\">\n                        <div class=\"om-settings__submenu-label ").concat(className || '', "\" data-value=\"").concat(key, "-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
+        var subItems = "\n                <div class=\"op-settings__header\">\n                    <button type=\"button\" class=\"op-settings__back\">".concat(name, "</button>\n                </div>\n                <div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-").concat(key, "\">\n                    ").concat(submenu.map(function (item) {
+          return "\n                    <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(defaultValue === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"").concat(key, "-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
         }).join(''), "\n                </div>");
         this.submenu[key] = subItems;
       }
@@ -4976,55 +4976,55 @@ var Settings = function () {
         var target = e.target;
 
         if (target.closest("#".concat(_this3.player.id))) {
-          if (general_1.hasClass(target, 'om-settings__back')) {
-            _this3.menu.classList.add('om-settings--sliding');
+          if (general_1.hasClass(target, 'op-settings__back')) {
+            _this3.menu.classList.add('op-settings--sliding');
 
             setTimeout(function () {
               _this3.menu.innerHTML = _this3.originalOutput;
 
-              _this3.menu.classList.remove('om-settings--sliding');
+              _this3.menu.classList.remove('op-settings--sliding');
             }, 100);
-          } else if (general_1.hasClass(target, 'om-settings__menu-content')) {
-            var fragments = target.parentElement.querySelector('.om-settings__menu-label').getAttribute('data-value').split('-');
+          } else if (general_1.hasClass(target, 'op-settings__menu-content')) {
+            var fragments = target.parentElement.querySelector('.op-settings__menu-label').getAttribute('data-value').split('-');
             fragments.pop();
             var current = fragments.join('-');
 
             if (_typeof(_this3.submenu[current]) !== undefined) {
-              _this3.menu.classList.add('om-settings--sliding');
+              _this3.menu.classList.add('op-settings--sliding');
 
               setTimeout(function () {
                 _this3.menu.innerHTML = _this3.submenu[current];
 
-                _this3.menu.classList.remove('om-settings--sliding');
+                _this3.menu.classList.remove('op-settings--sliding');
               }, 100);
             }
-          } else if (general_1.hasClass(target, 'om-settings__submenu-label')) {
+          } else if (general_1.hasClass(target, 'op-settings__submenu-label')) {
             var _current = target.getAttribute('data-value');
 
             var value = _current.replace("".concat(key, "-"), '');
 
             var label = target.innerText;
 
-            var menuTarget = _this3.menu.querySelector("#menu-item-".concat(key, " .om-settings__submenu-item[aria-checked=true]"));
+            var menuTarget = _this3.menu.querySelector("#menu-item-".concat(key, " .op-settings__submenu-item[aria-checked=true]"));
 
             if (menuTarget) {
               menuTarget.setAttribute('aria-checked', 'false');
               target.parentElement.setAttribute('aria-checked', 'true');
               _this3.submenu[key] = _this3.menu.innerHTML;
 
-              _this3.menu.classList.add('om-settings--sliding');
+              _this3.menu.classList.add('op-settings--sliding');
 
               setTimeout(function () {
                 _this3.menu.innerHTML = _this3.originalOutput;
 
-                var prev = _this3.menu.querySelector(".om-settings__menu-label[data-value=\"".concat(key, "-").concat(defaultValue, "\"]"));
+                var prev = _this3.menu.querySelector(".op-settings__menu-label[data-value=\"".concat(key, "-").concat(defaultValue, "\"]"));
 
                 prev.setAttribute('data-value', "".concat(_current));
                 prev.nextElementSibling.innerHTML = label;
                 defaultValue = value;
                 _this3.originalOutput = _this3.menu.innerHTML;
 
-                _this3.menu.classList.remove('om-settings--sliding');
+                _this3.menu.classList.remove('op-settings--sliding');
               }, 100);
             }
           }
@@ -5040,15 +5040,15 @@ var Settings = function () {
     key: "removeItem",
     value: function removeItem(id, type) {
       var minItems = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
-      var target = this.player.getElement().querySelector(".om-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
+      var target = this.player.getElement().querySelector(".op-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
 
       if (target) {
         target.remove();
       }
 
-      if (this.player.getElement().querySelectorAll(".om-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
+      if (this.player.getElement().querySelectorAll(".op-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
         delete this.submenu[type];
-        this.player.getElement().querySelector(".om-settings__menu-label[data-value^=".concat(type, "]")).closest('.om-settings__menu-item').remove();
+        this.player.getElement().querySelector(".op-settings__menu-label[data-value^=".concat(type, "]")).closest('.op-settings__menu-item').remove();
       }
     }
   }]);
@@ -5095,17 +5095,17 @@ var Time = function () {
       var _this = this;
 
       this.current = document.createElement('time');
-      this.current.className = 'om-controls__current';
+      this.current.className = 'op-controls__current';
       this.current.setAttribute('role', 'timer');
       this.current.setAttribute('aria-live', 'off');
       this.current.setAttribute('aria-hidden', 'false');
       this.current.innerText = '0:00';
       this.delimiter = document.createElement('span');
-      this.delimiter.className = 'om-controls__time-delimiter';
+      this.delimiter.className = 'op-controls__time-delimiter';
       this.delimiter.setAttribute('aria-hidden', 'false');
       this.delimiter.innerText = '/';
       this.duration = document.createElement('time');
-      this.duration.className = 'om-controls__duration';
+      this.duration.className = 'op-controls__duration';
       this.duration.setAttribute('aria-hidden', 'false');
       this.duration.innerText = '0:00';
 
@@ -5228,7 +5228,7 @@ var Volume = function () {
       var _this = this;
 
       this.container = document.createElement('div');
-      this.container.className = 'om-controls__volume';
+      this.container.className = 'op-controls__volume';
       this.container.tabIndex = 0;
       this.container.setAttribute('aria-valuemin', '0');
       this.container.setAttribute('aria-valuemax', '100');
@@ -5238,7 +5238,7 @@ var Volume = function () {
       this.container.setAttribute('aria-label', 'Volume Slider');
       this.slider = document.createElement('input');
       this.slider.type = 'range';
-      this.slider.className = 'om-controls__volume--input';
+      this.slider.className = 'op-controls__volume--input';
       this.slider.tabIndex = -1;
       this.slider.value = this.player.getMedia().volume.toString();
       this.slider.setAttribute('min', '0');
@@ -5246,7 +5246,7 @@ var Volume = function () {
       this.slider.setAttribute('step', '0.1');
       this.slider.setAttribute('aria-label', 'Volume Control');
       this.display = document.createElement('progress');
-      this.display.className = 'om-controls__volume--display';
+      this.display.className = 'op-controls__volume--display';
       this.display.setAttribute('max', '10');
       this.display.setAttribute('role', 'presentation');
       this.display.value = this.player.getMedia().volume * 10;
@@ -5254,12 +5254,12 @@ var Volume = function () {
       this.container.appendChild(this.display);
       this.button = document.createElement('button');
       this.button.type = 'button';
-      this.button.className = 'om-controls__mute';
+      this.button.className = 'op-controls__mute';
       this.button.tabIndex = 0;
       this.button.setAttribute('aria-controls', this.player.id);
       this.button.setAttribute('aria-pressed', 'false');
       this.button.setAttribute('aria-label', 'Mute');
-      this.button.innerHTML = '<span class="om-sr">Mute</span>';
+      this.button.innerHTML = '<span class="op-sr">Mute</span>';
 
       var updateSlider = function updateSlider(element) {
         var mediaVolume = element.volume * 1;
@@ -5276,17 +5276,17 @@ var Volume = function () {
         var vol = element.volume;
 
         if (vol <= 0.5 && vol > 0) {
-          _this.button.classList.remove('om-controls__mute--muted');
+          _this.button.classList.remove('op-controls__mute--muted');
 
-          _this.button.classList.add('om-controls__mute--half');
+          _this.button.classList.add('op-controls__mute--half');
         } else if (vol === 0) {
-          _this.button.classList.add('om-controls__mute--muted');
+          _this.button.classList.add('op-controls__mute--muted');
 
-          _this.button.classList.remove('om-controls__mute--half');
+          _this.button.classList.remove('op-controls__mute--half');
         } else {
-          _this.button.classList.remove('om-controls__mute--muted');
+          _this.button.classList.remove('op-controls__mute--muted');
 
-          _this.button.classList.remove('om-controls__mute--half');
+          _this.button.classList.remove('op-controls__mute--half');
         }
       };
 
@@ -5298,8 +5298,8 @@ var Volume = function () {
         el.muted = el.volume === 0;
         _this.volume = value;
 
-        if (!el.muted && _this.player.getContainer().querySelector('.om-player__unmute')) {
-          _this.player.getContainer().querySelector('.om-player__unmute').remove();
+        if (!el.muted && _this.player.getContainer().querySelector('.op-player__unmute')) {
+          _this.player.getContainer().querySelector('.op-player__unmute').remove();
         }
 
         var e = events_1.addEvent('volumechange');
@@ -6242,7 +6242,7 @@ var Ads = function () {
 
           var volumeEl = document.createElement('div');
           var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? 'Tap' : 'Click';
-          volumeEl.className = 'om-player__unmute';
+          volumeEl.className = 'op-player__unmute';
           volumeEl.innerHTML = "<span>".concat(action, " to unmute</span>");
           volumeEl.addEventListener('click', function () {
             _this.adsMuted = false;
@@ -6283,7 +6283,7 @@ var Ads = function () {
     value: function load() {
       this.adsStarted = true;
       this.adsContainer = document.createElement('div');
-      this.adsContainer.id = 'om-ads';
+      this.adsContainer.id = 'op-ads';
       this.adsContainer.tabIndex = -1;
       this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
       this.mediaSources = this.media.src;
@@ -6390,7 +6390,7 @@ var Ads = function () {
               this.media.pause();
             }
 
-            this.element.parentElement.classList.add('om-ads--active');
+            this.element.parentElement.classList.add('op-ads--active');
             this.adsDuration = ad.getDuration();
             this.adsCurrentTime = ad.getDuration();
 
@@ -6432,7 +6432,7 @@ var Ads = function () {
         case google.ima.AdEvent.Type.COMPLETE:
         case google.ima.AdEvent.Type.SKIPPED:
           if (ad.isLinear()) {
-            this.element.parentElement.classList.remove('om-ads--active');
+            this.element.parentElement.classList.remove('op-ads--active');
             this.adsActive = false;
             clearInterval(this.intervalTimer);
           }
@@ -6452,7 +6452,7 @@ var Ads = function () {
           if (ad.isLinear()) {
             this.adsActive = false;
             this.adsEnded = true;
-            this.element.parentElement.classList.remove('om-ads--active');
+            this.element.parentElement.classList.remove('op-ads--active');
           }
 
           break;
@@ -6477,7 +6477,7 @@ var Ads = function () {
           this.adsManager.destroy();
         }
 
-        var unmuteEl = this.element.parentElement.querySelector('.om-player__unmute');
+        var unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
 
         if (unmuteEl) {
           unmuteEl.remove();
@@ -6578,7 +6578,7 @@ var Ads = function () {
       this.adsStarted = false;
       this.adsDuration = 0;
       this.adsCurrentTime = 0;
-      this.element.parentElement.classList.remove('om-ads--active');
+      this.element.parentElement.classList.remove('op-ads--active');
 
       if (!this.media.ended) {
         setTimeout(function () {

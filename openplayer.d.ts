@@ -1,5 +1,5 @@
-// Type definitions for OpenPlayer 1.0
-// Project: https://github.com/rafa8626/openplayer
+// Type definitions for OpenPlayer 1.3
+// Project: https://github.com/openplayerjs/openplayerjs
 // Definitions by: Rafael Miranda <https://github.com/rafa8626>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // TypeScript Version: 2.2
@@ -78,7 +78,7 @@ declare namespace OpenPlayer {
      */
     class Player {
         /**
-         * Convert all the video/audio tags with `om-player` class in a OpenMedia player instance.
+         * Convert all the video/audio tags with `op-player` class in a OpenMedia player instance.
          */
         static init(): void;
         /**
@@ -116,7 +116,7 @@ declare namespace OpenPlayer {
          */
         destroy(): void;
         /**
-         * Retrieve the parent element (with `om-player` class) of the native video/audio tag.
+         * Retrieve the parent element (with `op-player` class) of the native video/audio tag.
          *
          * This element is mostly useful to attach other player component's markup in a place
          * different than the controls bar.

@@ -312,7 +312,7 @@ class Ads {
 
                     const volumeEl = document.createElement('div');
                     const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
-                    volumeEl.className = 'om-player__unmute';
+                    volumeEl.className = 'op-player__unmute';
                     volumeEl.innerHTML = `<span>${action} to unmute</span>`;
                     volumeEl.addEventListener('click', () => {
                         this.adsMuted = false;
@@ -355,7 +355,7 @@ class Ads {
     public load(): void {
         this.adsStarted = true;
         this.adsContainer = document.createElement('div');
-        this.adsContainer.id = 'om-ads';
+        this.adsContainer.id = 'op-ads';
         this.adsContainer.tabIndex = -1;
         this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
         this.mediaSources = this.media.src;
@@ -615,7 +615,7 @@ class Ads {
                     if (!this.media.paused) {
                         this.media.pause();
                     }
-                    this.element.parentElement.classList.add('om-ads--active');
+                    this.element.parentElement.classList.add('op-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
                     if (!this.mediaStarted) {
@@ -652,7 +652,7 @@ class Ads {
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
                 if (ad.isLinear()) {
-                    this.element.parentElement.classList.remove('om-ads--active');
+                    this.element.parentElement.classList.remove('op-ads--active');
                     this.adsActive = false;
                     clearInterval(this.intervalTimer);
                 }
@@ -668,7 +668,7 @@ class Ads {
                 if (ad.isLinear()) {
                     this.adsActive = false;
                     this.adsEnded = true;
-                    this.element.parentElement.classList.remove('om-ads--active');
+                    this.element.parentElement.classList.remove('op-ads--active');
                 }
                 break;
         }
@@ -700,7 +700,7 @@ class Ads {
             if (this.adsManager) {
                 this.adsManager.destroy();
             }
-            const unmuteEl = this.element.parentElement.querySelector('.om-player__unmute');
+            const unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
             if (unmuteEl) {
                 unmuteEl.remove();
             }
@@ -851,7 +851,7 @@ class Ads {
         this.adsStarted = false;
         this.adsDuration = 0;
         this.adsCurrentTime = 0;
-        this.element.parentElement.classList.remove('om-ads--active');
+        this.element.parentElement.classList.remove('op-ads--active');
 
         if (!this.media.ended) {
             setTimeout(() => {

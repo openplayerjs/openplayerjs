@@ -87,19 +87,19 @@ class Time implements PlayerComponent {
      */
     public create(): void {
         this.current = document.createElement('time');
-        this.current.className = 'om-controls__current';
+        this.current.className = 'op-controls__current';
         this.current.setAttribute('role', 'timer');
         this.current.setAttribute('aria-live', 'off');
         this.current.setAttribute('aria-hidden', 'false');
         this.current.innerText = '0:00';
 
         this.delimiter = document.createElement('span');
-        this.delimiter.className = 'om-controls__time-delimiter';
+        this.delimiter.className = 'op-controls__time-delimiter';
         this.delimiter.setAttribute('aria-hidden', 'false');
         this.delimiter.innerText = '/';
 
         this.duration = document.createElement('time');
-        this.duration.className = 'om-controls__duration';
+        this.duration.className = 'op-controls__duration';
         this.duration.setAttribute('aria-hidden', 'false');
         this.duration.innerText = '0:00';
 

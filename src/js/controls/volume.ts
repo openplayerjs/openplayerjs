@@ -105,7 +105,7 @@ class Volume implements PlayerComponent {
      */
     public create(): void {
         this.container = document.createElement('div');
-        this.container.className = 'om-controls__volume';
+        this.container.className = 'op-controls__volume';
         this.container.tabIndex = 0;
         this.container.setAttribute('aria-valuemin', '0');
         this.container.setAttribute('aria-valuemax', '100');
@@ -116,7 +116,7 @@ class Volume implements PlayerComponent {
 
         this.slider = document.createElement('input');
         this.slider.type = 'range';
-        this.slider.className = 'om-controls__volume--input';
+        this.slider.className = 'op-controls__volume--input';
         this.slider.tabIndex = -1;
         this.slider.value = this.player.getMedia().volume.toString();
         this.slider.setAttribute('min', '0');
@@ -125,7 +125,7 @@ class Volume implements PlayerComponent {
         this.slider.setAttribute('aria-label', 'Volume Control');
 
         this.display = document.createElement('progress');
-        this.display.className = 'om-controls__volume--display';
+        this.display.className = 'op-controls__volume--display';
         this.display.setAttribute('max', '10');
         this.display.setAttribute('role', 'presentation');
         this.display.value = this.player.getMedia().volume * 10;
@@ -136,12 +136,12 @@ class Volume implements PlayerComponent {
         // Use as backup when mute is clicked
         this.button = document.createElement('button');
         this.button.type = 'button';
-        this.button.className = 'om-controls__mute';
+        this.button.className = 'op-controls__mute';
         this.button.tabIndex = 0;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', 'Mute');
-        this.button.innerHTML = '<span class="om-sr">Mute</span>';
+        this.button.innerHTML = '<span class="op-sr">Mute</span>';
 
         /**
          * @private
@@ -164,14 +164,14 @@ class Volume implements PlayerComponent {
         const updateButton = (element: any) => {
             const vol = element.volume;
             if (vol <= 0.5 && vol > 0) {
-                this.button.classList.remove('om-controls__mute--muted');
-                this.button.classList.add('om-controls__mute--half');
+                this.button.classList.remove('op-controls__mute--muted');
+                this.button.classList.add('op-controls__mute--half');
             } else if (vol === 0) {
-                this.button.classList.add('om-controls__mute--muted');
-                this.button.classList.remove('om-controls__mute--half');
+                this.button.classList.add('op-controls__mute--muted');
+                this.button.classList.remove('op-controls__mute--half');
             } else {
-                this.button.classList.remove('om-controls__mute--muted');
-                this.button.classList.remove('om-controls__mute--half');
+                this.button.classList.remove('op-controls__mute--muted');
+                this.button.classList.remove('op-controls__mute--half');
             }
         };
 
@@ -185,8 +185,8 @@ class Volume implements PlayerComponent {
             el.volume = value;
             el.muted = (el.volume === 0);
             this.volume = value;
-            if (!el.muted && this.player.getContainer().querySelector('.om-player__unmute')) {
-                this.player.getContainer().querySelector('.om-player__unmute').remove();
+            if (!el.muted && this.player.getContainer().querySelector('.op-player__unmute')) {
+                this.player.getContainer().querySelector('.op-player__unmute').remove();
             }
             const e = addEvent('volumechange');
             this.player.getElement().dispatchEvent(e);
