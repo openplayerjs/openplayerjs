@@ -65,10 +65,10 @@ If you are planning to use OpenPlayer in a Node project, you can:
 
 ```javascript
 // Using as module
-var openplayer = require('/path/to/openplayer');
+var openplayer = require('/path/to/openplayerjs');
 
 // or importing the library (ES6)
-import OpenPlayer from 'openplayer';
+import OpenPlayer from 'openplayerjs';
 ```
 
 ## Usage with Javascript
