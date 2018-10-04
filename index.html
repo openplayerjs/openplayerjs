@@ -135,9 +135,8 @@
       text-align: left;
     }
     #autoplay {
-        margin-top: -1.25rem;
-        margin-left: -1.25rem;
-      }
+      margin-left: -6.25rem;
+    }
 
     #permalink {
       text-align: left;
@@ -157,13 +156,19 @@
       word-break: break-word;
     }
 
+    @media (min-width: 600px) {
+      #autoplay {
+        margin-top: -1.25rem;
+        margin-left: -1.25rem;
+      }
+    }
     @media (min-width: 992px) {
       .projects-section .featured-text {
-        border-left: .5rem solid #ffff00; 
+        border-left: .5rem solid orange; 
       }
       .projects-section .featured-text.text-lg-right {
         border-left: none;
-        border-right: .5rem solid #ffff00;
+        border-right: .5rem solid orange;
         padding: 0 2rem 0 0;
       }
       #mainNav.navbar-shrink .nav-link.active {
@@ -182,9 +187,9 @@
       #logo-min {
         display: none;
       }
+      
     }
   </style>
-
 </head>
 
 <body id="page-top">
@@ -380,6 +385,12 @@
     </div>
   </footer>
 
+  <script>
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      document.getElementById('video').querySelector('video').querySelector('source').src = 'http://techslides.com/demos/samples/sample.mp4';
+      document.getElementById('url').value = 'http://techslides.com/demos/samples/sample.mp4';
+    }
+  </script>
   <script src="https://cdn.rawgit.com/openplayerjs/openplayerjs/9fee3b9/dist/openplayer.min.js"></script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
