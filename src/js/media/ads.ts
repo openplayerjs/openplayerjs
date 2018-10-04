@@ -837,8 +837,8 @@ class Ads {
      * @memberof Ads
      */
     private _loadedMetadataHandler() {
-        if (this.element.seekable.length) {
-            if (this.element.seekable.end(0) > this.lastTimePaused) {
+        if (this.media.currentTime === 0 || this.element.seekable.length) {
+            if (this.media.currentTime === 0 || this.element.seekable.end(0) > this.lastTimePaused) {
                 this.media.currentTime = this.lastTimePaused;
                 this.element.controls = !!(IS_IPHONE && isVideo(this.element));
                 this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));

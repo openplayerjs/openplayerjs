@@ -110,6 +110,9 @@ class HlsMedia extends Native {
         this.player.loadSource(this.media.src);
         this.player.attachMedia(this.element);
 
+        const e = addEvent('loadedmetadata');
+        this.element.dispatchEvent(e);
+
         if (!this.events) {
             this.events = Hls.Events;
             Object.keys(this.events).forEach(event => {
