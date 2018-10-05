@@ -87,6 +87,14 @@ class Player {
     public controls: Controls;
 
     /**
+     * Instance of Ads object.
+     *
+     * @type Ads
+     * @memberof Player
+     */
+    public adsInstance?: Ads;
+
+    /**
      * Unique identified for the current player instance.
      *
      * @type string
@@ -110,14 +118,6 @@ class Player {
      * @memberof Player
      */
     private ads?: string|string[];
-
-    /**
-     * Instance of Ads object.
-     *
-     * @type Ads
-     * @memberof Player
-     */
-    private adsInstance?: Ads;
 
     /**
      * Flag to determine if player must be scaled and scrop to fit parent container

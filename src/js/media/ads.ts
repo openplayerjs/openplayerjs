@@ -892,8 +892,6 @@ class Ads {
         this.adsRequest.setAdWillAutoPlay(this.autoplayAllowed);
         this.adsRequest.setAdWillPlayMuted(this.autoplayRequiresMuted);
         this.adsLoader.requestAds(this.adsRequest);
-
-        this.element.controls = !(IS_IPHONE && isVideo(this.element));
     }
 
     /**
