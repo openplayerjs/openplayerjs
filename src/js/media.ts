@@ -348,9 +348,12 @@ class Media {
             throw new TypeError('Media not set');
         }
 
-        // Remove previous media if any is detected
+        // Remove previous media if any is detected and it's different from current one
         if (this.media && typeof this.media.destroy === 'function') {
-            this.media.destroy();
+            const sameMedia = sources.length === 1 && sources[0].src === this.media.media.src;
+            if (!sameMedia) {
+                this.media.destroy();
+            }
         }
 
         // Loop until first playable source is found
@@ -361,7 +364,13 @@ class Media {
                 this.media = new HTML5Media(this.element, media);
             }
 
-            return this.canPlayType(media.type);
+            // If not valid, make one last attempt to check if it plays with native HTML5
+            const canPlay = this.canPlayType(media.type);
+            if (!canPlay) {
+                this.media = new HTML5Media(this.element, media);
+                return this.canPlayType(media.type);
+            }
+            return canPlay;
         });
 
         try {

@@ -5109,6 +5109,10 @@ var Play = function () {
         var el = _this.player.activeElement();
 
         if (el.paused || el.ended) {
+          if (_this.player.adsInstance) {
+            _this.player.adsInstance.playRequested = true;
+          }
+
           el.play();
         } else {
           el.pause();
@@ -6229,7 +6233,11 @@ var Media = function () {
       }
 
       if (this.media && typeof this.media.destroy === 'function') {
-        this.media.destroy();
+        var sameMedia = sources.length === 1 && sources[0].src === this.media.media.src;
+
+        if (!sameMedia) {
+          this.media.destroy();
+        }
       }
 
       sources.some(function (media) {
@@ -6239,7 +6247,14 @@ var Media = function () {
           _this3.media = new html5_1.default(_this3.element, media);
         }
 
-        return _this3.canPlayType(media.type);
+        var canPlay = _this3.canPlayType(media.type);
+
+        if (!canPlay) {
+          _this3.media = new html5_1.default(_this3.element, media);
+          return _this3.canPlayType(media.type);
+        }
+
+        return canPlay;
       });
 
       try {
@@ -7357,7 +7372,6 @@ var Ads = function () {
       this.adsRequest.setAdWillAutoPlay(this.autoplayAllowed);
       this.adsRequest.setAdWillPlayMuted(this.autoplayRequiresMuted);
       this.adsLoader.requestAds(this.adsRequest);
-      this.element.controls = !(constants_1.IS_IPHONE && general_1.isVideo(this.element));
     }
   }, {
     key: "_contentLoadedAction",

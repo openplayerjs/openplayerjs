@@ -80,6 +80,9 @@ class Play implements PlayerComponent {
             this.button.setAttribute('aria-pressed', 'true');
             const el = this.player.activeElement();
             if (el.paused || el.ended) {
+                if (this.player.adsInstance) {
+                    this.player.adsInstance.playRequested = true;
+                }
                 el.play();
             } else {
                 el.pause();
