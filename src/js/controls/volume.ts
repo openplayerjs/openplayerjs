@@ -110,7 +110,7 @@ class Volume implements PlayerComponent {
         this.container.setAttribute('aria-valuemin', '0');
         this.container.setAttribute('aria-valuemax', '100');
         this.container.setAttribute('aria-valuenow', `${this.volume}`);
-        this.container.setAttribute('aria-valuetext', `${this.volume}`);
+        this.container.setAttribute('aria-valuetext', `Volume: ${this.volume}`);
         this.container.setAttribute('aria-orientation', 'vertical');
         this.container.setAttribute('aria-label', 'Volume Slider');
 
@@ -154,7 +154,7 @@ class Volume implements PlayerComponent {
             this.slider.value = `${element.volume}`;
             this.display.value = (mediaVolume * 10);
             this.container.setAttribute('aria-valuenow', `${vol}`);
-            this.container.setAttribute('aria-valuetext', `${vol}`);
+            this.container.setAttribute('aria-valuetext', `Volume: ${vol}`);
         };
 
         /**

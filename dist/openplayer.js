@@ -5978,7 +5978,7 @@ var Volume = function () {
       this.container.setAttribute('aria-valuemin', '0');
       this.container.setAttribute('aria-valuemax', '100');
       this.container.setAttribute('aria-valuenow', "".concat(this.volume));
-      this.container.setAttribute('aria-valuetext', "".concat(this.volume));
+      this.container.setAttribute('aria-valuetext', "Volume: ".concat(this.volume));
       this.container.setAttribute('aria-orientation', 'vertical');
       this.container.setAttribute('aria-label', 'Volume Slider');
       this.slider = document.createElement('input');
@@ -6014,7 +6014,7 @@ var Volume = function () {
 
         _this.container.setAttribute('aria-valuenow', "".concat(vol));
 
-        _this.container.setAttribute('aria-valuetext', "".concat(vol));
+        _this.container.setAttribute('aria-valuetext', "Volume: ".concat(vol));
       };
 
       var updateButton = function updateButton(element) {
