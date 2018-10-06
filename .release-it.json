@@ -6,7 +6,8 @@
     "afterReleaseCommand": "echo Successfully released ${version}.",
     "requireCleanWorkingDir": false,
     "src": {
-        "tagName": "v%s"
+        "tagName": "v%s",
+        "addUntrackedFiles": true
     },
     "github": {
         "release": true,

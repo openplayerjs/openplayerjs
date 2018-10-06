@@ -1,3 +1,14 @@
+<a name="1.3.4"></a>
+## [1.3.4](https://github.com/openplayerjs/openplayerjs/compare/v1.3.3...v1.3.4) (2018-10-06)
+
+
+### Bug Fixes
+
+* **ads:** Expanded conditional to start media after Ad has been played if there is no `seekable` info; added missing event for HLS media ([e1d31ba](https://github.com/openplayerjs/openplayerjs/commit/e1d31ba))
+* **player:** Set play request for Ads when clicking on media; fixed workflow to check if player can play media; removed setting controls when requesting Ads ([ff748bd](https://github.com/openplayerjs/openplayerjs/commit/ff748bd))
+
+
+
 <a name="1.3.3"></a>
 ## [1.3.3](https://github.com/openplayerjs/openplayerjs/compare/v1.3.2...v1.3.3) (2018-09-28)
 
