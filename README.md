@@ -30,11 +30,13 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can either download the repository from `https://github.com/openplayerjs/openplayerjs.git` or use NPM to get it:
+The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can download the repository from `https://github.com/openplayerjs/openplayerjs.git` or use NPM to get it:
 
 ```
 npm install openplayerjs
 ```
+
+CDN is also available for better performance. See next section for more details.
 
 ### Installation
 
@@ -61,6 +63,10 @@ That's it!
     </body>
 </html>
 ```
+
+We encourage to use CDN for major performance. To do it, in the snippet above, replace `/path/to/openplayer.css` and `/path/to/openplayer.js` with `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.css` and `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.js`.
+
+**NOTE**: As stated at [jsDeliver website](https://www.jsdelivr.com/), it is recommended to use a `[version]` number in the URL rather than `@latest` for production.
 
 If you are planning to use OpenPlayer in a Node project, you can:
 
