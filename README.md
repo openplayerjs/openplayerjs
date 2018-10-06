@@ -180,6 +180,7 @@ In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
 4. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
 5. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
+6. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 
 ## Built With
 
