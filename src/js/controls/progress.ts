@@ -160,37 +160,45 @@ class Progress implements PlayerComponent {
 
         this.events.media.loadedmetadata = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
                 this.slider.setAttribute('max', `${el.duration}`);
                 const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
                 this.progress.setAttribute('aria-valuemax', el.duration.toString());
+            } else {
+                this.destroy();
             }
         };
         this.events.media.progress = (e: Event) => {
             const el = (e.target as HTMLMediaElement);
-            if (el.duration > 0) {
-                for (let i = 0, total = el.buffered.length; i < total; i++) {
-                    if (el.buffered.start(el.buffered.length - 1 - i) < el.currentTime) {
-                        this.buffer.value = (el.buffered.end(el.buffered.length - 1 - i) / el.duration) * 100;
-                        break;
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+                if (el.duration > 0) {
+                    for (let i = 0, total = el.buffered.length; i < total; i++) {
+                        if (el.buffered.start(el.buffered.length - 1 - i) < el.currentTime) {
+                            this.buffer.value = (el.buffered.end(el.buffered.length - 1 - i) / el.duration) * 100;
+                            break;
+                        }
                     }
                 }
             }
         };
         this.events.media.pause = () => {
             const el = this.player.activeElement();
-            const current = el.currentTime;
-            this.progress.setAttribute('aria-valuenow', current.toString());
-            this.progress.setAttribute('aria-valuetext', formatTime(current));
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+                const current = el.currentTime;
+                this.progress.setAttribute('aria-valuenow', current.toString());
+                this.progress.setAttribute('aria-valuetext', formatTime(current));
+            }
         };
         this.events.media.play = () => {
-            this.progress.removeAttribute('aria-valuenow');
-            this.progress.removeAttribute('aria-valuetext');
+            if (this.player.activeElement().duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+                this.progress.removeAttribute('aria-valuenow');
+                this.progress.removeAttribute('aria-valuetext');
+            }
         };
         this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
                     parseFloat(this.slider.getAttribute('max')) !== el.duration) {
                     this.slider.setAttribute('max', `${el.duration}`);
@@ -208,6 +216,8 @@ class Progress implements PlayerComponent {
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
                     0 : ((current / el.duration) * 100);
+            } else {
+                this.destroy();
             }
         };
 
