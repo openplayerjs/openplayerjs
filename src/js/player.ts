@@ -331,8 +331,12 @@ class Player {
         }
 
         el.controls = true;
+        el.removeAttribute('op-live');
         const parent = el.parentElement;
         parent.parentNode.replaceChild(el, parent);
+
+        const e = addEvent('playerdestroyed');
+        el.dispatchEvent(e);
     }
 
     /**

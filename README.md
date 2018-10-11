@@ -168,6 +168,7 @@ Event | Description
 `controlshidden` | Event executed when controls timer stops and hides control bar (video only).
 `controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new caption).
 `captionschanged` | Event triggered when user changes the current caption by selecting a new one from the `Settings` menu.
+`playerdestroyed` | Event executed when an instance of OpenPlayer is destroyed (useful to remove extra elements created with the player's help).
 `adsloaded` | Event when Ads have been loaded successfully and can be played.
 `adsstart` | Event when Ads start being played.
 `adsfirstquartile` | Event triggered when Ad reached the first quarter of its length.

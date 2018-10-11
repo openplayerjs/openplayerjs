@@ -242,6 +242,11 @@ class HlsMedia extends Native {
                 this.element.dispatchEvent(errorEvent);
             }
         } else {
+            if (event === 'hlsLevelLoaded' && data[1].details.live === true) {
+                this.element.setAttribute('op-live', 'true');
+                const timeEvent = addEvent('timeupdate');
+                this.element.dispatchEvent(timeEvent);
+            }
             const e = addEvent(event, data[1]);
             this.element.dispatchEvent(e);
         }

@@ -105,7 +105,7 @@ class Time implements PlayerComponent {
 
         const setInitialTime = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
                 const duration = !isNaN(el.duration) ? el.duration : 0;
                 this.duration.innerText = formatTime(duration);
                 this.current.innerText = formatTime(el.currentTime);
@@ -120,7 +120,7 @@ class Time implements PlayerComponent {
 
         this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
                 const duration = formatTime(el.duration);
                 if (!isNaN(el.duration) && duration !== this.duration.innerText) {
                     this.duration.innerText = duration;

@@ -3,6 +3,7 @@ import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
+import { isAudio } from '../utils/general';
 
 /**
  * Volume controller element.
@@ -196,6 +197,15 @@ class Volume implements PlayerComponent {
             const el = this.player.activeElement();
             updateSlider(el);
             updateButton(el);
+        };
+
+        // If a source is live, ensure that Volume controls move to the right for audio to mimic
+        // Safari's output
+        this.events.media.timeupdate = () => {
+            if (isAudio(this.player.getElement()) && (this.player.activeElement().duration === Infinity ||
+                this.player.getElement().getAttribute('op-live'))) {
+                this.button.classList.add('op-control__right');
+            }
         };
         this.events.media.loadedmetadata = () => {
             const el = this.player.activeElement();
