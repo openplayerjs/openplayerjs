@@ -263,7 +263,7 @@ class Player {
             this.fill = fill;
             this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
-            this.options = merge(this.defaultOptions, options);
+            this.options = merge(this.defaultOptions, options || {});
             this.element.autoplay = false;
         }
         return this;
