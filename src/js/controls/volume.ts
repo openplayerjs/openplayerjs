@@ -88,6 +88,15 @@ class Volume implements PlayerComponent {
     private volume: number;
 
     /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Captions
+     */
+    private labels: any;
+
+    /**
      * Create an instance of Volume.
      *
      * @param {Player} player
@@ -95,6 +104,7 @@ class Volume implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
+        this.labels = player.getOptions().labels;
         this.volume = this.player.getMedia().volume;
         return this;
     }
@@ -111,9 +121,9 @@ class Volume implements PlayerComponent {
         this.container.setAttribute('aria-valuemin', '0');
         this.container.setAttribute('aria-valuemax', '100');
         this.container.setAttribute('aria-valuenow', `${this.volume}`);
-        this.container.setAttribute('aria-valuetext', `Volume: ${this.volume}`);
+        this.container.setAttribute('aria-valuetext', `${this.labels.volume}: ${this.volume}`);
         this.container.setAttribute('aria-orientation', 'vertical');
-        this.container.setAttribute('aria-label', 'Volume Slider');
+        this.container.setAttribute('aria-label', this.labels.volumeSlider);
 
         this.slider = document.createElement('input');
         this.slider.type = 'range';
@@ -123,7 +133,7 @@ class Volume implements PlayerComponent {
         this.slider.setAttribute('min', '0');
         this.slider.setAttribute('max', '1');
         this.slider.setAttribute('step', '0.1');
-        this.slider.setAttribute('aria-label', 'Volume Control');
+        this.slider.setAttribute('aria-label', this.labels.volumeControl);
 
         this.display = document.createElement('progress');
         this.display.className = 'op-controls__volume--display';
@@ -139,10 +149,11 @@ class Volume implements PlayerComponent {
         this.button.type = 'button';
         this.button.className = 'op-controls__mute';
         this.button.tabIndex = 0;
+        this.button.title = this.labels.mute;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
-        this.button.setAttribute('aria-label', 'Mute');
-        this.button.innerHTML = '<span class="op-sr">Mute</span>';
+        this.button.setAttribute('aria-label', this.labels.mute);
+        this.button.innerHTML = `<span class="op-sr">${this.labels.mute}</span>`;
 
         /**
          * @private
@@ -155,7 +166,7 @@ class Volume implements PlayerComponent {
             this.slider.value = `${element.volume}`;
             this.display.value = (mediaVolume * 10);
             this.container.setAttribute('aria-valuenow', `${vol}`);
-            this.container.setAttribute('aria-valuetext', `Volume: ${vol}`);
+            this.container.setAttribute('aria-valuetext', `${this.labels.volume}: ${vol}`);
         };
 
         /**
@@ -226,10 +237,12 @@ class Volume implements PlayerComponent {
 
             if (el.muted) {
                 el.volume = 0;
-                this.button.setAttribute('aria-label', 'Unmute');
+                this.button.title = this.labels.unmute;
+                this.button.setAttribute('aria-label', this.labels.unmute);
             } else {
                 el.volume = this.volume;
-                this.button.setAttribute('aria-label', 'Mute');
+                this.button.title = this.labels.mute;
+                this.button.setAttribute('aria-label', this.labels.mute);
             }
             const event = addEvent('volumechange');
             this.player.getElement().dispatchEvent(event);

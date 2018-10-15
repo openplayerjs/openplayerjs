@@ -95,7 +95,23 @@ class Settings implements PlayerComponent {
      */
     private hideEvent: () => void;
 
+    /**
+     * Event that is triggered when an element from Settings is removed.
+     *
+     * @private
+     * @type callback
+     * @memberof Settings
+     */
     private removeEvent: (e: CustomEvent) => void;
+
+    /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Captions
+     */
+    private labels: any;
 
     /**
      * Create an instance of Settings.
@@ -106,6 +122,7 @@ class Settings implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
+        this.labels = player.getOptions().labels;
         return this;
     }
 
@@ -118,10 +135,11 @@ class Settings implements PlayerComponent {
         this.button = document.createElement('button');
         this.button.className = 'op-controls__settings op-control__right';
         this.button.tabIndex = 0;
+        this.button.title = this.labels.settings;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
-        this.button.setAttribute('aria-label', 'Player Settings');
-        this.button.innerHTML = '<span class="op-sr">Player Settings</span>';
+        this.button.setAttribute('aria-label', this.labels.settings);
+        this.button.innerHTML = `<span class="op-sr">${this.labels.settings}</span>`;
 
         this.menu = document.createElement('div');
         this.menu.className = 'op-settings';
@@ -208,12 +226,12 @@ class Settings implements PlayerComponent {
             className: 'op-speed__option',
             default: '1',
             key: 'speed',
-            name: 'Speed',
+            name: this.labels.speed,
             subitems: [
                 { key: '0.25', label: '0.25' },
                 { key: '0.5', label: '0.5' },
                 { key: '0.75', label: '0.75' },
-                { key: '1', label: 'Normal' },
+                { key: '1', label: this.labels.speedNormal },
                 { key: '1.25', label: '1.25' },
                 { key: '1.5', label: '1.5' },
                 { key: '2', label: '2' },
