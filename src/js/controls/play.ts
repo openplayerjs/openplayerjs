@@ -48,6 +48,15 @@ class Play implements PlayerComponent {
     };
 
     /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Captions
+     */
+    private labels: any;
+
+    /**
      * Create an instance of Play.
      *
      * @param {Player} player
@@ -56,6 +65,7 @@ class Play implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
+        this.labels = this.player.getOptions().labels;
         return this;
     }
 
@@ -69,11 +79,11 @@ class Play implements PlayerComponent {
         this.button.type = 'button';
         this.button.className = 'op-controls__playpause';
         this.button.tabIndex = 0;
-        this.button.title = 'Play';
+        this.button.title = this.labels.play;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
-        this.button.setAttribute('aria-label', 'Play');
-        this.button.innerHTML = '<span class="op-sr">Play/Pause</span>';
+        this.button.setAttribute('aria-label', this.labels.play);
+        this.button.innerHTML = `<span class="op-sr">${this.labels.play}/${this.labels.pause}</span>`;
         this.player.getControls().getContainer().appendChild(this.button);
 
         this.events.media.click = (e: any) => {
@@ -97,14 +107,14 @@ class Play implements PlayerComponent {
                 } else {
                     this.button.classList.add('op-controls__playpause--pause');
                 }
-                this.button.title = 'Play';
-                this.button.setAttribute('aria-label', 'Play');
+                this.button.title = this.labels.play;
+                this.button.setAttribute('aria-label', this.labels.play);
             } else {
                 this.button.classList.remove('op-controls__playpause--replay');
                 this.button.classList.add('op-controls__playpause--pause');
 
-                this.button.title = 'Pause';
-                this.button.setAttribute('aria-label', 'Pause');
+                this.button.title = this.labels.pause;
+                this.button.setAttribute('aria-label', this.labels.pause);
 
                 Object.keys(Player.instances).forEach(key => {
                     if (key !== this.player.id) {
@@ -118,22 +128,22 @@ class Play implements PlayerComponent {
             if (hasClass(this.button, 'op-controls__playpause--pause')) {
                 this.button.classList.remove('op-controls__playpause--replay');
                 this.button.classList.remove('op-controls__playpause--pause');
-                this.button.title = 'Play';
-                this.button.setAttribute('aria-label', 'Play');
+                this.button.title = this.labels.play;
+                this.button.setAttribute('aria-label', this.labels.play);
             }
         };
         this.events.media.playing = () => {
             if (!hasClass(this.button, 'op-controls__playpause--pause')) {
                 this.button.classList.remove('op-controls__playpause--replay');
                 this.button.classList.add('op-controls__playpause--pause');
-                this.button.title = 'Pause';
-                this.button.setAttribute('aria-label', 'Pause');
+                this.button.title = this.labels.pause;
+                this.button.setAttribute('aria-label', this.labels.pause);
             }
         };
         this.events.media.pause = () => {
             this.button.classList.remove('op-controls__playpause--pause');
-            this.button.title = 'Play';
-            this.button.setAttribute('aria-label', 'Play');
+            this.button.title = this.labels.play;
+            this.button.setAttribute('aria-label', this.labels.play);
         };
         this.events.media.ended = () => {
             if (this.player.activeElement().ended && this.player.isMedia()) {
@@ -143,14 +153,14 @@ class Play implements PlayerComponent {
                 this.button.classList.remove('op-controls__playpause--replay');
                 this.button.classList.add('op-controls__playpause--pause');
             }
-            this.button.title = 'Play';
-            this.button.setAttribute('aria-label', 'Play');
+            this.button.title = this.labels.play;
+            this.button.setAttribute('aria-label', this.labels.play);
         };
         this.events.media['adsmediaended'] = () => {
             this.button.classList.remove('op-controls__playpause--replay');
             this.button.classList.add('op-controls__playpause--pause');
-            this.button.title = 'Pause Ads';
-            this.button.setAttribute('aria-label', 'Pause Ads');
+            this.button.title = this.labels.pause;
+            this.button.setAttribute('aria-label', this.labels.pause);
         };
 
         const element = this.player.getElement();

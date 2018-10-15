@@ -100,6 +100,15 @@ class Progress implements PlayerComponent {
     private forcePause: boolean;
 
     /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Captions
+     */
+    private labels: any;
+
+    /**
      * Create an instance of Progress.
      *
      * @param {Player} player
@@ -108,6 +117,7 @@ class Progress implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
+        this.labels = player.getOptions().labels;
         this.forcePause = false;
         return this;
     }
@@ -121,7 +131,7 @@ class Progress implements PlayerComponent {
         this.progress = document.createElement('div');
         this.progress.className = 'op-controls__progress';
         this.progress.tabIndex = 0;
-        this.progress.setAttribute('aria-label', 'Time Slider');
+        this.progress.setAttribute('aria-label', this.labels.progressSlider);
         this.progress.setAttribute('aria-valuemin', '0');
 
         this.slider = document.createElement('input');
@@ -132,7 +142,7 @@ class Progress implements PlayerComponent {
         this.slider.setAttribute('max', '0');
         this.slider.setAttribute('step', '0.1');
         this.slider.value = '0';
-        this.slider.setAttribute('aria-label', 'Time Rail');
+        this.slider.setAttribute('aria-label', this.labels.progressRail);
         this.slider.setAttribute('role', 'slider');
 
         this.buffer = document.createElement('progress');

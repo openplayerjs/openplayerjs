@@ -82,5 +82,8 @@
     "url-loader": "^1.0.1",
     "webpack": "^4.20.0",
     "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "deepmerge": "^2.2.1"
   }
 }

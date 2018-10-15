@@ -2,6 +2,7 @@ import 'core-js/es6/array';
 import 'core-js/es6/object';
 import 'core-js/es6/promise';
 import 'custom-event-polyfill';
+import merge from 'deepmerge';
 import 'element-closest';
 import 'element-remove';
 
@@ -218,6 +219,30 @@ class Player {
      * @memberof Player
      */
     private defaultOptions: PlayerOptions = {
+        labels: {
+            captions: 'CC/Subtitles',
+            click: 'Click to unmute',
+            fullscreen: 'Fullscreen',
+            lang: {
+                en: 'English',
+            },
+            live: 'Live Broadcast',
+            mute: 'Mute',
+            off: 'Off',
+            pause: 'Pause',
+            play: 'Play',
+            progressRail: 'Time Rail',
+            progressSlider: 'Time Slider',
+            settings: 'Player Settings',
+            speed: 'Speed',
+            speedNormal: 'Normal',
+            tap: 'Tap to unmute',
+            toggleCaptions: 'Toggle Captions',
+            unmute: 'Unmute',
+            volume: 'Volume',
+            volumeControl: 'Volume Control',
+            volumeSlider: 'Volume Slider',
+        },
         step: 0,
     };
 
@@ -238,7 +263,7 @@ class Player {
             this.fill = fill;
             this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
-            this.options = { ...this.defaultOptions, ...options };
+            this.options = merge(this.defaultOptions, options);
             this.element.autoplay = false;
         }
         return this;
@@ -382,6 +407,16 @@ class Player {
      */
     public getEvents(): EventsList {
         return this.events;
+    }
+
+    /**
+     * Retrieve the list of config options associated with the player..
+     *
+     * @returns {PlayerOptions}
+     * @memberof Player
+     */
+    public getOptions(): PlayerOptions {
+        return this.options;
     }
 
     /**
@@ -581,7 +616,8 @@ class Player {
 
             if (this.ads) {
                 const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-                this.adsInstance = new Ads(this.media, this.ads, this.autoplay, adsOptions);
+                const labels = this.options.labels;
+                this.adsInstance = new Ads(this.media, this.ads, labels, this.autoplay, adsOptions);
             }
         } catch (e) {
             console.error(e);
@@ -622,7 +658,8 @@ class Player {
         this.playBtn = document.createElement('button');
         this.playBtn.className = 'op-player__play';
         this.playBtn.tabIndex = 0;
-        this.playBtn.innerHTML = '<span>Play</span>';
+        this.playBtn.title = this.options.labels.play;
+        this.playBtn.innerHTML = `<span>${this.options.labels.play}</span>`;
         this.playBtn.setAttribute('aria-pressed', 'false');
         this.playBtn.setAttribute('aria-hidden', 'false');
 
@@ -779,9 +816,9 @@ class Player {
 
                     // Insert element to unmute if browser allows autoplay with muted media
                     const volumeEl = document.createElement('div');
-                    const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
+                    const action = IS_IOS || IS_ANDROID ? this.options.labels.tap : this.options.labels.click;
                     volumeEl.className = 'op-player__unmute';
-                    volumeEl.innerHTML = `<span>${action} to unmute</span>`;
+                    volumeEl.innerHTML = `<span>${action}</span>`;
 
                     volumeEl.addEventListener('click', () => {
                         this.activeElement().muted = false;

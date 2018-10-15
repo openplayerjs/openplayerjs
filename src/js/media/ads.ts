@@ -274,11 +274,14 @@ class Ads {
      * Create an instance of Ads.
      *
      * @param {Media} media
-     * @param {string} ads
+     * @param {string|string[]} ads
+     * @param {any} labels
+     * @param {boolean} autoStart
+     * @param {Options} options
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, ads: string|string[], autoStart?: boolean, options?: Options) {
+    constructor(media: Media, ads: string|string[], labels: any, autoStart?: boolean, options?: Options) {
         const defaultOpts = {
             debug: false,
             url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
@@ -311,9 +314,9 @@ class Ads {
                     this.element.dispatchEvent(e);
 
                     const volumeEl = document.createElement('div');
-                    const action = IS_IOS || IS_ANDROID ? 'Tap' : 'Click';
+                    const action = IS_IOS || IS_ANDROID ? labels.tap : labels.click;
                     volumeEl.className = 'op-player__unmute';
-                    volumeEl.innerHTML = `<span>${action} to unmute</span>`;
+                    volumeEl.innerHTML = `<span>${action}</span>`;
                     volumeEl.addEventListener('click', () => {
                         this.adsMuted = false;
                         this.media.muted = false;

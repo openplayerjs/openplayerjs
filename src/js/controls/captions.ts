@@ -120,6 +120,15 @@ class Captions implements PlayerComponent {
     private default: string;
 
     /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Captions
+     */
+    private labels: any;
+
+    /**
      * Create an instance of Captions.
      *
      * @param {Player} player
@@ -128,6 +137,7 @@ class Captions implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
+        this.labels = player.getOptions().labels;
         this.trackList = this.player.getElement().textTracks;
         this.hasTracks = !!this.trackList.length;
         return this;
@@ -147,11 +157,12 @@ class Captions implements PlayerComponent {
         this.button = document.createElement('button');
         this.button.className = 'op-controls__captions op-control__right';
         this.button.tabIndex = 0;
+        this.button.title = this.labels.toggleCaptions;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
-        this.button.setAttribute('aria-label', 'Toggle Captions');
+        this.button.setAttribute('aria-label', this.labels.toggleCaptions);
         this.button.setAttribute('data-active-captions', 'off');
-        this.button.innerHTML = '<span class="op-sr">Toggle Captions</span>';
+        this.button.innerHTML = `<span class="op-sr">${this.labels.toggleCaptions}</span>`;
 
         // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
         // Otherwise, remove the markup associated with them
@@ -291,13 +302,13 @@ class Captions implements PlayerComponent {
         if (this.trackList.length <= 1) {
             return {};
         }
-        let subitems = [{key: 'off', label: 'Off'}];
+        let subitems = [{key: 'off', label: this.labels.off}];
         // Build object based on available languages
         for (let i = 0, total = this.trackList.length; i < total; i++) {
             const track = this.trackList[i];
             // Override language item if duplicated when passing list of settings subitems
             subitems = subitems.filter(el => el.key !== track.language);
-            subitems.push({key: track.language, label: this.trackList[i].label});
+            subitems.push({key: track.language, label: this.labels.lang[track.language] || this.trackList[i].label});
         }
 
         // Avoid implementing submenu for captions if only 2 options were available
@@ -305,7 +316,7 @@ class Captions implements PlayerComponent {
             className: 'op-subtitles__option',
             default: this.default || 'off',
             key: 'captions',
-            name: 'Subtitles/CC',
+            name: this.labels.captions,
             subitems,
         } : {};
     }

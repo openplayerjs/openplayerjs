@@ -83,6 +83,15 @@ class Fullscreen implements PlayerComponent {
     private clickEvent: () => void;
 
     /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Captions
+     */
+    private labels: any;
+
+    /**
      * Create an instance of Fullscreen.
      *
      * @param {Player} player
@@ -91,6 +100,7 @@ class Fullscreen implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
+        this.labels = player.getOptions().labels;
         this.isFullscreen = false;
 
         const target = (document as any);
@@ -114,10 +124,11 @@ class Fullscreen implements PlayerComponent {
         this.button.type = 'button';
         this.button.className = 'op-controls__fullscreen op-control__right';
         this.button.tabIndex = 0;
+        this.button.title = this.labels.fullscreen;
         this.button.setAttribute('aria-controls', this.player.id);
         this.button.setAttribute('aria-pressed', 'false');
-        this.button.setAttribute('aria-label', 'Fullscreen');
-        this.button.innerHTML = '<span class="op-sr">Fullscreen</span>';
+        this.button.setAttribute('aria-label', this.labels.fullscreen);
+        this.button.innerHTML = `<span class="op-sr">${this.labels.fullscreen}</span>`;
 
         this.clickEvent = () => {
             this.button.setAttribute('aria-pressed', 'true');

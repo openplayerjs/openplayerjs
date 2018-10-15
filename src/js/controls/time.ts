@@ -68,6 +68,15 @@ class Time implements PlayerComponent {
     };
 
     /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Captions
+     */
+    private labels: any;
+
+    /**
      * Create an instance of Time.
      *
      * @param {Player} player
@@ -76,6 +85,7 @@ class Time implements PlayerComponent {
      */
     constructor(player: Player) {
         this.player = player;
+        this.labels = player.getOptions().labels;
         return this;
     }
 
@@ -131,7 +141,7 @@ class Time implements PlayerComponent {
             } else if (this.duration.getAttribute('aria-hidden') === 'false') {
                 this.duration.setAttribute('aria-hidden', 'true');
                 this.delimiter.setAttribute('aria-hidden', 'true');
-                this.current.innerText = 'Live Broadcast';
+                this.current.innerText = this.labels.live;
             }
         };
         this.events.media.ended = () => {
