@@ -1379,7 +1379,7 @@ var Player = function () {
       this.fill = fill;
       this.autoplay = this.element.autoplay || false;
       this.volume = this.element.volume;
-      this.options = deepmerge_1.default(this.defaultOptions, options);
+      this.options = deepmerge_1.default(this.defaultOptions, options || {});
       this.element.autoplay = false;
     }
 
