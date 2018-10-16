@@ -108,7 +108,7 @@ class Fullscreen implements PlayerComponent {
         // Check if fullscreen is supported
         this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled ||
             target.msFullscreenEnabled || target.webkitSupportsFullscreen ||
-            target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
+            target.webkitFullscreenEnabled || (document.createElement('video') as any).webkitRequestFullScreen);
 
         return this;
     }
@@ -181,7 +181,7 @@ class Fullscreen implements PlayerComponent {
                 target.exitFullscreen();
             } else if (target.mozCancelFullScreen) {
                 target.mozCancelFullScreen();
-            } else if (document.webkitCancelFullScreen) {
+            } else if ((document as any).webkitCancelFullScreen) {
                 target.webkitCancelFullScreen();
             } else if (target.msExitFullscreen) {
                 target.msExitFullscreen();
