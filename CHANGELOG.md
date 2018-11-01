@@ -1,3 +1,14 @@
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/openplayerjs/openplayerjs/compare/v1.4.0...v1.4.1) (2018-11-01)
+
+
+### Bug Fixes
+
+* **tests:** Changed sources to a valid one ([bb09e16](https://github.com/openplayerjs/openplayerjs/commit/bb09e16))
+* **tests:** Changed sources to a valid one ([91fd44d](https://github.com/openplayerjs/openplayerjs/commit/91fd44d))
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/openplayerjs/openplayerjs/compare/v1.3.4...v1.4.0) (2018-10-16)
 
