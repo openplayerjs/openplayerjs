@@ -594,8 +594,9 @@
 .op-player[data-fullscreen='true'].op-controls--hidden .op-controls {
     bottom: -40px;
 }
-.op-player video::-webkit-media-controls { 
-    display: none;
+.op-player video::-webkit-media-controls,
+.op-player video::-webkit-media-text-track-container { 
+    display: none !important;
 }
 
 /* == Captions =============== */
