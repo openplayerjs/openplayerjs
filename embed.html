@@ -41,6 +41,16 @@
             var results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         };
+        function getMimeType(url) {
+            if (/\.m3u8/i.test(url)) {
+                return 'application/x-mpegURL';
+            } else if (/\.mpd/i.test(url)) {
+                return 'application/dash+xml';
+            }
+
+            // Let browser figure out if it can play it
+            return null;
+        }
 
         var type = getUrlParameter('type');
         var ads = getUrlParameter('ads');
@@ -49,21 +59,18 @@
         var defaultMedia = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ?
             'http://techslides.com/demos/samples/sample.mp4' : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
         
+        var url = decodeURIComponent(getUrlParameter('file')) || defaultMedia;
         var media = document.createElement(type);
         media.id = 'media1';
-        media.src = decodeURIComponent(getUrlParameter('file')) || defaultMedia;
         media.setAttribute('playsinline', true);
         media.autoplay = !!getUrlParameter('autoplay') || false;
         media.controls = true;
         media.playsinline = true;
         media.className = 'op-player__media';
+        media.innerHTML = '<source src="' + url + '" type="' + getMimeType(url) + '">';
         document.getElementById('media').appendChild(media);
 
-        var player = new OpenPlayer('media1', ads, false, {
-            ads: {
-                debug: true
-            }
-        });
+        var player = new OpenPlayer('media1', ads);
         player.init();
     </script>
 </body>
