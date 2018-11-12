@@ -7242,7 +7242,7 @@ var Ads = function () {
 
         if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
           this.preloadContent = this._contentLoadedAction;
-          this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this), false);
+          this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
           this.media.load();
         } else {
           this._contentLoadedAction();
@@ -7486,9 +7486,15 @@ var Ads = function () {
     key: "_onContentResumeRequested",
     value: function _onContentResumeRequested() {
       this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-      this.media.src = this.mediaSources;
       this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-      this.media.load();
+
+      if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
+        this.media.src = this.mediaSources;
+        this.media.load();
+      } else {
+        var event = events_1.addEvent('loadedmetadata');
+        this.element.dispatchEvent(event);
+      }
     }
   }, {
     key: "_loadedMetadataHandler",

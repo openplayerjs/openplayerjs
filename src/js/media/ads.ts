@@ -407,10 +407,7 @@ class Ads {
 
             if (IS_IOS || IS_ANDROID) {
                 this.preloadContent = this._contentLoadedAction;
-                this.element.addEventListener(
-                    'loadedmetadata',
-                    this._contentLoadedAction.bind(this),
-                    false);
+                this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
                 this.media.load();
               } else {
                 this._contentLoadedAction();
@@ -824,13 +821,19 @@ class Ads {
     /**
      * Callback to be executed once the Ad has been resumed.
      *
+     * @private
      * @memberof Ads
      */
     private _onContentResumeRequested(): void {
         this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-        this.media.src = this.mediaSources;
         this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-        this.media.load();
+        if (IS_IOS || IS_ANDROID) {
+            this.media.src = this.mediaSources;
+            this.media.load();
+        } else {
+            const event = addEvent('loadedmetadata');
+            this.element.dispatchEvent(event);
+        }
     }
 
     /**
