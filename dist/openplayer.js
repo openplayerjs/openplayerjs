@@ -7208,6 +7208,7 @@ var Ads = function () {
   _createClass(Ads, [{
     key: "load",
     value: function load() {
+      var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       this.adsStarted = true;
       this.adsContainer = document.createElement('div');
       this.adsContainer.id = 'op-ads';
@@ -7222,7 +7223,7 @@ var Ads = function () {
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
       window.addEventListener('resize', this.resizeAds.bind(this));
 
-      if (this.autoStart === true) {
+      if (this.autoStart === true || force === true) {
         if (!this.adsDone) {
           this.adsDone = true;
           this.adDisplayContainer.initialize();
@@ -7408,7 +7409,7 @@ var Ads = function () {
         this.playTriggered = true;
         this.adsStarted = true;
         this.destroy();
-        this.load();
+        this.load(true);
       } else {
         if (this.adsManager) {
           this.adsManager.destroy();
