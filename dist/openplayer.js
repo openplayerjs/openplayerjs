@@ -1672,7 +1672,7 @@ var Player = function () {
         this.events.waiting = function () {
           _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', 'true');
+          _this3.loader.setAttribute('aria-hidden', 'false');
         };
 
         this.events.seeking = function () {
@@ -7333,10 +7333,11 @@ var Ads = function () {
             this.adsCurrentTime = ad.getDuration();
 
             if (!this.mediaStarted) {
+              var waitingEvent = events_1.addEvent('waiting');
+              this.element.dispatchEvent(waitingEvent);
               var loadedEvent = events_1.addEvent('loadedmetadata');
               this.element.dispatchEvent(loadedEvent);
-              var resizeEvent = events_1.addEvent('resize');
-              window.dispatchEvent(resizeEvent);
+              this.resizeAds();
               this.mediaStarted = true;
             }
           }
@@ -7348,6 +7349,12 @@ var Ads = function () {
             this.adsActive = true;
             var playEvent = events_1.addEvent('play');
             this.element.dispatchEvent(playEvent);
+            var resized;
+
+            if (!resized) {
+              this.resizeAds();
+              resized = true;
+            }
 
             if (this.media.ended) {
               this.adsEnded = false;
