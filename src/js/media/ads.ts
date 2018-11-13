@@ -353,9 +353,10 @@ class Ads {
     /**
      * Create the Ads container and loader to process the Ads URL provided.
      *
+     * @param {bool} force
      * @memberof Ads
      */
-    public load(): void {
+    public load(force: boolean = false): void {
         this.adsStarted = true;
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'op-ads';
@@ -384,7 +385,7 @@ class Ads {
         window.addEventListener('resize', this.resizeAds.bind(this));
 
         // Request Ads automatically if `autoplay` was set
-        if (this.autoStart === true) {
+        if (this.autoStart === true || force === true) {
             if (!this.adsDone) {
                 this.adsDone = true;
                 this.adDisplayContainer.initialize();
@@ -705,7 +706,7 @@ class Ads {
             this.playTriggered = true;
             this.adsStarted = true;
             this.destroy();
-            this.load();
+            this.load(true);
         } else {
             if (this.adsManager) {
                 this.adsManager.destroy();
