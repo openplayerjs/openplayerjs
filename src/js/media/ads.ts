@@ -630,11 +630,13 @@ class Ads {
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
                     if (!this.mediaStarted) {
+                        const waitingEvent = addEvent('waiting');
+                        this.element.dispatchEvent(waitingEvent);
+
                         const loadedEvent = addEvent('loadedmetadata');
                         this.element.dispatchEvent(loadedEvent);
 
-                        const resizeEvent = addEvent('resize');
-                        window.dispatchEvent(resizeEvent);
+                        this.resizeAds();
                         this.mediaStarted = true;
                     }
                 }
@@ -644,6 +646,12 @@ class Ads {
                     this.adsActive = true;
                     const playEvent = addEvent('play');
                     this.element.dispatchEvent(playEvent);
+                    let resized;
+
+                    if (!resized) {
+                        this.resizeAds();
+                        resized = true;
+                    }
 
                     if (this.media.ended) {
                         this.adsEnded = false;

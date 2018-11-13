@@ -698,7 +698,7 @@ class Player {
             };
             this.events.waiting = () => {
                 this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', 'false');
             };
             this.events.seeking = () => {
                 const el = this.activeElement();
