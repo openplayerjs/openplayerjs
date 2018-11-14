@@ -1670,9 +1670,25 @@ var Player = function () {
         };
 
         this.events.waiting = function () {
+          var el = _this3.activeElement();
+
           _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', 'false');
+          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
+        };
+
+        this.events.durationchange = function () {
+          var el = _this3.activeElement();
+
+          _this3.playBtn.setAttribute('aria-hidden', 'true');
+
+          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
+        };
+
+        this.events.canplay = function () {
+          _this3.playBtn.setAttribute('aria-hidden', 'true');
+
+          _this3.loader.setAttribute('aria-hidden', 'true');
         };
 
         this.events.seeking = function () {
@@ -1692,17 +1708,21 @@ var Player = function () {
         };
 
         this.events.play = function () {
+          var el = _this3.activeElement();
+
           _this3.playBtn.classList.add('op-player__play--paused');
 
           setTimeout(function () {
             _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this3.loader.setAttribute('aria-hidden', 'true');
+            _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
           }, 350);
         };
 
         this.events.playing = function () {
           _this3.playBtn.setAttribute('aria-hidden', 'true');
+
+          _this3.loader.setAttribute('aria-hidden', 'true');
         };
 
         this.events.pause = function () {

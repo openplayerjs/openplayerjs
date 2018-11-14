@@ -118,7 +118,7 @@ class Player {
      * @type string|string[]
      * @memberof Player
      */
-    private ads?: string|string[];
+    private ads?: string | string[];
 
     /**
      * Flag to determine if player must be scaled and scrop to fit parent container
@@ -256,7 +256,7 @@ class Player {
      * @returns {Player}
      * @memberof Player
      */
-    constructor(element: HTMLMediaElement | string, ads?: string|string[], fill?: boolean, options?: PlayerOptions) {
+    constructor(element: HTMLMediaElement | string, ads?: string | string[], fill?: boolean, options?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
             this.ads = ads;
@@ -697,8 +697,18 @@ class Player {
                 }
             };
             this.events.waiting = () => {
+                const el = this.activeElement();
                 this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', 'false');
+                this.loader.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
+            };
+            this.events.durationchange = () => {
+                const el = this.activeElement();
+                this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
+            };
+            this.events.canplay = () => {
+                this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.seeking = () => {
                 const el = this.activeElement();
@@ -711,14 +721,16 @@ class Player {
                 this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.play = () => {
+                const el = this.activeElement();
                 this.playBtn.classList.add('op-player__play--paused');
                 setTimeout(() => {
                     this.playBtn.setAttribute('aria-hidden', 'true');
-                    this.loader.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
                 }, 350);
             };
             this.events.playing = () => {
                 this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.pause = () => {
                 this.playBtn.classList.remove('op-player__play--paused');
