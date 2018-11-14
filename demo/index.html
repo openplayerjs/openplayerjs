@@ -36,8 +36,21 @@
 <body>
     <div class="players video-player">
         <h1>Video Sample</h1>
-        <video class="op-player__media" id="video" controls playsinline>
-            <source src="https://cdn5.anivid.nut.cc/vid/s1/10481/1/5.mp4/playlist.m3u8" type="application/x-mpegURL"></video>
+        <video class="op-player__media" id="video" controls playsinline
+            data-op-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator=">
+            <source src="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8">
+        </video>
+        <div>
+            <label>Change source <select name="sources">
+                <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" selected>MP4</option>
+                <option value="https://upload.wikimedia.org/wikipedia/commons/2/22/Volcano_Lava_Sample.webm">WebM</option>
+                <option value="https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8">HLS</option>
+                <option value="https://dash.akamaized.net/envivio/EnvivioDash3/manifest.mpd">M(PEG)-DASH</option>
+            </select>
+            </label>
+            <button class="destroy-player">Destroy player</button>
+            <button class="load-caption">Load caption</button>
+        </div>
     </div>
 
     <div class="players audio-player">
@@ -62,12 +75,10 @@
         script.src = '../dist/openplayer.js?rand=' + new Date().getTime();
         script.async = true;
         script.onload = function () {
-            var player = new OpenPlayer('video');
-            player.init();
-            const events = ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'];
-            events.forEach(event => {
-                player.getElement().addEventListener(event, () => console.log(event));
-            });
+            var script = document.createElement('script');
+            script.src = 'demo.js?rand=' + new Date().getTime();
+            script.async = true;
+            document.head.appendChild(script);
         };
         document.head.appendChild(script);
     </script>
