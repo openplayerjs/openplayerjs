@@ -1674,7 +1674,7 @@ var Player = function () {
 
           _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
+          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
         };
 
         this.events.durationchange = function () {
@@ -1682,7 +1682,7 @@ var Player = function () {
 
           _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
+          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
         };
 
         this.events.canplay = function () {
@@ -1712,10 +1712,10 @@ var Player = function () {
 
           _this3.playBtn.classList.add('op-player__play--paused');
 
+          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
+
           setTimeout(function () {
             _this3.playBtn.setAttribute('aria-hidden', 'true');
-
-            _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
           }, 350);
         };
 
@@ -1732,7 +1732,7 @@ var Player = function () {
 
           var el = _this3.activeElement();
 
-          _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
+          _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
         };
       }
 
