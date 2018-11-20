@@ -96,6 +96,14 @@ class Player {
     public adsInstance?: Ads;
 
     /**
+     * Button to play media.
+     *
+     * @type HTMLButtonElement
+     * @memberof Player
+     */
+    public playBtn: HTMLButtonElement;
+
+    /**
      * Unique identified for the current player instance.
      *
      * @type string
@@ -137,14 +145,6 @@ class Player {
      * @memberof Player
      */
     private media: Media;
-
-    /**
-     * Button to play media.
-     *
-     * @type HTMLButtonElement
-     * @memberof Player
-     */
-    private playBtn: HTMLButtonElement;
 
     /**
      * Element to indicate that media is being loaded.
@@ -228,6 +228,7 @@ class Player {
      * @memberof Player
      */
     private defaultOptions: PlayerOptions = {
+        hidePlayBtnTimer: 350,
         labels: {
             captions: 'CC/Subtitles',
             click: 'Click to unmute',
@@ -739,10 +740,9 @@ class Player {
 
                 setTimeout(() => {
                     this.playBtn.setAttribute('aria-hidden', 'true');
-                }, 350);
+                }, this.options.hidePlayBtnTimer);
             };
             this.events.playing = () => {
-                this.playBtn.setAttribute('aria-hidden', 'true');
                 this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.pause = () => {
