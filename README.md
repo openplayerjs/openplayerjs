@@ -14,7 +14,7 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 
 ## Why OpenPlayer?
 
-* **Supports IE11+ and all modern browsers**: its CSS and code is compatible with all modern browsers.
+* **Supports IE11+ (Win8) and all modern browsers**: its CSS and code is compatible with all modern browsers. IE11+ on Win7 requires an MP4/MP3 fallback to work correctly.
 * **Lightweight library**: Less than `20kb` when gzipped.
 * **Monetize video and audio content** with video advertising using VAST, VPAID or VMAP Ads, supported by the amazing [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
 * **Accessibility is a priority for OpenPlayerJS**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
@@ -84,8 +84,11 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
+    // Number of ms that takes the player to hide the Play button once it starts playing (video only)
+    // (bt default, `350`)
+    hidePlayBtnTimer,
     // Number of seconds to rewind/forward media
-    // (by default, player will rewind/forward  5% of the total duration of media)
+    // (by default, player will rewind/forward 5% of the total duration of media)
     step,
     ads: {
         // Custom path/URL to IMA SDK

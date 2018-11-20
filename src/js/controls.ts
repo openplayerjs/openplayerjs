@@ -174,12 +174,14 @@ class Controls implements PlayerComponent {
             this.events.mouse.mouseenter = () => {
                 if (isMediaVideo) {
                     this._stopControlTimer();
+                    this.player.playBtn.setAttribute('aria-hidden', 'false');
                     this.player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mousemove = () => {
                 if (isMediaVideo) {
+                    this.player.playBtn.setAttribute('aria-hidden', 'false');
                     this.player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
@@ -257,6 +259,7 @@ class Controls implements PlayerComponent {
         this.timer = window.setTimeout(() => {
             if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
                 this.player.getContainer().classList.add('op-controls--hidden');
+                this.player.playBtn.setAttribute('aria-hidden', 'true');
                 this._stopControlTimer();
                 const event = addEvent('controlshidden');
                 this.player.getElement().dispatchEvent(event);
