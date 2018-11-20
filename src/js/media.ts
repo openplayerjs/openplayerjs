@@ -116,10 +116,54 @@ class Media {
      * It requires to run with Promises to avoid racing errors between execution of the action
      * and the time the potential libraries are loaded completely.
      * It will loop the media list found until it reached the first element that can be played.
+     *
+     * If none of them can be played, automatically the method destroys the `Media` object.
+     *
      * @see [[Native.load]]
      */
     public load(): void {
-        this._loadSources(this.mediaFiles);
+        if (!this.mediaFiles.length) {
+            throw new TypeError('Media not set');
+        }
+
+        // Remove previous media if any is detected and it's different from current one
+        if (this.media && typeof this.media.destroy === 'function') {
+            const sameMedia = this.mediaFiles.length === 1 && this.mediaFiles[0].src === this.media.media.src;
+            if (!sameMedia) {
+                this.media.destroy();
+            }
+        }
+
+        // Loop until first playable source is found
+        this.mediaFiles.some(media => {
+            try {
+                this.media = this._invoke(media);
+            } catch (e) {
+                this.media = new HTML5Media(this.element, media);
+            }
+
+            // If not valid, make one last attempt to check if it plays with native HTML5
+            const canPlay = this.canPlayType(media.type);
+            if (!canPlay) {
+                this.media = new HTML5Media(this.element, media);
+                return this.canPlayType(media.type);
+            }
+            return canPlay;
+        });
+
+        try {
+            if (this.media === null) {
+                throw new TypeError('Media cannot be played with any valid media type');
+            }
+
+            this.media.promise.then(() => {
+                this.media.load();
+            });
+        } catch (e) {
+            // destroy media
+            this.media.destroy();
+            throw e;
+        }
     }
 
     /**
@@ -333,59 +377,6 @@ class Media {
      */
     get ended(): boolean {
         return this.media.ended;
-    }
-
-    /**
-     * Load the first playable source from one or many sources available in the video/audio tag.
-     *
-     * If none of them can be played, automatically the method destroys the `Media` object.
-     * @param {Source[]} sources
-     * @private
-     * @memberof Media
-     */
-    private _loadSources(sources: Source[]): void {
-        if (!sources.length) {
-            throw new TypeError('Media not set');
-        }
-
-        // Remove previous media if any is detected and it's different from current one
-        if (this.media && typeof this.media.destroy === 'function') {
-            const sameMedia = sources.length === 1 && sources[0].src === this.media.media.src;
-            if (!sameMedia) {
-                this.media.destroy();
-            }
-        }
-
-        // Loop until first playable source is found
-        sources.some(media => {
-            try {
-                this.media = this._invoke(media);
-            } catch (e) {
-                this.media = new HTML5Media(this.element, media);
-            }
-
-            // If not valid, make one last attempt to check if it plays with native HTML5
-            const canPlay = this.canPlayType(media.type);
-            if (!canPlay) {
-                this.media = new HTML5Media(this.element, media);
-                return this.canPlayType(media.type);
-            }
-            return canPlay;
-        });
-
-        try {
-            if (this.media === null) {
-                throw new TypeError('Media cannot be played with any valid media type');
-            }
-
-            this.media.promise.then(() => {
-                this.media.load();
-            });
-        } catch (e) {
-            // destroy media
-            this.media.destroy();
-            throw e;
-        }
     }
 
     /**

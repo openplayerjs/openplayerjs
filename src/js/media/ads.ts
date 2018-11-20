@@ -4,7 +4,7 @@ import Media from '../media';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, loadScript } from '../utils/general';
-import { isAutoplaySupported } from '../utils/media';
+// import { isAutoplaySupported } from '../utils/media';
 
 declare const google: any;
 
@@ -128,7 +128,7 @@ class Ads {
      * @type string|string[]
      * @memberof Ads
      */
-    private ads: string|string[];
+    private ads: string | string[];
 
     /**
      * Promise to start all IMA SDK elements, once the library has been loaded.
@@ -174,28 +174,21 @@ class Ads {
     private adsRequest: any;
 
     /**
-     * Flag to indicate if Ad can be played via `autoplay` attribute.
-     *
-     * @type boolean
-     * @memberof Ads
-     */
-    private autoplayAllowed: boolean = false;
-
-    /**
-     * Flag to indicate if Ad can autoplayed while muted.
-     *
-     * @type boolean
-     * @memberof Ads
-     */
-    private autoplayRequiresMuted: boolean = false;
-
-    /**
-     * Flag to indicate if Ad should be played automatically
+     * Flag to indicate if Ad should be played automatically with sound
      *
      * @type boolean
      * @memberof Ads
      */
     private autoStart: boolean = false;
+
+    /**
+     * Flag to indicate if Ad should be played automatically without sound
+     *
+     * @private
+     * @type {boolean}
+     * @memberof Ads
+     */
+    private autoStartMuted: boolean = false;
 
     /**
      * Flag to indicate if player requested play.
@@ -281,7 +274,7 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, ads: string|string[], labels: any, autoStart?: boolean, options?: Options) {
+    constructor(media: Media, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options) {
         const defaultOpts = {
             debug: false,
             url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
@@ -290,63 +283,17 @@ class Ads {
         this.media = media;
         this.element = media.element;
         this.autoStart = autoStart || false;
+        this.autoStartMuted = autoStartMuted || false;
         this.adsOptions = { ...defaultOpts, ...options };
         this.playTriggered = false;
         this.originalVolume = this.element.volume;
         this.adsVolume = this.originalVolume;
 
         const path = this.adsOptions.debug ? this.adsOptions.url.replace(/(\.js$)/, '_debug.js') : this.adsOptions.url;
+        this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
+            loadScript(path) : new Promise(resolve => resolve());
 
-        // Test browser capabilities to autoplay Ad if `autoStart` is flagged as true
-        if (this.autoStart === true) {
-            isAutoplaySupported(autoplay => {
-                this.autoplayAllowed = autoplay;
-            }, muted => {
-                this.autoplayRequiresMuted = muted;
-            }, () => {
-                if (this.autoplayRequiresMuted || IS_IOS) {
-                    this.adsMuted = true;
-                    this.media.muted = true;
-                    this.adsVolume = 0;
-                    this.media.volume = 0;
-
-                    const e = addEvent('volumechange');
-                    this.element.dispatchEvent(e);
-
-                    const volumeEl = document.createElement('div');
-                    const action = IS_IOS || IS_ANDROID ? labels.tap : labels.click;
-                    volumeEl.className = 'op-player__unmute';
-                    volumeEl.innerHTML = `<span>${action}</span>`;
-                    volumeEl.addEventListener('click', () => {
-                        this.adsMuted = false;
-                        this.media.muted = false;
-                        this.adsVolume = this.originalVolume;
-                        this.media.volume = this.originalVolume;
-                        this.adsManager.setVolume(this.originalVolume);
-
-                        const event = addEvent('volumechange');
-                        this.element.dispatchEvent(event);
-
-                        // Remove element
-                        volumeEl.remove();
-                    });
-
-                    const target = this.element.parentElement;
-                    target.insertBefore(volumeEl, target.firstChild);
-                }
-
-                this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-                    loadScript(path) : new Promise(resolve => resolve());
-
-                this.promise.then(this.load.bind(this));
-            });
-        } else {
-            this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-                loadScript(path) : new Promise(resolve => resolve());
-
-            this.promise.then(this.load.bind(this));
-        }
-
+        this.promise.then(this.load.bind(this));
         return this;
     }
 
@@ -385,11 +332,10 @@ class Ads {
         window.addEventListener('resize', this.resizeAds.bind(this));
 
         // Request Ads automatically if `autoplay` was set
-        if (this.autoStart === true || force === true) {
+        if (this.autoStart === true || this.autoStartMuted === true || force === true) {
             if (!this.adsDone) {
                 this.adsDone = true;
                 this.adDisplayContainer.initialize();
-                this.media.load();
             }
             this._requestAds();
         }
@@ -404,15 +350,13 @@ class Ads {
         if (!this.adsDone) {
             this.adsDone = true;
             this.adDisplayContainer.initialize();
-            this.media.load();
 
             if (IS_IOS || IS_ANDROID) {
                 this.preloadContent = this._contentLoadedAction;
                 this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
-                this.media.load();
-              } else {
+            } else {
                 this._contentLoadedAction();
-              }
+            }
             return;
         }
 
@@ -723,7 +667,7 @@ class Ads {
             if (unmuteEl) {
                 unmuteEl.remove();
             }
-            if (this.autoStart === true || this.adsStarted === true) {
+            if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
                 this.adsActive = false;
                 this._resumeMedia();
             }
@@ -838,7 +782,6 @@ class Ads {
         this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
         if (IS_IOS || IS_ANDROID) {
             this.media.src = this.mediaSources;
-            this.media.load();
         } else {
             const event = addEvent('loadedmetadata');
             this.element.dispatchEvent(event);
@@ -904,8 +847,8 @@ class Ads {
         const height = this.element.parentElement.offsetWidth;
         this.adsRequest.linearAdSlotWidth = width;
         this.adsRequest.linearAdSlotHeight = height;
-        this.adsRequest.setAdWillAutoPlay(this.autoplayAllowed);
-        this.adsRequest.setAdWillPlayMuted(this.autoplayRequiresMuted);
+        this.adsRequest.setAdWillAutoPlay(this.autoStart);
+        this.adsRequest.setAdWillPlayMuted(this.autoStartMuted);
         this.adsLoader.requestAds(this.adsRequest);
     }
 

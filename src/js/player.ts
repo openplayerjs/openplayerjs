@@ -203,6 +203,15 @@ class Player {
     private canAutoplayMuted: boolean;
 
     /**
+     * Flag that indicates if autoplay algorithm has been applied.
+     *
+     * @see [[Player._autoplay]]
+     * @type boolean
+     * @memberof Player
+     */
+    private processedAutoplay: boolean = false;
+
+    /**
      * Container for other player options.
      *
      * @private
@@ -284,7 +293,6 @@ class Player {
             this._createUID();
             this._createControls();
             this._setEvents();
-            this._autoplay();
             Player.instances[this.id] = this;
         }
     }
@@ -348,6 +356,9 @@ class Player {
             el.removeEventListener(event, this.events[event]);
         });
 
+        if (this.autoplay && !this.processedAutoplay && isVideo(this.element)) {
+            el.removeEventListener('canplay', this._autoplay.bind(this));
+        }
         this.controls.destroy();
 
         if (isVideo(this.element)) {
@@ -611,13 +622,14 @@ class Player {
      */
     private _prepareMedia(): void {
         try {
+            if (this.autoplay && isVideo(this.element)) {
+                this.element.addEventListener('canplay', this._autoplay.bind(this));
+            }
             this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
             this.media.load();
-
-            if (this.ads) {
+            if (!this.autoplay && this.ads) {
                 const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-                const labels = this.options.labels;
-                this.adsInstance = new Ads(this.media, this.ads, labels, this.autoplay, adsOptions);
+                this.adsInstance = new Ads(this.media, this.ads, false, false, adsOptions);
             }
         } catch (e) {
             console.error(e);
@@ -813,9 +825,11 @@ class Player {
      * @memberof Player
      */
     private _autoplay() {
-        if (this.autoplay) {
-            this.autoplay = false;
-            isAutoplaySupported(autoplay => {
+        if (!this.processedAutoplay) {
+            this.processedAutoplay = true;
+            this.element.removeEventListener('canplay', this._autoplay.bind(this));
+
+            isAutoplaySupported(this.element, autoplay => {
                 this.canAutoplay = autoplay;
             }, muted => {
                 this.canAutoplayMuted = muted;
@@ -846,9 +860,15 @@ class Player {
 
                     const target = this.getContainer();
                     target.insertBefore(volumeEl, target.firstChild);
+                } else {
+                    this.activeElement().muted = false;
+                    this.activeElement().volume = this.volume;
                 }
 
-                if (!this.adsInstance && (this.canAutoplay || this.canAutoplayMuted)) {
+                if (this.ads) {
+                    const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
+                    this.adsInstance = new Ads(this.media, this.ads, this.canAutoplay, this.canAutoplayMuted, adsOptions);
+                } else if (this.canAutoplay || this.canAutoplayMuted) {
                     this.play();
                 }
             });

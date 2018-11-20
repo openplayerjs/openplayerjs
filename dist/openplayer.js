@@ -449,7 +449,7 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.15 ToLength
-var toInteger = __webpack_require__(32);
+var toInteger = __webpack_require__(31);
 var min = Math.min;
 module.exports = function (it) {
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
@@ -750,6 +750,110 @@ module.exports = function (key) {
 
 /***/ }),
 /* 31 */
+/***/ (function(module, exports) {
+
+// 7.1.4 ToInteger
+var ceil = Math.ceil;
+var floor = Math.floor;
+module.exports = function (it) {
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(31);
+var max = Math.max;
+var min = Math.min;
+module.exports = function (index, length) {
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var def = __webpack_require__(10).f;
+var has = __webpack_require__(17);
+var TAG = __webpack_require__(1)('toStringTag');
+
+module.exports = function (it, tag, stat) {
+  if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
+};
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var META = __webpack_require__(27)('meta');
+var isObject = __webpack_require__(2);
+var has = __webpack_require__(17);
+var setDesc = __webpack_require__(10).f;
+var id = 0;
+var isExtensible = Object.isExtensible || function () {
+  return true;
+};
+var FREEZE = !__webpack_require__(7)(function () {
+  return isExtensible(Object.preventExtensions({}));
+});
+var setMeta = function (it) {
+  setDesc(it, META, { value: {
+    i: 'O' + ++id, // object ID
+    w: {}          // weak collections IDs
+  } });
+};
+var fastKey = function (it, create) {
+  // return primitive with prefix
+  if (!isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
+  if (!has(it, META)) {
+    // can't set metadata to uncaught frozen object
+    if (!isExtensible(it)) return 'F';
+    // not necessary to add metadata
+    if (!create) return 'E';
+    // add missing metadata
+    setMeta(it);
+  // return object ID
+  } return it[META].i;
+};
+var getWeak = function (it, create) {
+  if (!has(it, META)) {
+    // can't set metadata to uncaught frozen object
+    if (!isExtensible(it)) return true;
+    // not necessary to add metadata
+    if (!create) return false;
+    // add missing metadata
+    setMeta(it);
+  // return hash weak collections IDs
+  } return it[META].w;
+};
+// add metadata on freeze-family methods calling
+var onFreeze = function (it) {
+  if (FREEZE && meta.NEED && isExtensible(it) && !has(it, META)) setMeta(it);
+  return it;
+};
+var meta = module.exports = {
+  KEY: META,
+  NEED: false,
+  fastKey: fastKey,
+  getWeak: getWeak,
+  onFreeze: onFreeze
+};
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+exports.f = {}.propertyIsEnumerable;
+
+
+/***/ }),
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -818,146 +922,40 @@ function predictType(url) {
 
 exports.predictType = predictType;
 
-function isAutoplaySupported(autoplay, muted, callback) {
-  var videoContent = document.createElement('video');
-  videoContent.src = 'https://platform.galio.nl/op/media/xsmall.mp4';
-  var playPromise = videoContent.play();
+function isAutoplaySupported(media, autoplay, muted, callback) {
+  var playPromise = media.play();
 
   if (playPromise !== undefined) {
     playPromise.then(function () {
-      videoContent.pause();
+      media.pause();
       autoplay(true);
       muted(false);
       callback();
     }).catch(function () {
-      videoContent.volume = 0;
-      videoContent.muted = true;
-      videoContent.play().then(function () {
-        videoContent.pause();
+      media.volume = 0;
+      media.muted = true;
+      media.play().then(function () {
+        media.pause();
         autoplay(true);
         muted(true);
         callback();
       }).catch(function () {
-        videoContent.volume = 1;
-        videoContent.muted = false;
+        media.volume = 1;
+        media.muted = false;
         autoplay(false);
         muted(false);
         callback();
       });
     });
   } else {
-    autoplay(!videoContent.paused || 'Promise' in window && playPromise instanceof Promise);
-    videoContent.pause();
+    autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
+    media.pause();
     muted(false);
     callback();
   }
 }
 
 exports.isAutoplaySupported = isAutoplaySupported;
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports) {
-
-// 7.1.4 ToInteger
-var ceil = Math.ceil;
-var floor = Math.floor;
-module.exports = function (it) {
-  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
-};
-
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toInteger = __webpack_require__(32);
-var max = Math.max;
-var min = Math.min;
-module.exports = function (index, length) {
-  index = toInteger(index);
-  return index < 0 ? max(index + length, 0) : min(index, length);
-};
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var def = __webpack_require__(10).f;
-var has = __webpack_require__(17);
-var TAG = __webpack_require__(1)('toStringTag');
-
-module.exports = function (it, tag, stat) {
-  if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
-};
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var META = __webpack_require__(27)('meta');
-var isObject = __webpack_require__(2);
-var has = __webpack_require__(17);
-var setDesc = __webpack_require__(10).f;
-var id = 0;
-var isExtensible = Object.isExtensible || function () {
-  return true;
-};
-var FREEZE = !__webpack_require__(7)(function () {
-  return isExtensible(Object.preventExtensions({}));
-});
-var setMeta = function (it) {
-  setDesc(it, META, { value: {
-    i: 'O' + ++id, // object ID
-    w: {}          // weak collections IDs
-  } });
-};
-var fastKey = function (it, create) {
-  // return primitive with prefix
-  if (!isObject(it)) return typeof it == 'symbol' ? it : (typeof it == 'string' ? 'S' : 'P') + it;
-  if (!has(it, META)) {
-    // can't set metadata to uncaught frozen object
-    if (!isExtensible(it)) return 'F';
-    // not necessary to add metadata
-    if (!create) return 'E';
-    // add missing metadata
-    setMeta(it);
-  // return object ID
-  } return it[META].i;
-};
-var getWeak = function (it, create) {
-  if (!has(it, META)) {
-    // can't set metadata to uncaught frozen object
-    if (!isExtensible(it)) return true;
-    // not necessary to add metadata
-    if (!create) return false;
-    // add missing metadata
-    setMeta(it);
-  // return hash weak collections IDs
-  } return it[META].w;
-};
-// add metadata on freeze-family methods calling
-var onFreeze = function (it) {
-  if (FREEZE && meta.NEED && isExtensible(it) && !has(it, META)) setMeta(it);
-  return it;
-};
-var meta = module.exports = {
-  KEY: META,
-  NEED: false,
-  fastKey: fastKey,
-  getWeak: getWeak,
-  onFreeze: onFreeze
-};
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports) {
-
-exports.f = {}.propertyIsEnumerable;
-
 
 /***/ }),
 /* 37 */
@@ -1146,7 +1144,7 @@ exports.f = Object.getOwnPropertySymbols;
 /* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var pIE = __webpack_require__(36);
+var pIE = __webpack_require__(35);
 var createDesc = __webpack_require__(26);
 var toIObject = __webpack_require__(13);
 var toPrimitive = __webpack_require__(39);
@@ -1337,7 +1335,7 @@ var events_1 = __webpack_require__(15);
 
 var general_1 = __webpack_require__(5);
 
-var media_2 = __webpack_require__(31);
+var media_2 = __webpack_require__(36);
 
 var Player = function () {
   function Player(element, ads, fill, options) {
@@ -1345,6 +1343,7 @@ var Player = function () {
 
     this.events = {};
     this.autoplay = false;
+    this.processedAutoplay = false;
     this.defaultOptions = {
       labels: {
         captions: 'CC/Subtitles',
@@ -1402,8 +1401,6 @@ var Player = function () {
 
         this._setEvents();
 
-        this._autoplay();
-
         Player.instances[this.id] = this;
       }
     }
@@ -1447,6 +1444,11 @@ var Player = function () {
       Object.keys(this.events).forEach(function (event) {
         el.removeEventListener(event, _this.events[event]);
       });
+
+      if (this.autoplay && !this.processedAutoplay && general_1.isVideo(this.element)) {
+        el.removeEventListener('canplay', this._autoplay.bind(this));
+      }
+
       this.controls.destroy();
 
       if (general_1.isVideo(this.element)) {
@@ -1591,13 +1593,16 @@ var Player = function () {
     key: "_prepareMedia",
     value: function _prepareMedia() {
       try {
+        if (this.autoplay && general_1.isVideo(this.element)) {
+          this.element.addEventListener('canplay', this._autoplay.bind(this));
+        }
+
         this.media = new media_1.default(this.element, this.options, this.autoplay, Player.customMedia);
         this.media.load();
 
-        if (this.ads) {
+        if (!this.autoplay && this.ads) {
           var adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-          var labels = this.options.labels;
-          this.adsInstance = new ads_1.default(this.media, this.ads, labels, this.autoplay, adsOptions);
+          this.adsInstance = new ads_1.default(this.media, this.ads, false, false, adsOptions);
         }
       } catch (e) {
         console.error(e);
@@ -1815,9 +1820,10 @@ var Player = function () {
     value: function _autoplay() {
       var _this4 = this;
 
-      if (this.autoplay) {
-        this.autoplay = false;
-        media_2.isAutoplaySupported(function (autoplay) {
+      if (!this.processedAutoplay) {
+        this.processedAutoplay = true;
+        this.element.removeEventListener('canplay', this._autoplay.bind(this));
+        media_2.isAutoplaySupported(this.element, function (autoplay) {
           _this4.canAutoplay = autoplay;
         }, function (muted) {
           _this4.canAutoplayMuted = muted;
@@ -1846,9 +1852,15 @@ var Player = function () {
             var target = _this4.getContainer();
 
             target.insertBefore(volumeEl, target.firstChild);
+          } else {
+            _this4.activeElement().muted = false;
+            _this4.activeElement().volume = _this4.volume;
           }
 
-          if (!_this4.adsInstance && (_this4.canAutoplay || _this4.canAutoplayMuted)) {
+          if (_this4.ads) {
+            var adsOptions = _this4.options && _this4.options.ads ? _this4.options.ads : undefined;
+            _this4.adsInstance = new ads_1.default(_this4.media, _this4.ads, _this4.canAutoplay, _this4.canAutoplayMuted, adsOptions);
+          } else if (_this4.canAutoplay || _this4.canAutoplayMuted) {
             _this4.play();
           }
         });
@@ -1947,7 +1959,7 @@ var redefine = __webpack_require__(21);
 var hide = __webpack_require__(16);
 var Iterators = __webpack_require__(28);
 var $iterCreate = __webpack_require__(75);
-var setToStringTag = __webpack_require__(34);
+var setToStringTag = __webpack_require__(33);
 var getPrototypeOf = __webpack_require__(58);
 var ITERATOR = __webpack_require__(1)('iterator');
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
@@ -2070,7 +2082,7 @@ module.exports = function (object, names) {
 // true  -> Array#includes
 var toIObject = __webpack_require__(13);
 var toLength = __webpack_require__(14);
-var toAbsoluteIndex = __webpack_require__(33);
+var toAbsoluteIndex = __webpack_require__(32);
 module.exports = function (IS_INCLUDES) {
   return function ($this, el, fromIndex) {
     var O = toIObject($this);
@@ -2504,7 +2516,7 @@ module.exports = __webpack_require__(6).Array;
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(32);
+var toInteger = __webpack_require__(31);
 var defined = __webpack_require__(37);
 // true  -> String#at
 // false -> String#codePointAt
@@ -2531,7 +2543,7 @@ module.exports = function (TO_STRING) {
 
 var create = __webpack_require__(40);
 var descriptor = __webpack_require__(26);
-var setToStringTag = __webpack_require__(34);
+var setToStringTag = __webpack_require__(33);
 var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
@@ -2651,7 +2663,7 @@ $export($export.P + $export.F * (__webpack_require__(29) != Object || !__webpack
 var $export = __webpack_require__(0);
 var html = __webpack_require__(44);
 var cof = __webpack_require__(24);
-var toAbsoluteIndex = __webpack_require__(33);
+var toAbsoluteIndex = __webpack_require__(32);
 var toLength = __webpack_require__(14);
 var arraySlice = [].slice;
 
@@ -2891,7 +2903,7 @@ $export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(4)($nativ
 
 var $export = __webpack_require__(0);
 var toIObject = __webpack_require__(13);
-var toInteger = __webpack_require__(32);
+var toInteger = __webpack_require__(31);
 var toLength = __webpack_require__(14);
 var $native = [].lastIndexOf;
 var NEGATIVE_ZERO = !!$native && 1 / [1].lastIndexOf(1, -0) < 0;
@@ -2932,7 +2944,7 @@ __webpack_require__(30)('copyWithin');
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 
 var toObject = __webpack_require__(8);
-var toAbsoluteIndex = __webpack_require__(33);
+var toAbsoluteIndex = __webpack_require__(32);
 var toLength = __webpack_require__(14);
 
 module.exports = [].copyWithin || function copyWithin(target /* = 0 */, start /* = 0, end = @length */) {
@@ -2977,7 +2989,7 @@ __webpack_require__(30)('fill');
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 
 var toObject = __webpack_require__(8);
-var toAbsoluteIndex = __webpack_require__(33);
+var toAbsoluteIndex = __webpack_require__(32);
 var toLength = __webpack_require__(14);
 module.exports = function fill(value /* , start = 0, end = @length */) {
   var O = toObject(this);
@@ -3087,10 +3099,10 @@ var has = __webpack_require__(17);
 var DESCRIPTORS = __webpack_require__(12);
 var $export = __webpack_require__(0);
 var redefine = __webpack_require__(21);
-var META = __webpack_require__(35).KEY;
+var META = __webpack_require__(34).KEY;
 var $fails = __webpack_require__(7);
 var shared = __webpack_require__(42);
-var setToStringTag = __webpack_require__(34);
+var setToStringTag = __webpack_require__(33);
 var uid = __webpack_require__(27);
 var wks = __webpack_require__(1);
 var wksExt = __webpack_require__(67);
@@ -3230,7 +3242,7 @@ if (!USE_NATIVE) {
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f = $defineProperty;
   __webpack_require__(69).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(36).f = $propertyIsEnumerable;
+  __webpack_require__(35).f = $propertyIsEnumerable;
   __webpack_require__(47).f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !__webpack_require__(25)) {
@@ -3338,7 +3350,7 @@ module.exports = function (name) {
 // all enumerable object keys, includes symbols
 var getKeys = __webpack_require__(23);
 var gOPS = __webpack_require__(47);
-var pIE = __webpack_require__(36);
+var pIE = __webpack_require__(35);
 module.exports = function (it) {
   var result = getKeys(it);
   var getSymbols = gOPS.f;
@@ -3440,7 +3452,7 @@ __webpack_require__(9)('getOwnPropertyNames', function () {
 
 // 19.1.2.5 Object.freeze(O)
 var isObject = __webpack_require__(2);
-var meta = __webpack_require__(35).onFreeze;
+var meta = __webpack_require__(34).onFreeze;
 
 __webpack_require__(9)('freeze', function ($freeze) {
   return function freeze(it) {
@@ -3455,7 +3467,7 @@ __webpack_require__(9)('freeze', function ($freeze) {
 
 // 19.1.2.17 Object.seal(O)
 var isObject = __webpack_require__(2);
-var meta = __webpack_require__(35).onFreeze;
+var meta = __webpack_require__(34).onFreeze;
 
 __webpack_require__(9)('seal', function ($seal) {
   return function seal(it) {
@@ -3470,7 +3482,7 @@ __webpack_require__(9)('seal', function ($seal) {
 
 // 19.1.2.15 Object.preventExtensions(O)
 var isObject = __webpack_require__(2);
-var meta = __webpack_require__(35).onFreeze;
+var meta = __webpack_require__(34).onFreeze;
 
 __webpack_require__(9)('preventExtensions', function ($preventExtensions) {
   return function preventExtensions(it) {
@@ -3540,7 +3552,7 @@ $export($export.S + $export.F, 'Object', { assign: __webpack_require__(119) });
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys = __webpack_require__(23);
 var gOPS = __webpack_require__(47);
-var pIE = __webpack_require__(36);
+var pIE = __webpack_require__(35);
 var toObject = __webpack_require__(8);
 var IObject = __webpack_require__(29);
 var $assign = Object.assign;
@@ -3934,7 +3946,7 @@ if (!USE_NATIVE) {
 }
 
 $export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });
-__webpack_require__(34)($Promise, PROMISE);
+__webpack_require__(33)($Promise, PROMISE);
 __webpack_require__(65)(PROMISE);
 Wrapper = __webpack_require__(6)[PROMISE];
 
@@ -6342,7 +6354,7 @@ var hls_1 = __webpack_require__(150);
 
 var html5_1 = __webpack_require__(151);
 
-var source = __webpack_require__(31);
+var source = __webpack_require__(36);
 
 var Media = function () {
   function Media(element, options) {
@@ -6373,69 +6385,32 @@ var Media = function () {
   }, {
     key: "load",
     value: function load() {
-      this._loadSources(this.mediaFiles);
-    }
-  }, {
-    key: "play",
-    value: function play() {
       var _this = this;
 
-      this.promisePlay = new Promise(function (resolve) {
-        resolve();
-      }).then(function () {
-        _this.media.promise.then(function () {
-          _this.media.play();
-        });
-      });
-      return this.promisePlay;
-    }
-  }, {
-    key: "pause",
-    value: function pause() {
-      var _this2 = this;
-
-      if (this.promisePlay) {
-        this.promisePlay.then(function () {
-          _this2.media.pause();
-        });
-      } else {
-        this.media.pause();
-      }
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.media.destroy();
-    }
-  }, {
-    key: "_loadSources",
-    value: function _loadSources(sources) {
-      var _this3 = this;
-
-      if (!sources.length) {
+      if (!this.mediaFiles.length) {
         throw new TypeError('Media not set');
       }
 
       if (this.media && typeof this.media.destroy === 'function') {
-        var sameMedia = sources.length === 1 && sources[0].src === this.media.media.src;
+        var sameMedia = this.mediaFiles.length === 1 && this.mediaFiles[0].src === this.media.media.src;
 
         if (!sameMedia) {
           this.media.destroy();
         }
       }
 
-      sources.some(function (media) {
+      this.mediaFiles.some(function (media) {
         try {
-          _this3.media = _this3._invoke(media);
+          _this.media = _this._invoke(media);
         } catch (e) {
-          _this3.media = new html5_1.default(_this3.element, media);
+          _this.media = new html5_1.default(_this.element, media);
         }
 
-        var canPlay = _this3.canPlayType(media.type);
+        var canPlay = _this.canPlayType(media.type);
 
         if (!canPlay) {
-          _this3.media = new html5_1.default(_this3.element, media);
-          return _this3.canPlayType(media.type);
+          _this.media = new html5_1.default(_this.element, media);
+          return _this.canPlayType(media.type);
         }
 
         return canPlay;
@@ -6447,12 +6422,44 @@ var Media = function () {
         }
 
         this.media.promise.then(function () {
-          _this3.media.load();
+          _this.media.load();
         });
       } catch (e) {
         this.media.destroy();
         throw e;
       }
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      var _this2 = this;
+
+      this.promisePlay = new Promise(function (resolve) {
+        resolve();
+      }).then(function () {
+        _this2.media.promise.then(function () {
+          _this2.media.play();
+        });
+      });
+      return this.promisePlay;
+    }
+  }, {
+    key: "pause",
+    value: function pause() {
+      var _this3 = this;
+
+      if (this.promisePlay) {
+        this.promisePlay.then(function () {
+          _this3.media.pause();
+        });
+      } else {
+        this.media.pause();
+      }
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.media.destroy();
     }
   }, {
     key: "_getMediaFiles",
@@ -6637,7 +6644,7 @@ var events_1 = __webpack_require__(15);
 
 var general_1 = __webpack_require__(5);
 
-var media_1 = __webpack_require__(31);
+var media_1 = __webpack_require__(36);
 
 var native_1 = __webpack_require__(50);
 
@@ -6810,7 +6817,7 @@ var events_1 = __webpack_require__(15);
 
 var general_1 = __webpack_require__(5);
 
-var media_1 = __webpack_require__(31);
+var media_1 = __webpack_require__(36);
 
 var native_1 = __webpack_require__(50);
 
@@ -7134,12 +7141,8 @@ var events_1 = __webpack_require__(15);
 
 var general_1 = __webpack_require__(5);
 
-var media_1 = __webpack_require__(31);
-
 var Ads = function () {
-  function Ads(media, ads, labels, autoStart, options) {
-    var _this = this;
-
+  function Ads(media, ads, autoStart, autoStartMuted, options) {
     _classCallCheck(this, Ads);
 
     this.adsEnded = false;
@@ -7151,9 +7154,8 @@ var Ads = function () {
     this.adsDuration = 0;
     this.adsCurrentTime = 0;
     this.adsManager = null;
-    this.autoplayAllowed = false;
-    this.autoplayRequiresMuted = false;
     this.autoStart = false;
+    this.autoStartMuted = false;
     this.playTriggered = false;
     this.currentAdsIndex = 0;
     this.lastTimePaused = 0;
@@ -7166,62 +7168,16 @@ var Ads = function () {
     this.media = media;
     this.element = media.element;
     this.autoStart = autoStart || false;
+    this.autoStartMuted = autoStartMuted || false;
     this.adsOptions = Object.assign({}, defaultOpts, options);
     this.playTriggered = false;
     this.originalVolume = this.element.volume;
     this.adsVolume = this.originalVolume;
     var path = this.adsOptions.debug ? this.adsOptions.url.replace(/(\.js$)/, '_debug.js') : this.adsOptions.url;
-
-    if (this.autoStart === true) {
-      media_1.isAutoplaySupported(function (autoplay) {
-        _this.autoplayAllowed = autoplay;
-      }, function (muted) {
-        _this.autoplayRequiresMuted = muted;
-      }, function () {
-        if (_this.autoplayRequiresMuted || constants_1.IS_IOS) {
-          _this.adsMuted = true;
-          _this.media.muted = true;
-          _this.adsVolume = 0;
-          _this.media.volume = 0;
-          var e = events_1.addEvent('volumechange');
-
-          _this.element.dispatchEvent(e);
-
-          var volumeEl = document.createElement('div');
-          var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? labels.tap : labels.click;
-          volumeEl.className = 'op-player__unmute';
-          volumeEl.innerHTML = "<span>".concat(action, "</span>");
-          volumeEl.addEventListener('click', function () {
-            _this.adsMuted = false;
-            _this.media.muted = false;
-            _this.adsVolume = _this.originalVolume;
-            _this.media.volume = _this.originalVolume;
-
-            _this.adsManager.setVolume(_this.originalVolume);
-
-            var event = events_1.addEvent('volumechange');
-
-            _this.element.dispatchEvent(event);
-
-            volumeEl.remove();
-          });
-          var target = _this.element.parentElement;
-          target.insertBefore(volumeEl, target.firstChild);
-        }
-
-        _this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(path) : new Promise(function (resolve) {
-          return resolve();
-        });
-
-        _this.promise.then(_this.load.bind(_this));
-      });
-    } else {
-      this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(path) : new Promise(function (resolve) {
-        return resolve();
-      });
-      this.promise.then(this.load.bind(this));
-    }
-
+    this.promise = typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(path) : new Promise(function (resolve) {
+      return resolve();
+    });
+    this.promise.then(this.load.bind(this));
     return this;
   }
 
@@ -7243,11 +7199,10 @@ var Ads = function () {
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
       window.addEventListener('resize', this.resizeAds.bind(this));
 
-      if (this.autoStart === true || force === true) {
+      if (this.autoStart === true || this.autoStartMuted === true || force === true) {
         if (!this.adsDone) {
           this.adsDone = true;
           this.adDisplayContainer.initialize();
-          this.media.load();
         }
 
         this._requestAds();
@@ -7259,12 +7214,10 @@ var Ads = function () {
       if (!this.adsDone) {
         this.adsDone = true;
         this.adDisplayContainer.initialize();
-        this.media.load();
 
         if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
           this.preloadContent = this._contentLoadedAction;
           this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
-          this.media.load();
         } else {
           this._contentLoadedAction();
         }
@@ -7292,11 +7245,11 @@ var Ads = function () {
   }, {
     key: "destroy",
     value: function destroy() {
-      var _this2 = this;
+      var _this = this;
 
       if (this.events) {
         this.events.forEach(function (event) {
-          _this2.adsManager.removeEventListener(event, _this2._assign.bind(_this2));
+          _this.adsManager.removeEventListener(event, _this._assign.bind(_this));
         });
       }
 
@@ -7316,7 +7269,7 @@ var Ads = function () {
   }, {
     key: "resizeAds",
     value: function resizeAds(width, height) {
-      var _this3 = this;
+      var _this2 = this;
 
       if (this.adsManager) {
         var target = this.element;
@@ -7328,14 +7281,14 @@ var Ads = function () {
         }
 
         timeout = window.requestAnimationFrame(function () {
-          _this3.adsManager.resize(width && height ? width : target.offsetWidth, width && height ? height : target.offsetHeight, mode);
+          _this2.adsManager.resize(width && height ? width : target.offsetWidth, width && height ? height : target.offsetHeight, mode);
         });
       }
     }
   }, {
     key: "_assign",
     value: function _assign(event) {
-      var _this4 = this;
+      var _this3 = this;
 
       var ad = event.getAd();
 
@@ -7383,11 +7336,11 @@ var Ads = function () {
             }
 
             this.intervalTimer = window.setInterval(function () {
-              if (_this4.adsActive === true) {
-                _this4.adsCurrentTime = Math.round(_this4.adsManager.getRemainingTime());
+              if (_this3.adsActive === true) {
+                _this3.adsCurrentTime = Math.round(_this3.adsManager.getRemainingTime());
                 var timeEvent = events_1.addEvent('timeupdate');
 
-                _this4.element.dispatchEvent(timeEvent);
+                _this3.element.dispatchEvent(timeEvent);
               }
             }, 300);
           }
@@ -7448,7 +7401,7 @@ var Ads = function () {
           unmuteEl.remove();
         }
 
-        if (this.autoStart === true || this.adsStarted === true) {
+        if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
           this.adsActive = false;
 
           this._resumeMedia();
@@ -7467,14 +7420,14 @@ var Ads = function () {
   }, {
     key: "_start",
     value: function _start(manager) {
-      var _this5 = this;
+      var _this4 = this;
 
       manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this));
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this));
       this.events = [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED];
       this.events.forEach(function (event) {
-        manager.addEventListener(event, _this5._assign.bind(_this5));
+        manager.addEventListener(event, _this4._assign.bind(_this4));
       });
 
       if (this.autoStart === true || this.playTriggered === true) {
@@ -7518,7 +7471,6 @@ var Ads = function () {
 
       if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
         this.media.src = this.mediaSources;
-        this.media.load();
       } else {
         var event = events_1.addEvent('loadedmetadata');
         this.element.dispatchEvent(event);
@@ -7542,7 +7494,7 @@ var Ads = function () {
   }, {
     key: "_resumeMedia",
     value: function _resumeMedia() {
-      var _this6 = this;
+      var _this5 = this;
 
       this.intervalTimer = 0;
       this.adsMuted = false;
@@ -7553,11 +7505,11 @@ var Ads = function () {
 
       if (!this.media.ended) {
         setTimeout(function () {
-          _this6.media.play();
+          _this5.media.play();
 
           var playEvent = events_1.addEvent('play');
 
-          _this6.element.dispatchEvent(playEvent);
+          _this5.element.dispatchEvent(playEvent);
         }, 50);
       } else {
         var event = events_1.addEvent('ended');
@@ -7573,8 +7525,8 @@ var Ads = function () {
       var height = this.element.parentElement.offsetWidth;
       this.adsRequest.linearAdSlotWidth = width;
       this.adsRequest.linearAdSlotHeight = height;
-      this.adsRequest.setAdWillAutoPlay(this.autoplayAllowed);
-      this.adsRequest.setAdWillPlayMuted(this.autoplayRequiresMuted);
+      this.adsRequest.setAdWillAutoPlay(this.autoStart);
+      this.adsRequest.setAdWillPlayMuted(this.autoStartMuted);
       this.adsLoader.requestAds(this.adsRequest);
     }
   }, {
