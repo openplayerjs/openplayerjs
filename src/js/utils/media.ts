@@ -82,45 +82,42 @@ export function predictType(url: string): string {
  * @see https://raw.githubusercontent.com/googleads/googleads-ima-html5/2.11/attempt_to_autoplay/ads.js
  * @see https://github.com/Modernizr/Modernizr/issues/1095#issuecomment-304682473
  * @export
+ * @param {HTMLMediaElement} media  Callback to determine if browser can autoplay.
  * @param {function} autoplay  Callback to determine if browser can autoplay.
  * @param {function} muted  Callback to determine if browser requires media to be muted.
  * @param {function} callback  Custom callback after prior checks have been run.
  */
-export function isAutoplaySupported(autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void {
-    const videoContent = document.createElement('video');
-    // Use a video WITH audio to test properly browser's capabilities.
-    videoContent.src = 'https://platform.galio.nl/op/media/xsmall.mp4';
-
-    const playPromise = videoContent.play();
+export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void {
+    const playPromise = media.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
             // Umuted autoplay works.
-            videoContent.pause();
+            media.pause();
             autoplay(true);
             muted(false);
             callback();
         }).catch(() => {
             // Unmuted autoplay failed. New attempt with muted autoplay.
-            videoContent.volume = 0;
-            videoContent.muted = true;
-            videoContent.play().then(() => {
+            media.volume = 0;
+            media.muted = true;
+            media.play().then(() => {
                 // Muted autoplay works.
-                videoContent.pause();
+                media.pause();
                 autoplay(true);
                 muted(true);
                 callback();
             }).catch(() => {
                 // Both muted and unmuted autoplay failed. Fallback to click to play.
-                videoContent.volume = 1;
-                videoContent.muted = false;
+                media.volume = 1;
+                media.muted = false;
                 autoplay(false);
                 muted(false);
                 callback();
             });
         });
     } else {
-        autoplay(!videoContent.paused || 'Promise' in window && playPromise instanceof Promise);
-        videoContent.pause();
+        autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
+        media.pause();
         muted(false);
         callback();
     }
