@@ -1345,6 +1345,7 @@ var Player = function () {
     this.autoplay = false;
     this.processedAutoplay = false;
     this.defaultOptions = {
+      hidePlayBtnTimer: 350,
       labels: {
         captions: 'CC/Subtitles',
         click: 'Click to unmute',
@@ -1721,12 +1722,10 @@ var Player = function () {
 
           setTimeout(function () {
             _this3.playBtn.setAttribute('aria-hidden', 'true');
-          }, 350);
+          }, _this3.options.hidePlayBtnTimer);
         };
 
         this.events.playing = function () {
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
-
           _this3.loader.setAttribute('aria-hidden', 'true');
         };
 
@@ -4515,6 +4514,8 @@ var Controls = function () {
           if (isMediaVideo) {
             _this._stopControlTimer();
 
+            _this.player.playBtn.setAttribute('aria-hidden', 'false');
+
             _this.player.getContainer().classList.remove('op-controls--hidden');
 
             _this._startControlTimer(2500);
@@ -4523,6 +4524,8 @@ var Controls = function () {
 
         this.events.mouse.mousemove = function () {
           if (isMediaVideo) {
+            _this.player.playBtn.setAttribute('aria-hidden', 'false');
+
             _this.player.getContainer().classList.remove('op-controls--hidden');
 
             _this._startControlTimer(2500);
@@ -4590,6 +4593,8 @@ var Controls = function () {
       this.timer = window.setTimeout(function () {
         if ((!el.paused || !el.ended) && general_1.isVideo(_this3.player.getElement())) {
           _this3.player.getContainer().classList.add('op-controls--hidden');
+
+          _this3.player.playBtn.setAttribute('aria-hidden', 'true');
 
           _this3._stopControlTimer();
 

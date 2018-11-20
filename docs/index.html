@@ -75,7 +75,7 @@
 				<p>It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!</p>
 				<h2 id="why-openplayer-">Why OpenPlayer?</h2>
 				<ul>
-					<li><strong>Supports IE11+ and all modern browsers</strong>: its CSS and code is compatible with all modern browsers.</li>
+					<li><strong>Supports IE11+ (Win8) and all modern browsers</strong>: its CSS and code is compatible with all modern browsers. IE11+ on Win7 requires an MP4/MP3 fallback to work correctly.</li>
 					<li><strong>Lightweight library</strong>: Less than <code>20kb</code> when gzipped.</li>
 					<li><strong>Monetize video and audio content</strong> with video advertising using VAST, VPAID or VMAP Ads, supported by the amazing <a href="https://developers.google.com/interactive-media-ads/">Interactive Media Ads SDK</a> (IMA SDK) library.</li>
 					<li><strong>Accessibility is a priority for OpenPlayerJS</strong>: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See <a href="https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/">https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/</a> for more details.</li>
@@ -121,8 +121,11 @@
 				<h2 id="usage-with-javascript">Usage with Javascript</h2>
 				<p>Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the <code>op-player</code> class from the video/audio tag (just leave <code>op-player__media</code> to preserve styles), and in Javascript use the following snippet:</p>
 				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'[player ID]'</span>, [valid VAST/VPAID URL|List <span class="hljs-keyword">of</span> VAST/VPAID URLs], [<span class="hljs-string">`true|false`</span> <span class="hljs-keyword">for</span> fullscreen effect by <span class="hljs-keyword">default</span>], {
+    <span class="hljs-comment">// Number of ms that takes the player to hide the Play button once it starts playing (video only)</span>
+    <span class="hljs-comment">// (bt default, `350`)</span>
+    hidePlayBtnTimer,
     <span class="hljs-comment">// Number of seconds to rewind/forward media</span>
-    <span class="hljs-comment">// (by default, player will rewind/forward  5% of the total duration of media)</span>
+    <span class="hljs-comment">// (by default, player will rewind/forward 5% of the total duration of media)</span>
     step,
     <span class="hljs-attr">ads</span>: {
         <span class="hljs-comment">// Custom path/URL to IMA SDK</span>
