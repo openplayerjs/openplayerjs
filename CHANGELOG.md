@@ -1,3 +1,25 @@
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/openplayerjs/openplayerjs/compare/v1.4.1...v1.5.0) (2018-11-20)
+
+
+### Bug Fixes
+
+* **ads:** Dispatched new event to show loading state on ads; fixed dimensions on Ad when starting to play; fixed typo in waiting event ([e87466a](https://github.com/openplayerjs/openplayerjs/commit/e87466a))
+* **ads:** Fixed issue when player is not recovering after Ads error ([d6b83b0](https://github.com/openplayerjs/openplayerjs/commit/d6b83b0))
+* **ads:** Fixed issue where double requests to media were made non-mobile devices after Ads ended ([c63dc94](https://github.com/openplayerjs/openplayerjs/commit/c63dc94))
+* **demo:** Reverted demo to original state ([74a4b0b](https://github.com/openplayerjs/openplayerjs/commit/74a4b0b))
+* **player:** Added missing events to display/hide loader image ([d7808f0](https://github.com/openplayerjs/openplayerjs/commit/d7808f0))
+* **player:** Hid default captions layer to favor player's captions layer ([ecdb4b5](https://github.com/openplayerjs/openplayerjs/commit/ecdb4b5))
+* **player:** Modified autoplay workflow to verify current media content instead of video placeholder; removed unnecessary code in Ads to verify autoplay capabilities ([ddb08e1](https://github.com/openplayerjs/openplayerjs/commit/ddb08e1))
+* **player:** Moved loader hiding outside of timer on `play` event ([9503041](https://github.com/openplayerjs/openplayerjs/commit/9503041))
+
+
+### Features
+
+* **player:** Allowed displaying the Pause button correctly and added new flag to control the time it will take to disappear once video starts playing ([d02afa2](https://github.com/openplayerjs/openplayerjs/commit/d02afa2))
+
+
+
 <a name="1.4.1"></a>
 ## [1.4.1](https://github.com/openplayerjs/openplayerjs/compare/v1.4.0...v1.4.1) (2018-11-01)
 
