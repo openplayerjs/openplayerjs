@@ -41,6 +41,7 @@
             var results = regex.exec(location.search);
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         };
+        var type = getUrlParameter('type');
         function getMimeType(url) {
             if (/\.m3u8/i.test(url)) {
                 return 'application/x-mpegURL';
@@ -49,10 +50,9 @@
             }
 
             // Let browser figure out if it can play it
-            return null;
+            return '';
         }
 
-        var type = getUrlParameter('type');
         var ads = getUrlParameter('ads');
         ads = ads.replace(/~/g, '%');
 
