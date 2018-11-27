@@ -191,6 +191,11 @@ class Controls implements PlayerComponent {
                     this._startControlTimer(1000);
                 }
             };
+            this.events.media.play = () => {
+                if (isMediaVideo) {
+                    this._startControlTimer(1000);
+                }
+            };
             this.events.media.pause = () => {
                 this.player.getContainer().classList.remove('op-controls--hidden');
                 this._stopControlTimer();
