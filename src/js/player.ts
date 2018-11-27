@@ -686,9 +686,13 @@ class Player {
 
         this.playBtn.addEventListener('click', () => {
             if (this.adsInstance) {
-                this.adsInstance.playRequested = true;
+                this.adsInstance.playRequested = this.activeElement().paused;
             }
-            this.activeElement().play();
+            if (this.activeElement().paused) {
+                this.activeElement().play();
+            } else {
+                this.activeElement().pause();
+            }
         });
     }
 
