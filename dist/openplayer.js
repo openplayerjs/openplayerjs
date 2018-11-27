@@ -4544,7 +4544,7 @@ var Controls = function () {
 
         this.events.media.play = function () {
           if (isMediaVideo) {
-            _this._startControlTimer(1000);
+            _this._startControlTimer(_this.player.getOptions().hidePlayBtnTimer);
           }
         };
 
