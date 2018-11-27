@@ -193,7 +193,7 @@ class Controls implements PlayerComponent {
             };
             this.events.media.play = () => {
                 if (isMediaVideo) {
-                    this._startControlTimer(1000);
+                    this._startControlTimer(this.player.getOptions().hidePlayBtnTimer);
                 }
             };
             this.events.media.pause = () => {
