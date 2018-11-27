@@ -1651,10 +1651,14 @@ var Player = function () {
       this.element.parentElement.insertBefore(this.playBtn, this.element);
       this.playBtn.addEventListener('click', function () {
         if (_this2.adsInstance) {
-          _this2.adsInstance.playRequested = true;
+          _this2.adsInstance.playRequested = _this2.activeElement().paused;
         }
 
-        _this2.activeElement().play();
+        if (_this2.activeElement().paused) {
+          _this2.activeElement().play();
+        } else {
+          _this2.activeElement().pause();
+        }
       });
     }
   }, {
@@ -4533,6 +4537,12 @@ var Controls = function () {
         };
 
         this.events.mouse.mouseleave = function () {
+          if (isMediaVideo) {
+            _this._startControlTimer(1000);
+          }
+        };
+
+        this.events.media.play = function () {
           if (isMediaVideo) {
             _this._startControlTimer(1000);
           }
