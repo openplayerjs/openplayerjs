@@ -310,6 +310,9 @@ class Ads {
         this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
         this.mediaSources = this.media.src;
 
+        const e = addEvent('waiting');
+        this.element.dispatchEvent(e);
+
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
