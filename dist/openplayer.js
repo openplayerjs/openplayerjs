@@ -7213,6 +7213,7 @@ var Ads = function () {
       this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
       window.addEventListener('resize', this.resizeAds.bind(this));
+      this.element.addEventListener('loadedmetadata', this.resizeAds.bind(this));
 
       if (this.autoStart === true || this.autoStartMuted === true || force === true) {
         if (!this.adsDone) {
@@ -7277,6 +7278,11 @@ var Ads = function () {
         this.adsManager.destroy();
       }
 
+      if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
+        this.element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+      }
+
+      this.element.removeEventListener('loadedmetadata', this.resizeAds.bind(this));
       this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
       window.removeEventListener('resize', this.resizeAds.bind(this));
       this.adsContainer.remove();
@@ -7403,6 +7409,7 @@ var Ads = function () {
         this.currentAdsIndex++;
         this.playTriggered = true;
         this.adsStarted = true;
+        this.adsDone = false;
         this.destroy();
         this.load(true);
       } else {
@@ -7447,6 +7454,21 @@ var Ads = function () {
 
       if (this.autoStart === true || this.playTriggered === true) {
         this.playTriggered = false;
+
+        if (!this.adsDone) {
+          this.adsDone = true;
+          this.adDisplayContainer.initialize();
+
+          if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
+            this.preloadContent = this._contentLoadedAction;
+            this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+          } else {
+            this._contentLoadedAction();
+          }
+
+          return;
+        }
+
         manager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
         manager.start();
         var e = events_1.addEvent('play');
