@@ -4,7 +4,6 @@ import Media from '../media';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, loadScript } from '../utils/general';
-// import { isAutoplaySupported } from '../utils/media';
 
 declare const google: any;
 
@@ -330,6 +329,7 @@ class Ads {
         );
         // Create responsive ad
         window.addEventListener('resize', this.resizeAds.bind(this));
+        this.element.addEventListener('loadedmetadata', this.resizeAds.bind(this));
 
         // Request Ads automatically if `autoplay` was set
         if (this.autoStart === true || this.autoStartMuted === true || force === true) {
@@ -410,6 +410,9 @@ class Ads {
             this.adsManager.destroy();
         }
 
+        if (IS_IOS || IS_ANDROID) {
+            this.element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+        }
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         window.removeEventListener('resize', this.resizeAds.bind(this));
         this.adsContainer.remove();
@@ -657,6 +660,7 @@ class Ads {
             this.currentAdsIndex++;
             this.playTriggered = true;
             this.adsStarted = true;
+            this.adsDone = false;
             this.destroy();
             this.load(true);
         } else {
@@ -727,6 +731,18 @@ class Ads {
 
         if (this.autoStart === true || this.playTriggered === true) {
             this.playTriggered = false;
+            if (!this.adsDone) {
+                this.adsDone = true;
+                this.adDisplayContainer.initialize();
+
+                if (IS_IOS || IS_ANDROID) {
+                    this.preloadContent = this._contentLoadedAction;
+                    this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+                } else {
+                    this._contentLoadedAction();
+                }
+                return;
+            }
             manager.init(
                 this.element.offsetWidth,
                 this.element.offsetHeight,
