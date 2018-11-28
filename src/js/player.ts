@@ -714,9 +714,8 @@ class Player {
                 }
             };
             this.events.waiting = () => {
-                const el = this.activeElement();
                 this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', el instanceof Media || IS_ANDROID || IS_IOS ? 'false' : 'true');
+                this.loader.setAttribute('aria-hidden', 'false');
             };
             this.events.durationchange = () => {
                 const el = this.activeElement();
@@ -738,9 +737,8 @@ class Player {
                 this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.play = () => {
-                const el = this.activeElement();
                 this.playBtn.classList.add('op-player__play--paused');
-                this.loader.setAttribute('aria-hidden', el instanceof Media || IS_ANDROID || IS_IOS ? 'false' : 'true');
+                this.loader.setAttribute('aria-hidden', IS_ANDROID || IS_IOS ? 'false' : 'true');
 
                 setTimeout(() => {
                     this.playBtn.setAttribute('aria-hidden', 'true');
@@ -750,10 +748,9 @@ class Player {
                 this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.pause = () => {
-                this.playBtn.classList.remove('op-player__play--paused');
                 this.loader.setAttribute('aria-hidden', 'true');
-                const el = this.activeElement();
-                this.playBtn.setAttribute('aria-hidden', el instanceof Media || IS_ANDROID || IS_IOS ? 'false' : 'true');
+                this.playBtn.classList.remove('op-player__play--paused');
+                this.playBtn.setAttribute('aria-hidden', IS_ANDROID || IS_IOS ? 'false' : 'true');
             };
         }
 
