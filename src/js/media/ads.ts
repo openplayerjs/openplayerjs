@@ -413,6 +413,7 @@ class Ads {
         if (IS_IOS || IS_ANDROID) {
             this.element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
         }
+        this.element.removeEventListener('loadedmetadata', this.resizeAds.bind(this));
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         window.removeEventListener('resize', this.resizeAds.bind(this));
         this.adsContainer.remove();
