@@ -1680,11 +1680,9 @@ var Player = function () {
         };
 
         this.events.waiting = function () {
-          var el = _this3.activeElement();
-
           _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
+          _this3.loader.setAttribute('aria-hidden', 'false');
         };
 
         this.events.durationchange = function () {
@@ -1718,11 +1716,9 @@ var Player = function () {
         };
 
         this.events.play = function () {
-          var el = _this3.activeElement();
-
           _this3.playBtn.classList.add('op-player__play--paused');
 
-          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
+          _this3.loader.setAttribute('aria-hidden', constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
 
           setTimeout(function () {
             _this3.playBtn.setAttribute('aria-hidden', 'true');
@@ -1734,13 +1730,11 @@ var Player = function () {
         };
 
         this.events.pause = function () {
-          _this3.playBtn.classList.remove('op-player__play--paused');
-
           _this3.loader.setAttribute('aria-hidden', 'true');
 
-          var el = _this3.activeElement();
+          _this3.playBtn.classList.remove('op-player__play--paused');
 
-          _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
+          _this3.playBtn.setAttribute('aria-hidden', constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
         };
       }
 
@@ -7206,6 +7200,8 @@ var Ads = function () {
       this.adsContainer.tabIndex = -1;
       this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
       this.mediaSources = this.media.src;
+      var e = events_1.addEvent('waiting');
+      this.element.dispatchEvent(e);
       google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
       this.adDisplayContainer = new google.ima.AdDisplayContainer(this.adsContainer, this.element);
       this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
