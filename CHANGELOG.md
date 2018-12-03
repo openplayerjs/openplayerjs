@@ -48,23 +48,6 @@
 
 
 
-<a name="1.4.0"></a>
-# [1.4.0](https://github.com/openplayerjs/openplayerjs/compare/v1.3.4...v1.4.0) (2018-10-16)
-
-
-### Bug Fixes
-
-* **fullscreen:** Fixed issues related to non-standard methods for fullscreen ([6ee6bc5](https://github.com/openplayerjs/openplayerjs/commit/6ee6bc5))
-* **player:** Added default value when no options are passed to the player ([118bc63](https://github.com/openplayerjs/openplayerjs/commit/118bc63))
-
-
-### Features
-
-* **player:** Added ability to change labels as an effort to support localization ([ec60010](https://github.com/openplayerjs/openplayerjs/commit/ec60010))
-* **player:** Added new `playerdestroyed` event; added  workflow to detect live HLS streaming and display a `Live Broadcast` legend ([4e28dcd](https://github.com/openplayerjs/openplayerjs/commit/4e28dcd))
-
-
-
 <a name="1.3.4"></a>
 ## [1.3.4](https://github.com/openplayerjs/openplayerjs/compare/v1.3.3...v1.3.4) (2018-10-06)
 
