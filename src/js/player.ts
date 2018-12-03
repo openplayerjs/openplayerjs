@@ -707,6 +707,7 @@ class Player {
         if (isVideo(this.element)) {
             this.events.loadedmetadata = () => {
                 const el = this.activeElement();
+                this.loader.setAttribute('aria-hidden', 'true');
                 if (el.paused) {
                     this.playBtn.classList.remove('op-player__play--paused');
                     this.playBtn.setAttribute('aria-pressed', 'false');
@@ -716,11 +717,6 @@ class Player {
             this.events.waiting = () => {
                 this.playBtn.setAttribute('aria-hidden', 'true');
                 this.loader.setAttribute('aria-hidden', 'false');
-            };
-            this.events.durationchange = () => {
-                const el = this.activeElement();
-                this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', el instanceof Media || IS_ANDROID || IS_IOS ? 'false' : 'true');
             };
             this.events.canplay = () => {
                 this.playBtn.setAttribute('aria-hidden', 'true');

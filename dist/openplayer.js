@@ -1670,6 +1670,8 @@ var Player = function () {
         this.events.loadedmetadata = function () {
           var el = _this3.activeElement();
 
+          _this3.loader.setAttribute('aria-hidden', 'true');
+
           if (el.paused) {
             _this3.playBtn.classList.remove('op-player__play--paused');
 
@@ -1683,14 +1685,6 @@ var Player = function () {
           _this3.playBtn.setAttribute('aria-hidden', 'true');
 
           _this3.loader.setAttribute('aria-hidden', 'false');
-        };
-
-        this.events.durationchange = function () {
-          var el = _this3.activeElement();
-
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
-
-          _this3.loader.setAttribute('aria-hidden', el instanceof media_1.default || constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
         };
 
         this.events.canplay = function () {
