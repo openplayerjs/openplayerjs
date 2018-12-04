@@ -84,6 +84,6 @@
     "webpack-cli": "^3.0.8"
   },
   "dependencies": {
-    "deepmerge": "^2.2.1"
+    "deepmerge": "^3.0.0"
   }
 }
