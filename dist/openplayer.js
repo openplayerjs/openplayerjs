@@ -1317,7 +1317,7 @@ __webpack_require__(124);
 
 __webpack_require__(136);
 
-var deepmerge_1 = __webpack_require__(137);
+var deepmerge = __webpack_require__(137);
 
 __webpack_require__(138);
 
@@ -1379,7 +1379,7 @@ var Player = function () {
       this.fill = fill;
       this.autoplay = this.element.autoplay || false;
       this.volume = this.element.volume;
-      this.options = deepmerge_1.default(this.defaultOptions, options || {});
+      this.options = deepmerge(this.defaultOptions, options || {});
       this.element.autoplay = false;
     }
 
@@ -4272,10 +4272,13 @@ module.exports = function (target, src, safe) {
 
 /***/ }),
 /* 137 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
+(function (global, factory) {
+	 true ? module.exports = factory() :
+	undefined;
+}(this, (function () { 'use strict';
+
 var isMergeableObject = function isMergeableObject(value) {
 	return isNonNullObject(value)
 		&& !isSpecial(value)
@@ -4364,7 +4367,9 @@ deepmerge.all = function deepmergeAll(array, options) {
 
 var deepmerge_1 = deepmerge;
 
-/* harmony default export */ __webpack_exports__["default"] = (deepmerge_1);
+return deepmerge_1;
+
+})));
 
 
 /***/ }),
@@ -4801,10 +4806,12 @@ var Captions = function () {
           _this._hide();
 
           button.classList.remove('op-controls__captions--on');
+          button.setAttribute('data-active-captions', 'off');
         } else {
           _this._show();
 
           button.classList.add('op-controls__captions--on');
+          button.setAttribute('data-active-captions', _this.current.language);
         }
       };
 
