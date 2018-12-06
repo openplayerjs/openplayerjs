@@ -2,7 +2,7 @@ import 'core-js/es6/array';
 import 'core-js/es6/object';
 import 'core-js/es6/promise';
 import 'custom-event-polyfill';
-import merge from 'deepmerge';
+import * as deepmerge from 'deepmerge';
 import 'element-closest';
 import 'element-remove';
 
@@ -273,7 +273,7 @@ class Player {
             this.fill = fill;
             this.autoplay = this.element.autoplay || false;
             this.volume = this.element.volume;
-            this.options = merge(this.defaultOptions, options || {});
+            this.options = deepmerge(this.defaultOptions, options || {});
             this.element.autoplay = false;
         }
         return this;

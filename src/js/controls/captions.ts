@@ -237,9 +237,11 @@ class Captions implements PlayerComponent {
             if (hasClass(button, 'op-controls__captions--on')) {
                 this._hide();
                 button.classList.remove('op-controls__captions--on');
+                button.setAttribute('data-active-captions', 'off');
             } else {
                 this._show();
                 button.classList.add('op-controls__captions--on');
+                button.setAttribute('data-active-captions', this.current.language);
             }
         };
 
