@@ -44,7 +44,7 @@
     "conventional-changelog": "^3.0.5",
     "core-js": "^2.5.7",
     "coveralls": "^3.0.1",
-    "css-loader": "^1.0.0",
+    "css-loader": "^2.0.0",
     "cssnano": "^4.1.7",
     "custom-event-polyfill": "^1.0.6",
     "element-closest": "^2.0.2",
