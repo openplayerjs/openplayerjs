@@ -263,34 +263,34 @@
 
 /* === Buttons =================== */
 .op-controls__playpause:before {
-    content: '\E810';
+    content: '\e810';
 }
 .op-controls__playpause--pause:before {
-    content: '\E80D';
+    content: '\e80d';
 }
 .op-controls__playpause--replay:before {
-    content: '\E80C';
+    content: '\e80c';
 }
 .op-controls__fullscreen:before {
-    content: '\E811';
+    content: '\e811';
 }
 .op-controls__fullscreen--out:before {
-    content: '\E812';
+    content: '\e812';
 }
 .op-controls__mute:before {
-    content: '\E816';
+    content: '\e816';
 }
 .op-controls__mute--half:before {
-    content: '\E814';
+    content: '\e814';
 }
 .op-controls__mute--muted:before {
-    content: '\E815';
+    content: '\e815';
 }
 .op-controls__captions:before {
-    content: '\E809';
+    content: '\e809';
 }
 .op-controls__settings:before { 
-    content: '\E800'; 
+    content: '\e800'; 
 }
 
 /* === Settings =================== */
