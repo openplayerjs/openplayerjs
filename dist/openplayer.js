@@ -1529,16 +1529,19 @@ var Player = function () {
       var track = el.querySelector("track[srclang=\"".concat(args.srclang, "\"][kind=\"").concat(args.kind, "\"]"));
 
       if (track) {
-        track.remove();
+        track.src = args.src;
+        track.label = args.label;
+        track.default = args.default || null;
+      } else {
+        track = document.createElement('track');
+        track.srclang = args.srclang;
+        track.src = args.src;
+        track.kind = args.kind;
+        track.label = args.label;
+        track.default = args.default || null;
+        el.appendChild(track);
       }
 
-      track = document.createElement('track');
-      track.srclang = args.srclang;
-      track.src = args.src;
-      track.kind = args.kind;
-      track.label = args.label;
-      track.default = args.default || null;
-      el.appendChild(track);
       var e = events_1.addEvent('controlschanged');
       el.dispatchEvent(e);
     }
