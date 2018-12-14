@@ -1518,7 +1518,7 @@ var Player = function () {
     key: "addCaptions",
     value: function addCaptions(args) {
       if (args.default) {
-        var tracks = this.element.querySelectorAll('tracks');
+        var tracks = this.element.querySelectorAll('track');
 
         for (var i = 0, total = tracks.length; i < total; i++) {
           tracks[i].default = false;
@@ -1526,13 +1526,22 @@ var Player = function () {
       }
 
       var el = this.element;
-      var track = document.createElement('track');
-      track.srclang = args.srclang;
-      track.src = args.src;
-      track.kind = args.kind;
-      track.label = args.label;
-      track.default = args.default || null;
-      this.element.appendChild(track);
+      var track = el.querySelector("track[srclang=\"".concat(args.srclang, "\"][kind=\"").concat(args.kind, "\"]"));
+
+      if (track) {
+        track.src = args.src;
+        track.label = args.label;
+        track.default = args.default || null;
+      } else {
+        track = document.createElement('track');
+        track.srclang = args.srclang;
+        track.src = args.src;
+        track.kind = args.kind;
+        track.label = args.label;
+        track.default = args.default || null;
+        el.appendChild(track);
+      }
+
       var e = events_1.addEvent('controlschanged');
       el.dispatchEvent(e);
     }
