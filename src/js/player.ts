@@ -500,15 +500,18 @@ class Player {
         // If captions have been added previously, just update URL and default status
         let track = (el.querySelector(`track[srclang="${args.srclang}"][kind="${args.kind}"]`) as HTMLTrackElement);
         if (track) {
-            track.remove();
+            track.src = args.src;
+            track.label = args.label;
+            track.default = args.default || null;
+        } else {
+            track = document.createElement('track');
+            track.srclang = args.srclang;
+            track.src = args.src;
+            track.kind = args.kind;
+            track.label = args.label;
+            track.default = args.default || null;
+            el.appendChild(track);
         }
-        track = document.createElement('track');
-        track.srclang = args.srclang;
-        track.src = args.src;
-        track.kind = args.kind;
-        track.label = args.label;
-        track.default = args.default || null;
-        el.appendChild(track);
 
         const e = addEvent('controlschanged');
         el.dispatchEvent(e);
