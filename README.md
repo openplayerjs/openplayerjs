@@ -90,6 +90,8 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     // Number of seconds to rewind/forward media
     // (by default, player will rewind/forward 5% of the total duration of media)
     step,
+    // Initial volume of media in decimal numbers (by default, `1`)
+    startVolume,
     ads: {
         // Custom path/URL to IMA SDK
         url,
