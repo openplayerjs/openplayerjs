@@ -522,7 +522,7 @@ class Captions implements PlayerComponent {
      */
     private _prepareTrack(index: number, language: string, trackUrl: string, defaultTrack: boolean = false) {
         this.trackUrlList[language] = trackUrl;
-        this.trackList[index].mode = 'hidden';
+        this.trackList[index].mode = 'disabled';
         if (defaultTrack) {
             this.default = language;
             this.button.classList.add('op-controls__captions--on');
