@@ -578,6 +578,9 @@ class Ads {
                     if (!this.media.paused) {
                         this.media.pause();
                     }
+                    if (IS_IPHONE && isVideo(this.element)) {
+                        this.element.controls = false;
+                    }
                     this.element.parentElement.classList.add('op-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
@@ -804,6 +807,8 @@ class Ads {
         this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
         if (IS_IOS || IS_ANDROID) {
             this.media.src = this.mediaSources;
+            this.media.load();
+            this._prepareMedia();
         } else {
             const event = addEvent('loadedmetadata');
             this.element.dispatchEvent(event);
@@ -817,12 +822,9 @@ class Ads {
      * @memberof Ads
      */
     private _loadedMetadataHandler() {
-        if (this.media.currentTime === 0 || this.element.seekable.length) {
-            if (this.media.currentTime === 0 || this.element.seekable.end(0) > this.lastTimePaused) {
-                this.media.currentTime = this.lastTimePaused;
-                this.element.controls = !!(IS_IPHONE && isVideo(this.element));
-                this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-                this._resumeMedia();
+        if (this.element.seekable.length) {
+            if (this.element.seekable.end(0) > this.lastTimePaused) {
+                this._prepareMedia();
             }
         } else {
             setTimeout(this._loadedMetadataHandler.bind(this), 100);
@@ -885,6 +887,20 @@ class Ads {
             this.preloadContent = null;
         }
         this._requestAds();
+    }
+
+    /**
+     * Remove event for `loadedmetadata` and set the player to resume regular media.
+     *
+     * @memberof Ads
+     */
+    private _prepareMedia() {
+        if (IS_IPHONE && isVideo(this.element)) {
+            this.element.controls = true;
+        }
+        this.media.currentTime = this.lastTimePaused;
+        this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+        this._resumeMedia();
     }
 }
 
