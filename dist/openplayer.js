@@ -1697,7 +1697,7 @@ var Player = function () {
         };
 
         this.events.canplay = function () {
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
+          _this3.playBtn.setAttribute('aria-hidden', constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
 
           _this3.loader.setAttribute('aria-hidden', 'true');
         };
@@ -1721,7 +1721,7 @@ var Player = function () {
         this.events.play = function () {
           _this3.playBtn.classList.add('op-player__play--paused');
 
-          _this3.loader.setAttribute('aria-hidden', constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
+          _this3.loader.setAttribute('aria-hidden', 'true');
 
           setTimeout(function () {
             _this3.playBtn.setAttribute('aria-hidden', 'true');
@@ -7240,6 +7240,7 @@ var Ads = function () {
         if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
           this.preloadContent = this._contentLoadedAction;
           this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+          this.element.load();
         } else {
           this._contentLoadedAction();
         }
@@ -7468,6 +7469,7 @@ var Ads = function () {
           if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
             this.preloadContent = this._contentLoadedAction;
             this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+            this.element.load();
           } else {
             this._contentLoadedAction();
           }

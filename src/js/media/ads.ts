@@ -357,6 +357,7 @@ class Ads {
             if (IS_IOS || IS_ANDROID) {
                 this.preloadContent = this._contentLoadedAction;
                 this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+                this.element.load();
             } else {
                 this._contentLoadedAction();
             }
@@ -742,6 +743,7 @@ class Ads {
                 if (IS_IOS || IS_ANDROID) {
                     this.preloadContent = this._contentLoadedAction;
                     this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+                    this.element.load();
                 } else {
                     this._contentLoadedAction();
                 }
