@@ -5064,7 +5064,7 @@ var Captions = function () {
 
       var defaultTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       this.trackUrlList[language] = trackUrl;
-      this.trackList[index].mode = 'hidden';
+      this.trackList[index].mode = 'disabled';
 
       if (defaultTrack) {
         this.default = language;
@@ -7331,6 +7331,10 @@ var Ads = function () {
               this.media.pause();
             }
 
+            if (constants_1.IS_IPHONE && general_1.isVideo(this.element)) {
+              this.element.controls = false;
+            }
+
             this.element.parentElement.classList.add('op-ads--active');
             this.adsDuration = ad.getDuration();
             this.adsCurrentTime = ad.getDuration();
@@ -7518,6 +7522,9 @@ var Ads = function () {
 
       if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
         this.media.src = this.mediaSources;
+        this.media.load();
+
+        this._prepareMedia();
       } else {
         var event = events_1.addEvent('loadedmetadata');
         this.element.dispatchEvent(event);
@@ -7526,13 +7533,9 @@ var Ads = function () {
   }, {
     key: "_loadedMetadataHandler",
     value: function _loadedMetadataHandler() {
-      if (this.media.currentTime === 0 || this.element.seekable.length) {
-        if (this.media.currentTime === 0 || this.element.seekable.end(0) > this.lastTimePaused) {
-          this.media.currentTime = this.lastTimePaused;
-          this.element.controls = !!(constants_1.IS_IPHONE && general_1.isVideo(this.element));
-          this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-
-          this._resumeMedia();
+      if (this.element.seekable.length) {
+        if (this.element.seekable.end(0) > this.lastTimePaused) {
+          this._prepareMedia();
         }
       } else {
         setTimeout(this._loadedMetadataHandler.bind(this), 100);
@@ -7585,6 +7588,18 @@ var Ads = function () {
       }
 
       this._requestAds();
+    }
+  }, {
+    key: "_prepareMedia",
+    value: function _prepareMedia() {
+      if (constants_1.IS_IPHONE && general_1.isVideo(this.element)) {
+        this.element.controls = true;
+      }
+
+      this.media.currentTime = this.lastTimePaused;
+      this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+
+      this._resumeMedia();
     }
   }, {
     key: "playRequested",
