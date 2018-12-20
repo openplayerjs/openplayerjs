@@ -746,6 +746,7 @@ class Player {
             };
             this.events.play = () => {
                 this.playBtn.classList.add('op-player__play--paused');
+                this.playBtn.title = this.options.labels.pause;
                 this.loader.setAttribute('aria-hidden', 'true');
 
                 setTimeout(() => {
@@ -759,6 +760,7 @@ class Player {
                 this.loader.setAttribute('aria-hidden', 'true');
                 this.playBtn.classList.remove('op-player__play--paused');
                 this.playBtn.setAttribute('aria-hidden', IS_ANDROID || IS_IOS ? 'false' : 'true');
+                this.playBtn.title = this.options.labels.play;
             };
         }
 
