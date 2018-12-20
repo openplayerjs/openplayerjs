@@ -1,3 +1,32 @@
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/openplayerjs/openplayerjs/compare/v1.5.0...v1.6.0) (2018-12-20)
+
+
+### Bug Fixes
+
+* **ads:** Added `waiting` event to be dispatched while loading Ads; fixed conditionals to show/hide loader ([38fbe24](https://github.com/openplayerjs/openplayerjs/commit/38fbe24))
+* **ads:** Added missing call to initialize() method after an error occurred and having multiple Ads to play; added new event listener to resize Ads when media has been loaded ([cdef255](https://github.com/openplayerjs/openplayerjs/commit/cdef255))
+* **ads:** Added missing callback on mobile devices to load Ads correctly ([469559e](https://github.com/openplayerjs/openplayerjs/commit/469559e))
+* **ads:** Added missing workflow for mobile Ads to resume correctly media and display middle and postroll Ads correctly ([24ef925](https://github.com/openplayerjs/openplayerjs/commit/24ef925))
+* **ads:** Removed event listener once Ad has been destroyed ([89c982a](https://github.com/openplayerjs/openplayerjs/commit/89c982a))
+* **captions:** Added missing workflow to set the proper caption language as data-* attribute when clicking on Caption toggle button; fixed package import ([b4e7168](https://github.com/openplayerjs/openplayerjs/commit/b4e7168))
+* **controls:** Synced play event with timeout option to hide at the same time controls and play button ([31ed45b](https://github.com/openplayerjs/openplayerjs/commit/31ed45b))
+* **package:** update deepmerge to version 3.0.0 ([2f0eccf](https://github.com/openplayerjs/openplayerjs/commit/2f0eccf))
+* **player:** Added missing conditionals to allow big pause button to play video ([97ff19f](https://github.com/openplayerjs/openplayerjs/commit/97ff19f))
+* **player:** Added play event to hide control bar ([f7278f6](https://github.com/openplayerjs/openplayerjs/commit/f7278f6))
+* **player:** Added proper tooltip on play button when it is paused ([695c66c](https://github.com/openplayerjs/openplayerjs/commit/695c66c))
+* **player:** Changed `hidden` to `disabled` mode to avoid displaying native captions on MS Edge ([18de141](https://github.com/openplayerjs/openplayerjs/commit/18de141))
+* **player:** Fixed typo and added workflow to just update captions when track with same srclang and kind existed previously ([62e26fe](https://github.com/openplayerjs/openplayerjs/commit/62e26fe))
+* **player:** Refined workflow to update captions ([aa205a5](https://github.com/openplayerjs/openplayerjs/commit/aa205a5))
+* **player:** Removed unnecessary event workflow and added loader state in `loadedmetadata` event ([bd1c971](https://github.com/openplayerjs/openplayerjs/commit/bd1c971))
+
+
+### Features
+
+* **player:** Added new configuration element to set initial volume on media ([b349c5e](https://github.com/openplayerjs/openplayerjs/commit/b349c5e))
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/openplayerjs/openplayerjs/compare/v1.4.1...v1.5.0) (2018-11-20)
 
