@@ -1723,6 +1723,8 @@ var Player = function () {
         this.events.play = function () {
           _this3.playBtn.classList.add('op-player__play--paused');
 
+          _this3.playBtn.title = _this3.options.labels.pause;
+
           _this3.loader.setAttribute('aria-hidden', 'true');
 
           setTimeout(function () {
@@ -1740,6 +1742,8 @@ var Player = function () {
           _this3.playBtn.classList.remove('op-player__play--paused');
 
           _this3.playBtn.setAttribute('aria-hidden', constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
+
+          _this3.playBtn.title = _this3.options.labels.play;
         };
       }
 
