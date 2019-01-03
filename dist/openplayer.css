@@ -249,9 +249,6 @@
     -ms-touch-action: manipulation;
         touch-action: manipulation;
 }
-.op-controls input[type=range]::-ms-tooltip {
-    display: none;
-}
 
 /* === Time =================== */
 .op-controls > time {
@@ -396,6 +393,7 @@
 }
 .op-controls input[type='range'] {
     background: transparent;
+    padding: 0;
     -webkit-tap-highlight-color: transparent;
     z-index: 3;
 }
@@ -430,7 +428,6 @@
     -ms-user-select: none;
         user-select: none;
 }
-
 .op-controls input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
             appearance: none;
@@ -467,6 +464,13 @@
     position: relative;
     width: 12px;
 }
+.op-controls input[type='range']::-ms-tooltip {
+    display: none;
+}
+.op-controls input[type='range']::-ms-ticks-before,
+.op-controls input[type='range']::-ms-ticks-after {
+    background: transparent;
+}
 .op-controls--hidden .op-controls .op-controls__progress--seek::-webkit-slider-thumb {
     background: transparent;   
 }
@@ -490,6 +494,10 @@
     -webkit-box-flex: 2;
         -ms-flex-positive: 2;
             flex-grow: 2;
+}
+.op-controls > .op-controls__progress,
+.op-controls > .op-controls__progress:hover {
+    cursor: pointer;
 }
 .op-controls__progress,
 .op-controls__volume {
@@ -667,6 +675,9 @@
 .op-player video::-webkit-media-controls,
 .op-player video::-webkit-media-text-track-container { 
     display: none !important;
+}
+.op-player.op-player__ios--iphone video::-webkit-media-text-track-container { 
+    display: block !important;
 }
 
 /* == Captions =============== */
