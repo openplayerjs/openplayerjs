@@ -213,9 +213,6 @@
 .op-controls > button {
     touch-action: manipulation;
 }
-.op-controls input[type=range]::-ms-tooltip {
-    display: none;
-}
 
 /* === Time =================== */
 .op-controls > time {
@@ -350,6 +347,7 @@
 }
 .op-controls input[type='range'] {
     background: transparent;
+    padding: 0;
     -webkit-tap-highlight-color: transparent;
     z-index: 3;
 }
@@ -381,7 +379,6 @@
     height: 8px;
     user-select: none;
 }
-
 .op-controls input[type='range']::-webkit-slider-thumb {
     appearance: none;
     background: #fff;
@@ -415,6 +412,13 @@
     position: relative;
     width: 12px;
 }
+.op-controls input[type='range']::-ms-tooltip {
+    display: none;
+}
+.op-controls input[type='range']::-ms-ticks-before,
+.op-controls input[type='range']::-ms-ticks-after {
+    background: transparent;
+}
 .op-controls--hidden .op-controls .op-controls__progress--seek::-webkit-slider-thumb {
     background: transparent;   
 }
@@ -436,6 +440,10 @@
 }
 .op-controls > .op-controls__progress {
     flex-grow: 2;
+}
+.op-controls > .op-controls__progress,
+.op-controls > .op-controls__progress:hover {
+    cursor: pointer;
 }
 .op-controls__progress,
 .op-controls__volume {
@@ -597,6 +605,9 @@
 .op-player video::-webkit-media-controls,
 .op-player video::-webkit-media-text-track-container { 
     display: none !important;
+}
+.op-player.op-player__ios--iphone video::-webkit-media-text-track-container { 
+    display: block !important;
 }
 
 /* == Captions =============== */
