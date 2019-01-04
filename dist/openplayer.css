@@ -393,7 +393,8 @@
 }
 .op-controls input[type='range'] {
     background: transparent;
-    padding: 0;
+    height: 0;
+    padding: 2.5px 0;
     -webkit-tap-highlight-color: transparent;
     z-index: 3;
 }
@@ -467,9 +468,13 @@
 .op-controls input[type='range']::-ms-tooltip {
     display: none;
 }
-.op-controls input[type='range']::-ms-ticks-before,
-.op-controls input[type='range']::-ms-ticks-after {
+.op-controls input[type='range']::-ms-fill-lower,
+.op-controls input[type='range']::-ms-fill-upper {
     background: transparent;
+}
+.op-controls input[type='range']::-ms-ticks-before,
+.op-controls input[type='range']::-ms-ticks-after, {
+    display: none !important;
 }
 .op-controls--hidden .op-controls .op-controls__progress--seek::-webkit-slider-thumb {
     background: transparent;   
@@ -496,7 +501,9 @@
             flex-grow: 2;
 }
 .op-controls > .op-controls__progress,
-.op-controls > .op-controls__progress:hover {
+.op-controls > .op-controls__progress:hover,
+.op-controls > .op-controls__volume,
+.op-controls > .op-controls__volume:hover {
     cursor: pointer;
 }
 .op-controls__progress,
