@@ -6,6 +6,7 @@ import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
 import PlayerComponent from './interfaces/component';
+import ControlItem from './interfaces/control-item';
 import EventsList from './interfaces/events-list';
 import Player from './player';
 import { IS_ANDROID, IS_IOS } from './utils/constants';
@@ -114,10 +115,10 @@ class Controls implements PlayerComponent {
      * Storage for all the control elements.
      *
      * @private
-     * @type any[]
+     * @type any
      * @memberof Controls
      */
-    private items: any[];
+    private items: any;
 
     /**
      * Events that will be triggered in Controls element:
@@ -233,8 +234,14 @@ class Controls implements PlayerComponent {
 
         this.player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
 
-        this.items.forEach(item => {
-            item.destroy();
+        Object.keys(this.items).forEach((position: string) => {
+            this.items[position].forEach((item: any) => {
+                if (item.custom) {
+                    this._destroyCustomControl(item);
+                } else {
+                    item.destroy();
+                }
+            });
         });
 
         this.controls.remove();
@@ -300,19 +307,31 @@ class Controls implements PlayerComponent {
         this.volume = new Volume(this.player);
         this.captions = new Captions(this.player);
         this.settings = new Settings(this.player);
-        this.items = [
-            this.play,
-            this.time,
-            this.progress,
-            this.volume,
-            this.captions,
-            this.settings,
-        ];
+        this.items = {
+            left: [
+                this.play,
+                this.time,
+                this.volume,
+            ],
+            middle: [
+                this.progress,
+            ],
+            right: [
+                this.captions,
+                this.settings,
+            ],
+        };
 
         if (isVideo(this.player.getElement())) {
             this.fullscreen = new Fullscreen(this.player);
-            this.items.push(this.fullscreen);
+            this.items.right.push(this.fullscreen);
         }
+
+        const customItems = this.player.getCustomControls();
+        // Append the custom items
+        customItems.forEach(item => {
+            this.items[item.position].push(item);
+        });
     }
 
     /**
@@ -326,27 +345,67 @@ class Controls implements PlayerComponent {
      */
     private _buildElements(): void {
         // Loop controls to build them and register events
-        this.items.forEach(item => {
-            item.create();
+        Object.keys(this.items).forEach((position: string) => {
+            this.items[position].forEach((item: any) => {
+                if (item.custom) {
+                    this._createCustomControl(item);
+                } else {
+                    item.create();
+                }
+            });
         });
 
-        this.items.forEach(item => {
-            if (typeof item.addSettings === 'function') {
-                const menuItem = item.addSettings();
-                if (Object.keys(menuItem).length) {
-                    this.settings.addItem(
-                        menuItem.name,
-                        menuItem.key,
-                        menuItem.default,
-                        menuItem.subitems,
-                        menuItem.className,
-                    );
+        Object.keys(this.items).forEach((position: string) => {
+            this.items[position].forEach((item: any) => {
+                if (!item.custom && typeof item.addSettings === 'function') {
+                    const menuItem = item.addSettings();
+                    if (Object.keys(menuItem).length) {
+                        this.settings.addItem(
+                            menuItem.name,
+                            menuItem.key,
+                            menuItem.default,
+                            menuItem.subitems,
+                            menuItem.className,
+                        );
+                    }
                 }
-            }
+            });
         });
 
         const e = addEvent('controlschanged');
         this.controls.dispatchEvent(e);
+    }
+
+    /**
+     *
+     *
+     * @private
+     * @param {ControlItem} item
+     * @memberof Controls
+     */
+    private _createCustomControl(item: ControlItem): void {
+        const control = document.createElement('button');
+        const key = item.title.toLowerCase().replace(' ', '-');
+        control.className = `op-controls__${key}`;
+        control.tabIndex = 0;
+        control.title = item.title;
+        control.innerHTML = `<img src="${item.icon}"> <span class="op-sr">${item.title}</span>`;
+        control.addEventListener('click', item.click);
+        this.getContainer().appendChild(control);
+    }
+
+    /**
+     *
+     *
+     * @private
+     * @param {ControlItem} item
+     * @memberof Controls
+     */
+    private _destroyCustomControl(item: ControlItem): void {
+        const key = item.title.toLowerCase().replace(' ', '-');
+        const control = this.getContainer().querySelector(`.op-controls__${key}`);
+        control.removeEventListener('click', item.click);
+        control.remove();
     }
 }
 
