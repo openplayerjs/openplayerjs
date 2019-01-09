@@ -4672,16 +4672,15 @@ var Controls = function () {
         middle: [this.progress],
         right: [this.captions, this.settings]
       };
+      var customItems = this.player.getCustomControls();
+      customItems.forEach(function (item) {
+        _this4.items[item.position].push(item);
+      });
 
       if (general_1.isVideo(this.player.getElement())) {
         this.fullscreen = new fullscreen_1.default(this.player);
         this.items.right.push(this.fullscreen);
       }
-
-      var customItems = this.player.getCustomControls();
-      customItems.forEach(function (item) {
-        _this4.items[item.position].push(item);
-      });
     }
   }, {
     key: "_buildElements",
@@ -4720,7 +4719,6 @@ var Controls = function () {
       control.tabIndex = 0;
       control.title = item.title;
       control.innerHTML = "<img src=\"".concat(item.icon, "\"> <span class=\"op-sr\">").concat(item.title, "</span>");
-      control.style.maxHeight = '25px';
       control.addEventListener('click', item.click);
       this.getContainer().appendChild(control);
     }
