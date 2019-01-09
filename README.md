@@ -137,7 +137,7 @@ Method | Description
 `pause` | Pause media. If Ads are detected, different methods than the native ones are triggered with this operation.
 `load` | Load media. HLS and M(PEG)-DASH perform more operations during loading if browser does not support them natively.
 `addCaptions` | Append a new `<track>` tag to the video/audio tag and dispatch event so it gets registered/loaded in the player, via `controlschanged` event.
-`addControl` | Append a new button to the video/audio tag with the possibility dispatch a custom callback so it gets registered/loaded in the player, via `controlschanged` event.
+`addControl` | Append a new button to the video/audio tag with the possibility dispatch a custom callback so it gets registered/loaded in the player, via `controlschanged` event. It requires an object with `icon` URL/path, `title` for the button, the `position` (`right` or `left`) of the button and a `click` callback to dispatch an action.
 `destroy` | Destroy OpenMedia Player instance (including all events associated) and return the `video/audio` tag to its original state.
 `getAd` | Retrieve an instance of the `Ads` object.
 `getMedia` | Retrieve an instance of the `Media` object.
