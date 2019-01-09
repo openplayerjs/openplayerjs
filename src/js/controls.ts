@@ -322,16 +322,17 @@ class Controls implements PlayerComponent {
             ],
         };
 
+        // Append the custom items (if any)
+        const customItems = this.player.getCustomControls();
+        customItems.forEach(item => {
+            this.items[item.position].push(item);
+        });
+
+        // Make sure fullscreen is always the last one
         if (isVideo(this.player.getElement())) {
             this.fullscreen = new Fullscreen(this.player);
             this.items.right.push(this.fullscreen);
         }
-
-        const customItems = this.player.getCustomControls();
-        // Append the custom items
-        customItems.forEach(item => {
-            this.items[item.position].push(item);
-        });
     }
 
     /**
@@ -377,7 +378,7 @@ class Controls implements PlayerComponent {
     }
 
     /**
-     *
+     * Create a button for custom control items and activate `click` event on it.
      *
      * @private
      * @param {ControlItem} item
@@ -395,7 +396,7 @@ class Controls implements PlayerComponent {
     }
 
     /**
-     *
+     * Remove a custom control button and deactivate `click` event on it.
      *
      * @private
      * @param {ControlItem} item
