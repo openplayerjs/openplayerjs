@@ -2,6 +2,7 @@
     var sourcesSelector = document.querySelectorAll('select[name=sources]');
     var destroyBtn = document.querySelectorAll('button.destroy-player');
     var captionBtn = document.querySelectorAll('button.load-caption');
+    var controlBtn = document.querySelectorAll('button.add-control');
     var players = document.querySelectorAll('.op-player__media');
     var instances = [];
 
@@ -55,6 +56,20 @@
         this.removeEventListener('click', loadCaption);
     }
 
+    function addControl() {
+        var id = this.closest('.players').querySelector('.op-player').id;
+        var player = OpenPlayer.instances[id];
+        player.addControl({
+            icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Love_Heart_SVG.svg/32px-Love_Heart_SVG.svg.png',
+            title: 'Test',
+            position: 'right',
+            click: function() {
+                alert('You clicked the new ' + id + ' control');
+            }
+        });
+        this.removeEventListener('click', addControl);
+    }
+
     for (var i = 0, total = sourcesSelector.length; i < total; i++) {
         sourcesSelector[i].addEventListener('change', loadMedia);
     }
@@ -64,6 +79,9 @@
     }
     for (var i = 0, total = captionBtn.length; i < total; i++) {
         captionBtn[i].addEventListener('click', loadCaption);
+    }
+    for (var i = 0, total = controlBtn.length; i < total; i++) {
+        controlBtn[i].addEventListener('click', addControl);
     }
 
     instances[1].getElement().addEventListener('hlsFragParsingMetadata', function (event) {

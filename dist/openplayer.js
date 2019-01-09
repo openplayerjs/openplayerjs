@@ -1344,6 +1344,7 @@ var Player = function () {
     this.events = {};
     this.autoplay = false;
     this.processedAutoplay = false;
+    this.customControlItems = [];
     this.defaultOptions = {
       hidePlayBtnTimer: 350,
       labels: {
@@ -1477,6 +1478,11 @@ var Player = function () {
       return this.controls;
     }
   }, {
+    key: "getCustomControls",
+    value: function getCustomControls() {
+      return this.customControlItems;
+    }
+  }, {
     key: "getElement",
     value: function getElement() {
       return this.element;
@@ -1546,6 +1552,14 @@ var Player = function () {
 
       var e = events_1.addEvent('controlschanged');
       el.dispatchEvent(e);
+    }
+  }, {
+    key: "addControl",
+    value: function addControl(args) {
+      args.custom = true;
+      this.customControlItems.push(args);
+      var e = events_1.addEvent('controlschanged');
+      this.element.dispatchEvent(e);
     }
   }, {
     key: "_isValid",
@@ -4594,8 +4608,14 @@ var Controls = function () {
       }
 
       this.player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
-      this.items.forEach(function (item) {
-        item.destroy();
+      Object.keys(this.items).forEach(function (position) {
+        _this2.items[position].forEach(function (item) {
+          if (item.custom) {
+            _this2._destroyCustomControl(item);
+          } else {
+            item.destroy();
+          }
+        });
       });
       this.controls.remove();
     }
@@ -4639,38 +4659,80 @@ var Controls = function () {
   }, {
     key: "_setElements",
     value: function _setElements() {
+      var _this4 = this;
+
       this.play = new play_1.default(this.player);
       this.time = new time_1.default(this.player);
       this.progress = new progress_1.default(this.player);
       this.volume = new volume_1.default(this.player);
       this.captions = new captions_1.default(this.player);
       this.settings = new settings_1.default(this.player);
-      this.items = [this.play, this.time, this.progress, this.volume, this.captions, this.settings];
+      this.items = {
+        left: [this.play, this.time, this.volume],
+        middle: [this.progress],
+        right: [this.captions, this.settings]
+      };
+      var customItems = this.player.getCustomControls();
+      customItems.forEach(function (item) {
+        if (item.position === 'right') {
+          _this4.items[item.position].unshift(item);
+        } else {
+          _this4.items[item.position].push(item);
+        }
+      });
 
       if (general_1.isVideo(this.player.getElement())) {
         this.fullscreen = new fullscreen_1.default(this.player);
-        this.items.push(this.fullscreen);
+        this.items.right.push(this.fullscreen);
       }
     }
   }, {
     key: "_buildElements",
     value: function _buildElements() {
-      var _this4 = this;
+      var _this5 = this;
 
-      this.items.forEach(function (item) {
-        item.create();
-      });
-      this.items.forEach(function (item) {
-        if (typeof item.addSettings === 'function') {
-          var menuItem = item.addSettings();
-
-          if (Object.keys(menuItem).length) {
-            _this4.settings.addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems, menuItem.className);
+      Object.keys(this.items).forEach(function (position) {
+        _this5.items[position].forEach(function (item) {
+          if (item.custom) {
+            _this5._createCustomControl(item);
+          } else {
+            item.create();
           }
-        }
+        });
+      });
+      Object.keys(this.items).forEach(function (position) {
+        _this5.items[position].forEach(function (item) {
+          if (!item.custom && typeof item.addSettings === 'function') {
+            var menuItem = item.addSettings();
+
+            if (Object.keys(menuItem).length) {
+              _this5.settings.addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems, menuItem.className);
+            }
+          }
+        });
       });
       var e = events_1.addEvent('controlschanged');
       this.controls.dispatchEvent(e);
+    }
+  }, {
+    key: "_createCustomControl",
+    value: function _createCustomControl(item) {
+      var control = document.createElement('button');
+      var key = item.title.toLowerCase().replace(' ', '-');
+      control.className = "op-controls__".concat(key, " op-control__").concat(item.position);
+      control.tabIndex = 0;
+      control.title = item.title;
+      control.innerHTML = "<img src=\"".concat(item.icon, "\"> <span class=\"op-sr\">").concat(item.title, "</span>");
+      control.addEventListener('click', item.click);
+      this.getContainer().appendChild(control);
+    }
+  }, {
+    key: "_destroyCustomControl",
+    value: function _destroyCustomControl(item) {
+      var key = item.title.toLowerCase().replace(' ', '-');
+      var control = this.getContainer().querySelector(".op-controls__".concat(key));
+      control.removeEventListener('click', item.click);
+      control.remove();
     }
   }]);
 
