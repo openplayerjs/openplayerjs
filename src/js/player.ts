@@ -8,6 +8,7 @@ import 'element-remove';
 
 import Controls from './controls';
 import Track from './interfaces/captions/track';
+import ControlItem from './interfaces/control-item';
 import CustomMedia from './interfaces/custom-media';
 import EventsList from './interfaces/events-list';
 import PlayerInstanceList from './interfaces/instance';
@@ -221,6 +222,15 @@ class Player {
     private options: PlayerOptions;
 
     /**
+     * List of custom controls.
+     *
+     * @private
+     * @type ControlItem[]
+     * @memberof Player
+     */
+    private customControlItems: ControlItem[] = [];
+
+    /**
      * Default configuration for player.
      *
      * @private
@@ -402,6 +412,16 @@ class Player {
     }
 
     /**
+     * Retrieve an instance of the custom controls invoked in the player instance.
+     *
+     * @returns {ControlItem[]}
+     * @memberof Player
+     */
+    public getCustomControls(): ControlItem[] {
+        return this.customControlItems;
+    }
+
+    /**
      * Retrieve the original video/audio tag.
      *
      * This element is useful to attach different events in other player's components.
@@ -517,6 +537,19 @@ class Player {
 
         const e = addEvent('controlschanged');
         el.dispatchEvent(e);
+    }
+
+    /**
+     * Add new custom control to the list to be rendered.
+     *
+     * @param {ControlItem} args
+     * @memberof Player
+     */
+    public addControl(args: ControlItem): void {
+        args.custom = true;
+        this.customControlItems.push(args);
+        const e = addEvent('controlschanged');
+        this.element.dispatchEvent(e);
     }
 
     /**
