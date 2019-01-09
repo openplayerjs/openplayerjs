@@ -4674,7 +4674,11 @@ var Controls = function () {
       };
       var customItems = this.player.getCustomControls();
       customItems.forEach(function (item) {
-        _this4.items[item.position].push(item);
+        if (item.position === 'right') {
+          _this4.items[item.position].unshift(item);
+        } else {
+          _this4.items[item.position].push(item);
+        }
       });
 
       if (general_1.isVideo(this.player.getElement())) {
@@ -4715,7 +4719,7 @@ var Controls = function () {
     value: function _createCustomControl(item) {
       var control = document.createElement('button');
       var key = item.title.toLowerCase().replace(' ', '-');
-      control.className = "op-controls__".concat(key);
+      control.className = "op-controls__".concat(key, " op-control__").concat(item.position);
       control.tabIndex = 0;
       control.title = item.title;
       control.innerHTML = "<img src=\"".concat(item.icon, "\"> <span class=\"op-sr\">").concat(item.title, "</span>");
