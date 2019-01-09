@@ -62,7 +62,7 @@
         player.addControl({
             icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Love_Heart_SVG.svg/32px-Love_Heart_SVG.svg.png',
             title: 'Test',
-            position: 'left',
+            position: 'right',
             click: function() {
                 alert('You clicked the new ' + id + ' control');
             }

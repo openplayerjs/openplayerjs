@@ -322,10 +322,16 @@ class Controls implements PlayerComponent {
             ],
         };
 
-        // Append the custom items (if any)
+        // Append/prepend the custom items (if any) depending on their position:
+        // If position is right, always prepend so Settings and Fullscreen are the last items;
+        // otherwise, append new controls
         const customItems = this.player.getCustomControls();
         customItems.forEach(item => {
-            this.items[item.position].push(item);
+            if (item.position === 'right') {
+                this.items[item.position].unshift(item);
+            } else {
+                this.items[item.position].push(item);
+            }
         });
 
         // Make sure fullscreen is always the last one
@@ -387,7 +393,7 @@ class Controls implements PlayerComponent {
     private _createCustomControl(item: ControlItem): void {
         const control = document.createElement('button');
         const key = item.title.toLowerCase().replace(' ', '-');
-        control.className = `op-controls__${key}`;
+        control.className = `op-controls__${key} op-control__${item.position}`;
         control.tabIndex = 0;
         control.title = item.title;
         control.innerHTML = `<img src="${item.icon}"> <span class="op-sr">${item.title}</span>`;
