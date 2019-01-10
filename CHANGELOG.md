@@ -1,3 +1,21 @@
+<a name="1.7.0"></a>
+# [1.7.0](https://github.com/openplayerjs/openplayerjs/compare/v1.6.0...v1.7.0) (2019-01-10)
+
+
+### Bug Fixes
+
+* **controls:** Added new class to indicate position of the custom controls; ensured that all items in right position are prepended rather than appended ([1c6d9c9](https://github.com/openplayerjs/openplayerjs/commit/1c6d9c9))
+* **controls:** Ensured that fullscreen is the last icon on the control bar; added missing documentation ([0c02477](https://github.com/openplayerjs/openplayerjs/commit/0c02477))
+* **css:** Added new styles to fix issues in IE11 and display captions on iOS properly when not using `playsinline` attribute ([5412b7e](https://github.com/openplayerjs/openplayerjs/commit/5412b7e))
+* **css:** Adjusted styles to remove ticks in IE11 and added missing CSS property on volume bar ([2e00891](https://github.com/openplayerjs/openplayerjs/commit/2e00891))
+
+
+### Features
+
+* **player:** Added new `addControl` callback to append new control items, and modified class to auto generate custom control items based on the properties passed; updated demo file to show new capability ([2234f4d](https://github.com/openplayerjs/openplayerjs/commit/2234f4d))
+
+
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/openplayerjs/openplayerjs/compare/v1.5.0...v1.6.0) (2018-12-20)
 

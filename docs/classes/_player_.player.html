@@ -112,6 +112,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_player_.player.html#canautoplay" class="tsd-kind-icon">can<wbr>Autoplay</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_player_.player.html#canautoplaymuted" class="tsd-kind-icon">can<wbr>Autoplay<wbr>Muted</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_player_.player.html#controls" class="tsd-kind-icon">controls</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_player_.player.html#customcontrolitems" class="tsd-kind-icon">custom<wbr>Control<wbr>Items</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_player_.player.html#element" class="tsd-kind-icon">element</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_player_.player.html#events" class="tsd-kind-icon">events</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_player_.player.html#fill" class="tsd-kind-icon">fill</a></li>
@@ -146,10 +147,12 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_player_.player.html#_wrapinstance" class="tsd-kind-icon">_wrap<wbr>Instance</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#activeelement" class="tsd-kind-icon">active<wbr>Element</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#addcaptions" class="tsd-kind-icon">add<wbr>Captions</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#addcontrol" class="tsd-kind-icon">add<wbr>Control</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#destroy" class="tsd-kind-icon">destroy</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#getad" class="tsd-kind-icon">get<wbr>Ad</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#getcontainer" class="tsd-kind-icon">get<wbr>Container</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#getcontrols" class="tsd-kind-icon">get<wbr>Controls</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#getcustomcontrols" class="tsd-kind-icon">get<wbr>Custom<wbr>Controls</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#getelement" class="tsd-kind-icon">get<wbr>Element</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#getevents" class="tsd-kind-icon">get<wbr>Events</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_player_.player.html#getmedia" class="tsd-kind-icon">get<wbr>Media</a></li>
@@ -186,7 +189,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L258">player.ts:258</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L268">player.ts:268</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -247,7 +250,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L129">player.ts:129</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L130">player.ts:130</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -273,7 +276,7 @@
 					<div class="tsd-signature tsd-kind-icon">ads<wbr>Instance<span class="tsd-signature-symbol">:</span> <a href="_media_ads_.ads.html" class="tsd-signature-type">Ads</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L96">player.ts:96</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L97">player.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -296,7 +299,7 @@
 					<div class="tsd-signature tsd-kind-icon">autoplay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L174">player.ts:174</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L175">player.ts:175</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -322,7 +325,7 @@
 					<div class="tsd-signature tsd-kind-icon">can<wbr>Autoplay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L193">player.ts:193</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L194">player.ts:194</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -348,7 +351,7 @@
 					<div class="tsd-signature tsd-kind-icon">can<wbr>Autoplay<wbr>Muted<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L203">player.ts:203</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L204">player.ts:204</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -375,7 +378,7 @@
 					<div class="tsd-signature tsd-kind-icon">controls<span class="tsd-signature-symbol">:</span> <a href="_controls_.controls.html" class="tsd-signature-type">Controls</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L88">player.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L89">player.ts:89</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -393,12 +396,35 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="customcontrolitems" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> custom<wbr>Control<wbr>Items</h3>
+					<div class="tsd-signature tsd-kind-icon">custom<wbr>Control<wbr>Items<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interfaces_control_item_.controlitem.html" class="tsd-signature-type">ControlItem</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L231">player.ts:231</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>List of custom controls.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>type</dt>
+							<dd><p>ControlItem[]</p>
+							</dd>
+							<dt>memberof</dt>
+							<dd><p>Player</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="element" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> element</h3>
 					<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLMediaElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L120">player.ts:120</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L121">player.ts:121</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -421,7 +447,7 @@
 					<div class="tsd-signature tsd-kind-icon">events<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interfaces_events_list_.eventslist.html" class="tsd-signature-type">EventsList</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L165">player.ts:165</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L166">player.ts:166</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -445,7 +471,7 @@
 					<div class="tsd-signature tsd-kind-icon">fill<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L139">player.ts:139</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L140">player.ts:140</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -469,7 +495,7 @@
 					<div class="tsd-signature tsd-kind-icon">loader<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLSpanElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L156">player.ts:156</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L157">player.ts:157</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -493,7 +519,7 @@
 					<div class="tsd-signature tsd-kind-icon">media<span class="tsd-signature-symbol">:</span> <a href="_media_.media.html" class="tsd-signature-type">Media</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L147">player.ts:147</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L148">player.ts:148</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -516,7 +542,7 @@
 					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interfaces_player_options_.playeroptions.html" class="tsd-signature-type">PlayerOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L221">player.ts:221</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L222">player.ts:222</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -539,7 +565,7 @@
 					<div class="tsd-signature tsd-kind-icon">play<wbr>Btn<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLButtonElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L104">player.ts:104</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L105">player.ts:105</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -562,7 +588,7 @@
 					<div class="tsd-signature tsd-kind-icon">processed<wbr>Autoplay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L212">player.ts:212</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L213">player.ts:213</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -588,7 +614,7 @@
 					<div class="tsd-signature tsd-kind-icon">uid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L112">player.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L113">player.ts:113</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -611,7 +637,7 @@
 					<div class="tsd-signature tsd-kind-icon">volume<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L184">player.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L185">player.ts:185</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -638,7 +664,7 @@
 					<div class="tsd-signature tsd-kind-icon">instances<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interfaces_instance_.playerinstancelist.html" class="tsd-signature-type">PlayerInstanceList</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L37">player.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L38">player.ts:38</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -668,7 +694,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L552">player.ts:552</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L585">player.ts:585</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -701,7 +727,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L541">player.ts:541</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L574">player.ts:574</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -724,7 +750,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L527">player.ts:527</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L560">player.ts:560</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -760,7 +786,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L838">player.ts:838</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L871">player.ts:871</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -792,7 +818,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L622">player.ts:622</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L655">player.ts:655</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -819,7 +845,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L678">player.ts:678</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L711">player.ts:711</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -847,7 +873,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L658">player.ts:658</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L691">player.ts:691</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -874,7 +900,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L897">player.ts:897</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L930">player.ts:930</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -905,7 +931,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L565">player.ts:565</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L598">player.ts:598</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -934,7 +960,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L635">player.ts:635</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L668">player.ts:668</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -961,7 +987,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L718">player.ts:718</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L751">player.ts:751</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -989,7 +1015,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L590">player.ts:590</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L623">player.ts:623</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1017,7 +1043,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L442">player.ts:442</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L462">player.ts:462</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1047,7 +1073,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L492">player.ts:492</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L512">player.ts:512</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1072,6 +1098,39 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="addcontrol" class="tsd-anchor"></a>
+					<h3>add<wbr>Control</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Control<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_control_item_.controlitem.html" class="tsd-signature-type">ControlItem</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L548">player.ts:548</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Add new custom control to the list to be rendered.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>memberof</dt>
+									<dd><p>Player</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>args: <a href="../interfaces/_interfaces_control_item_.controlitem.html" class="tsd-signature-type">ControlItem</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="destroy" class="tsd-anchor"></a>
 					<h3>destroy</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1081,7 +1140,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L349">player.ts:349</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L359">player.ts:359</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1109,7 +1168,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L482">player.ts:482</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L502">player.ts:502</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1136,7 +1195,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L389">player.ts:389</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L399">player.ts:399</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1165,7 +1224,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L400">player.ts:400</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L410">player.ts:410</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1184,6 +1243,33 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getcustomcontrols" class="tsd-anchor"></a>
+					<h3>get<wbr>Custom<wbr>Controls</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Custom<wbr>Controls<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_control_item_.controlitem.html" class="tsd-signature-type">ControlItem</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L420">player.ts:420</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieve an instance of the custom controls invoked in the player instance.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>memberof</dt>
+									<dd><p>Player</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_interfaces_control_item_.controlitem.html" class="tsd-signature-type">ControlItem</a><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="getelement" class="tsd-anchor"></a>
 					<h3>get<wbr>Element</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1193,7 +1279,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L411">player.ts:411</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L431">player.ts:431</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1221,7 +1307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L422">player.ts:422</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L442">player.ts:442</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1249,7 +1335,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L472">player.ts:472</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L492">player.ts:492</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1276,7 +1362,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L432">player.ts:432</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L452">player.ts:452</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1303,7 +1389,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L291">player.ts:291</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L301">player.ts:301</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1332,7 +1418,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L462">player.ts:462</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L482">player.ts:482</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1359,7 +1445,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L452">player.ts:452</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L472">player.ts:472</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1386,7 +1472,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L309">player.ts:309</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L319">player.ts:319</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1414,7 +1500,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L335">player.ts:335</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L345">player.ts:345</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1442,7 +1528,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L321">player.ts:321</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L331">player.ts:331</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1470,7 +1556,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L76">player.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L77">player.ts:77</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1542,7 +1628,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L56">player.ts:56</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L57">player.ts:57</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1568,7 +1654,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L230">player.ts:230</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L240">player.ts:240</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1590,7 +1676,7 @@
 						<div class="tsd-signature tsd-kind-icon">hide<wbr>Play<wbr>Btn<wbr>Timer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;350</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L231">player.ts:231</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L241">player.ts:241</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1600,7 +1686,7 @@
 						<div class="tsd-signature tsd-kind-icon">start<wbr>Volume<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;1</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L256">player.ts:256</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L266">player.ts:266</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1610,7 +1696,7 @@
 						<div class="tsd-signature tsd-kind-icon">step<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;0</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L257">player.ts:257</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L267">player.ts:267</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1620,7 +1706,7 @@
 						<div class="tsd-signature tsd-kind-icon">labels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L232">player.ts:232</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L242">player.ts:242</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1629,7 +1715,7 @@
 							<div class="tsd-signature tsd-kind-icon">captions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;CC/Subtitles&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L233">player.ts:233</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L243">player.ts:243</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1639,7 +1725,7 @@
 							<div class="tsd-signature tsd-kind-icon">click<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Click to unmute&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L234">player.ts:234</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L244">player.ts:244</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1649,7 +1735,7 @@
 							<div class="tsd-signature tsd-kind-icon">fullscreen<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Fullscreen&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L235">player.ts:235</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L245">player.ts:245</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1659,7 +1745,7 @@
 							<div class="tsd-signature tsd-kind-icon">live<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Live Broadcast&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L239">player.ts:239</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L249">player.ts:249</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1669,7 +1755,7 @@
 							<div class="tsd-signature tsd-kind-icon">mute<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Mute&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L240">player.ts:240</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L250">player.ts:250</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1679,7 +1765,7 @@
 							<div class="tsd-signature tsd-kind-icon">off<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Off&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L241">player.ts:241</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L251">player.ts:251</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1689,7 +1775,7 @@
 							<div class="tsd-signature tsd-kind-icon">pause<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Pause&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L242">player.ts:242</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L252">player.ts:252</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1699,7 +1785,7 @@
 							<div class="tsd-signature tsd-kind-icon">play<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Play&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L243">player.ts:243</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L253">player.ts:253</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1709,7 +1795,7 @@
 							<div class="tsd-signature tsd-kind-icon">progress<wbr>Rail<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Time Rail&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L244">player.ts:244</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L254">player.ts:254</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1719,7 +1805,7 @@
 							<div class="tsd-signature tsd-kind-icon">progress<wbr>Slider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Time Slider&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L245">player.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L255">player.ts:255</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1729,7 +1815,7 @@
 							<div class="tsd-signature tsd-kind-icon">settings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Player Settings&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L246">player.ts:246</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L256">player.ts:256</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1739,7 +1825,7 @@
 							<div class="tsd-signature tsd-kind-icon">speed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Speed&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L247">player.ts:247</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L257">player.ts:257</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1749,7 +1835,7 @@
 							<div class="tsd-signature tsd-kind-icon">speed<wbr>Normal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Normal&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L248">player.ts:248</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L258">player.ts:258</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1759,7 +1845,7 @@
 							<div class="tsd-signature tsd-kind-icon">tap<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Tap to unmute&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L249">player.ts:249</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L259">player.ts:259</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1769,7 +1855,7 @@
 							<div class="tsd-signature tsd-kind-icon">toggle<wbr>Captions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Toggle Captions&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L250">player.ts:250</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L260">player.ts:260</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1779,7 +1865,7 @@
 							<div class="tsd-signature tsd-kind-icon">unmute<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Unmute&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L251">player.ts:251</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L261">player.ts:261</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1789,7 +1875,7 @@
 							<div class="tsd-signature tsd-kind-icon">volume<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Volume&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L252">player.ts:252</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L262">player.ts:262</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1799,7 +1885,7 @@
 							<div class="tsd-signature tsd-kind-icon">volume<wbr>Control<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Volume Control&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L253">player.ts:253</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L263">player.ts:263</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1809,7 +1895,7 @@
 							<div class="tsd-signature tsd-kind-icon">volume<wbr>Slider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;Volume Slider&quot;</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L254">player.ts:254</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L264">player.ts:264</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1819,7 +1905,7 @@
 							<div class="tsd-signature tsd-kind-icon">lang<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L236">player.ts:236</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L246">player.ts:246</a></li>
 								</ul>
 							</aside>
 							<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
@@ -1828,7 +1914,7 @@
 								<div class="tsd-signature tsd-kind-icon">en<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;English&quot;</span></div>
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L237">player.ts:237</a></li>
+										<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L247">player.ts:247</a></li>
 									</ul>
 								</aside>
 							</section>
@@ -1841,7 +1927,7 @@
 					<div class="tsd-signature tsd-kind-icon">custom<wbr>Media<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L45">player.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L46">player.ts:46</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1863,7 +1949,7 @@
 						<div class="tsd-signature tsd-kind-icon">media<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L46">player.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L47">player.ts:47</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1878,7 +1964,7 @@
 						<div class="tsd-signature tsd-kind-icon">options<wbr>Key<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L47">player.ts:47</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L48">player.ts:48</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1893,7 +1979,7 @@
 						<div class="tsd-signature tsd-kind-icon">rules<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/cd9dab0/src/js/player.ts#L48">player.ts:48</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/player.ts#L49">player.ts:49</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1938,6 +2024,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_player_.player.html#controls" class="tsd-kind-icon">controls</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_player_.player.html#customcontrolitems" class="tsd-kind-icon">custom<wbr>Control<wbr>Items</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_player_.player.html#element" class="tsd-kind-icon">element</a>
@@ -2012,6 +2101,9 @@
 								<a href="_player_.player.html#addcaptions" class="tsd-kind-icon">add<wbr>Captions</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_player_.player.html#addcontrol" class="tsd-kind-icon">add<wbr>Control</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_player_.player.html#destroy" class="tsd-kind-icon">destroy</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -2022,6 +2114,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_player_.player.html#getcontrols" class="tsd-kind-icon">get<wbr>Controls</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_player_.player.html#getcustomcontrols" class="tsd-kind-icon">get<wbr>Custom<wbr>Controls</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_player_.player.html#getelement" class="tsd-kind-icon">get<wbr>Element</a>

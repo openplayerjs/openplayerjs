@@ -182,6 +182,10 @@ player.init();</code></pre>
 							<td>Append a new <code>&lt;track&gt;</code> tag to the video/audio tag and dispatch event so it gets registered/loaded in the player, via <code>controlschanged</code> event.</td>
 						</tr>
 						<tr>
+							<td><code>addControl</code></td>
+							<td>Append a new button to the video/audio tag with the possibility dispatch a custom callback so it gets registered/loaded in the player, via <code>controlschanged</code> event. It requires an object with <code>icon</code> URL/path, <code>title</code> for the button, the <code>position</code> (<code>right</code> or <code>left</code>) of the button and a <code>click</code> callback to dispatch an action.</td>
+						</tr>
+						<tr>
 							<td><code>destroy</code></td>
 							<td>Destroy OpenMedia Player instance (including all events associated) and return the <code>video/audio</code> tag to its original state.</td>
 						</tr>
@@ -382,6 +386,9 @@ player.getElement().dispatchEvent(event);</code></pre>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_component_.html">"interfaces/component"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_control_item_.html">"interfaces/control-<wbr>item"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_custom_media_.html">"interfaces/custom-<wbr>media"</a>

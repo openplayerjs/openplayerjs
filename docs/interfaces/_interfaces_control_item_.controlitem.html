@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Track | openplayerjs</title>
+	<title>ControlItem | openplayerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_interfaces_captions_track_.html">&quot;interfaces/captions/track&quot;</a>
+					<a href="../modules/_interfaces_control_item_.html">&quot;interfaces/control-item&quot;</a>
 				</li>
 				<li>
-					<a href="_interfaces_captions_track_.track.html">Track</a>
+					<a href="_interfaces_control_item_.controlitem.html">ControlItem</a>
 				</li>
 			</ul>
-			<h1>Interface Track</h1>
+			<h1>Interface ControlItem</h1>
 		</div>
 	</div>
 </header>
@@ -72,14 +72,14 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Track</p>
+						<p>Control item</p>
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>description</dt>
-						<dd><p>An object that mimics the <code>track</code> tag attributes.</p>
+						<dd><p>An object that stores the definition for custom controls</p>
 						</dd>
 						<dt>interface</dt>
-						<dd><p>Track</p>
+						<dd><p>ControlItem</p>
 						</dd>
 						<dt>export</dt>
 						<dd></dd>
@@ -90,7 +90,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Track</span>
+						<span class="target">ControlItem</span>
 					</li>
 				</ul>
 			</section>
@@ -101,11 +101,16 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_captions_track_.track.html#default" class="tsd-kind-icon">default</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_captions_track_.track.html#kind" class="tsd-kind-icon">kind</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_captions_track_.track.html#label" class="tsd-kind-icon">label</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_captions_track_.track.html#src" class="tsd-kind-icon">src</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_captions_track_.track.html#srclang" class="tsd-kind-icon">srclang</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_control_item_.controlitem.html#custom" class="tsd-kind-icon">custom</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_control_item_.controlitem.html#icon" class="tsd-kind-icon">icon</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_control_item_.controlitem.html#position" class="tsd-kind-icon">position</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_control_item_.controlitem.html#title" class="tsd-kind-icon">title</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_interfaces_control_item_.controlitem.html#click" class="tsd-kind-icon">click</a></li>
 							</ul>
 						</section>
 					</div>
@@ -114,133 +119,114 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="default" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> default</h3>
-					<div class="tsd-signature tsd-kind-icon">default<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="custom" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> custom</h3>
+					<div class="tsd-signature tsd-kind-icon">custom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/captions/track.ts#L56">interfaces/captions/track.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/control-item.ts#L32">interfaces/control-item.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Flag to indicate if player should display track&#39;s content initially or not.</p>
+							<p>Flag to indicate is a custom control</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>type</dt>
 							<dd><p>boolean</p>
 							</dd>
-							<dt>memberof</dt>
-							<dd><p>Track</p>
-							</dd>
 						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="kind" class="tsd-anchor"></a>
-					<h3>kind</h3>
-					<div class="tsd-signature tsd-kind-icon">kind<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="icon" class="tsd-anchor"></a>
+					<h3>icon</h3>
+					<div class="tsd-signature tsd-kind-icon">icon<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/captions/track.ts#L39">interfaces/captions/track.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/control-item.ts#L14">interfaces/control-item.ts:14</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Type of track.</p>
-						</div>
-						<p>Possible values (although, OpenPlayer only supports the first one):</p>
-						<ul>
-							<li><code>subtitles</code></li>
-							<li><code>captions</code></li>
-							<li><code>descriptions</code></li>
-							<li><code>chapters</code></li>
-							<li><code>metadata</code></li>
-						</ul>
-						<dl class="tsd-comment-tags">
-							<dt>see</dt>
-							<dd><p><a href="https://mzl.la/2HyGCbg">https://mzl.la/2HyGCbg</a></p>
-							</dd>
-							<dt>type</dt>
-							<dd><p>string</p>
-							</dd>
-							<dt>memberof</dt>
-							<dd><p>Track</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="label" class="tsd-anchor"></a>
-					<h3>label</h3>
-					<div class="tsd-signature tsd-kind-icon">label<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/captions/track.ts#L48">interfaces/captions/track.ts:48</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Human-friendly name for the track to be displayed in <code>Settings</code> menu.</p>
-						</div>
-						<dl class="tsd-comment-tags">
-							<dt>see</dt>
-							<dd><p><a href="../classes/_controls_settings_.settings.html#additem">Settings.addItem</a></p>
-							</dd>
-							<dt>type</dt>
-							<dd><p>string</p>
-							</dd>
-							<dt>memberof</dt>
-							<dd><p>Track</p>
-							</dd>
-						</dl>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="src" class="tsd-anchor"></a>
-					<h3>src</h3>
-					<div class="tsd-signature tsd-kind-icon">src<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/captions/track.ts#L23">interfaces/captions/track.ts:23</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Path/URL to obtain track&#39;s content.</p>
+							<p>The icon image to present the custom control</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>type</dt>
 							<dd><p>string</p>
 							</dd>
-							<dt>memberof</dt>
-							<dd><p>Track</p>
-							</dd>
 						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="srclang" class="tsd-anchor"></a>
-					<h3>srclang</h3>
-					<div class="tsd-signature tsd-kind-icon">srclang<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<a name="position" class="tsd-anchor"></a>
+					<h3>position</h3>
+					<div class="tsd-signature tsd-kind-icon">position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/captions/track.ts#L15">interfaces/captions/track.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/control-item.ts#L26">interfaces/control-item.ts:26</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The language short code of the track (<code>en</code>, <code>es</code>, <code>pt</code>, etc.)</p>
+							<p>The custom control position (left. middle or right)</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>type</dt>
 							<dd><p>string</p>
 							</dd>
-							<dt>memberof</dt>
-							<dd><p>Track</p>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="title" class="tsd-anchor"></a>
+					<h3>title</h3>
+					<div class="tsd-signature tsd-kind-icon">title<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/control-item.ts#L20">interfaces/control-item.ts:20</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The custom control label (for accessibility purposes)</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>type</dt>
+							<dd><p>string</p>
 							</dd>
 						</dl>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="click" class="tsd-anchor"></a>
+					<h3>click</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">click<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/a17d34c/src/js/interfaces/control-item.ts#L38">interfaces/control-item.ts:38</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The custom control callback to be executed when clicking on it</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>memberof</dt>
+									<dd><p>ControlItem</p>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -251,7 +237,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/_interfaces_captions_track_.html">"interfaces/captions/track"</a>
+						<a href="../modules/_interfaces_control_item_.html">"interfaces/control-<wbr>item"</a>
 					</li>
 				</ul>
 			</nav>
@@ -260,22 +246,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="_interfaces_captions_track_.track.html" class="tsd-kind-icon">Track</a>
+						<a href="_interfaces_control_item_.controlitem.html" class="tsd-kind-icon">Control<wbr>Item</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_captions_track_.track.html#default" class="tsd-kind-icon">default</a>
+								<a href="_interfaces_control_item_.controlitem.html#custom" class="tsd-kind-icon">custom</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_captions_track_.track.html#kind" class="tsd-kind-icon">kind</a>
+								<a href="_interfaces_control_item_.controlitem.html#icon" class="tsd-kind-icon">icon</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_captions_track_.track.html#label" class="tsd-kind-icon">label</a>
+								<a href="_interfaces_control_item_.controlitem.html#position" class="tsd-kind-icon">position</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_captions_track_.track.html#src" class="tsd-kind-icon">src</a>
+								<a href="_interfaces_control_item_.controlitem.html#title" class="tsd-kind-icon">title</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="_interfaces_captions_track_.track.html#srclang" class="tsd-kind-icon">srclang</a>
+							<li class=" tsd-kind-method tsd-parent-kind-interface">
+								<a href="_interfaces_control_item_.controlitem.html#click" class="tsd-kind-icon">click</a>
 							</li>
 						</ul>
 					</li>
