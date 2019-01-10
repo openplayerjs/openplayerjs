@@ -23,7 +23,7 @@
     "dash",
     "mp4",
     "mp3",
-    "openplayer"
+    "openplayerjs"
   ],
   "scripts": {
     "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production",
