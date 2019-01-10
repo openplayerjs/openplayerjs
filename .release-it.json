@@ -1,11 +1,11 @@
 {
     "increment": "conventional:angular",
-    "beforeChangelogCommand": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "changelogCommand": "conventional-changelog -p angular | tail -n +3",
-    "safeBump": false,
-    "afterReleaseCommand": "echo Successfully released ${version}.",
-    "requireCleanWorkingDir": false,
-    "src": {
+    "scripts": {
+        "afterBump": "conventional-changelog -p angular -i CHANGELOG.md -s",
+        "changelog": "conventional-changelog -p angular | tail -n +3"
+    },
+    "git": {
+        "requireCleanWorkingDir": false,
         "tagName": "v%s",
         "addUntrackedFiles": true
     },
