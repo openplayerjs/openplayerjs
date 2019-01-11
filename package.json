@@ -77,7 +77,7 @@
     "stylelint-order": "^2.0.0",
     "ts-loader": "^5.0.0",
     "tslint": "^5.10.0",
-    "typedoc": "^0.14.0",
+    "typedoc": "^0.14.1",
     "typescript": "^3.0.3",
     "unminified-webpack-plugin": "^2.0.0",
     "url-loader": "^1.0.1",
