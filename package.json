@@ -73,7 +73,7 @@
     "release-it": "^9.6.4",
     "standard-version": "^4.3.0",
     "style-loader": "^0.23.0",
-    "stylelint": "^9.2.1",
+    "stylelint": "^9.10.0",
     "stylelint-order": "^2.0.0",
     "ts-loader": "^5.0.0",
     "tslint": "^5.10.0",
