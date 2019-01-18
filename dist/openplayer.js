@@ -6350,11 +6350,11 @@ var Volume = function () {
 
         if (el.muted) {
           el.volume = 0;
-          el.muted = true;
-          var e = events_1.addEvent('volumechange');
-
-          _this.player.getElement().dispatchEvent(e);
         }
+
+        var e = events_1.addEvent('volumechange');
+
+        _this.player.getElement().dispatchEvent(e);
       };
 
       this.events.slider.input = updateVolume.bind(this);

@@ -222,10 +222,9 @@ class Volume implements PlayerComponent {
             const el = this.player.activeElement();
             if (el.muted) {
                 el.volume = 0;
-                el.muted = true;
-                const e = addEvent('volumechange');
-                this.player.getElement().dispatchEvent(e);
             }
+            const e = addEvent('volumechange');
+            this.player.getElement().dispatchEvent(e);
         };
         this.events.slider.input = updateVolume.bind(this);
         this.events.slider.change = updateVolume.bind(this);
