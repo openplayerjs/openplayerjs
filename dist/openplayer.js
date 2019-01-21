@@ -345,7 +345,7 @@ exports.offset = offset;
 /* 6 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.2' };
+var core = module.exports = { version: '2.5.7' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -1071,7 +1071,7 @@ var store = global[SHARED] || (global[SHARED] = {});
 })('versions', []).push({
   version: core.version,
   mode: __webpack_require__(25) ? 'pure' : 'global',
-  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
+  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
 });
 
 
@@ -1371,6 +1371,7 @@ var Player = function () {
         volumeControl: 'Volume Control',
         volumeSlider: 'Volume Slider'
       },
+      startTime: 0,
       startVolume: 1,
       step: 0
     };
@@ -1382,6 +1383,11 @@ var Player = function () {
       this.autoplay = this.element.autoplay || false;
       this.options = deepmerge(this.defaultOptions, options || {});
       this.element.volume = this.options.startVolume;
+
+      if (this.options.startTime > 0) {
+        this.element.currentTime = this.options.startTime;
+      }
+
       this.volume = this.element.volume;
       this.element.autoplay = false;
     }

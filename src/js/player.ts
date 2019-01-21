@@ -263,6 +263,7 @@ class Player {
             volumeControl: 'Volume Control',
             volumeSlider: 'Volume Slider',
         },
+        startTime: 0,
         startVolume: 1,
         step: 0,
     };
@@ -285,6 +286,9 @@ class Player {
             this.autoplay = this.element.autoplay || false;
             this.options = deepmerge(this.defaultOptions, options || {});
             this.element.volume = this.options.startVolume;
+            if (this.options.startTime > 0) {
+                this.element.currentTime = this.options.startTime;
+            }
             this.volume = this.element.volume;
             this.element.autoplay = false;
         }

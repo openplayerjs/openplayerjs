@@ -12,13 +12,13 @@ This awesome player mimics the HTML5 video/audio methods/events/properties, and 
 
 It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 
-## Why OpenPlayer?
+## Advantages of using OpenPlayerJS
 
 * **Supports IE11+ (Win8) and all modern browsers**: its CSS and code is compatible with all modern browsers. IE11+ on Win7 requires an MP4/MP3 fallback to work correctly.
 * **Lightweight library**: Less than `20kb` when gzipped.
 * **Monetize video and audio content** with video advertising using VAST, VPAID or VMAP Ads, supported by the amazing [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
 * **Accessibility is a priority for OpenPlayerJS**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
-* **Always up-to-date**: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayer.
+* **Always up-to-date**: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.
 * **Smart `autoplay`**: Special algorithm to detect browser's autoplay capabilities.
 * **Responsive**: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 * Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
@@ -92,6 +92,8 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     step,
     // Initial volume of media in decimal numbers (by default, `1`)
     startVolume,
+    // Initial play time of media in seconds (by default, `0`)
+    startTime,
     ads: {
         // Custom path/URL to IMA SDK
         url,
