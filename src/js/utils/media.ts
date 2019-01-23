@@ -1,3 +1,5 @@
+import Source from '../interfaces/source';
+
 /**
  * Get media file extension from a URL.
  *
@@ -19,22 +21,22 @@ export function getExtension(url: string): string {
  * Check if URL is an HLS element.
  *
  * @export
- * @param {string} url  The target URL.
+ * @param {Source} media  The target media, including URL and type.
  * @returns {boolean}
  */
-export function isHlsSource(url: string): boolean {
-    return /\.m3u8/i.test(url);
+export function isHlsSource(media: Source): boolean {
+    return /\.m3u8/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
 }
 
 /**
  * Check if URL is an MPEG-DASH element.
  *
  * @export
- * @param {string} url  The target URL.
+ * @param {Source} media  The target media, including URL and type.
  * @returns {boolean}
  */
-export function isDashSource(url: string): boolean {
-    return /\.mpd/i.test(url);
+export function isDashSource(media: Source): boolean {
+    return /\.mpd/i.test(media.src) || media.type === 'application/dash+xml';
 }
 
 /**
