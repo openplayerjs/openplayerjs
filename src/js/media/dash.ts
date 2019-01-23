@@ -106,7 +106,7 @@ class DashMedia extends Native {
      * @memberof DashMedia
      */
     set src(media: Source) {
-        if (isDashSource(media.src)) {
+        if (isDashSource(media)) {
             this._revoke();
             this.player = dashjs.MediaPlayer().create();
             this._preparePlayer();

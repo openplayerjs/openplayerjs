@@ -438,10 +438,10 @@ class Media {
             } else {
                 return new HTML5Media(this.element, media);
             }
-        } else if (source.isHlsSource(media.src)) {
+        } else if (source.isHlsSource(media)) {
             const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
             return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
-        } else if (source.isDashSource(media.src)) {
+        } else if (source.isDashSource(media)) {
             const dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
             return new DashMedia(this.element, media, dashOptions);
         }

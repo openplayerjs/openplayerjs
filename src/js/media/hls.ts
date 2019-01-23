@@ -136,7 +136,7 @@ class HlsMedia extends Native {
      * @memberof HlsMedia
      */
     set src(media: Source) {
-        if (isHlsSource(media.src)) {
+        if (isHlsSource(media)) {
             this._revoke();
             this.player = new Hls(this.options);
             this.player.loadSource(media.src);

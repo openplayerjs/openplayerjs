@@ -345,7 +345,7 @@ exports.offset = offset;
 /* 6 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.5.7' };
+var core = module.exports = { version: '2.6.2' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -875,14 +875,14 @@ function getExtension(url) {
 
 exports.getExtension = getExtension;
 
-function isHlsSource(url) {
-  return /\.m3u8/i.test(url);
+function isHlsSource(media) {
+  return /\.m3u8/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
 }
 
 exports.isHlsSource = isHlsSource;
 
-function isDashSource(url) {
-  return /\.mpd/i.test(url);
+function isDashSource(media) {
+  return /\.mpd/i.test(media.src) || media.type === 'application/dash+xml';
 }
 
 exports.isDashSource = isDashSource;
@@ -1071,7 +1071,7 @@ var store = global[SHARED] || (global[SHARED] = {});
 })('versions', []).push({
   version: core.version,
   mode: __webpack_require__(25) ? 'pure' : 'global',
-  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
+  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
 
 
@@ -6607,10 +6607,10 @@ var Media = function () {
         } else {
           return new html5_1.default(this.element, media);
         }
-      } else if (source.isHlsSource(media.src)) {
+      } else if (source.isHlsSource(media)) {
         var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
         return new hls_1.default(this.element, media, this.autoplay, hlsOptions);
-      } else if (source.isDashSource(media.src)) {
+      } else if (source.isDashSource(media)) {
         var dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
         return new dash_1.default(this.element, media, dashOptions);
       }
@@ -6846,7 +6846,7 @@ var DashMedia = function (_native_1$default) {
     set: function set(media) {
       var _this4 = this;
 
-      if (media_1.isDashSource(media.src)) {
+      if (media_1.isDashSource(media)) {
         this._revoke();
 
         this.player = dashjs.MediaPlayer().create();
@@ -7115,7 +7115,7 @@ var HlsMedia = function (_native_1$default) {
     set: function set(media) {
       var _this5 = this;
 
-      if (media_1.isHlsSource(media.src)) {
+      if (media_1.isHlsSource(media)) {
         this._revoke();
 
         this.player = new Hls(this.options);
