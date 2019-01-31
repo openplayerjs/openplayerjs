@@ -112,10 +112,13 @@
     }
 
     .signup-section {
-      background-color: #444444;
-      background-image: -webkit-linear-gradient(bottom, #444444, #999999); /* Chrome 10-25, iOS 5+, Safari 5.1+ */
-      background-image:         linear-gradient(to top, #444444, #999999);
       padding: 5rem 0 2rem;
+    }
+    .form-group {
+      padding: 0 20px;
+    }
+    .card {
+      font-size: 0.8em;
     }
 
     #download, #load {
@@ -130,12 +133,18 @@
       color: #e80c19;
     }
 
+    #try {
+      padding-bottom: 30px
+    }
+
     #autoplay-check,
     #types {
       text-align: left;
+      padding-left: 0;
     }
     #autoplay {
-      margin-left: -6.25rem;
+      margin-top: -1rem;
+      margin-left: 5.25rem;
     }
 
     #permalink {
@@ -154,13 +163,6 @@
       -ms-word-break: break-all;
       word-break: break-all;
       word-break: break-word;
-    }
-
-    @media (min-width: 600px) {
-      #autoplay {
-        margin-top: -1.25rem;
-        margin-left: -1.25rem;
-      }
     }
     @media (min-width: 992px) {
       .projects-section .featured-text {
@@ -267,7 +269,8 @@
             </div>
           </div>
           <p class="text-white text-white-50">Technologies are evolving at a fast pace. Having a player that plays the
-            most popular content in all browsers and devices, keeps itself ever-green, and can be customized easily is a
+            most popular content in all browsers and devices, keeps itself ever-green, and can be customized easily is
+            a
             no-brainer for everyone that wants the best.</p>
         </div>
       </div>
@@ -300,8 +303,10 @@
         <div class="col-xl-4 col-lg-5 order-lg-first">
           <div class="featured-text text-center text-lg-right">
             <h3>Cross Browser/Cross Device Support</h3>
-            <p class="text-black-50 mb-0">With IE11+ support, OpenPlayerJS is your best choice! Also, giving the constant changes of policies on different browsers, OpenPlayer
-              integrates a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's
+            <p class="text-black-50 mb-0">With IE11+ support, OpenPlayerJS is your best choice! Also, giving the
+              constant changes of policies on different browsers, OpenPlayer
+              integrates a smart algorithm to detect autoplay capabilities so you don't have to worry about each
+              browser's
               quirks or workarounds for that.</p>
           </div>
         </div>
@@ -310,70 +315,78 @@
       <div class="row align-items-center no-gutters mb-4 mb-lg-5">
         <div class="col-xl-8 col-lg-7">
           <div class="img-fluid">
-              <img class="img-fluid" src="img/ads.svg" alt="Capable of monetizing with Ads">
+            <img class="img-fluid" src="img/ads.svg" alt="Capable of monetizing with Ads">
           </div>
         </div>
         <div class="col-xl-4 col-lg-5">
           <div class="featured-text text-center text-lg-left">
-              <h3>Media Advertising support</h3>
-              <p class="mb-0 text-black-50 ">OpenPlayerJS integrates Google IMA SDK so users have full support for all
-                the types of specifications for Ads in the current market: VAST/VPAID/VMAP. Just provide a valid Ads URL and let
-                OpenPlayerJS to take care of the rest!</p>
+            <h3>Media Advertising support</h3>
+            <p class="mb-0 text-black-50 ">OpenPlayerJS integrates Google IMA SDK so users have full support for all
+              the types of specifications for Ads in the current market: VAST/VPAID/VMAP. Just provide a valid Ads URL
+              and let
+              OpenPlayerJS to take care of the rest!</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="start" class="signup-section">
+  <section id="try" class="bg-light">
     <div class="container">
+      <h2 class="mb-5 text-center">Try it Now!</h2>
       <div class="row">
-        <div class="col-md-10 col-lg-8 mx-auto">
-          <h2 class="text-white mb-5 text-center">Try it Now!</h2>
+        <div class="col-md-5 mx-auto">
           <form id="settings" action="#" method="POST">
-            <div class="form-group">
-              <label for="url" class="text-white col-form-label">Your media URL</label>
-              <input type="url" class="form-control" id="url" name="url" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
-            </div>
-            <fieldset class="form-group text-white">
-              <div class="row">
-                <legend class="col-form-label col-sm-2 pt-0">Media type</legend>
-                <div class="col-sm-10" id="types">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
-                    <label class="form-check-label" for="video-type">
-                      Video
-                    </label>
+            <div class="card">
+              <h3 class="card-header">Media settings</h3>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label for="url" class="col-form-label">Your media URL</label>
+                  <input type="url" class="form-control" id="url" name="url" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
+                </div>
+                <fieldset class="form-group">
+                  <div class="row">
+                    <legend class="col-form-label col-sm-2 pt-0">Media type</legend>
+                    <div class="col-sm-10" id="types">
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
+                        <label class="form-check-label" for="video-type">
+                          Video
+                        </label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
+                        <label class="form-check-label" for="audio-type">
+                          Audio
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
-                    <label class="form-check-label" for="audio-type">
-                      Audio
+                </fieldset>
+                <div class="form-group">
+                  <label for="ads" class="col-form-label">Ads URL</label>
+                  <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
+                </div>
+                <div class="form-group">
+                  <div class="form-check" id="autoplay-check">
+                    <label for="autoplay" class="form-check-label">Autoplay?
+                      <input class="form-check-input" type="checkbox" name="autoplay" id="autoplay" value="1"
+                        aria-label="Autoplay media">
                     </label>
                   </div>
                 </div>
+                <div class="text-center">
+                  <button class="btn btn-primary mb-4" id="load" type="submit">Load</button>
+                </div>
               </div>
-            </fieldset>
-            <div class="form-group">
-              <label for="ads" class="text-white col-form-label">Ads URL</label>
-              <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
-            </div>
-            <div class="form-group">
-              <div class="form-check" id="autoplay-check">
-                <label for="autoplay" class="form-check-label text-white">Autoplay?
-                  <input class="form-check-input" type="checkbox" name="autoplay" id="autoplay" value="1" aria-label="Autoplay media">
-                </label>
-              </div>
-            </div>
-            <div class="form-group">
-              <p class="text-white-50">Your permalink</p>
-              <div id="permalink"></div>
-            </div>
-            <div class="text-center">
-              <button class="btn btn-primary mb-4" id="load" type="submit">Load</button>
             </div>
           </form>
+        </div>
+        <div class="col-md-5 mx-auto">
           <iframe title="Inline OpenPlayer" id="media" allowfullscreen scrolling="no" frameborder="0"></iframe>
+          <div class="form-group">
+            <button class="btn btn-primary mb-4" id="permalink" type="submit">Copy Permalink</button>
+          </div>
         </div>
       </div>
     </div>
@@ -418,28 +431,31 @@
         url += '&autoplay=true';
       }
       document.getElementById('media').src = url;
-
-      var link = document.createElement('a');
-      link.href = url;
-      link.innerText = url;
-      link.className = 'btn-link';
-
-      var item = document.getElementById('permalink');
-      var replace = item.childNodes[0];
-      if (replace) {
-        item.replaceChild(link, replace);
-      } else {
-        item.appendChild(link);
-      }
     }
 
+    document.getElementById('permalink').addEventListener('click', function () {
+      var el = document.createElement('textarea');
+      el.value = document.getElementById('media').src;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      var selected = document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      if (selected) {
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(selected);
+      }
+    });
+    window.addEventListener('load', loadMedia);
     form.addEventListener('submit', function (e) {
       loadMedia();
       e.preventDefault();
       e.stopPropagation();
       return false;
     });
-    window.addEventListener('load', loadMedia);
     iFrameResize({
       checkOrigin: false,
       interval: 450,
