@@ -101,7 +101,7 @@ class Fullscreen implements PlayerComponent {
     constructor(player: Player) {
         this.player = player;
         this.labels = player.getOptions().labels;
-        this.isFullscreen = false;
+        this.isFullscreen = document.body.classList.contains('op-fullscreen__on');
 
         const target = (document as any);
 
@@ -188,6 +188,7 @@ class Fullscreen implements PlayerComponent {
             } else {
                 this._fullscreenChange();
             }
+            document.body.classList.remove('op-fullscreen__on');
         } else {
             const video = (this.player.getElement() as any);
             this.fullscreenWidth = window.screen.width;
@@ -206,6 +207,8 @@ class Fullscreen implements PlayerComponent {
             } else {
                 this._fullscreenChange();
             }
+
+            document.body.classList.add('op-fullscreen__on');
         }
     }
 
