@@ -5190,7 +5190,7 @@ var Fullscreen = function () {
 
     this.player = player;
     this.labels = player.getOptions().labels;
-    this.isFullscreen = false;
+    this.isFullscreen = document.body.classList.contains('op-fullscreen__on');
     var target = document;
     this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
     return this;
@@ -5255,6 +5255,8 @@ var Fullscreen = function () {
         } else {
           this._fullscreenChange();
         }
+
+        document.body.classList.remove('op-fullscreen__on');
       } else {
         var video = this.player.getElement();
         this.fullscreenWidth = window.screen.width;
@@ -5273,6 +5275,8 @@ var Fullscreen = function () {
         } else {
           this._fullscreenChange();
         }
+
+        document.body.classList.add('op-fullscreen__on');
       }
     }
   }, {
