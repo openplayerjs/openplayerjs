@@ -345,7 +345,7 @@ exports.offset = offset;
 /* 6 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.2' };
+var core = module.exports = { version: '2.6.3' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -4465,11 +4465,12 @@ function polyfill(window) {
       enumerable: true,
       writable: true,
       value: function remove() {
-        this.parentNode.removeChild(this);
+        this.parentNode && this.parentNode.removeChild(this);
       }
     });
   });
-})([Element.prototype, CharacterData.prototype, DocumentType.prototype]);
+})([Element.prototype, CharacterData.prototype, DocumentType.prototype].filter(Boolean));
+
 
 /***/ }),
 /* 140 */
