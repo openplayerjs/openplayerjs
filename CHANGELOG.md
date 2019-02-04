@@ -1,3 +1,20 @@
+<a name="1.8.0"></a>
+# [1.8.0](https://github.com/openplayerjs/openplayerjs/compare/v1.7.0...v1.8.0) (2019-02-04)
+
+
+### Bug Fixes
+
+* **player:** Added missing workflow to allow player to toggle fullscreen if user is in fullscreen mode and controls are recreated ([e95db57](https://github.com/openplayerjs/openplayerjs/commit/e95db57))
+* **player:** Expanded conditionals to test if media is HLS or Dash using also MIME types ([d9c489e](https://github.com/openplayerjs/openplayerjs/commit/d9c489e))
+* **player:** Moved event dispatcher outside of conditional to ensure volume icon is updated accordingly ([5cc813e](https://github.com/openplayerjs/openplayerjs/commit/5cc813e))
+
+
+### Features
+
+* **player:** Added new config element to start media at a certain second; included documentation of it ([2d98ac2](https://github.com/openplayerjs/openplayerjs/commit/2d98ac2))
+
+
+
 <a name="1.7.0"></a>
 # [1.7.0](https://github.com/openplayerjs/openplayerjs/compare/v1.6.0...v1.7.0) (2019-01-10)
 
