@@ -438,16 +438,18 @@ class Ads {
 
             let timeout;
 
-            if (timeout) {
+            if (timeout && typeof window !== 'undefined') {
                 window.cancelAnimationFrame(timeout);
             }
-            timeout = window.requestAnimationFrame(() => {
-                this.adsManager.resize(
-                    width && height ? width : target.offsetWidth,
-                    width && height ? height : target.offsetHeight,
-                    mode,
-                );
-            });
+            if (typeof window !== 'undefined') {
+                timeout = window.requestAnimationFrame(() => {
+                    this.adsManager.resize(
+                        width && height ? width : target.offsetWidth,
+                        width && height ? height : target.offsetHeight,
+                        mode,
+                    );
+                });
+            }
         }
     }
 

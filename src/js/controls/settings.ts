@@ -153,14 +153,16 @@ class Settings implements PlayerComponent {
 
         this.hideEvent = () => {
             let timeout;
-            if (timeout) {
+            if (timeout && typeof window !== 'undefined') {
                 window.cancelAnimationFrame(timeout);
             }
 
-            timeout = window.requestAnimationFrame(() => {
-                this.menu.innerHTML = this.originalOutput;
-                this.menu.setAttribute('aria-hidden', 'true');
-            });
+            if (typeof window !== 'undefined') {
+                timeout = window.requestAnimationFrame(() => {
+                    this.menu.innerHTML = this.originalOutput;
+                    this.menu.setAttribute('aria-hidden', 'true');
+                });
+            }
         };
 
         this.removeEvent = (e: CustomEvent) => {

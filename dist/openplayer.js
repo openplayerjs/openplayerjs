@@ -5888,15 +5888,17 @@ var Settings = function () {
       this.hideEvent = function () {
         var timeout;
 
-        if (timeout) {
+        if (timeout && typeof window !== 'undefined') {
           window.cancelAnimationFrame(timeout);
         }
 
-        timeout = window.requestAnimationFrame(function () {
-          _this.menu.innerHTML = _this.originalOutput;
+        if (typeof window !== 'undefined') {
+          timeout = window.requestAnimationFrame(function () {
+            _this.menu.innerHTML = _this.originalOutput;
 
-          _this.menu.setAttribute('aria-hidden', 'true');
-        });
+            _this.menu.setAttribute('aria-hidden', 'true');
+          });
+        }
       };
 
       this.removeEvent = function (e) {
@@ -7388,13 +7390,15 @@ var Ads = function () {
         var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
         var timeout;
 
-        if (timeout) {
+        if (timeout && typeof window !== 'undefined') {
           window.cancelAnimationFrame(timeout);
         }
 
-        timeout = window.requestAnimationFrame(function () {
-          _this2.adsManager.resize(width && height ? width : target.offsetWidth, width && height ? height : target.offsetHeight, mode);
-        });
+        if (typeof window !== 'undefined') {
+          timeout = window.requestAnimationFrame(function () {
+            _this2.adsManager.resize(width && height ? width : target.offsetWidth, width && height ? height : target.offsetHeight, mode);
+          });
+        }
       }
     }
   }, {
