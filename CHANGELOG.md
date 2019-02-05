@@ -1,3 +1,13 @@
+<a name="1.8.1"></a>
+## [1.8.1](https://github.com/openplayerjs/openplayerjs/compare/v1.8.0...v1.8.1) (2019-02-05)
+
+
+### Bug Fixes
+
+* **player:** Fixed error when running tests on Travis ([51a968f](https://github.com/openplayerjs/openplayerjs/commit/51a968f))
+
+
+
 <a name="1.8.0"></a>
 # [1.8.0](https://github.com/openplayerjs/openplayerjs/compare/v1.7.0...v1.8.0) (2019-02-04)
 
