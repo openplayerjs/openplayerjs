@@ -71,7 +71,7 @@
     "postcss-import": "^12.0.1",
     "postcss-loader": "^3.0.0",
     "release-it": "^10.0.7",
-    "standard-version": "^4.3.0",
+    "standard-version": "^5.0.0",
     "style-loader": "^0.23.1",
     "stylelint": "^9.10.1",
     "stylelint-order": "^2.0.0",
