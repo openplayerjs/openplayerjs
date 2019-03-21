@@ -1,6 +1,6 @@
-import 'core-js/es6/array';
-import 'core-js/es6/object';
-import 'core-js/es6/promise';
+import 'core-js/features/array/from';
+import 'core-js/features/object/keys';
+import 'core-js/features/promise';
 import 'custom-event-polyfill';
 import * as deepmerge from 'deepmerge';
 import 'element-closest';
