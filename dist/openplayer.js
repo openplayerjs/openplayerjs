@@ -1407,6 +1407,11 @@ var Player = function () {
   }, {
     key: "play",
     value: function play() {
+      if (!this.media.loaded) {
+        this.media.load();
+        this.media.loaded = true;
+      }
+
       if (this.adsInstance) {
         this.adsInstance.play();
       } else {
@@ -1613,7 +1618,12 @@ var Player = function () {
         }
 
         this.media = new media_1.default(this.element, this.options, this.autoplay, Player.customMedia);
-        this.media.load();
+        var preload = this.element.getAttribute('preload');
+
+        if (this.ads || !preload || preload !== 'none') {
+          this.media.load();
+          this.media.loaded = true;
+        }
 
         if (!this.autoplay && this.ads) {
           var adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
@@ -5981,6 +5991,7 @@ var Media = function () {
 
     _classCallCheck(this, Media);
 
+    this.mediaLoaded = false;
     this.customMedia = {
       media: {},
       optionsKey: {},
@@ -6051,6 +6062,11 @@ var Media = function () {
     key: "play",
     value: function play() {
       var _this2 = this;
+
+      if (!this.loaded) {
+        this.load();
+        this.loaded = true;
+      }
 
       this.promisePlay = new Promise(function (resolve) {
         resolve();
@@ -6173,7 +6189,7 @@ var Media = function () {
       this.media.volume = value;
     },
     get: function get() {
-      return this.media.volume;
+      return this.media ? this.media.volume : this.element.volume;
     }
   }, {
     key: "muted",
@@ -6181,15 +6197,15 @@ var Media = function () {
       this.media.muted = value;
     },
     get: function get() {
-      return this.media.muted;
+      return this.media ? this.media.muted : this.element.muted;
     }
   }, {
     key: "playbackRate",
-    get: function get() {
-      return this.media.playbackRate;
-    },
     set: function set(value) {
       this.media.playbackRate = value;
+    },
+    get: function get() {
+      return this.media ? this.media.playbackRate : this.element.playbackRate;
     }
   }, {
     key: "currentTime",
@@ -6197,12 +6213,12 @@ var Media = function () {
       this.media.currentTime = value;
     },
     get: function get() {
-      return this.media.currentTime;
+      return this.media ? this.media.currentTime : this.element.currentTime;
     }
   }, {
     key: "duration",
     get: function get() {
-      var duration = this.media.duration;
+      var duration = this.media ? this.media.duration : this.element.duration;
 
       if (duration === Infinity && this.element.seekable && this.element.seekable.length) {
         return this.element.seekable.end(0);
@@ -6213,12 +6229,20 @@ var Media = function () {
   }, {
     key: "paused",
     get: function get() {
-      return this.media.paused;
+      return this.media ? this.media.paused : this.element.paused;
     }
   }, {
     key: "ended",
     get: function get() {
-      return this.media.ended;
+      return this.media ? this.media.ended : this.element.ended;
+    }
+  }, {
+    key: "loaded",
+    set: function set(loaded) {
+      this.mediaLoaded = loaded;
+    },
+    get: function get() {
+      return this.mediaLoaded;
     }
   }]);
 

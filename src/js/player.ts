@@ -333,6 +333,10 @@ class Player {
      * @memberof Player
      */
     public play(): void {
+        if (!this.media.loaded) {
+            this.media.load();
+            this.media.loaded = true;
+        }
         if (this.adsInstance) {
             this.adsInstance.play();
         } else {
@@ -675,7 +679,11 @@ class Player {
                 this.element.addEventListener('canplay', this._autoplay.bind(this));
             }
             this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
-            this.media.load();
+            const preload = this.element.getAttribute('preload');
+            if (this.ads || !preload || preload !== 'none') {
+                this.media.load();
+                this.media.loaded = true;
+            }
 
             if (!this.autoplay && this.ads) {
                 const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;

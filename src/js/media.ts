@@ -68,6 +68,14 @@ class Media {
     private autoplay: boolean;
 
     /**
+     * Flag that indicates if initial load has occurred.
+     *
+     * @type boolean
+     * @memberof Player
+     */
+    private mediaLoaded: boolean = false;
+
+    /**
      * Collection of additional (non-native) media
      *
      * @type CustomMedia
@@ -176,6 +184,10 @@ class Media {
      * @memberof Media
      */
     public play(): Promise<void> {
+        if (!this.loaded) {
+            this.load();
+            this.loaded = true;
+        }
         this.promisePlay = new Promise(resolve => {
             resolve();
         }).then(() => {
@@ -278,7 +290,7 @@ class Media {
      * @readonly
      */
     get volume(): number {
-        return this.media.volume;
+        return this.media ? this.media.volume : this.element.volume;
     }
 
     /**
@@ -298,7 +310,16 @@ class Media {
      * @readonly
      */
     get muted(): boolean {
-        return this.media.muted;
+        return this.media ? this.media.muted : this.element.muted;
+    }
+
+    /**
+     *
+     * @see [[Native.playbackRate]]
+     * @memberof Media
+     */
+    set playbackRate(value) {
+        this.media.playbackRate = value;
     }
 
     /**
@@ -309,16 +330,7 @@ class Media {
      * @readonly
      */
     get playbackRate(): number {
-        return this.media.playbackRate;
-    }
-
-    /**
-     *
-     * @see [[Native.playbackRate]]
-     * @memberof Media
-     */
-    set playbackRate(value) {
-        this.media.playbackRate = value;
+        return this.media ? this.media.playbackRate : this.element.playbackRate;
     }
 
     /**
@@ -338,7 +350,7 @@ class Media {
      * @readonly
      */
     get currentTime(): number {
-        return this.media.currentTime;
+        return this.media ? this.media.currentTime : this.element.currentTime;
     }
 
     /**
@@ -349,7 +361,7 @@ class Media {
      * @readonly
      */
     get duration(): number {
-        const duration = this.media.duration;
+        const duration = this.media ? this.media.duration : this.element.duration;
         // To seek backwards in a live streaming (mobile devices)
         if (duration === Infinity && this.element.seekable && this.element.seekable.length) {
             return this.element.seekable.end(0);
@@ -365,7 +377,7 @@ class Media {
      * @readonly
      */
     get paused(): boolean {
-        return this.media.paused;
+        return this.media ? this.media.paused : this.element.paused;
     }
 
     /**
@@ -376,7 +388,24 @@ class Media {
      * @readonly
      */
     get ended(): boolean {
-        return this.media.ended;
+        return this.media ? this.media.ended : this.element.ended;
+    }
+
+    /**
+     *
+     * @memberof Media
+     */
+    set loaded(loaded: boolean) {
+        this.mediaLoaded = loaded;
+    }
+
+    /**
+     *
+     * @type boolean
+     * @memberof Media
+     */
+    get loaded(): boolean {
+        return this.mediaLoaded;
     }
 
     /**
