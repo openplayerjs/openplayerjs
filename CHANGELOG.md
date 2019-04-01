@@ -1,3 +1,19 @@
+<a name="1.9.0"></a>
+# [1.9.0](https://github.com/openplayerjs/openplayerjs/compare/v1.8.1...v1.9.0) (2019-04-01)
+
+
+### Bug Fixes
+
+* **player:** Changed paths for packages to give proper support to IE11 ([fa4fd5a](https://github.com/openplayerjs/openplayerjs/commit/fa4fd5a))
+* **player:** Updated import references due `core-js` latest update ([fb7835c](https://github.com/openplayerjs/openplayerjs/commit/fb7835c))
+
+
+### Features
+
+* **player:** Introduced new workflow to consider `preload` attribute to avoid loading media when no Ads are present ([bb7f3ef](https://github.com/openplayerjs/openplayerjs/commit/bb7f3ef))
+
+
+
 <a name="1.8.1"></a>
 ## [1.8.1](https://github.com/openplayerjs/openplayerjs/compare/v1.8.0...v1.8.1) (2019-02-05)
 
