@@ -1,9 +1,11 @@
+import 'core-js/features/array/find';
 import 'core-js/features/array/from';
 import 'core-js/features/object/keys';
+import 'core-js/features/object/assign';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
 import * as deepmerge from 'deepmerge';
-import 'element-closest';
+import 'element-closest/browser';
 import 'element-remove';
 
 import Controls from './controls';
