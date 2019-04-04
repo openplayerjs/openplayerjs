@@ -1789,7 +1789,7 @@ var Player = function () {
 
           _this3.playBtn.classList.remove('op-player__play--paused');
 
-          _this3.playBtn.setAttribute('aria-hidden', constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
+          _this3.playBtn.setAttribute('aria-hidden', 'false');
 
           _this3.playBtn.title = _this3.options.labels.play;
         };
@@ -4156,7 +4156,7 @@ return deepmerge_1;
 /* 121 */
 /***/ (function(module, exports) {
 
-!function(e){var t=e.Element.prototype;"function"!=typeof t.matches&&(t.matches=t.msMatchesSelector||t.mozMatchesSelector||t.webkitMatchesSelector||function(e){for(var t=(o.document||o.ownerDocument).querySelectorAll(e),o=this,n=0;t[n]&&t[n]!==o;)++n;return Boolean(t[n])}),"function"!=typeof t.closest&&(t.closest=function(e){for(var t=this;t&&1===t.nodeType;){if(t.matches(e))return t;t=t.parentNode}return null})}(window);
+!function(e){var t=e.Element.prototype;"function"!=typeof t.matches&&(t.matches=t.msMatchesSelector||t.mozMatchesSelector||t.webkitMatchesSelector||function(e){for(var t=(this.document||this.ownerDocument).querySelectorAll(e),o=0;t[o]&&t[o]!==this;)++o;return Boolean(t[o])}),"function"!=typeof t.closest&&(t.closest=function(e){for(var t=this;t&&1===t.nodeType;){if(t.matches(e))return t;t=t.parentNode}return null})}(window);
 
 
 /***/ }),
@@ -4257,7 +4257,7 @@ var Controls = function () {
 
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         this.events.mouse.mouseenter = function () {
-          if (isMediaVideo) {
+          if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
             _this._stopControlTimer();
 
             _this.player.playBtn.setAttribute('aria-hidden', 'false');
@@ -4269,7 +4269,7 @@ var Controls = function () {
         };
 
         this.events.mouse.mousemove = function () {
-          if (isMediaVideo) {
+          if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
             _this.player.playBtn.setAttribute('aria-hidden', 'false');
 
             _this.player.getContainer().classList.remove('op-controls--hidden');
@@ -4279,7 +4279,7 @@ var Controls = function () {
         };
 
         this.events.mouse.mouseleave = function () {
-          if (isMediaVideo) {
+          if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
             _this._startControlTimer(1000);
           }
         };
