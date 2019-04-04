@@ -806,7 +806,7 @@ class Player {
             this.events.pause = () => {
                 this.loader.setAttribute('aria-hidden', 'true');
                 this.playBtn.classList.remove('op-player__play--paused');
-                this.playBtn.setAttribute('aria-hidden', IS_ANDROID || IS_IOS ? 'false' : 'true');
+                this.playBtn.setAttribute('aria-hidden', 'false');
                 this.playBtn.title = this.options.labels.play;
             };
         }

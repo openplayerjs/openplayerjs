@@ -173,7 +173,7 @@ class Controls implements PlayerComponent {
 
         if (!IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
-                if (isMediaVideo) {
+                if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
                     this._stopControlTimer();
                     this.player.playBtn.setAttribute('aria-hidden', 'false');
                     this.player.getContainer().classList.remove('op-controls--hidden');
@@ -181,14 +181,14 @@ class Controls implements PlayerComponent {
                 }
             };
             this.events.mouse.mousemove = () => {
-                if (isMediaVideo) {
+                if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
                     this.player.playBtn.setAttribute('aria-hidden', 'false');
                     this.player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mouseleave = () => {
-                if (isMediaVideo) {
+                if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
                     this._startControlTimer(1000);
                 }
             };
