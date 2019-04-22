@@ -86,6 +86,8 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
+    // Allow items to be contained in a different space outside of `Settings`
+    detachMenus,
     // Number of ms that takes the player to hide the Play button once it starts playing (video only)
     // (bt default, `350`)
     hidePlayBtnTimer,

@@ -1,7 +1,7 @@
 import 'core-js/features/array/find';
 import 'core-js/features/array/from';
-import 'core-js/features/object/keys';
 import 'core-js/features/object/assign';
+import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
 import * as deepmerge from 'deepmerge';
@@ -240,6 +240,7 @@ class Player {
      * @memberof Player
      */
     private defaultOptions: PlayerOptions = {
+        detachMenus: false,
         hidePlayBtnTimer: 350,
         labels: {
             captions: 'CC/Subtitles',
@@ -774,8 +775,10 @@ class Player {
                 }
             };
             this.events.waiting = () => {
-                this.playBtn.setAttribute('aria-hidden', 'true');
-                this.loader.setAttribute('aria-hidden', 'false');
+                if (this.playBtn.getAttribute('aria-hidden') === 'false') {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'false');
+                }
             };
             this.events.canplay = () => {
                 this.playBtn.setAttribute('aria-hidden', IS_ANDROID || IS_IOS ? 'false' : 'true');
