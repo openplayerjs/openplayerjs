@@ -1329,7 +1329,7 @@ __webpack_require__(85);
 
 __webpack_require__(94);
 
-__webpack_require__(97);
+__webpack_require__(98);
 
 __webpack_require__(101);
 
@@ -1364,6 +1364,7 @@ var Player = function () {
     this.processedAutoplay = false;
     this.customControlItems = [];
     this.defaultOptions = {
+      detachMenus: false,
       hidePlayBtnTimer: 350,
       labels: {
         captions: 'CC/Subtitles',
@@ -1741,9 +1742,11 @@ var Player = function () {
         };
 
         this.events.waiting = function () {
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
+          if (_this3.playBtn.getAttribute('aria-hidden') === 'false') {
+            _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', 'false');
+            _this3.loader.setAttribute('aria-hidden', 'false');
+          }
         };
 
         this.events.canplay = function () {
@@ -3038,47 +3041,14 @@ module.exports = __webpack_require__(95);
 
 __webpack_require__(96);
 
-module.exports = __webpack_require__(14).Object.keys;
+module.exports = __webpack_require__(14).Object.assign;
 
 
 /***/ }),
 /* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toObject = __webpack_require__(16);
-var nativeKeys = __webpack_require__(41);
-var FAILS_ON_PRIMITIVES = __webpack_require__(6)(function () { nativeKeys(1); });
-
-// `Object.keys` method
-// https://tc39.github.io/ecma262/#sec-object.keys
-__webpack_require__(2)({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
-  keys: function keys(it) {
-    return nativeKeys(toObject(it));
-  }
-});
-
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(98);
-
-
-/***/ }),
-/* 98 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(99);
-
-module.exports = __webpack_require__(14).Object.assign;
-
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var assign = __webpack_require__(100);
+var assign = __webpack_require__(97);
 
 // `Object.assign` method
 // https://tc39.github.io/ecma262/#sec-object.assign
@@ -3086,7 +3056,7 @@ __webpack_require__(2)({ target: 'Object', stat: true, forced: Object.assign !==
 
 
 /***/ }),
-/* 100 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3124,6 +3094,39 @@ module.exports = !nativeAssign || __webpack_require__(6)(function () {
     while (length > j) if (propertyIsEnumerable.call(S, key = keys[j++])) T[key] = S[key];
   } return T;
 } : nativeAssign;
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(99);
+
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(100);
+
+module.exports = __webpack_require__(14).Object.keys;
+
+
+/***/ }),
+/* 100 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toObject = __webpack_require__(16);
+var nativeKeys = __webpack_require__(41);
+var FAILS_ON_PRIMITIVES = __webpack_require__(6)(function () { nativeKeys(1); });
+
+// `Object.keys` method
+// https://tc39.github.io/ecma262/#sec-object.keys
+__webpack_require__(2)({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
+  keys: function keys(it) {
+    return nativeKeys(toObject(it));
+  }
+});
 
 
 /***/ }),
@@ -4417,7 +4420,7 @@ var Controls = function () {
       });
       Object.keys(this.items).forEach(function (position) {
         _this5.items[position].forEach(function (item) {
-          if (!item.custom && typeof item.addSettings === 'function') {
+          if (!_this5.player.getOptions().detachMenus && !item.custom && typeof item.addSettings === 'function') {
             var menuItem = item.addSettings();
 
             if (Object.keys(menuItem).length) {
@@ -4492,8 +4495,10 @@ var Captions = function () {
     };
     this.tracks = {};
     this.trackUrlList = {};
+    this.default = 'off';
     this.player = player;
     this.labels = player.getOptions().labels;
+    this.detachMenu = player.getOptions().detachMenus;
     this.trackList = this.player.getElement().textTracks;
     this.hasTracks = !!this.trackList.length;
     return this;
@@ -4575,20 +4580,24 @@ var Captions = function () {
 
       this.events.media.timeupdate = function () {
         if (_this.player.isMedia()) {
-          var currentCues = _this.tracks[_this.current.language];
+          if (_this.current) {
+            var currentCues = _this.tracks[_this.current.language];
 
-          if (currentCues !== undefined) {
-            var index = _this._search(currentCues, _this.player.getMedia().currentTime);
+            if (currentCues !== undefined) {
+              var index = _this._search(currentCues, _this.player.getMedia().currentTime);
 
-            container.innerHTML = '';
+              container.innerHTML = '';
 
-            if (index > -1 && general_1.hasClass(_this.button, 'op-controls__captions--on')) {
-              _this.captions.classList.add('op-captions--on');
+              if (index > -1 && general_1.hasClass(_this.button, 'op-controls__captions--on')) {
+                _this.captions.classList.add('op-captions--on');
 
-              container.innerHTML = _this._sanitize(currentCues[index].text);
-            } else {
-              _this._hide();
+                container.innerHTML = _this._sanitize(currentCues[index].text);
+              } else {
+                _this._hide();
+              }
             }
+          } else {
+            _this._hide();
           }
         } else {
           _this._hide();
@@ -4597,30 +4606,74 @@ var Captions = function () {
 
       this.events.button.click = function (e) {
         var button = e.target;
-        button.setAttribute('aria-pressed', 'true');
 
-        if (general_1.hasClass(button, 'op-controls__captions--on')) {
-          _this._hide();
-
-          button.classList.remove('op-controls__captions--on');
-          button.setAttribute('data-active-captions', 'off');
+        if (_this.detachMenu) {
+          if (_this.menu.getAttribute('aria-hidden') === 'true') {
+            _this.menu.setAttribute('aria-hidden', 'false');
+          } else {
+            _this.menu.setAttribute('aria-hidden', 'true');
+          }
         } else {
-          _this._show();
+          button.setAttribute('aria-pressed', 'true');
 
-          button.classList.add('op-controls__captions--on');
-          button.setAttribute('data-active-captions', _this.current.language);
+          if (general_1.hasClass(button, 'op-controls__captions--on')) {
+            _this._hide();
+
+            button.classList.remove('op-controls__captions--on');
+            button.setAttribute('data-active-captions', 'off');
+          } else {
+            _this._show();
+
+            button.classList.add('op-controls__captions--on');
+            button.setAttribute('data-active-captions', _this.current.language);
+          }
+        }
+      };
+
+      this.events.button.mouseover = function () {
+        if (_this.detachMenu) {
+          if (_this.menu.getAttribute('aria-hidden') === 'true') {
+            _this.menu.setAttribute('aria-hidden', 'false');
+          }
+        }
+      };
+
+      this.events.button.mouseout = function () {
+        if (_this.detachMenu) {
+          if (_this.menu.getAttribute('aria-hidden') === 'false') {
+            _this.menu.setAttribute('aria-hidden', 'true');
+          }
         }
       };
 
       this.button.addEventListener('click', this.events.button.click);
+      this.button.addEventListener('mouseover', this.events.button.mouseover);
+      this.button.addEventListener('mouseout', this.events.button.mouseout);
 
       if (this.hasTracks) {
         var target = this.player.getContainer();
         target.insertBefore(this.captions, target.firstChild);
+
+        if (this.detachMenu) {
+          this.button.classList.add('op-control--no-hover');
+          this.menu = document.createElement('div');
+          this.menu.className = 'op-settings';
+          this.menu.setAttribute('aria-hidden', 'true');
+          var className = 'op-subtitles__option';
+
+          var options = this._formatMenuItems();
+
+          var menu = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                    ".concat(options.map(function (item) {
+            return "\n                    <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(_this.default === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"captions-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
+          }).join(''), "\n                </div>");
+          this.menu.innerHTML = menu;
+          this.button.appendChild(this.menu);
+        }
+
         this.player.getControls().getContainer().appendChild(this.button);
       }
 
-      if (this.trackList.length <= 1) {
+      if (this.trackList.length <= 1 && !this.detachMenu || !this.trackList.length && this.detachMenu) {
         return;
       }
 
@@ -4633,9 +4686,33 @@ var Captions = function () {
             return item.language === language;
           }).pop();
 
-          _this._show();
+          if (_this.detachMenu) {
+            if (general_1.hasClass(_this.button, 'op-controls__captions--on')) {
+              _this._hide();
 
-          _this.button.setAttribute('data-active-captions', language);
+              _this.button.classList.remove('op-controls__captions--on');
+
+              _this.button.setAttribute('data-active-captions', 'off');
+            } else {
+              _this._show();
+
+              _this.button.classList.add('op-controls__captions--on');
+
+              _this.button.setAttribute('data-active-captions', language);
+            }
+
+            var captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
+            captions.forEach(function (caption) {
+              caption.setAttribute('aria-checked', 'false');
+            });
+            option.parentElement.setAttribute('aria-checked', 'true');
+
+            _this.menu.setAttribute('aria-hidden', 'false');
+          } else {
+            _this._show();
+
+            _this.button.setAttribute('data-active-captions', language);
+          }
 
           var event = events_1.addEvent('captionschanged');
 
@@ -4656,6 +4733,8 @@ var Captions = function () {
 
       if (this.hasTracks) {
         this.button.removeEventListener('click', this.events.button.click);
+        this.button.removeEventListener('mouseover', this.events.button.mouseover);
+        this.button.removeEventListener('mouseout', this.events.button.mouseout);
         this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
         this.button.remove();
         this.captions.remove();
@@ -4664,31 +4743,11 @@ var Captions = function () {
   }, {
     key: "addSettings",
     value: function addSettings() {
-      var _this2 = this;
-
-      if (this.trackList.length <= 1) {
+      if (this.detachMenu || this.trackList.length <= 1) {
         return {};
       }
 
-      var subitems = [{
-        key: 'off',
-        label: this.labels.off
-      }];
-
-      var _loop2 = function _loop2(i, total) {
-        var track = _this2.trackList[i];
-        subitems = subitems.filter(function (el) {
-          return el.key !== track.language;
-        });
-        subitems.push({
-          key: track.language,
-          label: _this2.labels.lang[track.language] || _this2.trackList[i].label
-        });
-      };
-
-      for (var i = 0, total = this.trackList.length; i < total; i++) {
-        _loop2(i, total);
-      }
+      var subitems = this._formatMenuItems();
 
       return subitems.length > 2 ? {
         className: 'op-subtitles__option',
@@ -4790,7 +4849,7 @@ var Captions = function () {
     key: "_hide",
     value: function _hide() {
       this.captions.classList.remove('op-captions--on');
-      this.button.setAttribute('data-active-captions', 'none');
+      this.button.setAttribute('data-active-captions', 'off');
     }
   }, {
     key: "_search",
@@ -4846,7 +4905,7 @@ var Captions = function () {
   }, {
     key: "_prepareTrack",
     value: function _prepareTrack(index, language, trackUrl) {
-      var _this3 = this;
+      var _this2 = this;
 
       var defaultTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       this.trackUrlList[language] = trackUrl;
@@ -4857,7 +4916,7 @@ var Captions = function () {
         this.button.classList.add('op-controls__captions--on');
         this.button.setAttribute('data-active-captions', language);
         this.current = Array.from(this.trackList).filter(function (item) {
-          return item.language === _this3.default;
+          return item.language === _this2.default;
         }).pop();
       } else {
         this.current = this.trackList[0];
@@ -4868,6 +4927,33 @@ var Captions = function () {
       if (!this.player.getContainer().classList.contains('op-captions--detected')) {
         this.player.getContainer().classList.add('op-captions--detected');
       }
+    }
+  }, {
+    key: "_formatMenuItems",
+    value: function _formatMenuItems() {
+      var _this3 = this;
+
+      var items = [{
+        key: 'off',
+        label: this.labels.off
+      }];
+
+      var _loop2 = function _loop2(i, total) {
+        var track = _this3.trackList[i];
+        items = items.filter(function (el) {
+          return el.key !== track.language;
+        });
+        items.push({
+          key: track.language,
+          label: _this3.labels.lang[track.language] || _this3.trackList[i].label
+        });
+      };
+
+      for (var i = 0, total = this.trackList.length; i < total; i++) {
+        _loop2(i, total);
+      }
+
+      return items;
     }
   }]);
 
