@@ -290,10 +290,6 @@ class Captions implements PlayerComponent {
             }
         };
 
-        this.button.addEventListener('click', this.events.button.click);
-        this.button.addEventListener('mouseover', this.events.button.mouseover);
-        this.button.addEventListener('mouseout', this.events.button.mouseout);
-
         if (this.hasTracks) {
             const target = this.player.getContainer();
             target.insertBefore(this.captions, target.firstChild);
@@ -302,7 +298,7 @@ class Captions implements PlayerComponent {
             if (this.detachMenu) {
                 this.button.classList.add('op-control--no-hover');
                 this.menu = document.createElement('div');
-                this.menu.className = 'op-settings';
+                this.menu.className = 'op-settings op-captions__menu';
                 this.menu.setAttribute('aria-hidden', 'true');
                 const className = 'op-subtitles__option';
                 const options = this._formatMenuItems();
@@ -316,7 +312,7 @@ class Captions implements PlayerComponent {
                     </div>`).join('')}
                 </div>`;
                 this.menu.innerHTML = menu;
-                this.button.appendChild(this.menu);
+                this.player.getControls().getContainer().appendChild(this.menu);
             }
             this.player.getControls().getContainer().appendChild(this.button);
         }
@@ -342,9 +338,9 @@ class Captions implements PlayerComponent {
                         this.button.setAttribute('data-active-captions', language);
                     }
                     const captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
-                    captions.forEach(caption => {
-                        caption.setAttribute('aria-checked', 'false');
-                    });
+                    for (let i = 0, total = captions.length; i < total; ++i) {
+                        captions[i].setAttribute('aria-checked', 'false');
+                    }
                     option.parentElement.setAttribute('aria-checked', 'true');
                     this.menu.setAttribute('aria-hidden', 'false');
                 } else {
@@ -355,6 +351,14 @@ class Captions implements PlayerComponent {
                 this.player.getElement().dispatchEvent(event);
             }
         };
+
+        this.button.addEventListener('click', this.events.button.click);
+        if (this.detachMenu) {
+            this.button.addEventListener('mouseover', this.events.button.mouseover);
+            this.menu.addEventListener('mouseover', this.events.button.mouseover);
+            this.menu.addEventListener('mouseout', this.events.button.mouseout);
+            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+        }
 
         if (typeof this.events.global.click !== 'undefined') {
             document.addEventListener('click', this.events.global.click);
@@ -373,8 +377,13 @@ class Captions implements PlayerComponent {
 
         if (this.hasTracks) {
             this.button.removeEventListener('click', this.events.button.click);
-            this.button.removeEventListener('mouseover', this.events.button.mouseover);
-            this.button.removeEventListener('mouseout', this.events.button.mouseout);
+            if (this.detachMenu) {
+                this.button.removeEventListener('mouseover', this.events.button.mouseover);
+                this.menu.removeEventListener('mouseover', this.events.button.mouseover);
+                this.menu.removeEventListener('mouseout', this.events.button.mouseout);
+                this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
+                this.menu.remove();
+            }
             this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
             this.button.remove();
             this.captions.remove();

@@ -315,24 +315,6 @@
     will-change: width,height;
     z-index: 4;
 }
-.op-controls > button > .op-settings {
-    bottom: 35px;
-    overflow: visible;
-    right: -20px;
-}
-.op-controls > button > .op-settings:after {
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid rgba(28, 28, 28, .9);
-    content:'';
-    height: 0;
-    left: 0;
-    margin: 0 auto;
-    position: absolute;
-    right: 0;
-    top: 100%;
-    width: 0;
-}
 .op-player__audio .op-settings {
     bottom: 32px;
     right: 0;
@@ -767,6 +749,25 @@
 }
 .op-controls .op-controls__captions--on:before {
     color: red;
+}
+.op-captions__menu {
+    bottom: 36px;
+    overflow: visible;
+    right: 59px;
+    z-index: 10;
+}
+.op-captions__menu:after {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid rgba(28, 28, 28, .9);
+    content:'';
+    height: 0;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 0;
 }
 
 /* WebVTT cues */
