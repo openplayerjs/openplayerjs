@@ -107,6 +107,15 @@ class Player {
     public playBtn: HTMLButtonElement;
 
     /**
+     * Element to indicate that media is being loaded.
+     *
+     * Only applies for `Media` object, since `Ads` does not need it.
+     * @type HTMLSpanElement
+     * @memberof Player
+     */
+    public loader: HTMLSpanElement;
+
+    /**
      * Unique identified for the current player instance.
      *
      * @type string
@@ -148,15 +157,6 @@ class Player {
      * @memberof Player
      */
     private media: Media;
-
-    /**
-     * Element to indicate that media is being loaded.
-     *
-     * Only applies for `Media` object, since `Ads` does not need it.
-     * @type HTMLSpanElement
-     * @memberof Player
-     */
-    private loader: HTMLSpanElement;
 
     /**
      * Events that will be triggered in Player to show/hide Play button and loader element,
@@ -266,6 +266,7 @@ class Player {
             volumeControl: 'Volume Control',
             volumeSlider: 'Volume Slider',
         },
+        showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,
         step: 0,
@@ -767,22 +768,21 @@ class Player {
         if (isVideo(this.element)) {
             this.events.loadedmetadata = () => {
                 const el = this.activeElement();
-                this.loader.setAttribute('aria-hidden', 'true');
+                if (this.options.showLoaderOnInit) {
+                    this.loader.setAttribute('aria-hidden', 'false');
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                } else {
+                    this.loader.setAttribute('aria-hidden', 'true');
+                    this.playBtn.setAttribute('aria-hidden', 'false');
+                }
                 if (el.paused) {
                     this.playBtn.classList.remove('op-player__play--paused');
                     this.playBtn.setAttribute('aria-pressed', 'false');
-                    this.playBtn.setAttribute('aria-hidden', 'false');
                 }
             };
             this.events.waiting = () => {
-                if (this.playBtn.getAttribute('aria-hidden') === 'false') {
-                    this.playBtn.setAttribute('aria-hidden', 'true');
-                    this.loader.setAttribute('aria-hidden', 'false');
-                }
-            };
-            this.events.canplay = () => {
-                this.playBtn.setAttribute('aria-hidden', IS_ANDROID || IS_IOS ? 'false' : 'true');
-                this.loader.setAttribute('aria-hidden', 'true');
+                this.playBtn.setAttribute('aria-hidden', 'true');
+                this.loader.setAttribute('aria-hidden', 'false');
             };
             this.events.seeking = () => {
                 const el = this.activeElement();
@@ -791,6 +791,13 @@ class Player {
             };
             this.events.seeked = () => {
                 const el = this.activeElement();
+                if (Math.round(el.currentTime) === 0) {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'false');
+                } else {
+                    this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
+                    this.loader.setAttribute('aria-hidden', 'true');
+                }
                 this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
                 this.loader.setAttribute('aria-hidden', 'true');
             };
@@ -798,19 +805,34 @@ class Player {
                 this.playBtn.classList.add('op-player__play--paused');
                 this.playBtn.title = this.options.labels.pause;
                 this.loader.setAttribute('aria-hidden', 'true');
-
-                setTimeout(() => {
+                if (this.options.showLoaderOnInit) {
                     this.playBtn.setAttribute('aria-hidden', 'true');
-                }, this.options.hidePlayBtnTimer);
+                } else {
+                    setTimeout(() => {
+                        this.playBtn.setAttribute('aria-hidden', 'true');
+                    }, this.options.hidePlayBtnTimer);
+                }
             };
             this.events.playing = () => {
                 this.loader.setAttribute('aria-hidden', 'true');
+                this.playBtn.setAttribute('aria-hidden', 'true');
             };
             this.events.pause = () => {
-                this.loader.setAttribute('aria-hidden', 'true');
+                const el = this.activeElement();
                 this.playBtn.classList.remove('op-player__play--paused');
-                this.playBtn.setAttribute('aria-hidden', 'false');
                 this.playBtn.title = this.options.labels.play;
+
+                if (this.options.showLoaderOnInit && Math.round(el.currentTime) === 0) {
+                    this.playBtn.setAttribute('aria-hidden', 'true');
+                    this.loader.setAttribute('aria-hidden', 'false');
+                } else {
+                    this.playBtn.setAttribute('aria-hidden', 'false');
+                    this.loader.setAttribute('aria-hidden', 'true');
+                }
+            };
+            this.events.ended = () => {
+                this.loader.setAttribute('aria-hidden', 'true');
+                this.playBtn.setAttribute('aria-hidden', 'true');
             };
         }
 
