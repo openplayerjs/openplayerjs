@@ -47,7 +47,7 @@
     "coveralls": "^3.0.2",
     "css-loader": "^2.1.0",
     "cssnano": "^4.1.10",
-    "custom-event-polyfill": "^1.0.6",
+    "custom-event-polyfill": "^1.0.7",
     "element-closest": "^3.0.1",
     "element-remove": "^1.0.4",
     "eslint": "^5.16.0",
