@@ -4018,11 +4018,9 @@ __webpack_require__(2)({ target: 'Promise', stat: true }, {
   } catch (e) {
     var CustomEvent = function(event, params) {
       var evt, origPrevent;
-      params = params || {
-        bubbles: false,
-        cancelable: false,
-        detail: undefined
-      };
+      params = params || {};
+      params.bubbles = !!params.bubbles;
+      params.cancelable = !!params.cancelable;
 
       evt = document.createEvent('CustomEvent');
       evt.initCustomEvent(
