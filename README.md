@@ -98,6 +98,8 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     startVolume,
     // Initial play time of media in seconds (by default, `0`)
     startTime,
+    // Allow loader to be displayed when loading video (by default, `false`)
+    showLoaderOnInit,
     ads: {
         // Custom path/URL to IMA SDK
         url,

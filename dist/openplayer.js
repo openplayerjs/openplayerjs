@@ -1390,6 +1390,7 @@ var Player = function () {
         volumeControl: 'Volume Control',
         volumeSlider: 'Volume Slider'
       },
+      showLoaderOnInit: false,
       startTime: 0,
       startVolume: 1,
       step: 0
@@ -1730,29 +1731,27 @@ var Player = function () {
         this.events.loadedmetadata = function () {
           var el = _this3.activeElement();
 
-          _this3.loader.setAttribute('aria-hidden', 'true');
+          if (_this3.options.showLoaderOnInit) {
+            _this3.loader.setAttribute('aria-hidden', 'false');
+
+            _this3.playBtn.setAttribute('aria-hidden', 'true');
+          } else {
+            _this3.loader.setAttribute('aria-hidden', 'true');
+
+            _this3.playBtn.setAttribute('aria-hidden', 'false');
+          }
 
           if (el.paused) {
             _this3.playBtn.classList.remove('op-player__play--paused');
 
             _this3.playBtn.setAttribute('aria-pressed', 'false');
-
-            _this3.playBtn.setAttribute('aria-hidden', 'false');
           }
         };
 
         this.events.waiting = function () {
-          if (_this3.playBtn.getAttribute('aria-hidden') === 'false') {
-            _this3.playBtn.setAttribute('aria-hidden', 'true');
+          _this3.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this3.loader.setAttribute('aria-hidden', 'false');
-          }
-        };
-
-        this.events.canplay = function () {
-          _this3.playBtn.setAttribute('aria-hidden', constants_1.IS_ANDROID || constants_1.IS_IOS ? 'false' : 'true');
-
-          _this3.loader.setAttribute('aria-hidden', 'true');
+          _this3.loader.setAttribute('aria-hidden', 'false');
         };
 
         this.events.seeking = function () {
@@ -1766,6 +1765,16 @@ var Player = function () {
         this.events.seeked = function () {
           var el = _this3.activeElement();
 
+          if (Math.round(el.currentTime) === 0) {
+            _this3.playBtn.setAttribute('aria-hidden', 'true');
+
+            _this3.loader.setAttribute('aria-hidden', 'false');
+          } else {
+            _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
+
+            _this3.loader.setAttribute('aria-hidden', 'true');
+          }
+
           _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
 
           _this3.loader.setAttribute('aria-hidden', 'true');
@@ -1778,23 +1787,43 @@ var Player = function () {
 
           _this3.loader.setAttribute('aria-hidden', 'true');
 
-          setTimeout(function () {
+          if (_this3.options.showLoaderOnInit) {
             _this3.playBtn.setAttribute('aria-hidden', 'true');
-          }, _this3.options.hidePlayBtnTimer);
+          } else {
+            setTimeout(function () {
+              _this3.playBtn.setAttribute('aria-hidden', 'true');
+            }, _this3.options.hidePlayBtnTimer);
+          }
         };
 
         this.events.playing = function () {
           _this3.loader.setAttribute('aria-hidden', 'true');
+
+          _this3.playBtn.setAttribute('aria-hidden', 'true');
         };
 
         this.events.pause = function () {
-          _this3.loader.setAttribute('aria-hidden', 'true');
+          var el = _this3.activeElement();
 
           _this3.playBtn.classList.remove('op-player__play--paused');
 
-          _this3.playBtn.setAttribute('aria-hidden', 'false');
-
           _this3.playBtn.title = _this3.options.labels.play;
+
+          if (_this3.options.showLoaderOnInit && Math.round(el.currentTime) === 0) {
+            _this3.playBtn.setAttribute('aria-hidden', 'true');
+
+            _this3.loader.setAttribute('aria-hidden', 'false');
+          } else {
+            _this3.playBtn.setAttribute('aria-hidden', 'false');
+
+            _this3.loader.setAttribute('aria-hidden', 'true');
+          }
+        };
+
+        this.events.ended = function () {
+          _this3.loader.setAttribute('aria-hidden', 'true');
+
+          _this3.playBtn.setAttribute('aria-hidden', 'true');
         };
       }
 
@@ -4261,7 +4290,15 @@ var Controls = function () {
           if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
             _this._stopControlTimer();
 
-            _this.player.playBtn.setAttribute('aria-hidden', 'false');
+            if (_this.player.activeElement().currentTime) {
+              _this.player.playBtn.setAttribute('aria-hidden', 'false');
+
+              _this.player.loader.setAttribute('aria-hidden', 'true');
+            } else if (_this.player.getOptions().showLoaderOnInit) {
+              _this.player.playBtn.setAttribute('aria-hidden', 'true');
+
+              _this.player.loader.setAttribute('aria-hidden', 'false');
+            }
 
             _this.player.getContainer().classList.remove('op-controls--hidden');
 
@@ -4271,7 +4308,15 @@ var Controls = function () {
 
         this.events.mouse.mousemove = function () {
           if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
-            _this.player.playBtn.setAttribute('aria-hidden', 'false');
+            if (_this.player.activeElement().currentTime) {
+              _this.player.loader.setAttribute('aria-hidden', 'true');
+
+              _this.player.playBtn.setAttribute('aria-hidden', 'false');
+            } else if (_this.player.getOptions().showLoaderOnInit) {
+              _this.player.playBtn.setAttribute('aria-hidden', 'true');
+
+              _this.player.loader.setAttribute('aria-hidden', 'false');
+            }
 
             _this.player.getContainer().classList.remove('op-controls--hidden');
 

@@ -175,14 +175,27 @@ class Controls implements PlayerComponent {
             this.events.mouse.mouseenter = () => {
                 if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
                     this._stopControlTimer();
-                    this.player.playBtn.setAttribute('aria-hidden', 'false');
+                    if (this.player.activeElement().currentTime) {
+                        this.player.playBtn.setAttribute('aria-hidden', 'false');
+                        this.player.loader.setAttribute('aria-hidden', 'true');
+                    } else if (this.player.getOptions().showLoaderOnInit) {
+                        this.player.playBtn.setAttribute('aria-hidden', 'true');
+                        this.player.loader.setAttribute('aria-hidden', 'false');
+                    }
                     this.player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mousemove = () => {
                 if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
-                    this.player.playBtn.setAttribute('aria-hidden', 'false');
+                    if (this.player.activeElement().currentTime) {
+                        this.player.loader.setAttribute('aria-hidden', 'true');
+                        this.player.playBtn.setAttribute('aria-hidden', 'false');
+                    } else if (this.player.getOptions().showLoaderOnInit) {
+                        this.player.playBtn.setAttribute('aria-hidden', 'true');
+                        this.player.loader.setAttribute('aria-hidden', 'false');
+                    }
+
                     this.player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
