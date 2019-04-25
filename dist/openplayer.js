@@ -1731,7 +1731,7 @@ var Player = function () {
         this.events.loadedmetadata = function () {
           var el = _this3.activeElement();
 
-          if (_this3.options.showLoaderOnInit) {
+          if (_this3.options.showLoaderOnInit && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
             _this3.loader.setAttribute('aria-hidden', 'false');
 
             _this3.playBtn.setAttribute('aria-hidden', 'true');
@@ -1774,10 +1774,6 @@ var Player = function () {
 
             _this3.loader.setAttribute('aria-hidden', 'true');
           }
-
-          _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1.default ? 'false' : 'true');
-
-          _this3.loader.setAttribute('aria-hidden', 'true');
         };
 
         this.events.play = function () {
@@ -5395,6 +5391,7 @@ var Progress = function () {
 
     this.events = {
       container: {},
+      controls: {},
       global: {},
       media: {},
       slider: {}
@@ -5446,7 +5443,7 @@ var Progress = function () {
         this.progress.appendChild(this.tooltip);
       }
 
-      this.events.media.loadedmetadata = function () {
+      var setInitialProgress = function setInitialProgress() {
         var el = _this.player.activeElement();
 
         if (el.duration !== Infinity && !_this.player.getElement().getAttribute('op-live')) {
@@ -5457,9 +5454,12 @@ var Progress = function () {
 
           _this.progress.setAttribute('aria-valuemax', el.duration.toString());
         } else {
-          _this.destroy();
+          _this.progress.setAttribute('aria-hidden', 'true');
         }
       };
+
+      this.events.media.loadedmetadata = setInitialProgress.bind(this);
+      this.events.controls.controlschanged = setInitialProgress.bind(this);
 
       this.events.media.progress = function (e) {
         var el = e.target;
@@ -5473,6 +5473,8 @@ var Progress = function () {
               }
             }
           }
+        } else if (_this.progress.getAttribute('aria-hidden') === 'false') {
+          _this.progress.setAttribute('aria-hidden', 'true');
         }
       };
 
@@ -5510,8 +5512,8 @@ var Progress = function () {
           _this.slider.value = current.toString();
           _this.slider.style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
           _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : current / el.duration * 100;
-        } else {
-          _this.destroy();
+        } else if (_this.progress.getAttribute('aria-hidden') === 'false') {
+          _this.progress.setAttribute('aria-hidden', 'true');
         }
       };
 
@@ -5644,6 +5646,7 @@ var Progress = function () {
       this.progress.addEventListener('keydown', this.player.getEvents().keydown);
       this.progress.addEventListener('mousemove', this.events.container.mousemove);
       document.addEventListener('mousemove', this.events.global.mousemove);
+      this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
       this.player.getControls().getContainer().appendChild(this.progress);
     }
   }, {
