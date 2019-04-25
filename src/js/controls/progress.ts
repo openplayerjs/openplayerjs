@@ -84,6 +84,7 @@ class Progress implements PlayerComponent {
      */
     private events: EventsList = {
         container: {},
+        controls: {},
         global: {},
         media: {},
         slider: {},
@@ -168,7 +169,7 @@ class Progress implements PlayerComponent {
             this.progress.appendChild(this.tooltip);
         }
 
-        this.events.media.loadedmetadata = () => {
+        const setInitialProgress = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
                 this.slider.setAttribute('max', `${el.duration}`);
@@ -176,9 +177,12 @@ class Progress implements PlayerComponent {
                 this.slider.value = current.toString();
                 this.progress.setAttribute('aria-valuemax', el.duration.toString());
             } else {
-                this.destroy();
+                this.progress.setAttribute('aria-hidden', 'true');
             }
         };
+        this.events.media.loadedmetadata = setInitialProgress.bind(this);
+        this.events.controls.controlschanged = setInitialProgress.bind(this);
+
         this.events.media.progress = (e: Event) => {
             const el = (e.target as HTMLMediaElement);
             if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
@@ -190,6 +194,8 @@ class Progress implements PlayerComponent {
                         }
                     }
                 }
+            } else if (this.progress.getAttribute('aria-hidden') === 'false') {
+                this.progress.setAttribute('aria-hidden', 'true');
             }
         };
         this.events.media.pause = () => {
@@ -226,8 +232,8 @@ class Progress implements PlayerComponent {
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
                     0 : ((current / el.duration) * 100);
-            } else {
-                this.destroy();
+            } else if (this.progress.getAttribute('aria-hidden') === 'false') {
+                this.progress.setAttribute('aria-hidden', 'true');
             }
         };
 
@@ -371,6 +377,7 @@ class Progress implements PlayerComponent {
         this.progress.addEventListener('keydown', this.player.getEvents().keydown);
         this.progress.addEventListener('mousemove', this.events.container.mousemove);
         document.addEventListener('mousemove', this.events.global.mousemove);
+        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
         this.player.getControls().getContainer().appendChild(this.progress);
     }
 

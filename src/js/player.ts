@@ -768,7 +768,7 @@ class Player {
         if (isVideo(this.element)) {
             this.events.loadedmetadata = () => {
                 const el = this.activeElement();
-                if (this.options.showLoaderOnInit) {
+                if (this.options.showLoaderOnInit && !IS_IOS && !IS_ANDROID) {
                     this.loader.setAttribute('aria-hidden', 'false');
                     this.playBtn.setAttribute('aria-hidden', 'true');
                 } else {
@@ -798,8 +798,6 @@ class Player {
                     this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
                     this.loader.setAttribute('aria-hidden', 'true');
                 }
-                this.playBtn.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
-                this.loader.setAttribute('aria-hidden', 'true');
             };
             this.events.play = () => {
                 this.playBtn.classList.add('op-player__play--paused');
