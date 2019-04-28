@@ -1,3 +1,21 @@
+<a name="1.10.0"></a>
+# [1.10.0](https://github.com/openplayerjs/openplayerjs/compare/v1.9.0...v1.10.0) (2019-04-28)
+
+
+### Bug Fixes
+
+* **player:** Added missing conditionals to avoid hiding controls when paused and on regular media; fixed typo on stylesheet ([a33dbe1](https://github.com/openplayerjs/openplayerjs/commit/a33dbe1))
+* **player:** Removed unnecessary attributes; expanded conditional on `loadedmetadata` to not consider mobile devices; added missing workflow to show/hide progress bar per tests on Android devices ([5fb7dc8](https://github.com/openplayerjs/openplayerjs/commit/5fb7dc8))
+* **player:** Restructured way to build captions menu to avoid issues on IE11 when `detachMenus` is `true` ([12e2905](https://github.com/openplayerjs/openplayerjs/commit/12e2905))
+
+
+### Features
+
+* **player:** Added new config element to show loader properly and fixed events to show/hide big play/loader elements ([bde589b](https://github.com/openplayerjs/openplayerjs/commit/bde589b))
+* **player:** Added new option to enable buttons to contain submenus, instead of putting all of them inside the `Settings` control ([820a9c8](https://github.com/openplayerjs/openplayerjs/commit/820a9c8))
+
+
+
 <a name="1.9.0"></a>
 # [1.9.0](https://github.com/openplayerjs/openplayerjs/compare/v1.8.1...v1.9.0) (2019-04-01)
 
