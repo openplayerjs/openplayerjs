@@ -85,10 +85,10 @@ class Captions implements PlayerComponent {
      * List of tracks found in current media.
      *
      * @private
-     * @type TextTrackList
+     * @type TextTrack[]
      * @memberof Captions
      */
-    private trackList: TextTrackList;
+    private trackList: TextTrack[];
 
     /**
      * List of remote/local track sources in case no cues are detected natively.
@@ -157,7 +157,24 @@ class Captions implements PlayerComponent {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.detachMenu = player.getOptions().detachMenus;
-        this.trackList = this.player.getElement().textTracks;
+        const trackList = this.player.getElement().textTracks;
+
+        // Check that `trackList` matches with track tags (if any)
+        const tracks = [];
+        for (let i = 0, total = trackList.length; i < total; i++) {
+            const selector = `track[kind="subtitles"][srclang="${trackList[i].language}"][label="${trackList[i].label}"]`;
+            const tag = this.player.getElement().querySelector(selector);
+            if (tag) {
+                tracks.push(trackList[i]);
+            }
+        }
+
+        if (!tracks.length) {
+            for (let i = 0, total = trackList.length; i < total; i++) {
+                tracks.push(trackList[i]);
+            }
+        }
+        this.trackList = tracks;
         this.hasTracks = !!this.trackList.length;
         return this;
     }
