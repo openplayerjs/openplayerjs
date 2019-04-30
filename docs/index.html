@@ -123,6 +123,8 @@
 				<h2 id="usage-with-javascript">Usage with Javascript</h2>
 				<p>Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the <code>op-player</code> class from the video/audio tag (just leave <code>op-player__media</code> to preserve styles), and in Javascript use the following snippet:</p>
 				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'[player ID]'</span>, [valid VAST/VPAID URL|List <span class="hljs-keyword">of</span> VAST/VPAID URLs], [<span class="hljs-string">`true|false`</span> <span class="hljs-keyword">for</span> fullscreen effect by <span class="hljs-keyword">default</span>], {
+    <span class="hljs-comment">// Allow items to be contained in a different space outside of `Settings`</span>
+    detachMenus,
     <span class="hljs-comment">// Number of ms that takes the player to hide the Play button once it starts playing (video only)</span>
     <span class="hljs-comment">// (bt default, `350`)</span>
     hidePlayBtnTimer,
@@ -133,6 +135,8 @@
     startVolume,
     <span class="hljs-comment">// Initial play time of media in seconds (by default, `0`)</span>
     startTime,
+    <span class="hljs-comment">// Allow loader to be displayed when loading video (by default, `false`)</span>
+    showLoaderOnInit,
     <span class="hljs-attr">ads</span>: {
         <span class="hljs-comment">// Custom path/URL to IMA SDK</span>
         url,
