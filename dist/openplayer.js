@@ -4538,7 +4538,25 @@ var Captions = function () {
     this.player = player;
     this.labels = player.getOptions().labels;
     this.detachMenu = player.getOptions().detachMenus;
-    this.trackList = this.player.getElement().textTracks;
+    var trackList = this.player.getElement().textTracks;
+    var tracks = [];
+
+    for (var i = 0, total = trackList.length; i < total; i++) {
+      var selector = "track[kind=\"subtitles\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]");
+      var tag = this.player.getElement().querySelector(selector);
+
+      if (tag) {
+        tracks.push(trackList[i]);
+      }
+    }
+
+    if (!tracks.length) {
+      for (var _i = 0, _total = trackList.length; _i < _total; _i++) {
+        tracks.push(trackList[_i]);
+      }
+    }
+
+    this.trackList = tracks;
     this.hasTracks = !!this.trackList.length;
     return this;
   }
@@ -4562,8 +4580,8 @@ var Captions = function () {
       this.button.setAttribute('data-active-captions', 'off');
       this.button.innerHTML = "<span class=\"op-sr\">".concat(this.labels.toggleCaptions, "</span>");
 
-      var _loop = function _loop(i, tracks, total) {
-        var element = tracks[i];
+      var _loop = function _loop(i, total, _tracks) {
+        var element = _tracks[i];
 
         if (element.kind === 'subtitles') {
           if (element.default) {
@@ -4608,8 +4626,8 @@ var Captions = function () {
         }
       };
 
-      for (var i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
-        _loop(i, tracks, total);
+      for (var i = 0, _tracks = this.player.getElement().querySelectorAll('track'), total = _tracks.length; i < total; i++) {
+        _loop(i, total, _tracks);
       }
 
       this.captions = document.createElement('div');
