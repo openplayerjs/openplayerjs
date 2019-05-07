@@ -156,3 +156,34 @@ export function offset(el: HTMLElement) {
         top: rect.top + (window.pageYOffset || document.documentElement.scrollTop),
     };
 }
+
+/**
+ * Determine if string is a valid XML structure.
+ *
+ * @export
+ * @param {string} input
+ * @returns {boolean}
+ */
+export function isXml(input: string) {
+    let parsedXml;
+
+    if (typeof (window as any).DOMParser !== 'undefined') {
+        parsedXml = (text: string) => new (window as any).DOMParser().parseFromString(text, 'text/xml');
+    } else if (typeof (window as any).ActiveXObject !== 'undefined' && new (window as any).ActiveXObject('Microsoft.XMLDOM')) {
+        parsedXml = (text: string) => {
+            const xmlDoc = new (window as any).ActiveXObject('Microsoft.XMLDOM');
+            xmlDoc.async = false;
+            xmlDoc.loadXML(text);
+            return xmlDoc;
+        };
+    } else {
+        return false;
+    }
+
+    try {
+        parsedXml(input);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}

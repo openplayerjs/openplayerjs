@@ -324,6 +324,35 @@ function offset(el) {
 
 exports.offset = offset;
 
+function isXml(input) {
+  var parsedXml;
+
+  if (typeof window.DOMParser !== 'undefined') {
+    parsedXml = function parsedXml(text) {
+      return new window.DOMParser().parseFromString(text, 'text/xml');
+    };
+  } else if (typeof window.ActiveXObject !== 'undefined' && new window.ActiveXObject('Microsoft.XMLDOM')) {
+    parsedXml = function parsedXml(text) {
+      var xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
+      xmlDoc.async = false;
+      xmlDoc.loadXML(text);
+      return xmlDoc;
+    };
+  } else {
+    return false;
+  }
+
+  try {
+    parsedXml(input);
+  } catch (e) {
+    return false;
+  }
+
+  return true;
+}
+
+exports.isXml = isXml;
+
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -7542,7 +7571,14 @@ var Ads = function () {
     key: "_requestAds",
     value: function _requestAds() {
       this.adsRequest = new google.ima.AdsRequest();
-      this.adsRequest.adTagUrl = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
+      var ads = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
+
+      if (general_1.isXml(ads)) {
+        this.adsRequest.adsResponse = ads;
+      } else {
+        this.adsRequest.adTagUrl = ads;
+      }
+
       var width = this.element.parentElement.offsetWidth;
       var height = this.element.parentElement.offsetWidth;
       this.adsRequest.linearAdSlotWidth = width;
