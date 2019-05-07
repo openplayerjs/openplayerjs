@@ -3,7 +3,7 @@ import Source from '../interfaces/source';
 import Media from '../media';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { isVideo, loadScript } from '../utils/general';
+import { isVideo, loadScript, isXml } from '../utils/general';
 
 declare const google: any;
 
@@ -867,7 +867,13 @@ class Ads {
      */
     private _requestAds(): void {
         this.adsRequest = new google.ima.AdsRequest();
-        this.adsRequest.adTagUrl = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
+        const ads = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
+
+        if (isXml(ads)) {
+            this.adsRequest.adsResponse = ads;
+        } else {
+            this.adsRequest.adTagUrl = ads;
+        }
 
         const width = this.element.parentElement.offsetWidth;
         const height = this.element.parentElement.offsetWidth;
