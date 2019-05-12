@@ -3,7 +3,7 @@ import Source from '../interfaces/source';
 import Media from '../media';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { isVideo, loadScript, isXml } from '../utils/general';
+import { isVideo, isXml, loadScript } from '../utils/general';
 
 declare const google: any;
 
