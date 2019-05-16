@@ -1,3 +1,20 @@
+# [1.11.0](https://github.com/openplayerjs/openplayerjs/compare/v1.10.0...v1.11.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* **captions:** Added workflow to verify that tracks match the `track` tag(s) (if any) to avoid extra TextTracks to be included ([68b02d6](https://github.com/openplayerjs/openplayerjs/commit/68b02d6))
+
+<a name="1.11.0"></a>
+# [1.11.0](https://github.com/openplayerjs/openplayerjs/compare/v1.10.0...v1.11.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* **captions:** Added workflow to verify that tracks match the `track` tag(s) (if any) to avoid extra TextTracks to be included ([68b02d6](https://github.com/openplayerjs/openplayerjs/commit/68b02d6))
+
+
+
 <a name="1.10.0"></a>
 # [1.10.0](https://github.com/openplayerjs/openplayerjs/compare/v1.9.0...v1.10.0) (2019-04-28)
 
