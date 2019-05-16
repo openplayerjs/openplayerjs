@@ -4,6 +4,12 @@
         "afterBump": "conventional-changelog -p angular -i CHANGELOG.md -s",
         "changelog": "conventional-changelog -p angular | tail -n +3"
     },
+    "plugins": {
+        "@release-it/conventional-changelog": {
+            "preset": "angular",
+            "infile": "CHANGELOG.md"
+        }
+    },
     "git": {
         "requireCleanWorkingDir": false,
         "tagName": "v%s",
