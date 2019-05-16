@@ -1,5 +1,4 @@
 {
-    "increment": "conventional:angular",
     "scripts": {
         "afterBump": "conventional-changelog -p angular -i CHANGELOG.md -s",
         "changelog": "conventional-changelog -p angular | tail -n +3"
