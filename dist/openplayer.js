@@ -6088,8 +6088,10 @@ var Time = function () {
       this.events.media.ended = function () {
         var el = _this.player.activeElement();
 
-        if (_this.player.isMedia() && _this.duration.innerText !== '0:00') {
-          _this.duration.innerText = time_1.formatTime(el.duration);
+        var duration = !isNaN(el.duration) ? el.duration : 0;
+
+        if (_this.player.isMedia()) {
+          _this.duration.innerText = time_1.formatTime(duration);
         }
       };
 

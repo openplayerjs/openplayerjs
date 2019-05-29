@@ -146,8 +146,9 @@ class Time implements PlayerComponent {
         };
         this.events.media.ended = () => {
             const el = this.player.activeElement();
-            if (this.player.isMedia() && this.duration.innerText !== '0:00') {
-                this.duration.innerText = formatTime(el.duration);
+            const duration = !isNaN(el.duration) ? el.duration : 0;
+            if (this.player.isMedia()) {
+                this.duration.innerText = formatTime(duration);
             }
         };
 
