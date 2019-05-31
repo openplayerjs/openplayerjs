@@ -377,7 +377,8 @@ class Controls implements PlayerComponent {
 
         Object.keys(this.items).forEach((position: string) => {
             this.items[position].forEach((item: any) => {
-                if (!this.player.getOptions().detachMenus && !item.custom && typeof item.addSettings === 'function') {
+                const allowDefault = !this.player.getOptions().detachMenus || item instanceof Settings;
+                if (allowDefault && !item.custom && typeof item.addSettings === 'function') {
                     const menuItem = item.addSettings();
                     if (Object.keys(menuItem).length) {
                         this.settings.addItem(
