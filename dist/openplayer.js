@@ -4488,7 +4488,9 @@ var Controls = function () {
       });
       Object.keys(this.items).forEach(function (position) {
         _this5.items[position].forEach(function (item) {
-          if (!_this5.player.getOptions().detachMenus && !item.custom && typeof item.addSettings === 'function') {
+          var allowDefault = !_this5.player.getOptions().detachMenus || item instanceof settings_1.default;
+
+          if (allowDefault && !item.custom && typeof item.addSettings === 'function') {
             var menuItem = item.addSettings();
 
             if (Object.keys(menuItem).length) {
