@@ -1,3 +1,14 @@
+## [1.11.1](https://github.com/openplayerjs/openplayerjs/compare/v1.11.0...v1.11.1) (2019-06-03)
+
+
+### Bug Fixes
+
+* **ads:** Added more conditionals to check errors from trying to determine if a string is a valid XML or not ([a52c945](https://github.com/openplayerjs/openplayerjs/commit/a52c945))
+* **player:** Expanded conditional to allow rendering settings speed by default ([74ae9f0](https://github.com/openplayerjs/openplayerjs/commit/74ae9f0))
+* **player:** Formatted time when media has ended and added missing validation for it to avoid displaying NaN values ([22fb1c2](https://github.com/openplayerjs/openplayerjs/commit/22fb1c2))
+
+
+
 # [1.11.0](https://github.com/openplayerjs/openplayerjs/compare/v1.10.0...v1.11.0) (2019-05-16)
 
 
