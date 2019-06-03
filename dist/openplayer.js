@@ -343,7 +343,15 @@ function isXml(input) {
   }
 
   try {
-    parsedXml(input);
+    var response = parsedXml(input);
+
+    if (response.getElementsByTagName('parsererror').length > 0) {
+      return false;
+    }
+
+    if (response.parseError && response.parseError.errorCode !== 0) {
+      return false;
+    }
   } catch (e) {
     return false;
   }
