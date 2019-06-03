@@ -181,7 +181,14 @@ export function isXml(input: string) {
     }
 
     try {
-        parsedXml(input);
+        const response = parsedXml(input);
+        if (response.getElementsByTagName('parsererror').length > 0) {
+            return false;
+        }
+
+        if (response.parseError && response.parseError.errorCode !== 0) {
+            return false;
+        }
     } catch (e) {
         return false;
     }
