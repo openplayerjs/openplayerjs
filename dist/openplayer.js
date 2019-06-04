@@ -5867,7 +5867,7 @@ var Settings = function () {
     value: function addSettings() {
       return {
         className: 'op-speed__option',
-        default: '1',
+        default: this.player.getMedia().playbackRate.toString(),
         key: 'speed',
         name: this.labels.speed,
         subitems: [{
