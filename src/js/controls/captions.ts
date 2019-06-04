@@ -277,7 +277,9 @@ class Captions implements PlayerComponent {
             if (this.detachMenu) {
                 const menus = this.player.getContainer().querySelectorAll('.op-settings');
                 for (let i = 0, total = menus.length; i < total; ++i) {
-                    menus[i].setAttribute('aria-hidden', 'true');
+                    if (menus[i] !== this.menu) {
+                        menus[i].setAttribute('aria-hidden', 'true');
+                    }
                 }
                 if (this.menu.getAttribute('aria-hidden') === 'true') {
                     this.menu.setAttribute('aria-hidden', 'false');
@@ -301,7 +303,9 @@ class Captions implements PlayerComponent {
             if (!IS_IOS && !IS_ANDROID && this.detachMenu) {
                 const menus = this.player.getContainer().querySelectorAll('.op-settings');
                 for (let i = 0, total = menus.length; i < total; ++i) {
-                    menus[i].setAttribute('aria-hidden', 'true');
+                    if (menus[i] !== this.menu) {
+                        menus[i].setAttribute('aria-hidden', 'true');
+                    }
                 }
                 if (this.menu.getAttribute('aria-hidden') === 'true') {
                     this.menu.setAttribute('aria-hidden', 'false');

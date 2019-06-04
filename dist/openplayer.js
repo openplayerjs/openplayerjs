@@ -4709,7 +4709,9 @@ var Captions = function () {
           var menus = _this.player.getContainer().querySelectorAll('.op-settings');
 
           for (var i = 0, total = menus.length; i < total; ++i) {
-            menus[i].setAttribute('aria-hidden', 'true');
+            if (menus[i] !== _this.menu) {
+              menus[i].setAttribute('aria-hidden', 'true');
+            }
           }
 
           if (_this.menu.getAttribute('aria-hidden') === 'true') {
@@ -4739,7 +4741,9 @@ var Captions = function () {
           var menus = _this.player.getContainer().querySelectorAll('.op-settings');
 
           for (var i = 0, total = menus.length; i < total; ++i) {
-            menus[i].setAttribute('aria-hidden', 'true');
+            if (menus[i] !== _this.menu) {
+              menus[i].setAttribute('aria-hidden', 'true');
+            }
           }
 
           if (_this.menu.getAttribute('aria-hidden') === 'true') {
@@ -5816,7 +5820,9 @@ var Settings = function () {
         var menus = _this.player.getContainer().querySelectorAll('.op-settings');
 
         for (var i = 0, total = menus.length; i < total; ++i) {
-          menus[i].setAttribute('aria-hidden', 'true');
+          if (menus[i] !== _this.menu) {
+            menus[i].setAttribute('aria-hidden', 'true');
+          }
         }
 
         _this.menu.setAttribute('aria-hidden', _this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false');
@@ -5893,7 +5899,7 @@ var Settings = function () {
     value: function addSettings() {
       return {
         className: 'op-speed__option',
-        default: this.player.getMedia().playbackRate.toString(),
+        default: this.player && this.player.getMedia() ? this.player.getMedia().playbackRate.toString() : '1',
         key: 'speed',
         name: this.labels.speed,
         subitems: [{

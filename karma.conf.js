@@ -13,7 +13,7 @@ module.exports = config => {
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
-        browsers: ['ChromeHeadless'],
+        browsers: ['Firefox'],
         proxies: {
             '/dist/': '/base/dist/',
             '/test/': '/base/test/',
