@@ -432,30 +432,6 @@ module.exports = function (it, key) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-function addEvent(event, details) {
-  if (typeof event !== 'string') {
-    throw new Error('Event name must be a string');
-  }
-
-  return new CustomEvent(event, {
-    detail: details
-  });
-}
-
-exports.addEvent = addEvent;
-exports.events = ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'];
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.NAV = window.navigator;
 exports.UA = exports.NAV.userAgent.toLowerCase();
 exports.IS_IPAD = /ipad/i.test(exports.UA) && !window.MSStream;
@@ -478,6 +454,30 @@ exports.SUPPORTS_HLS = function () {
   var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
   return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
 };
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function addEvent(event, details) {
+  if (typeof event !== 'string') {
+    throw new Error('Event name must be a string');
+  }
+
+  return new CustomEvent(event, {
+    detail: details
+  });
+}
+
+exports.addEvent = addEvent;
+exports.events = ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'];
 
 /***/ }),
 /* 11 */
@@ -1384,9 +1384,9 @@ var media_1 = __webpack_require__(131);
 
 var ads_1 = __webpack_require__(135);
 
-var constants_1 = __webpack_require__(10);
+var constants_1 = __webpack_require__(9);
 
-var events_1 = __webpack_require__(9);
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 
@@ -4274,9 +4274,9 @@ var time_1 = __webpack_require__(129);
 
 var volume_1 = __webpack_require__(130);
 
-var constants_1 = __webpack_require__(10);
+var constants_1 = __webpack_require__(9);
 
-var events_1 = __webpack_require__(9);
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 
@@ -4556,7 +4556,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var events_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(9);
+
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 
@@ -4704,6 +4706,12 @@ var Captions = function () {
         var button = e.target;
 
         if (_this.detachMenu) {
+          var menus = _this.player.getContainer().querySelectorAll('.op-settings');
+
+          for (var i = 0, total = menus.length; i < total; ++i) {
+            menus[i].setAttribute('aria-hidden', 'true');
+          }
+
           if (_this.menu.getAttribute('aria-hidden') === 'true') {
             _this.menu.setAttribute('aria-hidden', 'false');
           } else {
@@ -4727,7 +4735,13 @@ var Captions = function () {
       };
 
       this.events.button.mouseover = function () {
-        if (_this.detachMenu) {
+        if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && _this.detachMenu) {
+          var menus = _this.player.getContainer().querySelectorAll('.op-settings');
+
+          for (var i = 0, total = menus.length; i < total; ++i) {
+            menus[i].setAttribute('aria-hidden', 'true');
+          }
+
           if (_this.menu.getAttribute('aria-hidden') === 'true') {
             _this.menu.setAttribute('aria-hidden', 'false');
           }
@@ -4735,7 +4749,13 @@ var Captions = function () {
       };
 
       this.events.button.mouseout = function () {
-        if (_this.detachMenu) {
+        if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && _this.detachMenu) {
+          var menus = _this.player.getContainer().querySelectorAll('.op-settings');
+
+          for (var i = 0, total = menus.length; i < total; ++i) {
+            menus[i].setAttribute('aria-hidden', 'true');
+          }
+
           if (_this.menu.getAttribute('aria-hidden') === 'false') {
             _this.menu.setAttribute('aria-hidden', 'true');
           }
@@ -5247,7 +5267,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var player_1 = __webpack_require__(47);
 
-var events_1 = __webpack_require__(9);
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 
@@ -5436,7 +5456,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(10);
+var constants_1 = __webpack_require__(9);
 
 var general_1 = __webpack_require__(3);
 
@@ -5792,6 +5812,12 @@ var Settings = function () {
 
       this.clickEvent = function () {
         _this.button.setAttribute('aria-pressed', 'true');
+
+        var menus = _this.player.getContainer().querySelectorAll('.op-settings');
+
+        for (var i = 0, total = menus.length; i < total; ++i) {
+          menus[i].setAttribute('aria-hidden', 'true');
+        }
 
         _this.menu.setAttribute('aria-hidden', _this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false');
       };
@@ -6151,9 +6177,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(10);
+var constants_1 = __webpack_require__(9);
 
-var events_1 = __webpack_require__(9);
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 
@@ -6670,9 +6696,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(10);
+var constants_1 = __webpack_require__(9);
 
-var events_1 = __webpack_require__(9);
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 
@@ -6843,9 +6869,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(10);
+var constants_1 = __webpack_require__(9);
 
-var events_1 = __webpack_require__(9);
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 
@@ -7167,9 +7193,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(10);
+var constants_1 = __webpack_require__(9);
 
-var events_1 = __webpack_require__(9);
+var events_1 = __webpack_require__(10);
 
 var general_1 = __webpack_require__(3);
 

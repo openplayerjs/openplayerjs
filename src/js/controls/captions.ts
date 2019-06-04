@@ -5,6 +5,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
+import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { getAbsoluteUrl, hasClass, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
@@ -274,6 +275,10 @@ class Captions implements PlayerComponent {
         this.events.button.click = (e: Event) => {
             const button = (e.target as HTMLDivElement);
             if (this.detachMenu) {
+                const menus = this.player.getContainer().querySelectorAll('.op-settings');
+                for (let i = 0, total = menus.length; i < total; ++i) {
+                    menus[i].setAttribute('aria-hidden', 'true');
+                }
                 if (this.menu.getAttribute('aria-hidden') === 'true') {
                     this.menu.setAttribute('aria-hidden', 'false');
                 } else {
@@ -293,14 +298,22 @@ class Captions implements PlayerComponent {
             }
         };
         this.events.button.mouseover = () => {
-            if (this.detachMenu) {
+            if (!IS_IOS && !IS_ANDROID && this.detachMenu) {
+                const menus = this.player.getContainer().querySelectorAll('.op-settings');
+                for (let i = 0, total = menus.length; i < total; ++i) {
+                    menus[i].setAttribute('aria-hidden', 'true');
+                }
                 if (this.menu.getAttribute('aria-hidden') === 'true') {
                     this.menu.setAttribute('aria-hidden', 'false');
                 }
             }
         };
         this.events.button.mouseout = () => {
-            if (this.detachMenu) {
+            if (!IS_IOS && !IS_ANDROID && this.detachMenu) {
+                const menus = this.player.getContainer().querySelectorAll('.op-settings');
+                for (let i = 0, total = menus.length; i < total; ++i) {
+                    menus[i].setAttribute('aria-hidden', 'true');
+                }
                 if (this.menu.getAttribute('aria-hidden') === 'false') {
                     this.menu.setAttribute('aria-hidden', 'true');
                 }
