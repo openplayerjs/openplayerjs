@@ -150,7 +150,9 @@ class Settings implements PlayerComponent {
             this.button.setAttribute('aria-pressed', 'true');
             const menus = this.player.getContainer().querySelectorAll('.op-settings');
             for (let i = 0, total = menus.length; i < total; ++i) {
-                menus[i].setAttribute('aria-hidden', 'true');
+                if (menus[i] !== this.menu) {
+                    menus[i].setAttribute('aria-hidden', 'true');
+                }
             }
             this.menu.setAttribute('aria-hidden', (this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false'));
         };
@@ -230,7 +232,7 @@ class Settings implements PlayerComponent {
     public addSettings(): SettingsItem {
         return {
             className: 'op-speed__option',
-            default: this.player.getMedia().playbackRate.toString(),
+            default: this.player && this.player.getMedia() ? this.player.getMedia().playbackRate.toString() : '1',
             key: 'speed',
             name: this.labels.speed,
             subitems: [
