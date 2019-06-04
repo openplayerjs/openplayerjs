@@ -148,6 +148,10 @@ class Settings implements PlayerComponent {
 
         this.clickEvent = () => {
             this.button.setAttribute('aria-pressed', 'true');
+            const menus = this.player.getContainer().querySelectorAll('.op-settings');
+            for (let i = 0, total = menus.length; i < total; ++i) {
+                menus[i].setAttribute('aria-hidden', 'true');
+            }
             this.menu.setAttribute('aria-hidden', (this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false'));
         };
 
