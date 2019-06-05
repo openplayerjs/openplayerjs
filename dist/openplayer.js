@@ -5892,7 +5892,6 @@ var Settings = function () {
 
       this.menu.remove();
       this.button.remove();
-      this.player.getMedia().playbackRate = 1;
     }
   }, {
     key: "addSettings",
