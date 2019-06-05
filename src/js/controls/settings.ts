@@ -218,9 +218,6 @@ class Settings implements PlayerComponent {
 
         this.menu.remove();
         this.button.remove();
-
-        // Restore original playback rate
-        this.player.getMedia().playbackRate = 1;
     }
 
     /**
