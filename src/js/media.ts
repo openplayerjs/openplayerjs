@@ -335,6 +335,26 @@ class Media {
 
     /**
      *
+     * @see [[Native.defaultPlaybackRate]]
+     * @memberof Media
+     */
+    set defaultPlaybackRate(value) {
+        this.media.defaultPlaybackRate = value;
+    }
+
+    /**
+     *
+     * @see [[Native.defaultPlaybackRate]]
+     * @type number
+     * @memberof Media
+     * @readonly
+     */
+    get defaultPlaybackRate(): number {
+        return this.media ? this.media.defaultPlaybackRate : this.element.defaultPlaybackRate;
+    }
+
+    /**
+     *
      * @see [[Native.currentTime]]
      * @memberof Media
      */

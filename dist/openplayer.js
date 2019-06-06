@@ -1314,6 +1314,14 @@ var Native = function () {
       return this.element.playbackRate;
     }
   }, {
+    key: "defaultPlaybackRate",
+    set: function set(value) {
+      this.element.defaultPlaybackRate = value;
+    },
+    get: function get() {
+      return this.element.defaultPlaybackRate;
+    }
+  }, {
     key: "currentTime",
     set: function set(value) {
       this.element.currentTime = value;
@@ -5898,7 +5906,7 @@ var Settings = function () {
     value: function addSettings() {
       return {
         className: 'op-speed__option',
-        default: this.player && this.player.getMedia() ? this.player.getMedia().playbackRate.toString() : '1',
+        default: this.player && this.player.getMedia() ? this.player.getMedia().defaultPlaybackRate.toString() : '1',
         key: 'speed',
         name: this.labels.speed,
         subitems: [{
@@ -6627,6 +6635,14 @@ var Media = function () {
     },
     get: function get() {
       return this.media ? this.media.playbackRate : this.element.playbackRate;
+    }
+  }, {
+    key: "defaultPlaybackRate",
+    set: function set(value) {
+      this.media.defaultPlaybackRate = value;
+    },
+    get: function get() {
+      return this.media ? this.media.defaultPlaybackRate : this.element.defaultPlaybackRate;
     }
   }, {
     key: "currentTime",

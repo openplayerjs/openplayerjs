@@ -171,6 +171,25 @@ abstract class Native {
     }
 
     /**
+     * Set the current media's playback rate.
+     *
+     * @memberof Native
+     */
+    set defaultPlaybackRate(value: number) {
+        this.element.defaultPlaybackRate = value;
+    }
+
+    /**
+     * Retrieve the current media's playback rate.
+     *
+     * @returns {number}
+     * @memberof Native
+     */
+    get defaultPlaybackRate(): number {
+        return this.element.defaultPlaybackRate;
+    }
+
+    /**
      * Set the current media's current time position.
      *
      * @memberof Native
