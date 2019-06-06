@@ -1,5 +1,6 @@
 import PlayerComponent from '../interfaces/component';
 import Player from '../player';
+import { IS_IPHONE } from '../utils/constants';
 
 /**
  * Fullscreen element.
@@ -151,6 +152,20 @@ class Fullscreen implements PlayerComponent {
         this.button.addEventListener('click', this.clickEvent.bind(this));
 
         this.player.getControls().getContainer().appendChild(this.button);
+
+        // Since iPhone still doesn't accept the regular Fullscreen API, use the following events
+        if (IS_IPHONE) {
+            this.player.getElement().addEventListener('webkitbeginfullscreen', () => {
+                this.isFullscreen = true;
+                this._setFullscreenData(false);
+                document.body.classList.add('op-fullscreen__on');
+            });
+            this.player.getElement().addEventListener('webkitendfullscreen', () => {
+                this.isFullscreen = false;
+                this._setFullscreenData(true);
+                document.body.classList.remove('op-fullscreen__on');
+            });
+        }
     }
 
     /**
@@ -162,6 +177,18 @@ class Fullscreen implements PlayerComponent {
         this.fullscreenEvents.forEach(event => {
             document.removeEventListener(event, this._fullscreenChange.bind(this));
         });
+        if (IS_IPHONE) {
+            this.player.getElement().removeEventListener('webkitbeginfullscreen', () => {
+                this.isFullscreen = true;
+                this._setFullscreenData(false);
+                document.body.classList.add('op-fullscreen__on');
+            });
+            this.player.getElement().removeEventListener('webkitendfullscreen', () => {
+                this.isFullscreen = false;
+                this._setFullscreenData(true);
+                document.body.classList.remove('op-fullscreen__on');
+            });
+        }
         this.button.removeEventListener('click', this.clickEvent.bind(this));
         this.button.remove();
     }
@@ -227,6 +254,12 @@ class Fullscreen implements PlayerComponent {
             this.player.getAd().resizeAds(width, height);
         }
         this.isFullscreen = !this.isFullscreen;
+
+        if (this.isFullscreen) {
+            document.body.classList.add('op-fullscreen__on');
+        } else {
+            document.body.classList.remove('op-fullscreen__on');
+        }
         this._resize(width, height);
     }
 

@@ -380,7 +380,7 @@ module.exports = __webpack_require__(13) ? function (object, key, value) {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 
 module.exports = function (it) {
   if (!isObject(it)) {
@@ -391,39 +391,6 @@ module.exports = function (it) {
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports) {
-
-module.exports = function (exec) {
-  try {
-    return !!exec();
-  } catch (e) {
-    return true;
-  }
-};
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-module.exports = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-var hasOwnProperty = {}.hasOwnProperty;
-
-module.exports = function (it, key) {
-  return hasOwnProperty.call(it, key);
-};
-
-
-/***/ }),
-/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -454,6 +421,39 @@ exports.SUPPORTS_HLS = function () {
   var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
   return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
 };
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (e) {
+    return true;
+  }
+};
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+var hasOwnProperty = {}.hasOwnProperty;
+
+module.exports = function (it, key) {
+  return hasOwnProperty.call(it, key);
+};
+
 
 /***/ }),
 /* 10 */
@@ -518,7 +518,7 @@ exports.f = DESCRIPTORS ? nativeDefineProperty : function defineProperty(O, P, A
 /***/ (function(module, exports, __webpack_require__) {
 
 // Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(6)(function () {
+module.exports = !__webpack_require__(7)(function () {
   return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 
@@ -688,7 +688,7 @@ module.exports = function (it) {
 
 var global = __webpack_require__(0);
 var hide = __webpack_require__(4);
-var has = __webpack_require__(8);
+var has = __webpack_require__(9);
 var setGlobal = __webpack_require__(33);
 var nativeFunctionToString = __webpack_require__(51);
 var InternalStateModule = __webpack_require__(26);
@@ -730,9 +730,9 @@ __webpack_require__(21)('inspectSource', function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var NATIVE_WEAK_MAP = __webpack_require__(77);
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 var hide = __webpack_require__(4);
-var objectHas = __webpack_require__(8);
+var objectHas = __webpack_require__(9);
 var sharedKey = __webpack_require__(37);
 var hiddenKeys = __webpack_require__(38);
 var WeakMap = __webpack_require__(0).WeakMap;
@@ -952,7 +952,7 @@ exports.isAutoplaySupported = isAutoplaySupported;
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
-var fails = __webpack_require__(6);
+var fails = __webpack_require__(7);
 var classof = __webpack_require__(11);
 var split = ''.split;
 
@@ -1011,7 +1011,7 @@ module.exports = function (key, value) {
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 var document = __webpack_require__(0).document;
 // typeof document.createElement is 'object' in old IE
 var exist = isObject(document) && isObject(document.createElement);
@@ -1026,7 +1026,7 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
 module.exports = function (it, S) {
@@ -1048,7 +1048,7 @@ var propertyIsEnumerableModule = __webpack_require__(50);
 var createPropertyDescriptor = __webpack_require__(22);
 var toIndexedObject = __webpack_require__(24);
 var toPrimitive = __webpack_require__(35);
-var has = __webpack_require__(8);
+var has = __webpack_require__(9);
 var IE8_DOM_DEFINE = __webpack_require__(48);
 var nativeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 
@@ -1166,7 +1166,7 @@ module.exports = Object.keys || function keys(O) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-var has = __webpack_require__(8);
+var has = __webpack_require__(9);
 var toObject = __webpack_require__(16);
 var IE_PROTO = __webpack_require__(37)('IE_PROTO');
 var CORRECT_PROTOTYPE_GETTER = __webpack_require__(89);
@@ -1186,7 +1186,7 @@ module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O)
 /***/ (function(module, exports, __webpack_require__) {
 
 var defineProperty = __webpack_require__(12).f;
-var has = __webpack_require__(8);
+var has = __webpack_require__(9);
 var TO_STRING_TAG = __webpack_require__(1)('toStringTag');
 
 module.exports = function (it, TAG, STATIC) {
@@ -1392,7 +1392,7 @@ var media_1 = __webpack_require__(131);
 
 var ads_1 = __webpack_require__(135);
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var events_1 = __webpack_require__(10);
 
@@ -2055,7 +2055,7 @@ Player.init();
 /***/ (function(module, exports, __webpack_require__) {
 
 // Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(13) && !__webpack_require__(6)(function () {
+module.exports = !__webpack_require__(13) && !__webpack_require__(7)(function () {
   return Object.defineProperty(__webpack_require__(34)('div'), 'a', {
     get: function () { return 7; }
   }).a != 7;
@@ -2103,7 +2103,7 @@ module.exports = __webpack_require__(21)('native-function-to-string', Function.t
 /* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(8);
+var has = __webpack_require__(9);
 var toIndexedObject = __webpack_require__(24);
 var arrayIndexOf = __webpack_require__(81)(false);
 var hiddenKeys = __webpack_require__(38);
@@ -2133,7 +2133,7 @@ exports.f = Object.getOwnPropertySymbols;
 /* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(6);
+var fails = __webpack_require__(7);
 var replacement = /#|\.prototype\./;
 
 var isForced = function (feature, detection) {
@@ -2323,7 +2323,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 
 var getPrototypeOf = __webpack_require__(42);
 var hide = __webpack_require__(4);
-var has = __webpack_require__(8);
+var has = __webpack_require__(9);
 var IS_PURE = __webpack_require__(23);
 var ITERATOR = __webpack_require__(1)('iterator');
 var BUGGY_SAFARI_ITERATORS = false;
@@ -2626,7 +2626,7 @@ module.exports = navigator && navigator.userAgent || '';
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(5);
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 var newPromiseCapability = __webpack_require__(18);
 
 module.exports = function (C, x) {
@@ -2743,7 +2743,7 @@ module.exports = function (TYPE, specificCreate) {
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 var isArray = __webpack_require__(75);
 var SPECIES = __webpack_require__(1)('species');
 
@@ -2781,7 +2781,7 @@ module.exports = Array.isArray || function isArray(arg) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // Chrome 38 Symbol has incorrect toString conversion
-module.exports = !__webpack_require__(6)(function () {
+module.exports = !__webpack_require__(7)(function () {
   // eslint-disable-next-line no-undef
   String(Symbol());
 });
@@ -2801,7 +2801,7 @@ module.exports = typeof WeakMap === 'function' && /native code/.test(nativeFunct
 /* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(8);
+var has = __webpack_require__(9);
 var ownKeys = __webpack_require__(79);
 var getOwnPropertyDescriptorModule = __webpack_require__(36);
 var definePropertyModule = __webpack_require__(12);
@@ -2996,7 +2996,7 @@ module.exports = function (IteratorConstructor, NAME, next) {
 /* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(6)(function () {
+module.exports = !__webpack_require__(7)(function () {
   function F() { /* empty */ }
   F.prototype.constructor = null;
   return Object.getPrototypeOf(new F()) !== F.prototype;
@@ -3007,7 +3007,7 @@ module.exports = !__webpack_require__(6)(function () {
 /* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 var anObject = __webpack_require__(5);
 
 module.exports = function (O, proto) {
@@ -3140,7 +3140,7 @@ var IndexedObject = __webpack_require__(30);
 var nativeAssign = Object.assign;
 
 // should work with symbols and should have deterministic property order (V8 bug)
-module.exports = !nativeAssign || __webpack_require__(6)(function () {
+module.exports = !nativeAssign || __webpack_require__(7)(function () {
   var A = {};
   var B = {};
   // eslint-disable-next-line no-undef
@@ -3188,7 +3188,7 @@ module.exports = __webpack_require__(14).Object.keys;
 
 var toObject = __webpack_require__(16);
 var nativeKeys = __webpack_require__(41);
-var FAILS_ON_PRIMITIVES = __webpack_require__(6)(function () { nativeKeys(1); });
+var FAILS_ON_PRIMITIVES = __webpack_require__(7)(function () { nativeKeys(1); });
 
 // `Object.keys` method
 // https://tc39.github.io/ecma262/#sec-object.keys
@@ -3403,7 +3403,7 @@ var PROMISE = 'Promise';
 var IS_PURE = __webpack_require__(23);
 var global = __webpack_require__(0);
 var $export = __webpack_require__(2);
-var isObject = __webpack_require__(7);
+var isObject = __webpack_require__(8);
 var aFunction = __webpack_require__(19);
 var anInstance = __webpack_require__(109);
 var classof = __webpack_require__(11);
@@ -4282,7 +4282,7 @@ var time_1 = __webpack_require__(129);
 
 var volume_1 = __webpack_require__(130);
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var events_1 = __webpack_require__(10);
 
@@ -4564,7 +4564,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var events_1 = __webpack_require__(10);
 
@@ -5121,6 +5121,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var constants_1 = __webpack_require__(6);
+
 var Fullscreen = function () {
   function Fullscreen(player) {
     _classCallCheck(this, Fullscreen);
@@ -5163,6 +5165,23 @@ var Fullscreen = function () {
       });
       this.button.addEventListener('click', this.clickEvent.bind(this));
       this.player.getControls().getContainer().appendChild(this.button);
+
+      if (constants_1.IS_IPHONE) {
+        this.player.getElement().addEventListener('webkitbeginfullscreen', function () {
+          _this.isFullscreen = true;
+
+          _this._setFullscreenData(false);
+
+          document.body.classList.add('op-fullscreen__on');
+        });
+        this.player.getElement().addEventListener('webkitendfullscreen', function () {
+          _this.isFullscreen = false;
+
+          _this._setFullscreenData(true);
+
+          document.body.classList.remove('op-fullscreen__on');
+        });
+      }
     }
   }, {
     key: "destroy",
@@ -5172,6 +5191,24 @@ var Fullscreen = function () {
       this.fullscreenEvents.forEach(function (event) {
         document.removeEventListener(event, _this2._fullscreenChange.bind(_this2));
       });
+
+      if (constants_1.IS_IPHONE) {
+        this.player.getElement().removeEventListener('webkitbeginfullscreen', function () {
+          _this2.isFullscreen = true;
+
+          _this2._setFullscreenData(false);
+
+          document.body.classList.add('op-fullscreen__on');
+        });
+        this.player.getElement().removeEventListener('webkitendfullscreen', function () {
+          _this2.isFullscreen = false;
+
+          _this2._setFullscreenData(true);
+
+          document.body.classList.remove('op-fullscreen__on');
+        });
+      }
+
       this.button.removeEventListener('click', this.clickEvent.bind(this));
       this.button.remove();
     }
@@ -5229,6 +5266,12 @@ var Fullscreen = function () {
       }
 
       this.isFullscreen = !this.isFullscreen;
+
+      if (this.isFullscreen) {
+        document.body.classList.add('op-fullscreen__on');
+      } else {
+        document.body.classList.remove('op-fullscreen__on');
+      }
 
       this._resize(width, height);
     }
@@ -5468,7 +5511,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(3);
 
@@ -6190,7 +6233,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var events_1 = __webpack_require__(10);
 
@@ -6717,7 +6760,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var events_1 = __webpack_require__(10);
 
@@ -6890,7 +6933,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var events_1 = __webpack_require__(10);
 
@@ -7214,7 +7257,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(9);
+var constants_1 = __webpack_require__(6);
 
 var events_1 = __webpack_require__(10);
 
