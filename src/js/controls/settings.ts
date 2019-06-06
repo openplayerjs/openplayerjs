@@ -229,7 +229,7 @@ class Settings implements PlayerComponent {
     public addSettings(): SettingsItem {
         return {
             className: 'op-speed__option',
-            default: this.player && this.player.getMedia() ? this.player.getMedia().playbackRate.toString() : '1',
+            default: this.player && this.player.getMedia() ? this.player.getMedia().defaultPlaybackRate.toString() : '1',
             key: 'speed',
             name: this.labels.speed,
             subitems: [
