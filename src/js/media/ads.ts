@@ -631,6 +631,11 @@ class Ads {
                     this.element.parentElement.classList.remove('op-ads--active');
                     this.adsActive = false;
                     clearInterval(this.intervalTimer);
+                    if (this.element.currentTime >= this.element.duration) {
+                        this.destroy();
+                        const endedEvent = addEvent('ended');
+                        this.element.dispatchEvent(endedEvent);
+                    }
                 }
                 break;
             case google.ima.AdEvent.Type.VOLUME_CHANGED:
@@ -645,6 +650,11 @@ class Ads {
                     this.adsActive = false;
                     this.adsEnded = true;
                     this.element.parentElement.classList.remove('op-ads--active');
+                    this.destroy();
+                    if (this.element.currentTime >= this.element.duration) {
+                        const endedEvent = addEvent('ended');
+                        this.element.dispatchEvent(endedEvent);
+                    }
                 }
                 break;
         }

@@ -4324,7 +4324,12 @@ var Controls = function () {
         _this.create();
       };
 
+      this.events.ended = function () {
+        _this.player.getContainer().classList.remove('op-controls--hidden');
+      };
+
       this.player.getElement().addEventListener('controlschanged', this.events.controlschanged);
+      this.player.getElement().addEventListener('ended', this.events.ended);
 
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         this.events.mouse.mouseenter = function () {
@@ -4410,6 +4415,7 @@ var Controls = function () {
       }
 
       this.player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
+      this.player.getElement().removeEventListener('ended', this.events.ended);
       Object.keys(this.items).forEach(function (position) {
         _this2.items[position].forEach(function (item) {
           if (item.custom) {
@@ -5436,6 +5442,10 @@ var Play = function () {
 
       this.events.media.ended = function () {
         if (_this.player.activeElement().ended && _this.player.isMedia()) {
+          _this.button.classList.add('op-controls__playpause--replay');
+
+          _this.button.classList.remove('op-controls__playpause--pause');
+        } else if (_this.player.getElement().currentTime >= _this.player.getElement().duration || _this.player.getElement().currentTime <= 0) {
           _this.button.classList.add('op-controls__playpause--replay');
 
           _this.button.classList.remove('op-controls__playpause--pause');
@@ -7490,6 +7500,12 @@ var Ads = function () {
             this.element.parentElement.classList.remove('op-ads--active');
             this.adsActive = false;
             clearInterval(this.intervalTimer);
+
+            if (this.element.currentTime >= this.element.duration) {
+              this.destroy();
+              var endedEvent = events_1.addEvent('ended');
+              this.element.dispatchEvent(endedEvent);
+            }
           }
 
           break;
@@ -7508,6 +7524,13 @@ var Ads = function () {
             this.adsActive = false;
             this.adsEnded = true;
             this.element.parentElement.classList.remove('op-ads--active');
+            this.destroy();
+
+            if (this.element.currentTime >= this.element.duration) {
+              var _endedEvent = events_1.addEvent('ended');
+
+              this.element.dispatchEvent(_endedEvent);
+            }
           }
 
           break;
