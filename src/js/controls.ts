@@ -169,7 +169,12 @@ class Controls implements PlayerComponent {
             this.create();
         };
 
+        this.events.ended = () => {
+            this.player.getContainer().classList.remove('op-controls--hidden');
+        };
+
         this.player.getElement().addEventListener('controlschanged', this.events.controlschanged);
+        this.player.getElement().addEventListener('ended', this.events.ended);
 
         if (!IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
@@ -246,6 +251,7 @@ class Controls implements PlayerComponent {
         }
 
         this.player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
+        this.player.getElement().removeEventListener('ended', this.events.ended);
 
         Object.keys(this.items).forEach((position: string) => {
             this.items[position].forEach((item: any) => {
