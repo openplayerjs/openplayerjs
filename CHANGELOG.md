@@ -1,3 +1,42 @@
+# [1.12.0](https://github.com/openplayerjs/openplayerjs/compare/v1.11.1...v1.12.0) (2019-06-08)
+
+
+### Bug Fixes
+
+* **player:** Added missing conditional to avoid issues when clicking multiple times on Settings; changed browser to test locally ([a1753f1](https://github.com/openplayerjs/openplayerjs/commit/a1753f1))
+* **player:** Added missing workflow to check if media has finished playing when Ad stopped playing on post roll to destroy Ads completely ([d640861](https://github.com/openplayerjs/openplayerjs/commit/d640861))
+* **player:** Added missing workflow to hide other menus when selecting another ([9d068e8](https://github.com/openplayerjs/openplayerjs/commit/9d068e8))
+* **player:** Changed default setting for speed to current media one to allow user to use a different one ([1647e29](https://github.com/openplayerjs/openplayerjs/commit/1647e29))
+* **player:** Enhanced events for iPhone to support fullscreen ([e4425f0](https://github.com/openplayerjs/openplayerjs/commit/e4425f0))
+* **player:** Removed reset of playback when destroying settings ([be62f05](https://github.com/openplayerjs/openplayerjs/commit/be62f05))
+* **tests:** Reverted settings to allow Travis to continue testing properly ([194999c](https://github.com/openplayerjs/openplayerjs/commit/194999c))
+
+
+### Features
+
+* **player:** Added new wrappers for default method to get/set defaultPlaybackRate, part of the HTML5 specs ([3b8ba5a](https://github.com/openplayerjs/openplayerjs/commit/3b8ba5a))
+
+<a name="1.12.0"></a>
+# [1.12.0](https://github.com/openplayerjs/openplayerjs/compare/v1.11.1...v1.12.0) (2019-06-08)
+
+
+### Bug Fixes
+
+* **player:** Added missing conditional to avoid issues when clicking multiple times on Settings; changed browser to test locally ([a1753f1](https://github.com/openplayerjs/openplayerjs/commit/a1753f1))
+* **player:** Added missing workflow to check if media has finished playing when Ad stopped playing on post roll to destroy Ads completely ([d640861](https://github.com/openplayerjs/openplayerjs/commit/d640861))
+* **player:** Added missing workflow to hide other menus when selecting another ([9d068e8](https://github.com/openplayerjs/openplayerjs/commit/9d068e8))
+* **player:** Changed default setting for speed to current media one to allow user to use a different one ([1647e29](https://github.com/openplayerjs/openplayerjs/commit/1647e29))
+* **player:** Enhanced events for iPhone to support fullscreen ([e4425f0](https://github.com/openplayerjs/openplayerjs/commit/e4425f0))
+* **player:** Removed reset of playback when destroying settings ([be62f05](https://github.com/openplayerjs/openplayerjs/commit/be62f05))
+* **tests:** Reverted settings to allow Travis to continue testing properly ([194999c](https://github.com/openplayerjs/openplayerjs/commit/194999c))
+
+
+### Features
+
+* **player:** Added new wrappers for default method to get/set defaultPlaybackRate, part of the HTML5 specs ([3b8ba5a](https://github.com/openplayerjs/openplayerjs/commit/3b8ba5a))
+
+
+
 ## [1.11.1](https://github.com/openplayerjs/openplayerjs/compare/v1.11.0...v1.11.1) (2019-06-03)
 
 
