@@ -145,6 +145,8 @@ class Fullscreen implements PlayerComponent {
 
         this._setFullscreenData(false);
 
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+
         this.fullscreenEvents.forEach(event => {
             document.addEventListener(event, this._fullscreenChange.bind(this));
         });
@@ -174,6 +176,8 @@ class Fullscreen implements PlayerComponent {
      * @memberof Fullscreen
      */
     public destroy(): void {
+        this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+
         this.fullscreenEvents.forEach(event => {
             document.removeEventListener(event, this._fullscreenChange.bind(this));
         });
@@ -295,6 +299,21 @@ class Fullscreen implements PlayerComponent {
         wrapper.style.height = height ? '100%' : null;
         video.style.width = width ? '100%' : null;
         video.style.height = height ? '100%' : null;
+    }
+
+    /**
+     * Use the `F` key to go fullscreen if the focus is on player.
+     *
+     * @private
+     * @param {KeyboardEvent} e
+     * @memberof Fullscreen
+     */
+    private _keydownEvent(e: KeyboardEvent) {
+        const key = e.which || e.keyCode || 0;
+        if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
+            this.toggleFullscreen();
+            e.preventDefault();
+        }
     }
 }
 
