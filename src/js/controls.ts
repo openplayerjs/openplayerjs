@@ -2,6 +2,7 @@ import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Play from './controls/play';
 import Progress from './controls/progress';
+// import Quality from './controls/quality';
 import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
@@ -22,76 +23,22 @@ import { isVideo } from './utils/general';
  */
 class Controls implements PlayerComponent {
     /**
-     * Instance of Play object.
-     *
-     * @public
-     * @type Play
-     * @memberof Controls
-     */
-    public play: Play;
-
-    /**
-     * Instance of Time object.
-     *
-     * @public
-     * @type Time
-     * @memberof Controls
-     */
-    public time: Time;
-
-    /**
-     * Instance of Volume object.
-     *
-     * @public
-     * @type Volume
-     * @memberof Controls
-     */
-    public volume: Volume;
-
-    /**
-     * Instance of Progress object.
-     *
-     * @public
-     * @type Progress
-     * @memberof Controls
-     */
-    public progress: Progress;
-
-    /**
      * Instance of Settings object.
      *
-     * @public
+     * @private
      * @type Settings
      * @memberof Controls
      */
-    public settings: Settings;
-
-    /**
-     * Instance of Fullscreen object.
-     *
-     * @public
-     * @type Fullscreen
-     * @memberof Controls
-     */
-    public fullscreen: Fullscreen;
-
-    /**
-     * Instance of Captions object.
-     *
-     * @public
-     * @type Captions
-     * @memberof Controls
-     */
-    public captions: Captions;
+    private settings: Settings;
 
     /**
      * Element that stores the time to hide controls.
      *
-     * @public
+     * @private
      * @type number
      * @memberof Controls
      */
-    public timer: number;
+    private timer: number;
 
     /**
      * Main container of control elements.
@@ -118,7 +65,11 @@ class Controls implements PlayerComponent {
      * @type any
      * @memberof Controls
      */
-    private items: any;
+    private items: any = {
+        left: [],
+        middle: [],
+        right: [],
+    };
 
     /**
      * Events that will be triggered in Controls element:
@@ -132,6 +83,17 @@ class Controls implements PlayerComponent {
     private events: EventsList = {
         media: {},
         mouse: {},
+    };
+
+    private controlEls: any = {
+        Captions,
+        Fullscreen,
+        Play,
+        Progress,
+        // Quality,
+        Settings,
+        Time,
+        Volume,
     };
 
     /**
@@ -320,32 +282,22 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private _setElements(): void {
-        this.play = new Play(this.player);
-        this.time = new Time(this.player);
-        this.progress = new Progress(this.player);
-        this.volume = new Volume(this.player);
-        this.captions = new Captions(this.player);
-        this.settings = new Settings(this.player);
-        this.items = {
-            left: [
-                this.play,
-                this.time,
-                this.volume,
-            ],
-            middle: [
-                this.progress,
-            ],
-            right: [
-                this.captions,
-                this.settings,
-            ],
-        };
+        const controls = this.player.getOptions().controls;
+        controls.forEach((position: string) => {
+            controls[position].forEach((el: string) => {
+                const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
+                const item = new this.controlEls[className](this.player);
+                if (el === 'settings') {
+                    this.settings = item;
+                }
+                this.items[position].push(item);
+            });
+        });
 
         // Append/prepend the custom items (if any) depending on their position:
         // If position is right, always prepend so Settings and Fullscreen are the last items;
         // otherwise, append new controls
-        const customItems = this.player.getCustomControls();
-        customItems.forEach(item => {
+        this.player.getCustomControls().forEach(item => {
             if (item.position === 'right') {
                 this.items[item.position].unshift(item);
             } else {
@@ -355,8 +307,7 @@ class Controls implements PlayerComponent {
 
         // Make sure fullscreen is always the last one
         if (isVideo(this.player.getElement())) {
-            this.fullscreen = new Fullscreen(this.player);
-            this.items.right.push(this.fullscreen);
+            this.items.right.push(new Fullscreen(this.player));
         }
     }
 
