@@ -82,7 +82,7 @@
     "typescript": "^3.2.4",
     "unminified-webpack-plugin": "^2.0.0",
     "url-loader": "^2.0.0",
-    "webpack": "^4.35.0",
+    "webpack": "^4.36.1",
     "webpack-cli": "^3.2.1"
   },
   "dependencies": {
