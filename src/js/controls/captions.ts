@@ -363,9 +363,7 @@ class Captions implements PlayerComponent {
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
                 if (this.detachMenu) {
                     if (hasClass(this.button, 'op-controls__captions--on')) {
-                        this._hide();
-                        this.button.classList.remove('op-controls__captions--on');
-                        this.button.setAttribute('data-active-captions', 'off');
+                        this._hide();                        
                     } else {
                         this._show();
                         this.button.classList.add('op-controls__captions--on');
@@ -379,6 +377,7 @@ class Captions implements PlayerComponent {
                     this.menu.setAttribute('aria-hidden', 'false');
                 } else {
                     this._show();
+                    this.button.classList.add('op-controls__captions--on');
                     this.button.setAttribute('data-active-captions', language);
                 }
                 const event = addEvent('captionschanged');
@@ -559,6 +558,7 @@ class Captions implements PlayerComponent {
     private _hide(): void {
         this.captions.classList.remove('op-captions--on');
         this.button.setAttribute('data-active-captions', 'off');
+        this.button.classList.remove('op-controls__captions--on');
     }
 
     /**

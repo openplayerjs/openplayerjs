@@ -4819,10 +4819,6 @@ var Captions = function () {
           if (_this.detachMenu) {
             if (general_1.hasClass(_this.button, 'op-controls__captions--on')) {
               _this._hide();
-
-              _this.button.classList.remove('op-controls__captions--on');
-
-              _this.button.setAttribute('data-active-captions', 'off');
             } else {
               _this._show();
 
@@ -4842,6 +4838,8 @@ var Captions = function () {
             _this.menu.setAttribute('aria-hidden', 'false');
           } else {
             _this._show();
+
+            _this.button.classList.add('op-controls__captions--on');
 
             _this.button.setAttribute('data-active-captions', language);
           }
@@ -4998,6 +4996,7 @@ var Captions = function () {
     value: function _hide() {
       this.captions.classList.remove('op-captions--on');
       this.button.setAttribute('data-active-captions', 'off');
+      this.button.classList.remove('op-controls__captions--on');
     }
   }, {
     key: "_search",
