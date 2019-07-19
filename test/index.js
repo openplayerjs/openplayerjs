@@ -186,11 +186,11 @@ describe('OpenPlayer.js', () => {
         player.src = 'https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8';
         player.load();
         player.play();
-        expect(player.src[0].src).to.equal('http://clips.vorwaerts-gmbh.de/VfE_html5.mp4');
+        expect(player.src[0].src).to.equal('https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8');
         expect(player.src[0].type).to.equal('application/x-mpegURL');
         setTimeout(() => {
             player.pause();
-            player.src = 'http://rmcdn.2mdn.net/Demo/vast_inspector/android.mp4';
+            player.src = 'http://clips.vorwaerts-gmbh.de/VfE_html5.mp4';
             player.load();
             expect(player.src[0].src).to.equal('http://clips.vorwaerts-gmbh.de/VfE_html5.mp4');
             expect(player.src[0].type).to.equal('video/mp4');
