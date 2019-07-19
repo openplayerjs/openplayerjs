@@ -619,7 +619,7 @@
     position: absolute;
     text-align: center;
     -webkit-transform: translateX(0%);
-                -ms-transform: translateX(0%);
+        -ms-transform: translateX(0%);
             transform: translateX(0%);
 }
 .op-player__video .op-controls__tooltip {
@@ -702,14 +702,13 @@
     position: absolute;
     text-align: center;
     -webkit-transform: translateY(-40px);
-                -ms-transform: translateY(-40px);
+        -ms-transform: translateY(-40px);
             transform: translateY(-40px);
-    transition: -webkit-transform 0.3s ease;
     -webkit-transition: -webkit-transform 0.3s ease;
+    transition: -webkit-transform 0.3s ease;
     -o-transition: transform 0.3s ease;
     transition: transform 0.3s ease;
     transition: transform 0.3s ease, -webkit-transform 0.3s ease;
-    transition: transform 0.3s ease,-webkit-transform 0.3s ease;
     width: 100%;
     z-index: 1;
 }
@@ -839,7 +838,7 @@ video:-webkit-media-text-track-display {
     position: absolute;
     top: 50%;
     -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
             transform: translate(-50%, -50%);
     width: auto !important;
 }

@@ -10,6 +10,10 @@ module.exports = {
         'openplayer.css': './src/css/player.css',
         'openplayer.min.css': './src/css/player.css',
     },
+    performance: {
+        hints: 'error',
+        maxAssetSize: 300000,
+    },
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: '[name]',
