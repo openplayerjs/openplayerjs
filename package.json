@@ -73,7 +73,7 @@
     "postcss-loader": "^3.0.0",
     "release-it": "^12.3.3",
     "standard-version": "^7.0.0",
-    "style-loader": "^0.23.1",
+    "style-loader": "^1.0.0",
     "stylelint": "^10.1.0",
     "stylelint-order": "^3.0.1",
     "ts-loader": "^5.4.5",
