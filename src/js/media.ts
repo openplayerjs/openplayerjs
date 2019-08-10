@@ -257,6 +257,7 @@ class Media {
         if (this.element.src) {
             this.element.setAttribute('data-op-file', this.mediaFiles[0].src);
         }
+
         this.element.src = this.mediaFiles[0].src;
         this.media.src = this.mediaFiles[0];
     }
@@ -457,6 +458,13 @@ class Media {
             mediaFiles.push({
                 src,
                 type: item.getAttribute('type') || source.predictType(src),
+            });
+        }
+
+        if (!mediaFiles.length) {
+            mediaFiles.push({
+                src: '',
+                type: source.predictType(''),
             });
         }
 
