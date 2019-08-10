@@ -6843,6 +6843,13 @@ var Media = function () {
         });
       }
 
+      if (!mediaFiles.length) {
+        mediaFiles.push({
+          src: '',
+          type: source.predictType('')
+        });
+      }
+
       return mediaFiles;
     }
   }, {
