@@ -1,3 +1,26 @@
+## [1.12.1](https://github.com/openplayerjs/openplayerjs/compare/v1.12.0...v1.12.1) (2019-08-10)
+
+
+### Bug Fixes
+
+* **player:** Added missing action to remove class from Captions button when hiding captions ([e429a5f](https://github.com/openplayerjs/openplayerjs/commit/e429a5f))
+* **player:** Added missing condition to captions button to remove class; fixed issues with WebPack and unit tests ([abd2045](https://github.com/openplayerjs/openplayerjs/commit/abd2045))
+* **player:** Added missing conditional to set an empty source when none is present ([e53d639](https://github.com/openplayerjs/openplayerjs/commit/e53d639))
+* **tests:** Updated MP4 source to match the current source in the video tag ([903bbb0](https://github.com/openplayerjs/openplayerjs/commit/903bbb0))
+
+<a name="1.12.1"></a>
+## [1.12.1](https://github.com/openplayerjs/openplayerjs/compare/v1.12.0...v1.12.1) (2019-08-10)
+
+
+### Bug Fixes
+
+* **player:** Added missing action to remove class from Captions button when hiding captions ([e429a5f](https://github.com/openplayerjs/openplayerjs/commit/e429a5f))
+* **player:** Added missing condition to captions button to remove class; fixed issues with WebPack and unit tests ([abd2045](https://github.com/openplayerjs/openplayerjs/commit/abd2045))
+* **player:** Added missing conditional to set an empty source when none is present ([e53d639](https://github.com/openplayerjs/openplayerjs/commit/e53d639))
+* **tests:** Updated MP4 source to match the current source in the video tag ([903bbb0](https://github.com/openplayerjs/openplayerjs/commit/903bbb0))
+
+
+
 # [1.12.0](https://github.com/openplayerjs/openplayerjs/compare/v1.11.1...v1.12.0) (2019-06-08)
 
 
