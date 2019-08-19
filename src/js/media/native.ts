@@ -36,8 +36,6 @@ abstract class Native {
      */
     public promise: Promise<any>;
 
-    public quality: number;
-
     /**
      * Create an instance of Native.
      *
