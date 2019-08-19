@@ -36,6 +36,8 @@ abstract class Native {
      */
     public promise: Promise<any>;
 
+    public quality: number;
+
     /**
      * Create an instance of Native.
      *
@@ -94,6 +96,27 @@ abstract class Native {
      * @memberof Native
      */
     public abstract get src(): Source;
+
+    /**
+     *
+     * @abstract
+     * @memberof Media
+     */
+    public abstract set level(value: number|string|object);
+
+    /**
+     *
+     * @abstract
+     * @memberof Media
+     */
+    public abstract get level(): number|string|object;
+
+    /**
+     *
+     * @abstract
+     * @memberof Media
+     */
+    public abstract get levels(): object[];
 
     /**
      * Play current media.

@@ -9,6 +9,8 @@ import Native from './native';
  * @class NativeMedia
  */
 class HTML5Media extends Native  {
+    private currentLevel: object;
+
     /**
      * Creates an instance of NativeMedia.
      *
@@ -51,6 +53,41 @@ class HTML5Media extends Native  {
      */
     public destroy(): HTML5Media {
         return this;
+    }
+
+    get levels(): object[] {
+        return this.levels;
+    }
+
+    set level(level: any) {
+        const idx = this.levels.findIndex((item: any) => item.label === level.label);
+        if (idx > -1) {
+            this.currentLevel = this.levels[idx];
+        }
+    }
+
+    get level(): any {
+        return this.currentLevel;
+    }
+
+    /**
+     *
+     * @type number
+     * @memberof Media
+     */
+    public qualityLevels(): any {
+        const sources = this.element.querySelectorAll('sources');
+        for (let i = 0, total = sources.length; i < total; ++i) {
+            const current = (sources[i] as HTMLSourceElement);
+            if (current.type && this.canPlayType(current.type) && current.getAttribute('label')) {
+                this.levels.push({
+                    label: current.getAttribute('label'),
+                    src: current.src,
+                });
+            }
+        }
+
+        return this.levels;
     }
 
     /**

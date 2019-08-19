@@ -119,6 +119,36 @@ class DashMedia extends Native {
         }
     }
 
+    get levels() {
+        const levels: any = [];
+        if (this.player) {
+            const bitrates = this.player.getBitrateInfoListFor('video');
+            bitrates.forEach((item: number) => {
+                const { height, name } = bitrates[item];
+                const level = {
+                    height,
+                    id: item,
+                    label: name || item,
+                };
+                levels.push(level);
+            });
+        }
+        return levels;
+    }
+
+    set level(level: number) {
+        if (level === 0) {
+            this.player.setAutoSwitchQuality(true);
+        } else {
+            this.player.setAutoSwitchQuality(false);
+            this.player.setQualityFor('video', level);
+        }
+    }
+
+    get level() {
+        return this.player.setQualityFor('video');
+    }
+
     /**
      * Custom M(PEG)-DASH events
      *

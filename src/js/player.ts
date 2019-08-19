@@ -243,7 +243,7 @@ class Player {
         controls: {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
-            right: ['quality', 'captions', 'settings', 'fullscreen'],
+            right: ['levels', 'captions', 'settings', 'fullscreen'],
         },
         detachMenus: false,
         hidePlayBtnTimer: 350,
