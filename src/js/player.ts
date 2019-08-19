@@ -255,6 +255,7 @@ class Player {
                 en: 'English',
             },
             live: 'Live Broadcast',
+            mediaLevels: 'Quality levels',
             mute: 'Mute',
             off: 'Off',
             pause: 'Pause',
