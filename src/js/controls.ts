@@ -1,8 +1,8 @@
 import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
+import Levels from './controls/levels';
 import Play from './controls/play';
 import Progress from './controls/progress';
-// import Quality from './controls/quality';
 import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
@@ -88,9 +88,9 @@ class Controls implements PlayerComponent {
     private controlEls: any = {
         Captions,
         Fullscreen,
+        Levels,
         Play,
         Progress,
-        // Quality,
         Settings,
         Time,
         Volume,
@@ -283,14 +283,17 @@ class Controls implements PlayerComponent {
      */
     private _setElements(): void {
         const controls = this.player.getOptions().controls;
-        controls.forEach((position: string) => {
+        Object.keys(controls).forEach((position: string) => {
             controls[position].forEach((el: string) => {
                 const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
                 const item = new this.controlEls[className](this.player);
                 if (el === 'settings') {
                     this.settings = item;
                 }
-                this.items[position].push(item);
+
+                if (el !== 'fullscreen') {
+                    this.items[position].push(item);
+                }
             });
         });
 

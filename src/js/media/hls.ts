@@ -149,6 +149,30 @@ class HlsMedia extends Native {
         }
     }
 
+    get levels() {
+        const levels: any = [];
+        if (this.player && this.player.levels && this.player.levels.length) {
+            Object.keys(this.player.levels).forEach(item => {
+                const { height, name } = this.player.levels[item];
+                const level = {
+                    height,
+                    id: item,
+                    label: name || item,
+                };
+                levels.push(level);
+            });
+        }
+        return levels;
+    }
+
+    set level(level: number) {
+        this.player.currentLevel = level;
+    }
+
+    get level() {
+        return this.player.currentLevel;
+    }
+
     /**
      * Setup Hls player with options.
      *
