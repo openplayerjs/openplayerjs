@@ -434,7 +434,7 @@ class Media {
      * @memberof Media
      */
     set level(value: number|string|object) {
-        this.media.qualityLevel = value;
+        this.media.level = value;
     }
 
     /**
@@ -443,7 +443,7 @@ class Media {
      * @readonly
      */
     get level(): number|string|object {
-        return this.media ? this.media.qualityLevel : -1;
+        return this.media ? this.media.level : -1;
     }
 
     /**

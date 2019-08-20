@@ -10,6 +10,6 @@ export default interface Level {
      * @type object
      */
     height: number;
-    id: number;
-    label: string | number;
+    id: string;
+    label: string;
 }
