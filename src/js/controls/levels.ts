@@ -1,7 +1,10 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Level from '../interfaces/level';
+import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
+import { addEvent } from '../utils/events';
+import { hasClass } from '../utils/general';
 
 /**
  * Levels element.
@@ -39,10 +42,10 @@ class Levels implements PlayerComponent {
     // private menu: HTMLDivElement;
 
     /**
-     * Events that will be triggered in Caption element:
-     *  - button (for the caption toggle element)
-     *  - global (for dynamic elements)
-     *  - media (to update captions on `timeupdate`, instead of using `oncuechanged`)
+     * Events that will be triggered:
+     *  - button (to display menu of Levels if detached menus are active)
+     *  - global (to dispatch click on the subitems on the menu settings)
+     *  - media (to check the available levels)
      *
      * @private
      * @type EventsList
@@ -61,7 +64,7 @@ class Levels implements PlayerComponent {
      * @type boolean
      * @memberof Levels
      */
-    // private detachMenu: boolean;
+    private detachMenu: boolean;
 
     /**
      * Default labels from player's config
@@ -71,6 +74,8 @@ class Levels implements PlayerComponent {
      * @memberof Levels
      */
     private labels: any;
+
+    private levels: Level[] = [];
 
     /**
      * Create an instance of Captions.
@@ -82,7 +87,7 @@ class Levels implements PlayerComponent {
     constructor(player: Player) {
         this.player = player;
         this.labels = player.getOptions().labels;
-        // this.detachMenu = player.getOptions().detachMenus;
+        this.detachMenu = player.getOptions().detachMenus;
         return this;
     }
 
@@ -103,32 +108,89 @@ class Levels implements PlayerComponent {
         this.button.innerHTML = `<span>${this._getResolutionsLabel(-1)}</span>`;
 
         this.player.getControls().getContainer().appendChild(this.button);
-
-        const labels: any[] = [];
-        this.events.media.loadedmetadata = () => {
-            if (!labels.length) {
-                this.player.getMedia().levels.forEach((level: Level) => {
-                    labels.push({ ...level, label: this._getResolutionsLabel(level.height) });
-                });
+        this.events.media.loadedmetadata = this._gatherLevels.bind(this);
+        this.events.media.canplay = () => {
+            if (!this.levels.length) {
+                this.destroy();
+            } else {
+                const e = addEvent('controlschanged');
+                this.player.getElement().dispatchEvent(e);
             }
         };
 
-        this.events.media.canplay = () => {
-            if (!labels.length) {
-                this.destroy();
+        this.events.global.click = (e: Event) => {
+            const option = (e.target as HTMLElement);
+            if (option.closest(`#${this.player.id}`) && hasClass(option, 'op-levels__option')) {
+                const level = parseInt(option.getAttribute('data-value').replace('levels-', ''), 10);
+                if (this.detachMenu) {
+
+                } else {
+                    this.player.getMedia().level = level;
+                }
             }
         };
 
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().addEventListener(event, this.events.media[event]);
         });
+
+        if (typeof this.events.global.click !== 'undefined') {
+            document.addEventListener('click', this.events.global.click);
+        }
     }
 
     public destroy(): void {
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
+        if (typeof this.events.global.click !== 'undefined') {
+            document.removeEventListener('click', this.events.global.click);
+        }
         this.button.remove();
+    }
+
+    /**
+     * Add list of available captions in the `Settings` menu.
+     *
+     * @see [[Settings.addSettings]]
+     * @returns {SettingsItem|object}
+     * @memberof Captions
+     */
+    public addSettings(): SettingsItem | object {
+        if (this.detachMenu) {
+            return {};
+        }
+        const subitems = this._formatMenuItems();
+        // Avoid implementing submenu for levels if only 2 options were available
+        return subitems.length > 2 ? {
+            className: 'op-levels__option',
+            default: '-1',
+            key: 'levels',
+            name: this.labels.quality,
+            subitems,
+        } : {};
+    }
+
+    private _formatMenuItems() {
+        const levels = this._gatherLevels();
+        const total = levels.length;
+        let items = total ? [{ key: '-1', label: 'Auto' }] : [];
+        for (let i = 0; i < total; i++) {
+            const level = levels[i];
+            items = items.filter(el => el.key !== level.id);
+            items.push({ key: level.id, label: level.label });
+        }
+
+        // Remove duplicated labels
+        items = items.reduce((acc, current) => {
+            const duplicate = acc.find(item => item.label === current.label);
+            if (!duplicate) {
+                return acc.concat([current]);
+            }
+            return acc;
+        }, []).sort((a, b) => parseInt(a.label, 10) > parseInt(b.label, 10) ? 1 : -1);
+
+        return items;
     }
 
     /**
@@ -139,7 +201,7 @@ class Levels implements PlayerComponent {
      * @returns {string}
      * @memberof Levels
      */
-    private _getResolutionsLabel(height: number) {
+    private _getResolutionsLabel(height: number): string {
         if (height >= 4320) {
             return '8K';
         } else if (height >= 2160) {
@@ -160,6 +222,15 @@ class Levels implements PlayerComponent {
             return '144p';
         }
         return 'Auto';
+    }
+
+    private _gatherLevels() {
+        if (!this.levels.length) {
+            this.player.getMedia().levels.forEach((level: Level) => {
+                this.levels.push({ ...level, label: this._getResolutionsLabel(level.height) });
+            });
+        }
+        return this.levels;
     }
 
     // private _buildMenu() {

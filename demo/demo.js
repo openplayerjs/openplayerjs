@@ -7,7 +7,7 @@
     var instances = [];
 
     for (var i = 0, total = players.length; i < total; i++) {
-        var ads = i === 0 ? [players[i].getAttribute('data-op-ads'),] : null;
+        var ads = null;
         instances[i] = new OpenPlayer(players[i].id, ads, false, {
             ads: {
                 debug: false,

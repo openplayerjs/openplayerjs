@@ -65,11 +65,7 @@ class Controls implements PlayerComponent {
      * @type any
      * @memberof Controls
      */
-    private items: any = {
-        left: [],
-        middle: [],
-        right: [],
-    };
+    private items: any;
 
     /**
      * Events that will be triggered in Controls element:
@@ -219,7 +215,7 @@ class Controls implements PlayerComponent {
             this.items[position].forEach((item: any) => {
                 if (item.custom) {
                     this._destroyCustomControl(item);
-                } else {
+                } else if (typeof item.destroy === 'function') {
                     item.destroy();
                 }
             });
@@ -283,6 +279,12 @@ class Controls implements PlayerComponent {
      */
     private _setElements(): void {
         const controls = this.player.getOptions().controls;
+        this.items = {
+            left: [],
+            middle: [],
+            right: [],
+        };
+
         Object.keys(controls).forEach((position: string) => {
             controls[position].forEach((el: string) => {
                 const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;

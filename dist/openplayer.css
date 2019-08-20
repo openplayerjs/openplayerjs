@@ -141,6 +141,9 @@
     padding: 2px 6px 3px;
     z-index: 4;
 }
+.op-controls > button > span {
+    color: #fff;
+}
 .op-player__loader {
     display: block;
     height: 60px;
