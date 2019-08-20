@@ -7802,27 +7802,9 @@ var HTML5Media = function (_native_1$default) {
       return this;
     }
   }, {
-    key: "qualityLevels",
-    value: function qualityLevels() {
-      var sources = this.element.querySelectorAll('sources');
-
-      for (var i = 0, total = sources.length; i < total; ++i) {
-        var current = sources[i];
-
-        if (current.type && this.canPlayType(current.type) && current.getAttribute('label')) {
-          this.levels.push({
-            label: current.getAttribute('label'),
-            src: current.src
-          });
-        }
-      }
-
-      return this.levels;
-    }
-  }, {
     key: "levels",
     get: function get() {
-      return this.levels;
+      return [];
     }
   }, {
     key: "level",

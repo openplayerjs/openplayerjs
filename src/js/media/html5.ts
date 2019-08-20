@@ -56,7 +56,7 @@ class HTML5Media extends Native  {
     }
 
     get levels(): object[] {
-        return this.levels;
+        return [];
     }
 
     set level(level: any) {
@@ -68,26 +68,6 @@ class HTML5Media extends Native  {
 
     get level(): any {
         return this.currentLevel;
-    }
-
-    /**
-     *
-     * @type number
-     * @memberof Media
-     */
-    public qualityLevels(): any {
-        const sources = this.element.querySelectorAll('sources');
-        for (let i = 0, total = sources.length; i < total; ++i) {
-            const current = (sources[i] as HTMLSourceElement);
-            if (current.type && this.canPlayType(current.type) && current.getAttribute('label')) {
-                this.levels.push({
-                    label: current.getAttribute('label'),
-                    src: current.src,
-                });
-            }
-        }
-
-        return this.levels;
     }
 
     /**
