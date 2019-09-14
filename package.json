@@ -54,7 +54,7 @@
     "eslint": "^6.0.1",
     "eslint-config-airbnb": "^18.0.0",
     "eslint-config-airbnb-base": "^14.0.0",
-    "eslint-loader": "^2.2.1",
+    "eslint-loader": "^3.0.0",
     "eslint-plugin-import": "^2.18.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.14.2",
@@ -71,7 +71,7 @@
     "postcss-cssnext": "^3.1.0",
     "postcss-import": "^12.0.1",
     "postcss-loader": "^3.0.0",
-    "release-it": "^12.3.3",
+    "release-it": "^12.3.6",
     "standard-version": "^7.0.0",
     "style-loader": "^1.0.0",
     "stylelint": "^10.1.0",
@@ -83,7 +83,7 @@
     "unminified-webpack-plugin": "^2.0.0",
     "url-loader": "^2.1.0",
     "webpack": "^4.36.1",
-    "webpack-cli": "^3.3.6"
+    "webpack-cli": "^3.3.7"
   },
   "dependencies": {
     "deepmerge": "^4.0.0"
