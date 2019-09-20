@@ -51,7 +51,7 @@
     "custom-event-polyfill": "^1.0.7",
     "element-closest": "^3.0.1",
     "element-remove": "^1.0.4",
-    "eslint": "^6.0.1",
+    "eslint": "^6.4.0",
     "eslint-config-airbnb": "^18.0.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-loader": "^3.0.0",
