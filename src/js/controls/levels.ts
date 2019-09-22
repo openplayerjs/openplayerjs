@@ -39,7 +39,7 @@ class Levels implements PlayerComponent {
      * @type HTMLDivElement
      * @memberof Levels
      */
-    // private menu: HTMLDivElement;
+    private menu: HTMLDivElement;
 
     /**
      * Events that will be triggered:
@@ -78,6 +78,16 @@ class Levels implements PlayerComponent {
     private levels: Level[] = [];
 
     /**
+     * Initial level to be used as a default value in the `Settings` component.
+     *
+     * @see [[Levels.addSettings]]
+     * @private
+     * @type string
+     * @memberof Levels
+     */
+    private default: string = '-1';
+
+    /**
      * Create an instance of Captions.
      *
      * @param {Player} player
@@ -107,7 +117,10 @@ class Levels implements PlayerComponent {
         this.button.setAttribute('aria-label', this.labels.mediaLevels);
         this.button.innerHTML = `<span>${this._getResolutionsLabel(-1)}</span>`;
 
-        this.player.getControls().getContainer().appendChild(this.button);
+        if (this.detachMenu) {
+            this.player.getControls().getContainer().appendChild(this.button);
+            this._buildMenu();
+        }
         this.events.media.loadedmetadata = this._gatherLevels.bind(this);
         this.events.media.canplay = () => {
             if (!this.levels.length) {
@@ -146,7 +159,9 @@ class Levels implements PlayerComponent {
         if (typeof this.events.global.click !== 'undefined') {
             document.removeEventListener('click', this.events.global.click);
         }
-        this.button.remove();
+        if (this.detachMenu) {
+            this.button.remove();
+        }
     }
 
     /**
@@ -233,28 +248,28 @@ class Levels implements PlayerComponent {
         return this.levels;
     }
 
-    // private _buildMenu() {
-    //     // Build menu if detachMenu is `true`
-    //     if (this.detachMenu) {
-    //         this.button.classList.add('op-control--no-hover');
-    //         this.menu = document.createElement('div');
-    //         this.menu.className = 'op-settings op-levels__menu';
-    //         this.menu.setAttribute('aria-hidden', 'true');
-    //         const className = 'op-subtitles__option';
-    //         const options = this._formatMenuItems();
+    private _buildMenu() {
+        // Build menu if detachMenu is `true`
+        if (this.detachMenu) {
+            this.button.classList.add('op-control--no-hover');
+            this.menu = document.createElement('div');
+            this.menu.className = 'op-settings op-levels__menu';
+            this.menu.setAttribute('aria-hidden', 'true');
+            const className = 'op-subtitles__option';
+            const options = this._formatMenuItems();
 
-    //         // Store the submenu to reach all options for current menu item
-    //         const menu = `<div class="op-settings__menu" role="menu" id="menu-item-captions">
-    //             ${options.map(item => `
-    //             <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio"
-    //                 aria-checked="${this.default === item.key ? 'true' : 'false'}">
-    //                 <div class="op-settings__submenu-label ${className || ''}" data-value="captions-${item.key}">${item.label}</div>
-    //             </div>`).join('')}
-    //         </div>`;
-    //         this.menu.innerHTML = menu;
-    //         this.player.getControls().getContainer().appendChild(this.menu);
-    //     }
-    // }
+            // Store the submenu to reach all options for current menu item
+            const menu = `<div class="op-settings__menu" role="menu" id="menu-item-captions">
+                ${options.map(item => `
+                <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio"
+                    aria-checked="${this.default === item.key ? 'true' : 'false'}">
+                    <div class="op-settings__submenu-label ${className || ''}" data-value="captions-${item.key}">${item.label}</div>
+                </div>`).join('')}
+            </div>`;
+            this.menu.innerHTML = menu;
+            this.player.getControls().getContainer().appendChild(this.menu);
+        }
+    }
 }
 
 export default Levels;
