@@ -189,7 +189,12 @@ class DashMedia extends Native {
      * @memberof DashMedia
      */
     private _preparePlayer() {
-        this.player.getDebug().setLogToBrowserConsole(false);
+        // In version 3x, `getDebug` is deprecated
+        if (typeof this.player.getDebug !== 'function') {
+            this.player.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE }});
+        } else {
+            this.player.getDebug().setLogToBrowserConsole(false);
+        }
         this.player.initialize();
         this.player.setScheduleWhilePaused(false);
         this.player.setFastSwitchEnabled(true);
