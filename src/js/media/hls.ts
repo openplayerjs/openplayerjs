@@ -157,7 +157,7 @@ class HlsMedia extends Native {
                 const level = {
                     height,
                     id: item,
-                    label: name || item,
+                    label: name || null,
                 };
                 levels.push(level);
             });
@@ -170,7 +170,7 @@ class HlsMedia extends Native {
     }
 
     get level() {
-        return this.player.currentLevel;
+        return this.player ? this.player.currentLevel : -1;
     }
 
     /**

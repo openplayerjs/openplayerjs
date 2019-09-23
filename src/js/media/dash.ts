@@ -14,6 +14,7 @@ declare const dashjs: any;
  *
  * @description Class that handles MPD files using dash.js within the player
  * @see https://github.com/Dash-Industry-Forum/dash.js/
+ * @see https://github.com/Dash-Industry-Forum/dash.js/wiki/Migration-3.0
  * @class DashMedia
  */
 class DashMedia extends Native {
@@ -123,15 +124,19 @@ class DashMedia extends Native {
         const levels: any = [];
         if (this.player) {
             const bitrates = this.player.getBitrateInfoListFor('video');
-            bitrates.forEach((item: number) => {
-                const { height, name } = bitrates[item];
-                const level = {
-                    height,
-                    id: item,
-                    label: name || item,
-                };
-                levels.push(level);
-            });
+            if (bitrates.length) {
+                bitrates.forEach((item: number) => {
+                    if (bitrates[item]) {
+                        const { height, name } = bitrates[item];
+                        const level = {
+                            height,
+                            id: item,
+                            label: name || null,
+                        };
+                        levels.push(level);
+                    }
+                });
+            }
         }
         return levels;
     }
@@ -146,7 +151,7 @@ class DashMedia extends Native {
     }
 
     get level() {
-        return this.player.setQualityFor('video');
+        return this.player ? this.player.getQualityFor('video') : -1;
     }
 
     /**
@@ -190,14 +195,22 @@ class DashMedia extends Native {
      */
     private _preparePlayer() {
         // In version 3x, `getDebug` is deprecated
-        if (typeof this.player.getDebug !== 'function') {
-            this.player.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE }});
+        if (typeof this.player.getDebug().setLogToBrowserConsole === 'undefined') {
+            this.player.updateSettings({
+                debug: {
+                    logLevel: dashjs.Debug.LOG_LEVEL_NONE,
+                },
+                streaming: {
+                    fastSwitchEnabled: true,
+                    scheduleWhilePaused: false,
+                },
+            });
         } else {
             this.player.getDebug().setLogToBrowserConsole(false);
+            this.player.setScheduleWhilePaused(false);
+            this.player.setFastSwitchEnabled(true);
         }
         this.player.initialize();
-        this.player.setScheduleWhilePaused(false);
-        this.player.setFastSwitchEnabled(true);
         this.player.attachView(this.element);
         this.player.setAutoPlay(false);
 

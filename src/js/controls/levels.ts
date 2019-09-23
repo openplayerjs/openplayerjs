@@ -3,6 +3,7 @@ import EventsList from '../interfaces/events-list';
 import Level from '../interfaces/level';
 import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
+import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { hasClass } from '../utils/general';
 
@@ -85,7 +86,7 @@ class Levels implements PlayerComponent {
      * @type string
      * @memberof Levels
      */
-    private default: string = '-1';
+    private default: string;
 
     /**
      * Create an instance of Captions.
@@ -108,19 +109,20 @@ class Levels implements PlayerComponent {
      * @memberof Levels
      */
     public create(): void {
+        this.default = `${this.player.getMedia().level}`;
+        const menuItems = this._formatMenuItems();
+        const defaultLabel = menuItems.length ?
+            menuItems.find((items: any) => items.key === this.default).label : 'Auto';
+
         this.button = document.createElement('button');
         this.button.className = 'op-controls__levels op-control__right';
         this.button.tabIndex = 0;
         this.button.title = this.labels.mediaLevels;
         this.button.setAttribute('aria-controls', this.player.id);
-        this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', this.labels.mediaLevels);
-        this.button.innerHTML = `<span>${this._getResolutionsLabel(-1)}</span>`;
+        this.button.setAttribute('data-active-level', this.default);
+        this.button.innerHTML = `<span>${defaultLabel}</span>`;
 
-        if (this.detachMenu) {
-            this.player.getControls().getContainer().appendChild(this.button);
-            this._buildMenu();
-        }
         this.events.media.loadedmetadata = this._gatherLevels.bind(this);
         this.events.media.canplay = () => {
             if (!this.levels.length) {
@@ -131,15 +133,73 @@ class Levels implements PlayerComponent {
             }
         };
 
+        if (this.detachMenu) {
+            this.player.getControls().getContainer().appendChild(this.button);
+            this._buildMenu();
+            this.events.button.click = () => {
+                if (this.detachMenu) {
+                    const menus = this.player.getContainer().querySelectorAll('.op-settings');
+                    for (let i = 0, total = menus.length; i < total; ++i) {
+                        if (menus[i] !== this.menu) {
+                            menus[i].setAttribute('aria-hidden', 'true');
+                        }
+                    }
+                    if (this.menu.getAttribute('aria-hidden') === 'true') {
+                        this.menu.setAttribute('aria-hidden', 'false');
+                    } else {
+                        this.menu.setAttribute('aria-hidden', 'true');
+                    }
+                }
+            };
+            this.events.button.mouseover = () => {
+                if (!IS_IOS && !IS_ANDROID) {
+                    const menus = this.player.getContainer().querySelectorAll('.op-settings');
+                    for (let i = 0, total = menus.length; i < total; ++i) {
+                        if (menus[i] !== this.menu) {
+                            menus[i].setAttribute('aria-hidden', 'true');
+                    }
+                }
+                    if (this.menu.getAttribute('aria-hidden') === 'true') {
+                        this.menu.setAttribute('aria-hidden', 'false');
+                    }
+                }
+            };
+            this.events.button.mouseout = () => {
+                if (!IS_IOS && !IS_ANDROID) {
+                    const menus = this.player.getContainer().querySelectorAll('.op-settings');
+                    for (let i = 0, total = menus.length; i < total; ++i) {
+                        menus[i].setAttribute('aria-hidden', 'true');
+                    }
+                    if (this.menu.getAttribute('aria-hidden') === 'false') {
+                        this.menu.setAttribute('aria-hidden', 'true');
+                    }
+                }
+            };
+
+            this.button.addEventListener('click', this.events.button.click);
+            this.button.addEventListener('mouseover', this.events.button.mouseover);
+            this.menu.addEventListener('mouseover', this.events.button.mouseover);
+            this.menu.addEventListener('mouseout', this.events.button.mouseout);
+            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+        }
+
         this.events.global.click = (e: Event) => {
             const option = (e.target as HTMLElement);
             if (option.closest(`#${this.player.id}`) && hasClass(option, 'op-levels__option')) {
                 const level = parseInt(option.getAttribute('data-value').replace('levels-', ''), 10);
+                this.default = `${level}`;
                 if (this.detachMenu) {
-
-                } else {
-                    this.player.getMedia().level = level;
+                    this.button.setAttribute('data-active-level', `${level}`);
+                    this.button.innerHTML = `<span>${option.innerText}</span>`;
+                    const levels = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
+                    for (let i = 0, total = levels.length; i < total; ++i) {
+                        levels[i].setAttribute('aria-checked', 'false');
+                    }
+                    option.parentElement.setAttribute('aria-checked', 'true');
+                    this.menu.setAttribute('aria-hidden', 'false');
                 }
+                this.player.getMedia().level = level;
+                e.preventDefault();
             }
         };
 
@@ -147,20 +207,22 @@ class Levels implements PlayerComponent {
             this.player.getElement().addEventListener(event, this.events.media[event]);
         });
 
-        if (typeof this.events.global.click !== 'undefined') {
-            document.addEventListener('click', this.events.global.click);
-        }
+        document.addEventListener('click', this.events.global.click);
     }
 
     public destroy(): void {
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
-        if (typeof this.events.global.click !== 'undefined') {
-            document.removeEventListener('click', this.events.global.click);
-        }
+        document.removeEventListener('click', this.events.global.click);
         if (this.detachMenu) {
+            this.button.removeEventListener('click', this.events.button.click);
             this.button.remove();
+            this.button.removeEventListener('mouseover', this.events.button.mouseover);
+            this.menu.removeEventListener('mouseover', this.events.button.mouseover);
+            this.menu.removeEventListener('mouseout', this.events.button.mouseout);
+            this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
+            this.menu.remove();
         }
     }
 
@@ -242,7 +304,7 @@ class Levels implements PlayerComponent {
     private _gatherLevels() {
         if (!this.levels.length) {
             this.player.getMedia().levels.forEach((level: Level) => {
-                this.levels.push({ ...level, label: this._getResolutionsLabel(level.height) });
+                this.levels.push({ ...level, label: level.label || this._getResolutionsLabel(level.height) });
             });
         }
         return this.levels;
@@ -255,15 +317,15 @@ class Levels implements PlayerComponent {
             this.menu = document.createElement('div');
             this.menu.className = 'op-settings op-levels__menu';
             this.menu.setAttribute('aria-hidden', 'true');
-            const className = 'op-subtitles__option';
+            const className = 'op-levels__option';
             const options = this._formatMenuItems();
 
             // Store the submenu to reach all options for current menu item
-            const menu = `<div class="op-settings__menu" role="menu" id="menu-item-captions">
+            const menu = `<div class="op-settings__menu" role="menu" id="menu-item-levels">
                 ${options.map(item => `
                 <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio"
                     aria-checked="${this.default === item.key ? 'true' : 'false'}">
-                    <div class="op-settings__submenu-label ${className || ''}" data-value="captions-${item.key}">${item.label}</div>
+                    <div class="op-settings__submenu-label ${className || ''}" data-value="levels-${item.key}">${item.label}</div>
                 </div>`).join('')}
             </div>`;
             this.menu.innerHTML = menu;
