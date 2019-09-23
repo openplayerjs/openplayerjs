@@ -100,6 +100,12 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     startTime,
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
+    // Controls configuration by default; `levels` can be added as well
+    controls: {
+        left: ['play', 'time', 'volume'],
+        middle: ['progress'],
+        right: ['levels', 'captions', 'settings', 'fullscreen'],
+    },
     ads: {
         // Custom path/URL to IMA SDK
         url,
@@ -200,9 +206,9 @@ In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/
 
 1. [No configuration (only using classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
-4. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
-5. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
-6. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
+3. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
+4. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
+5. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 
 ## Built With
 
@@ -214,7 +220,7 @@ Make sure you check [Conventional Commits Standards](https://conventionalcommits
 
 ## Authors
 
-* **Rafael Miranda** - *Initial work* - [rafa8626](https://github.com/rafa8626)
+* **Rafael Miranda** - [rafa8626](https://github.com/rafa8626)
 
 See also the list of [contributors](https://github.com/openplayerjs/openplayerjs/contributors) who participated in this project.
 
