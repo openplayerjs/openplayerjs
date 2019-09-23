@@ -780,6 +780,28 @@ video:-webkit-media-text-track-display {
     top: -15%;
 }
 
+/* === Levels ================ */
+.op-levels__menu {
+    bottom: 36px;
+    min-width: 73px;
+    overflow: visible;
+    right: 98px;
+    z-index: 10;
+}
+.op-levels__menu:after {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid rgba(28, 28, 28, .9);
+    content:'';
+    height: 0;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 0;
+}
+
 /* === Ads =================== */
 #op-ads {
     height: 100%;

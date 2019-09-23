@@ -9,7 +9,9 @@ import Native from './native';
  * @class NativeMedia
  */
 class HTML5Media extends Native  {
-    private currentLevel: object;
+    private currentLevel: any = null;
+
+    private levelList: any[] = [];
 
     /**
      * Creates an instance of NativeMedia.
@@ -20,10 +22,10 @@ class HTML5Media extends Native  {
      * @memberof NativeMedia
      */
     constructor(element: HTMLMediaElement, mediaFile: Source) {
+        super(element, mediaFile);
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
-        super(element, mediaFile);
         return this;
     }
 
@@ -56,18 +58,35 @@ class HTML5Media extends Native  {
     }
 
     get levels(): object[] {
-        return [];
+        if (!this.levelList.length) {
+            const levels = this.element.querySelectorAll('source[title]');
+            for (let i = 0, total = levels.length; i < total; ++i) {
+                const level = {
+                    height: 0,
+                    id: `${i}`,
+                    label: levels[i].getAttribute('title'),
+                };
+                this.levelList.push(level);
+            }
+        }
+        return this.levelList;
     }
 
     set level(level: any) {
-        const idx = this.levels.findIndex((item: any) => item.label === level.label);
+        const idx = this.levelList.findIndex((item: any) => parseInt(item.id, 10) === level);
         if (idx > -1) {
             this.currentLevel = this.levels[idx];
+            const levels = this.element.querySelectorAll('source[title]');
+            for (let i = 0, total = levels.length; i < total; ++i) {
+                if (parseInt(this.currentLevel.id, 10) === i) {
+                    this.element.src = levels[i].getAttribute('src');
+                }
+            }
         }
     }
 
     get level(): any {
-        return this.currentLevel;
+        return this.currentLevel ? this.currentLevel.id : '-1';
     }
 
     /**
