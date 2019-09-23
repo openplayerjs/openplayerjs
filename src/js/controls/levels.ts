@@ -112,7 +112,7 @@ class Levels implements PlayerComponent {
         this.default = `${this.player.getMedia().level}`;
         const menuItems = this._formatMenuItems();
         const defaultLabel = menuItems.length ?
-            menuItems.find((items: any) => items.key === this.default).label : 'Auto';
+            menuItems.find((items: any) => items.key === this.default).label : this.labels.auto;
 
         this.button = document.createElement('button');
         this.button.className = 'op-controls__levels op-control__right';
@@ -243,7 +243,7 @@ class Levels implements PlayerComponent {
             className: 'op-levels__option',
             default: '-1',
             key: 'levels',
-            name: this.labels.quality,
+            name: this.labels.levels,
             subitems,
         } : {};
     }
@@ -251,7 +251,7 @@ class Levels implements PlayerComponent {
     private _formatMenuItems() {
         const levels = this._gatherLevels();
         const total = levels.length;
-        let items = total ? [{ key: '-1', label: 'Auto' }] : [];
+        let items = total ? [{ key: '-1', label: this.labels.auto }] : [];
         for (let i = 0; i < total; i++) {
             const level = levels[i];
             items = items.filter(el => el.key !== level.id);
@@ -298,7 +298,7 @@ class Levels implements PlayerComponent {
         } else if (height >= 144) {
             return '144p';
         }
-        return 'Auto';
+        return this.labels.auto;
     }
 
     private _gatherLevels() {

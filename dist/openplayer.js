@@ -1472,12 +1472,14 @@ var Player = function () {
       detachMenus: false,
       hidePlayBtnTimer: 350,
       labels: {
+        auto: 'Auto',
         captions: 'CC/Subtitles',
         click: 'Click to unmute',
         fullscreen: 'Fullscreen',
         lang: {
           en: 'English'
         },
+        levels: 'Quality Levels',
         live: 'Live Broadcast',
         mediaLevels: 'Change Quality',
         mute: 'Mute',
@@ -1486,7 +1488,6 @@ var Player = function () {
         play: 'Play',
         progressRail: 'Time Rail',
         progressSlider: 'Time Slider',
-        quality: 'Quality',
         settings: 'Player Settings',
         speed: 'Speed',
         speedNormal: 'Normal',
@@ -5612,7 +5613,7 @@ var Levels = function () {
 
       var defaultLabel = menuItems.length ? menuItems.find(function (items) {
         return items.key === _this["default"];
-      }).label : 'Auto';
+      }).label : this.labels.auto;
       this.button = document.createElement('button');
       this.button.className = 'op-controls__levels op-control__right';
       this.button.tabIndex = 0;
@@ -5758,7 +5759,7 @@ var Levels = function () {
         className: 'op-levels__option',
         "default": '-1',
         key: 'levels',
-        name: this.labels.quality,
+        name: this.labels.levels,
         subitems: subitems
       } : {};
     }
@@ -5770,7 +5771,7 @@ var Levels = function () {
       var total = levels.length;
       var items = total ? [{
         key: '-1',
-        label: 'Auto'
+        label: this.labels.auto
       }] : [];
 
       var _loop = function _loop(i) {
@@ -5826,7 +5827,7 @@ var Levels = function () {
         return '144p';
       }
 
-      return 'Auto';
+      return this.labels.auto;
     }
   }, {
     key: "_gatherLevels",
