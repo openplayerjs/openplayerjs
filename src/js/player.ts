@@ -248,12 +248,14 @@ class Player {
         detachMenus: false,
         hidePlayBtnTimer: 350,
         labels: {
+            auto: 'Auto',
             captions: 'CC/Subtitles',
             click: 'Click to unmute',
             fullscreen: 'Fullscreen',
             lang: {
                 en: 'English',
             },
+            levels: 'Quality Levels',
             live: 'Live Broadcast',
             mediaLevels: 'Change Quality',
             mute: 'Mute',
@@ -262,7 +264,6 @@ class Player {
             play: 'Play',
             progressRail: 'Time Rail',
             progressSlider: 'Time Slider',
-            quality: 'Quality',
             settings: 'Player Settings',
             speed: 'Speed',
             speedNormal: 'Normal',
