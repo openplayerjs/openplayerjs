@@ -4960,9 +4960,9 @@ var Captions = function () {
         if (_this.detachMenu) {
           var menus = _this.player.getContainer().querySelectorAll('.op-settings');
 
-          for (var i = 0, total = menus.length; i < total; ++i) {
-            if (menus[i] !== _this.menu) {
-              menus[i].setAttribute('aria-hidden', 'true');
+          for (var _i2 = 0, _total2 = menus.length; _i2 < _total2; ++_i2) {
+            if (menus[_i2] !== _this.menu) {
+              menus[_i2].setAttribute('aria-hidden', 'true');
             }
           }
 
@@ -4992,9 +4992,9 @@ var Captions = function () {
         if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && _this.detachMenu) {
           var menus = _this.player.getContainer().querySelectorAll('.op-settings');
 
-          for (var i = 0, total = menus.length; i < total; ++i) {
-            if (menus[i] !== _this.menu) {
-              menus[i].setAttribute('aria-hidden', 'true');
+          for (var _i3 = 0, _total3 = menus.length; _i3 < _total3; ++_i3) {
+            if (menus[_i3] !== _this.menu) {
+              menus[_i3].setAttribute('aria-hidden', 'true');
             }
           }
 
@@ -5008,8 +5008,8 @@ var Captions = function () {
         if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && _this.detachMenu) {
           var menus = _this.player.getContainer().querySelectorAll('.op-settings');
 
-          for (var i = 0, total = menus.length; i < total; ++i) {
-            menus[i].setAttribute('aria-hidden', 'true');
+          for (var _i4 = 0, _total4 = menus.length; _i4 < _total4; ++_i4) {
+            menus[_i4].setAttribute('aria-hidden', 'true');
           }
 
           if (_this.menu.getAttribute('aria-hidden') === 'false') {
@@ -5071,8 +5071,8 @@ var Captions = function () {
 
             var captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
 
-            for (var i = 0, total = captions.length; i < total; ++i) {
-              captions[i].setAttribute('aria-checked', 'false');
+            for (var _i5 = 0, _total5 = captions.length; _i5 < _total5; ++_i5) {
+              captions[_i5].setAttribute('aria-checked', 'false');
             }
 
             option.parentElement.setAttribute('aria-checked', 'true');
