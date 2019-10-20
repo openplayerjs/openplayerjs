@@ -1,4 +1,5 @@
 import Source from '../interfaces/source';
+import { addEvent } from '../utils/events';
 import { isAudio, isVideo } from '../utils/general';
 import Native from './native';
 
@@ -21,6 +22,17 @@ class HTML5Media extends Native  {
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
+        element.addEventListener('error', (e: any) => {
+            const details = {
+                detail: {
+                    type: `HTML5`,
+                    message: e.message,
+                    data: e,
+                },
+            };
+            const errorEvent = addEvent('playererror', { ...details });
+            this.element.dispatchEvent(errorEvent);
+        })
         super(element, mediaFile);
         return this;
     }

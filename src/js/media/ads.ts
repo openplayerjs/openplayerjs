@@ -675,7 +675,16 @@ class Ads {
      * @memberof Ads
      */
     private _error(event: any): void {
-        console.error(`Ad error: ${event.getError().toString()}`);
+        const details = {
+            detail: {
+                type: `Ads`,
+                message: event.getMessage(),
+                data: event.getError(),
+            },
+        };
+        const errorEvent = addEvent('playererror', { ...details });
+        this.element.dispatchEvent(errorEvent);
+
         if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {
             this.currentAdsIndex++;
             this.playTriggered = true;

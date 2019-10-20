@@ -10,6 +10,7 @@ export default interface CustomMedia {
      * Store all the native methods to play custom media
      *
      * @type object
+     * @memberof CustomMedia
      */
     media: {
         [key: string]: object,
