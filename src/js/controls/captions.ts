@@ -363,9 +363,9 @@ class Captions implements PlayerComponent {
                 this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
                 if (this.detachMenu) {
                     if (hasClass(this.button, 'op-controls__captions--on')) {
-                        this._hide();      
+                        this._hide();
                         this.button.classList.remove('op-controls__captions--on');
-                        this.button.setAttribute('data-active-captions', 'off');                  
+                        this.button.setAttribute('data-active-captions', 'off');
                     } else {
                         this._show();
                         this.button.classList.add('op-controls__captions--on');
@@ -431,7 +431,7 @@ class Captions implements PlayerComponent {
      * @returns {SettingsItem|object}
      * @memberof Captions
      */
-    public addSettings(): SettingsItem|object {
+    public addSettings(): SettingsItem | object {
         if (this.detachMenu || this.trackList.length <= 1) {
             return {};
         }
@@ -665,13 +665,13 @@ class Captions implements PlayerComponent {
     }
 
     private _formatMenuItems() {
-        let items = [{key: 'off', label: this.labels.off}];
+        let items = [{ key: 'off', label: this.labels.off }];
         // Build object based on available languages
         for (let i = 0, total = this.trackList.length; i < total; i++) {
             const track = this.trackList[i];
             // Override language item if duplicated when passing list of items
             items = items.filter(el => el.key !== track.language);
-            items.push({key: track.language, label: this.labels.lang[track.language] || this.trackList[i].label});
+            items.push({ key: track.language, label: this.labels.lang[track.language] || this.trackList[i].label });
         }
 
         return items;
