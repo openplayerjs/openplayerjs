@@ -14,6 +14,7 @@ declare const dashjs: any;
  *
  * @description Class that handles MPD files using dash.js within the player
  * @see https://github.com/Dash-Industry-Forum/dash.js/
+ * @see https://github.com/Dash-Industry-Forum/dash.js/wiki/Migration-3.0
  * @class DashMedia
  */
 class DashMedia extends Native {
@@ -119,6 +120,40 @@ class DashMedia extends Native {
         }
     }
 
+    get levels() {
+        const levels: any = [];
+        if (this.player) {
+            const bitrates = this.player.getBitrateInfoListFor('video');
+            if (bitrates.length) {
+                bitrates.forEach((item: number) => {
+                    if (bitrates[item]) {
+                        const { height, name } = bitrates[item];
+                        const level = {
+                            height,
+                            id: item,
+                            label: name || null,
+                        };
+                        levels.push(level);
+                    }
+                });
+            }
+        }
+        return levels;
+    }
+
+    set level(level: number) {
+        if (level === 0) {
+            this.player.setAutoSwitchQuality(true);
+        } else {
+            this.player.setAutoSwitchQuality(false);
+            this.player.setQualityFor('video', level);
+        }
+    }
+
+    get level() {
+        return this.player ? this.player.getQualityFor('video') : -1;
+    }
+
     /**
      * Custom M(PEG)-DASH events
      *
@@ -166,10 +201,23 @@ class DashMedia extends Native {
      * @memberof DashMedia
      */
     private _preparePlayer() {
-        this.player.getDebug().setLogToBrowserConsole(false);
+        // In version 3x, `getDebug` is deprecated
+        if (typeof this.player.getDebug().setLogToBrowserConsole === 'undefined') {
+            this.player.updateSettings({
+                debug: {
+                    logLevel: dashjs.Debug.LOG_LEVEL_NONE,
+                },
+                streaming: {
+                    fastSwitchEnabled: true,
+                    scheduleWhilePaused: false,
+                },
+            });
+        } else {
+            this.player.getDebug().setLogToBrowserConsole(false);
+            this.player.setScheduleWhilePaused(false);
+            this.player.setFastSwitchEnabled(true);
+        }
         this.player.initialize();
-        this.player.setScheduleWhilePaused(false);
-        this.player.setFastSwitchEnabled(true);
         this.player.attachView(this.element);
         this.player.setAutoPlay(false);
 

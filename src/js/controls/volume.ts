@@ -256,6 +256,8 @@ class Volume implements PlayerComponent {
             this.slider.addEventListener(event, this.events.slider[event]);
         });
 
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+
         if (!IS_ANDROID && !IS_IOS) {
             const controls = this.player.getControls().getContainer();
             controls.appendChild(this.button);
@@ -278,9 +280,29 @@ class Volume implements PlayerComponent {
             this.slider.removeEventListener(event, this.events.slider[event]);
         });
 
+        this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+
         this.slider.remove();
         this.display.remove();
         this.container.remove();
+    }
+
+    /**
+     * Use the up and down arrow keys to manipulate volume.
+     *
+     * @private
+     * @param {KeyboardEvent} e
+     * @memberof Volume
+     */
+    private _keydownEvent(e: KeyboardEvent) {
+        const key = e.which || e.keyCode || 0;
+        const el = this.player.activeElement();
+        if (key === 38 || key === 40) {
+            const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
+            el.volume = newVol;
+            el.muted = !(newVol > 0);
+            e.preventDefault();
+        }
     }
 }
 

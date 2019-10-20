@@ -181,6 +181,8 @@ class Play implements PlayerComponent {
 
         this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
 
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+
         this.button.addEventListener('click', this.events.media.click);
     }
 
@@ -196,8 +198,30 @@ class Play implements PlayerComponent {
 
         this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
 
+        this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+
         this.button.removeEventListener('click', this.events.media.click);
         this.button.remove();
+    }
+
+    /**
+     * Use the `Enter` and space bar keys to play/pause.
+     *
+     * @private
+     * @param {KeyboardEvent} e
+     * @memberof Play
+     */
+    private _keydownEvent(e: KeyboardEvent) {
+        const key = e.which || e.keyCode || 0;
+        const el = this.player.activeElement();
+        if (key === 13 || key === 32) {
+            if (el.paused) {
+                el.play();
+            } else {
+                el.pause();
+            }
+            e.preventDefault();
+        }
     }
 }
 
