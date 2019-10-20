@@ -225,7 +225,7 @@ class Progress implements PlayerComponent {
                 // reach the end of the rail
                 const current = this.player.isMedia() ? el.currentTime :
                     ((el.duration - el.currentTime) + 1 >= 100 ? 100 :
-                    (el.duration - el.currentTime) + 1);
+                        (el.duration - el.currentTime) + 1);
                 const min = parseFloat(this.slider.min);
                 const max = parseFloat(this.slider.max);
                 this.slider.value = current.toString();
@@ -377,6 +377,7 @@ class Progress implements PlayerComponent {
         this.progress.addEventListener('keydown', this.player.getEvents().keydown);
         this.progress.addEventListener('mousemove', this.events.container.mousemove);
         document.addEventListener('mousemove', this.events.global.mousemove);
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
         this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
         this.player.getControls().getContainer().appendChild(this.progress);
     }
@@ -400,6 +401,9 @@ class Progress implements PlayerComponent {
 
         document.removeEventListener('mousemove', this.events.global.mousemove);
 
+        this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
+
         this.buffer.remove();
         this.played.remove();
         this.slider.remove();
@@ -407,6 +411,39 @@ class Progress implements PlayerComponent {
             this.tooltip.remove();
         }
         this.progress.remove();
+    }
+
+    /**
+     * Use the left and right arrow keys to manipulate current media time.
+     *
+     * Also, the `Home` and `End` keys to restart or end media.
+     * @private
+     * @param {KeyboardEvent} e
+     * @memberof Progress
+     */
+    private _keydownEvent(e: KeyboardEvent) {
+        const el = this.player.activeElement();
+        const isAd = this.player.isAd();
+        const key = e.which || e.keyCode || 0;
+        // By default, if no `step` set, it will skip 5% of the duration of the media
+        const newStep = this.player.getOptions().step ? this.player.getOptions().step : el.duration * 0.05;
+        const step = el.duration !== Infinity ? newStep : 0;
+
+        if (key === 35 && !isAd) {
+            el.currentTime = el.duration;
+            e.preventDefault();
+        } else if (key === 36 && !isAd) {
+            el.currentTime = 0;
+            e.preventDefault();
+        } else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
+            el.currentTime += key === 37 ? (step * -1) : step;
+            if (el.currentTime < 0) {
+                el.currentTime = 0;
+            } else if (el.currentTime >= el.duration) {
+                el.currentTime = el.duration;
+            }
+            e.preventDefault();
+        }
     }
 }
 

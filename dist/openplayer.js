@@ -137,66 +137,6 @@ module.exports = function (name) {
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(0);
-var getOwnPropertyDescriptor = __webpack_require__(31).f;
-var hide = __webpack_require__(5);
-var redefine = __webpack_require__(14);
-var setGlobal = __webpack_require__(36);
-var copyConstructorProperties = __webpack_require__(77);
-var isForced = __webpack_require__(54);
-
-/*
-  options.target      - name of the target object
-  options.global      - target is the global object
-  options.stat        - export as static methods of target
-  options.proto       - export as prototype methods of target
-  options.real        - real prototype method for the `pure` version
-  options.forced      - export even if the native feature is available
-  options.bind        - bind methods to the target, required for the `pure` version
-  options.wrap        - wrap constructors to preventing global pollution, required for the `pure` version
-  options.unsafe      - use the simple assignment of property instead of delete + defineProperty
-  options.sham        - add a flag to not completely full polyfills
-  options.enumerable  - export as enumerable property
-  options.noTargetGet - prevent calling a getter on target
-*/
-module.exports = function (options, source) {
-  var TARGET = options.target;
-  var GLOBAL = options.global;
-  var STATIC = options.stat;
-  var FORCED, target, key, targetProperty, sourceProperty, descriptor;
-  if (GLOBAL) {
-    target = global;
-  } else if (STATIC) {
-    target = global[TARGET] || setGlobal(TARGET, {});
-  } else {
-    target = (global[TARGET] || {}).prototype;
-  }
-  if (target) for (key in source) {
-    sourceProperty = source[key];
-    if (options.noTargetGet) {
-      descriptor = getOwnPropertyDescriptor(target, key);
-      targetProperty = descriptor && descriptor.value;
-    } else targetProperty = target[key];
-    FORCED = isForced(GLOBAL ? key : TARGET + (STATIC ? '.' : '#') + key, options.forced);
-    // contained in target
-    if (!FORCED && targetProperty !== undefined) {
-      if (typeof sourceProperty === typeof targetProperty) continue;
-      copyConstructorProperties(sourceProperty, targetProperty);
-    }
-    // add a flag to not completely full polyfills
-    if (options.sham || (targetProperty && targetProperty.sham)) {
-      hide(sourceProperty, 'sham', true);
-    }
-    // extend global
-    redefine(target, key, sourceProperty, options);
-  }
-};
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
@@ -375,49 +315,71 @@ function isXml(input) {
 exports.isXml = isXml;
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports) {
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = function (exec) {
-  try {
-    return !!exec();
-  } catch (error) {
-    return true;
+<<<<<<< HEAD
+var isObject = __webpack_require__(9);
+=======
+var global = __webpack_require__(0);
+var getOwnPropertyDescriptor = __webpack_require__(31).f;
+var hide = __webpack_require__(6);
+var redefine = __webpack_require__(14);
+var setGlobal = __webpack_require__(36);
+var copyConstructorProperties = __webpack_require__(77);
+var isForced = __webpack_require__(54);
+>>>>>>> master
+
+/*
+  options.target      - name of the target object
+  options.global      - target is the global object
+  options.stat        - export as static methods of target
+  options.proto       - export as prototype methods of target
+  options.real        - real prototype method for the `pure` version
+  options.forced      - export even if the native feature is available
+  options.bind        - bind methods to the target, required for the `pure` version
+  options.wrap        - wrap constructors to preventing global pollution, required for the `pure` version
+  options.unsafe      - use the simple assignment of property instead of delete + defineProperty
+  options.sham        - add a flag to not completely full polyfills
+  options.enumerable  - export as enumerable property
+  options.noTargetGet - prevent calling a getter on target
+*/
+module.exports = function (options, source) {
+  var TARGET = options.target;
+  var GLOBAL = options.global;
+  var STATIC = options.stat;
+  var FORCED, target, key, targetProperty, sourceProperty, descriptor;
+  if (GLOBAL) {
+    target = global;
+  } else if (STATIC) {
+    target = global[TARGET] || setGlobal(TARGET, {});
+  } else {
+    target = (global[TARGET] || {}).prototype;
+  }
+  if (target) for (key in source) {
+    sourceProperty = source[key];
+    if (options.noTargetGet) {
+      descriptor = getOwnPropertyDescriptor(target, key);
+      targetProperty = descriptor && descriptor.value;
+    } else targetProperty = target[key];
+    FORCED = isForced(GLOBAL ? key : TARGET + (STATIC ? '.' : '#') + key, options.forced);
+    // contained in target
+    if (!FORCED && targetProperty !== undefined) {
+      if (typeof sourceProperty === typeof targetProperty) continue;
+      copyConstructorProperties(sourceProperty, targetProperty);
+    }
+    // add a flag to not completely full polyfills
+    if (options.sham || (targetProperty && targetProperty.sham)) {
+      hide(sourceProperty, 'sham', true);
+    }
+    // extend global
+    redefine(target, key, sourceProperty, options);
   }
 };
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(11);
-var definePropertyModule = __webpack_require__(13);
-var createPropertyDescriptor = __webpack_require__(18);
-
-module.exports = DESCRIPTORS ? function (object, key, value) {
-  return definePropertyModule.f(object, key, createPropertyDescriptor(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(9);
-
-module.exports = function (it) {
-  if (!isObject(it)) {
-    throw TypeError(String(it) + ' is not an object');
-  } return it;
-};
-
-
-/***/ }),
-/* 7 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -450,6 +412,51 @@ exports.SUPPORTS_HLS = function () {
 };
 
 /***/ }),
+<<<<<<< HEAD
+=======
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = function (exec) {
+  try {
+    return !!exec();
+  } catch (error) {
+    return true;
+  }
+};
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var DESCRIPTORS = __webpack_require__(11);
+var definePropertyModule = __webpack_require__(13);
+var createPropertyDescriptor = __webpack_require__(18);
+
+module.exports = DESCRIPTORS ? function (object, key, value) {
+  return definePropertyModule.f(object, key, createPropertyDescriptor(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
+};
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isObject = __webpack_require__(9);
+
+module.exports = function (it) {
+  if (!isObject(it)) {
+    throw TypeError(String(it) + ' is not an object');
+  } return it;
+};
+
+
+/***/ }),
+>>>>>>> master
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -497,7 +504,7 @@ module.exports = function (it, key) {
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 
 // Thank's IE8 for his funny defineProperty
 module.exports = !fails(function () {
@@ -522,7 +529,7 @@ module.exports = function (it) {
 
 var DESCRIPTORS = __webpack_require__(11);
 var IE8_DOM_DEFINE = __webpack_require__(49);
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 var toPrimitive = __webpack_require__(34);
 
 var nativeDefineProperty = Object.defineProperty;
@@ -548,7 +555,11 @@ exports.f = DESCRIPTORS ? nativeDefineProperty : function defineProperty(O, P, A
 
 var global = __webpack_require__(0);
 var shared = __webpack_require__(25);
+<<<<<<< HEAD
 var hide = __webpack_require__(5);
+=======
+var hide = __webpack_require__(6);
+>>>>>>> master
 var has = __webpack_require__(10);
 var setGlobal = __webpack_require__(36);
 var nativeFunctionToString = __webpack_require__(50);
@@ -758,7 +769,11 @@ var store = global[SHARED] || setGlobal(SHARED, {});
 var NATIVE_WEAK_MAP = __webpack_require__(76);
 var global = __webpack_require__(0);
 var isObject = __webpack_require__(9);
+<<<<<<< HEAD
 var hide = __webpack_require__(5);
+=======
+var hide = __webpack_require__(6);
+>>>>>>> master
 var objectHas = __webpack_require__(10);
 var sharedKey = __webpack_require__(37);
 var hiddenKeys = __webpack_require__(38);
@@ -837,7 +852,7 @@ module.exports = function (argument) {
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 var isArrayIteratorMethod = __webpack_require__(62);
 var toLength = __webpack_require__(27);
 var bind = __webpack_require__(20);
@@ -1029,7 +1044,7 @@ exports.f = DESCRIPTORS ? nativeGetOwnPropertyDescriptor : function getOwnProper
 /* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 var classof = __webpack_require__(12);
 
 var split = ''.split;
@@ -1097,7 +1112,7 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var hide = __webpack_require__(5);
+var hide = __webpack_require__(6);
 
 module.exports = function (key, value) {
   try {
@@ -1163,7 +1178,7 @@ module.exports = [
 /* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 var defineProperties = __webpack_require__(86);
 var enumBugKeys = __webpack_require__(40);
 var hiddenKeys = __webpack_require__(38);
@@ -1443,15 +1458,15 @@ __webpack_require__(125);
 
 var controls_1 = __webpack_require__(126);
 
-var media_1 = __webpack_require__(134);
+var media_1 = __webpack_require__(135);
 
-var ads_1 = __webpack_require__(138);
+var ads_1 = __webpack_require__(139);
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var media_2 = __webpack_require__(30);
 
@@ -1464,16 +1479,24 @@ var Player = function () {
     this.processedAutoplay = false;
     this.customControlItems = [];
     this.defaultOptions = {
+      controls: {
+        left: ['play', 'time', 'volume'],
+        middle: ['progress'],
+        right: ['levels', 'captions', 'settings', 'fullscreen']
+      },
       detachMenus: false,
       hidePlayBtnTimer: 350,
       labels: {
+        auto: 'Auto',
         captions: 'CC/Subtitles',
         click: 'Click to unmute',
         fullscreen: 'Fullscreen',
         lang: {
           en: 'English'
         },
+        levels: 'Quality Levels',
         live: 'Live Broadcast',
+        mediaLevels: 'Change Quality',
         mute: 'Mute',
         off: 'Off',
         pause: 'Pause',
@@ -1931,76 +1954,6 @@ var Player = function () {
       Object.keys(this.events).forEach(function (event) {
         _this3.element.addEventListener(event, _this3.events[event]);
       });
-
-      this.events.keydown = function (e) {
-        var el = _this3.activeElement();
-
-        var isAd = el instanceof ads_1["default"];
-        var key = e.which || e.keyCode || 0;
-        var newStep = _this3.options.step ? _this3.options.step : el.duration * 0.05;
-        var step = el.duration !== Infinity ? newStep : 0;
-
-        switch (key) {
-          case 13:
-          case 32:
-            if (el.paused) {
-              el.play();
-            } else {
-              el.pause();
-            }
-
-            break;
-
-          case 36:
-            if (!isAd) {
-              el.currentTime = 0;
-            }
-
-            break;
-
-          case 37:
-          case 39:
-            if (!isAd && el.duration !== Infinity) {
-              el.currentTime += key === 37 ? step * -1 : step;
-
-              if (el.currentTime < 0) {
-                el.currentTime = 0;
-              } else if (el.currentTime >= el.duration) {
-                el.currentTime = el.duration;
-              }
-            }
-
-            break;
-
-          case 38:
-          case 40:
-            var newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
-            el.volume = newVol;
-            el.muted = !(newVol > 0);
-            break;
-
-          case 35:
-            if (!isAd) {
-              el.currentTime = el.duration;
-            }
-
-            break;
-
-          case 70:
-            if (!e.ctrlKey && typeof _this3.controls.fullscreen.fullScreenEnabled !== 'undefined') {
-              _this3.controls.fullscreen.toggleFullscreen();
-            }
-
-            break;
-
-          default:
-            return true;
-        }
-
-        e.preventDefault();
-      };
-
-      this.getContainer().addEventListener('keydown', this.events.keydown);
     }
   }, {
     key: "_autoplay",
@@ -2135,7 +2088,7 @@ exports.f = NASHORN_BUG ? function propertyIsEnumerable(V) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var DESCRIPTORS = __webpack_require__(11);
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 var createElement = __webpack_require__(35);
 
 // Thank's IE8 for his funny defineProperty
@@ -2201,7 +2154,7 @@ exports.f = Object.getOwnPropertySymbols;
 /* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 
 var replacement = /#|\.prototype\./;
 
@@ -2230,7 +2183,7 @@ module.exports = isForced;
 
 var wellKnownSymbol = __webpack_require__(1);
 var create = __webpack_require__(41);
-var hide = __webpack_require__(5);
+var hide = __webpack_require__(6);
 
 var UNSCOPABLES = wellKnownSymbol('unscopables');
 var ArrayPrototype = Array.prototype;
@@ -2298,12 +2251,12 @@ defineIterator(String, 'String', function (iterated) {
 
 "use strict";
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var createIteratorConstructor = __webpack_require__(91);
 var getPrototypeOf = __webpack_require__(43);
 var setPrototypeOf = __webpack_require__(60);
 var setToStringTag = __webpack_require__(44);
-var hide = __webpack_require__(5);
+var hide = __webpack_require__(6);
 var redefine = __webpack_require__(14);
 var wellKnownSymbol = __webpack_require__(1);
 var IS_PURE = __webpack_require__(19);
@@ -2396,7 +2349,11 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 "use strict";
 
 var getPrototypeOf = __webpack_require__(43);
+<<<<<<< HEAD
 var hide = __webpack_require__(5);
+=======
+var hide = __webpack_require__(6);
+>>>>>>> master
 var has = __webpack_require__(10);
 var wellKnownSymbol = __webpack_require__(1);
 var IS_PURE = __webpack_require__(19);
@@ -2435,7 +2392,7 @@ module.exports = {
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 var aPossiblePrototype = __webpack_require__(93);
 
 // `Object.setPrototypeOf` method
@@ -2465,7 +2422,7 @@ module.exports = Object.setPrototypeOf || ('__proto__' in {} ? function () {
 /* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 
 // call something on iterator step with safe closing on error
 module.exports = function (iterator, fn, value, ENTRIES) {
@@ -2601,7 +2558,7 @@ module.exports = global.Promise;
 /* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 var aFunction = __webpack_require__(17);
 var wellKnownSymbol = __webpack_require__(1);
 
@@ -2621,7 +2578,7 @@ module.exports = function (O, defaultConstructor) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 var classof = __webpack_require__(12);
 var bind = __webpack_require__(20);
 var html = __webpack_require__(56);
@@ -2734,7 +2691,11 @@ module.exports = getBuiltIn('navigator', 'userAgent') || '';
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
+<<<<<<< HEAD
 var anObject = __webpack_require__(6);
+=======
+var anObject = __webpack_require__(7);
+>>>>>>> master
 var isObject = __webpack_require__(9);
 var newPromiseCapability = __webpack_require__(23);
 
@@ -2754,7 +2715,7 @@ module.exports = function (C, x) {
 
 "use strict";
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var aFunction = __webpack_require__(17);
 var newPromiseCapabilityModule = __webpack_require__(23);
 var perform = __webpack_require__(29);
@@ -2821,7 +2782,7 @@ module.exports = entryUnbind('Array', 'find');
 
 "use strict";
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var $find = __webpack_require__(82).find;
 var addToUnscopables = __webpack_require__(55);
 
@@ -2908,7 +2869,7 @@ module.exports = function (target, source) {
 var getBuiltIn = __webpack_require__(15);
 var getOwnPropertyNamesModule = __webpack_require__(79);
 var getOwnPropertySymbolsModule = __webpack_require__(53);
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 
 // all object keys, includes non-enumerable and symbols
 module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
@@ -3104,7 +3065,7 @@ module.exports = Array.isArray || function isArray(arg) {
 /* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 
 module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
   // Chrome 38 Symbol has incorrect toString conversion
@@ -3119,7 +3080,7 @@ module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
 
 var DESCRIPTORS = __webpack_require__(11);
 var definePropertyModule = __webpack_require__(13);
-var anObject = __webpack_require__(6);
+var anObject = __webpack_require__(7);
 var objectKeys = __webpack_require__(42);
 
 // `Object.defineProperties` method
@@ -3227,7 +3188,7 @@ module.exports = function (IteratorConstructor, NAME, next) {
 /* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 
 module.exports = !fails(function () {
   function F() { /* empty */ }
@@ -3253,7 +3214,7 @@ module.exports = function (it) {
 /* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var from = __webpack_require__(95);
 var checkCorrectnessOfIteration = __webpack_require__(65);
 
@@ -3354,7 +3315,7 @@ module.exports = path.Object.assign;
 /* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var assign = __webpack_require__(100);
 
 // `Object.assign` method
@@ -3371,7 +3332,7 @@ $({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
 "use strict";
 
 var DESCRIPTORS = __webpack_require__(11);
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 var objectKeys = __webpack_require__(42);
 var getOwnPropertySymbolsModule = __webpack_require__(53);
 var propertyIsEnumerableModule = __webpack_require__(48);
@@ -3433,10 +3394,10 @@ module.exports = path.Object.keys;
 /* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var toObject = __webpack_require__(21);
 var nativeKeys = __webpack_require__(42);
-var fails = __webpack_require__(4);
+var fails = __webpack_require__(5);
 
 var FAILS_ON_PRIMITIVES = fails(function () { nativeKeys(1); });
 
@@ -3521,7 +3482,7 @@ module.exports = String(test) !== '[object z]' ? function toString() {
 var global = __webpack_require__(0);
 var DOMIterables = __webpack_require__(109);
 var ArrayIteratorMethods = __webpack_require__(110);
-var hide = __webpack_require__(5);
+var hide = __webpack_require__(6);
 var wellKnownSymbol = __webpack_require__(1);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -3658,7 +3619,7 @@ addToUnscopables('entries');
 
 "use strict";
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var IS_PURE = __webpack_require__(19);
 var global = __webpack_require__(0);
 var path = __webpack_require__(16);
@@ -4183,7 +4144,7 @@ module.exports = function (a, b) {
 
 "use strict";
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var IS_PURE = __webpack_require__(19);
 var NativePromise = __webpack_require__(66);
 var getBuiltIn = __webpack_require__(15);
@@ -4218,13 +4179,13 @@ if (!IS_PURE && typeof NativePromise == 'function' && !NativePromise.prototype['
 /* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var getPrototypeOf = __webpack_require__(43);
 var setPrototypeOf = __webpack_require__(60);
 var create = __webpack_require__(41);
 var createPropertyDescriptor = __webpack_require__(18);
 var iterate = __webpack_require__(28);
-var hide = __webpack_require__(5);
+var hide = __webpack_require__(6);
 
 var $AggregateError = function AggregateError(errors, message) {
   var that = this;
@@ -4263,7 +4224,7 @@ __webpack_require__(71);
 
 "use strict";
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var newPromiseCapabilityModule = __webpack_require__(23);
 var perform = __webpack_require__(29);
 
@@ -4285,7 +4246,7 @@ $({ target: 'Promise', stat: true }, {
 
 "use strict";
 
-var $ = __webpack_require__(2);
+var $ = __webpack_require__(3);
 var aFunction = __webpack_require__(17);
 var getBuiltIn = __webpack_require__(15);
 var newPromiseCapabilityModule = __webpack_require__(23);
@@ -4558,21 +4519,23 @@ var captions_1 = __webpack_require__(127);
 
 var fullscreen_1 = __webpack_require__(128);
 
-var play_1 = __webpack_require__(129);
+var levels_1 = __webpack_require__(129);
 
-var progress_1 = __webpack_require__(130);
+var play_1 = __webpack_require__(130);
 
-var settings_1 = __webpack_require__(131);
+var progress_1 = __webpack_require__(131);
 
-var time_1 = __webpack_require__(132);
+var settings_1 = __webpack_require__(132);
 
-var volume_1 = __webpack_require__(133);
+var time_1 = __webpack_require__(133);
 
-var constants_1 = __webpack_require__(7);
+var volume_1 = __webpack_require__(134);
+
+var constants_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var Controls = function () {
   function Controls(player) {
@@ -4581,6 +4544,16 @@ var Controls = function () {
     this.events = {
       media: {},
       mouse: {}
+    };
+    this.controlEls = {
+      Captions: captions_1["default"],
+      Fullscreen: fullscreen_1["default"],
+      Levels: levels_1["default"],
+      Play: play_1["default"],
+      Progress: progress_1["default"],
+      Settings: settings_1["default"],
+      Time: time_1["default"],
+      Volume: volume_1["default"]
     };
     this.player = player;
 
@@ -4706,7 +4679,7 @@ var Controls = function () {
         _this2.items[position].forEach(function (item) {
           if (item.custom) {
             _this2._destroyCustomControl(item);
-          } else {
+          } else if (typeof item.destroy === 'function') {
             item.destroy();
           }
         });
@@ -4755,19 +4728,27 @@ var Controls = function () {
     value: function _setElements() {
       var _this4 = this;
 
-      this.play = new play_1["default"](this.player);
-      this.time = new time_1["default"](this.player);
-      this.progress = new progress_1["default"](this.player);
-      this.volume = new volume_1["default"](this.player);
-      this.captions = new captions_1["default"](this.player);
-      this.settings = new settings_1["default"](this.player);
+      var controls = this.player.getOptions().controls;
       this.items = {
-        left: [this.play, this.time, this.volume],
-        middle: [this.progress],
-        right: [this.captions, this.settings]
+        left: [],
+        middle: [],
+        right: []
       };
-      var customItems = this.player.getCustomControls();
-      customItems.forEach(function (item) {
+      Object.keys(controls).forEach(function (position) {
+        controls[position].forEach(function (el) {
+          var className = "".concat(el.charAt(0).toUpperCase()).concat(el.slice(1));
+          var item = new _this4.controlEls[className](_this4.player);
+
+          if (el === 'settings') {
+            _this4.settings = item;
+          }
+
+          if (el !== 'fullscreen') {
+            _this4.items[position].push(item);
+          }
+        });
+      });
+      this.player.getCustomControls().forEach(function (item) {
         if (item.position === 'right') {
           _this4.items[item.position].unshift(item);
         } else {
@@ -4776,8 +4757,7 @@ var Controls = function () {
       });
 
       if (general_1.isVideo(this.player.getElement())) {
-        this.fullscreen = new fullscreen_1["default"](this.player);
-        this.items.right.push(this.fullscreen);
+        this.items.right.push(new fullscreen_1["default"](this.player));
       }
     }
   }, {
@@ -4856,11 +4836,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var time_1 = __webpack_require__(45);
 
@@ -5417,7 +5397,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
 var Fullscreen = function () {
   function Fullscreen(player) {
@@ -5456,6 +5436,7 @@ var Fullscreen = function () {
 
       this._setFullscreenData(false);
 
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
       this.fullscreenEvents.forEach(function (event) {
         document.addEventListener(event, _this._fullscreenChange.bind(_this));
       });
@@ -5484,6 +5465,7 @@ var Fullscreen = function () {
     value: function destroy() {
       var _this2 = this;
 
+      this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
       this.fullscreenEvents.forEach(function (event) {
         document.removeEventListener(event, _this2._fullscreenChange.bind(_this2));
       });
@@ -5592,6 +5574,16 @@ var Fullscreen = function () {
       video.style.width = width ? '100%' : null;
       video.style.height = height ? '100%' : null;
     }
+  }, {
+    key: "_keydownEvent",
+    value: function _keydownEvent(e) {
+      var key = e.which || e.keyCode || 0;
+
+      if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
+        this.toggleFullscreen();
+        e.preventDefault();
+      }
+    }
   }]);
 
   return Fullscreen;
@@ -5616,11 +5608,320 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var constants_1 = __webpack_require__(4);
+
+var events_1 = __webpack_require__(8);
+
+var general_1 = __webpack_require__(2);
+
+var Levels = function () {
+  function Levels(player) {
+    _classCallCheck(this, Levels);
+
+    this.events = {
+      button: {},
+      global: {},
+      media: {}
+    };
+    this.levels = [];
+    this.player = player;
+    this.labels = player.getOptions().labels;
+    this.detachMenu = player.getOptions().detachMenus;
+    return this;
+  }
+
+  _createClass(Levels, [{
+    key: "create",
+    value: function create() {
+      var _this = this;
+
+      this["default"] = "".concat(this.player.getMedia().level);
+
+      var menuItems = this._formatMenuItems();
+
+      var defaultLabel = menuItems.length ? menuItems.find(function (items) {
+        return items.key === _this["default"];
+      }).label : this.labels.auto;
+      this.button = document.createElement('button');
+      this.button.className = 'op-controls__levels op-control__right';
+      this.button.tabIndex = 0;
+      this.button.title = this.labels.mediaLevels;
+      this.button.setAttribute('aria-controls', this.player.id);
+      this.button.setAttribute('aria-label', this.labels.mediaLevels);
+      this.button.setAttribute('data-active-level', this["default"]);
+      this.button.innerHTML = "<span>".concat(defaultLabel, "</span>");
+      this.events.media.loadedmetadata = this._gatherLevels.bind(this);
+
+      this.events.media.canplay = function () {
+        if (!_this.levels.length) {
+          _this.destroy();
+        } else {
+          var e = events_1.addEvent('controlschanged');
+
+          _this.player.getElement().dispatchEvent(e);
+        }
+      };
+
+      if (this.detachMenu) {
+        this.player.getControls().getContainer().appendChild(this.button);
+
+        this._buildMenu();
+
+        this.events.button.click = function () {
+          if (_this.detachMenu) {
+            var menus = _this.player.getContainer().querySelectorAll('.op-settings');
+
+            for (var i = 0, total = menus.length; i < total; ++i) {
+              if (menus[i] !== _this.menu) {
+                menus[i].setAttribute('aria-hidden', 'true');
+              }
+            }
+
+            if (_this.menu.getAttribute('aria-hidden') === 'true') {
+              _this.menu.setAttribute('aria-hidden', 'false');
+            } else {
+              _this.menu.setAttribute('aria-hidden', 'true');
+            }
+          }
+        };
+
+        this.events.button.mouseover = function () {
+          if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
+            var menus = _this.player.getContainer().querySelectorAll('.op-settings');
+
+            for (var i = 0, total = menus.length; i < total; ++i) {
+              if (menus[i] !== _this.menu) {
+                menus[i].setAttribute('aria-hidden', 'true');
+              }
+            }
+
+            if (_this.menu.getAttribute('aria-hidden') === 'true') {
+              _this.menu.setAttribute('aria-hidden', 'false');
+            }
+          }
+        };
+
+        this.events.button.mouseout = function () {
+          if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
+            var menus = _this.player.getContainer().querySelectorAll('.op-settings');
+
+            for (var i = 0, total = menus.length; i < total; ++i) {
+              menus[i].setAttribute('aria-hidden', 'true');
+            }
+
+            if (_this.menu.getAttribute('aria-hidden') === 'false') {
+              _this.menu.setAttribute('aria-hidden', 'true');
+            }
+          }
+        };
+
+        this.button.addEventListener('click', this.events.button.click);
+        this.button.addEventListener('mouseover', this.events.button.mouseover);
+        this.menu.addEventListener('mouseover', this.events.button.mouseover);
+        this.menu.addEventListener('mouseout', this.events.button.mouseout);
+        this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+      }
+
+      this.events.global.click = function (e) {
+        var option = e.target;
+
+        if (option.closest("#".concat(_this.player.id)) && general_1.hasClass(option, 'op-levels__option')) {
+          var level = parseInt(option.getAttribute('data-value').replace('levels-', ''), 10);
+          _this["default"] = "".concat(level);
+
+          if (_this.detachMenu) {
+            _this.button.setAttribute('data-active-level', "".concat(level));
+
+            _this.button.innerHTML = "<span>".concat(option.innerText, "</span>");
+            var levels = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
+
+            for (var i = 0, total = levels.length; i < total; ++i) {
+              levels[i].setAttribute('aria-checked', 'false');
+            }
+
+            option.parentElement.setAttribute('aria-checked', 'true');
+
+            _this.menu.setAttribute('aria-hidden', 'false');
+          }
+
+          _this.player.getMedia().level = level;
+          e.preventDefault();
+        }
+      };
+
+      Object.keys(this.events.media).forEach(function (event) {
+        _this.player.getElement().addEventListener(event, _this.events.media[event]);
+      });
+      document.addEventListener('click', this.events.global.click);
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      var _this2 = this;
+
+      Object.keys(this.events.media).forEach(function (event) {
+        _this2.player.getElement().removeEventListener(event, _this2.events.media[event]);
+      });
+      document.removeEventListener('click', this.events.global.click);
+
+      if (this.detachMenu) {
+        this.button.removeEventListener('click', this.events.button.click);
+        this.button.remove();
+        this.button.removeEventListener('mouseover', this.events.button.mouseover);
+        this.menu.removeEventListener('mouseover', this.events.button.mouseover);
+        this.menu.removeEventListener('mouseout', this.events.button.mouseout);
+        this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
+        this.menu.remove();
+      }
+    }
+  }, {
+    key: "addSettings",
+    value: function addSettings() {
+      if (this.detachMenu) {
+        return {};
+      }
+
+      var subitems = this._formatMenuItems();
+
+      return subitems.length > 2 ? {
+        className: 'op-levels__option',
+        "default": '-1',
+        key: 'levels',
+        name: this.labels.levels,
+        subitems: subitems
+      } : {};
+    }
+  }, {
+    key: "_formatMenuItems",
+    value: function _formatMenuItems() {
+      var levels = this._gatherLevels();
+
+      var total = levels.length;
+      var items = total ? [{
+        key: '-1',
+        label: this.labels.auto
+      }] : [];
+
+      var _loop = function _loop(i) {
+        var level = levels[i];
+        items = items.filter(function (el) {
+          return el.key !== level.id;
+        });
+        items.push({
+          key: level.id,
+          label: level.label
+        });
+      };
+
+      for (var i = 0; i < total; i++) {
+        _loop(i);
+      }
+
+      items = items.reduce(function (acc, current) {
+        var duplicate = acc.find(function (item) {
+          return item.label === current.label;
+        });
+
+        if (!duplicate) {
+          return acc.concat([current]);
+        }
+
+        return acc;
+      }, []).sort(function (a, b) {
+        return parseInt(a.label, 10) > parseInt(b.label, 10) ? 1 : -1;
+      });
+      return items;
+    }
+  }, {
+    key: "_getResolutionsLabel",
+    value: function _getResolutionsLabel(height) {
+      if (height >= 4320) {
+        return '8K';
+      } else if (height >= 2160) {
+        return '4K';
+      } else if (height >= 1440) {
+        return '1440p';
+      } else if (height >= 1080) {
+        return '1080p';
+      } else if (height >= 720) {
+        return '720p';
+      } else if (height >= 480) {
+        return '480p';
+      } else if (height >= 360) {
+        return '360p';
+      } else if (height >= 240) {
+        return '240p';
+      } else if (height >= 144) {
+        return '144p';
+      }
+
+      return this.labels.auto;
+    }
+  }, {
+    key: "_gatherLevels",
+    value: function _gatherLevels() {
+      var _this3 = this;
+
+      if (!this.levels.length) {
+        this.player.getMedia().levels.forEach(function (level) {
+          _this3.levels.push(Object.assign(Object.assign({}, level), {
+            label: level.label || _this3._getResolutionsLabel(level.height)
+          }));
+        });
+      }
+
+      return this.levels;
+    }
+  }, {
+    key: "_buildMenu",
+    value: function _buildMenu() {
+      var _this4 = this;
+
+      if (this.detachMenu) {
+        this.button.classList.add('op-control--no-hover');
+        this.menu = document.createElement('div');
+        this.menu.className = 'op-settings op-levels__menu';
+        this.menu.setAttribute('aria-hidden', 'true');
+        var className = 'op-levels__option';
+
+        var options = this._formatMenuItems();
+
+        var menu = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-levels\">\n                ".concat(options.map(function (item) {
+          return "\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                    aria-checked=\"".concat(_this4["default"] === item.key ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"levels-").concat(item.key, "\">").concat(item.label, "</div>\n                </div>");
+        }).join(''), "\n            </div>");
+        this.menu.innerHTML = menu;
+        this.player.getControls().getContainer().appendChild(this.menu);
+      }
+    }
+  }]);
+
+  return Levels;
+}();
+
+exports["default"] = Levels;
+
+/***/ }),
+/* 130 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var player_1 = __webpack_require__(47);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var Play = function () {
   function Play(player) {
@@ -5773,6 +6074,7 @@ var Play = function () {
         element.addEventListener(event, _this.events.media[event]);
       });
       this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
       this.button.addEventListener('click', this.events.media.click);
     }
   }, {
@@ -5784,8 +6086,25 @@ var Play = function () {
         _this2.player.getElement().removeEventListener(event, _this2.events.media[event]);
       });
       this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
+      this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
       this.button.removeEventListener('click', this.events.media.click);
       this.button.remove();
+    }
+  }, {
+    key: "_keydownEvent",
+    value: function _keydownEvent(e) {
+      var key = e.which || e.keyCode || 0;
+      var el = this.player.activeElement();
+
+      if (key === 13 || key === 32) {
+        if (el.paused) {
+          el.play();
+        } else {
+          el.pause();
+        }
+
+        e.preventDefault();
+      }
     }
   }]);
 
@@ -5795,7 +6114,7 @@ var Play = function () {
 exports["default"] = Play;
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5811,9 +6130,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var time_1 = __webpack_require__(45);
 
@@ -6078,6 +6397,7 @@ var Progress = function () {
       this.progress.addEventListener('keydown', this.player.getEvents().keydown);
       this.progress.addEventListener('mousemove', this.events.container.mousemove);
       document.addEventListener('mousemove', this.events.global.mousemove);
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
       this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
       this.player.getControls().getContainer().appendChild(this.progress);
     }
@@ -6095,6 +6415,8 @@ var Progress = function () {
       this.progress.removeEventListener('keydown', this.player.getEvents().keydown);
       this.progress.removeEventListener('mousemove', this.events.container.mousemove);
       document.removeEventListener('mousemove', this.events.global.mousemove);
+      this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+      this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
       this.buffer.remove();
       this.played.remove();
       this.slider.remove();
@@ -6105,6 +6427,33 @@ var Progress = function () {
 
       this.progress.remove();
     }
+  }, {
+    key: "_keydownEvent",
+    value: function _keydownEvent(e) {
+      var el = this.player.activeElement();
+      var isAd = this.player.isAd();
+      var key = e.which || e.keyCode || 0;
+      var newStep = this.player.getOptions().step ? this.player.getOptions().step : el.duration * 0.05;
+      var step = el.duration !== Infinity ? newStep : 0;
+
+      if (key === 35 && !isAd) {
+        el.currentTime = el.duration;
+        e.preventDefault();
+      } else if (key === 36 && !isAd) {
+        el.currentTime = 0;
+        e.preventDefault();
+      } else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
+        el.currentTime += key === 37 ? step * -1 : step;
+
+        if (el.currentTime < 0) {
+          el.currentTime = 0;
+        } else if (el.currentTime >= el.duration) {
+          el.currentTime = el.duration;
+        }
+
+        e.preventDefault();
+      }
+    }
   }]);
 
   return Progress;
@@ -6113,7 +6462,7 @@ var Progress = function () {
 exports["default"] = Progress;
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6131,7 +6480,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var Settings = function () {
   function Settings(player) {
@@ -6313,7 +6662,7 @@ var Settings = function () {
           } else if (general_1.hasClass(target, 'op-settings__menu-content')) {
             var fragments = target.parentElement.querySelector('.op-settings__menu-label').getAttribute('data-value').split('-');
             fragments.pop();
-            var current = fragments.join('-');
+            var current = fragments.join('-').replace(/^\-|\-$/, '');
 
             if (_typeof(_this3.submenu[current]) !== undefined) {
               _this3.menu.classList.add('op-settings--sliding');
@@ -6385,7 +6734,7 @@ var Settings = function () {
 exports["default"] = Settings;
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6517,7 +6866,7 @@ var Time = function () {
 exports["default"] = Time;
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6533,11 +6882,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var Volume = function () {
   function Volume(player) {
@@ -6699,6 +7048,7 @@ var Volume = function () {
       Object.keys(this.events.slider).forEach(function (event) {
         _this.slider.addEventListener(event, _this.events.slider[event]);
       });
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
 
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         var controls = this.player.getControls().getContainer();
@@ -6718,9 +7068,23 @@ var Volume = function () {
       Object.keys(this.events.slider).forEach(function (event) {
         _this2.slider.removeEventListener(event, _this2.events.slider[event]);
       });
+      this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
       this.slider.remove();
       this.display.remove();
       this.container.remove();
+    }
+  }, {
+    key: "_keydownEvent",
+    value: function _keydownEvent(e) {
+      var key = e.which || e.keyCode || 0;
+      var el = this.player.activeElement();
+
+      if (key === 38 || key === 40) {
+        var newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
+        el.volume = newVol;
+        el.muted = !(newVol > 0);
+        e.preventDefault();
+      }
     }
   }]);
 
@@ -6730,7 +7094,7 @@ var Volume = function () {
 exports["default"] = Volume;
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6748,11 +7112,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var dash_1 = __webpack_require__(135);
+var dash_1 = __webpack_require__(136);
 
-var hls_1 = __webpack_require__(136);
+var hls_1 = __webpack_require__(137);
 
-var html5_1 = __webpack_require__(137);
+var html5_1 = __webpack_require__(138);
 
 var source = __webpack_require__(30);
 
@@ -7031,6 +7395,19 @@ var Media = function () {
     get: function get() {
       return this.mediaLoaded;
     }
+  }, {
+    key: "level",
+    set: function set(value) {
+      this.media.level = value;
+    },
+    get: function get() {
+      return this.media ? this.media.level : -1;
+    }
+  }, {
+    key: "levels",
+    get: function get() {
+      return this.media ? this.media.levels : [];
+    }
   }]);
 
   return Media;
@@ -7039,7 +7416,7 @@ var Media = function () {
 exports["default"] = Media;
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7067,11 +7444,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var media_1 = __webpack_require__(30);
 
@@ -7164,10 +7541,23 @@ var DashMedia = function (_native_1$default) {
   }, {
     key: "_preparePlayer",
     value: function _preparePlayer() {
-      this.player.getDebug().setLogToBrowserConsole(false);
+      if (typeof this.player.getDebug().setLogToBrowserConsole === 'undefined') {
+        this.player.updateSettings({
+          debug: {
+            logLevel: dashjs.Debug.LOG_LEVEL_NONE
+          },
+          streaming: {
+            fastSwitchEnabled: true,
+            scheduleWhilePaused: false
+          }
+        });
+      } else {
+        this.player.getDebug().setLogToBrowserConsole(false);
+        this.player.setScheduleWhilePaused(false);
+        this.player.setFastSwitchEnabled(true);
+      }
+
       this.player.initialize();
-      this.player.setScheduleWhilePaused(false);
-      this.player.setFastSwitchEnabled(true);
       this.player.attachView(this.element);
       this.player.setAutoPlay(false);
 
@@ -7198,6 +7588,46 @@ var DashMedia = function (_native_1$default) {
         });
       }
     }
+  }, {
+    key: "levels",
+    get: function get() {
+      var levels = [];
+
+      if (this.player) {
+        var bitrates = this.player.getBitrateInfoListFor('video');
+
+        if (bitrates.length) {
+          bitrates.forEach(function (item) {
+            if (bitrates[item]) {
+              var _bitrates$item = bitrates[item],
+                  height = _bitrates$item.height,
+                  name = _bitrates$item.name;
+              var level = {
+                height: height,
+                id: item,
+                label: name || null
+              };
+              levels.push(level);
+            }
+          });
+        }
+      }
+
+      return levels;
+    }
+  }, {
+    key: "level",
+    set: function set(level) {
+      if (level === 0) {
+        this.player.setAutoSwitchQuality(true);
+      } else {
+        this.player.setAutoSwitchQuality(false);
+        this.player.setQualityFor('video', level);
+      }
+    },
+    get: function get() {
+      return this.player ? this.player.getQualityFor('video') : -1;
+    }
   }]);
 
   return DashMedia;
@@ -7206,7 +7636,7 @@ var DashMedia = function (_native_1$default) {
 exports["default"] = DashMedia;
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7247,11 +7677,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var media_1 = __webpack_require__(30);
 
@@ -7478,6 +7908,37 @@ var HlsMedia = function (_native_1$default) {
         });
       }
     }
+  }, {
+    key: "levels",
+    get: function get() {
+      var _this6 = this;
+
+      var levels = [];
+
+      if (this.player && this.player.levels && this.player.levels.length) {
+        Object.keys(this.player.levels).forEach(function (item) {
+          var _this6$player$levels$ = _this6.player.levels[item],
+              height = _this6$player$levels$.height,
+              name = _this6$player$levels$.name;
+          var level = {
+            height: height,
+            id: item,
+            label: name || null
+          };
+          levels.push(level);
+        });
+      }
+
+      return levels;
+    }
+  }, {
+    key: "level",
+    set: function set(level) {
+      this.player.currentLevel = level;
+    },
+    get: function get() {
+      return this.player ? this.player.currentLevel : -1;
+    }
   }]);
 
   return HlsMedia;
@@ -7486,7 +7947,7 @@ var HlsMedia = function (_native_1$default) {
 exports["default"] = HlsMedia;
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7514,9 +7975,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+<<<<<<< HEAD
 var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
+=======
+var general_1 = __webpack_require__(2);
+>>>>>>> master
 
 var native_1 = __webpack_require__(46);
 
@@ -7528,10 +7993,15 @@ var HTML5Media = function (_native_1$default) {
 
     _classCallCheck(this, HTML5Media);
 
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(HTML5Media).call(this, element, mediaFile));
+    _this.currentLevel = null;
+    _this.levelList = [];
+
     if (!general_1.isAudio(element) && !general_1.isVideo(element)) {
       throw new TypeError('Native method only supports video/audio tags');
     }
 
+<<<<<<< HEAD
     element.addEventListener('error', function (e) {
       var details = {
         detail: {
@@ -7545,6 +8015,8 @@ var HTML5Media = function (_native_1$default) {
       _this.element.dispatchEvent(errorEvent);
     });
     _this = _possibleConstructorReturn(this, _getPrototypeOf(HTML5Media).call(this, element, mediaFile));
+=======
+>>>>>>> master
     return _possibleConstructorReturn(_this, _assertThisInitialized(_this));
   }
 
@@ -7564,6 +8036,45 @@ var HTML5Media = function (_native_1$default) {
       return this;
     }
   }, {
+    key: "levels",
+    get: function get() {
+      if (!this.levelList.length) {
+        var levels = this.element.querySelectorAll('source[title]');
+
+        for (var i = 0, total = levels.length; i < total; ++i) {
+          var level = {
+            height: 0,
+            id: "".concat(i),
+            label: levels[i].getAttribute('title')
+          };
+          this.levelList.push(level);
+        }
+      }
+
+      return this.levelList;
+    }
+  }, {
+    key: "level",
+    set: function set(level) {
+      var idx = this.levelList.findIndex(function (item) {
+        return parseInt(item.id, 10) === level;
+      });
+
+      if (idx > -1) {
+        this.currentLevel = this.levels[idx];
+        var levels = this.element.querySelectorAll('source[title]');
+
+        for (var i = 0, total = levels.length; i < total; ++i) {
+          if (parseInt(this.currentLevel.id, 10) === i) {
+            this.element.src = levels[i].getAttribute('src');
+          }
+        }
+      }
+    },
+    get: function get() {
+      return this.currentLevel ? this.currentLevel.id : '-1';
+    }
+  }, {
     key: "src",
     set: function set(media) {
       this.element.src = media.src;
@@ -7576,7 +8087,7 @@ var HTML5Media = function (_native_1$default) {
 exports["default"] = HTML5Media;
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7592,11 +8103,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(7);
+var constants_1 = __webpack_require__(4);
 
 var events_1 = __webpack_require__(8);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(2);
 
 var Ads = function () {
   function Ads(media, ads, autoStart, autoStartMuted, options) {

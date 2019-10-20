@@ -299,7 +299,7 @@ class Settings implements PlayerComponent {
                     const fragments = target.parentElement.querySelector('.op-settings__menu-label')
                         .getAttribute('data-value').split('-');
                     fragments.pop();
-                    const current = fragments.join('-');
+                    const current = fragments.join('-').replace(/^\-|\-$/, '');
 
                     if (typeof this.submenu[current] !== undefined) {
                         this.menu.classList.add('op-settings--sliding');
