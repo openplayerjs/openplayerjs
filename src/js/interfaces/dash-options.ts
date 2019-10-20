@@ -8,13 +8,14 @@
 export default interface DashOptions {
     /**
      * @type string
+     * @memberof DashOptions
      */
     robustnessLevel: string;
     /**
      * Digital rights management object to allow play restricted media.
      *
      * @type object
-     * @memberof Source
+     * @memberof DashOptions
      */
     drm?: object;
 }

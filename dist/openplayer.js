@@ -407,7 +407,7 @@ module.exports = DESCRIPTORS ? function (object, key, value) {
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 
 module.exports = function (it) {
   if (!isObject(it)) {
@@ -451,26 +451,6 @@ exports.SUPPORTS_HLS = function () {
 
 /***/ }),
 /* 8 */
-/***/ (function(module, exports) {
-
-module.exports = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-var hasOwnProperty = {}.hasOwnProperty;
-
-module.exports = function (it, key) {
-  return hasOwnProperty.call(it, key);
-};
-
-
-/***/ }),
-/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -492,6 +472,26 @@ function addEvent(event, details) {
 
 exports.addEvent = addEvent;
 exports.events = ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'];
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+var hasOwnProperty = {}.hasOwnProperty;
+
+module.exports = function (it, key) {
+  return hasOwnProperty.call(it, key);
+};
+
 
 /***/ }),
 /* 11 */
@@ -549,7 +549,7 @@ exports.f = DESCRIPTORS ? nativeDefineProperty : function defineProperty(O, P, A
 var global = __webpack_require__(0);
 var shared = __webpack_require__(25);
 var hide = __webpack_require__(5);
-var has = __webpack_require__(9);
+var has = __webpack_require__(10);
 var setGlobal = __webpack_require__(36);
 var nativeFunctionToString = __webpack_require__(50);
 var InternalStateModule = __webpack_require__(26);
@@ -757,9 +757,9 @@ var store = global[SHARED] || setGlobal(SHARED, {});
 
 var NATIVE_WEAK_MAP = __webpack_require__(76);
 var global = __webpack_require__(0);
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 var hide = __webpack_require__(5);
-var objectHas = __webpack_require__(9);
+var objectHas = __webpack_require__(10);
 var sharedKey = __webpack_require__(37);
 var hiddenKeys = __webpack_require__(38);
 
@@ -1008,7 +1008,7 @@ var propertyIsEnumerableModule = __webpack_require__(48);
 var createPropertyDescriptor = __webpack_require__(18);
 var toIndexedObject = __webpack_require__(24);
 var toPrimitive = __webpack_require__(34);
-var has = __webpack_require__(9);
+var has = __webpack_require__(10);
 var IE8_DOM_DEFINE = __webpack_require__(49);
 
 var nativeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
@@ -1060,7 +1060,7 @@ module.exports = function (it) {
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 
 // `ToPrimitive` abstract operation
 // https://tc39.github.io/ecma262/#sec-toprimitive
@@ -1081,7 +1081,7 @@ module.exports = function (input, PREFERRED_STRING) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 
 var document = global.document;
 // typeof document.createElement is 'object' in old IE
@@ -1232,7 +1232,7 @@ module.exports = Object.keys || function keys(O) {
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(9);
+var has = __webpack_require__(10);
 var toObject = __webpack_require__(21);
 var sharedKey = __webpack_require__(37);
 var CORRECT_PROTOTYPE_GETTER = __webpack_require__(92);
@@ -1256,7 +1256,7 @@ module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O)
 /***/ (function(module, exports, __webpack_require__) {
 
 var defineProperty = __webpack_require__(13).f;
-var has = __webpack_require__(9);
+var has = __webpack_require__(10);
 var wellKnownSymbol = __webpack_require__(1);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
@@ -1449,7 +1449,7 @@ var ads_1 = __webpack_require__(138);
 
 var constants_1 = __webpack_require__(7);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -1493,7 +1493,10 @@ var Player = function () {
       showLoaderOnInit: false,
       startTime: 0,
       startVolume: 1,
-      step: 0
+      step: 0,
+      onError: function onError(error) {
+        return console.error(error);
+      }
     };
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
@@ -1750,6 +1753,8 @@ var Player = function () {
     key: "_prepareMedia",
     value: function _prepareMedia() {
       try {
+        this.element.addEventListener('playererror', this.options.onError);
+
         if (this.autoplay && general_1.isVideo(this.element)) {
           this.element.addEventListener('canplay', this._autoplay.bind(this));
         }
@@ -2166,7 +2171,7 @@ module.exports = function (key) {
 /* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(9);
+var has = __webpack_require__(10);
 var toIndexedObject = __webpack_require__(24);
 var indexOf = __webpack_require__(80).indexOf;
 var hiddenKeys = __webpack_require__(38);
@@ -2392,7 +2397,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 
 var getPrototypeOf = __webpack_require__(43);
 var hide = __webpack_require__(5);
-var has = __webpack_require__(9);
+var has = __webpack_require__(10);
 var wellKnownSymbol = __webpack_require__(1);
 var IS_PURE = __webpack_require__(19);
 
@@ -2730,7 +2735,7 @@ module.exports = getBuiltIn('navigator', 'userAgent') || '';
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(6);
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 var newPromiseCapability = __webpack_require__(23);
 
 module.exports = function (C, x) {
@@ -2880,7 +2885,7 @@ module.exports = typeof WeakMap === 'function' && /native code/.test(nativeFunct
 /* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(9);
+var has = __webpack_require__(10);
 var ownKeys = __webpack_require__(78);
 var getOwnPropertyDescriptorModule = __webpack_require__(31);
 var definePropertyModule = __webpack_require__(13);
@@ -3060,7 +3065,7 @@ module.exports = {
 /* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 var isArray = __webpack_require__(84);
 var wellKnownSymbol = __webpack_require__(1);
 
@@ -3235,7 +3240,7 @@ module.exports = !fails(function () {
 /* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 
 module.exports = function (it) {
   if (!isObject(it) && it !== null) {
@@ -3662,7 +3667,7 @@ var redefine = __webpack_require__(14);
 var redefineAll = __webpack_require__(112);
 var setToStringTag = __webpack_require__(44);
 var setSpecies = __webpack_require__(113);
-var isObject = __webpack_require__(8);
+var isObject = __webpack_require__(9);
 var aFunction = __webpack_require__(17);
 var anInstance = __webpack_require__(114);
 var classof = __webpack_require__(12);
@@ -4565,7 +4570,7 @@ var volume_1 = __webpack_require__(133);
 
 var constants_1 = __webpack_require__(7);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -4853,7 +4858,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(7);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -4947,7 +4952,7 @@ var Captions = function () {
                     type: 'captions'
                   }
                 };
-                var e = events_1.addEvent('settingremoved', details);
+                var e = events_1.addEvent('settingremoved', Object.assign({}, details));
 
                 _this.player.getElement().dispatchEvent(e);
 
@@ -5613,7 +5618,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var player_1 = __webpack_require__(47);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -6530,7 +6535,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(7);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -7064,7 +7069,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(7);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -7129,7 +7134,14 @@ var DashMedia = function (_native_1$default) {
     key: "_assign",
     value: function _assign(event) {
       if (event.type === 'error') {
-        console.error(event);
+        var details = {
+          detail: {
+            type: "M(PEG)-DASH",
+            message: event
+          }
+        };
+        var errorEvent = events_1.addEvent('playererror', Object.assign({}, details));
+        this.element.dispatchEvent(errorEvent);
       } else {
         var e = events_1.addEvent(event.type, event);
         this.element.dispatchEvent(e);
@@ -7237,7 +7249,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(7);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -7347,12 +7359,18 @@ var HlsMedia = function (_native_1$default) {
     key: "_assign",
     value: function _assign(event, data) {
       if (event === 'hlsError') {
-        console.warn(data);
-        data = data[1];
+        var errorDetails = {
+          detail: {
+            type: "HLS",
+            message: data[1].details,
+            data: data
+          }
+        };
+        var errorEvent = events_1.addEvent('playererror', Object.assign({}, errorDetails));
+        this.element.dispatchEvent(errorEvent);
 
-        var _data = data,
-            type = _data.type,
-            fatal = _data.fatal,
+        var type = data.type,
+            fatal = data.fatal,
             details = __rest(data, ["type", "fatal"]);
 
         if (fatal) {
@@ -7391,8 +7409,9 @@ var HlsMedia = function (_native_1$default) {
               break;
           }
         } else {
-          var errorEvent = events_1.addEvent(type, details);
-          this.element.dispatchEvent(errorEvent);
+          var _errorEvent = events_1.addEvent(type, details);
+
+          this.element.dispatchEvent(_errorEvent);
         }
       } else {
         if (event === 'hlsLevelLoaded' && data[1].details.live === true) {
@@ -7495,6 +7514,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var events_1 = __webpack_require__(8);
+
 var general_1 = __webpack_require__(3);
 
 var native_1 = __webpack_require__(46);
@@ -7511,6 +7532,18 @@ var HTML5Media = function (_native_1$default) {
       throw new TypeError('Native method only supports video/audio tags');
     }
 
+    element.addEventListener('error', function (e) {
+      var details = {
+        detail: {
+          type: "HTML5",
+          message: e.message,
+          data: e
+        }
+      };
+      var errorEvent = events_1.addEvent('playererror', Object.assign({}, details));
+
+      _this.element.dispatchEvent(errorEvent);
+    });
     _this = _possibleConstructorReturn(this, _getPrototypeOf(HTML5Media).call(this, element, mediaFile));
     return _possibleConstructorReturn(_this, _assertThisInitialized(_this));
   }
@@ -7561,7 +7594,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(7);
 
-var events_1 = __webpack_require__(10);
+var events_1 = __webpack_require__(8);
 
 var general_1 = __webpack_require__(3);
 
@@ -7834,7 +7867,15 @@ var Ads = function () {
   }, {
     key: "_error",
     value: function _error(event) {
-      console.error("Ad error: ".concat(event.getError().toString()));
+      var details = {
+        detail: {
+          type: "Ads",
+          message: event.getMessage(),
+          data: event.getError()
+        }
+      };
+      var errorEvent = events_1.addEvent('playererror', Object.assign({}, details));
+      this.element.dispatchEvent(errorEvent);
 
       if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {
         this.currentAdsIndex++;

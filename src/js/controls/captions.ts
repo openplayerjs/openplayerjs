@@ -230,7 +230,7 @@ class Captions implements PlayerComponent {
                                     type: 'captions',
                                 },
                             };
-                            const e = addEvent('settingremoved', details);
+                            const e = addEvent('settingremoved', { ...details });
                             this.player.getElement().dispatchEvent(e);
 
                             setTimeout(() => {
