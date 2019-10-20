@@ -240,16 +240,24 @@ class Player {
      * @memberof Player
      */
     private defaultOptions: PlayerOptions = {
+        controls: {
+            left: ['play', 'time', 'volume'],
+            middle: ['progress'],
+            right: ['levels', 'captions', 'settings', 'fullscreen'],
+        },
         detachMenus: false,
         hidePlayBtnTimer: 350,
         labels: {
+            auto: 'Auto',
             captions: 'CC/Subtitles',
             click: 'Click to unmute',
             fullscreen: 'Fullscreen',
             lang: {
                 en: 'English',
             },
+            levels: 'Quality Levels',
             live: 'Live Broadcast',
+            mediaLevels: 'Change Quality',
             mute: 'Mute',
             off: 'Off',
             pause: 'Pause',
@@ -837,63 +845,6 @@ class Player {
         Object.keys(this.events).forEach(event => {
             this.element.addEventListener(event, this.events[event]);
         });
-
-        this.events.keydown = (e: any) => {
-            const el = this.activeElement();
-            const isAd = el instanceof Ads;
-            const key = e.which || e.keyCode || 0;
-            // By default, if no `step` set, it will skip 5% of the duration of the media
-            const newStep = this.options.step ? this.options.step : el.duration * 0.05;
-            const step = el.duration !== Infinity ? newStep : 0;
-
-            switch (key) {
-                case 13: // Enter
-                case 32: // Space bar
-                    if (el.paused) {
-                        el.play();
-                    } else {
-                        el.pause();
-                    }
-                    break;
-                case 36: // Home
-                    if (!isAd) {
-                        el.currentTime = 0;
-                    }
-                    break;
-                case 37: // Left
-                case 39: // Right
-                    if (!isAd && el.duration !== Infinity) {
-                        el.currentTime += key === 37 ? (step * -1) : step;
-                        if (el.currentTime < 0) {
-                            el.currentTime = 0;
-                        } else if (el.currentTime >= el.duration) {
-                            el.currentTime = el.duration;
-                        }
-                    }
-                    break;
-                case 38: // Up
-                case 40: // Down
-                    const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
-                    el.volume = newVol;
-                    el.muted = !(newVol > 0);
-                    break;
-                case 35: // End
-                    if (!isAd) {
-                        el.currentTime = el.duration;
-                    }
-                    break;
-                case 70: // F
-                    if (!e.ctrlKey && typeof this.controls.fullscreen.fullScreenEnabled !== 'undefined') {
-                        this.controls.fullscreen.toggleFullscreen();
-                    }
-                    break;
-                default:
-                    return true;
-            }
-            e.preventDefault();
-        };
-
-        this.getContainer().addEventListener('keydown', this.events.keydown);
     }
 
     /**

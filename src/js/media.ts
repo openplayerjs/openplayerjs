@@ -430,6 +430,32 @@ class Media {
     }
 
     /**
+     *
+     * @memberof Media
+     */
+    set level(value: number|string|object) {
+        this.media.level = value;
+    }
+
+    /**
+     *
+     * @memberof Media
+     * @readonly
+     */
+    get level(): number|string|object {
+        return this.media ? this.media.level : -1;
+    }
+
+    /**
+     *
+     * @memberof Media
+     * @readonly
+     */
+    get levels() {
+        return this.media ? this.media.levels : [];
+    }
+
+    /**
      * Gather all media sources within the video/audio/iframe tags.
      *
      * It will be grouped inside the `mediaFiles` array. This method basically mimics
