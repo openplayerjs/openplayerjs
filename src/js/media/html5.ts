@@ -27,12 +27,12 @@ class HTML5Media extends Native  {
         element.addEventListener('error', (e: any) => {
             const details = {
                 detail: {
-                    type: `HTML5`,
+                    type: 'HTML5',
                     message: e.message,
                     data: e,
                 },
             };
-            const errorEvent = addEvent('playererror', { ...details });
+            const errorEvent = addEvent('playererror', details);
             this.element.dispatchEvent(errorEvent);
         })
         if (!isAudio(element) && !isVideo(element)) {

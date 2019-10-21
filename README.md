@@ -106,8 +106,8 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     startTime,
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
-    // Callback to be executed once an error is found (efault, `console.error`)
-    // Params passed: `CustomEvent` error event
+    // Callback to be executed once an error is found (default, `console.error`)
+    // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
     onError,
     ads: {
         // Custom path/URL to IMA SDK
