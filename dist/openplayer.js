@@ -4909,7 +4909,7 @@ var Captions = function () {
                     type: 'captions'
                   }
                 };
-                var e = events_1.addEvent('settingremoved', Object.assign({}, details));
+                var e = events_1.addEvent('settingremoved', details);
 
                 _this.player.getElement().dispatchEvent(e);
 
@@ -7490,11 +7490,11 @@ var DashMedia = function (_native_1$default) {
       if (event.type === 'error') {
         var details = {
           detail: {
-            type: "M(PEG)-DASH",
+            type: 'M(PEG)-DASH',
             message: event
           }
         };
-        var errorEvent = events_1.addEvent('playererror', Object.assign({}, details));
+        var errorEvent = events_1.addEvent('playererror', details);
         this.element.dispatchEvent(errorEvent);
       } else {
         var e = events_1.addEvent(event.type, event);
@@ -7768,16 +7768,18 @@ var HlsMedia = function (_native_1$default) {
       if (event === 'hlsError') {
         var errorDetails = {
           detail: {
-            type: "HLS",
+            type: 'HLS',
             message: data[1].details,
             data: data
           }
         };
-        var errorEvent = events_1.addEvent('playererror', Object.assign({}, errorDetails));
+        var errorEvent = events_1.addEvent('playererror', errorDetails);
         this.element.dispatchEvent(errorEvent);
+        data = data[1];
 
-        var type = data.type,
-            fatal = data.fatal,
+        var _data = data,
+            type = _data.type,
+            fatal = _data.fatal,
             details = __rest(data, ["type", "fatal"]);
 
         if (fatal) {
@@ -7972,12 +7974,12 @@ var HTML5Media = function (_native_1$default) {
     element.addEventListener('error', function (e) {
       var details = {
         detail: {
-          type: "HTML5",
+          type: 'HTML5',
           message: e.message,
           data: e
         }
       };
-      var errorEvent = events_1.addEvent('playererror', Object.assign({}, details));
+      var errorEvent = events_1.addEvent('playererror', details);
 
       _this.element.dispatchEvent(errorEvent);
     });
@@ -8349,12 +8351,12 @@ var Ads = function () {
     value: function _error(event) {
       var details = {
         detail: {
-          type: "Ads",
+          type: 'Ads',
           message: event.getMessage(),
           data: event.getError()
         }
       };
-      var errorEvent = events_1.addEvent('playererror', Object.assign({}, details));
+      var errorEvent = events_1.addEvent('playererror', details);
       this.element.dispatchEvent(errorEvent);
 
       if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {

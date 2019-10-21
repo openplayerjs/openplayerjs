@@ -677,12 +677,12 @@ class Ads {
     private _error(event: any): void {
         const details = {
             detail: {
-                type: `Ads`,
+                type: 'Ads',
                 message: event.getMessage(),
                 data: event.getError(),
             },
         };
-        const errorEvent = addEvent('playererror', { ...details });
+        const errorEvent = addEvent('playererror', details);
         this.element.dispatchEvent(errorEvent);
 
         if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {
