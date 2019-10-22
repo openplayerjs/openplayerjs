@@ -44,7 +44,7 @@
     "babili-webpack-plugin": "^0.1.2",
     "chai": "^4.2.0",
     "conventional-changelog": "^3.1.10",
-    "core-js": "^3.2.1",
+    "core-js": "^3.3.3",
     "coveralls": "^3.0.6",
     "css-loader": "^3.2.0",
     "cssnano": "^4.1.10",
