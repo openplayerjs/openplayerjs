@@ -149,6 +149,12 @@
     startTime,
     <span class="hljs-comment">// Allow loader to be displayed when loading video (by default, `false`)</span>
     showLoaderOnInit,
+    <span class="hljs-comment">// Controls configuration by default; `levels` can be added as well since it's an optional feature</span>
+    controls: {
+        <span class="hljs-attr">left</span>: [<span class="hljs-string">'play'</span>, <span class="hljs-string">'time'</span>, <span class="hljs-string">'volume'</span>],
+        <span class="hljs-attr">middle</span>: [<span class="hljs-string">'progress'</span>],
+        <span class="hljs-attr">right</span>: [<span class="hljs-string">'levels'</span>, <span class="hljs-string">'captions'</span>, <span class="hljs-string">'settings'</span>, <span class="hljs-string">'fullscreen'</span>],
+    },
     <span class="hljs-attr">ads</span>: {
         <span class="hljs-comment">// Custom path/URL to IMA SDK</span>
         url,
@@ -346,6 +352,7 @@ player.getElement().dispatchEvent(event);</code></pre>
 					<li><a href="https://codepen.io/rafa8626/pen/vVYKav">Using Ads</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/QZWEVy">Playing HLS streaming</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/Xxjmra">M(PEG)-DASH with Ads</a></li>
+					<li><a href="https://codepen.io/rafa8626/pen/ExxXvZx">Using <code>Levels</code></a></li>
 				</ol>
 				<a href="#built-with" id="built-with" style="color: inherit; text-decoration: none;">
 					<h2>Built With</h2>
@@ -361,7 +368,7 @@ player.getElement().dispatchEvent(event);</code></pre>
 					<h2>Authors</h2>
 				</a>
 				<ul>
-					<li><strong>Rafael Miranda</strong> - <em>Initial work</em> - <a href="https://github.com/rafa8626">rafa8626</a></li>
+					<li><strong>Rafael Miranda</strong> - <a href="https://github.com/rafa8626">rafa8626</a></li>
 				</ul>
 				<p>See also the list of <a href="https://github.com/openplayerjs/openplayerjs/contributors">contributors</a> who participated in this project.</p>
 				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
@@ -438,6 +445,9 @@ player.getElement().dispatchEvent(event);</code></pre>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_instance_.html">"interfaces/instance"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_level_.html">"interfaces/level"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_interfaces_player_options_.html">"interfaces/player-<wbr>options"</a>

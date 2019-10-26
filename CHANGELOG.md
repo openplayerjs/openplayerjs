@@ -1,3 +1,46 @@
+# [1.13.0](https://github.com/openplayerjs/openplayerjs/compare/v1.12.1...v1.13.0) (2019-10-26)
+
+
+### Bug Fixes
+
+* **player:** Updated method in Dash.js after upgrade ([fef5e1c](https://github.com/openplayerjs/openplayerjs/commit/fef5e1c))
+
+
+### Features
+
+* **controls:** Moved keyboard events to each of the control elements; refactor way to add/remove default controls via settings ([4e1f23f](https://github.com/openplayerjs/openplayerjs/commit/4e1f23f))
+* **demo:** Added updated stream and updated documentation ([5150142](https://github.com/openplayerjs/openplayerjs/commit/5150142))
+* **levels:** Added documentation about new way to config controls ([bf455a6](https://github.com/openplayerjs/openplayerjs/commit/bf455a6))
+* **levels:** Added missing label for button accessibility ([f8db386](https://github.com/openplayerjs/openplayerjs/commit/f8db386))
+* **levels:** Added missing workflow to manipulate detached menu; fixed several issues with Dash.js due to upgrades and added HTML5 workflow for levels ([01bf900](https://github.com/openplayerjs/openplayerjs/commit/01bf900))
+* **levels:** Added new levels retrieval for HLS and M-DASH, and started control element by setting default level in its button ([3c2b908](https://github.com/openplayerjs/openplayerjs/commit/3c2b908))
+* **levels:** Added setters/getters for levels ([5bba79b](https://github.com/openplayerjs/openplayerjs/commit/5bba79b))
+* **levels:** Added workflow to render levels, removing duplicated labels and setting submenu to switch them ([df8683a](https://github.com/openplayerjs/openplayerjs/commit/df8683a))
+* **levels:** Changed name of label and added missing one for `Auto` level ([309ffd9](https://github.com/openplayerjs/openplayerjs/commit/309ffd9))
+
+<a name="1.13.0"></a>
+# [1.13.0](https://github.com/openplayerjs/openplayerjs/compare/v1.12.1...v1.13.0) (2019-10-26)
+
+
+### Bug Fixes
+
+* **player:** Updated method in Dash.js after upgrade ([fef5e1c](https://github.com/openplayerjs/openplayerjs/commit/fef5e1c))
+
+
+### Features
+
+* **controls:** Moved keyboard events to each of the control elements; refactor way to add/remove default controls via settings ([4e1f23f](https://github.com/openplayerjs/openplayerjs/commit/4e1f23f))
+* **demo:** Added updated stream and updated documentation ([5150142](https://github.com/openplayerjs/openplayerjs/commit/5150142))
+* **levels:** Added documentation about new way to config controls ([bf455a6](https://github.com/openplayerjs/openplayerjs/commit/bf455a6))
+* **levels:** Added missing label for button accessibility ([f8db386](https://github.com/openplayerjs/openplayerjs/commit/f8db386))
+* **levels:** Added missing workflow to manipulate detached menu; fixed several issues with Dash.js due to upgrades and added HTML5 workflow for levels ([01bf900](https://github.com/openplayerjs/openplayerjs/commit/01bf900))
+* **levels:** Added new levels retrieval for HLS and M-DASH, and started control element by setting default level in its button ([3c2b908](https://github.com/openplayerjs/openplayerjs/commit/3c2b908))
+* **levels:** Added setters/getters for levels ([5bba79b](https://github.com/openplayerjs/openplayerjs/commit/5bba79b))
+* **levels:** Added workflow to render levels, removing duplicated labels and setting submenu to switch them ([df8683a](https://github.com/openplayerjs/openplayerjs/commit/df8683a))
+* **levels:** Changed name of label and added missing one for `Auto` level ([309ffd9](https://github.com/openplayerjs/openplayerjs/commit/309ffd9))
+
+
+
 ## [1.12.1](https://github.com/openplayerjs/openplayerjs/compare/v1.12.0...v1.12.1) (2019-08-10)
 
 
