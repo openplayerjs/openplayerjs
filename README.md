@@ -210,6 +210,7 @@ In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/
 4. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
 5. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 6. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
+7. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
 
 ## Built With
 

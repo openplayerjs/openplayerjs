@@ -1472,7 +1472,7 @@ var Player = function () {
       controls: {
         left: ['play', 'time', 'volume'],
         middle: ['progress'],
-        right: ['levels', 'captions', 'settings', 'fullscreen']
+        right: ['captions', 'settings', 'fullscreen']
       },
       detachMenus: false,
       hidePlayBtnTimer: 350,
@@ -1557,7 +1557,7 @@ var Player = function () {
   }, {
     key: "play",
     value: function play() {
-      if (!this.media.loaded) {
+      if (this.media && !this.media.loaded) {
         this.media.load();
         this.media.loaded = true;
       }
