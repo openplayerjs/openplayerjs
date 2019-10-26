@@ -100,7 +100,7 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     startTime,
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
-    // Controls configuration by default; `levels` can be added as well
+    // Controls configuration by default; `levels` can be added as well since it's an optional feature
     controls: {
         left: ['play', 'time', 'volume'],
         middle: ['progress'],
@@ -209,6 +209,7 @@ In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/
 3. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
 4. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
 5. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
+6. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
 
 ## Built With
 
