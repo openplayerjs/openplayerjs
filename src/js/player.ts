@@ -243,7 +243,7 @@ class Player {
         controls: {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
-            right: ['levels', 'captions', 'settings', 'fullscreen'],
+            right: ['captions', 'settings', 'fullscreen'],
         },
         detachMenus: false,
         hidePlayBtnTimer: 350,
@@ -346,7 +346,7 @@ class Player {
      * @memberof Player
      */
     public play(): void {
-        if (!this.media.loaded) {
+        if (this.media && !this.media.loaded) {
             this.media.load();
             this.media.loaded = true;
         }

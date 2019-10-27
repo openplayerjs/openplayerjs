@@ -286,17 +286,19 @@ class Controls implements PlayerComponent {
         };
 
         Object.keys(controls).forEach((position: string) => {
-            controls[position].forEach((el: string) => {
-                const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
-                const item = new this.controlEls[className](this.player);
-                if (el === 'settings') {
-                    this.settings = item;
-                }
+            controls[position]
+                .filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
+                .forEach((el: string) => {
+                    const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
+                    const item = new this.controlEls[className](this.player);
+                    if (el === 'settings') {
+                        this.settings = item;
+                    }
 
-                if (el !== 'fullscreen') {
-                    this.items[position].push(item);
-                }
-            });
+                    if (el !== 'fullscreen') {
+                        this.items[position].push(item);
+                    }
+                });
         });
 
         // Append/prepend the custom items (if any) depending on their position:

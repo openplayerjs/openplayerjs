@@ -86,11 +86,11 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
-    // Controls configuration by default; `levels` can be added as well
+    // Controls configuration by default; `levels` can be added as well since it's an optional feature
     controls: {
         left: ['play', 'time', 'volume'],
         middle: ['progress'],
-        right: ['levels', 'captions', 'settings', 'fullscreen'],
+        right: ['captions', 'settings', 'fullscreen'],
     },
     // Allow items to be contained in a different space outside of `Settings`
     detachMenus,
@@ -213,6 +213,8 @@ In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/
 3. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
 4. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
 5. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
+6. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
+7. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
 
 ## Built With
 
