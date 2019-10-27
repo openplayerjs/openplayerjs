@@ -4769,7 +4769,9 @@ var Controls = function () {
         right: []
       };
       Object.keys(controls).forEach(function (position) {
-        controls[position].forEach(function (el) {
+        controls[position].filter(function (v, i, a) {
+          return a.indexOf(v) === i;
+        }).forEach(function (el) {
           var className = "".concat(el.charAt(0).toUpperCase()).concat(el.slice(1));
           var item = new _this4.controlEls[className](_this4.player);
 
