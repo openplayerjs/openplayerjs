@@ -1472,7 +1472,7 @@ var Player = function () {
       controls: {
         left: ['play', 'time', 'volume'],
         middle: ['progress'],
-        right: ['levels', 'captions', 'settings', 'fullscreen']
+        right: ['captions', 'settings', 'fullscreen']
       },
       detachMenus: false,
       hidePlayBtnTimer: 350,
@@ -1560,7 +1560,7 @@ var Player = function () {
   }, {
     key: "play",
     value: function play() {
-      if (!this.media.loaded) {
+      if (this.media && !this.media.loaded) {
         this.media.load();
         this.media.loaded = true;
       }
@@ -4774,7 +4774,9 @@ var Controls = function () {
         right: []
       };
       Object.keys(controls).forEach(function (position) {
-        controls[position].forEach(function (el) {
+        controls[position].filter(function (v, i, a) {
+          return a.indexOf(v) === i;
+        }).forEach(function (el) {
           var className = "".concat(el.charAt(0).toUpperCase()).concat(el.slice(1));
           var item = new _this4.controlEls[className](_this4.player);
 

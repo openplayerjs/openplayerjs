@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;utils/events&quot; | openplayerjs</title>
+	<title>Level | openplayerjs</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,102 +56,97 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_utils_events_.html">&quot;utils/events&quot;</a>
+					<a href="../modules/_interfaces_level_.html">&quot;interfaces/level&quot;</a>
+				</li>
+				<li>
+					<a href="_interfaces_level_.level.html">Level</a>
 				</li>
 			</ul>
-			<h1>External module &quot;utils/events&quot;</h1>
+			<h1>Interface Level</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Level</p>
+					</div>
+					<dl class="tsd-comment-tags">
+						<dt>description</dt>
+						<dd><p>Media level a source can have.</p>
+						</dd>
+						<dt>interface</dt>
+						<dd><p>Level</p>
+						</dd>
+						<dt>export</dt>
+						<dd></dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">Level</span>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Variables</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="_utils_events_.html#events" class="tsd-kind-icon">events</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Functions</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_events_.html#addevent" class="tsd-kind-icon">add<wbr>Event</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_level_.level.html#height" class="tsd-kind-icon">height</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_level_.level.html#id" class="tsd-kind-icon">id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="_interfaces_level_.level.html#label" class="tsd-kind-icon">label</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
-					<a name="events" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> events</h3>
-					<div class="tsd-signature tsd-kind-icon">events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&#x27;loadstart&#x27;, &#x27;durationchange&#x27;, &#x27;loadedmetadata&#x27;, &#x27;loadeddata&#x27;,&#x27;progress&#x27;, &#x27;canplay&#x27;, &#x27;canplaythrough&#x27;, &#x27;suspend&#x27;, &#x27;abort&#x27;, &#x27;error&#x27;,&#x27;emptied&#x27;, &#x27;stalled&#x27;, &#x27;play&#x27;, &#x27;playing&#x27;, &#x27;pause&#x27;, &#x27;waiting&#x27;, &#x27;seeking&#x27;,&#x27;seeked&#x27;, &#x27;timeupdate&#x27;, &#x27;ended&#x27;, &#x27;ratechange&#x27;, &#x27;volumechange&#x27;,]</span></div>
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="height" class="tsd-anchor"></a>
+					<h3>height</h3>
+					<div class="tsd-signature tsd-kind-icon">height<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/8a01d58/src/js/utils/events.ts#L24">utils/events.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/8a01d58/src/js/interfaces/level.ts#L12">interfaces/level.ts:12</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Media&#39;s default events.</p>
-						</div>
 						<dl class="tsd-comment-tags">
 							<dt>type</dt>
-							<dd><p>string[]</p>
+							<dd><p>object</p>
 							</dd>
-							<dt>default</dt>
-							<dd></dd>
 						</dl>
 					</div>
 				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
-					<a name="addevent" class="tsd-anchor"></a>
-					<h3>add<wbr>Event</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Event<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, details<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">CustomEventInit</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">CustomEvent</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/8a01d58/src/js/utils/events.ts#L10">utils/events.ts:10</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Create a custom event for any purpose.</p>
-								</div>
-								<dl class="tsd-comment-tags">
-									<dt>export</dt>
-									<dd></dd>
-									<dt>see</dt>
-									<dd><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent">https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent</a></p>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>event: <span class="tsd-signature-type">string</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The name of the event</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> details: <span class="tsd-signature-type">CustomEventInit</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">CustomEvent</span></h4>
-						</li>
-					</ul>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="id" class="tsd-anchor"></a>
+					<h3>id</h3>
+					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/8a01d58/src/js/interfaces/level.ts#L13">interfaces/level.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="label" class="tsd-anchor"></a>
+					<h3>label</h3>
+					<div class="tsd-signature tsd-kind-icon">label<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/8a01d58/src/js/interfaces/level.ts#L14">interfaces/level.ts:14</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -162,18 +157,30 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="_utils_events_.html">"utils/events"</a>
+						<a href="../modules/_interfaces_level_.html">"interfaces/level"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
-						<a href="_utils_events_.html#events" class="tsd-kind-icon">events</a>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+						<a href="_interfaces_level_.level.html" class="tsd-kind-icon">Level</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_interfaces_level_.level.html#height" class="tsd-kind-icon">height</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_interfaces_level_.level.html#id" class="tsd-kind-icon">id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="_interfaces_level_.level.html#label" class="tsd-kind-icon">label</a>
+							</li>
+						</ul>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module">
-						<a href="_utils_events_.html#addevent" class="tsd-kind-icon">add<wbr>Event</a>
-					</li>
+				</ul>
+				<ul class="after-current">
 				</ul>
 			</nav>
 		</div>
