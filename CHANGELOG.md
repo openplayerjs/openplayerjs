@@ -1,3 +1,22 @@
+## [1.13.1](https://github.com/openplayerjs/openplayerjs/compare/v1.13.0...v1.13.1) (2019-10-27)
+
+
+### Bug Fixes
+
+* **player:** Deactivated `Levels` by default; added new source for playlist ([90ec134](https://github.com/openplayerjs/openplayerjs/commit/90ec134))
+* **player:** Removed duplicate controls due to deep merge ([8a01d58](https://github.com/openplayerjs/openplayerjs/commit/8a01d58))
+
+<a name="1.13.1"></a>
+## [1.13.1](https://github.com/openplayerjs/openplayerjs/compare/v1.13.0...v1.13.1) (2019-10-27)
+
+
+### Bug Fixes
+
+* **player:** Deactivated `Levels` by default; added new source for playlist ([90ec134](https://github.com/openplayerjs/openplayerjs/commit/90ec134))
+* **player:** Removed duplicate controls due to deep merge ([8a01d58](https://github.com/openplayerjs/openplayerjs/commit/8a01d58))
+
+
+
 # [1.13.0](https://github.com/openplayerjs/openplayerjs/compare/v1.12.1...v1.13.0) (2019-10-26)
 
 
