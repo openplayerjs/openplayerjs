@@ -675,23 +675,16 @@ class Ads {
      * @memberof Ads
      */
     private _error(event: any): void {
-        const details = {
-            detail: {
-                type: 'Ads',
-                message: event.getMessage(),
-                data: event.getError(),
-            },
-        };
-        const errorEvent = addEvent('playererror', details);
-        this.element.dispatchEvent(errorEvent);
-
-        if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {
-            this.currentAdsIndex++;
+        if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length - 1) {
+            if (this.currentAdsIndex < this.ads.length - 1) {
+                this.currentAdsIndex++;
+            }
             this.playTriggered = true;
             this.adsStarted = true;
             this.adsDone = false;
             this.destroy();
             this.load(true);
+            console.warn(`Ad warning: ${event.getError().toString()}`);
         } else {
             if (this.adsManager) {
                 this.adsManager.destroy();
@@ -704,7 +697,18 @@ class Ads {
                 this.adsActive = false;
                 this._resumeMedia();
             }
+            console.error(`Ad error: ${event.getError().toString()}`);
         }
+
+        const details = {
+            detail: {
+                type: 'Ads',
+                message: event.getMessage(),
+                data: event.getError(),
+            },
+        };
+        const errorEvent = addEvent('playererror', details);
+        this.element.dispatchEvent(errorEvent);
     }
 
     /**
@@ -843,7 +847,15 @@ class Ads {
      * @memberof Ads
      */
     private _loadedMetadataHandler() {
-        if (this.element.seekable.length) {
+        if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length - 1) {
+            this.adsManager.destroy();
+            this.adsLoader.contentComplete();
+            this.currentAdsIndex++;
+            this.playTriggered = true;
+            this.adsStarted = true;
+            this.adsDone = false;
+            this._requestAds();
+        } else if (this.element.seekable.length) {
             if (this.element.seekable.end(0) > this.lastTimePaused) {
                 this._prepareMedia();
             }

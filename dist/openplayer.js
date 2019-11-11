@@ -8413,23 +8413,17 @@ var Ads = function () {
   }, {
     key: "_error",
     value: function _error(event) {
-      var details = {
-        detail: {
-          type: 'Ads',
-          message: event.getMessage(),
-          data: event.getError()
+      if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length - 1) {
+        if (this.currentAdsIndex < this.ads.length - 1) {
+          this.currentAdsIndex++;
         }
-      };
-      var errorEvent = events_1.addEvent('playererror', details);
-      this.element.dispatchEvent(errorEvent);
 
-      if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length) {
-        this.currentAdsIndex++;
         this.playTriggered = true;
         this.adsStarted = true;
         this.adsDone = false;
         this.destroy();
         this.load(true);
+        console.warn("Ad warning: ".concat(event.getError().toString()));
       } else {
         if (this.adsManager) {
           this.adsManager.destroy();
@@ -8446,7 +8440,19 @@ var Ads = function () {
 
           this._resumeMedia();
         }
+
+        console.error("Ad error: ".concat(event.getError().toString()));
       }
+
+      var details = {
+        detail: {
+          type: 'Ads',
+          message: event.getMessage(),
+          data: event.getError()
+        }
+      };
+      var errorEvent = events_1.addEvent('playererror', details);
+      this.element.dispatchEvent(errorEvent);
     }
   }, {
     key: "_loaded",
@@ -8538,7 +8544,16 @@ var Ads = function () {
   }, {
     key: "_loadedMetadataHandler",
     value: function _loadedMetadataHandler() {
-      if (this.element.seekable.length) {
+      if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length - 1) {
+        this.adsManager.destroy();
+        this.adsLoader.contentComplete();
+        this.currentAdsIndex++;
+        this.playTriggered = true;
+        this.adsStarted = true;
+        this.adsDone = false;
+
+        this._requestAds();
+      } else if (this.element.seekable.length) {
         if (this.element.seekable.end(0) > this.lastTimePaused) {
           this._prepareMedia();
         }
