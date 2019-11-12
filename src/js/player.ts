@@ -278,6 +278,7 @@ class Player {
         startTime: 0,
         startVolume: 1,
         step: 0,
+        onError: (error: CustomEvent) => console.error(error),
     };
 
     /**
@@ -687,6 +688,7 @@ class Player {
      */
     private _prepareMedia(): void {
         try {
+            this.element.addEventListener('playererror', this.options.onError);
             if (this.autoplay && isVideo(this.element)) {
                 this.element.addEventListener('canplay', this._autoplay.bind(this));
             }

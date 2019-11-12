@@ -86,6 +86,12 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
+    // Controls configuration by default; `levels` can be added as well since it's an optional feature
+    controls: {
+        left: ['play', 'time', 'volume'],
+        middle: ['progress'],
+        right: ['captions', 'settings', 'fullscreen'],
+    },
     // Allow items to be contained in a different space outside of `Settings`
     detachMenus,
     // Number of ms that takes the player to hide the Play button once it starts playing (video only)
@@ -100,12 +106,9 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     startTime,
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
-    // Controls configuration by default; `levels` can be added as well since it's an optional feature
-    controls: {
-        left: ['play', 'time', 'volume'],
-        middle: ['progress'],
-        right: ['levels', 'captions', 'settings', 'fullscreen'],
-    },
+    // Callback to be executed once an error is found (default, `console.error`)
+    // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
+    onError,
     ads: {
         // Custom path/URL to IMA SDK
         url,
@@ -188,6 +191,7 @@ Event | Description
 `controlshidden` | Event executed when controls timer stops and hides control bar (video only).
 `controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new caption).
 `captionschanged` | Event triggered when user changes the current caption by selecting a new one from the `Settings` menu.
+`playererror` | Event executed when any error has occurred within the OpenPlayer instance; a response will be sent via `onError` config callback.
 `playerdestroyed` | Event executed when an instance of OpenPlayer is destroyed (useful to remove extra elements created with the player's help).
 `adsloaded` | Event when Ads have been loaded successfully and can be played.
 `adsstart` | Event when Ads start being played.

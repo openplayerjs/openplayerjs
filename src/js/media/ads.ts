@@ -699,6 +699,16 @@ class Ads {
             }
             console.error(`Ad error: ${event.getError().toString()}`);
         }
+
+        const details = {
+            detail: {
+                type: 'Ads',
+                message: event.getMessage(),
+                data: event.getError(),
+            },
+        };
+        const errorEvent = addEvent('playererror', details);
+        this.element.dispatchEvent(errorEvent);
     }
 
     /**
