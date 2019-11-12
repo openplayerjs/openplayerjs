@@ -1,9 +1,9 @@
-![openplayer](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
-
 # [OpenPlayer.js](https://www.openplayerjs.com)
 
+![openplayer](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
+
 [![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
-<br>
+
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Try%20the%20best%20open%20source%20player%20and%20give%20it%20a%20star&url=https://www.openplayerjs.com&hashtags=openplayerjs,vast,vpaid,rocks,streaming)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
 [![Greenkeeper badge](https://badges.greenkeeper.io/openplayerjs/openplayerjs.svg)](https://greenkeeper.io/)   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
@@ -17,9 +17,9 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 * **Supports IE11+ (Win8) and all modern browsers**: its CSS and code is compatible with all modern browsers. IE11+ on Win7 requires an MP4/MP3 fallback to work correctly.
 * **Lightweight library**: Less than `20kb` when gzipped.
 * **Monetize video and audio content** with video advertising using VAST, VPAID or VMAP Ads, supported by the amazing [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
-* **Multi Ads**: OpenPlayerJS provides the ability to use a single VAST/VPAID source or a VAST/VPAID playlist from several different sources (**including URLs and valid XML strings**). Usually, advertisers take only part of the total traffic of a website. As a result, users view only 10% of the total advertising per day (besides, once the user has seen the Ad, the advertiser's cookie is set, so it will not perform a new request through the server. Therefore, a website benefits when connecting multiple Ads streams.
+* **Multi Ads**: OpenPlayerJS is the **only player that provides the ability to use a single VAST/VPAID source or a VAST/VPAID playlist from several different sources (including URLs and valid XML strings)**. Usually, advertisers take only part of the total traffic of a website. As a result, users view only 10% of the total advertising per day (besides, once the user has seen the Ad, the advertiser's cookie is set, so it will not perform a new request through the server. Therefore, a website benefits when connecting multiple Ads streams.
 * **Enhance player controls**: You can add your own buttons (see example above).
-* **Accessibility is a priority**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/ for more details.
+* **Accessibility is a priority**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See [High Contrast Proof CSS Sprites](https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/) for more details.
 * **Always up-to-date**: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.
 * **Smart `autoplay`**: Special algorithm to detect browser's autoplay capabilities.
 * **Responsive**: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
@@ -34,7 +34,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can download the repository from `https://github.com/openplayerjs/openplayerjs.git` or use NPM to get it:
 
-```
+```node
 npm install openplayerjs
 ```
 
@@ -204,13 +204,19 @@ In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/
 
 ## Examples
 
-1. [No configuration (only using classes)](https://codepen.io/rafa8626/pen/WaNxNB)
+Witness the power of this player by browser the best examples!
+
+If you want to suggest one, please submit an issue indicating what scenarios could OpenPlayerJS help you with.
+
+1. [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
 3. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
-4. [Playing HLS streaming](https://codepen.io/rafa8626/pen/QZWEVy)
-5. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
-6. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
+4. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
+5. [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
+6. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 7. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
+8. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
+9. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
 
 ## Built With
 
