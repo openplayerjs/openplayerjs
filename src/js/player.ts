@@ -278,7 +278,7 @@ class Player {
         startTime: 0,
         startVolume: 1,
         step: 0,
-        onError: (error: CustomEvent) => console.error(error),
+        onError: () => { },
     };
 
     /**
