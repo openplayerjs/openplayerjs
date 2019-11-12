@@ -1,50 +1,17 @@
-## [1.13.1](https://github.com/openplayerjs/openplayerjs/compare/v1.13.0...v1.13.1) (2019-10-27)
-
-
-### Bug Fixes
-
-* **player:** Deactivated `Levels` by default; added new source for playlist ([90ec134](https://github.com/openplayerjs/openplayerjs/commit/90ec134))
-* **player:** Removed duplicate controls due to deep merge ([8a01d58](https://github.com/openplayerjs/openplayerjs/commit/8a01d58))
-
 <a name="1.13.1"></a>
 ## [1.13.1](https://github.com/openplayerjs/openplayerjs/compare/v1.13.0...v1.13.1) (2019-10-27)
 
-
 ### Bug Fixes
 
 * **player:** Deactivated `Levels` by default; added new source for playlist ([90ec134](https://github.com/openplayerjs/openplayerjs/commit/90ec134))
 * **player:** Removed duplicate controls due to deep merge ([8a01d58](https://github.com/openplayerjs/openplayerjs/commit/8a01d58))
-
-
-
-# [1.13.0](https://github.com/openplayerjs/openplayerjs/compare/v1.12.1...v1.13.0) (2019-10-26)
-
-
-### Bug Fixes
-
-* **player:** Updated method in Dash.js after upgrade ([fef5e1c](https://github.com/openplayerjs/openplayerjs/commit/fef5e1c))
-
-
-### Features
-
-* **controls:** Moved keyboard events to each of the control elements; refactor way to add/remove default controls via settings ([4e1f23f](https://github.com/openplayerjs/openplayerjs/commit/4e1f23f))
-* **demo:** Added updated stream and updated documentation ([5150142](https://github.com/openplayerjs/openplayerjs/commit/5150142))
-* **levels:** Added documentation about new way to config controls ([bf455a6](https://github.com/openplayerjs/openplayerjs/commit/bf455a6))
-* **levels:** Added missing label for button accessibility ([f8db386](https://github.com/openplayerjs/openplayerjs/commit/f8db386))
-* **levels:** Added missing workflow to manipulate detached menu; fixed several issues with Dash.js due to upgrades and added HTML5 workflow for levels ([01bf900](https://github.com/openplayerjs/openplayerjs/commit/01bf900))
-* **levels:** Added new levels retrieval for HLS and M-DASH, and started control element by setting default level in its button ([3c2b908](https://github.com/openplayerjs/openplayerjs/commit/3c2b908))
-* **levels:** Added setters/getters for levels ([5bba79b](https://github.com/openplayerjs/openplayerjs/commit/5bba79b))
-* **levels:** Added workflow to render levels, removing duplicated labels and setting submenu to switch them ([df8683a](https://github.com/openplayerjs/openplayerjs/commit/df8683a))
-* **levels:** Changed name of label and added missing one for `Auto` level ([309ffd9](https://github.com/openplayerjs/openplayerjs/commit/309ffd9))
 
 <a name="1.13.0"></a>
 # [1.13.0](https://github.com/openplayerjs/openplayerjs/compare/v1.12.1...v1.13.0) (2019-10-26)
 
-
 ### Bug Fixes
 
 * **player:** Updated method in Dash.js after upgrade ([fef5e1c](https://github.com/openplayerjs/openplayerjs/commit/fef5e1c))
-
 
 ### Features
 
@@ -58,53 +25,19 @@
 * **levels:** Added workflow to render levels, removing duplicated labels and setting submenu to switch them ([df8683a](https://github.com/openplayerjs/openplayerjs/commit/df8683a))
 * **levels:** Changed name of label and added missing one for `Auto` level ([309ffd9](https://github.com/openplayerjs/openplayerjs/commit/309ffd9))
 
-
-
-## [1.12.1](https://github.com/openplayerjs/openplayerjs/compare/v1.12.0...v1.12.1) (2019-08-10)
-
-
-### Bug Fixes
-
-* **player:** Added missing action to remove class from Captions button when hiding captions ([e429a5f](https://github.com/openplayerjs/openplayerjs/commit/e429a5f))
-* **player:** Added missing condition to captions button to remove class; fixed issues with WebPack and unit tests ([abd2045](https://github.com/openplayerjs/openplayerjs/commit/abd2045))
-* **player:** Added missing conditional to set an empty source when none is present ([e53d639](https://github.com/openplayerjs/openplayerjs/commit/e53d639))
-* **tests:** Updated MP4 source to match the current source in the video tag ([903bbb0](https://github.com/openplayerjs/openplayerjs/commit/903bbb0))
-
 <a name="1.12.1"></a>
 ## [1.12.1](https://github.com/openplayerjs/openplayerjs/compare/v1.12.0...v1.12.1) (2019-08-10)
 
-
 ### Bug Fixes
 
 * **player:** Added missing action to remove class from Captions button when hiding captions ([e429a5f](https://github.com/openplayerjs/openplayerjs/commit/e429a5f))
 * **player:** Added missing condition to captions button to remove class; fixed issues with WebPack and unit tests ([abd2045](https://github.com/openplayerjs/openplayerjs/commit/abd2045))
 * **player:** Added missing conditional to set an empty source when none is present ([e53d639](https://github.com/openplayerjs/openplayerjs/commit/e53d639))
 * **tests:** Updated MP4 source to match the current source in the video tag ([903bbb0](https://github.com/openplayerjs/openplayerjs/commit/903bbb0))
-
-
-
-# [1.12.0](https://github.com/openplayerjs/openplayerjs/compare/v1.11.1...v1.12.0) (2019-06-08)
-
-
-### Bug Fixes
-
-* **player:** Added missing conditional to avoid issues when clicking multiple times on Settings; changed browser to test locally ([a1753f1](https://github.com/openplayerjs/openplayerjs/commit/a1753f1))
-* **player:** Added missing workflow to check if media has finished playing when Ad stopped playing on post roll to destroy Ads completely ([d640861](https://github.com/openplayerjs/openplayerjs/commit/d640861))
-* **player:** Added missing workflow to hide other menus when selecting another ([9d068e8](https://github.com/openplayerjs/openplayerjs/commit/9d068e8))
-* **player:** Changed default setting for speed to current media one to allow user to use a different one ([1647e29](https://github.com/openplayerjs/openplayerjs/commit/1647e29))
-* **player:** Enhanced events for iPhone to support fullscreen ([e4425f0](https://github.com/openplayerjs/openplayerjs/commit/e4425f0))
-* **player:** Removed reset of playback when destroying settings ([be62f05](https://github.com/openplayerjs/openplayerjs/commit/be62f05))
-* **tests:** Reverted settings to allow Travis to continue testing properly ([194999c](https://github.com/openplayerjs/openplayerjs/commit/194999c))
-
-
-### Features
-
-* **player:** Added new wrappers for default method to get/set defaultPlaybackRate, part of the HTML5 specs ([3b8ba5a](https://github.com/openplayerjs/openplayerjs/commit/3b8ba5a))
 
 <a name="1.12.0"></a>
 # [1.12.0](https://github.com/openplayerjs/openplayerjs/compare/v1.11.1...v1.12.0) (2019-06-08)
 
-
 ### Bug Fixes
 
 * **player:** Added missing conditional to avoid issues when clicking multiple times on Settings; changed browser to test locally ([a1753f1](https://github.com/openplayerjs/openplayerjs/commit/a1753f1))
@@ -115,30 +48,17 @@
 * **player:** Removed reset of playback when destroying settings ([be62f05](https://github.com/openplayerjs/openplayerjs/commit/be62f05))
 * **tests:** Reverted settings to allow Travis to continue testing properly ([194999c](https://github.com/openplayerjs/openplayerjs/commit/194999c))
 
-
 ### Features
 
 * **player:** Added new wrappers for default method to get/set defaultPlaybackRate, part of the HTML5 specs ([3b8ba5a](https://github.com/openplayerjs/openplayerjs/commit/3b8ba5a))
 
-
-
 ## [1.11.1](https://github.com/openplayerjs/openplayerjs/compare/v1.11.0...v1.11.1) (2019-06-03)
-
 
 ### Bug Fixes
 
 * **ads:** Added more conditionals to check errors from trying to determine if a string is a valid XML or not ([a52c945](https://github.com/openplayerjs/openplayerjs/commit/a52c945))
 * **player:** Expanded conditional to allow rendering settings speed by default ([74ae9f0](https://github.com/openplayerjs/openplayerjs/commit/74ae9f0))
 * **player:** Formatted time when media has ended and added missing validation for it to avoid displaying NaN values ([22fb1c2](https://github.com/openplayerjs/openplayerjs/commit/22fb1c2))
-
-
-
-# [1.11.0](https://github.com/openplayerjs/openplayerjs/compare/v1.10.0...v1.11.0) (2019-05-16)
-
-
-### Bug Fixes
-
-* **captions:** Added workflow to verify that tracks match the `track` tag(s) (if any) to avoid extra TextTracks to be included ([68b02d6](https://github.com/openplayerjs/openplayerjs/commit/68b02d6))
 
 <a name="1.11.0"></a>
 # [1.11.0](https://github.com/openplayerjs/openplayerjs/compare/v1.10.0...v1.11.0) (2019-05-16)
@@ -153,50 +73,38 @@
 <a name="1.10.0"></a>
 # [1.10.0](https://github.com/openplayerjs/openplayerjs/compare/v1.9.0...v1.10.0) (2019-04-28)
 
-
 ### Bug Fixes
 
 * **player:** Added missing conditionals to avoid hiding controls when paused and on regular media; fixed typo on stylesheet ([a33dbe1](https://github.com/openplayerjs/openplayerjs/commit/a33dbe1))
 * **player:** Removed unnecessary attributes; expanded conditional on `loadedmetadata` to not consider mobile devices; added missing workflow to show/hide progress bar per tests on Android devices ([5fb7dc8](https://github.com/openplayerjs/openplayerjs/commit/5fb7dc8))
 * **player:** Restructured way to build captions menu to avoid issues on IE11 when `detachMenus` is `true` ([12e2905](https://github.com/openplayerjs/openplayerjs/commit/12e2905))
 
-
 ### Features
 
 * **player:** Added new config element to show loader properly and fixed events to show/hide big play/loader elements ([bde589b](https://github.com/openplayerjs/openplayerjs/commit/bde589b))
 * **player:** Added new option to enable buttons to contain submenus, instead of putting all of them inside the `Settings` control ([820a9c8](https://github.com/openplayerjs/openplayerjs/commit/820a9c8))
 
-
-
 <a name="1.9.0"></a>
 # [1.9.0](https://github.com/openplayerjs/openplayerjs/compare/v1.8.1...v1.9.0) (2019-04-01)
-
 
 ### Bug Fixes
 
 * **player:** Changed paths for packages to give proper support to IE11 ([fa4fd5a](https://github.com/openplayerjs/openplayerjs/commit/fa4fd5a))
 * **player:** Updated import references due `core-js` latest update ([fb7835c](https://github.com/openplayerjs/openplayerjs/commit/fb7835c))
 
-
 ### Features
 
 * **player:** Introduced new workflow to consider `preload` attribute to avoid loading media when no Ads are present ([bb7f3ef](https://github.com/openplayerjs/openplayerjs/commit/bb7f3ef))
 
-
-
 <a name="1.8.1"></a>
 ## [1.8.1](https://github.com/openplayerjs/openplayerjs/compare/v1.8.0...v1.8.1) (2019-02-05)
-
 
 ### Bug Fixes
 
 * **player:** Fixed error when running tests on Travis ([51a968f](https://github.com/openplayerjs/openplayerjs/commit/51a968f))
 
-
-
 <a name="1.8.0"></a>
 # [1.8.0](https://github.com/openplayerjs/openplayerjs/compare/v1.7.0...v1.8.0) (2019-02-04)
-
 
 ### Bug Fixes
 
@@ -204,16 +112,12 @@
 * **player:** Expanded conditionals to test if media is HLS or Dash using also MIME types ([d9c489e](https://github.com/openplayerjs/openplayerjs/commit/d9c489e))
 * **player:** Moved event dispatcher outside of conditional to ensure volume icon is updated accordingly ([5cc813e](https://github.com/openplayerjs/openplayerjs/commit/5cc813e))
 
-
 ### Features
 
 * **player:** Added new config element to start media at a certain second; included documentation of it ([2d98ac2](https://github.com/openplayerjs/openplayerjs/commit/2d98ac2))
 
-
-
 <a name="1.7.0"></a>
 # [1.7.0](https://github.com/openplayerjs/openplayerjs/compare/v1.6.0...v1.7.0) (2019-01-10)
-
 
 ### Bug Fixes
 
@@ -222,16 +126,12 @@
 * **css:** Added new styles to fix issues in IE11 and display captions on iOS properly when not using `playsinline` attribute ([5412b7e](https://github.com/openplayerjs/openplayerjs/commit/5412b7e))
 * **css:** Adjusted styles to remove ticks in IE11 and added missing CSS property on volume bar ([2e00891](https://github.com/openplayerjs/openplayerjs/commit/2e00891))
 
-
 ### Features
 
 * **player:** Added new `addControl` callback to append new control items, and modified class to auto generate custom control items based on the properties passed; updated demo file to show new capability ([2234f4d](https://github.com/openplayerjs/openplayerjs/commit/2234f4d))
 
-
-
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/openplayerjs/openplayerjs/compare/v1.5.0...v1.6.0) (2018-12-20)
-
 
 ### Bug Fixes
 
@@ -250,7 +150,6 @@
 * **player:** Fixed typo and added workflow to just update captions when track with same srclang and kind existed previously ([62e26fe](https://github.com/openplayerjs/openplayerjs/commit/62e26fe))
 * **player:** Refined workflow to update captions ([aa205a5](https://github.com/openplayerjs/openplayerjs/commit/aa205a5))
 * **player:** Removed unnecessary event workflow and added loader state in `loadedmetadata` event ([bd1c971](https://github.com/openplayerjs/openplayerjs/commit/bd1c971))
-
 
 ### Features
 
@@ -273,27 +172,20 @@
 * **player:** Modified autoplay workflow to verify current media content instead of video placeholder; removed unnecessary code in Ads to verify autoplay capabilities ([ddb08e1](https://github.com/openplayerjs/openplayerjs/commit/ddb08e1))
 * **player:** Moved loader hiding outside of timer on `play` event ([9503041](https://github.com/openplayerjs/openplayerjs/commit/9503041))
 
-
 ### Features
 
 * **player:** Allowed displaying the Pause button correctly and added new flag to control the time it will take to disappear once video starts playing ([d02afa2](https://github.com/openplayerjs/openplayerjs/commit/d02afa2))
 
-
-
 <a name="1.4.1"></a>
 ## [1.4.1](https://github.com/openplayerjs/openplayerjs/compare/v1.4.0...v1.4.1) (2018-11-01)
-
 
 ### Bug Fixes
 
 * **tests:** Changed sources to a valid one ([bb09e16](https://github.com/openplayerjs/openplayerjs/commit/bb09e16))
 * **tests:** Changed sources to a valid one ([91fd44d](https://github.com/openplayerjs/openplayerjs/commit/91fd44d))
 
-
-
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/openplayerjs/openplayerjs/compare/v1.3.4...v1.4.0) (2018-10-16)
-
 
 ### Bug Fixes
 
@@ -317,31 +209,22 @@
 * **ads:** Expanded conditional to start media after Ad has been played if there is no `seekable` info; added missing event for HLS media ([e1d31ba](https://github.com/openplayerjs/openplayerjs/commit/e1d31ba))
 * **player:** Set play request for Ads when clicking on media; fixed workflow to check if player can play media; removed setting controls when requesting Ads ([ff748bd](https://github.com/openplayerjs/openplayerjs/commit/ff748bd))
 
-
-
 <a name="1.3.3"></a>
 ## [1.3.3](https://github.com/openplayerjs/openplayerjs/compare/v1.3.2...v1.3.3) (2018-09-28)
-
 
 ### Bug Fixes
 
 * **readme:** Added correct way to use package for Node projects ([671f179](https://github.com/openplayerjs/openplayerjs/commit/671f179))
 
-
-
 <a name="1.3.2"></a>
 ## [1.3.2](https://github.com/openplayerjs/openplayerjs/compare/v1.3.1...v1.3.2) (2018-09-28)
-
 
 ### Bug Fixes
 
 * **readme:** Added correct way to install package via NPM ([bc48d1f](https://github.com/openplayerjs/openplayerjs/commit/bc48d1f))
 
-
-
 <a name="1.3.1"></a>
 ## [1.3.1](https://github.com/openplayerjs/openplayerjs/compare/v1.3.0...v1.3.1) (2018-09-28)
-
 
 ### Bug Fixes
 
@@ -357,17 +240,13 @@
 * **progress:** Removed tooltip completely from mobile devices ([ad63445](https://github.com/openplayerjs/openplayerjs/commit/ad63445))
 * **readme:** Updated logo ([aeb7a31](https://github.com/openplayerjs/openplayerjs/commit/aeb7a31))
 
-
 ### Features
 
 * **player:** Renamed classes for entire project; fixed Type Definition file ([f646d69](https://github.com/openplayerjs/openplayerjs/commit/f646d69))
-
-
 
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/openplayerjs/openplayerjs/compare/v1.3.0...v1.4.0) (2018-09-28)
 
-
 ### Bug Fixes
 
 * **ads:** Added missing conditional to destroy correctly Ads when single URL is being passed via an array ([b3c6a6f](https://github.com/openplayerjs/openplayerjs/commit/b3c6a6f))
@@ -382,16 +261,12 @@
 * **progress:** Removed tooltip completely from mobile devices ([ad63445](https://github.com/openplayerjs/openplayerjs/commit/ad63445))
 * **readme:** Updated logo ([aeb7a31](https://github.com/openplayerjs/openplayerjs/commit/aeb7a31))
 
-
 ### Features
 
 * **player:** Renamed classes for entire project; fixed Type Definition file ([f646d69](https://github.com/openplayerjs/openplayerjs/commit/f646d69))
 
-
-
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/openplayerjs/openplayerjs/compare/v1.2.3...v1.3.0) (2018-09-19)
-
 
 ### Bug Fixes
 
@@ -420,21 +295,15 @@
 * **settings:** Fixed issue with Settings not retrieving the proper submenu after selecting an option from it ([3afe609](https://github.com/openplayerjs/openplayerjs/commit/3afe609))
 * **styles:** Added missing CSS rule for input range ([2676fe1](https://github.com/openplayerjs/openplayerjs/commit/2676fe1))
 
-
-
 <a name="1.2.3"></a>
 ## [1.2.3](https://github.com/openplayerjs/openplayerjs/compare/v1.2.2...v1.2.3) (2018-09-06)
-
 
 ### Bug Fixes
 
 * **player:** Simplified workflow to generate fullscreen video by relying only in CSS ([8e9d3a6](https://github.com/openplayerjs/openplayerjs/commit/8e9d3a6))
 
-
-
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/openplayerjs/openplayerjs/compare/v1.2.1...v1.2.2) (2018-09-04)
-
 
 ### Bug Fixes
 
@@ -446,11 +315,8 @@
 * **player:** Added conditional to test if container of player exists to remove callback effectively ([2b96bd4](https://github.com/openplayerjs/openplayerjs/commit/2b96bd4))
 * **webpack:** Fixed webpack and babelrc config after babel-loader upgrade ([c896c75](https://github.com/openplayerjs/openplayerjs/commit/c896c75))
 
-
-
 <a name="1.2.1"></a>
 ## [1.2.1](https://github.com/rafa8626/openplayer/compare/v1.2.0...v1.2.1) (2018-08-27)
-
 
 ### Bug Fixes
 
@@ -462,12 +328,9 @@
 * **player:** Changed target to execute keydown event to main wrapper to use keyboard successfully ([c67c595](https://github.com/rafa8626/openplayer/commit/c67c595))
 * **tests:** Fixed unit tests due changes on event ([f48c0a7](https://github.com/rafa8626/openplayer/commit/f48c0a7))
 
-
-
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/rafa8626/openplayer/compare/v1.1.4...v1.2.0) (2018-08-22)
 
-
 ### Bug Fixes
 
 * **package:** Downgrade cssnano version ([93acdaa](https://github.com/rafa8626/openplayer/commit/93acdaa))
@@ -475,13 +338,10 @@
 * **player:** Added missing conditionals to set proper config on HLS and Dash players; changed test source to use HTTPS ([46a02f9](https://github.com/rafa8626/openplayer/commit/46a02f9))
 * **player:** Fixed `fill` effect by using more CSS properties to enable proper resizing using that effect ([9547a11](https://github.com/rafa8626/openplayer/commit/9547a11))
 * **webpack:** Removed configuration for `cssnano` configuration and updated package ([aa12ccc](https://github.com/rafa8626/openplayer/commit/aa12ccc))
-
-
 
 <a name="1.1.5"></a>
 ## [1.1.5](https://github.com/rafa8626/openplayer/compare/v1.1.4...v1.1.5) (2018-08-22)
 
-
 ### Bug Fixes
 
 * **package:** Downgrade cssnano version ([93acdaa](https://github.com/rafa8626/openplayer/commit/93acdaa))
@@ -489,13 +349,10 @@
 * **player:** Added missing conditionals to set proper config on HLS and Dash players; changed test source to use HTTPS ([46a02f9](https://github.com/rafa8626/openplayer/commit/46a02f9))
 * **player:** Fixed `fill` effect by using more CSS properties to enable proper resizing using that effect ([9547a11](https://github.com/rafa8626/openplayer/commit/9547a11))
 * **webpack:** Removed configuration for `cssnano` configuration and updated package ([aa12ccc](https://github.com/rafa8626/openplayer/commit/aa12ccc))
-
-
 
 <a name="1.1.5"></a>
 ## [1.1.5](https://github.com/rafa8626/openplayer/compare/v1.1.4...v1.1.5) (2018-08-22)
 
-
 ### Bug Fixes
 
 * **package:** Downgrade cssnano version ([93acdaa](https://github.com/rafa8626/openplayer/commit/93acdaa))
@@ -503,13 +360,10 @@
 * **player:** Added missing conditionals to set proper config on HLS and Dash players; changed test source to use HTTPS ([46a02f9](https://github.com/rafa8626/openplayer/commit/46a02f9))
 * **player:** Fixed `fill` effect by using more CSS properties to enable proper resizing using that effect ([9547a11](https://github.com/rafa8626/openplayer/commit/9547a11))
 * **webpack:** Removed configuration for `cssnano` configuration and updated package ([aa12ccc](https://github.com/rafa8626/openplayer/commit/aa12ccc))
-
-
 
 <a name="1.2.0"></a>
 ## [1.2.0](https://github.com/rafa8626/openplayer/compare/v1.1.5...v1.2.0) (2018-08-22)
 
-
 ### Bug Fixes
 
 * **package:** Downgrade cssnano version ([93acdaa](https://github.com/rafa8626/openplayer/commit/93acdaa))
@@ -517,8 +371,6 @@
 * **player:** Added missing conditionals to set proper config on HLS and Dash players; changed test source to use HTTPS ([46a02f9](https://github.com/rafa8626/openplayer/commit/46a02f9))
 * **player:** Fixed `fill` effect by using more CSS properties to enable proper resizing using that effect ([9547a11](https://github.com/rafa8626/openplayer/commit/9547a11))
 * **webpack:** Removed configuration for `cssnano` configuration and updated package ([aa12ccc](https://github.com/rafa8626/openplayer/commit/aa12ccc))
-
-
 
 <a name="1.1.5"></a>
 ## [1.1.5](https://github.com/rafa8626/openplayer/compare/v1.1.4...v1.1.5) (2018-07-23)
@@ -586,7 +438,6 @@
 
 * **Definitions:** Removed `export` keywords and fixed header to pass tests ([166f16d](https://github.com/rafa8626/openplayer/commit/166f16d))
 
-
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/rafa8626/openplayer/compare/v0.2.0...v1.0.0) (2018-05-02)
 
@@ -597,12 +448,10 @@
 * **Player:** Removed conditional to create controls on iPhone as well, and added negative `z-index` in Ads container when inactive ([2c60e29](https://github.com/rafa8626/openplayer/commit/2c60e29))
 * **Styles:** Added missing `z-index` in buttons to override progress bar index in IE11 ([ec8af9e](https://github.com/rafa8626/openplayer/commit/ec8af9e))
 
-
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/rafa8626/openplayer/compare/v0.2.0...v0.1.0) (2018-04-23)
 
 * **Documentation**: Completed work on API and methods sections; added new NPM commands
-
 
 <a name="0.1.0"></a>
 # 0.1.0 (2018-04-18)

@@ -225,7 +225,15 @@ class HlsMedia extends Native {
      */
     private _assign(event: string, data: any): void {
         if (event === 'hlsError') {
-            console.warn(data);
+            const errorDetails = {
+                detail: {
+                    type: 'HLS',
+                    message: data[1].details,
+                    data,
+                },
+            };
+            const errorEvent = addEvent('playererror', errorDetails);
+            this.element.dispatchEvent(errorEvent);
             data = data[1];
 
             // borrowed from https://video-dev.github.io/hls.js/demo
