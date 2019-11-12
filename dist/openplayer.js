@@ -435,9 +435,8 @@ function addEvent(event, details) {
     throw new Error('Event name must be a string');
   }
 
-  return new CustomEvent(event, {
-    detail: details
-  });
+  var detail = Object.assign({}, details);
+  return new CustomEvent(event, detail ? Object.assign({}, detail) : null);
 }
 
 exports.addEvent = addEvent;
@@ -1507,9 +1506,7 @@ var Player = function () {
       startTime: 0,
       startVolume: 1,
       step: 0,
-      onError: function onError(error) {
-        return console.error(error);
-      }
+      onError: function onError() {}
     };
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
@@ -8413,6 +8410,16 @@ var Ads = function () {
   }, {
     key: "_error",
     value: function _error(event) {
+      var details = {
+        detail: {
+          type: 'Ads',
+          message: event.getError().toString(),
+          data: event.getError()
+        }
+      };
+      var errorEvent = events_1.addEvent('playererror', details);
+      this.element.dispatchEvent(errorEvent);
+
       if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length - 1) {
         if (this.currentAdsIndex < this.ads.length - 1) {
           this.currentAdsIndex++;
@@ -8443,16 +8450,6 @@ var Ads = function () {
 
         console.error("Ad error: ".concat(event.getError().toString()));
       }
-
-      var details = {
-        detail: {
-          type: 'Ads',
-          message: event.getMessage(),
-          data: event.getError()
-        }
-      };
-      var errorEvent = events_1.addEvent('playererror', details);
-      this.element.dispatchEvent(errorEvent);
     }
   }, {
     key: "_loaded",
