@@ -89,16 +89,26 @@ class Levels implements PlayerComponent {
     private default: string;
 
     /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Levels
+     */
+    private position: string;
+
+    /**
      * Create an instance of Captions.
      *
      * @param {Player} player
      * @memberof Levels
      * @returns {Levels}
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.detachMenu = player.getOptions().detachMenus;
+        this.position = position;
         return this;
     }
 
@@ -115,7 +125,7 @@ class Levels implements PlayerComponent {
             menuItems.find((items: any) => items.key === this.default).label : this.labels.auto;
 
         this.button = document.createElement('button');
-        this.button.className = 'op-controls__levels op-control__right';
+        this.button.className = `op-controls__levels op-control__${this.position}`;
         this.button.tabIndex = 0;
         this.button.title = this.labels.mediaLevels;
         this.button.setAttribute('aria-controls', this.player.id);

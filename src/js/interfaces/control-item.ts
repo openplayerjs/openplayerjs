@@ -19,7 +19,7 @@ export default interface ControlItem {
      */
     title: string;
     /**
-     * The custom control position (left. middle or right)
+     * The custom control position (left, middle or right)
      *
      * @type string
      */

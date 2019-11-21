@@ -274,11 +274,11 @@ class Player {
             volumeControl: 'Volume Control',
             volumeSlider: 'Volume Slider',
         },
+        onError: () => { },
         showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,
         step: 0,
-        onError: () => { },
     };
 
     /**

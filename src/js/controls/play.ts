@@ -52,9 +52,18 @@ class Play implements PlayerComponent {
      *
      * @private
      * @type object
-     * @memberof Captions
+     * @memberof Play
      */
     private labels: any;
+
+    /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Play
+     */
+    private position: string;
 
     /**
      * Create an instance of Play.
@@ -63,9 +72,10 @@ class Play implements PlayerComponent {
      * @returns {Play}
      * @memberof Play
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = this.player.getOptions().labels;
+        this.position = position;
         return this;
     }
 
@@ -77,7 +87,7 @@ class Play implements PlayerComponent {
     public create(): void {
         this.button = document.createElement('button');
         this.button.type = 'button';
-        this.button.className = 'op-controls__playpause';
+        this.button.className = `op-controls__playpause op-control__${this.position}`;
         this.button.tabIndex = 0;
         this.button.title = this.labels.play;
         this.button.setAttribute('aria-controls', this.player.id);

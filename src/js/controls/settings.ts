@@ -109,9 +109,18 @@ class Settings implements PlayerComponent {
      *
      * @private
      * @type object
-     * @memberof Captions
+     * @memberof Settings
      */
     private labels: any;
+
+    /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Settings
+     */
+    private position: string;
 
     /**
      * Create an instance of Settings.
@@ -120,9 +129,10 @@ class Settings implements PlayerComponent {
      * @returns {Settings}
      * @memberof Settings
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
+        this.position = position;
         return this;
     }
 
@@ -133,7 +143,7 @@ class Settings implements PlayerComponent {
      */
     public create(): void {
         this.button = document.createElement('button');
-        this.button.className = 'op-controls__settings op-control__right';
+        this.button.className = `op-controls__settings op-control__${this.position}`;
         this.button.tabIndex = 0;
         this.button.title = this.labels.settings;
         this.button.setAttribute('aria-controls', this.player.id);

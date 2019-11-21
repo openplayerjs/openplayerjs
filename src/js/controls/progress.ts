@@ -105,9 +105,18 @@ class Progress implements PlayerComponent {
      *
      * @private
      * @type object
-     * @memberof Captions
+     * @memberof Progress
      */
     private labels: any;
+
+    /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Progress
+     */
+    private position: string;
 
     /**
      * Create an instance of Progress.
@@ -116,10 +125,11 @@ class Progress implements PlayerComponent {
      * @returns {Progress}
      * @memberof Progress
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.forcePause = false;
+        this.position = position;
         return this;
     }
 
@@ -130,7 +140,7 @@ class Progress implements PlayerComponent {
      */
     public create(): void {
         this.progress = document.createElement('div');
-        this.progress.className = 'op-controls__progress';
+        this.progress.className = `op-controls__progress op-control__${this.position}`;
         this.progress.tabIndex = 0;
         this.progress.setAttribute('aria-label', this.labels.progressSlider);
         this.progress.setAttribute('aria-valuemin', '0');
