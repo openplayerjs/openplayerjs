@@ -1,3 +1,20 @@
+## [1.14.1](https://github.com/openplayerjs/openplayerjs/compare/v1.14.0...v1.14.1) (2019-11-21)
+
+
+### Bug Fixes
+
+* **player:** Added control position as part of each one of the controls class names to allow more advanced styling ([1fb55c1](https://github.com/openplayerjs/openplayerjs/commit/1fb55c1))
+
+<a name="1.14.1"></a>
+## [1.14.1](https://github.com/openplayerjs/openplayerjs/compare/v1.14.0...v1.14.1) (2019-11-21)
+
+
+### Bug Fixes
+
+* **player:** Added control position as part of each one of the controls class names to allow more advanced styling ([1fb55c1](https://github.com/openplayerjs/openplayerjs/commit/1fb55c1))
+
+
+
 # [1.14.0](https://github.com/openplayerjs/openplayerjs/compare/v1.13.1...v1.14.0) (2019-11-21)
 
 

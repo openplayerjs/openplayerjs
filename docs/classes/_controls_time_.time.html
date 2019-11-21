@@ -121,11 +121,13 @@
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_controls_time_.time.html#container" class="tsd-kind-icon">container</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_controls_time_.time.html#current" class="tsd-kind-icon">current</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_controls_time_.time.html#delimiter" class="tsd-kind-icon">delimiter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_controls_time_.time.html#duration" class="tsd-kind-icon">duration</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_controls_time_.time.html#labels" class="tsd-kind-icon">labels</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_controls_time_.time.html#player" class="tsd-kind-icon">player</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_controls_time_.time.html#position" class="tsd-kind-icon">position</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -150,13 +152,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Time<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="_player_.player.html" class="tsd-signature-type">Player</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_controls_time_.time.html" class="tsd-signature-type">Time</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Time<span class="tsd-signature-symbol">(</span>player<span class="tsd-signature-symbol">: </span><a href="_player_.player.html" class="tsd-signature-type">Player</a>, position<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_controls_time_.time.html" class="tsd-signature-type">Time</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L77">controls/time.ts:77</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L95">controls/time.ts:95</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -174,6 +176,9 @@
 								<li>
 									<h5>player: <a href="_player_.player.html" class="tsd-signature-type">Player</a></h5>
 								</li>
+								<li>
+									<h5>position: <span class="tsd-signature-type">string</span></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_controls_time_.time.html" class="tsd-signature-type">Time</a></h4>
 						</li>
@@ -183,12 +188,35 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="container" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> container</h3>
+					<div class="tsd-signature tsd-kind-icon">container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLSpanElement</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L63">controls/time.ts:63</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Element that encloses all elements to show time</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>type</dt>
+							<dd><p>{HTMLSpanElement}</p>
+							</dd>
+							<dt>memberof</dt>
+							<dd><p>Time</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="current" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> current</h3>
 					<div class="tsd-signature tsd-kind-icon">current<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLTimeElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L34">controls/time.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L34">controls/time.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -212,7 +240,7 @@
 					<div class="tsd-signature tsd-kind-icon">delimiter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLSpanElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L44">controls/time.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L44">controls/time.ts:44</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -236,7 +264,7 @@
 					<div class="tsd-signature tsd-kind-icon">duration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLTimeElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L54">controls/time.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L54">controls/time.ts:54</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -260,7 +288,7 @@
 					<div class="tsd-signature tsd-kind-icon">labels<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L77">controls/time.ts:77</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L86">controls/time.ts:86</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -272,7 +300,7 @@
 							<dd><p>object</p>
 							</dd>
 							<dt>memberof</dt>
-							<dd><p>Captions</p>
+							<dd><p>Time</p>
 							</dd>
 						</dl>
 					</div>
@@ -283,7 +311,7 @@
 					<div class="tsd-signature tsd-kind-icon">player<span class="tsd-signature-symbol">:</span> <a href="_player_.player.html" class="tsd-signature-type">Player</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L24">controls/time.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L24">controls/time.ts:24</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -293,6 +321,29 @@
 						<dl class="tsd-comment-tags">
 							<dt>type</dt>
 							<dd><p>Player</p>
+							</dd>
+							<dt>memberof</dt>
+							<dd><p>Time</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="position" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> position</h3>
+					<div class="tsd-signature tsd-kind-icon">position<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L95">controls/time.ts:95</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Position of the button to be indicated as part of its class name</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>type</dt>
+							<dd><p>{string}</p>
 							</dd>
 							<dt>memberof</dt>
 							<dd><p>Time</p>
@@ -314,7 +365,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_interfaces_component_.playercomponent.html">PlayerComponent</a>.<a href="../interfaces/_interfaces_component_.playercomponent.html#create">create</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L98">controls/time.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L117">controls/time.ts:117</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -343,7 +394,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_interfaces_component_.playercomponent.html">PlayerComponent</a>.<a href="../interfaces/_interfaces_component_.playercomponent.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L172">controls/time.ts:172</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L194">controls/time.ts:194</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -370,7 +421,7 @@
 					<div class="tsd-signature tsd-kind-icon">events<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L65">controls/time.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L74">controls/time.ts:74</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -396,7 +447,7 @@
 						<div class="tsd-signature tsd-kind-icon">controls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L66">controls/time.ts:66</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L75">controls/time.ts:75</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -411,7 +462,7 @@
 						<div class="tsd-signature tsd-kind-icon">media<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/9c2189a/src/js/controls/time.ts#L67">controls/time.ts:67</a></li>
+								<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/1fb55c1/src/js/controls/time.ts#L76">controls/time.ts:76</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -445,6 +496,9 @@
 								<a href="_controls_time_.time.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_controls_time_.time.html#container" class="tsd-kind-icon">container</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_controls_time_.time.html#current" class="tsd-kind-icon">current</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
@@ -458,6 +512,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 								<a href="_controls_time_.time.html#player" class="tsd-kind-icon">player</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_controls_time_.time.html#position" class="tsd-kind-icon">position</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_controls_time_.time.html#create" class="tsd-kind-icon">create</a>
