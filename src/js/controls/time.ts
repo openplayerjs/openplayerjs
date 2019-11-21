@@ -54,6 +54,15 @@ class Time implements PlayerComponent {
     private duration: HTMLTimeElement;
 
     /**
+     * Element that encloses all elements to show time
+     *
+     * @private
+     * @type {HTMLSpanElement}
+     * @memberof Time
+     */
+    private container: HTMLSpanElement;
+
+    /**
      * Events that will be triggered in Time element:
      *  - controls (to reset time properly when `controlschanged` event is triggered).
      *  - media (to set current time and duration in `loadedmetadata`, `progress` and `timeupdate` events).
@@ -72,9 +81,18 @@ class Time implements PlayerComponent {
      *
      * @private
      * @type object
-     * @memberof Captions
+     * @memberof Time
      */
     private labels: any;
+
+    /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Time
+     */
+    private position: string;
 
     /**
      * Create an instance of Time.
@@ -83,9 +101,10 @@ class Time implements PlayerComponent {
      * @returns {Time}
      * @memberof Time
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
+        this.position = position;
         return this;
     }
 
@@ -159,9 +178,12 @@ class Time implements PlayerComponent {
         this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
 
         const controls = this.player.getControls().getContainer();
-        controls.appendChild(this.current);
-        controls.appendChild(this.delimiter);
-        controls.appendChild(this.duration);
+        this.container = document.createElement('span');
+        this.container.className = `op-controls-time op-control__${this.position}`;
+        this.container.appendChild(this.current);
+        this.container.appendChild(this.delimiter);
+        this.container.appendChild(this.duration);
+        controls.appendChild(this.container);
     }
 
     /**
@@ -179,6 +201,7 @@ class Time implements PlayerComponent {
         this.current.remove();
         this.delimiter.remove();
         this.duration.remove();
+        this.container.remove();
     }
 }
 

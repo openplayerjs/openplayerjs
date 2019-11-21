@@ -290,7 +290,7 @@ class Controls implements PlayerComponent {
                 .filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
                 .forEach((el: string) => {
                     const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
-                    const item = new this.controlEls[className](this.player);
+                    const item = new this.controlEls[className](this.player, position);
                     if (el === 'settings') {
                         this.settings = item;
                     }
@@ -314,7 +314,7 @@ class Controls implements PlayerComponent {
 
         // Make sure fullscreen is always the last one
         if (isVideo(this.player.getElement())) {
-            this.items.right.push(new Fullscreen(this.player));
+            this.items.right.push(new Fullscreen(this.player, 'right'));
         }
     }
 

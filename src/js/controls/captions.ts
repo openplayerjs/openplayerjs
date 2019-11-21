@@ -148,16 +148,26 @@ class Captions implements PlayerComponent {
     private labels: any;
 
     /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private position: string;
+
+    /**
      * Create an instance of Captions.
      *
      * @param {Player} player
      * @memberof Captions
      * @returns {Captions}
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.detachMenu = player.getOptions().detachMenus;
+        this.position = position;
         const trackList = this.player.getElement().textTracks;
 
         // Check that `trackList` matches with track tags (if any)
@@ -192,7 +202,7 @@ class Captions implements PlayerComponent {
         }
 
         this.button = document.createElement('button');
-        this.button.className = 'op-controls__captions op-control__right';
+        this.button.className = `op-controls__captions op-control__${this.position}`;
         this.button.tabIndex = 0;
         this.button.title = this.labels.toggleCaptions;
         this.button.setAttribute('aria-controls', this.player.id);

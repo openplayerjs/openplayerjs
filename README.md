@@ -86,7 +86,9 @@ Sometimes you need more flexibility instantiating the player (for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
-    // Controls configuration by default; `levels` can be added as well since it's an optional feature
+    // Controls configuration by default; `levels` can be added as well since it's an optional feature;
+    // Each one of the items will have in their class name the `op-control__[left|middle|right]` according
+    // to the controls' structure listed below
     controls: {
         left: ['play', 'time', 'volume'],
         middle: ['progress'],

@@ -258,10 +258,7 @@
 }
 
 /* === Time =================== */
-.op-controls > time {
-    margin-top: 4px;
-}
-.op-controls__time-delimiter {
+.op-controls > .op-controls-time {
     margin: 4px 3px 0;
 }
 

@@ -88,9 +88,18 @@ class Fullscreen implements PlayerComponent {
      *
      * @private
      * @type object
-     * @memberof Captions
+     * @memberof Fullscreen
      */
     private labels: any;
+
+    /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Fullscreen
+     */
+    private position: string;
 
     /**
      * Create an instance of Fullscreen.
@@ -99,9 +108,10 @@ class Fullscreen implements PlayerComponent {
      * @returns {Fullscreen}
      * @memberof Fullscreen
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
+        this.position = position;
         this.isFullscreen = document.body.classList.contains('op-fullscreen__on');
 
         const target = (document as any);
@@ -123,7 +133,7 @@ class Fullscreen implements PlayerComponent {
     public create(): void {
         this.button = document.createElement('button');
         this.button.type = 'button';
-        this.button.className = 'op-controls__fullscreen op-control__right';
+        this.button.className = `op-controls__fullscreen op-control__${this.position}`;
         this.button.tabIndex = 0;
         this.button.title = this.labels.fullscreen;
         this.button.setAttribute('aria-controls', this.player.id);

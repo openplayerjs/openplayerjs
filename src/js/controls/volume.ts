@@ -92,9 +92,18 @@ class Volume implements PlayerComponent {
      *
      * @private
      * @type object
-     * @memberof Captions
+     * @memberof Volume
      */
     private labels: any;
+
+    /**
+     * Position of the button to be indicated as part of its class name
+     *
+     * @private
+     * @type {string}
+     * @memberof Volume
+     */
+    private position: string;
 
     /**
      * Create an instance of Volume.
@@ -102,10 +111,11 @@ class Volume implements PlayerComponent {
      * @param {Player} player
      * @returns {Volume}
      */
-    constructor(player: Player) {
+    constructor(player: Player, position: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.volume = this.player.getMedia().volume;
+        this.position = position;
         return this;
     }
 
@@ -116,7 +126,7 @@ class Volume implements PlayerComponent {
      */
     public create(): void {
         this.container = document.createElement('div');
-        this.container.className = 'op-controls__volume';
+        this.container.className = `op-controls__volume op-control__${this.position}`;
         this.container.tabIndex = 0;
         this.container.setAttribute('aria-valuemin', '0');
         this.container.setAttribute('aria-valuemax', '100');

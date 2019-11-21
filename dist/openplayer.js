@@ -1502,11 +1502,11 @@ var Player = function () {
         volumeControl: 'Volume Control',
         volumeSlider: 'Volume Slider'
       },
+      onError: function onError() {},
       showLoaderOnInit: false,
       startTime: 0,
       startVolume: 1,
-      step: 0,
-      onError: function onError() {}
+      step: 0
     };
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
@@ -4775,7 +4775,7 @@ var Controls = function () {
           return a.indexOf(v) === i;
         }).forEach(function (el) {
           var className = "".concat(el.charAt(0).toUpperCase()).concat(el.slice(1));
-          var item = new _this4.controlEls[className](_this4.player);
+          var item = new _this4.controlEls[className](_this4.player, position);
 
           if (el === 'settings') {
             _this4.settings = item;
@@ -4795,7 +4795,7 @@ var Controls = function () {
       });
 
       if (general_1.isVideo(this.player.getElement())) {
-        this.items.right.push(new fullscreen_1["default"](this.player));
+        this.items.right.push(new fullscreen_1["default"](this.player, 'right'));
       }
     }
   }, {
@@ -4883,7 +4883,7 @@ var general_1 = __webpack_require__(2);
 var time_1 = __webpack_require__(46);
 
 var Captions = function () {
-  function Captions(player) {
+  function Captions(player, position) {
     _classCallCheck(this, Captions);
 
     this.events = {
@@ -4897,6 +4897,7 @@ var Captions = function () {
     this.player = player;
     this.labels = player.getOptions().labels;
     this.detachMenu = player.getOptions().detachMenus;
+    this.position = position;
     var trackList = this.player.getElement().textTracks;
     var tracks = [];
 
@@ -4930,7 +4931,7 @@ var Captions = function () {
       }
 
       this.button = document.createElement('button');
-      this.button.className = 'op-controls__captions op-control__right';
+      this.button.className = "op-controls__captions op-control__".concat(this.position);
       this.button.tabIndex = 0;
       this.button.title = this.labels.toggleCaptions;
       this.button.setAttribute('aria-controls', this.player.id);
@@ -5438,11 +5439,12 @@ Object.defineProperty(exports, "__esModule", {
 var constants_1 = __webpack_require__(5);
 
 var Fullscreen = function () {
-  function Fullscreen(player) {
+  function Fullscreen(player, position) {
     _classCallCheck(this, Fullscreen);
 
     this.player = player;
     this.labels = player.getOptions().labels;
+    this.position = position;
     this.isFullscreen = document.body.classList.contains('op-fullscreen__on');
     var target = document;
     this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
@@ -5456,7 +5458,7 @@ var Fullscreen = function () {
 
       this.button = document.createElement('button');
       this.button.type = 'button';
-      this.button.className = 'op-controls__fullscreen op-control__right';
+      this.button.className = "op-controls__fullscreen op-control__".concat(this.position);
       this.button.tabIndex = 0;
       this.button.title = this.labels.fullscreen;
       this.button.setAttribute('aria-controls', this.player.id);
@@ -5653,7 +5655,7 @@ var events_1 = __webpack_require__(6);
 var general_1 = __webpack_require__(2);
 
 var Levels = function () {
-  function Levels(player) {
+  function Levels(player, position) {
     _classCallCheck(this, Levels);
 
     this.events = {
@@ -5665,6 +5667,7 @@ var Levels = function () {
     this.player = player;
     this.labels = player.getOptions().labels;
     this.detachMenu = player.getOptions().detachMenus;
+    this.position = position;
     return this;
   }
 
@@ -5681,7 +5684,7 @@ var Levels = function () {
         return items.key === _this["default"];
       }).label : this.labels.auto;
       this.button = document.createElement('button');
-      this.button.className = 'op-controls__levels op-control__right';
+      this.button.className = "op-controls__levels op-control__".concat(this.position);
       this.button.tabIndex = 0;
       this.button.title = this.labels.mediaLevels;
       this.button.setAttribute('aria-controls', this.player.id);
@@ -5962,7 +5965,7 @@ var events_1 = __webpack_require__(6);
 var general_1 = __webpack_require__(2);
 
 var Play = function () {
-  function Play(player) {
+  function Play(player, position) {
     _classCallCheck(this, Play);
 
     this.events = {
@@ -5971,6 +5974,7 @@ var Play = function () {
     };
     this.player = player;
     this.labels = this.player.getOptions().labels;
+    this.position = position;
     return this;
   }
 
@@ -5981,7 +5985,7 @@ var Play = function () {
 
       this.button = document.createElement('button');
       this.button.type = 'button';
-      this.button.className = 'op-controls__playpause';
+      this.button.className = "op-controls__playpause op-control__".concat(this.position);
       this.button.tabIndex = 0;
       this.button.title = this.labels.play;
       this.button.setAttribute('aria-controls', this.player.id);
@@ -6175,7 +6179,7 @@ var general_1 = __webpack_require__(2);
 var time_1 = __webpack_require__(46);
 
 var Progress = function () {
-  function Progress(player) {
+  function Progress(player, position) {
     _classCallCheck(this, Progress);
 
     this.events = {
@@ -6188,6 +6192,7 @@ var Progress = function () {
     this.player = player;
     this.labels = player.getOptions().labels;
     this.forcePause = false;
+    this.position = position;
     return this;
   }
 
@@ -6197,7 +6202,7 @@ var Progress = function () {
       var _this = this;
 
       this.progress = document.createElement('div');
-      this.progress.className = 'op-controls__progress';
+      this.progress.className = "op-controls__progress op-control__".concat(this.position);
       this.progress.tabIndex = 0;
       this.progress.setAttribute('aria-label', this.labels.progressSlider);
       this.progress.setAttribute('aria-valuemin', '0');
@@ -6521,7 +6526,7 @@ Object.defineProperty(exports, "__esModule", {
 var general_1 = __webpack_require__(2);
 
 var Settings = function () {
-  function Settings(player) {
+  function Settings(player, position) {
     _classCallCheck(this, Settings);
 
     this.submenu = {};
@@ -6531,6 +6536,7 @@ var Settings = function () {
     };
     this.player = player;
     this.labels = player.getOptions().labels;
+    this.position = position;
     return this;
   }
 
@@ -6540,7 +6546,7 @@ var Settings = function () {
       var _this = this;
 
       this.button = document.createElement('button');
-      this.button.className = 'op-controls__settings op-control__right';
+      this.button.className = "op-controls__settings op-control__".concat(this.position);
       this.button.tabIndex = 0;
       this.button.title = this.labels.settings;
       this.button.setAttribute('aria-controls', this.player.id);
@@ -6791,7 +6797,7 @@ Object.defineProperty(exports, "__esModule", {
 var time_1 = __webpack_require__(46);
 
 var Time = function () {
-  function Time(player) {
+  function Time(player, position) {
     _classCallCheck(this, Time);
 
     this.events = {
@@ -6800,6 +6806,7 @@ var Time = function () {
     };
     this.player = player;
     this.labels = player.getOptions().labels;
+    this.position = position;
     return this;
   }
 
@@ -6879,9 +6886,12 @@ var Time = function () {
       });
       this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
       var controls = this.player.getControls().getContainer();
-      controls.appendChild(this.current);
-      controls.appendChild(this.delimiter);
-      controls.appendChild(this.duration);
+      this.container = document.createElement('span');
+      this.container.className = "op-controls-time op-control__".concat(this.position);
+      this.container.appendChild(this.current);
+      this.container.appendChild(this.delimiter);
+      this.container.appendChild(this.duration);
+      controls.appendChild(this.container);
     }
   }, {
     key: "destroy",
@@ -6895,6 +6905,7 @@ var Time = function () {
       this.current.remove();
       this.delimiter.remove();
       this.duration.remove();
+      this.container.remove();
     }
   }]);
 
@@ -6927,7 +6938,7 @@ var events_1 = __webpack_require__(6);
 var general_1 = __webpack_require__(2);
 
 var Volume = function () {
-  function Volume(player) {
+  function Volume(player, position) {
     _classCallCheck(this, Volume);
 
     this.events = {
@@ -6938,6 +6949,7 @@ var Volume = function () {
     this.player = player;
     this.labels = player.getOptions().labels;
     this.volume = this.player.getMedia().volume;
+    this.position = position;
     return this;
   }
 
@@ -6947,7 +6959,7 @@ var Volume = function () {
       var _this = this;
 
       this.container = document.createElement('div');
-      this.container.className = 'op-controls__volume';
+      this.container.className = "op-controls__volume op-control__".concat(this.position);
       this.container.tabIndex = 0;
       this.container.setAttribute('aria-valuemin', '0');
       this.container.setAttribute('aria-valuemax', '100');
