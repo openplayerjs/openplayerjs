@@ -1,3 +1,36 @@
+# [1.14.0](https://github.com/openplayerjs/openplayerjs/compare/v1.13.1...v1.14.0) (2019-11-21)
+
+
+### Bug Fixes
+
+* **ads:** Modified error conditional and displaying of error; added missing workflow on `loadedmetadata` event to check if more Ad URLs need to be loaded ([da25ced](https://github.com/openplayerjs/openplayerjs/commit/da25ced))
+* **events:** Fixed Ads error event due to typo; removed default `onError` content ([a42a5a2](https://github.com/openplayerjs/openplayerjs/commit/a42a5a2))
+* **player:** Fixed typos when creating event and added documentation about it ([8d306b2](https://github.com/openplayerjs/openplayerjs/commit/8d306b2))
+* **README:** Added updated examples and fixed minor issues detected in structure ([37fd312](https://github.com/openplayerjs/openplayerjs/commit/37fd312))
+
+
+### Features
+
+* **payer:** Added new `playererror` event to expose any errors in an OpenPlayer instance ([c587662](https://github.com/openplayerjs/openplayerjs/commit/c587662))
+
+<a name="1.14.0"></a>
+# [1.14.0](https://github.com/openplayerjs/openplayerjs/compare/v1.13.1...v1.14.0) (2019-11-21)
+
+
+### Bug Fixes
+
+* **ads:** Modified error conditional and displaying of error; added missing workflow on `loadedmetadata` event to check if more Ad URLs need to be loaded ([da25ced](https://github.com/openplayerjs/openplayerjs/commit/da25ced))
+* **events:** Fixed Ads error event due to typo; removed default `onError` content ([a42a5a2](https://github.com/openplayerjs/openplayerjs/commit/a42a5a2))
+* **player:** Fixed typos when creating event and added documentation about it ([8d306b2](https://github.com/openplayerjs/openplayerjs/commit/8d306b2))
+* **README:** Added updated examples and fixed minor issues detected in structure ([37fd312](https://github.com/openplayerjs/openplayerjs/commit/37fd312))
+
+
+### Features
+
+* **payer:** Added new `playererror` event to expose any errors in an OpenPlayer instance ([c587662](https://github.com/openplayerjs/openplayerjs/commit/c587662))
+
+
+
 <a name="1.13.1"></a>
 ## [1.13.1](https://github.com/openplayerjs/openplayerjs/compare/v1.13.0...v1.13.1) (2019-10-27)
 
