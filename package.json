@@ -81,7 +81,7 @@
     "typedoc": "^0.15.0",
     "typescript": "^3.6.3",
     "unminified-webpack-plugin": "^2.0.0",
-    "url-loader": "^2.1.0",
+    "url-loader": "^3.0.0",
     "webpack": "^4.40.2",
     "webpack-cli": "^3.3.9"
   },
