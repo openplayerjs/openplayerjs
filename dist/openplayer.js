@@ -4940,6 +4940,19 @@ var Captions = function () {
       this.button.setAttribute('data-active-captions', 'off');
       this.button.innerHTML = "<span class=\"op-sr\">".concat(this.labels.toggleCaptions, "</span>");
 
+      if (this.detachMenu) {
+        this.button.classList.add('op-control--no-hover');
+        this.menu = document.createElement('div');
+        this.menu.className = 'op-settings op-captions__menu';
+        this.menu.setAttribute('aria-hidden', 'true');
+        this.button.classList.add('op-control--no-hover');
+        this.menu = document.createElement('div');
+        this.menu.className = 'op-settings op-captions__menu';
+        this.menu.setAttribute('aria-hidden', 'true');
+        this.menu.innerHTML = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\" aria-checked=\"".concat(this["default"] === 'off' ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label op-subtitles__option\" data-value=\"captions-off\">").concat(this.labels.off, "</div>\n                </div>\n            </div>");
+        this.player.getControls().getContainer().appendChild(this.menu);
+      }
+
       var _loop = function _loop(i, total, _tracks) {
         var element = _tracks[i];
 
@@ -4962,24 +4975,17 @@ var Captions = function () {
                 _this.tracks[element.srclang] = _this._getCuesFromText(d);
 
                 _this._prepareTrack(i, element.srclang, trackUrl, element["default"] || false);
-              }, function () {
-                delete _this.trackList[i];
-                element.remove();
-                var details = {
-                  detail: {
-                    id: element.srclang,
-                    type: 'captions'
-                  }
-                };
-                var e = events_1.addEvent('settingremoved', details);
 
-                _this.player.getElement().dispatchEvent(e);
+                if (_this.menu && !_this.menu.querySelector(".op-subtitles__option[data-value=\"captions-".concat(_this.trackList[i].language, "\"]"))) {
+                  var item = document.createElement('div');
+                  item.className = 'op-settings__submenu-item';
+                  item.tabIndex = 0;
+                  item.setAttribute('role', 'menuitemradio');
+                  item.setAttribute('aria-checked', _this["default"] === _this.trackList[i].language ? 'true' : 'false');
+                  item.innerHTML = "<div class=\"op-settings__submenu-label op-subtitles__option\"\n                                        data-value=\"captions-".concat(_this.trackList[i].language, "\">\n                                        ").concat(_this.labels.lang[_this.trackList[i].language] || _this.trackList[i].label, "\n                                    </div>");
 
-                setTimeout(function () {
-                  var ev = events_1.addEvent('controlschanged');
-
-                  _this.player.getElement().dispatchEvent(ev);
-                }, 200);
+                  _this.menu.appendChild(item);
+                }
               });
             }
           }
@@ -5088,24 +5094,8 @@ var Captions = function () {
       if (this.hasTracks) {
         var target = this.player.getContainer();
         target.insertBefore(this.captions, target.firstChild);
-
-        if (this.detachMenu) {
-          this.button.classList.add('op-control--no-hover');
-          this.menu = document.createElement('div');
-          this.menu.className = 'op-settings op-captions__menu';
-          this.menu.setAttribute('aria-hidden', 'true');
-          var className = 'op-subtitles__option';
-
-          var options = this._formatMenuItems();
-
-          var menu = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                    ".concat(options.map(function (item) {
-            return "\n                    <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(_this["default"] === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"captions-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
-          }).join(''), "\n                </div>");
-          this.menu.innerHTML = menu;
-          this.player.getControls().getContainer().appendChild(this.menu);
-        }
-
         this.player.getControls().getContainer().appendChild(this.button);
+        this.button.addEventListener('click', this.events.button.click);
       }
 
       if (this.trackList.length <= 1 && !this.detachMenu || !this.trackList.length && this.detachMenu) {
@@ -5156,8 +5146,6 @@ var Captions = function () {
           _this.player.getElement().dispatchEvent(event);
         }
       };
-
-      this.button.addEventListener('click', this.events.button.click);
 
       if (this.detachMenu) {
         this.button.addEventListener('mouseover', this.events.button.mouseover);
