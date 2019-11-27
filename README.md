@@ -217,12 +217,14 @@ If you want to suggest one, please submit an issue indicating what scenarios cou
 1. [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
 3. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
-4. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
-5. [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
-6. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
-7. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
-8. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
-9. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
+4. [Add source after initialization (useful for AJAX)](https://codepen.io/rafa8626/pen/YzzgJrK)
+5. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
+6. [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
+7. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
+8. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
+9. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
+10. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
+11. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
 
 ## Built With
 
