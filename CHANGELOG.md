@@ -1,3 +1,20 @@
+## [1.14.2](https://github.com/openplayerjs/openplayerjs/compare/v1.14.1...v1.14.2) (2019-11-27)
+
+
+### Bug Fixes
+
+* **captions:** Changed way to generate menu caption items when `detachMenu` is true due to issues with nodes being removed asyncronously ([a37869c](https://github.com/openplayerjs/openplayerjs/commit/a37869c))
+
+<a name="1.14.2"></a>
+## [1.14.2](https://github.com/openplayerjs/openplayerjs/compare/v1.14.1...v1.14.2) (2019-11-27)
+
+
+### Bug Fixes
+
+* **captions:** Changed way to generate menu caption items when `detachMenu` is true due to issues with nodes being removed asyncronously ([a37869c](https://github.com/openplayerjs/openplayerjs/commit/a37869c))
+
+
+
 ## [1.14.1](https://github.com/openplayerjs/openplayerjs/compare/v1.14.0...v1.14.1) (2019-11-21)
 
 
