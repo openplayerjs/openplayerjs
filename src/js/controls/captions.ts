@@ -646,24 +646,22 @@ class Captions implements PlayerComponent {
      * @param {number} index
      * @param {string} language
      * @param {string} trackUrl
-     * @param {boolean} [defaultTrack=false]
+     * @param {boolean} [showTrack=false]
      * @memberof Captions
      */
-    private _prepareTrack(index: number, language: string, trackUrl: string, defaultTrack: boolean = false) {
+    private _prepareTrack(index: number, language: string, trackUrl: string, showTrack: boolean = false) {
         this.trackUrlList[language] = trackUrl;
         this.trackList[index].mode = 'disabled';
-        if (defaultTrack) {
+        if (showTrack) {
             this.default = language;
             this.button.classList.add('op-controls__captions--on');
             this.button.setAttribute('data-active-captions', language);
             this.current = Array.from(this.trackList)
                 .filter(item => item.language === this.default).pop();
-        } else {
-            this.current = this.trackList[0];
-        }
-        this._show();
-        if (!this.player.getContainer().classList.contains('op-captions--detected')) {
-            this.player.getContainer().classList.add('op-captions--detected');
+            this._show();
+            if (!this.player.getContainer().classList.contains('op-captions--detected')) {
+                this.player.getContainer().classList.add('op-captions--detected');
+            }
         }
     }
 
