@@ -1,3 +1,22 @@
+## [1.14.3](https://github.com/openplayerjs/openplayerjs/compare/v1.14.2...v1.14.3) (2019-12-18)
+
+
+### Bug Fixes
+
+* **captions:** Fixed workflow to prepare captions correctly by removing assignment of current caption to the first one ([0161c0e](https://github.com/openplayerjs/openplayerjs/commit/0161c0e))
+* **player:** Fixed way to create events to pass data from media types correctly ([6a5d20d](https://github.com/openplayerjs/openplayerjs/commit/6a5d20d))
+
+<a name="1.14.3"></a>
+## [1.14.3](https://github.com/openplayerjs/openplayerjs/compare/v1.14.2...v1.14.3) (2019-12-18)
+
+
+### Bug Fixes
+
+* **captions:** Fixed workflow to prepare captions correctly by removing assignment of current caption to the first one ([0161c0e](https://github.com/openplayerjs/openplayerjs/commit/0161c0e))
+* **player:** Fixed way to create events to pass data from media types correctly ([6a5d20d](https://github.com/openplayerjs/openplayerjs/commit/6a5d20d))
+
+
+
 ## [1.14.2](https://github.com/openplayerjs/openplayerjs/compare/v1.14.1...v1.14.2) (2019-11-27)
 
 

@@ -677,9 +677,9 @@ class Ads {
     private _error(event: any): void {
         const details = {
             detail: {
-                type: 'Ads',
-                message: event.getError().toString(),
                 data: event.getError(),
+                message: event.getError().toString(),
+                type: 'Ads',
             },
         };
         const errorEvent = addEvent('playererror', details);
