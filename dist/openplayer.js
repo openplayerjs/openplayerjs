@@ -5361,25 +5361,23 @@ var Captions = function () {
     value: function _prepareTrack(index, language, trackUrl) {
       var _this2 = this;
 
-      var defaultTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+      var showTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       this.trackUrlList[language] = trackUrl;
       this.trackList[index].mode = 'disabled';
 
-      if (defaultTrack) {
+      if (showTrack) {
         this["default"] = language;
         this.button.classList.add('op-controls__captions--on');
         this.button.setAttribute('data-active-captions', language);
         this.current = Array.from(this.trackList).filter(function (item) {
           return item.language === _this2["default"];
         }).pop();
-      } else {
-        this.current = this.trackList[0];
-      }
 
-      this._show();
+        this._show();
 
-      if (!this.player.getContainer().classList.contains('op-captions--detected')) {
-        this.player.getContainer().classList.add('op-captions--detected');
+        if (!this.player.getContainer().classList.contains('op-captions--detected')) {
+          this.player.getContainer().classList.add('op-captions--detected');
+        }
       }
     }
   }, {
