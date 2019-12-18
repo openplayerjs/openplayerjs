@@ -303,7 +303,6 @@ class Player {
                 this.element.currentTime = this.options.startTime;
             }
             this.volume = this.element.volume;
-            this.element.autoplay = false;
         }
         return this;
     }

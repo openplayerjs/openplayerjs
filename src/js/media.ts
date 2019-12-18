@@ -505,6 +505,9 @@ class Media {
      * @memberof Media
      */
     private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
+        const playHLSNatively = this.element.canPlayType('application/vnd.apple.mpegurl') ||
+            this.element.canPlayType('application/x-mpegURL');
+
         if (Object.keys(this.customMedia.media).length) {
             let customRef: any;
             this.customMedia.rules.forEach((rule: any) => {
@@ -521,7 +524,7 @@ class Media {
             } else {
                 return new HTML5Media(this.element, media);
             }
-        } else if (source.isHlsSource(media)) {
+        } else if (!playHLSNatively && source.isHlsSource(media)) {
             const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
             return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
         } else if (source.isDashSource(media)) {
