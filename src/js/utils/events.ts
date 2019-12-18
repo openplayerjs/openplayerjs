@@ -12,8 +12,11 @@ export function addEvent(event: string, details?: CustomEventInit): CustomEvent 
         throw new Error('Event name must be a string');
     }
 
-    const detail = { ...details };
-    return new CustomEvent(event, detail ? { ...detail } : null);
+    let detail = null;
+    if (details) {
+        detail = details.detail ? { detail: details.detail } : { detail: details };
+    }
+    return new CustomEvent(event, detail);
 }
 
 /**

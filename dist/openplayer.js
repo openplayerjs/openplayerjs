@@ -440,8 +440,17 @@ function addEvent(event, details) {
     throw new Error('Event name must be a string');
   }
 
-  var detail = Object.assign({}, details);
-  return new CustomEvent(event, detail ? Object.assign({}, detail) : null);
+  var detail = null;
+
+  if (details) {
+    detail = details.detail ? {
+      detail: details.detail
+    } : {
+      detail: details
+    };
+  }
+
+  return new CustomEvent(event, detail);
 }
 
 exports.addEvent = addEvent;
@@ -8504,9 +8513,9 @@ var Ads = function () {
     value: function _error(event) {
       var details = {
         detail: {
-          type: 'Ads',
+          data: event.getError(),
           message: event.getError().toString(),
-          data: event.getError()
+          type: 'Ads'
         }
       };
       var errorEvent = events_1.addEvent('playererror', details);
