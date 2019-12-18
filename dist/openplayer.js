@@ -1531,7 +1531,6 @@ var Player = function () {
       }
 
       this.volume = this.element.volume;
-      this.element.autoplay = false;
     }
 
     return this;
@@ -7397,6 +7396,8 @@ var Media = function () {
     value: function _invoke(media) {
       var _this4 = this;
 
+      var playHLSNatively = this.element.canPlayType('application/vnd.apple.mpegurl') || this.element.canPlayType('application/x-mpegURL');
+
       if (Object.keys(this.customMedia.media).length) {
         var customRef;
         this.customMedia.rules.forEach(function (rule) {
@@ -7415,7 +7416,7 @@ var Media = function () {
         } else {
           return new html5_1["default"](this.element, media);
         }
-      } else if (source.isHlsSource(media)) {
+      } else if (!playHLSNatively && source.isHlsSource(media)) {
         var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
         return new hls_1["default"](this.element, media, this.autoplay, hlsOptions);
       } else if (source.isDashSource(media)) {
