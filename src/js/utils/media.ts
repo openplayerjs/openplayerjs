@@ -96,11 +96,15 @@ export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) 
         playPromise.then(() => {
             // Umuted autoplay works.
             media.pause();
-            autoplay(true);
-            // Autoplay with sound not will be working for IOS, macOS
-            // Apple has strict policy about that
-            muted((IS_IOS || IS_SAFARI));
-            callback();
+            try {
+                autoplay(true);
+                // Autoplay with sound not will be working for IOS, macOS
+                // Apple has strict policy about that
+                muted((IS_IOS || IS_SAFARI));
+                callback();
+            } catch (e) {
+                throw new Error('Attempt to autoplay with sound failed');
+            }
         }).catch(() => {
             // Unmuted autoplay failed. New attempt with muted autoplay.
             media.volume = 0;
@@ -108,22 +112,34 @@ export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) 
             media.play().then(() => {
                 // Muted autoplay works.
                 media.pause();
-                autoplay(true);
-                muted(true);
-                callback();
+                try {
+                    autoplay(true);
+                    muted(true);
+                    callback();
+                } catch (e) {
+                    throw new Error('Attempt to autoplay without sound failed');
+                }
             }).catch(() => {
                 // Both muted and unmuted autoplay failed. Fallback to click to play.
                 media.volume = 1;
                 media.muted = false;
-                autoplay(false);
-                muted(false);
-                callback();
+                try {
+                    autoplay(false);
+                    muted(false);
+                    callback();
+                } catch (e) {
+                    throw new Error('Cannot autoplay');
+                }
             });
         });
     } else {
-        autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
-        media.pause();
-        muted(false);
-        callback();
+        try {
+            autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
+            media.pause();
+            muted(false);
+            callback();
+        } catch (e) {
+            throw new Error('Attempt to autoplay failed');
+        }
     }
 }
