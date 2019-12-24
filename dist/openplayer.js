@@ -962,30 +962,49 @@ function isAutoplaySupported(media, autoplay, muted, callback) {
   if (playPromise !== undefined) {
     playPromise.then(function () {
       media.pause();
-      autoplay(true);
-      muted(constants_1.IS_IOS || constants_1.IS_SAFARI);
-      callback();
+
+      try {
+        autoplay(true);
+        muted(constants_1.IS_IOS || constants_1.IS_SAFARI);
+        callback();
+      } catch (e) {
+        throw new Error('Attempt to autoplay with sound failed');
+      }
     })["catch"](function () {
       media.volume = 0;
       media.muted = true;
       media.play().then(function () {
         media.pause();
-        autoplay(true);
-        muted(true);
-        callback();
+
+        try {
+          autoplay(true);
+          muted(true);
+          callback();
+        } catch (e) {
+          throw new Error('Attempt to autoplay without sound failed');
+        }
       })["catch"](function () {
         media.volume = 1;
         media.muted = false;
-        autoplay(false);
-        muted(false);
-        callback();
+
+        try {
+          autoplay(false);
+          muted(false);
+          callback();
+        } catch (e) {
+          throw new Error('Cannot autoplay');
+        }
       });
     });
   } else {
-    autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
-    media.pause();
-    muted(false);
-    callback();
+    try {
+      autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
+      media.pause();
+      muted(false);
+      callback();
+    } catch (e) {
+      throw new Error('Attempt to autoplay failed');
+    }
   }
 }
 
