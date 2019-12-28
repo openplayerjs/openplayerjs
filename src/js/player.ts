@@ -897,7 +897,7 @@ class Player {
                     this.activeElement().muted = false;
                     this.activeElement().volume = this.volume;
                 }
-                console.log({canAutoplay: this.canAutoplay, canAutoplayMuted: this.canAutoplayMuted});
+
                 if (this.ads) {
                     const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
                     this.adsInstance = new Ads(this.media, this.ads, this.canAutoplay, this.canAutoplayMuted, adsOptions);
