@@ -344,13 +344,13 @@ class Player {
      * If Ads are detected, different methods than the native ones are triggered with this operation.
      * @memberof Player
      */
-    public play(): Promise<void> | void {
+    public play(): Promise<void> {
         if (this.media && !this.media.loaded) {
             this.media.load();
             this.media.loaded = true;
         }
         if (this.adsInstance) {
-            this.adsInstance.play();
+            return this.adsInstance.play();
         } else {
            return this.media.play();
         }

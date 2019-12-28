@@ -192,7 +192,7 @@ class Media {
         // Wait until any other Promise is resolved to execute the Play action
         this.promisePlay = new Promise(resolve => {
             resolve();
-        }).then(() => this.media.promise.then(() => this.media.play()));
+        }).then(this.media.promise.then(this.media.play()));
 
         return this.promisePlay;
     }
