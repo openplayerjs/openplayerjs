@@ -34,7 +34,7 @@ class HTML5Media extends Native  {
             };
             const errorEvent = addEvent('playererror', details);
             this.element.dispatchEvent(errorEvent);
-        })
+        });
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }

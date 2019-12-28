@@ -121,8 +121,8 @@ abstract class Native {
      *
      * @memberof Native
      */
-    public play(): void {
-        this.element.play();
+    public play(): Promise<void> {
+        return this.element.play();
     }
 
     /**

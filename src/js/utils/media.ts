@@ -1,5 +1,4 @@
 import Source from '../interfaces/source';
-import { IS_IOS, IS_SAFARI } from './constants';
 
 /**
  * Get media file extension from a URL.
@@ -97,10 +96,8 @@ export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) 
             // Umuted autoplay works.
             media.pause();
             autoplay(true);
-            // Autoplay with sound not will be working for IOS, macOS
-            // Apple has strict policy about that
-            muted((IS_IOS || IS_SAFARI));
-            callback();
+            muted(false);
+            return callback();
         }).catch(() => {
             // Unmuted autoplay failed. New attempt with muted autoplay.
             media.volume = 0;
@@ -110,7 +107,7 @@ export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) 
                 media.pause();
                 autoplay(true);
                 muted(true);
-                callback();
+                return callback();
             }).catch(() => {
                 // Both muted and unmuted autoplay failed. Fallback to click to play.
                 media.volume = 1;

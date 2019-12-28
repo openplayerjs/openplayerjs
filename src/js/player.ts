@@ -344,7 +344,7 @@ class Player {
      * If Ads are detected, different methods than the native ones are triggered with this operation.
      * @memberof Player
      */
-    public play(): void {
+    public play(): Promise<void> | void {
         if (this.media && !this.media.loaded) {
             this.media.load();
             this.media.loaded = true;
@@ -352,7 +352,7 @@ class Player {
         if (this.adsInstance) {
             this.adsInstance.play();
         } else {
-            this.media.play();
+           return this.media.play();
         }
     }
 
@@ -897,12 +897,12 @@ class Player {
                     this.activeElement().muted = false;
                     this.activeElement().volume = this.volume;
                 }
-
+                console.log({canAutoplay: this.canAutoplay, canAutoplayMuted: this.canAutoplayMuted});
                 if (this.ads) {
                     const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
                     this.adsInstance = new Ads(this.media, this.ads, this.canAutoplay, this.canAutoplayMuted, adsOptions);
                 } else if (this.canAutoplay || this.canAutoplayMuted) {
-                    this.play();
+                    return this.play();
                 }
             });
         }
