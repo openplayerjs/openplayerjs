@@ -349,27 +349,24 @@ class Ads {
      *
      * @memberof Ads
      */
-    public play(): void {
-        if (!this.adsDone) {
-            this.adsDone = true;
-            this.adDisplayContainer.initialize();
-
-            if (IS_IOS || IS_ANDROID) {
-                this.preloadContent = this._contentLoadedAction;
-                this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
-                this.element.load();
-            } else {
-                this._contentLoadedAction();
+    public play(): Promise<void> {
+        const play = (): void => {
+            if (!this.adsDone) {
+                this._initNotDoneAds();
+                return;
             }
-            return;
-        }
 
-        if (this.adsManager) {
-            this.adsActive = true;
-            this.adsManager.resume();
-            const e = addEvent('play');
-            this.element.dispatchEvent(e);
-        }
+            if (this.adsManager) {
+                this.adsActive = true;
+                this.adsManager.resume();
+                const e = addEvent('play');
+                this.element.dispatchEvent(e);
+            }
+        };
+
+        return new Promise(resolve => {
+            resolve();
+        }).then(play);
     }
 
     /**
@@ -764,16 +761,7 @@ class Ads {
         if (this.autoStart === true || this.playTriggered === true) {
             this.playTriggered = false;
             if (!this.adsDone) {
-                this.adsDone = true;
-                this.adDisplayContainer.initialize();
-
-                if (IS_IOS || IS_ANDROID) {
-                    this.preloadContent = this._contentLoadedAction;
-                    this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
-                    this.element.load();
-                } else {
-                    this._contentLoadedAction();
-                }
+                this._initNotDoneAds();
                 return;
             }
             manager.init(
@@ -787,6 +775,24 @@ class Ads {
             this.element.dispatchEvent(e);
             const event = addEvent('playing');
             this.element.dispatchEvent(event);
+        }
+    }
+
+    /**
+     * Resume Ads if not done
+     *
+     * @memberof Ads
+     */
+    private _initNotDoneAds(): void {
+        this.adsDone = true;
+        this.adDisplayContainer.initialize();
+
+        if (IS_IOS || IS_ANDROID) {
+            this.preloadContent = this._contentLoadedAction;
+            this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+            this.element.load();
+        } else {
+            this._contentLoadedAction();
         }
     }
 
@@ -877,16 +883,21 @@ class Ads {
         this.adsCurrentTime = 0;
         this.element.parentElement.classList.remove('op-ads--active');
 
-        if (!this.media.ended) {
-            setTimeout(() => {
-                this.media.play();
-                const playEvent = addEvent('play');
-                this.element.dispatchEvent(playEvent);
-            }, 50);
-        } else {
-            const event = addEvent('ended');
+        const triggerEvent = (eventName: string): void => {
+            const event = addEvent(eventName);
             this.element.dispatchEvent(event);
-        }
+        };
+
+        const waitPromise = (ms: number, isReject: boolean) => new Promise((resolve, reject) => {
+            if (isReject) { return reject(); }
+
+            setTimeout(resolve, ms);
+        });
+
+        waitPromise(50, this.media.ended)
+            .then(() => this.media.play().then(() => triggerEvent('play'))
+                .catch(() => triggerEvent('ended')));
+
     }
 
     /**
@@ -906,7 +917,7 @@ class Ads {
         }
 
         const width = this.element.parentElement.offsetWidth;
-        const height = this.element.parentElement.offsetWidth;
+        const height = this.element.parentElement.offsetHeight;
         this.adsRequest.linearAdSlotWidth = width;
         this.adsRequest.linearAdSlotHeight = height;
         this.adsRequest.setAdWillAutoPlay(this.autoStart);

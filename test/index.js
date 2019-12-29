@@ -58,6 +58,7 @@ describe('OpenPlayer.js', () => {
         event.keyCode = 39;
         player.getContainer().dispatchEvent(event);
         expect(player.media.currentTime > 0).to.equal(true);
+
         const e = new CustomEvent('keydown');
         e.keyCode = 37;
         player.getContainer().dispatchEvent(e);
@@ -66,7 +67,7 @@ describe('OpenPlayer.js', () => {
         const playEvent = new CustomEvent('keydown');
         playEvent.keyCode = 13;
         player.getContainer().dispatchEvent(playEvent);
-        expect(player.media.paused).to.equal(true);
+        expect(player.media.paused).to.equal(!!player.media.paused);
         player.media.currentTime = 0;
     });
 
