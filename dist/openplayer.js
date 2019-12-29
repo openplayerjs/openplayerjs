@@ -1624,6 +1624,7 @@ var Player = function () {
       }
 
       el.controls = true;
+      el.setAttribute('id', this.uid);
       el.removeAttribute('op-live');
       var parent = el.parentElement;
       parent.parentNode.replaceChild(el, parent);
