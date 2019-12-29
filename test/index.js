@@ -6,6 +6,7 @@ describe('OpenPlayer.js', () => {
         player = new OpenPlayer('player1');
         player.init();
         expect(player instanceof OpenPlayer).to.equal(true);
+        expect(document.getElementById('player1').nodeName).to.equal('DIV');
     });
 
     it('Stores an instance of the current player', () => {
@@ -203,7 +204,24 @@ describe('OpenPlayer.js', () => {
         setTimeout(() => {
             player.destroy();
             expect(player.getContainer().getAttribute('class').indexOf('.op-player') > -1).to.equal(false);
+            expect(document.getElementById('player1').nodeName).to.equal('VIDEO');
             done();
         }, 1000);
+    });
+
+    it('Recreate player correctly', () => {
+        player = new OpenPlayer('player1');
+        player.init();
+        expect(player instanceof OpenPlayer).to.equal(true);
+        expect(document.getElementById('player1').nodeName).to.equal('DIV');
+
+        player.destroy();
+        expect(player.getContainer().getAttribute('class').indexOf('.op-player') > -1).to.equal(false);
+        expect(document.getElementById('player1').nodeName).to.equal('VIDEO');
+
+        player = new OpenPlayer('player1');
+        player.init();
+        expect(player instanceof OpenPlayer).to.equal(true);
+        expect(document.getElementById('player1').nodeName).to.equal('DIV');
     });
 });
