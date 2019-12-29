@@ -37,6 +37,7 @@
     height: auto;
     -o-object-fit: contain;
        object-fit: contain;
+    position: relative;
     width: 100% !important;
 }
 .op-player [aria-hidden='true'] {
@@ -290,8 +291,8 @@
 .op-controls__captions:before {
     content: '\e809';
 }
-.op-controls__settings:before { 
-    content: '\e800'; 
+.op-controls__settings:before {
+    content: '\e800';
 }
 
 /* === Settings =================== */
@@ -481,7 +482,7 @@
     display: none !important;
 }
 .op-controls--hidden .op-controls .op-controls__progress--seek::-webkit-slider-thumb {
-    background: transparent;   
+    background: transparent;
 }
 .op-controls--hidden .op-controls .op-controls__progress--seek::-moz-range-thumb {
     background: transparent;
@@ -630,7 +631,7 @@
     content:'';
     height: 0;
     left: 0;
-    margin: 0 auto;    
+    margin: 0 auto;
     position: absolute;
     right: 0;
     top: 100%;
@@ -684,10 +685,10 @@
     bottom: -40px;
 }
 .op-player video::-webkit-media-controls,
-.op-player video::-webkit-media-text-track-container { 
+.op-player video::-webkit-media-text-track-container {
     display: none !important;
 }
-.op-player.op-player__ios--iphone video::-webkit-media-text-track-container { 
+.op-player.op-player__ios--iphone video::-webkit-media-text-track-container {
     display: block !important;
 }
 
@@ -770,7 +771,7 @@
 }
 
 /* WebVTT cues */
-::cue { 
+::cue {
     color:#ccc;
 }
 video:-webkit-media-text-track-display {
