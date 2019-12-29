@@ -1,3 +1,24 @@
+## [1.14.4](https://github.com/openplayerjs/openplayerjs/compare/v1.14.3...v1.14.4) (2019-12-29)
+
+
+### Bug Fixes
+
+* **player:** Added missing try/catch blocks to execute exceptions properly ([ecbb9fd](https://github.com/openplayerjs/openplayerjs/commit/ecbb9fd))
+* **player:** Fixed callback to autoplay workflow based on iOS and Safari policies to autoplay on mute ([07ca4bf](https://github.com/openplayerjs/openplayerjs/commit/07ca4bf))
+* **player:** Removed resetting of `autoplay` and expand conditional to test if HLS.js needs to be loaded ([2cda30d](https://github.com/openplayerjs/openplayerjs/commit/2cda30d))
+
+<a name="1.14.4"></a>
+## [1.14.4](https://github.com/openplayerjs/openplayerjs/compare/v1.14.3...v1.14.4) (2019-12-29)
+
+
+### Bug Fixes
+
+* **player:** Added missing try/catch blocks to execute exceptions properly ([ecbb9fd](https://github.com/openplayerjs/openplayerjs/commit/ecbb9fd))
+* **player:** Fixed callback to autoplay workflow based on iOS and Safari policies to autoplay on mute ([07ca4bf](https://github.com/openplayerjs/openplayerjs/commit/07ca4bf))
+* **player:** Removed resetting of `autoplay` and expand conditional to test if HLS.js needs to be loaded ([2cda30d](https://github.com/openplayerjs/openplayerjs/commit/2cda30d))
+
+
+
 ## [1.14.3](https://github.com/openplayerjs/openplayerjs/compare/v1.14.2...v1.14.3) (2019-12-18)
 
 
