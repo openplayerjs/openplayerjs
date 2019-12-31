@@ -21,7 +21,7 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 * **Enhance player controls**: You can add your own buttons (see example above).
 * **Accessibility is a priority**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See [High Contrast Proof CSS Sprites](https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/) for more details.
 * **Always up-to-date**: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.
-* **Smart `autoplay`**: Special algorithm to detect browser's autoplay capabilities.
+* **Smart autoplay algorithm**: Have you ever worried to know if your browser will autoplay media correctly? Forget about it! With OpenPlayerJS, we run a simple but yet powerful algorithm to check your browser's `autoplay` capabilities.
 * **Responsive**: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 * Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 * **No dependencies**, since this player is written in Typescript.
@@ -78,6 +78,25 @@ var openplayer = require('/path/to/openplayerjs');
 
 // or importing the library (ES6)
 import OpenPlayer from 'openplayerjs';
+```
+
+### Adding Closed Captions
+
+OpenPlayer supports the use of VTT closed captions by adding the `track` tag as indicated in the following snippet; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed:
+
+```html
+<html>
+    <head>
+        <link rel="stylesheet" href="/path/to/openplayer.css">
+    </head>
+    <body>
+        <video class="op-player op-player__media" controls playsinline>
+            <source src="/path/to/video.mp4" type="video/mp4">
+            <track kind="subtitles" src="/path/to/video.vtt" srclang="en" label="English">
+        </video>
+        <script src="/path/to/openplayer.js"></script>
+    </body>
+</html>
 ```
 
 ## Usage with Javascript
