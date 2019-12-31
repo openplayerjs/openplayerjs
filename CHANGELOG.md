@@ -1,3 +1,20 @@
+## [1.14.5](https://github.com/openplayerjs/openplayerjs/compare/v1.14.4...v1.14.5) (2019-12-31)
+
+
+### Bug Fixes
+
+* **captions:** Added missing workflow to check if hours were present in closed captions time codes; updated README file to indicate how to integrate closed captioning ([66553ea](https://github.com/openplayerjs/openplayerjs/commit/66553ea))
+
+<a name="1.14.5"></a>
+## [1.14.5](https://github.com/openplayerjs/openplayerjs/compare/v1.14.4...v1.14.5) (2019-12-31)
+
+
+### Bug Fixes
+
+* **captions:** Added missing workflow to check if hours were present in closed captions time codes; updated README file to indicate how to integrate closed captioning ([66553ea](https://github.com/openplayerjs/openplayerjs/commit/66553ea))
+
+
+
 ## [1.14.4](https://github.com/openplayerjs/openplayerjs/compare/v1.14.3...v1.14.4) (2019-12-29)
 
 

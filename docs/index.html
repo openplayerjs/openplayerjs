@@ -85,7 +85,7 @@
 					<li><strong>Enhance player controls</strong>: You can add your own buttons (see example above).</li>
 					<li><strong>Accessibility is a priority</strong>: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See <a href="https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/">High Contrast Proof CSS Sprites</a> for more details.</li>
 					<li><strong>Always up-to-date</strong>: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, <a href="https://github.com/video-dev/hls.js/">hls.js</a> and <a href="https://github.com/Dash-Industry-Forum/dash.js/">dash.js</a> use <strong>even-green paths</strong> from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.</li>
-					<li><strong>Smart <code>autoplay</code></strong>: Special algorithm to detect browser&#39;s autoplay capabilities.</li>
+					<li><strong>Smart autoplay algorithm</strong>: Have you ever worried to know if your browser will autoplay media correctly? Forget about it! With OpenPlayerJS, we run a simple but yet powerful algorithm to check your browser&#39;s <code>autoplay</code> capabilities.</li>
 					<li><strong>Responsive</strong>: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new <strong><code>fill</code></strong> mode is also included to scale and crop media relative to its parent container.</li>
 					<li>Support for <strong>local and remote captions</strong> for <strong>both video and audio</strong>, even without including the <code>crossorigin</code> attribute.</li>
 					<li><strong>No dependencies</strong>, since this player is written in Typescript.</li>
@@ -130,6 +130,22 @@
 
 <span class="hljs-comment">// or importing the library (ES6)</span>
 <span class="hljs-keyword">import</span> OpenPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'openplayerjs'</span>;</code></pre>
+				<a href="#adding-closed-captions" id="adding-closed-captions" style="color: inherit; text-decoration: none;">
+					<h3>Adding Closed Captions</h3>
+				</a>
+				<p>OpenPlayer supports the use of VTT closed captions by adding the <code>track</code> tag as indicated in the following snippet; you can also use the <code>default</code> attribute in the tag, but as a rule of thumb, all the attributes displayed below in the <code>track</code> tag <strong>MUST</strong> be there; otherwise, closed captions won&#39;t be displayed:</p>
+				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"/path/to/openplayer.css"</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">video</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"op-player op-player__media"</span> <span class="hljs-attr">controls</span> <span class="hljs-attr">playsinline</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">source</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/path/to/video.mp4"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"video/mp4"</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">track</span> <span class="hljs-attr">kind</span>=<span class="hljs-string">"subtitles"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/path/to/video.vtt"</span> <span class="hljs-attr">srclang</span>=<span class="hljs-string">"en"</span> <span class="hljs-attr">label</span>=<span class="hljs-string">"English"</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">video</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/path/to/openplayer.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></code></pre>
 				<a href="#usage-with-javascript" id="usage-with-javascript" style="color: inherit; text-decoration: none;">
 					<h2>Usage with Javascript</h2>
 				</a>
