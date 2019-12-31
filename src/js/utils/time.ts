@@ -26,8 +26,15 @@ export function formatTime(seconds: number, frameRate?: number) {
  */
 export function timeToSeconds(timecode: string) {
     const time = timecode.replace(/;/g, ':').split(':');
-    let seconds = parseFloat(time[0]) * 60 * 60;
-    seconds += parseFloat(time[1]) * 60;
-    seconds += parseFloat(time[2]);
+    let seconds = 0;
+    // Hours found; use different calculation
+    if (time.length === 3) {
+        seconds += parseFloat(time[0]) * 60 * 60;
+        seconds += parseFloat(time[1]) * 60;
+        seconds += parseFloat(time[2]);
+    } else {
+        seconds += parseFloat(time[0]) * 60;
+        seconds += parseFloat(time[1]);
+    }
     return seconds;
 }

@@ -1320,9 +1320,17 @@ exports.formatTime = formatTime;
 
 function timeToSeconds(timecode) {
   var time = timecode.replace(/;/g, ':').split(':');
-  var seconds = parseFloat(time[0]) * 60 * 60;
-  seconds += parseFloat(time[1]) * 60;
-  seconds += parseFloat(time[2]);
+  var seconds = 0;
+
+  if (time.length === 3) {
+    seconds += parseFloat(time[0]) * 60 * 60;
+    seconds += parseFloat(time[1]) * 60;
+    seconds += parseFloat(time[2]);
+  } else {
+    seconds += parseFloat(time[0]) * 60;
+    seconds += parseFloat(time[1]);
+  }
+
   return seconds;
 }
 
@@ -5067,7 +5075,7 @@ var Captions = function () {
 
           var trackUrl = general_1.getAbsoluteUrl(element.src);
 
-          if (_this.trackList[i].language === element.srclang) {
+          if (_this.trackList[i] && _this.trackList[i].language === element.srclang) {
             if (_this.trackList[i].cues && _this.trackList[i].cues.length) {
               _this.tracks[element.srclang] = _this._getNativeCues(_this.trackList[i]);
 
@@ -5155,6 +5163,10 @@ var Captions = function () {
             button.classList.remove('op-controls__captions--on');
             button.setAttribute('data-active-captions', 'off');
           } else {
+            if (!_this.current) {
+              _this.current = _this.trackList[0];
+            }
+
             _this._show();
 
             button.classList.add('op-controls__captions--on');

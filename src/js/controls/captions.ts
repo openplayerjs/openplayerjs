@@ -239,7 +239,7 @@ class Captions implements PlayerComponent {
                     this.button.setAttribute('data-active-captions', element.srclang);
                 }
                 const trackUrl = getAbsoluteUrl(element.src);
-                if (this.trackList[i].language === element.srclang) {
+                if (this.trackList[i] && this.trackList[i].language === element.srclang) {
                     if (this.trackList[i].cues && this.trackList[i].cues.length) {
                         this.tracks[element.srclang] = this._getNativeCues(this.trackList[i]);
                         this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
@@ -317,6 +317,9 @@ class Captions implements PlayerComponent {
                     button.classList.remove('op-controls__captions--on');
                     button.setAttribute('data-active-captions', 'off');
                 } else {
+                    if (!this.current) {
+                        this.current = this.trackList[0];
+                    }
                     this._show();
                     button.classList.add('op-controls__captions--on');
                     button.setAttribute('data-active-captions', this.current.language);
