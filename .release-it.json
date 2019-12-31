@@ -1,6 +1,8 @@
 {
+    "hooks": {
+        "after:bump": "conventional-changelog -p angular -i CHANGELOG.md -s"
+    },
     "scripts": {
-        "afterBump": "conventional-changelog -p angular -i CHANGELOG.md -s",
         "changelog": "conventional-changelog -p angular | tail -n +3"
     },
     "plugins": {
