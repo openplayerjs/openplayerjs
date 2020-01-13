@@ -618,8 +618,12 @@
 .op-player video::-webkit-media-text-track-container {
     display: none !important;
 }
+.op-player.op-player__ios--iphone video::-webkit-media-controls,
 .op-player.op-player__ios--iphone video::-webkit-media-text-track-container {
     display: block !important;
+}
+.op-fullscreen-native .op-captions {
+    display: none !important;
 }
 
 /* == Captions =============== */
@@ -791,10 +795,4 @@ video:-webkit-media-text-track-display {
 /* === Device-specific rules ========= */
 .op-player__ios--iphone .op-player__play {
     margin-top: -5px;
-}
-.op-player__ios--iphone .op-controls {
-    display: none;
-}
-.op-player__ios--iphone.op-ads--active .op-controls {
-    display: block;
 }

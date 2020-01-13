@@ -4,3 +4,4 @@ ts-dist/
 .idea/
 coverage/
 .history/
+.DS_Store
