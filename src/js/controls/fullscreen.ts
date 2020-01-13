@@ -170,7 +170,7 @@ class Fullscreen implements PlayerComponent {
             this.player.getElement().addEventListener('webkitbeginfullscreen', () => {
                 this.isFullscreen = true;
                 this._setFullscreenData(true);
-                document.body.classList.add('op-fullscreen__on', 'op-fullscreen-native');
+                document.body.classList.add('op-fullscreen__on');
             });
             this.player.getElement().addEventListener('webkitendfullscreen', () => {
                 this.isFullscreen = false;

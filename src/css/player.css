@@ -618,13 +618,6 @@
 .op-player video::-webkit-media-text-track-container {
     display: none !important;
 }
-.op-player.op-player__ios--iphone video::-webkit-media-controls,
-.op-player.op-player__ios--iphone video::-webkit-media-text-track-container {
-    display: block !important;
-}
-.op-fullscreen-native .op-captions {
-    display: none !important;
-}
 
 /* == Captions =============== */
 .op-captions {
@@ -795,4 +788,22 @@ video:-webkit-media-text-track-display {
 /* === Device-specific rules ========= */
 .op-player__ios--iphone .op-player__play {
     margin-top: -5px;
+}
+.op-player.op-player__ios--iphone video::-webkit-media-controls,
+.op-player.op-player__ios--iphone video::-webkit-media-text-track-container {
+    display: block !important;
+}
+.op-player.op-player__ios--iphone video::cue {
+    color: transparent;
+    font-size: 0.001px;
+}
+.op-player.op-player__ios--iphone video::-webkit-media-text-track-display-backdrop {
+    background: transparent !important;
+}
+.op-player[data-fullscreen='true'].op-player__ios--iphone video::cue {
+    color: #fff;
+    font-size: initial;
+}
+.op-player[data-fullscreen='true'].op-player.op-player__ios--iphone video::-webkit-media-text-track-display-backdrop {
+    background: rgba(0, 0, 0, 0.498039) !important;
 }
