@@ -880,6 +880,7 @@ class Player {
                     const action = IS_IOS || IS_ANDROID ? this.options.labels.tap : this.options.labels.click;
                     volumeEl.className = 'op-player__unmute';
                     volumeEl.innerHTML = `<span>${action}</span>`;
+                    volumeEl.tabIndex = 0;
 
                     volumeEl.addEventListener('click', () => {
                         this.activeElement().muted = false;
