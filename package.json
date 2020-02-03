@@ -57,7 +57,7 @@
     "eslint-loader": "^3.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.15.1",
+    "eslint-plugin-react": "^7.18.3",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^5.0.0",
     "karma": "^4.3.0",
