@@ -8479,12 +8479,6 @@ var Ads = function () {
             this.element.parentElement.classList.remove('op-ads--active');
             this.adsActive = false;
             clearInterval(this.intervalTimer);
-
-            if (this.element.currentTime >= this.element.duration) {
-              this.destroy();
-              var endedEvent = events_1.addEvent('ended');
-              this.element.dispatchEvent(endedEvent);
-            }
           }
 
           break;
@@ -8506,9 +8500,8 @@ var Ads = function () {
             this.destroy();
 
             if (this.element.currentTime >= this.element.duration) {
-              var _endedEvent = events_1.addEvent('ended');
-
-              this.element.dispatchEvent(_endedEvent);
+              var endedEvent = events_1.addEvent('ended');
+              this.element.dispatchEvent(endedEvent);
             }
           }
 
@@ -8657,15 +8650,20 @@ var Ads = function () {
   }, {
     key: "_loadedMetadataHandler",
     value: function _loadedMetadataHandler() {
-      if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length - 1) {
-        this.adsManager.destroy();
-        this.adsLoader.contentComplete();
+      if (Array.isArray(this.ads)) {
         this.currentAdsIndex++;
-        this.playTriggered = true;
-        this.adsStarted = true;
-        this.adsDone = false;
 
-        this._requestAds();
+        if (this.currentAdsIndex <= this.ads.length - 1) {
+          this.adsManager.destroy();
+          this.adsLoader.contentComplete();
+          this.playTriggered = true;
+          this.adsStarted = true;
+          this.adsDone = false;
+
+          this._requestAds();
+        } else {
+          this._prepareMedia();
+        }
       } else if (this.element.seekable.length) {
         if (this.element.seekable.end(0) > this.lastTimePaused) {
           this._prepareMedia();

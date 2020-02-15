@@ -628,11 +628,6 @@ class Ads {
                     this.element.parentElement.classList.remove('op-ads--active');
                     this.adsActive = false;
                     clearInterval(this.intervalTimer);
-                    if (this.element.currentTime >= this.element.duration) {
-                        this.destroy();
-                        const endedEvent = addEvent('ended');
-                        this.element.dispatchEvent(endedEvent);
-                    }
                 }
                 break;
             case google.ima.AdEvent.Type.VOLUME_CHANGED:
@@ -681,6 +676,7 @@ class Ads {
         };
         const errorEvent = addEvent('playererror', details);
         this.element.dispatchEvent(errorEvent);
+
         if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length - 1) {
             if (this.currentAdsIndex < this.ads.length - 1) {
                 this.currentAdsIndex++;
@@ -852,14 +848,18 @@ class Ads {
      * @memberof Ads
      */
     private _loadedMetadataHandler() {
-        if (Array.isArray(this.ads) && this.currentAdsIndex <= this.ads.length - 1) {
-            this.adsManager.destroy();
-            this.adsLoader.contentComplete();
+        if (Array.isArray(this.ads)) {
             this.currentAdsIndex++;
-            this.playTriggered = true;
-            this.adsStarted = true;
-            this.adsDone = false;
-            this._requestAds();
+            if (this.currentAdsIndex <= this.ads.length - 1) {
+                this.adsManager.destroy();
+                this.adsLoader.contentComplete();
+                this.playTriggered = true;
+                this.adsStarted = true;
+                this.adsDone = false;
+                this._requestAds();
+            } else {
+                this._prepareMedia();
+            }
         } else if (this.element.seekable.length) {
             if (this.element.seekable.end(0) > this.lastTimePaused) {
                 this._prepareMedia();
@@ -889,14 +889,16 @@ class Ads {
         };
 
         const waitPromise = (ms: number, isReject: boolean) => new Promise((resolve, reject) => {
-            if (isReject) { return reject(); }
+            if (isReject) {
+                return reject();
+            }
 
             setTimeout(resolve, ms);
         });
 
         waitPromise(50, this.media.ended)
             .then(() => this.media.play().then(() => triggerEvent('play'))
-                .catch(() => triggerEvent('ended')));
+            .catch(() => triggerEvent('ended')));
 
     }
 
