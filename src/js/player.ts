@@ -275,6 +275,7 @@ class Player {
             volumeSlider: 'Volume Slider',
         },
         onError: () => { },
+        showLiveProgress: false,
         showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,

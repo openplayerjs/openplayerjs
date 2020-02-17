@@ -157,7 +157,11 @@ class Time implements PlayerComponent {
                     this.delimiter.setAttribute('aria-hidden', 'false');
                 }
                 this.current.innerText = formatTime(el.currentTime);
-            } else if (this.duration.getAttribute('aria-hidden') === 'false') {
+            } else if (this.player.getOptions().showLiveProgress) {
+                this.duration.setAttribute('aria-hidden', 'true');
+                this.delimiter.setAttribute('aria-hidden', 'true');
+                this.current.innerText = formatTime(el.currentTime);
+            } else if (!this.player.getOptions().showLiveProgress && this.duration.getAttribute('aria-hidden') === 'false') {
                 this.duration.setAttribute('aria-hidden', 'true');
                 this.delimiter.setAttribute('aria-hidden', 'true');
                 this.current.innerText = this.labels.live;

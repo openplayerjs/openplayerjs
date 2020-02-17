@@ -186,6 +186,12 @@ class Progress implements PlayerComponent {
                 const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
                 this.progress.setAttribute('aria-valuemax', el.duration.toString());
+            } else if (this.player.getOptions().showLiveProgress) {
+                this.slider.setAttribute('max', '1');
+                this.slider.value = '1';
+                this.slider.style.backgroundSize = '100% 100%';
+                this.played.value = 1;
+                this.progress.setAttribute('aria-valuemax', '1');
             } else {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
@@ -204,7 +210,7 @@ class Progress implements PlayerComponent {
                         }
                     }
                 }
-            } else if (this.progress.getAttribute('aria-hidden') === 'false') {
+            } else if (!this.player.getOptions().showLiveProgress && this.progress.getAttribute('aria-hidden') === 'false') {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
         };
@@ -224,7 +230,8 @@ class Progress implements PlayerComponent {
         };
         this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+            if (el.duration !== Infinity &&
+                (!this.player.getElement().getAttribute('op-live') || this.player.getOptions().showLiveProgress)) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
                     parseFloat(this.slider.getAttribute('max')) !== el.duration) {
                     this.slider.setAttribute('max', `${el.duration}`);
@@ -242,7 +249,7 @@ class Progress implements PlayerComponent {
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
                     0 : ((current / el.duration) * 100);
-            } else if (this.progress.getAttribute('aria-hidden') === 'false') {
+            } else if (!this.player.getOptions().showLiveProgress && this.progress.getAttribute('aria-hidden') === 'false') {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
         };
