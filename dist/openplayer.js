@@ -1529,6 +1529,7 @@ var Player = function () {
         volumeSlider: 'Volume Slider'
       },
       onError: function onError() {},
+      showLiveProgress: false,
       showLoaderOnInit: false,
       startTime: 0,
       startVolume: 1,
@@ -6348,6 +6349,14 @@ var Progress = function () {
           _this.slider.value = current.toString();
 
           _this.progress.setAttribute('aria-valuemax', el.duration.toString());
+        } else if (_this.player.getOptions().showLiveProgress) {
+          _this.slider.setAttribute('max', '1');
+
+          _this.slider.value = '1';
+          _this.slider.style.backgroundSize = '100% 100%';
+          _this.played.value = 1;
+
+          _this.progress.setAttribute('aria-valuemax', '1');
         } else {
           _this.progress.setAttribute('aria-hidden', 'true');
         }
@@ -6368,7 +6377,7 @@ var Progress = function () {
               }
             }
           }
-        } else if (_this.progress.getAttribute('aria-hidden') === 'false') {
+        } else if (!_this.player.getOptions().showLiveProgress && _this.progress.getAttribute('aria-hidden') === 'false') {
           _this.progress.setAttribute('aria-hidden', 'true');
         }
       };
@@ -6396,7 +6405,7 @@ var Progress = function () {
       this.events.media.timeupdate = function () {
         var el = _this.player.activeElement();
 
-        if (el.duration !== Infinity && !_this.player.getElement().getAttribute('op-live')) {
+        if (el.duration !== Infinity && (!_this.player.getElement().getAttribute('op-live') || _this.player.getOptions().showLiveProgress)) {
           if (!_this.slider.getAttribute('max') || _this.slider.getAttribute('max') === '0' || parseFloat(_this.slider.getAttribute('max')) !== el.duration) {
             _this.slider.setAttribute('max', "".concat(el.duration));
           }
@@ -6407,7 +6416,7 @@ var Progress = function () {
           _this.slider.value = current.toString();
           _this.slider.style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
           _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : current / el.duration * 100;
-        } else if (_this.progress.getAttribute('aria-hidden') === 'false') {
+        } else if (!_this.player.getOptions().showLiveProgress && _this.progress.getAttribute('aria-hidden') === 'false') {
           _this.progress.setAttribute('aria-hidden', 'true');
         }
       };
@@ -6963,7 +6972,13 @@ var Time = function () {
           }
 
           _this.current.innerText = time_1.formatTime(el.currentTime);
-        } else if (_this.duration.getAttribute('aria-hidden') === 'false') {
+        } else if (_this.player.getOptions().showLiveProgress) {
+          _this.duration.setAttribute('aria-hidden', 'true');
+
+          _this.delimiter.setAttribute('aria-hidden', 'true');
+
+          _this.current.innerText = time_1.formatTime(el.currentTime);
+        } else if (!_this.player.getOptions().showLiveProgress && _this.duration.getAttribute('aria-hidden') === 'false') {
           _this.duration.setAttribute('aria-hidden', 'true');
 
           _this.delimiter.setAttribute('aria-hidden', 'true');
