@@ -8,8 +8,6 @@ import 'custom-event-polyfill';
 import * as deepmerge from 'deepmerge';
 import 'element-closest/browser';
 import 'element-remove';
-import 'global/document';
-import 'global/window';
 
 import Controls from './controls';
 import Track from './interfaces/captions/track';
