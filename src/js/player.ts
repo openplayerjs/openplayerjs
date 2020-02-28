@@ -929,5 +929,5 @@ export default Player;
 // Expose element globally.
 if (typeof window !== 'undefined') {
     (window as any).OpenPlayer = Player;
+    Player.init();
 }
-Player.init();
