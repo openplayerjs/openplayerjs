@@ -2087,7 +2087,11 @@ Player.customMedia = {
   rules: []
 };
 exports["default"] = Player;
-window.OpenPlayer = Player;
+
+if (typeof window !== 'undefined') {
+  window.OpenPlayer = Player;
+}
+
 Player.init();
 
 /***/ }),
