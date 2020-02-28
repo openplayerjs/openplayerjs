@@ -425,7 +425,7 @@ exports.IS_CHROME = exports.UA ? /chrome/i.test(exports.UA) : false;
 exports.IS_FIREFOX = exports.UA ? /firefox/i.test(exports.UA) : false;
 exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROME : false;
 exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
-exports.HAS_MSE = window ? 'MediaSource' in window : false;
+exports.HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
 
 exports.SUPPORTS_HLS = function () {
   if (typeof window === 'undefined') {
