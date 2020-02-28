@@ -86,7 +86,6 @@
     "custom-event-polyfill": "^1.0.7",
     "deepmerge": "^4.2.0",
     "element-closest": "^3.0.1",
-    "element-remove": "^1.0.4",
     "global": "^4.4.0"
   }
 }

@@ -12,7 +12,7 @@ import EventsList from './interfaces/events-list';
 import Player from './player';
 import { IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
-import { isVideo } from './utils/general';
+import { isVideo, removeElement } from './utils/general';
 
 /**
  * Controls element.
@@ -221,7 +221,7 @@ class Controls implements PlayerComponent {
             });
         });
 
-        this.controls.remove();
+        removeElement(this.controls);
     }
 
     /**
@@ -245,15 +245,17 @@ class Controls implements PlayerComponent {
         const el = this.player.activeElement();
         this._stopControlTimer();
 
-        this.timer = window.setTimeout(() => {
-            if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
-                this.player.getContainer().classList.add('op-controls--hidden');
-                this.player.playBtn.setAttribute('aria-hidden', 'true');
-                this._stopControlTimer();
-                const event = addEvent('controlshidden');
-                this.player.getElement().dispatchEvent(event);
-            }
-        }, time);
+        if (typeof window !== 'undefined') {
+            this.timer = window.setTimeout(() => {
+                if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
+                    this.player.getContainer().classList.add('op-controls--hidden');
+                    this.player.playBtn.setAttribute('aria-hidden', 'true');
+                    this._stopControlTimer();
+                    const event = addEvent('controlshidden');
+                    this.player.getElement().dispatchEvent(event);
+                }
+            }, time);
+        }
     }
 
     /**
@@ -390,7 +392,7 @@ class Controls implements PlayerComponent {
         const key = item.title.toLowerCase().replace(' ', '-');
         const control = this.getContainer().querySelector(`.op-controls__${key}`);
         control.removeEventListener('click', item.click);
-        control.remove();
+        removeElement(control);
     }
 }
 

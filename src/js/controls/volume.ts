@@ -3,7 +3,7 @@ import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { isAudio } from '../utils/general';
+import { isAudio, removeElement } from '../utils/general';
 
 /**
  * Volume controller element.
@@ -208,7 +208,7 @@ class Volume implements PlayerComponent {
             el.muted = (el.volume === 0);
             this.volume = value;
             if (!el.muted && this.player.getContainer().querySelector('.op-player__unmute')) {
-                this.player.getContainer().querySelector('.op-player__unmute').remove();
+                removeElement(this.player.getContainer().querySelector('.op-player__unmute'));
             }
             const e = addEvent('volumechange');
             this.player.getElement().dispatchEvent(e);
@@ -292,9 +292,9 @@ class Volume implements PlayerComponent {
 
         this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
 
-        this.slider.remove();
-        this.display.remove();
-        this.container.remove();
+        removeElement(this.slider);
+        removeElement(this.display);
+        removeElement(this.container);
     }
 
     /**

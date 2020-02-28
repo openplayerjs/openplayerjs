@@ -2,7 +2,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
-import { hasClass, offset } from '../utils/general';
+import { hasClass, offset, removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 
 /**
@@ -414,13 +414,13 @@ class Progress implements PlayerComponent {
         this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
         this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
 
-        this.buffer.remove();
-        this.played.remove();
-        this.slider.remove();
+        removeElement(this.buffer);
+        removeElement(this.played);
+        removeElement(this.slider);
         if (!IS_IOS && !IS_ANDROID) {
-            this.tooltip.remove();
+            removeElement(this.tooltip);
         }
-        this.progress.remove();
+        removeElement(this.progress);
     }
 
     /**
