@@ -412,22 +412,26 @@ module.exports = function (exec) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.NAV = window.navigator;
-exports.UA = exports.NAV.userAgent.toLowerCase();
-exports.IS_IPAD = /ipad/i.test(exports.UA) && !window.MSStream;
-exports.IS_IPHONE = /iphone/i.test(exports.UA) && !window.MSStream;
-exports.IS_IPOD = /ipod/i.test(exports.UA) && !window.MSStream;
-exports.IS_IOS = /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream;
-exports.IS_ANDROID = /android/i.test(exports.UA);
-exports.IS_IE = /(trident|microsoft)/i.test(exports.NAV.appName);
-exports.IS_EDGE = 'msLaunchUri' in exports.NAV && !('documentMode' in document);
-exports.IS_CHROME = /chrome/i.test(exports.UA);
-exports.IS_FIREFOX = /firefox/i.test(exports.UA);
-exports.IS_SAFARI = /safari/i.test(exports.UA) && !exports.IS_CHROME;
-exports.IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA);
-exports.HAS_MSE = 'MediaSource' in window;
+exports.NAV = typeof window !== 'undefined' ? window.navigator : null;
+exports.UA = exports.NAV ? exports.NAV.userAgent.toLowerCase() : null;
+exports.IS_IPAD = exports.UA ? /ipad/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPHONE = exports.UA ? /iphone/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPOD = exports.UA ? /ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IOS = exports.UA ? /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_ANDROID = exports.UA ? /android/i.test(exports.UA) : false;
+exports.IS_IE = exports.UA ? /(trident|microsoft)/i.test(exports.NAV.appName) : false;
+exports.IS_EDGE = exports.NAV ? 'msLaunchUri' in exports.NAV && !('documentMode' in document) : false;
+exports.IS_CHROME = exports.UA ? /chrome/i.test(exports.UA) : false;
+exports.IS_FIREFOX = exports.UA ? /firefox/i.test(exports.UA) : false;
+exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROME : false;
+exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
+exports.HAS_MSE = window ? 'MediaSource' in window : false;
 
 exports.SUPPORTS_HLS = function () {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
   var mediaSource = window.MediaSource || window.WebKitMediaSource;
   var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
   var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
