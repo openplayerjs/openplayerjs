@@ -44,13 +44,9 @@
     "babili-webpack-plugin": "^0.1.2",
     "chai": "^4.2.0",
     "conventional-changelog": "^3.1.10",
-    "core-js": "^3.4.8",
     "coveralls": "^3.0.6",
     "css-loader": "^3.4.0",
     "cssnano": "^4.1.10",
-    "custom-event-polyfill": "^1.0.7",
-    "element-closest": "^3.0.1",
-    "element-remove": "^1.0.4",
     "eslint": "^6.4.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-airbnb-base": "^14.0.0",
@@ -86,7 +82,11 @@
     "webpack-cli": "^3.3.9"
   },
   "dependencies": {
+    "core-js": "^3.4.8",
+    "custom-event-polyfill": "^1.0.7",
     "deepmerge": "^4.2.0",
+    "element-closest": "^3.0.1",
+    "element-remove": "^1.0.4",
     "global": "^4.4.0"
   }
 }

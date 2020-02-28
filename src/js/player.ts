@@ -4,7 +4,6 @@ import 'core-js/features/object/assign';
 import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
-import 'custom-event-polyfill';
 import * as deepmerge from 'deepmerge';
 import 'element-closest/browser';
 import 'element-remove';
