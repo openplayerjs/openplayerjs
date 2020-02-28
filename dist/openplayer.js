@@ -2090,9 +2090,8 @@ exports["default"] = Player;
 
 if (typeof window !== 'undefined') {
   window.OpenPlayer = Player;
+  Player.init();
 }
-
-Player.init();
 
 /***/ }),
 /* 49 */
