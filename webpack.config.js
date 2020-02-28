@@ -122,7 +122,7 @@ module.exports = {
             cssProcessor: require('cssnano')
         }),
         new webpack.ProvidePlugin({
-            window: 'global',
+            window: 'global/window',
             document: 'global/document'
         }),
     ]
