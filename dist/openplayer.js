@@ -4592,9 +4592,46 @@ module.exports = deepmerge_1;
 
 /***/ }),
 /* 128 */
-/***/ (function(module, exports) {
+/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
-!function(e){var t=e.Element.prototype;"function"!=typeof t.matches&&(t.matches=t.msMatchesSelector||t.mozMatchesSelector||t.webkitMatchesSelector||function(e){for(var t=(this.document||this.ownerDocument).querySelectorAll(e),o=0;t[o]&&t[o]!==this;)++o;return Boolean(t[o])}),"function"!=typeof t.closest&&(t.closest=function(e){for(var t=this;t&&1===t.nodeType;){if(t.matches(e))return t;t=t.parentNode}return null})}(window);
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function polyfill(window) {
+  const ElementPrototype = window.Element.prototype;
+
+  if (typeof ElementPrototype.matches !== 'function') {
+    ElementPrototype.matches = ElementPrototype.msMatchesSelector || ElementPrototype.mozMatchesSelector || ElementPrototype.webkitMatchesSelector || function matches(selector) {
+      let element = this;
+      const elements = (element.document || element.ownerDocument).querySelectorAll(selector);
+      let index = 0;
+
+      while (elements[index] && elements[index] !== element) {
+        ++index;
+      }
+
+      return Boolean(elements[index]);
+    };
+  }
+
+  if (typeof ElementPrototype.closest !== 'function') {
+    ElementPrototype.closest = function closest(selector) {
+      let element = this;
+
+      while (element && element.nodeType === 1) {
+        if (element.matches(selector)) {
+          return element;
+        }
+
+        element = element.parentNode;
+      }
+
+      return null;
+    };
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (polyfill);
+//# sourceMappingURL=index.mjs.map
 
 
 /***/ }),
