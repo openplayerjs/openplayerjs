@@ -1,6 +1,7 @@
 import PlayerComponent from '../interfaces/component';
 import Player from '../player';
 import { IS_IPHONE } from '../utils/constants';
+import { removeElement } from '../utils/general';
 
 /**
  * Fullscreen element.
@@ -204,7 +205,7 @@ class Fullscreen implements PlayerComponent {
             });
         }
         this.button.removeEventListener('click', this.clickEvent.bind(this));
-        this.button.remove();
+        removeElement(this.button);
     }
 
     /**

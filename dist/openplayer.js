@@ -179,12 +179,12 @@ function loadScript(url) {
     script.async = true;
 
     script.onload = function () {
-      script.remove();
+      removeElement(script);
       resolve();
     };
 
     script.onerror = function () {
-      script.remove();
+      removeElement(script);
       reject();
     };
 
@@ -193,6 +193,18 @@ function loadScript(url) {
 }
 
 exports.loadScript = loadScript;
+
+function removeElement(node) {
+  if (node) {
+    var parentNode = node.parentNode;
+
+    if (parentNode) {
+      parentNode.removeChild(node);
+    }
+  }
+}
+
+exports.removeElement = removeElement;
 
 function request(url, dataType, success, error) {
   var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -1468,13 +1480,11 @@ var deepmerge = __webpack_require__(127);
 
 __webpack_require__(128);
 
-__webpack_require__(129);
+var controls_1 = __webpack_require__(129);
 
-var controls_1 = __webpack_require__(130);
+var media_1 = __webpack_require__(138);
 
-var media_1 = __webpack_require__(139);
-
-var ads_1 = __webpack_require__(143);
+var ads_1 = __webpack_require__(142);
 
 var constants_1 = __webpack_require__(5);
 
@@ -1624,8 +1634,8 @@ var Player = function () {
       this.controls.destroy();
 
       if (general_1.isVideo(this.element)) {
-        this.playBtn.remove();
-        this.loader.remove();
+        general_1.removeElement(this.playBtn);
+        general_1.removeElement(this.loader);
       }
 
       el.controls = true;
@@ -1999,7 +2009,7 @@ var Player = function () {
 
               _this4.element.dispatchEvent(event);
 
-              volumeEl.remove();
+              general_1.removeElement(volumeEl);
             });
 
             var target = _this4.getContainer();
@@ -4636,27 +4646,6 @@ function polyfill(window) {
 
 /***/ }),
 /* 129 */
-/***/ (function(module, exports) {
-
-(function (arr) {
-  arr.forEach(function (item) {
-    if (item.hasOwnProperty('remove')) {
-      return;
-    }
-    Object.defineProperty(item, 'remove', {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function remove() {
-        this.parentNode && this.parentNode.removeChild(this);
-      }
-    });
-  });
-})([Element.prototype, CharacterData.prototype, DocumentType.prototype].filter(Boolean));
-
-
-/***/ }),
-/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4672,21 +4661,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var captions_1 = __webpack_require__(131);
+var captions_1 = __webpack_require__(130);
 
-var fullscreen_1 = __webpack_require__(132);
+var fullscreen_1 = __webpack_require__(131);
 
-var levels_1 = __webpack_require__(133);
+var levels_1 = __webpack_require__(132);
 
-var play_1 = __webpack_require__(134);
+var play_1 = __webpack_require__(133);
 
-var progress_1 = __webpack_require__(135);
+var progress_1 = __webpack_require__(134);
 
-var settings_1 = __webpack_require__(136);
+var settings_1 = __webpack_require__(135);
 
-var time_1 = __webpack_require__(137);
+var time_1 = __webpack_require__(136);
 
-var volume_1 = __webpack_require__(138);
+var volume_1 = __webpack_require__(137);
 
 var constants_1 = __webpack_require__(5);
 
@@ -4841,7 +4830,7 @@ var Controls = function () {
           }
         });
       });
-      this.controls.remove();
+      general_1.removeElement(this.controls);
     }
   }, {
     key: "getContainer",
@@ -4857,19 +4846,21 @@ var Controls = function () {
 
       this._stopControlTimer();
 
-      this.timer = window.setTimeout(function () {
-        if ((!el.paused || !el.ended) && general_1.isVideo(_this3.player.getElement())) {
-          _this3.player.getContainer().classList.add('op-controls--hidden');
+      if (typeof window !== 'undefined') {
+        this.timer = window.setTimeout(function () {
+          if ((!el.paused || !el.ended) && general_1.isVideo(_this3.player.getElement())) {
+            _this3.player.getContainer().classList.add('op-controls--hidden');
 
-          _this3.player.playBtn.setAttribute('aria-hidden', 'true');
+            _this3.player.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3._stopControlTimer();
+            _this3._stopControlTimer();
 
-          var event = events_1.addEvent('controlshidden');
+            var event = events_1.addEvent('controlshidden');
 
-          _this3.player.getElement().dispatchEvent(event);
-        }
-      }, time);
+            _this3.player.getElement().dispatchEvent(event);
+          }
+        }, time);
+      }
     }
   }, {
     key: "_stopControlTimer",
@@ -4967,7 +4958,7 @@ var Controls = function () {
       var key = item.title.toLowerCase().replace(' ', '-');
       var control = this.getContainer().querySelector(".op-controls__".concat(key));
       control.removeEventListener('click', item.click);
-      control.remove();
+      general_1.removeElement(control);
     }
   }]);
 
@@ -4977,7 +4968,7 @@ var Controls = function () {
 exports["default"] = Controls;
 
 /***/ }),
-/* 131 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5298,12 +5289,12 @@ var Captions = function () {
           this.menu.removeEventListener('mouseover', this.events.button.mouseover);
           this.menu.removeEventListener('mouseout', this.events.button.mouseout);
           this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
-          this.menu.remove();
+          general_1.removeElement(this.menu);
         }
 
         this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
-        this.button.remove();
-        this.captions.remove();
+        general_1.removeElement(this.button);
+        general_1.removeElement(this.captions);
       }
     }
   }, {
@@ -5452,7 +5443,7 @@ var Captions = function () {
       var i = scripts.length;
 
       while (i--) {
-        scripts[i].remove();
+        general_1.removeElement(scripts[i]);
       }
 
       var allElements = div.getElementsByTagName('*');
@@ -5463,7 +5454,7 @@ var Captions = function () {
 
         for (var j = 0, total = attributes.length; j < total; j++) {
           if (/^(on|javascript:)/.test(attributes[j].name)) {
-            allElements[index].remove();
+            general_1.removeElement(allElements[index]);
           } else if (attributes[j].name === 'style') {
             allElements[index].removeAttribute(attributes[j].name);
           }
@@ -5531,7 +5522,7 @@ var Captions = function () {
 exports["default"] = Captions;
 
 /***/ }),
-/* 132 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5548,6 +5539,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var constants_1 = __webpack_require__(5);
+
+var general_1 = __webpack_require__(2);
 
 var Fullscreen = function () {
   function Fullscreen(player, position) {
@@ -5639,7 +5632,7 @@ var Fullscreen = function () {
       }
 
       this.button.removeEventListener('click', this.clickEvent.bind(this));
-      this.button.remove();
+      general_1.removeElement(this.button);
     }
   }, {
     key: "toggleFullscreen",
@@ -5743,7 +5736,7 @@ var Fullscreen = function () {
 exports["default"] = Fullscreen;
 
 /***/ }),
-/* 133 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5918,12 +5911,12 @@ var Levels = function () {
 
       if (this.detachMenu) {
         this.button.removeEventListener('click', this.events.button.click);
-        this.button.remove();
+        general_1.removeElement(this.button);
         this.button.removeEventListener('mouseover', this.events.button.mouseover);
         this.menu.removeEventListener('mouseover', this.events.button.mouseover);
         this.menu.removeEventListener('mouseout', this.events.button.mouseout);
         this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
-        this.menu.remove();
+        general_1.removeElement(this.menu);
       }
     }
   }, {
@@ -6053,7 +6046,7 @@ var Levels = function () {
 exports["default"] = Levels;
 
 /***/ }),
-/* 134 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6241,7 +6234,7 @@ var Play = function () {
       this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
       this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
       this.button.removeEventListener('click', this.events.media.click);
-      this.button.remove();
+      general_1.removeElement(this.button);
     }
   }, {
     key: "_keydownEvent",
@@ -6267,7 +6260,7 @@ var Play = function () {
 exports["default"] = Play;
 
 /***/ }),
-/* 135 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6571,15 +6564,15 @@ var Progress = function () {
       document.removeEventListener('mousemove', this.events.global.mousemove);
       this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
       this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
-      this.buffer.remove();
-      this.played.remove();
-      this.slider.remove();
+      general_1.removeElement(this.buffer);
+      general_1.removeElement(this.played);
+      general_1.removeElement(this.slider);
 
       if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-        this.tooltip.remove();
+        general_1.removeElement(this.tooltip);
       }
 
-      this.progress.remove();
+      general_1.removeElement(this.progress);
     }
   }, {
     key: "_keydownEvent",
@@ -6616,7 +6609,7 @@ var Progress = function () {
 exports["default"] = Progress;
 
 /***/ }),
-/* 136 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6724,7 +6717,11 @@ var Settings = function () {
         _this.player.getElement().addEventListener(event, _this.events.media[event]);
       });
       document.addEventListener('click', this.events.global.click);
-      window.addEventListener('resize', this.events.global.resize);
+
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', this.events.global.resize);
+      }
+
       this.player.getControls().getContainer().appendChild(this.button);
       this.player.getContainer().appendChild(this.menu);
     }
@@ -6738,15 +6735,18 @@ var Settings = function () {
         _this2.player.getElement().removeEventListener(event, _this2.events.media[event]);
       });
       document.removeEventListener('click', this.events.global.click);
-      window.removeEventListener('resize', this.events.global.resize);
+
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', this.events.global.resize);
+      }
 
       if (this.events.global['settings.submenu'] !== undefined) {
         document.removeEventListener('click', this.events.global['settings.submenu']);
         this.player.getElement().removeEventListener('controlshidden', this.hideEvent);
       }
 
-      this.menu.remove();
-      this.button.remove();
+      general_1.removeElement(this.menu);
+      general_1.removeElement(this.button);
     }
   }, {
     key: "addSettings",
@@ -6873,12 +6873,12 @@ var Settings = function () {
       var target = this.player.getElement().querySelector(".op-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
 
       if (target) {
-        target.remove();
+        general_1.removeElement(target);
       }
 
       if (this.player.getElement().querySelectorAll(".op-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
         delete this.submenu[type];
-        this.player.getElement().querySelector(".op-settings__menu-label[data-value^=".concat(type, "]")).closest('.op-settings__menu-item').remove();
+        general_1.removeElement(this.player.getElement().querySelector(".op-settings__menu-label[data-value^=".concat(type, "]")).closest('.op-settings__menu-item'));
       }
     }
   }]);
@@ -6889,7 +6889,7 @@ var Settings = function () {
 exports["default"] = Settings;
 
 /***/ }),
-/* 137 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6906,6 +6906,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var time_1 = __webpack_require__(46);
+
+var general_1 = __webpack_require__(2);
 
 var Time = function () {
   function Time(player, position) {
@@ -7013,10 +7015,10 @@ var Time = function () {
         _this2.player.getElement().removeEventListener(event, _this2.events.media[event]);
       });
       this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
-      this.current.remove();
-      this.delimiter.remove();
-      this.duration.remove();
-      this.container.remove();
+      general_1.removeElement(this.current);
+      general_1.removeElement(this.delimiter);
+      general_1.removeElement(this.duration);
+      general_1.removeElement(this.container);
     }
   }]);
 
@@ -7026,7 +7028,7 @@ var Time = function () {
 exports["default"] = Time;
 
 /***/ }),
-/* 138 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7142,7 +7144,7 @@ var Volume = function () {
         _this.volume = value;
 
         if (!el.muted && _this.player.getContainer().querySelector('.op-player__unmute')) {
-          _this.player.getContainer().querySelector('.op-player__unmute').remove();
+          general_1.removeElement(_this.player.getContainer().querySelector('.op-player__unmute'));
         }
 
         var e = events_1.addEvent('volumechange');
@@ -7230,9 +7232,9 @@ var Volume = function () {
         _this2.slider.removeEventListener(event, _this2.events.slider[event]);
       });
       this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
-      this.slider.remove();
-      this.display.remove();
-      this.container.remove();
+      general_1.removeElement(this.slider);
+      general_1.removeElement(this.display);
+      general_1.removeElement(this.container);
     }
   }, {
     key: "_keydownEvent",
@@ -7255,7 +7257,7 @@ var Volume = function () {
 exports["default"] = Volume;
 
 /***/ }),
-/* 139 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7273,11 +7275,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var dash_1 = __webpack_require__(140);
+var dash_1 = __webpack_require__(139);
 
-var hls_1 = __webpack_require__(141);
+var hls_1 = __webpack_require__(140);
 
-var html5_1 = __webpack_require__(142);
+var html5_1 = __webpack_require__(141);
 
 var source = __webpack_require__(29);
 
@@ -7573,7 +7575,7 @@ var Media = function () {
 exports["default"] = Media;
 
 /***/ }),
-/* 140 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7793,7 +7795,7 @@ var DashMedia = function (_native_1$default) {
 exports["default"] = DashMedia;
 
 /***/ }),
-/* 141 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8106,7 +8108,7 @@ var HlsMedia = function (_native_1$default) {
 exports["default"] = HlsMedia;
 
 /***/ }),
-/* 142 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8238,7 +8240,7 @@ var HTML5Media = function (_native_1$default) {
 exports["default"] = HTML5Media;
 
 /***/ }),
-/* 143 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8318,7 +8320,11 @@ var Ads = function () {
       this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
       this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
-      window.addEventListener('resize', this.resizeAds.bind(this));
+
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', this.resizeAds.bind(this));
+      }
+
       this.element.addEventListener('loadedmetadata', this.resizeAds.bind(this));
 
       if (this.autoStart === true || this.autoStartMuted === true || force === true) {
@@ -8379,8 +8385,12 @@ var Ads = function () {
       }
 
       this.events = [];
-      this.adsLoader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
-      this.adsLoader.removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
+
+      if (this.adsLoader) {
+        this.adsLoader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
+        this.adsLoader.removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
+      }
+
       var destroy = !Array.isArray(this.ads) || this.currentAdsIndex > this.ads.length;
 
       if (this.adsManager && destroy) {
@@ -8393,8 +8403,12 @@ var Ads = function () {
 
       this.element.removeEventListener('loadedmetadata', this.resizeAds.bind(this));
       this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-      window.removeEventListener('resize', this.resizeAds.bind(this));
-      this.adsContainer.remove();
+
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', this.resizeAds.bind(this));
+      }
+
+      general_1.removeElement(this.adsContainer);
     }
   }, {
     key: "resizeAds",
@@ -8471,14 +8485,16 @@ var Ads = function () {
               this.element.dispatchEvent(endEvent);
             }
 
-            this.intervalTimer = window.setInterval(function () {
-              if (_this4.adsActive === true) {
-                _this4.adsCurrentTime = Math.round(_this4.adsManager.getRemainingTime());
-                var timeEvent = events_1.addEvent('timeupdate');
+            if (typeof window !== 'undefined') {
+              this.intervalTimer = window.setInterval(function () {
+                if (_this4.adsActive === true) {
+                  _this4.adsCurrentTime = Math.round(_this4.adsManager.getRemainingTime());
+                  var timeEvent = events_1.addEvent('timeupdate');
 
-                _this4.element.dispatchEvent(timeEvent);
-              }
-            }, 300);
+                  _this4.element.dispatchEvent(timeEvent);
+                }
+              }, 300);
+            }
           }
 
           break;
@@ -8553,7 +8569,7 @@ var Ads = function () {
         var unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
 
         if (unmuteEl) {
-          unmuteEl.remove();
+          general_1.removeElement(unmuteEl);
         }
 
         if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
