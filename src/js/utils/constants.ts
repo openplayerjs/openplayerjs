@@ -109,7 +109,7 @@ export const IS_STOCK_ANDROID = UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA
  * @type boolean
  * @default
  */
-export const HAS_MSE = window ? ('MediaSource' in (window as any)) : false;
+export const HAS_MSE = typeof window !== 'undefined' ? ('MediaSource' in (window as any)) : false;
 
 /**
  * Check if current browser supports HLS streaming.
