@@ -927,5 +927,7 @@ class Player {
 export default Player;
 
 // Expose element globally.
-(window as any).OpenPlayer = Player;
+if (typeof window !== 'undefined') {
+    (window as any).OpenPlayer = Player;
+}
 Player.init();
