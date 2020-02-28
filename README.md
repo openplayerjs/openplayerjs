@@ -269,6 +269,7 @@ If you want to suggest one, please submit an issue indicating what scenarios cou
 9. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
 10. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
 11. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
+12. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
 
 ## Built With
 
