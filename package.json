@@ -74,7 +74,7 @@
     "release-it": "^12.6.1",
     "standard-version": "^7.1.0",
     "style-loader": "^1.0.2",
-    "stylelint": "^13.1.0",
+    "stylelint": "^13.2.0",
     "stylelint-order": "^4.0.0",
     "ts-loader": "^5.4.5",
     "tslint": "^5.20.0",
