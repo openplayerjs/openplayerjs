@@ -5,7 +5,7 @@ import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { hasClass } from '../utils/general';
+import { hasClass, removeElement } from '../utils/general';
 
 /**
  * Levels element.
@@ -227,12 +227,12 @@ class Levels implements PlayerComponent {
         document.removeEventListener('click', this.events.global.click);
         if (this.detachMenu) {
             this.button.removeEventListener('click', this.events.button.click);
-            this.button.remove();
+            removeElement(this.button);
             this.button.removeEventListener('mouseover', this.events.button.mouseover);
             this.menu.removeEventListener('mouseover', this.events.button.mouseover);
             this.menu.removeEventListener('mouseout', this.events.button.mouseout);
             this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
-            this.menu.remove();
+            removeElement(this.menu);
         }
     }
 

@@ -1,9 +1,14 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const path = require('path');
+// const webpack = require('webpack');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 module.exports = {
+    target: 'node',
+    node: {
+        fs: 'empty'
+    },
     context: __dirname,
     entry: {
         'openplayer.min.js': './src/js/player.ts',
@@ -20,7 +25,8 @@ module.exports = {
         publicPath: '/dist/',
         library: 'OpenPlayer',
         libraryTarget: 'umd',
-        libraryExport: 'default'
+        libraryExport: 'default',
+        globalObject: 'this',
     },
     module: {
         rules: [
@@ -118,6 +124,11 @@ module.exports = {
                 }
             },
             cssProcessor: require('cssnano')
-        })
+        }),
+        // new webpack.ProvidePlugin({
+        //     global: 'global',
+        //     window: 'global/window',
+        //     document: 'global/document'
+        // }),
     ]
 };

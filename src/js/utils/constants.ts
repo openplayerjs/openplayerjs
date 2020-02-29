@@ -4,7 +4,7 @@
  * @type Navigator
  * @default
  */
-export const NAV = (window as any).navigator;
+export const NAV = typeof window !== 'undefined' ? (window as any).navigator : null;
 
 /**
  * Browser's user agent.
@@ -12,7 +12,7 @@ export const NAV = (window as any).navigator;
  * @type string
  * @default
  */
-export const UA = NAV.userAgent.toLowerCase();
+export const UA = NAV ? NAV.userAgent.toLowerCase() : null;
 
 /**
  * Check if browser's user agent is related to an iPad.
@@ -20,7 +20,7 @@ export const UA = NAV.userAgent.toLowerCase();
  * @type boolean
  * @default
  */
-export const IS_IPAD = /ipad/i.test(UA) && !(window as any).MSStream;
+export const IS_IPAD = UA ? /ipad/i.test(UA) && !(window as any).MSStream : false;
 
 /**
  * Check if browser's user agent is related to an iPhone.
@@ -28,7 +28,7 @@ export const IS_IPAD = /ipad/i.test(UA) && !(window as any).MSStream;
  * @type boolean
  * @default
  */
-export const IS_IPHONE = /iphone/i.test(UA) && !(window as any).MSStream;
+export const IS_IPHONE = UA ? /iphone/i.test(UA) && !(window as any).MSStream : false;
 
 /**
  * Check if browser's user agent is related to an iPod.
@@ -36,7 +36,7 @@ export const IS_IPHONE = /iphone/i.test(UA) && !(window as any).MSStream;
  * @type boolean
  * @default
  */
-export const IS_IPOD = /ipod/i.test(UA) && !(window as any).MSStream;
+export const IS_IPOD = UA ? /ipod/i.test(UA) && !(window as any).MSStream : false;
 
 /**
  * Check if browser's user agent is related to an iOS device (iPhone, iPad, iPod).
@@ -44,7 +44,7 @@ export const IS_IPOD = /ipod/i.test(UA) && !(window as any).MSStream;
  * @type boolean
  * @default
  */
-export const IS_IOS = /ipad|iphone|ipod/i.test(UA) && !(window as any).MSStream;
+export const IS_IOS = UA ? /ipad|iphone|ipod/i.test(UA) && !(window as any).MSStream : false;
 
 /**
  * Check if browser's user agent is related to an Android device.
@@ -52,7 +52,7 @@ export const IS_IOS = /ipad|iphone|ipod/i.test(UA) && !(window as any).MSStream;
  * @type boolean
  * @default
  */
-export const IS_ANDROID = /android/i.test(UA);
+export const IS_ANDROID = UA ? /android/i.test(UA) : false;
 
 /**
  * Check if current browser is Internet Explorer (any version).
@@ -60,7 +60,7 @@ export const IS_ANDROID = /android/i.test(UA);
  * @type boolean
  * @default
  */
-export const IS_IE = /(trident|microsoft)/i.test(NAV.appName);
+export const IS_IE = UA ? /(trident|microsoft)/i.test(NAV.appName) : false;
 
 /**
  * Check if current browser is Microsoft Edge (any version).
@@ -68,7 +68,7 @@ export const IS_IE = /(trident|microsoft)/i.test(NAV.appName);
  * @type boolean
  * @default
  */
-export const IS_EDGE = ('msLaunchUri' in NAV && !('documentMode' in document));
+export const IS_EDGE = NAV ? ('msLaunchUri' in NAV && !('documentMode' in document)) : false;
 
 /**
  * Check if current browser is Chrome (any version).
@@ -76,7 +76,7 @@ export const IS_EDGE = ('msLaunchUri' in NAV && !('documentMode' in document));
  * @type boolean
  * @default
  */
-export const IS_CHROME = /chrome/i.test(UA);
+export const IS_CHROME = UA ? /chrome/i.test(UA) : false;
 
 /**
  * Check if current browser is Mozilla Firefox (any version).
@@ -84,7 +84,7 @@ export const IS_CHROME = /chrome/i.test(UA);
  * @type boolean
  * @default
  */
-export const IS_FIREFOX = /firefox/i.test(UA);
+export const IS_FIREFOX = UA ? /firefox/i.test(UA) : false;
 
 /**
  * Check if current browser is WebKit Safari (any version).
@@ -92,7 +92,7 @@ export const IS_FIREFOX = /firefox/i.test(UA);
  * @type boolean
  * @default
  */
-export const IS_SAFARI = /safari/i.test(UA) && !IS_CHROME;
+export const IS_SAFARI = UA ? /safari/i.test(UA) && !IS_CHROME : false;
 
 /**
  * Check if current browser is Android's Stock browser (any version).
@@ -100,7 +100,7 @@ export const IS_SAFARI = /safari/i.test(UA) && !IS_CHROME;
  * @type boolean
  * @default
  */
-export const IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA);
+export const IS_STOCK_ANDROID = UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA) : false;
 
 /**
  * Check if current browser supports MediaSource API.
@@ -109,7 +109,7 @@ export const IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA);
  * @type boolean
  * @default
  */
-export const HAS_MSE = ('MediaSource' in (window as any));
+export const HAS_MSE = typeof window !== 'undefined' ? ('MediaSource' in (window as any)) : false;
 
 /**
  * Check if current browser supports HLS streaming.
@@ -119,6 +119,9 @@ export const HAS_MSE = ('MediaSource' in (window as any));
  * @default
  */
 export const SUPPORTS_HLS = () => {
+    if (typeof window === 'undefined') {
+        return false;
+    }
     const mediaSource = (window as any).MediaSource || (window as any).WebKitMediaSource;
     const sourceBuffer = (window as any).SourceBuffer || (window as any).WebKitSourceBuffer;
     const isTypeSupported = mediaSource &&

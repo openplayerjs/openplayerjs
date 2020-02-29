@@ -2,6 +2,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { formatTime } from '../utils/time';
+import { removeElement } from '../utils/general';
 
 /**
  * Time element.
@@ -202,10 +203,10 @@ class Time implements PlayerComponent {
 
         this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
 
-        this.current.remove();
-        this.delimiter.remove();
-        this.duration.remove();
-        this.container.remove();
+        removeElement(this.current);
+        removeElement(this.delimiter);
+        removeElement(this.duration);
+        removeElement(this.container);
     }
 }
 
