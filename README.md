@@ -125,6 +125,8 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     startVolume,
     // Initial play time of media in seconds (by default, `0`)
     startTime,
+    // Allow progress bar to be displayed when using live streamings (by default, `false`)
+    showLiveProgress,
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
     // Callback to be executed once an error is found (default, `console.error`)
