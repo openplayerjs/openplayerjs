@@ -157,6 +157,31 @@ player.init();
 
 **NOTE**: Only caveat here is that the video/audio tags need an ID ahead of time.
 
+## Usage with Next.js/React
+
+Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can see in the example below.
+
+```javascript
+import React, { useEffect } from 'react';
+import OpenPlayer from 'openplayerjs';
+
+export default function Sample() {
+    // IMPORTANT: make sure you invoke OpenPlayerJS in the `componentDidMount` stage
+    // of the lifecycle, so it has access to the `window` object
+    useEffect(() => {
+        const player = new OpenPlayer('player');
+        player.init();
+    }, []);
+
+    return (
+        <div>
+            <video id='player' className='op-player__media' controls playsInline>
+                <source src='https://my.test.com/video.mp4' type='video/mp4' />
+            </video>
+        </div>
+    );
+```
+
 ## API
 
 If you need more control over the player, OpenPlayer stores instances of each player in the document. To have access to a specific instance, use video/audio's `id` and use `OpenPlayer.instances` element.
