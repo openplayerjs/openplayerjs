@@ -7,7 +7,7 @@ import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { getAbsoluteUrl, hasClass, request } from '../utils/general';
+import { getAbsoluteUrl, hasClass, request, removeElement } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
 /**
@@ -422,11 +422,11 @@ class Captions implements PlayerComponent {
                 this.menu.removeEventListener('mouseover', this.events.button.mouseover);
                 this.menu.removeEventListener('mouseout', this.events.button.mouseout);
                 this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
-                this.menu.remove();
+                removeElement(this.menu);
             }
             this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
-            this.button.remove();
-            this.captions.remove();
+            removeElement(this.button);
+            removeElement(this.captions);
         }
     }
 
@@ -619,7 +619,7 @@ class Captions implements PlayerComponent {
         const scripts = div.getElementsByTagName('script');
         let i = scripts.length;
         while (i--) {
-            scripts[i].remove();
+            removeElement(scripts[i]);
         }
 
         // Loop the elements and remove anything that contains value="javascript:" or an `on*` attribute
@@ -631,7 +631,7 @@ class Captions implements PlayerComponent {
 
             for (let j = 0, total = attributes.length; j < total; j++) {
                 if (/^(on|javascript:)/.test(attributes[j].name)) {
-                    allElements[index].remove();
+                    removeElement(allElements[index]);
                 } else if (attributes[j].name === 'style') {
                     allElements[index].removeAttribute(attributes[j].name);
                 }

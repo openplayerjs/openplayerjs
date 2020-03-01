@@ -3,7 +3,7 @@ import Source from '../interfaces/source';
 import Media from '../media';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { isVideo, isXml, loadScript } from '../utils/general';
+import { isVideo, isXml, loadScript, removeElement } from '../utils/general';
 
 declare const google: any;
 
@@ -331,7 +331,9 @@ class Ads {
             this._error.bind(this),
         );
         // Create responsive ad
-        window.addEventListener('resize', this.resizeAds.bind(this));
+        if (typeof window !== 'undefined') {
+            window.addEventListener('resize', this.resizeAds.bind(this));
+        }
         this.element.addEventListener('loadedmetadata', this.resizeAds.bind(this));
 
         // Request Ads automatically if `autoplay` was set
@@ -397,14 +399,16 @@ class Ads {
 
         this.events = [];
 
-        this.adsLoader.removeEventListener(
-            google.ima.AdErrorEvent.Type.AD_ERROR,
-            this._error.bind(this),
-        );
-        this.adsLoader.removeEventListener(
-            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-            this._loaded.bind(this),
-        );
+        if (this.adsLoader) {
+            this.adsLoader.removeEventListener(
+                google.ima.AdErrorEvent.Type.AD_ERROR,
+                this._error.bind(this),
+            );
+            this.adsLoader.removeEventListener(
+                google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+                this._loaded.bind(this),
+            );
+        }
 
         const destroy = !Array.isArray(this.ads) || this.currentAdsIndex > this.ads.length;
         if (this.adsManager && destroy) {
@@ -416,8 +420,10 @@ class Ads {
         }
         this.element.removeEventListener('loadedmetadata', this.resizeAds.bind(this));
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-        window.removeEventListener('resize', this.resizeAds.bind(this));
-        this.adsContainer.remove();
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('resize', this.resizeAds.bind(this));
+        }
+        removeElement(this.adsContainer);
     }
 
     /**
@@ -613,13 +619,15 @@ class Ads {
                         this.element.dispatchEvent(endEvent);
                     }
 
-                    this.intervalTimer = window.setInterval(() => {
-                        if (this.adsActive === true) {
-                            this.adsCurrentTime = Math.round(this.adsManager.getRemainingTime());
-                            const timeEvent = addEvent('timeupdate');
-                            this.element.dispatchEvent(timeEvent);
-                        }
-                    }, 300);
+                    if (typeof window !== 'undefined') {
+                        this.intervalTimer = window.setInterval(() => {
+                            if (this.adsActive === true) {
+                                this.adsCurrentTime = Math.round(this.adsManager.getRemainingTime());
+                                const timeEvent = addEvent('timeupdate');
+                                this.element.dispatchEvent(timeEvent);
+                            }
+                        }, 300);
+                    }
                 }
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
@@ -693,7 +701,7 @@ class Ads {
             }
             const unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
             if (unmuteEl) {
-                unmuteEl.remove();
+                removeElement(unmuteEl);
             }
             if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
                 this.adsActive = false;

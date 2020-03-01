@@ -7,7 +7,7 @@
 		exports["OpenPlayer"] = factory();
 	else
 		root["OpenPlayer"] = factory();
-})(window, function() {
+})(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -96,9 +96,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var check = function (it) {
+var check = function (it) {
   return it && it.Math == Math && it;
 };
 
@@ -112,7 +112,6 @@ module.exports =
   // eslint-disable-next-line no-new-func
   Function('return this')();
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(79)))
 
 /***/ }),
 /* 1 */
@@ -123,7 +122,7 @@ var shared = __webpack_require__(52);
 var has = __webpack_require__(7);
 var uid = __webpack_require__(53);
 var NATIVE_SYMBOL = __webpack_require__(57);
-var USE_SYMBOL_AS_UID = __webpack_require__(89);
+var USE_SYMBOL_AS_UID = __webpack_require__(88);
 
 var WellKnownSymbolsStore = shared('wks');
 var Symbol = global.Symbol;
@@ -180,12 +179,12 @@ function loadScript(url) {
     script.async = true;
 
     script.onload = function () {
-      script.remove();
+      removeElement(script);
       resolve();
     };
 
     script.onerror = function () {
-      script.remove();
+      removeElement(script);
       reject();
     };
 
@@ -194,6 +193,18 @@ function loadScript(url) {
 }
 
 exports.loadScript = loadScript;
+
+function removeElement(node) {
+  if (node) {
+    var parentNode = node.parentNode;
+
+    if (parentNode) {
+      parentNode.removeChild(node);
+    }
+  }
+}
+
+exports.removeElement = removeElement;
 
 function request(url, dataType, success, error) {
   var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -327,7 +338,7 @@ var getOwnPropertyDescriptor = __webpack_require__(30).f;
 var createNonEnumerableProperty = __webpack_require__(8);
 var redefine = __webpack_require__(15);
 var setGlobal = __webpack_require__(35);
-var copyConstructorProperties = __webpack_require__(81);
+var copyConstructorProperties = __webpack_require__(80);
 var isForced = __webpack_require__(56);
 
 /*
@@ -401,22 +412,26 @@ module.exports = function (exec) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.NAV = window.navigator;
-exports.UA = exports.NAV.userAgent.toLowerCase();
-exports.IS_IPAD = /ipad/i.test(exports.UA) && !window.MSStream;
-exports.IS_IPHONE = /iphone/i.test(exports.UA) && !window.MSStream;
-exports.IS_IPOD = /ipod/i.test(exports.UA) && !window.MSStream;
-exports.IS_IOS = /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream;
-exports.IS_ANDROID = /android/i.test(exports.UA);
-exports.IS_IE = /(trident|microsoft)/i.test(exports.NAV.appName);
-exports.IS_EDGE = 'msLaunchUri' in exports.NAV && !('documentMode' in document);
-exports.IS_CHROME = /chrome/i.test(exports.UA);
-exports.IS_FIREFOX = /firefox/i.test(exports.UA);
-exports.IS_SAFARI = /safari/i.test(exports.UA) && !exports.IS_CHROME;
-exports.IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA);
-exports.HAS_MSE = 'MediaSource' in window;
+exports.NAV = typeof window !== 'undefined' ? window.navigator : null;
+exports.UA = exports.NAV ? exports.NAV.userAgent.toLowerCase() : null;
+exports.IS_IPAD = exports.UA ? /ipad/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPHONE = exports.UA ? /iphone/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPOD = exports.UA ? /ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IOS = exports.UA ? /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_ANDROID = exports.UA ? /android/i.test(exports.UA) : false;
+exports.IS_IE = exports.UA ? /(trident|microsoft)/i.test(exports.NAV.appName) : false;
+exports.IS_EDGE = exports.NAV ? 'msLaunchUri' in exports.NAV && !('documentMode' in document) : false;
+exports.IS_CHROME = exports.UA ? /chrome/i.test(exports.UA) : false;
+exports.IS_FIREFOX = exports.UA ? /firefox/i.test(exports.UA) : false;
+exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROME : false;
+exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
+exports.HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
 
 exports.SUPPORTS_HLS = function () {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
   var mediaSource = window.MediaSource || window.WebKitMediaSource;
   var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
   var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
@@ -640,7 +655,7 @@ module.exports = function (bitmap, value) {
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var NATIVE_WEAK_MAP = __webpack_require__(80);
+var NATIVE_WEAK_MAP = __webpack_require__(79);
 var global = __webpack_require__(0);
 var isObject = __webpack_require__(11);
 var createNonEnumerableProperty = __webpack_require__(8);
@@ -1172,7 +1187,7 @@ module.exports = [
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(9);
-var defineProperties = __webpack_require__(90);
+var defineProperties = __webpack_require__(89);
 var enumBugKeys = __webpack_require__(40);
 var hiddenKeys = __webpack_require__(38);
 var html = __webpack_require__(59);
@@ -1243,7 +1258,7 @@ module.exports = Object.keys || function keys(O) {
 var has = __webpack_require__(7);
 var toObject = __webpack_require__(22);
 var sharedKey = __webpack_require__(37);
-var CORRECT_PROTOTYPE_GETTER = __webpack_require__(96);
+var CORRECT_PROTOTYPE_GETTER = __webpack_require__(95);
 
 var IE_PROTO = sharedKey('IE_PROTO');
 var ObjectPrototype = Object.prototype;
@@ -1455,27 +1470,25 @@ Object.defineProperty(exports, "__esModule", {
 
 __webpack_require__(76);
 
-__webpack_require__(92);
+__webpack_require__(91);
 
-__webpack_require__(101);
+__webpack_require__(100);
 
-__webpack_require__(105);
+__webpack_require__(104);
 
-__webpack_require__(108);
+__webpack_require__(107);
 
-__webpack_require__(127);
+__webpack_require__(126);
 
-var deepmerge = __webpack_require__(128);
+var deepmerge = __webpack_require__(127);
 
-__webpack_require__(129);
+__webpack_require__(128);
 
-__webpack_require__(130);
+var controls_1 = __webpack_require__(129);
 
-var controls_1 = __webpack_require__(131);
+var media_1 = __webpack_require__(138);
 
-var media_1 = __webpack_require__(140);
-
-var ads_1 = __webpack_require__(144);
+var ads_1 = __webpack_require__(142);
 
 var constants_1 = __webpack_require__(5);
 
@@ -1626,8 +1639,8 @@ var Player = function () {
       this.controls.destroy();
 
       if (general_1.isVideo(this.element)) {
-        this.playBtn.remove();
-        this.loader.remove();
+        general_1.removeElement(this.playBtn);
+        general_1.removeElement(this.loader);
       }
 
       el.controls = true;
@@ -2001,7 +2014,7 @@ var Player = function () {
 
               _this4.element.dispatchEvent(event);
 
-              volumeEl.remove();
+              general_1.removeElement(volumeEl);
             });
 
             var target = _this4.getContainer();
@@ -2075,8 +2088,11 @@ Player.customMedia = {
   rules: []
 };
 exports["default"] = Player;
-window.OpenPlayer = Player;
-Player.init();
+
+if (typeof window !== 'undefined') {
+  window.OpenPlayer = Player;
+  Player.init();
+}
 
 /***/ }),
 /* 49 */
@@ -2161,7 +2177,7 @@ module.exports = function (key) {
 
 var has = __webpack_require__(7);
 var toIndexedObject = __webpack_require__(25);
-var indexOf = __webpack_require__(84).indexOf;
+var indexOf = __webpack_require__(83).indexOf;
 var hiddenKeys = __webpack_require__(38);
 
 module.exports = function (object, names) {
@@ -2263,7 +2279,7 @@ module.exports = getBuiltIn('document', 'documentElement');
 
 "use strict";
 
-var charAt = __webpack_require__(94).charAt;
+var charAt = __webpack_require__(93).charAt;
 var InternalStateModule = __webpack_require__(18);
 var defineIterator = __webpack_require__(61);
 
@@ -2300,7 +2316,7 @@ defineIterator(String, 'String', function (iterated) {
 "use strict";
 
 var $ = __webpack_require__(3);
-var createIteratorConstructor = __webpack_require__(95);
+var createIteratorConstructor = __webpack_require__(94);
 var getPrototypeOf = __webpack_require__(43);
 var setPrototypeOf = __webpack_require__(63);
 var setToStringTag = __webpack_require__(44);
@@ -2439,7 +2455,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(9);
-var aPossiblePrototype = __webpack_require__(97);
+var aPossiblePrototype = __webpack_require__(96);
 
 // `Object.setPrototypeOf` method
 // https://tc39.github.io/ecma262/#sec-object.setprototypeof
@@ -2827,7 +2843,7 @@ module.exports = parent;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(78);
-var entryUnbind = __webpack_require__(91);
+var entryUnbind = __webpack_require__(90);
 
 module.exports = entryUnbind('Array', 'find');
 
@@ -2839,7 +2855,7 @@ module.exports = entryUnbind('Array', 'find');
 "use strict";
 
 var $ = __webpack_require__(3);
-var $find = __webpack_require__(86).find;
+var $find = __webpack_require__(85).find;
 var addToUnscopables = __webpack_require__(58);
 
 var FIND = 'find';
@@ -2862,32 +2878,6 @@ addToUnscopables(FIND);
 
 /***/ }),
 /* 79 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -2899,11 +2889,11 @@ module.exports = typeof WeakMap === 'function' && /native code/.test(inspectSour
 
 
 /***/ }),
-/* 81 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(7);
-var ownKeys = __webpack_require__(82);
+var ownKeys = __webpack_require__(81);
 var getOwnPropertyDescriptorModule = __webpack_require__(30);
 var definePropertyModule = __webpack_require__(12);
 
@@ -2919,11 +2909,11 @@ module.exports = function (target, source) {
 
 
 /***/ }),
-/* 82 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getBuiltIn = __webpack_require__(13);
-var getOwnPropertyNamesModule = __webpack_require__(83);
+var getOwnPropertyNamesModule = __webpack_require__(82);
 var getOwnPropertySymbolsModule = __webpack_require__(55);
 var anObject = __webpack_require__(9);
 
@@ -2936,7 +2926,7 @@ module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
 
 
 /***/ }),
-/* 83 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var internalObjectKeys = __webpack_require__(54);
@@ -2952,12 +2942,12 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 
 
 /***/ }),
-/* 84 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toIndexedObject = __webpack_require__(25);
 var toLength = __webpack_require__(26);
-var toAbsoluteIndex = __webpack_require__(85);
+var toAbsoluteIndex = __webpack_require__(84);
 
 // `Array.prototype.{ indexOf, includes }` methods implementation
 var createMethod = function (IS_INCLUDES) {
@@ -2990,7 +2980,7 @@ module.exports = {
 
 
 /***/ }),
-/* 85 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(39);
@@ -3008,14 +2998,14 @@ module.exports = function (index, length) {
 
 
 /***/ }),
-/* 86 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var bind = __webpack_require__(21);
 var IndexedObject = __webpack_require__(31);
 var toObject = __webpack_require__(22);
 var toLength = __webpack_require__(26);
-var arraySpeciesCreate = __webpack_require__(87);
+var arraySpeciesCreate = __webpack_require__(86);
 
 var push = [].push;
 
@@ -3079,11 +3069,11 @@ module.exports = {
 
 
 /***/ }),
-/* 87 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(11);
-var isArray = __webpack_require__(88);
+var isArray = __webpack_require__(87);
 var wellKnownSymbol = __webpack_require__(1);
 
 var SPECIES = wellKnownSymbol('species');
@@ -3105,7 +3095,7 @@ module.exports = function (originalArray, length) {
 
 
 /***/ }),
-/* 88 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var classof = __webpack_require__(14);
@@ -3118,7 +3108,7 @@ module.exports = Array.isArray || function isArray(arg) {
 
 
 /***/ }),
-/* 89 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var NATIVE_SYMBOL = __webpack_require__(57);
@@ -3131,7 +3121,7 @@ module.exports = NATIVE_SYMBOL
 
 
 /***/ }),
-/* 90 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var DESCRIPTORS = __webpack_require__(10);
@@ -3153,7 +3143,7 @@ module.exports = DESCRIPTORS ? Object.defineProperties : function defineProperti
 
 
 /***/ }),
-/* 91 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -3167,27 +3157,27 @@ module.exports = function (CONSTRUCTOR, METHOD, length) {
 
 
 /***/ }),
-/* 92 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(93);
+var parent = __webpack_require__(92);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 93 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(60);
-__webpack_require__(98);
+__webpack_require__(97);
 var path = __webpack_require__(20);
 
 module.exports = path.Array.from;
 
 
 /***/ }),
-/* 94 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(39);
@@ -3220,7 +3210,7 @@ module.exports = {
 
 
 /***/ }),
-/* 95 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3243,7 +3233,7 @@ module.exports = function (IteratorConstructor, NAME, next) {
 
 
 /***/ }),
-/* 96 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fails = __webpack_require__(4);
@@ -3256,7 +3246,7 @@ module.exports = !fails(function () {
 
 
 /***/ }),
-/* 97 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(11);
@@ -3269,11 +3259,11 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 98 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(3);
-var from = __webpack_require__(99);
+var from = __webpack_require__(98);
 var checkCorrectnessOfIteration = __webpack_require__(68);
 
 var INCORRECT_ITERATION = !checkCorrectnessOfIteration(function (iterable) {
@@ -3288,7 +3278,7 @@ $({ target: 'Array', stat: true, forced: INCORRECT_ITERATION }, {
 
 
 /***/ }),
-/* 99 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3298,7 +3288,7 @@ var toObject = __webpack_require__(22);
 var callWithSafeIterationClosing = __webpack_require__(64);
 var isArrayIteratorMethod = __webpack_require__(65);
 var toLength = __webpack_require__(26);
-var createProperty = __webpack_require__(100);
+var createProperty = __webpack_require__(99);
 var getIteratorMethod = __webpack_require__(66);
 
 // `Array.from` method implementation
@@ -3337,7 +3327,7 @@ module.exports = function from(arrayLike /* , mapfn = undefined, thisArg = undef
 
 
 /***/ }),
-/* 100 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3354,30 +3344,30 @@ module.exports = function (object, key, value) {
 
 
 /***/ }),
-/* 101 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(102);
+var parent = __webpack_require__(101);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 102 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(103);
+__webpack_require__(102);
 var path = __webpack_require__(20);
 
 module.exports = path.Object.assign;
 
 
 /***/ }),
-/* 103 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(3);
-var assign = __webpack_require__(104);
+var assign = __webpack_require__(103);
 
 // `Object.assign` method
 // https://tc39.github.io/ecma262/#sec-object.assign
@@ -3387,7 +3377,7 @@ $({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
 
 
 /***/ }),
-/* 104 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3446,26 +3436,26 @@ module.exports = !nativeAssign || fails(function () {
 
 
 /***/ }),
-/* 105 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(106);
+var parent = __webpack_require__(105);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 106 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(107);
+__webpack_require__(106);
 var path = __webpack_require__(20);
 
 module.exports = path.Object.keys;
 
 
 /***/ }),
-/* 107 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(3);
@@ -3485,41 +3475,41 @@ $({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
 
 
 /***/ }),
-/* 108 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(109);
-__webpack_require__(123);
+var parent = __webpack_require__(108);
+__webpack_require__(122);
 // TODO: Remove from `core-js@4`
+__webpack_require__(123);
 __webpack_require__(124);
 __webpack_require__(125);
-__webpack_require__(126);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 109 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(110);
+__webpack_require__(109);
 __webpack_require__(60);
-__webpack_require__(112);
-__webpack_require__(115);
+__webpack_require__(111);
+__webpack_require__(114);
 __webpack_require__(75);
-__webpack_require__(122);
+__webpack_require__(121);
 var path = __webpack_require__(20);
 
 module.exports = path.Promise;
 
 
 /***/ }),
-/* 110 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var TO_STRING_TAG_SUPPORT = __webpack_require__(45);
 var redefine = __webpack_require__(15);
-var toString = __webpack_require__(111);
+var toString = __webpack_require__(110);
 
 // `Object.prototype.toString` method
 // https://tc39.github.io/ecma262/#sec-object.prototype.tostring
@@ -3529,7 +3519,7 @@ if (!TO_STRING_TAG_SUPPORT) {
 
 
 /***/ }),
-/* 111 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3545,12 +3535,12 @@ module.exports = TO_STRING_TAG_SUPPORT ? {}.toString : function toString() {
 
 
 /***/ }),
-/* 112 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var DOMIterables = __webpack_require__(113);
-var ArrayIteratorMethods = __webpack_require__(114);
+var DOMIterables = __webpack_require__(112);
+var ArrayIteratorMethods = __webpack_require__(113);
 var createNonEnumerableProperty = __webpack_require__(8);
 var wellKnownSymbol = __webpack_require__(1);
 
@@ -3584,7 +3574,7 @@ for (var COLLECTION_NAME in DOMIterables) {
 
 
 /***/ }),
-/* 113 */
+/* 112 */
 /***/ (function(module, exports) {
 
 // iterable DOM collections
@@ -3625,7 +3615,7 @@ module.exports = {
 
 
 /***/ }),
-/* 114 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3685,7 +3675,7 @@ addToUnscopables('entries');
 
 
 /***/ }),
-/* 115 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3696,27 +3686,27 @@ var global = __webpack_require__(0);
 var getBuiltIn = __webpack_require__(13);
 var NativePromise = __webpack_require__(69);
 var redefine = __webpack_require__(15);
-var redefineAll = __webpack_require__(116);
+var redefineAll = __webpack_require__(115);
 var setToStringTag = __webpack_require__(44);
-var setSpecies = __webpack_require__(117);
+var setSpecies = __webpack_require__(116);
 var isObject = __webpack_require__(11);
 var aFunction = __webpack_require__(16);
-var anInstance = __webpack_require__(118);
+var anInstance = __webpack_require__(117);
 var classof = __webpack_require__(14);
 var inspectSource = __webpack_require__(36);
 var iterate = __webpack_require__(27);
 var checkCorrectnessOfIteration = __webpack_require__(68);
 var speciesConstructor = __webpack_require__(70);
 var task = __webpack_require__(71).set;
-var microtask = __webpack_require__(119);
+var microtask = __webpack_require__(118);
 var promiseResolve = __webpack_require__(74);
-var hostReportErrors = __webpack_require__(120);
+var hostReportErrors = __webpack_require__(119);
 var newPromiseCapabilityModule = __webpack_require__(24);
 var perform = __webpack_require__(28);
 var InternalStateModule = __webpack_require__(18);
 var isForced = __webpack_require__(56);
 var wellKnownSymbol = __webpack_require__(1);
-var V8_VERSION = __webpack_require__(121);
+var V8_VERSION = __webpack_require__(120);
 
 var SPECIES = wellKnownSymbol('species');
 var PROMISE = 'Promise';
@@ -4071,7 +4061,7 @@ $({ target: PROMISE, stat: true, forced: INCORRECT_ITERATION }, {
 
 
 /***/ }),
-/* 116 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var redefine = __webpack_require__(15);
@@ -4083,7 +4073,7 @@ module.exports = function (target, src, options) {
 
 
 /***/ }),
-/* 117 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4109,7 +4099,7 @@ module.exports = function (CONSTRUCTOR_NAME) {
 
 
 /***/ }),
-/* 118 */
+/* 117 */
 /***/ (function(module, exports) {
 
 module.exports = function (it, Constructor, name) {
@@ -4120,7 +4110,7 @@ module.exports = function (it, Constructor, name) {
 
 
 /***/ }),
-/* 119 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -4204,7 +4194,7 @@ module.exports = queueMicrotask || function (fn) {
 
 
 /***/ }),
-/* 120 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -4218,7 +4208,7 @@ module.exports = function (a, b) {
 
 
 /***/ }),
-/* 121 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -4244,7 +4234,7 @@ module.exports = version && +version;
 
 
 /***/ }),
-/* 122 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4287,7 +4277,7 @@ if (!IS_PURE && typeof NativePromise == 'function' && !NativePromise.prototype['
 
 
 /***/ }),
-/* 123 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4339,7 +4329,7 @@ $({ global: true }, {
 
 
 /***/ }),
-/* 124 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
@@ -4347,7 +4337,7 @@ __webpack_require__(75);
 
 
 /***/ }),
-/* 125 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4369,7 +4359,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 126 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4422,7 +4412,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 127 */
+/* 126 */
 /***/ (function(module, exports) {
 
 // Polyfill for creating CustomEvents on IE9/10/11
@@ -4481,7 +4471,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 128 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4619,35 +4609,51 @@ module.exports = deepmerge_1;
 
 
 /***/ }),
-/* 129 */
-/***/ (function(module, exports) {
+/* 128 */
+/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
-!function(e){var t=e.Element.prototype;"function"!=typeof t.matches&&(t.matches=t.msMatchesSelector||t.mozMatchesSelector||t.webkitMatchesSelector||function(e){for(var t=(this.document||this.ownerDocument).querySelectorAll(e),o=0;t[o]&&t[o]!==this;)++o;return Boolean(t[o])}),"function"!=typeof t.closest&&(t.closest=function(e){for(var t=this;t&&1===t.nodeType;){if(t.matches(e))return t;t=t.parentNode}return null})}(window);
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function polyfill(window) {
+  const ElementPrototype = window.Element.prototype;
 
+  if (typeof ElementPrototype.matches !== 'function') {
+    ElementPrototype.matches = ElementPrototype.msMatchesSelector || ElementPrototype.mozMatchesSelector || ElementPrototype.webkitMatchesSelector || function matches(selector) {
+      let element = this;
+      const elements = (element.document || element.ownerDocument).querySelectorAll(selector);
+      let index = 0;
 
-/***/ }),
-/* 130 */
-/***/ (function(module, exports) {
-
-(function (arr) {
-  arr.forEach(function (item) {
-    if (item.hasOwnProperty('remove')) {
-      return;
-    }
-    Object.defineProperty(item, 'remove', {
-      configurable: true,
-      enumerable: true,
-      writable: true,
-      value: function remove() {
-        this.parentNode && this.parentNode.removeChild(this);
+      while (elements[index] && elements[index] !== element) {
+        ++index;
       }
-    });
-  });
-})([Element.prototype, CharacterData.prototype, DocumentType.prototype].filter(Boolean));
+
+      return Boolean(elements[index]);
+    };
+  }
+
+  if (typeof ElementPrototype.closest !== 'function') {
+    ElementPrototype.closest = function closest(selector) {
+      let element = this;
+
+      while (element && element.nodeType === 1) {
+        if (element.matches(selector)) {
+          return element;
+        }
+
+        element = element.parentNode;
+      }
+
+      return null;
+    };
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (polyfill);
+//# sourceMappingURL=index.mjs.map
 
 
 /***/ }),
-/* 131 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4663,21 +4669,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var captions_1 = __webpack_require__(132);
+var captions_1 = __webpack_require__(130);
 
-var fullscreen_1 = __webpack_require__(133);
+var fullscreen_1 = __webpack_require__(131);
 
-var levels_1 = __webpack_require__(134);
+var levels_1 = __webpack_require__(132);
 
-var play_1 = __webpack_require__(135);
+var play_1 = __webpack_require__(133);
 
-var progress_1 = __webpack_require__(136);
+var progress_1 = __webpack_require__(134);
 
-var settings_1 = __webpack_require__(137);
+var settings_1 = __webpack_require__(135);
 
-var time_1 = __webpack_require__(138);
+var time_1 = __webpack_require__(136);
 
-var volume_1 = __webpack_require__(139);
+var volume_1 = __webpack_require__(137);
 
 var constants_1 = __webpack_require__(5);
 
@@ -4832,7 +4838,7 @@ var Controls = function () {
           }
         });
       });
-      this.controls.remove();
+      general_1.removeElement(this.controls);
     }
   }, {
     key: "getContainer",
@@ -4848,19 +4854,21 @@ var Controls = function () {
 
       this._stopControlTimer();
 
-      this.timer = window.setTimeout(function () {
-        if ((!el.paused || !el.ended) && general_1.isVideo(_this3.player.getElement())) {
-          _this3.player.getContainer().classList.add('op-controls--hidden');
+      if (typeof window !== 'undefined') {
+        this.timer = window.setTimeout(function () {
+          if ((!el.paused || !el.ended) && general_1.isVideo(_this3.player.getElement())) {
+            _this3.player.getContainer().classList.add('op-controls--hidden');
 
-          _this3.player.playBtn.setAttribute('aria-hidden', 'true');
+            _this3.player.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3._stopControlTimer();
+            _this3._stopControlTimer();
 
-          var event = events_1.addEvent('controlshidden');
+            var event = events_1.addEvent('controlshidden');
 
-          _this3.player.getElement().dispatchEvent(event);
-        }
-      }, time);
+            _this3.player.getElement().dispatchEvent(event);
+          }
+        }, time);
+      }
     }
   }, {
     key: "_stopControlTimer",
@@ -4958,7 +4966,7 @@ var Controls = function () {
       var key = item.title.toLowerCase().replace(' ', '-');
       var control = this.getContainer().querySelector(".op-controls__".concat(key));
       control.removeEventListener('click', item.click);
-      control.remove();
+      general_1.removeElement(control);
     }
   }]);
 
@@ -4968,13 +4976,13 @@ var Controls = function () {
 exports["default"] = Controls;
 
 /***/ }),
-/* 132 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -5289,12 +5297,12 @@ var Captions = function () {
           this.menu.removeEventListener('mouseover', this.events.button.mouseover);
           this.menu.removeEventListener('mouseout', this.events.button.mouseout);
           this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
-          this.menu.remove();
+          general_1.removeElement(this.menu);
         }
 
         this.player.getElement().removeEventListener('timeupdate', this.events.media.timeupdate);
-        this.button.remove();
-        this.captions.remove();
+        general_1.removeElement(this.button);
+        general_1.removeElement(this.captions);
       }
     }
   }, {
@@ -5443,7 +5451,7 @@ var Captions = function () {
       var i = scripts.length;
 
       while (i--) {
-        scripts[i].remove();
+        general_1.removeElement(scripts[i]);
       }
 
       var allElements = div.getElementsByTagName('*');
@@ -5454,7 +5462,7 @@ var Captions = function () {
 
         for (var j = 0, total = attributes.length; j < total; j++) {
           if (/^(on|javascript:)/.test(attributes[j].name)) {
-            allElements[index].remove();
+            general_1.removeElement(allElements[index]);
           } else if (attributes[j].name === 'style') {
             allElements[index].removeAttribute(attributes[j].name);
           }
@@ -5522,7 +5530,7 @@ var Captions = function () {
 exports["default"] = Captions;
 
 /***/ }),
-/* 133 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5539,6 +5547,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var constants_1 = __webpack_require__(5);
+
+var general_1 = __webpack_require__(2);
 
 var Fullscreen = function () {
   function Fullscreen(player, position) {
@@ -5630,7 +5640,7 @@ var Fullscreen = function () {
       }
 
       this.button.removeEventListener('click', this.clickEvent.bind(this));
-      this.button.remove();
+      general_1.removeElement(this.button);
     }
   }, {
     key: "toggleFullscreen",
@@ -5734,7 +5744,7 @@ var Fullscreen = function () {
 exports["default"] = Fullscreen;
 
 /***/ }),
-/* 134 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5909,12 +5919,12 @@ var Levels = function () {
 
       if (this.detachMenu) {
         this.button.removeEventListener('click', this.events.button.click);
-        this.button.remove();
+        general_1.removeElement(this.button);
         this.button.removeEventListener('mouseover', this.events.button.mouseover);
         this.menu.removeEventListener('mouseover', this.events.button.mouseover);
         this.menu.removeEventListener('mouseout', this.events.button.mouseout);
         this.player.getElement().removeEventListener('controlshidden', this.events.button.mouseout);
-        this.menu.remove();
+        general_1.removeElement(this.menu);
       }
     }
   }, {
@@ -6044,7 +6054,7 @@ var Levels = function () {
 exports["default"] = Levels;
 
 /***/ }),
-/* 135 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6232,7 +6242,7 @@ var Play = function () {
       this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
       this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
       this.button.removeEventListener('click', this.events.media.click);
-      this.button.remove();
+      general_1.removeElement(this.button);
     }
   }, {
     key: "_keydownEvent",
@@ -6258,7 +6268,7 @@ var Play = function () {
 exports["default"] = Play;
 
 /***/ }),
-/* 136 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6570,15 +6580,15 @@ var Progress = function () {
       document.removeEventListener('mousemove', this.events.global.mousemove);
       this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
       this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
-      this.buffer.remove();
-      this.played.remove();
-      this.slider.remove();
+      general_1.removeElement(this.buffer);
+      general_1.removeElement(this.played);
+      general_1.removeElement(this.slider);
 
       if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-        this.tooltip.remove();
+        general_1.removeElement(this.tooltip);
       }
 
-      this.progress.remove();
+      general_1.removeElement(this.progress);
     }
   }, {
     key: "_keydownEvent",
@@ -6615,13 +6625,13 @@ var Progress = function () {
 exports["default"] = Progress;
 
 /***/ }),
-/* 137 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -6723,7 +6733,11 @@ var Settings = function () {
         _this.player.getElement().addEventListener(event, _this.events.media[event]);
       });
       document.addEventListener('click', this.events.global.click);
-      window.addEventListener('resize', this.events.global.resize);
+
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', this.events.global.resize);
+      }
+
       this.player.getControls().getContainer().appendChild(this.button);
       this.player.getContainer().appendChild(this.menu);
     }
@@ -6737,15 +6751,18 @@ var Settings = function () {
         _this2.player.getElement().removeEventListener(event, _this2.events.media[event]);
       });
       document.removeEventListener('click', this.events.global.click);
-      window.removeEventListener('resize', this.events.global.resize);
+
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', this.events.global.resize);
+      }
 
       if (this.events.global['settings.submenu'] !== undefined) {
         document.removeEventListener('click', this.events.global['settings.submenu']);
         this.player.getElement().removeEventListener('controlshidden', this.hideEvent);
       }
 
-      this.menu.remove();
-      this.button.remove();
+      general_1.removeElement(this.menu);
+      general_1.removeElement(this.button);
     }
   }, {
     key: "addSettings",
@@ -6872,12 +6889,12 @@ var Settings = function () {
       var target = this.player.getElement().querySelector(".op-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
 
       if (target) {
-        target.remove();
+        general_1.removeElement(target);
       }
 
       if (this.player.getElement().querySelectorAll(".op-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
         delete this.submenu[type];
-        this.player.getElement().querySelector(".op-settings__menu-label[data-value^=".concat(type, "]")).closest('.op-settings__menu-item').remove();
+        general_1.removeElement(this.player.getElement().querySelector(".op-settings__menu-label[data-value^=".concat(type, "]")).closest('.op-settings__menu-item'));
       }
     }
   }]);
@@ -6888,7 +6905,7 @@ var Settings = function () {
 exports["default"] = Settings;
 
 /***/ }),
-/* 138 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6905,6 +6922,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var time_1 = __webpack_require__(46);
+
+var general_1 = __webpack_require__(2);
 
 var Time = function () {
   function Time(player, position) {
@@ -7018,10 +7037,10 @@ var Time = function () {
         _this2.player.getElement().removeEventListener(event, _this2.events.media[event]);
       });
       this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
-      this.current.remove();
-      this.delimiter.remove();
-      this.duration.remove();
-      this.container.remove();
+      general_1.removeElement(this.current);
+      general_1.removeElement(this.delimiter);
+      general_1.removeElement(this.duration);
+      general_1.removeElement(this.container);
     }
   }]);
 
@@ -7031,7 +7050,7 @@ var Time = function () {
 exports["default"] = Time;
 
 /***/ }),
-/* 139 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7147,7 +7166,7 @@ var Volume = function () {
         _this.volume = value;
 
         if (!el.muted && _this.player.getContainer().querySelector('.op-player__unmute')) {
-          _this.player.getContainer().querySelector('.op-player__unmute').remove();
+          general_1.removeElement(_this.player.getContainer().querySelector('.op-player__unmute'));
         }
 
         var e = events_1.addEvent('volumechange');
@@ -7235,9 +7254,9 @@ var Volume = function () {
         _this2.slider.removeEventListener(event, _this2.events.slider[event]);
       });
       this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
-      this.slider.remove();
-      this.display.remove();
-      this.container.remove();
+      general_1.removeElement(this.slider);
+      general_1.removeElement(this.display);
+      general_1.removeElement(this.container);
     }
   }, {
     key: "_keydownEvent",
@@ -7260,13 +7279,13 @@ var Volume = function () {
 exports["default"] = Volume;
 
 /***/ }),
-/* 140 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -7278,11 +7297,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var dash_1 = __webpack_require__(141);
+var dash_1 = __webpack_require__(139);
 
-var hls_1 = __webpack_require__(142);
+var hls_1 = __webpack_require__(140);
 
-var html5_1 = __webpack_require__(143);
+var html5_1 = __webpack_require__(141);
 
 var source = __webpack_require__(29);
 
@@ -7578,13 +7597,13 @@ var Media = function () {
 exports["default"] = Media;
 
 /***/ }),
-/* 141 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -7798,13 +7817,13 @@ var DashMedia = function (_native_1$default) {
 exports["default"] = DashMedia;
 
 /***/ }),
-/* 142 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -8111,13 +8130,13 @@ var HlsMedia = function (_native_1$default) {
 exports["default"] = HlsMedia;
 
 /***/ }),
-/* 143 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -8243,7 +8262,7 @@ var HTML5Media = function (_native_1$default) {
 exports["default"] = HTML5Media;
 
 /***/ }),
-/* 144 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8323,7 +8342,11 @@ var Ads = function () {
       this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
       this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
-      window.addEventListener('resize', this.resizeAds.bind(this));
+
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', this.resizeAds.bind(this));
+      }
+
       this.element.addEventListener('loadedmetadata', this.resizeAds.bind(this));
 
       if (this.autoStart === true || this.autoStartMuted === true || force === true) {
@@ -8384,8 +8407,12 @@ var Ads = function () {
       }
 
       this.events = [];
-      this.adsLoader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
-      this.adsLoader.removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
+
+      if (this.adsLoader) {
+        this.adsLoader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
+        this.adsLoader.removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
+      }
+
       var destroy = !Array.isArray(this.ads) || this.currentAdsIndex > this.ads.length;
 
       if (this.adsManager && destroy) {
@@ -8398,8 +8425,12 @@ var Ads = function () {
 
       this.element.removeEventListener('loadedmetadata', this.resizeAds.bind(this));
       this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-      window.removeEventListener('resize', this.resizeAds.bind(this));
-      this.adsContainer.remove();
+
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', this.resizeAds.bind(this));
+      }
+
+      general_1.removeElement(this.adsContainer);
     }
   }, {
     key: "resizeAds",
@@ -8476,14 +8507,16 @@ var Ads = function () {
               this.element.dispatchEvent(endEvent);
             }
 
-            this.intervalTimer = window.setInterval(function () {
-              if (_this4.adsActive === true) {
-                _this4.adsCurrentTime = Math.round(_this4.adsManager.getRemainingTime());
-                var timeEvent = events_1.addEvent('timeupdate');
+            if (typeof window !== 'undefined') {
+              this.intervalTimer = window.setInterval(function () {
+                if (_this4.adsActive === true) {
+                  _this4.adsCurrentTime = Math.round(_this4.adsManager.getRemainingTime());
+                  var timeEvent = events_1.addEvent('timeupdate');
 
-                _this4.element.dispatchEvent(timeEvent);
-              }
-            }, 300);
+                  _this4.element.dispatchEvent(timeEvent);
+                }
+              }, 300);
+            }
           }
 
           break;
@@ -8558,7 +8591,7 @@ var Ads = function () {
         var unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
 
         if (unmuteEl) {
-          unmuteEl.remove();
+          general_1.removeElement(unmuteEl);
         }
 
         if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {

@@ -2,7 +2,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { addEvent } from '../utils/events';
-import { hasClass } from '../utils/general';
+import { hasClass, removeElement } from '../utils/general';
 
 /**
  * Play/pause element.
@@ -211,7 +211,7 @@ class Play implements PlayerComponent {
         this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
 
         this.button.removeEventListener('click', this.events.media.click);
-        this.button.remove();
+        removeElement(this.button);
     }
 
     /**

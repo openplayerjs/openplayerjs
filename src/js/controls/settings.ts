@@ -4,7 +4,7 @@ import SettingsItem from '../interfaces/settings/item';
 import SettingsSubItem from '../interfaces/settings/subitem';
 import SettingsSubMenu from '../interfaces/settings/submenu';
 import Player from '../player';
-import { hasClass } from '../utils/general';
+import { hasClass, removeElement } from '../utils/general';
 
 /**
  * Settings element.
@@ -203,7 +203,9 @@ class Settings implements PlayerComponent {
             this.player.getElement().addEventListener(event, this.events.media[event]);
         });
         document.addEventListener('click', this.events.global.click);
-        window.addEventListener('resize', this.events.global.resize);
+        if (typeof window !== 'undefined') {
+            window.addEventListener('resize', this.events.global.resize);
+        }
 
         this.player.getControls().getContainer().appendChild(this.button);
         this.player.getContainer().appendChild(this.menu);
@@ -220,14 +222,16 @@ class Settings implements PlayerComponent {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
         document.removeEventListener('click', this.events.global.click);
-        window.removeEventListener('resize', this.events.global.resize);
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('resize', this.events.global.resize);
+        }
         if (this.events.global['settings.submenu'] !== undefined) {
             document.removeEventListener('click', this.events.global['settings.submenu']);
             this.player.getElement().removeEventListener('controlshidden', this.hideEvent);
         }
 
-        this.menu.remove();
-        this.button.remove();
+        removeElement(this.menu);
+        removeElement(this.button);
     }
 
     /**
@@ -363,13 +367,13 @@ class Settings implements PlayerComponent {
     public removeItem(id: string|number, type: string, minItems: number = 2) {
         const target = this.player.getElement().querySelector(`.op-settings__submenu-label[data-value=${type}-${id}]`);
         if (target) {
-            target.remove();
+            removeElement(target);
         }
 
         if (this.player.getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length < minItems) {
             delete this.submenu[type];
-            this.player.getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`)
-                .closest('.op-settings__menu-item').remove();
+            removeElement(this.player.getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`)
+                .closest('.op-settings__menu-item'));
         }
     }
 }

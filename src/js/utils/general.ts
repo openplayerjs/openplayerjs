@@ -51,16 +51,33 @@ export function loadScript(url: string) {
         script.src = url;
         script.async = true;
         script.onload = () => {
-            script.remove();
+            removeElement(script);
             resolve();
         };
         script.onerror = () => {
-            script.remove();
+            removeElement(script);
             reject();
         };
         document.head.appendChild(script);
     });
 }
+
+/**
+ * Remove a node using removeChild as a way to support IE11
+ *
+ * @export
+ * @param {Node} node
+ * @returns {void}
+ */
+export function removeElement(node?: Node) {
+    if (node) {
+        const parentNode = node.parentNode;
+        if (parentNode) {
+            parentNode.removeChild(node);
+        }
+    }
+}
+
 /**
  * Perform an asynchronous (AJAX) request.
  *

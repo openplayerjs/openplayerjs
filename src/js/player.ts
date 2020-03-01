@@ -5,8 +5,7 @@ import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
 import * as deepmerge from 'deepmerge';
-import 'element-closest/browser';
-import 'element-remove';
+import 'element-closest';
 
 import Controls from './controls';
 import Track from './interfaces/captions/track';
@@ -20,7 +19,7 @@ import Media from './media';
 import Ads from './media/ads';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
-import { isAudio, isVideo } from './utils/general';
+import { isAudio, isVideo, removeElement } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
 
 /**
@@ -396,8 +395,8 @@ class Player {
         this.controls.destroy();
 
         if (isVideo(this.element)) {
-            this.playBtn.remove();
-            this.loader.remove();
+            removeElement(this.playBtn);
+            removeElement(this.loader);
         }
 
         el.controls = true;
@@ -891,7 +890,7 @@ class Player {
                         this.element.dispatchEvent(event);
 
                         // Remove element
-                        volumeEl.remove();
+                        removeElement(volumeEl);
                     });
 
                     const target = this.getContainer();
@@ -929,5 +928,7 @@ class Player {
 export default Player;
 
 // Expose element globally.
-(window as any).OpenPlayer = Player;
-Player.init();
+if (typeof window !== 'undefined') {
+    (window as any).OpenPlayer = Player;
+    Player.init();
+}
