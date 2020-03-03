@@ -254,11 +254,11 @@ Event | Description
 
 In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are being supported by OpenPlayer, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
 
-## Examples
+## Code Samples
 
-Witness the power of this player by browser the best examples!
+Witness the power of this player by browsing our best samples!
 
-If you want to suggest one, please submit an issue indicating what scenarios could OpenPlayerJS help you with.
+If you want to see one added to this list, please submit an issue indicating what scenarios OpenPlayerJS could help you with.
 
 1. [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
