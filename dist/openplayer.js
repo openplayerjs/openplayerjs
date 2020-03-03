@@ -6490,8 +6490,10 @@ var Progress = function () {
 
         if ((e.which === 1 || e.which === 0) && _this.player.isMedia()) {
           if (!el.paused) {
-            el.pause();
-            _this.forcePause = true;
+            el.play().then(function () {
+              el.pause.bind(_this);
+              _this.forcePause = true;
+            });
           }
         }
       };
@@ -6552,7 +6554,7 @@ var Progress = function () {
           if (pos <= 0 || x - general_1.offset(mediaContainer).left <= half) {
             pos = 0;
           } else if (x - general_1.offset(mediaContainer).left >= limit) {
-            pos = limit;
+            pos = limit - general_1.offset(_this.slider).left - 10;
           } else {
             pos -= half;
           }
@@ -7344,7 +7346,6 @@ var Media = function () {
     this.element = element;
     this.options = options;
     this.mediaFiles = this._getMediaFiles();
-    this.promisePlay = null;
     this.customMedia = customMedia;
     this.autoplay = autoplay;
     return this;
@@ -7420,7 +7421,7 @@ var Media = function () {
     value: function pause() {
       var _this2 = this;
 
-      if (this.promisePlay) {
+      if (this.promisePlay !== undefined) {
         this.promisePlay.then(function () {
           _this2.media.pause();
         });

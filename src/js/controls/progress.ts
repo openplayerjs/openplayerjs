@@ -315,8 +315,10 @@ class Progress implements PlayerComponent {
             // If current progress is not related to an Ad, manipulate current time
             if ((e.which === 1 || e.which === 0) && this.player.isMedia()) {
                 if (!el.paused) {
-                    el.pause();
-                    this.forcePause = true;
+                    el.play().then(() => {
+                        el.pause.bind(this);
+                        this.forcePause = true;
+                    });
                 }
             }
         };
@@ -386,7 +388,7 @@ class Progress implements PlayerComponent {
                 if (pos <= 0 || x - offset(mediaContainer).left <= half) {
                     pos = 0;
                 } else if (x - offset(mediaContainer).left >= limit) {
-                    pos = limit;
+                    pos = limit - offset(this.slider).left - 10;
                 } else {
                     pos -= half;
                 }
