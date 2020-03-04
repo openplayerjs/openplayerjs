@@ -56,7 +56,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1> openplayerjs</h1>
+			<h1>openplayerjs</h1>
 		</div>
 	</div>
 </header>
@@ -154,7 +154,7 @@
     <span class="hljs-comment">// Controls configuration by default; `levels` can be added as well since it's an optional feature;</span>
     <span class="hljs-comment">// Each one of the items will have in their class name the `op-control__[left|middle|right]` according</span>
     <span class="hljs-comment">// to the controls' structure listed below</span>
-    controls: {
+    <span class="hljs-attr">controls</span>: {
         <span class="hljs-attr">left</span>: [<span class="hljs-string">'play'</span>, <span class="hljs-string">'time'</span>, <span class="hljs-string">'volume'</span>],
         <span class="hljs-attr">middle</span>: [<span class="hljs-string">'progress'</span>],
         <span class="hljs-attr">right</span>: [<span class="hljs-string">'captions'</span>, <span class="hljs-string">'settings'</span>, <span class="hljs-string">'fullscreen'</span>],
@@ -171,6 +171,8 @@
     startVolume,
     <span class="hljs-comment">// Initial play time of media in seconds (by default, `0`)</span>
     startTime,
+    <span class="hljs-comment">// Allow progress bar to be displayed when using live streamings (by default, `false`)</span>
+    showLiveProgress,
     <span class="hljs-comment">// Allow loader to be displayed when loading video (by default, `false`)</span>
     showLoaderOnInit,
     <span class="hljs-comment">// Callback to be executed once an error is found (default, `console.error`)</span>
@@ -198,6 +200,28 @@
 <span class="hljs-comment">// Don't forget to start the player</span>
 player.init();</code></pre>
 				<p><strong>NOTE</strong>: Only caveat here is that the video/audio tags need an ID ahead of time.</p>
+				<a href="#usage-with-nextjsreact" id="usage-with-nextjsreact" style="color: inherit; text-decoration: none;">
+					<h2>Usage with Next.js/React</h2>
+				</a>
+				<p>Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can see in the example below.</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">import</span> React, { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">'react'</span>;
+<span class="hljs-keyword">import</span> OpenPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'openplayerjs'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sample</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-comment">// IMPORTANT: make sure you invoke OpenPlayerJS in the `componentDidMount` stage</span>
+    <span class="hljs-comment">// of the lifecycle, so it has access to the `window` object</span>
+    useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+        <span class="hljs-keyword">const</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'player'</span>);
+        player.init();
+    }, []);
+
+    <span class="hljs-keyword">return</span> (
+        <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">video</span> <span class="hljs-attr">id</span>=<span class="hljs-string">'player'</span> <span class="hljs-attr">className</span>=<span class="hljs-string">'op-player__media'</span> <span class="hljs-attr">controls</span> <span class="hljs-attr">playsInline</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">source</span> <span class="hljs-attr">src</span>=<span class="hljs-string">'https://my.test.com/video.mp4'</span> <span class="hljs-attr">type</span>=<span class="hljs-string">'video/mp4'</span> /&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">video</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+    );</code></pre>
 				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
 					<h2>API</h2>
 				</a>
@@ -368,11 +392,11 @@ player.getElement().dispatchEvent(event);</code></pre>
 						</tr>
 				</tbody></table>
 				<p>In addition to the list above, <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events">HLS events</a> and <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors">HLS error events</a> are being supported by OpenPlayer, including all their details. For the error ones, they are classified as <code>networkError</code>, <code>mediaError</code>, <code>muxError</code> and <code>otherError</code>.</p>
-				<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
-					<h2>Examples</h2>
+				<a href="#code-samples" id="code-samples" style="color: inherit; text-decoration: none;">
+					<h2>Code Samples</h2>
 				</a>
-				<p>Witness the power of this player by browser the best examples!</p>
-				<p>If you want to suggest one, please submit an issue indicating what scenarios could OpenPlayerJS help you with.</p>
+				<p>Witness the power of this player by browsing our best samples!</p>
+				<p>If you want to see one added to this list, please submit an issue indicating what scenarios OpenPlayerJS could help you with.</p>
 				<ol>
 					<li><a href="https://codepen.io/rafa8626/pen/WaNxNB">No configuration (only DOM classes)</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/BqazxX">Minimal configuration</a></li>
@@ -385,6 +409,7 @@ player.getElement().dispatchEvent(event);</code></pre>
 					<li><a href="https://codepen.io/rafa8626/pen/wvvxbMN">Ads playlist (multiple URLs)</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/abbjrBW">Retrieve data from audio streaming (HLS)</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/wvvOYpg">YouTube video (using plugin)</a></li>
+					<li><a href="https://codesandbox.io/s/vigorous-almeida-71gln">OpenPlayerJS with Next.js</a></li>
 				</ol>
 				<a href="#built-with" id="built-with" style="color: inherit; text-decoration: none;">
 					<h2>Built With</h2>
@@ -416,121 +441,121 @@ player.getElement().dispatchEvent(event);</code></pre>
 						<a href="globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_.html">"controls"</a>
+						<a href="modules/_controls_.html">&quot;controls&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_captions_.html">"controls/captions"</a>
+						<a href="modules/_controls_captions_.html">&quot;controls/captions&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_fullscreen_.html">"controls/fullscreen"</a>
+						<a href="modules/_controls_fullscreen_.html">&quot;controls/fullscreen&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_levels_.html">"controls/levels"</a>
+						<a href="modules/_controls_levels_.html">&quot;controls/levels&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_play_.html">"controls/play"</a>
+						<a href="modules/_controls_play_.html">&quot;controls/play&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_progress_.html">"controls/progress"</a>
+						<a href="modules/_controls_progress_.html">&quot;controls/progress&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_settings_.html">"controls/settings"</a>
+						<a href="modules/_controls_settings_.html">&quot;controls/settings&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_time_.html">"controls/time"</a>
+						<a href="modules/_controls_time_.html">&quot;controls/time&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_controls_volume_.html">"controls/volume"</a>
+						<a href="modules/_controls_volume_.html">&quot;controls/volume&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_ads_options_.html">"interfaces/ads/options"</a>
+						<a href="modules/_interfaces_ads_options_.html">&quot;interfaces/ads/options&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_ads_playtracker_.html">"interfaces/ads/playtracker"</a>
+						<a href="modules/_interfaces_ads_playtracker_.html">&quot;interfaces/ads/playtracker&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_captions_cue_.html">"interfaces/captions/cue"</a>
+						<a href="modules/_interfaces_captions_cue_.html">&quot;interfaces/captions/cue&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_captions_cue_list_.html">"interfaces/captions/cue-<wbr>list"</a>
+						<a href="modules/_interfaces_captions_cue_list_.html">&quot;interfaces/captions/cue-<wbr>list&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_captions_track_.html">"interfaces/captions/track"</a>
+						<a href="modules/_interfaces_captions_track_.html">&quot;interfaces/captions/track&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_captions_track_urls_.html">"interfaces/captions/track-<wbr>urls"</a>
+						<a href="modules/_interfaces_captions_track_urls_.html">&quot;interfaces/captions/track-<wbr>urls&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_component_.html">"interfaces/component"</a>
+						<a href="modules/_interfaces_component_.html">&quot;interfaces/component&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_control_item_.html">"interfaces/control-<wbr>item"</a>
+						<a href="modules/_interfaces_control_item_.html">&quot;interfaces/control-<wbr>item&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_custom_media_.html">"interfaces/custom-<wbr>media"</a>
+						<a href="modules/_interfaces_custom_media_.html">&quot;interfaces/custom-<wbr>media&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_dash_options_.html">"interfaces/dash-<wbr>options"</a>
+						<a href="modules/_interfaces_dash_options_.html">&quot;interfaces/dash-<wbr>options&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_events_list_.html">"interfaces/events-<wbr>list"</a>
+						<a href="modules/_interfaces_events_list_.html">&quot;interfaces/events-<wbr>list&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_instance_.html">"interfaces/instance"</a>
+						<a href="modules/_interfaces_instance_.html">&quot;interfaces/instance&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_level_.html">"interfaces/level"</a>
+						<a href="modules/_interfaces_level_.html">&quot;interfaces/level&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_player_options_.html">"interfaces/player-<wbr>options"</a>
+						<a href="modules/_interfaces_player_options_.html">&quot;interfaces/player-<wbr>options&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_settings_item_.html">"interfaces/settings/item"</a>
+						<a href="modules/_interfaces_settings_item_.html">&quot;interfaces/settings/item&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_settings_subitem_.html">"interfaces/settings/subitem"</a>
+						<a href="modules/_interfaces_settings_subitem_.html">&quot;interfaces/settings/subitem&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_settings_submenu_.html">"interfaces/settings/submenu"</a>
+						<a href="modules/_interfaces_settings_submenu_.html">&quot;interfaces/settings/submenu&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_interfaces_source_.html">"interfaces/source"</a>
+						<a href="modules/_interfaces_source_.html">&quot;interfaces/source&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_media_.html">"media"</a>
+						<a href="modules/_media_.html">&quot;media&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_media_ads_.html">"media/ads"</a>
+						<a href="modules/_media_ads_.html">&quot;media/ads&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_media_dash_.html">"media/dash"</a>
+						<a href="modules/_media_dash_.html">&quot;media/dash&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_media_hls_.html">"media/hls"</a>
+						<a href="modules/_media_hls_.html">&quot;media/hls&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_media_html5_.html">"media/html5"</a>
+						<a href="modules/_media_html5_.html">&quot;media/html5&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_media_native_.html">"media/native"</a>
+						<a href="modules/_media_native_.html">&quot;media/native&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_player_.html">"player"</a>
+						<a href="modules/_player_.html">&quot;player&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_utils_constants_.html">"utils/constants"</a>
+						<a href="modules/_utils_constants_.html">&quot;utils/constants&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_utils_events_.html">"utils/events"</a>
+						<a href="modules/_utils_events_.html">&quot;utils/events&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_utils_general_.html">"utils/general"</a>
+						<a href="modules/_utils_general_.html">&quot;utils/general&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_utils_media_.html">"utils/media"</a>
+						<a href="modules/_utils_media_.html">&quot;utils/media&quot;</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_utils_time_.html">"utils/time"</a>
+						<a href="modules/_utils_time_.html">&quot;utils/time&quot;</a>
 					</li>
 				</ul>
 			</nav>
