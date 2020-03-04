@@ -6372,6 +6372,7 @@ var Progress = function () {
         }
       };
 
+      var lastCurrentTime = 0;
       this.events.media.loadedmetadata = setInitialProgress.bind(this);
       this.events.controls.controlschanged = setInitialProgress.bind(this);
 
@@ -6426,9 +6427,25 @@ var Progress = function () {
           _this.slider.value = current.toString();
           _this.slider.style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
           _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : current / el.duration * 100;
+
+          if (_this.player.getOptions().showLiveProgress && Math.floor(_this.played.value) >= 99) {
+            lastCurrentTime = el.currentTime;
+          }
         } else if (!_this.player.getOptions().showLiveProgress && _this.progress.getAttribute('aria-hidden') === 'false') {
           _this.progress.setAttribute('aria-hidden', 'true');
         }
+      };
+
+      this.events.media.durationchange = function () {
+        var el = _this.player.activeElement();
+
+        var current = _this.player.isMedia() ? el.currentTime : el.duration - el.currentTime;
+
+        _this.slider.setAttribute('max', "".concat(el.duration));
+
+        _this.progress.setAttribute('aria-valuemax', el.duration.toString());
+
+        _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : current / el.duration * 100;
       };
 
       this.events.media.ended = function () {
@@ -6455,10 +6472,16 @@ var Progress = function () {
         var max = parseFloat(target.max);
         var val = parseFloat(target.value);
         _this.slider.style.backgroundSize = "".concat((val - min) * 100 / (max - min), "% 100%");
+        _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : val / el.duration * 100;
+
+        if (_this.player.getOptions().showLiveProgress) {
+          el.currentTime = Math.round(_this.played.value) >= 99 ? lastCurrentTime : val;
+        } else {
+          el.currentTime = val;
+        }
 
         _this.slider.classList.remove('.op-progress--pressed');
 
-        el.currentTime = val;
         e.preventDefault();
       };
 
@@ -6467,8 +6490,10 @@ var Progress = function () {
 
         if ((e.which === 1 || e.which === 0) && _this.player.isMedia()) {
           if (!el.paused) {
-            el.pause();
-            _this.forcePause = true;
+            el.play().then(function () {
+              el.pause.bind(_this);
+              _this.forcePause = true;
+            });
           }
         }
       };
@@ -6529,7 +6554,7 @@ var Progress = function () {
           if (pos <= 0 || x - general_1.offset(mediaContainer).left <= half) {
             pos = 0;
           } else if (x - general_1.offset(mediaContainer).left >= limit) {
-            pos = limit;
+            pos = limit - general_1.offset(_this.slider).left - 10;
           } else {
             pos -= half;
           }
@@ -7321,7 +7346,6 @@ var Media = function () {
     this.element = element;
     this.options = options;
     this.mediaFiles = this._getMediaFiles();
-    this.promisePlay = null;
     this.customMedia = customMedia;
     this.autoplay = autoplay;
     return this;
@@ -7397,7 +7421,7 @@ var Media = function () {
     value: function pause() {
       var _this2 = this;
 
-      if (this.promisePlay) {
+      if (this.promisePlay !== undefined) {
         this.promisePlay.then(function () {
           _this2.media.pause();
         });
