@@ -81,9 +81,6 @@
 						<dt>see</dt>
 						<dd><p><a href="https://github.com/video-dev/hls.js/">https://github.com/video-dev/hls.js/</a></p>
 						</dd>
-						<dt>class</dt>
-						<dd><p>HlsMedia</p>
-						</dd>
 					</dl>
 				</div>
 			</section>
@@ -162,14 +159,14 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Hls<wbr>Media<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLMediaElement</span>, mediaSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_source_.source.html" class="tsd-signature-type">Source</a>, autoplay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">__type</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_hls_.hlsmedia.html" class="tsd-signature-type">HlsMedia</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Hls<wbr>Media<span class="tsd-signature-symbol">(</span>element<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLMediaElement</span>, mediaSource<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_source_.source.html" class="tsd-signature-type">Source</a>, autoplay<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span>, options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_media_hls_.hlsmedia.html" class="tsd-signature-type">HlsMedia</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L69">media/hls.ts:69</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L69">media/hls.ts:69</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -191,10 +188,12 @@
 									<h5>mediaSource: <a href="../interfaces/_interfaces_source_.source.html" class="tsd-signature-type">Source</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> autoplay: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> autoplay: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
 								</li>
 								<li>
-									<h5>options: <span class="tsd-signature-type">__type</span></h5>
+									<h5>options: <span class="tsd-signature-symbol">{}</span></h5>
+									<ul class="tsd-parameters">
+									</ul>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_media_hls_.hlsmedia.html" class="tsd-signature-type">HlsMedia</a></h4>
@@ -210,7 +209,7 @@
 					<div class="tsd-signature tsd-kind-icon">autoplay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L69">media/hls.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L69">media/hls.ts:69</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -218,9 +217,6 @@
 							<p>Flag to indicate if <code>autoplay</code> attribute was set</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>boolean</p>
-							</dd>
 							<dt>memberof</dt>
 							<dd><p>HlsMedia</p>
 							</dd>
@@ -234,7 +230,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#element">element</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L21">media/native.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L21">media/native.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -242,9 +238,6 @@
 							<p>Native video/audio tag.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>HTMLMediaElement</p>
-							</dd>
 							<dt>memberof</dt>
 							<dd><p>Native</p>
 							</dd>
@@ -257,7 +250,7 @@
 					<div class="tsd-signature tsd-kind-icon">events<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interfaces_events_list_.eventslist.html" class="tsd-signature-type">EventsList</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L34">media/hls.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L34">media/hls.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -267,9 +260,6 @@
 						<dl class="tsd-comment-tags">
 							<dt>see</dt>
 							<dd><p><a href="https://github.com/video-dev/hls.js/blob/master/src/events.js">https://github.com/video-dev/hls.js/blob/master/src/events.js</a></p>
-							</dd>
-							<dt>type</dt>
-							<dd><p>EventsList</p>
 							</dd>
 							<dt>memberof</dt>
 							<dd><p>HlsMedia</p>
@@ -284,7 +274,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#media">media</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L29">media/native.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L29">media/native.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -292,9 +282,6 @@
 							<p>The current media source element.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>Source</p>
-							</dd>
 							<dt>memberof</dt>
 							<dd><p>Native</p>
 							</dd>
@@ -307,7 +294,7 @@
 					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L60">media/hls.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L60">media/hls.ts:60</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -317,9 +304,6 @@
 						<dl class="tsd-comment-tags">
 							<dt>see</dt>
 							<dd><p><a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning">https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning</a></p>
-							</dd>
-							<dt>type</dt>
-							<dd><p>object</p>
 							</dd>
 							<dt>memberof</dt>
 							<dd><p>HlsMedia</p>
@@ -333,7 +317,7 @@
 					<div class="tsd-signature tsd-kind-icon">player<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L25">media/hls.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L25">media/hls.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -341,9 +325,6 @@
 							<p>Instance of hls.js player.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>Hls</p>
-							</dd>
 							<dt>memberof</dt>
 							<dd><p>HlsMedia</p>
 							</dd>
@@ -357,7 +338,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#promise">promise</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L37">media/native.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L37">media/native.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -365,9 +346,6 @@
 							<p>Promise to be resolved once media starts playing to avoid race issues.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>Promise<any></p>
-							</dd>
 							<dt>memberof</dt>
 							<dd><p>Native</p>
 							</dd>
@@ -380,7 +358,7 @@
 					<div class="tsd-signature tsd-kind-icon">recover<wbr>Decoding<wbr>Error<wbr>Date<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L42">media/hls.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L42">media/hls.ts:42</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -388,9 +366,6 @@
 							<p>Time in milliseconds to attempt to recover media after an error.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>number</p>
-							</dd>
 							<dt>memberof</dt>
 							<dd><p>HlsMedia</p>
 							</dd>
@@ -403,7 +378,7 @@
 					<div class="tsd-signature tsd-kind-icon">recover<wbr>Swap<wbr>Audio<wbr>Codec<wbr>Date<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L50">media/hls.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L50">media/hls.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -411,9 +386,6 @@
 							<p>Time in milliseconds to attempt to swap audio codec after an error.</p>
 						</div>
 						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>number</p>
-							</dd>
 							<dt>memberof</dt>
 							<dd><p>HlsMedia</p>
 							</dd>
@@ -435,7 +407,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#currenttime">currentTime</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L228">media/native.ts:228</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L228">media/native.ts:228</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -454,7 +426,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#currenttime">currentTime</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L218">media/native.ts:218</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L218">media/native.ts:218</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -489,7 +461,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#defaultplaybackrate">defaultPlaybackRate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L209">media/native.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L209">media/native.ts:209</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -508,7 +480,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#defaultplaybackrate">defaultPlaybackRate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L199">media/native.ts:199</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L199">media/native.ts:199</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -542,7 +514,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#duration">duration</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L238">media/native.ts:238</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L238">media/native.ts:238</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -570,7 +542,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#ended">ended</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L258">media/native.ts:258</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L258">media/native.ts:258</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -601,7 +573,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#level">level</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L172">media/hls.ts:172</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L172">media/hls.ts:172</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -610,7 +582,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#level">level</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L168">media/hls.ts:168</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L168">media/hls.ts:168</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -634,7 +606,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#levels">levels</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L152">media/hls.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L152">media/hls.ts:152</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -653,7 +625,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#muted">muted</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L171">media/native.ts:171</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L171">media/native.ts:171</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -672,7 +644,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#muted">muted</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L161">media/native.ts:161</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L161">media/native.ts:161</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -706,7 +678,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#paused">paused</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L248">media/native.ts:248</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L248">media/native.ts:248</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -735,7 +707,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#playbackrate">playbackRate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L190">media/native.ts:190</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L190">media/native.ts:190</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -754,7 +726,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#playbackrate">playbackRate</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L180">media/native.ts:180</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L180">media/native.ts:180</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -788,7 +760,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#src">src</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L138">media/hls.ts:138</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L138">media/hls.ts:138</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -822,7 +794,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#volume">volume</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L152">media/native.ts:152</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L152">media/native.ts:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -841,7 +813,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#volume">volume</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L142">media/native.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L142">media/native.ts:142</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -877,7 +849,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L226">media/hls.ts:226</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L226">media/hls.ts:226</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -933,7 +905,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L184">media/hls.ts:184</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L184">media/hls.ts:184</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -961,7 +933,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L291">media/hls.ts:291</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L291">media/hls.ts:291</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -989,7 +961,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#canplaytype">canPlayType</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L99">media/hls.ts:99</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L99">media/hls.ts:99</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1025,7 +997,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#destroy">destroy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L129">media/hls.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L129">media/hls.ts:129</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1052,7 +1024,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#load">load</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/hls.ts#L108">media/hls.ts:108</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/hls.ts#L108">media/hls.ts:108</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1079,7 +1051,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#pause">pause</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L133">media/native.ts:133</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L133">media/native.ts:133</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1107,7 +1079,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="_media_native_.native.html">Native</a>.<a href="_media_native_.native.html#play">play</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/7ebe3fc/src/js/media/native.ts#L124">media/native.ts:124</a></li>
+									<li>Defined in <a href="https://github.com/openplayerjs/openplayerjs/blob/6cb14fd/src/js/media/native.ts#L124">media/native.ts:124</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1133,7 +1105,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/_media_hls_.html">"media/hls"</a>
+						<a href="../modules/_media_hls_.html">&quot;media/hls&quot;</a>
 					</li>
 				</ul>
 			</nav>
