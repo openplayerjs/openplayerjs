@@ -196,6 +196,9 @@ class Progress implements PlayerComponent {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
         };
+
+        let lastCurrentTime = 0;
+
         this.events.media.loadedmetadata = setInitialProgress.bind(this);
         this.events.controls.controlschanged = setInitialProgress.bind(this);
 
@@ -249,9 +252,22 @@ class Progress implements PlayerComponent {
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
                     0 : ((current / el.duration) * 100);
+                
+                if (this.player.getOptions().showLiveProgress && Math.floor(this.played.value) >= 99) {
+                    lastCurrentTime = el.currentTime;
+                }
             } else if (!this.player.getOptions().showLiveProgress && this.progress.getAttribute('aria-hidden') === 'false') {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
+        };
+
+        this.events.media.durationchange = () => {
+            const el = this.player.activeElement();
+            const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
+            this.slider.setAttribute('max', `${el.duration}`);
+            this.progress.setAttribute('aria-valuemax', el.duration.toString());
+            this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
+                0 : ((current / el.duration) * 100);
         };
 
         this.events.media.ended = () => {
@@ -277,8 +293,16 @@ class Progress implements PlayerComponent {
             const max = parseFloat(target.max);
             const val = parseFloat(target.value);
             this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
+            this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
+                    0 : ((val / el.duration) * 100);
+
+            if (this.player.getOptions().showLiveProgress) {
+                el.currentTime = (Math.round(this.played.value) >= 99) ? lastCurrentTime : val;
+            } else {
+                el.currentTime = val;
+            }
+            
             this.slider.classList.remove('.op-progress--pressed');
-            el.currentTime = val;
             e.preventDefault();
         };
 
@@ -291,8 +315,10 @@ class Progress implements PlayerComponent {
             // If current progress is not related to an Ad, manipulate current time
             if ((e.which === 1 || e.which === 0) && this.player.isMedia()) {
                 if (!el.paused) {
-                    el.pause();
-                    this.forcePause = true;
+                    el.play().then(() => {
+                        el.pause.bind(this);
+                        this.forcePause = true;
+                    });
                 }
             }
         };
@@ -362,7 +388,7 @@ class Progress implements PlayerComponent {
                 if (pos <= 0 || x - offset(mediaContainer).left <= half) {
                     pos = 0;
                 } else if (x - offset(mediaContainer).left >= limit) {
-                    pos = limit;
+                    pos = limit - offset(this.slider).left - 10;
                 } else {
                     pos -= half;
                 }

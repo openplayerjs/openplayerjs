@@ -101,7 +101,6 @@ class Media {
         this.element = element;
         this.options = options;
         this.mediaFiles = this._getMediaFiles();
-        this.promisePlay = null;
         this.customMedia = customMedia;
         this.autoplay = autoplay;
         return this;
@@ -207,7 +206,7 @@ class Media {
      * @memberof Media
      */
     public pause(): void {
-        if (this.promisePlay) {
+        if (this.promisePlay !== undefined) {
             this.promisePlay.then(() => {
                 this.media.pause();
             });
