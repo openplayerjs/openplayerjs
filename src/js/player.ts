@@ -701,7 +701,7 @@ class Player {
 
             if (!this.autoplay && this.ads) {
                 const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-                this.adsInstance = new Ads(this.media, this.ads, false, false, adsOptions);
+                this.adsInstance = new Ads(this, this.ads, false, false, adsOptions);
             }
         } catch (e) {
             console.error(e);
@@ -902,7 +902,7 @@ class Player {
 
                 if (this.ads) {
                     const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-                    this.adsInstance = new Ads(this.media, this.ads, this.canAutoplay, this.canAutoplayMuted, adsOptions);
+                    this.adsInstance = new Ads(this, this.ads, this.canAutoplay, this.canAutoplayMuted, adsOptions);
                 } else if (this.canAutoplay || this.canAutoplayMuted) {
                     return this.play();
                 }

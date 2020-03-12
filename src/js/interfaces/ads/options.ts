@@ -14,4 +14,8 @@ export default interface Options {
      * @type boolean
      */
     debug: boolean;
+    /**
+     * @type boolean
+     */
+    loop: boolean;
 }

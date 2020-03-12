@@ -23,6 +23,20 @@ import { isVideo, removeElement } from './utils/general';
  */
 class Controls implements PlayerComponent {
     /**
+     * Events that will be triggered in Controls element:
+     *  - mouse (to show/hide controls after specific number of seconds)
+     *  - media (to trigger/stop timer that will hide or show controls)
+     *
+     * @private
+     * @type EventsList
+     * @memberof Controls
+     */
+    public events: EventsList = {
+        media: {},
+        mouse: {},
+    };
+
+    /**
      * Instance of Settings object.
      *
      * @private
@@ -66,20 +80,6 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private items: any;
-
-    /**
-     * Events that will be triggered in Controls element:
-     *  - mouse (to show/hide controls after specific number of seconds)
-     *  - media (to trigger/stop timer that will hide or show controls)
-     *
-     * @private
-     * @type EventsList
-     * @memberof Controls
-     */
-    private events: EventsList = {
-        media: {},
-        mouse: {},
-    };
 
     private controlEls: any = {
         Captions,
@@ -136,10 +136,10 @@ class Controls implements PlayerComponent {
 
         if (!IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
-                if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
+                if (isMediaVideo && !this.player.activeElement().paused) {
                     this._stopControlTimer();
                     if (this.player.activeElement().currentTime) {
-                        this.player.playBtn.setAttribute('aria-hidden', 'false');
+                        this.player.playBtn.setAttribute('aria-hidden', this.player.isMedia() ? 'false' : 'true');
                         this.player.loader.setAttribute('aria-hidden', 'true');
                     } else if (this.player.getOptions().showLoaderOnInit) {
                         this.player.playBtn.setAttribute('aria-hidden', 'true');
@@ -150,10 +150,10 @@ class Controls implements PlayerComponent {
                 }
             };
             this.events.mouse.mousemove = () => {
-                if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
+                if (isMediaVideo && !this.player.activeElement().paused) {
                     if (this.player.activeElement().currentTime) {
                         this.player.loader.setAttribute('aria-hidden', 'true');
-                        this.player.playBtn.setAttribute('aria-hidden', 'false');
+                        this.player.playBtn.setAttribute('aria-hidden', this.player.isMedia() ? 'false' : 'true');
                     } else if (this.player.getOptions().showLoaderOnInit) {
                         this.player.playBtn.setAttribute('aria-hidden', 'true');
                         this.player.loader.setAttribute('aria-hidden', 'false');
@@ -164,7 +164,7 @@ class Controls implements PlayerComponent {
                 }
             };
             this.events.mouse.mouseleave = () => {
-                if (isMediaVideo && this.player.isMedia() && !this.player.activeElement().paused) {
+                if (isMediaVideo && !this.player.activeElement().paused) {
                     this._startControlTimer(1000);
                 }
             };

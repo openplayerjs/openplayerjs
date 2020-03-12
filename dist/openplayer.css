@@ -564,9 +564,9 @@
 .op-controls .op-controls__volume--display {
     background: 0 0;
     color: #f00;
-    -webkit-transition: none;
-    -o-transition: none;
-    transition: none;
+    -webkit-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
     z-index: 2;
 }
 .op-controls .op-controls__volume--display {
