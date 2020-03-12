@@ -1,6 +1,7 @@
 import Options from '../interfaces/ads/options';
 import Source from '../interfaces/source';
 import Media from '../media';
+import Player from '../player';
 import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, isXml, loadScript, removeElement } from '../utils/general';
@@ -96,6 +97,15 @@ class Ads {
      * @memberof Ads
      */
     public adsManager: any = null;
+
+    /**
+     * Instance of OpenPlayer.
+     *
+     * @private
+     * @type Player
+     * @memberof Captions
+     */
+    private player: Player;
 
     /**
      * Instance of Media object to execute actions once Ad has ended/skipped.
@@ -265,7 +275,7 @@ class Ads {
     /**
      * Create an instance of Ads.
      *
-     * @param {Media} media
+     * @param {Player} player
      * @param {string|string[]} ads
      * @param {any} labels
      * @param {boolean} autoStart
@@ -273,14 +283,16 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(media: Media, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options) {
+    constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options) {
         const defaultOpts = {
             debug: false,
+            loop: false,
             url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
         };
+        this.player = player;
         this.ads = ads;
-        this.media = media;
-        this.element = media.element;
+        this.media = player.getMedia();
+        this.element = player.getElement();
         this.autoStart = autoStart || false;
         this.autoStartMuted = autoStartMuted || false;
         this.adsOptions = { ...defaultOpts, ...options };
@@ -398,6 +410,11 @@ class Ads {
         }
 
         this.events = [];
+
+        const mouseEvents = this.player.getControls().events.mouse;
+        Object.keys(mouseEvents).forEach((event: string) => {
+            this.adsContainer.removeEventListener(event, mouseEvents[event]);
+        });
 
         if (this.adsLoader) {
             this.adsLoader.removeEventListener(
@@ -589,7 +606,7 @@ class Ads {
                     this.element.parentElement.classList.add('op-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
-                    if (!this.mediaStarted) {
+                    if (!this.mediaStarted && !IS_IOS && !IS_ANDROID) {
                         const waitingEvent = addEvent('waiting');
                         this.element.dispatchEvent(waitingEvent);
 
@@ -734,9 +751,6 @@ class Ads {
     private _start(manager: any): void {
         // Add listeners to the required events.
         manager.addEventListener(
-            google.ima.AdErrorEvent.Type.AD_ERROR,
-            this._error.bind(this));
-        manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
             this._onContentPauseRequested.bind(this));
         manager.addEventListener(
@@ -758,6 +772,10 @@ class Ads {
             google.ima.AdEvent.Type.VOLUME_MUTED,
         ];
 
+        const mouseEvents = this.player.getControls().events.mouse;
+        Object.keys(mouseEvents).forEach((event: string) => {
+            this.adsContainer.addEventListener(event, mouseEvents[event]);
+        });
         this.events.forEach(event => {
             manager.addEventListener(event, this._assign.bind(this));
         });
@@ -790,14 +808,7 @@ class Ads {
     private _initNotDoneAds(): void {
         this.adsDone = true;
         this.adDisplayContainer.initialize();
-
-        if (IS_IOS || IS_ANDROID) {
-            this.preloadContent = this._contentLoadedAction;
-            this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
-            this.element.load();
-        } else {
-            this._contentLoadedAction();
-        }
+        this._contentLoadedAction();
     }
 
     /**
@@ -837,15 +848,25 @@ class Ads {
      * @memberof Ads
      */
     private _onContentResumeRequested(): void {
-        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-        this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-        if (IS_IOS || IS_ANDROID) {
-            this.media.src = this.mediaSources;
-            this.media.load();
-            this._prepareMedia();
+        if (this.adsOptions.loop) {
+            this.destroy();
+            this.adsLoader.contentComplete();
+            this.playTriggered = true;
+            this.adsStarted = true;
+            this.adsDone = false;
+            this.load(true);
         } else {
-            const event = addEvent('loadedmetadata');
-            this.element.dispatchEvent(event);
+            this.element.addEventListener('ended', this._contentEndedListener.bind(this));
+            this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+            if (IS_IOS || IS_ANDROID) {
+                this.media.src = this.mediaSources;
+                this.media.load();
+                this._prepareMedia();
+                this.element.parentElement.classList.add('op-ads--active');
+            } else {
+                const event = addEvent('loadedmetadata');
+                this.element.dispatchEvent(event);
+            }
         }
     }
 

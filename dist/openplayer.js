@@ -1848,7 +1848,7 @@ var Player = function () {
 
         if (!this.autoplay && this.ads) {
           var adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-          this.adsInstance = new ads_1["default"](this.media, this.ads, false, false, adsOptions);
+          this.adsInstance = new ads_1["default"](this, this.ads, false, false, adsOptions);
         }
       } catch (e) {
         console.error(e);
@@ -2056,7 +2056,7 @@ var Player = function () {
 
           if (_this4.ads) {
             var adsOptions = _this4.options && _this4.options.ads ? _this4.options.ads : undefined;
-            _this4.adsInstance = new ads_1["default"](_this4.media, _this4.ads, _this4.canAutoplay, _this4.canAutoplayMuted, adsOptions);
+            _this4.adsInstance = new ads_1["default"](_this4, _this4.ads, _this4.canAutoplay, _this4.canAutoplayMuted, adsOptions);
           } else if (_this4.canAutoplay || _this4.canAutoplayMuted) {
             return _this4.play();
           }
@@ -4815,11 +4815,11 @@ var Controls = function () {
 
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         this.events.mouse.mouseenter = function () {
-          if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
+          if (isMediaVideo && !_this.player.activeElement().paused) {
             _this._stopControlTimer();
 
             if (_this.player.activeElement().currentTime) {
-              _this.player.playBtn.setAttribute('aria-hidden', 'false');
+              _this.player.playBtn.setAttribute('aria-hidden', _this.player.isMedia() ? 'false' : 'true');
 
               _this.player.loader.setAttribute('aria-hidden', 'true');
             } else if (_this.player.getOptions().showLoaderOnInit) {
@@ -4835,11 +4835,11 @@ var Controls = function () {
         };
 
         this.events.mouse.mousemove = function () {
-          if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
+          if (isMediaVideo && !_this.player.activeElement().paused) {
             if (_this.player.activeElement().currentTime) {
               _this.player.loader.setAttribute('aria-hidden', 'true');
 
-              _this.player.playBtn.setAttribute('aria-hidden', 'false');
+              _this.player.playBtn.setAttribute('aria-hidden', _this.player.isMedia() ? 'false' : 'true');
             } else if (_this.player.getOptions().showLoaderOnInit) {
               _this.player.playBtn.setAttribute('aria-hidden', 'true');
 
@@ -4853,7 +4853,7 @@ var Controls = function () {
         };
 
         this.events.mouse.mouseleave = function () {
-          if (isMediaVideo && _this.player.isMedia() && !_this.player.activeElement().paused) {
+          if (isMediaVideo && !_this.player.activeElement().paused) {
             _this._startControlTimer(1000);
           }
         };
@@ -8378,7 +8378,7 @@ var events_1 = __webpack_require__(7);
 var general_1 = __webpack_require__(2);
 
 var Ads = function () {
-  function Ads(media, ads, autoStart, autoStartMuted, options) {
+  function Ads(player, ads, autoStart, autoStartMuted, options) {
     _classCallCheck(this, Ads);
 
     this.adsEnded = false;
@@ -8398,11 +8398,13 @@ var Ads = function () {
     this.mediaStarted = false;
     var defaultOpts = {
       debug: false,
+      loop: false,
       url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js'
     };
+    this.player = player;
     this.ads = ads;
-    this.media = media;
-    this.element = media.element;
+    this.media = player.getMedia();
+    this.element = player.getElement();
     this.autoStart = autoStart || false;
     this.autoStartMuted = autoStartMuted || false;
     this.adsOptions = Object.assign(Object.assign({}, defaultOpts), options);
@@ -8500,6 +8502,10 @@ var Ads = function () {
       }
 
       this.events = [];
+      var mouseEvents = this.player.getControls().events.mouse;
+      Object.keys(mouseEvents).forEach(function (event) {
+        _this2.adsContainer.removeEventListener(event, mouseEvents[event]);
+      });
 
       if (this.adsLoader) {
         this.adsLoader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
@@ -8570,7 +8576,7 @@ var Ads = function () {
             this.adsDuration = ad.getDuration();
             this.adsCurrentTime = ad.getDuration();
 
-            if (!this.mediaStarted) {
+            if (!this.mediaStarted && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
               var waitingEvent = events_1.addEvent('waiting');
               this.element.dispatchEvent(waitingEvent);
               var loadedEvent = events_1.addEvent('loadedmetadata');
@@ -8710,10 +8716,13 @@ var Ads = function () {
     value: function _start(manager) {
       var _this5 = this;
 
-      manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this));
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this));
       this.events = [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED];
+      var mouseEvents = this.player.getControls().events.mouse;
+      Object.keys(mouseEvents).forEach(function (event) {
+        _this5.adsContainer.addEventListener(event, mouseEvents[event]);
+      });
       this.events.forEach(function (event) {
         manager.addEventListener(event, _this5._assign.bind(_this5));
       });
@@ -8741,13 +8750,7 @@ var Ads = function () {
       this.adsDone = true;
       this.adDisplayContainer.initialize();
 
-      if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
-        this.preloadContent = this._contentLoadedAction;
-        this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
-        this.element.load();
-      } else {
-        this._contentLoadedAction();
-      }
+      this._contentLoadedAction();
     }
   }, {
     key: "_contentEndedListener",
@@ -8775,17 +8778,28 @@ var Ads = function () {
   }, {
     key: "_onContentResumeRequested",
     value: function _onContentResumeRequested() {
-      this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-      this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-
-      if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
-        this.media.src = this.mediaSources;
-        this.media.load();
-
-        this._prepareMedia();
+      if (this.adsOptions.loop) {
+        this.destroy();
+        this.adsLoader.contentComplete();
+        this.playTriggered = true;
+        this.adsStarted = true;
+        this.adsDone = false;
+        this.load(true);
       } else {
-        var event = events_1.addEvent('loadedmetadata');
-        this.element.dispatchEvent(event);
+        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
+        this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+
+        if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
+          this.media.src = this.mediaSources;
+          this.media.load();
+
+          this._prepareMedia();
+
+          this.element.parentElement.classList.add('op-ads--active');
+        } else {
+          var event = events_1.addEvent('loadedmetadata');
+          this.element.dispatchEvent(event);
+        }
       }
     }
   }, {
