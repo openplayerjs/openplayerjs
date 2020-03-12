@@ -502,7 +502,7 @@
 .op-controls .op-controls__volume--display {
     background: 0 0;
     color: #f00;
-    transition: none;
+    transition: all 0.2s ease;
     z-index: 2;
 }
 .op-controls .op-controls__volume--display {

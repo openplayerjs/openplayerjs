@@ -136,7 +136,9 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
         // Custom path/URL to IMA SDK
         url,
         // If set to `true`, load `ima3_debug.js` file for debugging purposes
-        debug
+        debug,
+        // If set to `true`, play infintely an Ad
+        loop
     },
     hls: {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
@@ -166,12 +168,10 @@ import React, { useEffect } from 'react';
 import OpenPlayer from 'openplayerjs';
 
 export default function Sample() {
-    // IMPORTANT: make sure you invoke OpenPlayerJS in the `componentDidMount` stage
-    // of the lifecycle, so it has access to the `window` object
     useEffect(() => {
         const player = new OpenPlayer('player');
         player.init();
-    }, []);
+    });
 
     return (
         <div>
