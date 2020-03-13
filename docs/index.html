@@ -71,7 +71,7 @@
 				<p><a href="https://nodei.co/npm/openplayerjs/"><img src="https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true" alt="NPM"></a></p>
 				<p><a href="https://twitter.com/intent/tweet?text=Try%20the%20best%20open%20source%20player%20and%20give%20it%20a%20star&amp;url=https://www.openplayerjs.com&amp;hashtags=openplayerjs,vast,vpaid,rocks,streaming"><img src="https://img.shields.io/twitter/url/http/shields.io.svg?style=social" alt="Tweet"></a>
 					<a href="https://www.jsdelivr.com/package/npm/openplayerjs"><img src="https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge" alt="JSDelivr"></a>
-				<a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/openplayerjs/openplayerjs.svg" alt="Greenkeeper badge"></a>   <a href="https://travis-ci.org/openplayerjs/openplayerjs"><img src="https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master" alt="Build Status"></a>  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Conventional Commits"></a></p>
+				<a href="https://travis-ci.org/openplayerjs/openplayerjs"><img src="https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master" alt="Build Status"></a>  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Conventional Commits"></a></p>
 				<p>This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.</p>
 				<p>It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!</p>
 				<a href="#advantages-of-using-openplayerjs" id="advantages-of-using-openplayerjs" style="color: inherit; text-decoration: none;">
@@ -82,6 +82,7 @@
 					<li><strong>Lightweight library</strong>: Less than <code>20kb</code> when gzipped.</li>
 					<li><strong>Monetize video and audio content</strong> with video advertising using VAST, VPAID or VMAP Ads, supported by the amazing <a href="https://developers.google.com/interactive-media-ads/">Interactive Media Ads SDK</a> (IMA SDK) library.</li>
 					<li><strong>Multi Ads</strong>: OpenPlayerJS is <strong>one of the few players that provides the ability to use a single VAST/VPAID source or a VAST/VPAID playlist from several different sources (including URLs and valid XML strings)</strong>. Usually, advertisers take only part of the total traffic of a website. As a result, users view only 10% of the total advertising per day (besides, once the user has seen the Ad, the advertiser&#39;s cookie is set, so it will not perform a new request through the server. Therefore, a website benefits when connecting multiple Ads streams.</li>
+					<li><strong>Play Ads indefinitely</strong>: OpenPlayerJS has the ability to set an ad and play it in an infinite loop; this is desired for ads that are in a heavy text page.</li>
 					<li><strong>Enhance player controls</strong>: You can add your own buttons (see example above).</li>
 					<li><strong>Accessibility is a priority</strong>: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See <a href="https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/">High Contrast Proof CSS Sprites</a> for more details.</li>
 					<li><strong>Always up-to-date</strong>: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, <a href="https://github.com/video-dev/hls.js/">hls.js</a> and <a href="https://github.com/Dash-Industry-Forum/dash.js/">dash.js</a> use <strong>even-green paths</strong> from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.</li>
@@ -182,7 +183,9 @@
         <span class="hljs-comment">// Custom path/URL to IMA SDK</span>
         url,
         <span class="hljs-comment">// If set to `true`, load `ima3_debug.js` file for debugging purposes</span>
-        debug
+        debug,
+        <span class="hljs-comment">// If set to `true`, play infintely an Ad</span>
+        loop
     },
     <span class="hljs-attr">hls</span>: {
         <span class="hljs-comment">// all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.</span>
@@ -208,12 +211,10 @@ player.init();</code></pre>
 <span class="hljs-keyword">import</span> OpenPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'openplayerjs'</span>;
 
 <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Sample</span>(<span class="hljs-params"></span>) </span>{
-    <span class="hljs-comment">// IMPORTANT: make sure you invoke OpenPlayerJS in the `componentDidMount` stage</span>
-    <span class="hljs-comment">// of the lifecycle, so it has access to the `window` object</span>
     useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
         <span class="hljs-keyword">const</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'player'</span>);
         player.init();
-    }, []);
+    });
 
     <span class="hljs-keyword">return</span> (
         <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>

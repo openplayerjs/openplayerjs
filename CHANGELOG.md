@@ -1,3 +1,20 @@
+# [1.16.0](https://github.com/openplayerjs/openplayerjs/compare/v1.15.0...v1.16.0) (2020-03-13)
+
+
+### Features
+
+* **ads:** Added `loop` option to play an Ad indefinitely per [#123](https://github.com/openplayerjs/openplayerjs/issues/123) request; updated documentation to relfect changes ([#124](https://github.com/openplayerjs/openplayerjs/issues/124)) ([e209a83](https://github.com/openplayerjs/openplayerjs/commit/e209a83))
+
+<a name="1.16.0"></a>
+# [1.16.0](https://github.com/openplayerjs/openplayerjs/compare/v1.15.0...v1.16.0) (2020-03-13)
+
+
+### Features
+
+* **ads:** Added `loop` option to play an Ad indefinitely per [#123](https://github.com/openplayerjs/openplayerjs/issues/123) request; updated documentation to relfect changes ([#124](https://github.com/openplayerjs/openplayerjs/issues/124)) ([e209a83](https://github.com/openplayerjs/openplayerjs/commit/e209a83))
+
+
+
 # 1.15.0 (2020-03-04)
 
 
