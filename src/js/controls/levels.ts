@@ -133,15 +133,17 @@ class Levels implements PlayerComponent {
         this.button.setAttribute('data-active-level', this.default);
         this.button.innerHTML = `<span>${defaultLabel}</span>`;
 
-        this.events.media.loadedmetadata = this._gatherLevels.bind(this);
-        this.events.media.canplay = () => {
+        const loadLevelsEvent = () => {
             if (!this.levels.length) {
-                this.destroy();
-            } else {
+                this._gatherLevels.bind(this);
                 const e = addEvent('controlschanged');
                 this.player.getElement().dispatchEvent(e);
             }
-        };
+        }
+
+        this.events.media.loadedmetadata = loadLevelsEvent.bind(this);
+        this.events.media.manifestLoaded = loadLevelsEvent.bind(this);
+        this.events.media.hlsManifestParsed = loadLevelsEvent.bind(this);
 
         if (this.detachMenu) {
             this.player.getControls().getContainer().appendChild(this.button);
@@ -195,6 +197,8 @@ class Levels implements PlayerComponent {
 
         this.events.global.click = (e: Event) => {
             const option = (e.target as HTMLElement);
+            const currentTime = this.player.getMedia().currentTime;
+            const isPaused = this.player.getMedia().paused;
             if (option.closest(`#${this.player.id}`) && hasClass(option, 'op-levels__option')) {
                 const level = parseInt(option.getAttribute('data-value').replace('levels-', ''), 10);
                 this.default = `${level}`;
@@ -209,6 +213,10 @@ class Levels implements PlayerComponent {
                     this.menu.setAttribute('aria-hidden', 'false');
                 }
                 this.player.getMedia().level = level;
+                this.player.getMedia().currentTime = currentTime;
+                if (!isPaused) {
+                    this.player.play();
+                }
                 e.preventDefault();
             }
         };
