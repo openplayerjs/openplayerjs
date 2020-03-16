@@ -15,6 +15,11 @@
   "main": "./dist/openplayer.js",
   "style": "./dist/openplayer.css",
   "types": "./openplayer.d.ts",
+  "files": [
+    "./demo/",
+    "./dist",
+    "./openplayer.d.ts"
+  ],
   "keywords": [
     "media",
     "video",
@@ -23,7 +28,16 @@
     "dash",
     "mp4",
     "mp3",
-    "openplayerjs"
+    "openplayer",
+    "openplayerjs",
+    "vast",
+    "vpaid",
+    "player",
+    "video-player",
+    "audio-player",
+    "html5-media",
+    "hlsjs",
+    "ima-sdk"
   ],
   "scripts": {
     "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production",
