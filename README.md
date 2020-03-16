@@ -172,7 +172,7 @@ export default function Sample() {
     useEffect(() => {
         const player = new OpenPlayer('player');
         player.init();
-    });
+    }, []);
 
     return (
         <div>
