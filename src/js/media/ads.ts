@@ -808,7 +808,13 @@ class Ads {
     private _initNotDoneAds(): void {
         this.adsDone = true;
         this.adDisplayContainer.initialize();
-        this._contentLoadedAction();
+        if (IS_IOS || IS_ANDROID) {
+            this.preloadContent = this._contentLoadedAction;
+            this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+            this.element.load();
+        } else {
+            this._contentLoadedAction();
+        }
     }
 
     /**
@@ -975,9 +981,6 @@ class Ads {
      * @memberof Ads
      */
     private _prepareMedia() {
-        if (IS_IPHONE && isVideo(this.element)) {
-            this.element.controls = true;
-        }
         this.media.currentTime = this.lastTimePaused;
         this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
         this._resumeMedia();
