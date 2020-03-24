@@ -5,7 +5,7 @@
     "allowSyntheticDefaultImports": true,
     "lib": [
       "dom",
-      "es6",
+      "es6"
     ],
     "declaration": false,
     "allowJs": true,
