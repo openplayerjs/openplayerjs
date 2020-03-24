@@ -16,8 +16,8 @@
   "style": "./dist/openplayer.css",
   "types": "./openplayer.d.ts",
   "files": [
-    "./demo/",
-    "./dist",
+    "./demo/*",
+    "./dist/*",
     "./openplayer.d.ts"
   ],
   "keywords": [
