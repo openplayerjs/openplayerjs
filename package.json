@@ -97,7 +97,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "auto-changelog": "^1.16.2",
+    "auto-changelog": "^1.16.3",
     "core-js": "^3.6.4",
     "custom-event-polyfill": "^1.0.7",
     "deepmerge": "^4.2.2",
