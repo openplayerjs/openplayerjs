@@ -272,7 +272,8 @@ If you want to see one added to this list, please submit an issue indicating wha
 9. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
 10. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
 11. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
-12. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
+12. [Addition of a custom control](https://codepen.io/rafa8626/pen/oNXmEza)
+13. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
 
 ## Built With
 
