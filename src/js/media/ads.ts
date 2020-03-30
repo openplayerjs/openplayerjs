@@ -154,7 +154,7 @@ class Ads {
      * @type google.ima.AdsLoader
      * @memberof Ads
      */
-    private adsLoader: any;
+    public adsLoader: any;
 
     /**
      * Element in which Ads will be created.

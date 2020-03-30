@@ -292,6 +292,7 @@ class Player {
      * @memberof Player
      */
     constructor(element: HTMLMediaElement | string, ads?: string | string[], fill?: boolean, options?: PlayerOptions) {
+        console.info('bcorvino version');
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
             this.ads = ads;
