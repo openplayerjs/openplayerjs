@@ -154,7 +154,7 @@ class Ads {
      * @type google.ima.AdsLoader
      * @memberof Ads
      */
-    public adsLoader: any;
+    private adsLoader: any;
 
     /**
      * Element in which Ads will be created.
@@ -288,6 +288,7 @@ class Ads {
             debug: false,
             loop: false,
             url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+            autoPlayAdBreaks: true
         };
         this.player = player;
         this.ads = ads;
@@ -315,6 +316,12 @@ class Ads {
      * @memberof Ads
      */
     public load(force: boolean = false): void {
+        console.info('load', force, this.adsOptions.autoPlayAdBreaks);
+        if(!this.adsOptions.autoPlayAdBreaks && !force) {
+            console.info('backing out bc of ads settings');
+            return;
+        }
+
         this.adsStarted = true;
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'op-ads';
@@ -338,6 +345,12 @@ class Ads {
             google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
             this._loaded.bind(this),
         );
+
+        if(!this.adsOptions.autoPlayAdBreaks) {
+            console.info('catch autoplayAdBreaks exception');
+            this.adsLoader.getSettings().setAutoPlayAdBreaks(false);
+        }
+
         this.adsLoader.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
             this._error.bind(this),
@@ -591,7 +604,7 @@ class Ads {
      */
     private _assign(event: any): void {
         const ad = event.getAd();
-
+        console.info('_assign', event, ad);
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 if (!ad.isLinear()) {
@@ -649,7 +662,15 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
+                console.info('SKIPPED OR COMPLETE');
                 if (ad.isLinear()) {
+                    console.info('SKIPPED OR COMPLETE Ad is Linear');
+
+                    if(event.type === google.ima.AdEvent.Type.SKIPPED) {
+                        const skipEvent = addEvent('adsskipped');
+                        this.element.dispatchEvent(skipEvent);
+                    }
+
                     this.element.parentElement.classList.remove('op-ads--active');
                     this.adsActive = false;
                     clearInterval(this.intervalTimer);
@@ -663,7 +684,9 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
+                console.info('ALL_ADS_COMPLETED', ad);
                 if (ad.isLinear()) {
+                    console.info('ALL_ADS_COMPLETED Ad is Linear');
                     this.adsActive = false;
                     this.adsEnded = true;
                     this.element.parentElement.classList.remove('op-ads--active');
@@ -772,6 +795,13 @@ class Ads {
             google.ima.AdEvent.Type.VOLUME_MUTED,
         ];
 
+        if(!this.adsOptions.autoPlayAdBreaks) {
+            /**
+            Add it to the events array so it gets removed onDestroy
+            */
+            this.events.push(google.ima.AdEvent.Type.AD_BREAK_READY);
+        }
+
         const mouseEvents = this.player.getControls().events.mouse;
         Object.keys(mouseEvents).forEach((event: string) => {
             this.adsContainer.addEventListener(event, mouseEvents[event]);
@@ -854,6 +884,7 @@ class Ads {
      * @memberof Ads
      */
     private _onContentResumeRequested(): void {
+        console.info('_onContentResumeRequested');
         if (this.adsOptions.loop) {
             this.destroy();
             this.adsLoader.contentComplete();
@@ -883,6 +914,7 @@ class Ads {
      * @memberof Ads
      */
     private _loadedMetadataHandler() {
+        console.info('_loadedMetadataHandler')
         if (Array.isArray(this.ads)) {
             this.currentAdsIndex++;
             if (this.currentAdsIndex <= this.ads.length - 1) {
@@ -893,10 +925,24 @@ class Ads {
                 this.adsDone = false;
                 this._requestAds();
             } else {
+                console.info('in other case');
+                if(!this.adsOptions.autoPlayAdBreaks) {
+                    this.adsManager.destroy();
+                    this.adsLoader.contentComplete();
+                    this.adsDone = false;
+                    this.playTriggered = true;
+                }
                 this._prepareMedia();
             }
         } else if (this.element.seekable.length) {
             if (this.element.seekable.end(0) > this.lastTimePaused) {
+                if(!this.adsOptions.autoPlayAdBreaks) {
+                    console.info('destrying bc of ad options');
+                    this.adsManager.destroy();
+                    this.adsLoader.contentComplete();
+                    this.adsDone = false;
+                    this.playTriggered = true;
+                }
                 this._prepareMedia();
             }
         } else {
