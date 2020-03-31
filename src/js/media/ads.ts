@@ -937,35 +937,15 @@ class Ads {
                 this.adsDone = false;
                 this._requestAds();
             } else {
-                /**
-                If we have set autoPlayAdBreaks to false, destroy
-                the adsManager to prevent postRolls and call
-                contentComplete on the adsLoader to reset the SDK
-                and avoid false positive of duplicate Ad Request
-                https://developers.google.com/interactive-media-ads/docs/sdks/html5/faq#8
-                */
                 if(!this.adsOptions.autoPlayAdBreaks) {
-                    this.adsManager.destroy();
-                    this.adsLoader.contentComplete();
-                    this.adsDone = false;
-                    this.playTriggered = true;
+                    this._resetAdsAfterManualBreak();
                 }
                 this._prepareMedia();
             }
         } else if (this.element.seekable.length) {
             if (this.element.seekable.end(0) > this.lastTimePaused) {
-                /**
-                If we have set autoPlayAdBreaks to false, destroy
-                the adsManager to prevent postRolls and call
-                contentComplete on the adsLoader to reset the SDK
-                and avoid false positive of duplicate Ad Request
-                https://developers.google.com/interactive-media-ads/docs/sdks/html5/faq#8
-                */
                 if(!this.adsOptions.autoPlayAdBreaks) {
-                    this.adsManager.destroy();
-                    this.adsLoader.contentComplete();
-                    this.adsDone = false;
-                    this.playTriggered = true;
+                    this._resetAdsAfterManualBreak();
                 }
                 this._prepareMedia();
             }
@@ -1043,6 +1023,25 @@ class Ads {
             this.preloadContent = null;
         }
         this._requestAds();
+    }
+
+    /**
+     * Reset Ads Player after manual ad break.
+     *
+     * @memberof Ads
+     */
+    private _resetAdsAfterManualBreak() {
+        /**
+        If we have set autoPlayAdBreaks to false, destroy
+        the adsManager to prevent postRolls and call
+        contentComplete on the adsLoader to reset the SDK
+        and avoid false positive of duplicate Ad Request
+        https://developers.google.com/interactive-media-ads/docs/sdks/html5/faq#8
+        */
+        this.adsManager.destroy();
+        this.adsLoader.contentComplete();
+        this.adsDone = false;
+        this.playTriggered = true;
     }
 
     /**
