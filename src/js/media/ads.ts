@@ -366,9 +366,7 @@ class Ads {
         /**
         If we have set autoPlayAdBreaks to false, set it in the adsLoader
         */
-        if(!this.adsOptions.autoPlayAdBreaks) {
-            this.adsLoader.getSettings().setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
-        }
+        this.adsLoader.getSettings().setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
 
         this.adsLoader.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
