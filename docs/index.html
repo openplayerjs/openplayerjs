@@ -185,7 +185,9 @@
         <span class="hljs-comment">// If set to `true`, load `ima3_debug.js` file for debugging purposes</span>
         debug,
         <span class="hljs-comment">// If set to `true`, play infintely an Ad</span>
-        loop
+        loop,
+        <span class="hljs-comment">// If set to `false`, allows the user to overwrite the default mechanism to skip Ads</span>
+        autoPlayAdBreaks,
     },
     <span class="hljs-attr">hls</span>: {
         <span class="hljs-comment">// all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.</span>
@@ -197,7 +199,7 @@
         <span class="hljs-comment">// object containing property names corresponding to key system name strings (e.g. "org.w3.clearkey") and</span>
         <span class="hljs-comment">// associated values being instances of ProtectionData</span>
         <span class="hljs-comment">// (http://vm2.dashif.org/dash.js/docs/jsdocs/MediaPlayer.vo.protection.ProtectionData.html)</span>
-        drm
+        drm,
     },
 });
 <span class="hljs-comment">// Don't forget to start the player</span>
@@ -410,6 +412,7 @@ player.getElement().dispatchEvent(event);</code></pre>
 					<li><a href="https://codepen.io/rafa8626/pen/wvvxbMN">Ads playlist (multiple URLs)</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/abbjrBW">Retrieve data from audio streaming (HLS)</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/wvvOYpg">YouTube video (using plugin)</a></li>
+					<li><a href="https://codepen.io/rafa8626/pen/oNXmEza">Addition of a custom control</a></li>
 					<li><a href="https://codesandbox.io/s/vigorous-almeida-71gln">OpenPlayerJS with Next.js</a></li>
 				</ol>
 				<a href="#built-with" id="built-with" style="color: inherit; text-decoration: none;">
