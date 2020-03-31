@@ -18,4 +18,6 @@ export default interface Options {
      * @type boolean
      */
     loop: boolean;
+
+    autoPlayAdBreaks: boolean;
 }
