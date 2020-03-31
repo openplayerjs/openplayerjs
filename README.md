@@ -139,7 +139,9 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
         // If set to `true`, load `ima3_debug.js` file for debugging purposes
         debug,
         // If set to `true`, play infintely an Ad
-        loop
+        loop,
+        // If set to `false`, allows the user to overwrite the default mechanism to skip Ads
+        autoPlayAdBreaks,
     },
     hls: {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
@@ -151,7 +153,7 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
         // object containing property names corresponding to key system name strings (e.g. "org.w3.clearkey") and
         // associated values being instances of ProtectionData
         // (http://vm2.dashif.org/dash.js/docs/jsdocs/MediaPlayer.vo.protection.ProtectionData.html)
-        drm
+        drm,
     },
 });
 // Don't forget to start the player
