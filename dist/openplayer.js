@@ -8430,8 +8430,7 @@ var Ads = function () {
     var defaultOpts = {
       debug: false,
       loop: false,
-      url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-      autoPlayAdBreaks: true
+      url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js'
     };
     this.player = player;
     this.ads = ads;
@@ -8455,17 +8454,6 @@ var Ads = function () {
     key: "load",
     value: function load() {
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-      if (!this.adsOptions.autoPlayAdBreaks && !force) {
-        return;
-      }
-
-      var existingContainer = document.getElementById('op-ads');
-
-      if (existingContainer) {
-        existingContainer.parentNode.removeChild(existingContainer);
-      }
-
       this.adsStarted = true;
       this.adsContainer = document.createElement('div');
       this.adsContainer.id = 'op-ads';
@@ -8479,11 +8467,6 @@ var Ads = function () {
       this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
       this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
       this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
-
-      if (!this.adsOptions.autoPlayAdBreaks) {
-        this.adsLoader.getSettings().setAutoPlayAdBreaks(false);
-      }
-
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
 
       if (typeof window !== 'undefined') {
@@ -8671,11 +8654,6 @@ var Ads = function () {
         case google.ima.AdEvent.Type.COMPLETE:
         case google.ima.AdEvent.Type.SKIPPED:
           if (ad.isLinear()) {
-            if (event.type === google.ima.AdEvent.Type.SKIPPED) {
-              var skipEvent = events_1.addEvent('adsskipped');
-              this.element.dispatchEvent(skipEvent);
-            }
-
             this.element.parentElement.classList.remove('op-ads--active');
             this.adsActive = false;
             clearInterval(this.intervalTimer);
@@ -8772,11 +8750,6 @@ var Ads = function () {
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this));
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this));
       this.events = [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED];
-
-      if (!this.adsOptions.autoPlayAdBreaks) {
-        this.events.push(google.ima.AdEvent.Type.AD_BREAK_READY);
-      }
-
       var mouseEvents = this.player.getControls().events.mouse;
       Object.keys(mouseEvents).forEach(function (event) {
         _this5.adsContainer.addEventListener(event, mouseEvents[event]);
@@ -8881,24 +8854,10 @@ var Ads = function () {
 
           this._requestAds();
         } else {
-          if (!this.adsOptions.autoPlayAdBreaks) {
-            this.adsManager.destroy();
-            this.adsLoader.contentComplete();
-            this.adsDone = false;
-            this.playTriggered = true;
-          }
-
           this._prepareMedia();
         }
       } else if (this.element.seekable.length) {
         if (this.element.seekable.end(0) > this.lastTimePaused) {
-          if (!this.adsOptions.autoPlayAdBreaks) {
-            this.adsManager.destroy();
-            this.adsLoader.contentComplete();
-            this.adsDone = false;
-            this.playTriggered = true;
-          }
-
           this._prepareMedia();
         }
       } else {
