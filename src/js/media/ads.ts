@@ -284,10 +284,15 @@ class Ads {
      * @memberof Ads
      */
     constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options) {
+        /**
+        Set the default value for autoPlayAdBreaks
+        so we can override it
+        */
         const defaultOpts = {
             debug: false,
             loop: false,
             url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+            autoPlayAdBreaks: true
         };
         this.player = player;
         this.ads = ads;
@@ -315,6 +320,24 @@ class Ads {
      * @memberof Ads
      */
     public load(force: boolean = false): void {
+
+        /**
+        If we have set autoPlayAdBreaks to false and haven't set the
+        force flag, we don't want to load ads yet
+        */
+        if(!this.adsOptions.autoPlayAdBreaks && !force) {
+            return;
+        }
+
+        /**
+        Check for an existing ad container div and destroy it to avoid 
+        clickable areas of subsequent ads being blocked by old divs 
+        */
+        const existingContainer = document.getElementById('op-ads');
+        if(existingContainer) {
+            existingContainer.parentNode.removeChild(existingContainer);
+        }
+
         this.adsStarted = true;
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'op-ads';
@@ -326,6 +349,7 @@ class Ads {
         this.element.dispatchEvent(e);
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
                 this.adsContainer,
@@ -338,6 +362,12 @@ class Ads {
             google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
             this._loaded.bind(this),
         );
+
+        /**
+        If we have set autoPlayAdBreaks to false, set it in the adsLoader
+        */
+        this.adsLoader.getSettings().setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
+
         this.adsLoader.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
             this._error.bind(this),
@@ -591,7 +621,6 @@ class Ads {
      */
     private _assign(event: any): void {
         const ad = event.getAd();
-
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 if (!ad.isLinear()) {
@@ -650,6 +679,12 @@ class Ads {
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
                 if (ad.isLinear()) {
+
+                    if(event.type === google.ima.AdEvent.Type.SKIPPED) {
+                        const skipEvent = addEvent('adsskipped');
+                        this.element.dispatchEvent(skipEvent);
+                    }
+
                     this.element.parentElement.classList.remove('op-ads--active');
                     this.adsActive = false;
                     clearInterval(this.intervalTimer);
@@ -772,6 +807,13 @@ class Ads {
             google.ima.AdEvent.Type.VOLUME_MUTED,
         ];
 
+        if(!this.adsOptions.autoPlayAdBreaks) {
+            /**
+            Add it to the events array so it gets removed onDestroy
+            */
+            this.events.push(google.ima.AdEvent.Type.AD_BREAK_READY);
+        }
+
         const mouseEvents = this.player.getControls().events.mouse;
         Object.keys(mouseEvents).forEach((event: string) => {
             this.adsContainer.addEventListener(event, mouseEvents[event]);
@@ -893,10 +935,16 @@ class Ads {
                 this.adsDone = false;
                 this._requestAds();
             } else {
+                if(!this.adsOptions.autoPlayAdBreaks) {
+                    this._resetAdsAfterManualBreak();
+                }
                 this._prepareMedia();
             }
         } else if (this.element.seekable.length) {
             if (this.element.seekable.end(0) > this.lastTimePaused) {
+                if(!this.adsOptions.autoPlayAdBreaks) {
+                    this._resetAdsAfterManualBreak();
+                }
                 this._prepareMedia();
             }
         } else {
@@ -973,6 +1021,25 @@ class Ads {
             this.preloadContent = null;
         }
         this._requestAds();
+    }
+
+    /**
+     * Reset Ads Player after manual ad break.
+     *
+     * @memberof Ads
+     */
+    private _resetAdsAfterManualBreak() {
+        /**
+        If we have set autoPlayAdBreaks to false, destroy
+        the adsManager to prevent postRolls and call
+        contentComplete on the adsLoader to reset the SDK
+        and avoid false positive of duplicate Ad Request
+        https://developers.google.com/interactive-media-ads/docs/sdks/html5/faq#8
+        */
+        this.adsManager.destroy();
+        this.adsLoader.contentComplete();
+        this.adsDone = false;
+        this.playTriggered = true;
     }
 
     /**
