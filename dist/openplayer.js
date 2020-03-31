@@ -8456,11 +8456,15 @@ var Ads = function () {
     key: "load",
     value: function load() {
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      console.info('load', force, this.adsOptions.autoPlayAdBreaks);
 
       if (!this.adsOptions.autoPlayAdBreaks && !force) {
-        console.info('backing out bc of ads settings');
         return;
+      }
+
+      var existingContainer = document.getElementById('op-ads');
+
+      if (existingContainer) {
+        existingContainer.parentNode.removeChild(existingContainer);
       }
 
       this.adsStarted = true;
@@ -8478,7 +8482,6 @@ var Ads = function () {
       this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
 
       if (!this.adsOptions.autoPlayAdBreaks) {
-        console.info('catch autoplayAdBreaks exception');
         this.adsLoader.getSettings().setAutoPlayAdBreaks(false);
       }
 
@@ -8604,7 +8607,6 @@ var Ads = function () {
       var _this4 = this;
 
       var ad = event.getAd();
-      console.info('_assign', event, ad);
 
       switch (event.type) {
         case google.ima.AdEvent.Type.LOADED:
@@ -8669,11 +8671,7 @@ var Ads = function () {
 
         case google.ima.AdEvent.Type.COMPLETE:
         case google.ima.AdEvent.Type.SKIPPED:
-          console.info('SKIPPED OR COMPLETE');
-
           if (ad.isLinear()) {
-            console.info('SKIPPED OR COMPLETE Ad is Linear');
-
             if (event.type === google.ima.AdEvent.Type.SKIPPED) {
               var skipEvent = events_1.addEvent('adsskipped');
               this.element.dispatchEvent(skipEvent);
@@ -8696,10 +8694,7 @@ var Ads = function () {
           break;
 
         case google.ima.AdEvent.ALL_ADS_COMPLETED:
-          console.info('ALL_ADS_COMPLETED', ad);
-
           if (ad.isLinear()) {
-            console.info('ALL_ADS_COMPLETED Ad is Linear');
             this.adsActive = false;
             this.adsEnded = true;
             this.element.parentElement.classList.remove('op-ads--active');
@@ -8848,8 +8843,6 @@ var Ads = function () {
   }, {
     key: "_onContentResumeRequested",
     value: function _onContentResumeRequested() {
-      console.info('_onContentResumeRequested');
-
       if (this.adsOptions.loop) {
         this.destroy();
         this.adsLoader.contentComplete();
@@ -8877,8 +8870,6 @@ var Ads = function () {
   }, {
     key: "_loadedMetadataHandler",
     value: function _loadedMetadataHandler() {
-      console.info('_loadedMetadataHandler');
-
       if (Array.isArray(this.ads)) {
         this.currentAdsIndex++;
 
@@ -8891,8 +8882,6 @@ var Ads = function () {
 
           this._requestAds();
         } else {
-          console.info('in other case');
-
           if (!this.adsOptions.autoPlayAdBreaks) {
             this.adsManager.destroy();
             this.adsLoader.contentComplete();
@@ -8905,7 +8894,6 @@ var Ads = function () {
       } else if (this.element.seekable.length) {
         if (this.element.seekable.end(0) > this.lastTimePaused) {
           if (!this.adsOptions.autoPlayAdBreaks) {
-            console.info('destrying bc of ad options');
             this.adsManager.destroy();
             this.adsLoader.contentComplete();
             this.adsDone = false;

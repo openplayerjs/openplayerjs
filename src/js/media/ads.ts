@@ -284,6 +284,10 @@ class Ads {
      * @memberof Ads
      */
     constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options) {
+        /**
+        Set the default value for autoPlayAdBreaks
+        so we can override it
+        */
         const defaultOpts = {
             debug: false,
             loop: false,
@@ -316,10 +320,22 @@ class Ads {
      * @memberof Ads
      */
     public load(force: boolean = false): void {
-        console.info('load', force, this.adsOptions.autoPlayAdBreaks);
+
+        /**
+        If we have set autoPlayAdBreaks to false and haven't set the
+        force flag, we don't want to load ads yet
+        */
         if(!this.adsOptions.autoPlayAdBreaks && !force) {
-            console.info('backing out bc of ads settings');
             return;
+        }
+
+        /**
+        Check for an existing ad container div and destroy it to avoid 
+        clickable areas of subsequent ads being blocked by old divs 
+        */
+        const existingContainer = document.getElementById('op-ads');
+        if(existingContainer) {
+            existingContainer.parentNode.removeChild(existingContainer);
         }
 
         this.adsStarted = true;
@@ -333,6 +349,7 @@ class Ads {
         this.element.dispatchEvent(e);
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
                 this.adsContainer,
@@ -346,8 +363,10 @@ class Ads {
             this._loaded.bind(this),
         );
 
+        /**
+        If we have set autoPlayAdBreaks to false, set it in the adsLoader
+        */
         if(!this.adsOptions.autoPlayAdBreaks) {
-            console.info('catch autoplayAdBreaks exception');
             this.adsLoader.getSettings().setAutoPlayAdBreaks(false);
         }
 
@@ -604,7 +623,6 @@ class Ads {
      */
     private _assign(event: any): void {
         const ad = event.getAd();
-        console.info('_assign', event, ad);
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 if (!ad.isLinear()) {
@@ -662,9 +680,7 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.COMPLETE:
             case google.ima.AdEvent.Type.SKIPPED:
-                console.info('SKIPPED OR COMPLETE');
                 if (ad.isLinear()) {
-                    console.info('SKIPPED OR COMPLETE Ad is Linear');
 
                     if(event.type === google.ima.AdEvent.Type.SKIPPED) {
                         const skipEvent = addEvent('adsskipped');
@@ -684,9 +700,7 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.ALL_ADS_COMPLETED:
-                console.info('ALL_ADS_COMPLETED', ad);
                 if (ad.isLinear()) {
-                    console.info('ALL_ADS_COMPLETED Ad is Linear');
                     this.adsActive = false;
                     this.adsEnded = true;
                     this.element.parentElement.classList.remove('op-ads--active');
@@ -884,7 +898,6 @@ class Ads {
      * @memberof Ads
      */
     private _onContentResumeRequested(): void {
-        console.info('_onContentResumeRequested');
         if (this.adsOptions.loop) {
             this.destroy();
             this.adsLoader.contentComplete();
@@ -914,7 +927,6 @@ class Ads {
      * @memberof Ads
      */
     private _loadedMetadataHandler() {
-        console.info('_loadedMetadataHandler')
         if (Array.isArray(this.ads)) {
             this.currentAdsIndex++;
             if (this.currentAdsIndex <= this.ads.length - 1) {
@@ -925,7 +937,13 @@ class Ads {
                 this.adsDone = false;
                 this._requestAds();
             } else {
-                console.info('in other case');
+                /**
+                If we have set autoPlayAdBreaks to false, destroy
+                the adsManager to prevent postRolls and call
+                contentComplete on the adsLoader to reset the SDK
+                and avoid false positive of duplicate Ad Request
+                https://developers.google.com/interactive-media-ads/docs/sdks/html5/faq#8
+                */
                 if(!this.adsOptions.autoPlayAdBreaks) {
                     this.adsManager.destroy();
                     this.adsLoader.contentComplete();
@@ -936,8 +954,14 @@ class Ads {
             }
         } else if (this.element.seekable.length) {
             if (this.element.seekable.end(0) > this.lastTimePaused) {
+                /**
+                If we have set autoPlayAdBreaks to false, destroy
+                the adsManager to prevent postRolls and call
+                contentComplete on the adsLoader to reset the SDK
+                and avoid false positive of duplicate Ad Request
+                https://developers.google.com/interactive-media-ads/docs/sdks/html5/faq#8
+                */
                 if(!this.adsOptions.autoPlayAdBreaks) {
-                    console.info('destrying bc of ad options');
                     this.adsManager.destroy();
                     this.adsLoader.contentComplete();
                     this.adsDone = false;
