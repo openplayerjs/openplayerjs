@@ -57,6 +57,20 @@
         </div>
     </div>
 
+    <div class="players video-player">
+        <h1>Manual Ad Breaks Sample</h1>
+        <video class="op-player__media" id="video" controls playsinline
+            data-op-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator="
+            data-op-ads-autoplay-adbreaks="false"
+            >
+            <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
+        </video>
+        <div>
+            <button class="destroy-player">Destroy player</button>
+            <button class="play-ad">Play Ad</button>
+        </div>
+    </div>
+
     <div class="players audio-player">
         <h1>Audio Sample</h1>
         <div id="stream-info" class="hidden"></div>

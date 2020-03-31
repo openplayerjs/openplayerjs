@@ -1577,7 +1577,6 @@ var Player = function () {
       startVolume: 1,
       step: 0
     };
-    console.info('bcorvino version');
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
     if (this.element) {
