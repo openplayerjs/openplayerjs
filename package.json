@@ -98,7 +98,7 @@
   },
   "dependencies": {
     "auto-changelog": "^1.16.4",
-    "core-js": "^3.6.4",
+    "core-js": "^3.6.5",
     "custom-event-polyfill": "^1.0.7",
     "deepmerge": "^4.2.2",
     "element-closest": "^3.0.2",
