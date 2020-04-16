@@ -1,16 +1,20 @@
 # [OpenPlayer.js](https://www.openplayerjs.com)
 
-![openplayer](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
+![openplayerjs](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
 
 [![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Try%20the%20best%20open%20source%20player%20and%20give%20it%20a%20star&url=https://www.openplayerjs.com&hashtags=openplayerjs,vast,vpaid,rocks,streaming)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
-   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs)  [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs)
 
-This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.
+This awesome media player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play MP4/MP3, HLS and M(PEG)-DASH, among others.
 
 It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
+
+To see the unleashed power of OpenPlayerJS, **check our [Demo folder](https://github.com/openplayerjs/openplayerjs/tree/master/demo) and our [Code Samples](#code-samples)**.
+
+We are constantly looking to see if OpenPlayerJS meets your needs; if it does not, please submit an issue indicating what scenarios OpenPlayerJS it's lacking and we will add a sample to demonstrate the solution(s). Your feedback is always extremely valuable!
 
 ## Advantages of using OpenPlayerJS
 
@@ -21,15 +25,15 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 * **Play Ads indefinitely**: OpenPlayerJS has the ability to set an ad and play it in an infinite loop; this is desired for ads that are in a heavy text page.
 * **Enhance player controls**: You can add your own buttons (see example above).
 * **Accessibility is a priority**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See [High Contrast Proof CSS Sprites](https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/) for more details.
-* **Always up-to-date**: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.
-* **Smart autoplay algorithm**: Have you ever worried to know if your browser will autoplay media correctly? Forget about it! With OpenPlayerJS, we run a simple but yet powerful algorithm to check your browser's `autoplay` capabilities.
+* **Always up-to-date**: Relying on [Snyk](https://snyk.io/), OpenPlayerJS uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.
+* **Smart autoplay algorithm**: Have you ever worried to know if your browser will autoplay media correctly? Forget about it! OpenPlayerJS runs a simple but yet powerful algorithm to check your browser's `autoplay` capabilities.
 * **Responsive**: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 * Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
-* **No dependencies**, since this player is written in Typescript.
+* **Use it without dependencies**, since this player is written in Typescript, compiled and ready to be used!
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+OpenPlayerJS requires minimum steps to be installed.
 
 ### Prerequisites
 
@@ -43,11 +47,9 @@ CDN is also available for better performance. See next section for more details.
 
 ### Installation
 
-Include OpenPlayer's stylesheet inside the `<head>` tag, and the script at the bottom of the `<body>` tag (both of them located in the `dist` folder). The bundles will contain both minified and uncompressed files, so use the one that fits the best your needs.
-
 Since this player uses HTML5 markup, all the attributes for video/audio tags are available. The only 3 requirements to invoke the player are:
 
-* A valid media source, such as MP4, MP3, HLS, M(PEG)-DASH.
+* A valid media source, such as MP4, MP3, HLS or M(PEG)-DASH.
 * The `controls` and `playsinline` attributes to provide cross-browser support.
 * The `op-player op-player__media` class names to invoke the player.
 
@@ -67,7 +69,7 @@ That's it!
 </html>
 ```
 
-We encourage to use CDN for major performance. To do it, in the snippet above, replace `/path/to/openplayer.css` and `/path/to/openplayer.js` with `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.css` and `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.js`.
+We encourage you to use a CDN service for optimal performance. To do it, in the snippet above, replace `/path/to/openplayer.css` and `/path/to/openplayer.js` with `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.css` and `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.js`.
 
 **NOTE**: As stated at [jsDeliver website](https://www.jsdelivr.com/), it is recommended to use a `[version]` number in the URL rather than `@latest` for production.
 
@@ -83,7 +85,7 @@ import OpenPlayer from 'openplayerjs';
 
 ### Adding Closed Captions
 
-OpenPlayer supports the use of VTT closed captions by adding the `track` tag as indicated in the following snippet; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed:
+OpenPlayerJS supports the use of VTT closed captions by adding the `track` tag as indicated in the following snippet; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed:
 
 ```html
 <html>
@@ -102,7 +104,7 @@ OpenPlayer supports the use of VTT closed captions by adding the `track` tag as 
 
 ## Usage with Javascript
 
-Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the `op-player` class from the video/audio tag (just leave `op-player__media` to preserve styles), and in Javascript use the following snippet:
+Sometimes you need more flexibility instantiating the player; for example, adding cache busting to the VAST/VPAID URL, having a list of Ads URLs, adding new controls, etc. So, for that case, remove the `op-player` class from the video/audio tag (leaving `op-player__media` to preserve styles), and, with Javascript, use the following setup:
 
 ```javascript
 var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
@@ -162,7 +164,7 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
 player.init();
 ```
 
-**NOTE**: Only caveat here is that the video/audio tags need an ID ahead of time.
+**NOTE**: In order to use this setup, the video/audio tag(s) need a unique ID.
 
 ## Usage with Next.js/React
 
@@ -189,14 +191,14 @@ export default function Sample() {
 
 ## API
 
-If you need more control over the player, OpenPlayer stores instances of each player in the document. To have access to a specific instance, use video/audio's `id` and use `OpenPlayer.instances` element.
+If you need more control over the player, OpenPlayerJS stores an instance of each player in the document. To have access to a specific instance, use the media `id` and use `OpenPlayer.instances` element.
 
-**NOTE**: if an `id` attribute is not detected, OpenPlayer will autogenerate one.
+**NOTE**: if an `id` attribute is not detected, OpenPlayerJS will autogenerate one for you.
 
 ```javascript
 // Selects the first video/audio that uses OpenPlayer
 var id = document.querySelector('.op-player').id;
-var player = OpenPlayer.instances[id];
+var player = OpenPlayerJS.instances[id];
 ```
 
 The methods supported by the OpenPlayer instance are:
@@ -224,9 +226,7 @@ Method | Description
 
 ### Events
 
-Since OpenPlayer is based on HTML5 media, the way to trigger events is using the video/audio tag.
-
-Using the code above, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
+Using the code below, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
 
 ```javascript
 player.getElement().addEventListener('ended', function() {
@@ -237,7 +237,7 @@ var event = new CustomEvent('ended');
 player.getElement().dispatchEvent(event);
 ```
 
-All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayer, and it incorporates some custom ones, mostly related to Ads:
+All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayerJS, and it incorporates some custom ones, mostly related to Ads:
 
 Event | Description
 --- | ---
@@ -257,35 +257,28 @@ Event | Description
 `adsallAdsCompleted` | Event triggered when all Ads have been played.
 `adsmediaended` | Event executed when an Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad).
 
-In addition to the list above, [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are being supported by OpenPlayer, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
+In addition to the list above, all [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are supported using the same approach described above, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
 
 ## Code Samples
-
-Witness the power of this player by browsing our best samples!
-
-If you want to see one added to this list, please submit an issue indicating what scenarios OpenPlayerJS could help you with.
 
 1. [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
 3. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
-4. [Add source after initialization (useful for AJAX)](https://codepen.io/rafa8626/pen/YzzgJrK)
-5. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
-6. [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
-7. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
-8. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
-9. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
-10. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
-11. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
-12. [Addition of a custom control](https://codepen.io/rafa8626/pen/oNXmEza)
-13. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
+4. [Removing controls and using `preload="none"`](https://codepen.io/rafa8626/pen/OJyMwxX)
+5. [Add source after initialization (useful for AJAX)](https://codepen.io/rafa8626/pen/YzzgJrK)
+6. [Using `Levels`](https://codepen.io/rafa8626/pen/ExxXvZx)
+7. [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
+8. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
+9. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
+10. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
+11. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
+12. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
+13. [Addition of a custom control](https://codepen.io/rafa8626/pen/oNXmEza)
+14. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
 
 ## Built With
 
 * [Typescript](https://www.typescriptlang.org/docs/home.html) - The Javascript for Pros.
-
-## Contributing
-
-Make sure you check [Conventional Commits Standards](https://conventionalcommits.org/) for commit guidelines.
 
 ## Authors
 
