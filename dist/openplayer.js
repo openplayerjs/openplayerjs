@@ -7477,7 +7477,7 @@ var Media = function () {
           throw new TypeError('Media cannot be played with any valid media type');
         }
 
-        this.media.promise.then(function () {
+        return this.media.promise.then(function () {
           _this.media.load();
         });
       } catch (e) {
@@ -7488,9 +7488,18 @@ var Media = function () {
   }, {
     key: "play",
     value: function play() {
+      var _this2 = this;
+
       if (!this.loaded) {
-        this.load();
         this.loaded = true;
+        var promiseLoad = this.load();
+
+        if (promiseLoad) {
+          this.loaded = true;
+          return promiseLoad.then(function () {
+            _this2.media.play();
+          });
+        }
       }
 
       this.promisePlay = new Promise(function (resolve) {
@@ -7501,11 +7510,11 @@ var Media = function () {
   }, {
     key: "pause",
     value: function pause() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.promisePlay !== undefined) {
         this.promisePlay.then(function () {
-          _this2.media.pause();
+          _this3.media.pause();
         });
       } else {
         this.media.pause();
@@ -7551,7 +7560,7 @@ var Media = function () {
   }, {
     key: "_invoke",
     value: function _invoke(media) {
-      var _this3 = this;
+      var _this4 = this;
 
       var playHLSNatively = this.element.canPlayType('application/vnd.apple.mpegurl') || this.element.canPlayType('application/x-mpegURL');
 
@@ -7561,9 +7570,9 @@ var Media = function () {
           var type = rule(media.src);
 
           if (type) {
-            var customMedia = _this3.customMedia.media[type];
-            var customOptions = _this3.options[_this3.customMedia.optionsKey[type]] || undefined;
-            customRef = customMedia(_this3.element, media, _this3.autoplay, customOptions);
+            var customMedia = _this4.customMedia.media[type];
+            var customOptions = _this4.options[_this4.customMedia.optionsKey[type]] || undefined;
+            customRef = customMedia(_this4.element, media, _this4.autoplay, customOptions);
           }
         });
 
@@ -7586,7 +7595,7 @@ var Media = function () {
   }, {
     key: "src",
     set: function set(media) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (typeof media === 'string') {
         this.mediaFiles.push({
@@ -7600,7 +7609,7 @@ var Media = function () {
       }
 
       this.mediaFiles.some(function (file) {
-        return _this4.canPlayType(file.type);
+        return _this5.canPlayType(file.type);
       });
 
       if (this.element.src) {
@@ -8302,9 +8311,9 @@ var HTML5Media = function (_native_1$default) {
     element.addEventListener('error', function (e) {
       var details = {
         detail: {
-          type: 'HTML5',
+          data: e,
           message: e.message,
-          data: e
+          type: 'HTML5'
         }
       };
       var errorEvent = events_1.addEvent('playererror', details);
@@ -8428,10 +8437,10 @@ var Ads = function () {
     this.lastTimePaused = 0;
     this.mediaStarted = false;
     var defaultOpts = {
+      autoPlayAdBreaks: true,
       debug: false,
       loop: false,
-      url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-      autoPlayAdBreaks: true
+      url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js'
     };
     this.player = player;
     this.ads = ads;
