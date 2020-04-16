@@ -8440,6 +8440,7 @@ var Ads = function () {
       autoPlayAdBreaks: true,
       debug: false,
       loop: false,
+      numRedirects: 4,
       url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js'
     };
     this.player = player;
@@ -8487,8 +8488,9 @@ var Ads = function () {
       this.adDisplayContainer = new google.ima.AdDisplayContainer(this.adsContainer, this.element);
       this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
       this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
-      this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
       this.adsLoader.getSettings().setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
+      this.adsLoader.getSettings().setNumRedirects(this.adsOptions.numRedirects);
+      this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
       this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
 
       if (typeof window !== 'undefined') {
