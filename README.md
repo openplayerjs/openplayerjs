@@ -134,14 +134,16 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
     onError,
     ads: {
-        // Custom path/URL to IMA SDK
-        url,
+        // If set to `false`, allows the user to overwrite the default mechanism to skip Ads
+        autoPlayAdBreaks,
         // If set to `true`, load `ima3_debug.js` file for debugging purposes
         debug,
         // If set to `true`, play infintely an Ad
         loop,
-        // If set to `false`, allows the user to overwrite the default mechanism to skip Ads
-        autoPlayAdBreaks,
+        // Maximum number of redirects before the subsequent redirects will be denied (by default, `4`)
+        numRedirects,
+        // Custom path/URL to IMA SDK
+        url,
     },
     hls: {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.

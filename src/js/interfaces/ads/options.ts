@@ -7,17 +7,23 @@
  */
 export default interface Options {
     /**
-     * @type string
+     * @type boolean
      */
-    url: string;
+    autoPlayAdBreaks: boolean;
     /**
      * @type boolean
      */
     debug: boolean;
     /**
+     * @type number
+     */
+    numRedirects: number;
+    /**
      * @type boolean
      */
     loop: boolean;
-
-    autoPlayAdBreaks: boolean;
+    /**
+     * @type string
+     */
+    url: string;
 }
