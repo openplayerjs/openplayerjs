@@ -4,7 +4,6 @@ import 'core-js/features/object/assign';
 import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
-import * as deepmerge from 'deepmerge';
 import 'element-closest';
 
 import Controls from './controls';
@@ -287,17 +286,17 @@ class Player {
      * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
      * @param {?string} ads  A URL or collection of URLs to play Ads via Google IMA SDK.
      * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
-     * @param {?PlayerOptions} options  Options to enhance Hls and Dash players.
+     * @param {?PlayerOptions} playerOptions  Options to enhance Hls and Dash players, among other things.
      * @returns {Player}
      * @memberof Player
      */
-    constructor(element: HTMLMediaElement | string, ads?: string | string[], fill?: boolean, options?: PlayerOptions) {
+    constructor(element: HTMLMediaElement | string, ads?: string | string[], fill?: boolean, playerOptions?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
             this.ads = ads;
             this.fill = fill;
             this.autoplay = this.element.autoplay || false;
-            this.options = deepmerge(this.defaultOptions, options || {});
+            this._mergeOptions(playerOptions);
             this.element.volume = this.options.startVolume;
             if (this.options.startTime > 0) {
                 this.element.currentTime = this.options.startTime;
@@ -923,6 +922,24 @@ class Player {
             this.getContainer().classList.add('op-player__full');
         }
     }
+
+    /**
+     * Merge user's configuration wit default configuration.
+     *
+     * It deals with complex config elements, like `labels` and `controls`.
+     * @param playerOptions
+     * @private
+     * @memberof Player
+     */
+    private _mergeOptions(playerOptions: PlayerOptions = {}): void {
+        this.options = { ...this.defaultOptions, ...playerOptions };
+        const objectElements = ['labels', 'controls'];
+        objectElements.forEach(item => {
+            this.options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ?
+                { ...this.defaultOptions[item], ...playerOptions[item] } :
+                this.defaultOptions[item];
+        });
+    }
 }
 
 export default Player;
@@ -930,5 +947,6 @@ export default Player;
 // Expose element globally.
 if (typeof window !== 'undefined') {
     (window as any).OpenPlayer = Player;
+    (window as any).OpenPlayerJS = Player;
     Player.init();
 }

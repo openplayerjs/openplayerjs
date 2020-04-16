@@ -1509,15 +1509,13 @@ __webpack_require__(108);
 
 __webpack_require__(127);
 
-var deepmerge = __webpack_require__(128);
+__webpack_require__(128);
 
-__webpack_require__(129);
+var controls_1 = __webpack_require__(129);
 
-var controls_1 = __webpack_require__(130);
+var media_1 = __webpack_require__(138);
 
-var media_1 = __webpack_require__(139);
-
-var ads_1 = __webpack_require__(143);
+var ads_1 = __webpack_require__(142);
 
 var constants_1 = __webpack_require__(6);
 
@@ -1528,7 +1526,7 @@ var general_1 = __webpack_require__(2);
 var media_2 = __webpack_require__(29);
 
 var Player = function () {
-  function Player(element, ads, fill, options) {
+  function Player(element, ads, fill, playerOptions) {
     _classCallCheck(this, Player);
 
     this.events = {};
@@ -1583,7 +1581,9 @@ var Player = function () {
       this.ads = ads;
       this.fill = fill;
       this.autoplay = this.element.autoplay || false;
-      this.options = deepmerge(this.defaultOptions, options || {});
+
+      this._mergeOptions(playerOptions);
+
       this.element.volume = this.options.startVolume;
 
       if (this.options.startTime > 0) {
@@ -2071,6 +2071,18 @@ var Player = function () {
       }
     }
   }, {
+    key: "_mergeOptions",
+    value: function _mergeOptions() {
+      var _this5 = this;
+
+      var playerOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      this.options = Object.assign(Object.assign({}, this.defaultOptions), playerOptions);
+      var objectElements = ['labels', 'controls'];
+      objectElements.forEach(function (item) {
+        _this5.options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, _this5.defaultOptions[item]), playerOptions[item]) : _this5.defaultOptions[item];
+      });
+    }
+  }, {
     key: "src",
     set: function set(media) {
       if (this.media instanceof media_1["default"]) {
@@ -2120,6 +2132,7 @@ exports["default"] = Player;
 
 if (typeof window !== 'undefined') {
   window.OpenPlayer = Player;
+  window.OpenPlayerJS = Player;
   Player.init();
 }
 
@@ -4539,146 +4552,6 @@ $({ target: 'Promise', stat: true }, {
 
 /***/ }),
 /* 128 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var isMergeableObject = function isMergeableObject(value) {
-	return isNonNullObject(value)
-		&& !isSpecial(value)
-};
-
-function isNonNullObject(value) {
-	return !!value && typeof value === 'object'
-}
-
-function isSpecial(value) {
-	var stringValue = Object.prototype.toString.call(value);
-
-	return stringValue === '[object RegExp]'
-		|| stringValue === '[object Date]'
-		|| isReactElement(value)
-}
-
-// see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
-var canUseSymbol = typeof Symbol === 'function' && Symbol.for;
-var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol.for('react.element') : 0xeac7;
-
-function isReactElement(value) {
-	return value.$$typeof === REACT_ELEMENT_TYPE
-}
-
-function emptyTarget(val) {
-	return Array.isArray(val) ? [] : {}
-}
-
-function cloneUnlessOtherwiseSpecified(value, options) {
-	return (options.clone !== false && options.isMergeableObject(value))
-		? deepmerge(emptyTarget(value), value, options)
-		: value
-}
-
-function defaultArrayMerge(target, source, options) {
-	return target.concat(source).map(function(element) {
-		return cloneUnlessOtherwiseSpecified(element, options)
-	})
-}
-
-function getMergeFunction(key, options) {
-	if (!options.customMerge) {
-		return deepmerge
-	}
-	var customMerge = options.customMerge(key);
-	return typeof customMerge === 'function' ? customMerge : deepmerge
-}
-
-function getEnumerableOwnPropertySymbols(target) {
-	return Object.getOwnPropertySymbols
-		? Object.getOwnPropertySymbols(target).filter(function(symbol) {
-			return target.propertyIsEnumerable(symbol)
-		})
-		: []
-}
-
-function getKeys(target) {
-	return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target))
-}
-
-function propertyIsOnObject(object, property) {
-	try {
-		return property in object
-	} catch(_) {
-		return false
-	}
-}
-
-// Protects from prototype poisoning and unexpected merging up the prototype chain.
-function propertyIsUnsafe(target, key) {
-	return propertyIsOnObject(target, key) // Properties are safe to merge if they don't exist in the target yet,
-		&& !(Object.hasOwnProperty.call(target, key) // unsafe if they exist up the prototype chain,
-			&& Object.propertyIsEnumerable.call(target, key)) // and also unsafe if they're nonenumerable.
-}
-
-function mergeObject(target, source, options) {
-	var destination = {};
-	if (options.isMergeableObject(target)) {
-		getKeys(target).forEach(function(key) {
-			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
-		});
-	}
-	getKeys(source).forEach(function(key) {
-		if (propertyIsUnsafe(target, key)) {
-			return
-		}
-
-		if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
-			destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
-		} else {
-			destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
-		}
-	});
-	return destination
-}
-
-function deepmerge(target, source, options) {
-	options = options || {};
-	options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-	options.isMergeableObject = options.isMergeableObject || isMergeableObject;
-	// cloneUnlessOtherwiseSpecified is added to `options` so that custom arrayMerge()
-	// implementations can use it. The caller may not replace it.
-	options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
-
-	var sourceIsArray = Array.isArray(source);
-	var targetIsArray = Array.isArray(target);
-	var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
-
-	if (!sourceAndTargetTypesMatch) {
-		return cloneUnlessOtherwiseSpecified(source, options)
-	} else if (sourceIsArray) {
-		return options.arrayMerge(target, source, options)
-	} else {
-		return mergeObject(target, source, options)
-	}
-}
-
-deepmerge.all = function deepmergeAll(array, options) {
-	if (!Array.isArray(array)) {
-		throw new Error('first argument should be an array')
-	}
-
-	return array.reduce(function(prev, next) {
-		return deepmerge(prev, next, options)
-	}, {})
-};
-
-var deepmerge_1 = deepmerge;
-
-module.exports = deepmerge_1;
-
-
-/***/ }),
-/* 129 */
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4722,7 +4595,7 @@ function polyfill(window) {
 
 
 /***/ }),
-/* 130 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4738,21 +4611,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var captions_1 = __webpack_require__(131);
+var captions_1 = __webpack_require__(130);
 
-var fullscreen_1 = __webpack_require__(132);
+var fullscreen_1 = __webpack_require__(131);
 
-var levels_1 = __webpack_require__(133);
+var levels_1 = __webpack_require__(132);
 
-var play_1 = __webpack_require__(134);
+var play_1 = __webpack_require__(133);
 
-var progress_1 = __webpack_require__(135);
+var progress_1 = __webpack_require__(134);
 
-var settings_1 = __webpack_require__(136);
+var settings_1 = __webpack_require__(135);
 
-var time_1 = __webpack_require__(137);
+var time_1 = __webpack_require__(136);
 
-var volume_1 = __webpack_require__(138);
+var volume_1 = __webpack_require__(137);
 
 var constants_1 = __webpack_require__(6);
 
@@ -4970,9 +4843,7 @@ var Controls = function () {
             _this4.settings = item;
           }
 
-          if (el !== 'fullscreen') {
-            _this4.items[position].push(item);
-          }
+          _this4.items[position].push(item);
         });
       });
       this.player.getCustomControls().forEach(function (item) {
@@ -4982,10 +4853,6 @@ var Controls = function () {
           _this4.items[item.position].push(item);
         }
       });
-
-      if (general_1.isVideo(this.player.getElement())) {
-        this.items.right.push(new fullscreen_1["default"](this.player, 'right'));
-      }
     }
   }, {
     key: "_buildElements",
@@ -5045,7 +4912,7 @@ var Controls = function () {
 exports["default"] = Controls;
 
 /***/ }),
-/* 131 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5599,7 +5466,7 @@ var Captions = function () {
 exports["default"] = Captions;
 
 /***/ }),
-/* 132 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5813,7 +5680,7 @@ var Fullscreen = function () {
 exports["default"] = Fullscreen;
 
 /***/ }),
-/* 133 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6136,7 +6003,7 @@ var Levels = function () {
 exports["default"] = Levels;
 
 /***/ }),
-/* 134 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6350,7 +6217,7 @@ var Play = function () {
 exports["default"] = Play;
 
 /***/ }),
-/* 135 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6732,7 +6599,7 @@ var Progress = function () {
 exports["default"] = Progress;
 
 /***/ }),
-/* 136 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7012,7 +6879,7 @@ var Settings = function () {
 exports["default"] = Settings;
 
 /***/ }),
-/* 137 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7157,7 +7024,7 @@ var Time = function () {
 exports["default"] = Time;
 
 /***/ }),
-/* 138 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7386,7 +7253,7 @@ var Volume = function () {
 exports["default"] = Volume;
 
 /***/ }),
-/* 139 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7404,11 +7271,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var dash_1 = __webpack_require__(140);
+var dash_1 = __webpack_require__(139);
 
-var hls_1 = __webpack_require__(141);
+var hls_1 = __webpack_require__(140);
 
-var html5_1 = __webpack_require__(142);
+var html5_1 = __webpack_require__(141);
 
 var source = __webpack_require__(29);
 
@@ -7712,7 +7579,7 @@ var Media = function () {
 exports["default"] = Media;
 
 /***/ }),
-/* 140 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7938,7 +7805,7 @@ var DashMedia = function (_native_1$default) {
 exports["default"] = DashMedia;
 
 /***/ }),
-/* 141 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8257,7 +8124,7 @@ var HlsMedia = function (_native_1$default) {
 exports["default"] = HlsMedia;
 
 /***/ }),
-/* 142 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8395,7 +8262,7 @@ var HTML5Media = function (_native_1$default) {
 exports["default"] = HTML5Media;
 
 /***/ }),
-/* 143 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
