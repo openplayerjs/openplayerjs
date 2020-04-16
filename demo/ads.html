@@ -38,7 +38,7 @@
 </head>
 <body>
     <div class="players video-player">
-        <h1>Manual Ad Breaks Sample</h1>
+        <h1>Ads Sample (including manual Ad breaks)</h1>
         <video class="op-player__media" id="video" controls playsinline
             data-op-ads="https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=">
             <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
@@ -48,14 +48,15 @@
             <button class="play-ad">Play Ad</button>
         </div>
     </div>
-
+    <br>
+    <a href="index.html">Back to Main</a>
     <script>
         var script = document.createElement('script');
         script.src = '../dist/openplayer.js?rand=' + new Date().getTime();
         script.async = true;
         script.onload = function () {
             var script = document.createElement('script');
-            script.src = 'demo-manual-adbreaks.js?rand=' + new Date().getTime();
+            script.src = 'ads.js?rand=' + new Date().getTime();
             script.async = true;
             document.head.appendChild(script);
         };
