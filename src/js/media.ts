@@ -128,7 +128,7 @@ class Media {
      *
      * @see [[Native.load]]
      */
-    public load(): void {
+    public load(): Promise<void>|void {
         if (!this.mediaFiles.length) {
             throw new TypeError('Media not set');
         }
@@ -163,7 +163,7 @@ class Media {
                 throw new TypeError('Media cannot be played with any valid media type');
             }
 
-            this.media.promise.then(() => {
+            return this.media.promise.then(() => {
                 this.media.load();
             });
         } catch (e) {
@@ -179,13 +179,19 @@ class Media {
      * It returns a Promise to avoid browser's race issues when attempting to pause media.
      * @see https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
      * @see [[Native.play]]
-     * @returns {Promise}
+     * @returns {Promise<void>}
      * @memberof Media
      */
     public play(): Promise<void> {
         if (!this.loaded) {
-            this.load();
             this.loaded = true;
+            const promiseLoad = this.load();
+            if (promiseLoad) {
+                this.loaded = true;
+                return promiseLoad.then(() => {
+                    this.media.play();
+                });
+            }
         }
 
         // Wait until any other Promise is resolved to execute the Play action

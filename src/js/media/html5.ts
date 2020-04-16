@@ -27,9 +27,9 @@ class HTML5Media extends Native  {
         element.addEventListener('error', (e: any) => {
             const details = {
                 detail: {
-                    type: 'HTML5',
-                    message: e.message,
                     data: e,
+                    message: e.message,
+                    type: 'HTML5',
                 },
             };
             const errorEvent = addEvent('playererror', details);
