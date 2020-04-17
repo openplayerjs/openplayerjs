@@ -14,7 +14,7 @@ It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
 
 To see the unleashed power of OpenPlayerJS, **check our [Demo folder](https://github.com/openplayerjs/openplayerjs/tree/master/demo) and our [Code Samples](#code-samples)**.
 
-We are constantly looking to see if OpenPlayerJS meets your needs; if it does not, please submit an issue indicating what scenarios OpenPlayerJS it's lacking and we will add a sample to demonstrate the solution(s). Your feedback is always extremely valuable!
+**We are constantly looking to see if OpenPlayerJS meets your needs; if it does not, please submit an issue indicating what scenarios OpenPlayerJS it's lacking and we will add a sample to demonstrate the solution(s). Your feedback is always extremely valuable!**
 
 ## Advantages of using OpenPlayerJS
 
