@@ -67,13 +67,15 @@
 				<a href="#a-hrefhttpswwwopenplayerjscomopenplayerjsa" id="a-hrefhttpswwwopenplayerjscomopenplayerjsa" style="color: inherit; text-decoration: none;">
 					<h1><a href="https://www.openplayerjs.com">OpenPlayer.js</a></h1>
 				</a>
-				<p><img src="https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png" alt="openplayer"></p>
+				<p><img src="https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png" alt="openplayerjs"></p>
 				<p><a href="https://nodei.co/npm/openplayerjs/"><img src="https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true" alt="NPM"></a></p>
 				<p><a href="https://twitter.com/intent/tweet?text=Try%20the%20best%20open%20source%20player%20and%20give%20it%20a%20star&amp;url=https://www.openplayerjs.com&amp;hashtags=openplayerjs,vast,vpaid,rocks,streaming"><img src="https://img.shields.io/twitter/url/http/shields.io.svg?style=social" alt="Tweet"></a>
 					<a href="https://www.jsdelivr.com/package/npm/openplayerjs"><img src="https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge" alt="JSDelivr"></a>
-				<a href="https://travis-ci.org/openplayerjs/openplayerjs"><img src="https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master" alt="Build Status"></a>  <a href="https://conventionalcommits.org"><img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Conventional Commits"></a></p>
-				<p>This awesome player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play different types of native media, such as MP4/MP3, HLS and M(PEG)-DASH.</p>
+				<a href="https://travis-ci.org/openplayerjs/openplayerjs"><img src="https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master" alt="Build Status"></a></p>
+				<p>This awesome media player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play MP4/MP3, HLS and M(PEG)-DASH, among others.</p>
 				<p>It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!</p>
+				<p>To see the unleashed power of OpenPlayerJS, <strong>check our <a href="https://github.com/openplayerjs/openplayerjs/tree/master/demo">Demo folder</a> and our <a href="#code-samples">Code Samples</a></strong>.</p>
+				<p><strong>We are constantly looking to see if OpenPlayerJS meets your needs; if it does not, please submit an issue indicating what scenarios OpenPlayerJS it&#39;s lacking and we will add a sample to demonstrate the solution(s). Your feedback is always extremely valuable!</strong></p>
 				<a href="#advantages-of-using-openplayerjs" id="advantages-of-using-openplayerjs" style="color: inherit; text-decoration: none;">
 					<h2>Advantages of using OpenPlayerJS</h2>
 				</a>
@@ -85,16 +87,16 @@
 					<li><strong>Play Ads indefinitely</strong>: OpenPlayerJS has the ability to set an ad and play it in an infinite loop; this is desired for ads that are in a heavy text page.</li>
 					<li><strong>Enhance player controls</strong>: You can add your own buttons (see example above).</li>
 					<li><strong>Accessibility is a priority</strong>: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See <a href="https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/">High Contrast Proof CSS Sprites</a> for more details.</li>
-					<li><strong>Always up-to-date</strong>: Relying on services like Greenkeeper, OpenPlayer uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, <a href="https://github.com/video-dev/hls.js/">hls.js</a> and <a href="https://github.com/Dash-Industry-Forum/dash.js/">dash.js</a> use <strong>even-green paths</strong> from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.</li>
-					<li><strong>Smart autoplay algorithm</strong>: Have you ever worried to know if your browser will autoplay media correctly? Forget about it! With OpenPlayerJS, we run a simple but yet powerful algorithm to check your browser&#39;s <code>autoplay</code> capabilities.</li>
+					<li><strong>Always up-to-date</strong>: Relying on <a href="https://snyk.io/">Snyk</a>, OpenPlayerJS uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, <a href="https://github.com/video-dev/hls.js/">hls.js</a> and <a href="https://github.com/Dash-Industry-Forum/dash.js/">dash.js</a> use <strong>even-green paths</strong> from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.</li>
+					<li><strong>Smart autoplay algorithm</strong>: Have you ever worried to know if your browser will autoplay media correctly? Forget about it! OpenPlayerJS runs a simple but yet powerful algorithm to check your browser&#39;s <code>autoplay</code> capabilities.</li>
 					<li><strong>Responsive</strong>: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new <strong><code>fill</code></strong> mode is also included to scale and crop media relative to its parent container.</li>
 					<li>Support for <strong>local and remote captions</strong> for <strong>both video and audio</strong>, even without including the <code>crossorigin</code> attribute.</li>
-					<li><strong>No dependencies</strong>, since this player is written in Typescript.</li>
+					<li><strong>Use it without dependencies</strong>, since this player is written in Typescript, compiled and ready to be used!</li>
 				</ul>
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h2>Getting Started</h2>
 				</a>
-				<p>These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.</p>
+				<p>OpenPlayerJS requires minimum steps to be installed.</p>
 				<a href="#prerequisites" id="prerequisites" style="color: inherit; text-decoration: none;">
 					<h3>Prerequisites</h3>
 				</a>
@@ -104,10 +106,9 @@
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h3>Installation</h3>
 				</a>
-				<p>Include OpenPlayer&#39;s stylesheet inside the <code>&lt;head&gt;</code> tag, and the script at the bottom of the <code>&lt;body&gt;</code> tag (both of them located in the <code>dist</code> folder). The bundles will contain both minified and uncompressed files, so use the one that fits the best your needs.</p>
 				<p>Since this player uses HTML5 markup, all the attributes for video/audio tags are available. The only 3 requirements to invoke the player are:</p>
 				<ul>
-					<li>A valid media source, such as MP4, MP3, HLS, M(PEG)-DASH.</li>
+					<li>A valid media source, such as MP4, MP3, HLS or M(PEG)-DASH.</li>
 					<li>The <code>controls</code> and <code>playsinline</code> attributes to provide cross-browser support.</li>
 					<li>The <code>op-player op-player__media</code> class names to invoke the player.</li>
 				</ul>
@@ -123,7 +124,7 @@
         <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/path/to/openplayer.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
     <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></code></pre>
-				<p>We encourage to use CDN for major performance. To do it, in the snippet above, replace <code>/path/to/openplayer.css</code> and <code>/path/to/openplayer.js</code> with <code>https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.css</code> and <code>https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.js</code>.</p>
+				<p>We encourage you to use a CDN service for optimal performance. To do it, in the snippet above, replace <code>/path/to/openplayer.css</code> and <code>/path/to/openplayer.js</code> with <code>https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.css</code> and <code>https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.js</code>.</p>
 				<p><strong>NOTE</strong>: As stated at <a href="https://www.jsdelivr.com/">jsDeliver website</a>, it is recommended to use a <code>[version]</code> number in the URL rather than <code>@latest</code> for production.</p>
 				<p>If you are planning to use OpenPlayer in a Node project, you can:</p>
 				<pre><code class="language-javascript"><span class="hljs-comment">// Using as module</span>
@@ -134,7 +135,7 @@
 				<a href="#adding-closed-captions" id="adding-closed-captions" style="color: inherit; text-decoration: none;">
 					<h3>Adding Closed Captions</h3>
 				</a>
-				<p>OpenPlayer supports the use of VTT closed captions by adding the <code>track</code> tag as indicated in the following snippet; you can also use the <code>default</code> attribute in the tag, but as a rule of thumb, all the attributes displayed below in the <code>track</code> tag <strong>MUST</strong> be there; otherwise, closed captions won&#39;t be displayed:</p>
+				<p>OpenPlayerJS supports the use of VTT closed captions by adding the <code>track</code> tag as indicated in the following snippet; you can also use the <code>default</code> attribute in the tag, but as a rule of thumb, all the attributes displayed below in the <code>track</code> tag <strong>MUST</strong> be there; otherwise, closed captions won&#39;t be displayed:</p>
 				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
         <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"/path/to/openplayer.css"</span>&gt;</span>
@@ -150,7 +151,7 @@
 				<a href="#usage-with-javascript" id="usage-with-javascript" style="color: inherit; text-decoration: none;">
 					<h2>Usage with Javascript</h2>
 				</a>
-				<p>Sometimes you need more flexibility instantiating the player (for example, adding cache busting to the VAST/VPAID URL, or even having a list of Ads URLs). So for that case, remove the <code>op-player</code> class from the video/audio tag (just leave <code>op-player__media</code> to preserve styles), and in Javascript use the following snippet:</p>
+				<p>Sometimes you need more flexibility instantiating the player; for example, adding cache busting to the VAST/VPAID URL, having a list of Ads URLs, adding new controls, etc. So, for that case, remove the <code>op-player</code> class from the video/audio tag (leaving <code>op-player__media</code> to preserve styles), and, with Javascript, use the following setup:</p>
 				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> OpenPlayer(<span class="hljs-string">'[player ID]'</span>, [valid VAST/VPAID URL|List <span class="hljs-keyword">of</span> VAST/VPAID URLs], [<span class="hljs-string">`true|false`</span> <span class="hljs-keyword">for</span> fullscreen effect by <span class="hljs-keyword">default</span>], {
     <span class="hljs-comment">// Controls configuration by default; `levels` can be added as well since it's an optional feature;</span>
     <span class="hljs-comment">// Each one of the items will have in their class name the `op-control__[left|middle|right]` according</span>
@@ -180,14 +181,16 @@
     <span class="hljs-comment">// Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`</span>
     onError,
     <span class="hljs-attr">ads</span>: {
-        <span class="hljs-comment">// Custom path/URL to IMA SDK</span>
-        url,
+        <span class="hljs-comment">// If set to `false`, allows the user to overwrite the default mechanism to skip Ads</span>
+        autoPlayAdBreaks,
         <span class="hljs-comment">// If set to `true`, load `ima3_debug.js` file for debugging purposes</span>
         debug,
         <span class="hljs-comment">// If set to `true`, play infintely an Ad</span>
         loop,
-        <span class="hljs-comment">// If set to `false`, allows the user to overwrite the default mechanism to skip Ads</span>
-        autoPlayAdBreaks,
+        <span class="hljs-comment">// Maximum number of redirects before the subsequent redirects will be denied (by default, `4`)</span>
+        numRedirects,
+        <span class="hljs-comment">// Custom path/URL to IMA SDK</span>
+        url,
     },
     <span class="hljs-attr">hls</span>: {
         <span class="hljs-comment">// all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.</span>
@@ -204,7 +207,7 @@
 });
 <span class="hljs-comment">// Don't forget to start the player</span>
 player.init();</code></pre>
-				<p><strong>NOTE</strong>: Only caveat here is that the video/audio tags need an ID ahead of time.</p>
+				<p><strong>NOTE</strong>: In order to use this setup, the video/audio tag(s) need a unique ID.</p>
 				<a href="#usage-with-nextjsreact" id="usage-with-nextjsreact" style="color: inherit; text-decoration: none;">
 					<h2>Usage with Next.js/React</h2>
 				</a>
@@ -228,11 +231,11 @@ player.init();</code></pre>
 				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
 					<h2>API</h2>
 				</a>
-				<p>If you need more control over the player, OpenPlayer stores instances of each player in the document. To have access to a specific instance, use video/audio&#39;s <code>id</code> and use <code>OpenPlayer.instances</code> element.</p>
-				<p><strong>NOTE</strong>: if an <code>id</code> attribute is not detected, OpenPlayer will autogenerate one.</p>
+				<p>If you need more control over the player, OpenPlayerJS stores an instance of each player in the document. To have access to a specific instance, use the media <code>id</code> and use <code>OpenPlayer.instances</code> element.</p>
+				<p><strong>NOTE</strong>: if an <code>id</code> attribute is not detected, OpenPlayerJS will autogenerate one for you.</p>
 				<pre><code class="language-javascript"><span class="hljs-comment">// Selects the first video/audio that uses OpenPlayer</span>
 <span class="hljs-keyword">var</span> id = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">'.op-player'</span>).id;
-<span class="hljs-keyword">var</span> player = OpenPlayer.instances[id];</code></pre>
+<span class="hljs-keyword">var</span> player = OpenPlayerJS.instances[id];</code></pre>
 				<p>The methods supported by the OpenPlayer instance are:</p>
 				<table>
 					<thead>
@@ -317,15 +320,14 @@ player.init();</code></pre>
 				<a href="#events" id="events" style="color: inherit; text-decoration: none;">
 					<h3>Events</h3>
 				</a>
-				<p>Since OpenPlayer is based on HTML5 media, the way to trigger events is using the video/audio tag.</p>
-				<p>Using the code above, you can attach/dispatch any valid event, using <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent"><code>CustomEvent</code></a>, like this:</p>
+				<p>Using the code below, you can attach/dispatch any valid event, using <a href="https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent"><code>CustomEvent</code></a>, like this:</p>
 				<pre><code class="language-javascript">player.getElement().addEventListener(<span class="hljs-string">'ended'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Your code when media ends playing'</span>);
 });
 
 <span class="hljs-keyword">var</span> event = <span class="hljs-keyword">new</span> CustomEvent(<span class="hljs-string">'ended'</span>);
 player.getElement().dispatchEvent(event);</code></pre>
-				<p>All <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events">HTML5 media events</a> are supported by OpenPlayer, and it incorporates some custom ones, mostly related to Ads:</p>
+				<p>All <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events">HTML5 media events</a> are supported by OpenPlayerJS, and it incorporates some custom ones, mostly related to Ads:</p>
 				<table>
 					<thead>
 						<tr>
@@ -394,16 +396,15 @@ player.getElement().dispatchEvent(event);</code></pre>
 							<td>Event executed when an Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad).</td>
 						</tr>
 				</tbody></table>
-				<p>In addition to the list above, <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events">HLS events</a> and <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors">HLS error events</a> are being supported by OpenPlayer, including all their details. For the error ones, they are classified as <code>networkError</code>, <code>mediaError</code>, <code>muxError</code> and <code>otherError</code>.</p>
+				<p>In addition to the list above, all <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events">HLS events</a> and <a href="https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors">HLS error events</a> are supported using the same approach described above, including all their details. For the error ones, they are classified as <code>networkError</code>, <code>mediaError</code>, <code>muxError</code> and <code>otherError</code>.</p>
 				<a href="#code-samples" id="code-samples" style="color: inherit; text-decoration: none;">
 					<h2>Code Samples</h2>
 				</a>
-				<p>Witness the power of this player by browsing our best samples!</p>
-				<p>If you want to see one added to this list, please submit an issue indicating what scenarios OpenPlayerJS could help you with.</p>
 				<ol>
 					<li><a href="https://codepen.io/rafa8626/pen/WaNxNB">No configuration (only DOM classes)</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/BqazxX">Minimal configuration</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/vVYKav">Using Ads</a></li>
+					<li><a href="https://codepen.io/rafa8626/pen/OJyMwxX">Removing controls and using <code>preload=&quot;none&quot;</code></a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/YzzgJrK">Add source after initialization (useful for AJAX)</a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/ExxXvZx">Using <code>Levels</code></a></li>
 					<li><a href="https://codepen.io/rafa8626/pen/QZWEVy">Playing HLS streaming with DRM (Encryption)</a></li>
@@ -421,10 +422,6 @@ player.getElement().dispatchEvent(event);</code></pre>
 				<ul>
 					<li><a href="https://www.typescriptlang.org/docs/home.html">Typescript</a> - The Javascript for Pros.</li>
 				</ul>
-				<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
-					<h2>Contributing</h2>
-				</a>
-				<p>Make sure you check <a href="https://conventionalcommits.org/">Conventional Commits Standards</a> for commit guidelines.</p>
 				<a href="#authors" id="authors" style="color: inherit; text-decoration: none;">
 					<h2>Authors</h2>
 				</a>
