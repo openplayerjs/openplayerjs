@@ -931,14 +931,16 @@ class Player {
      * @private
      * @memberof Player
      */
-    private _mergeOptions(playerOptions: PlayerOptions = {}): void {
+    private _mergeOptions(playerOptions?: PlayerOptions): void {
         this.options = { ...this.defaultOptions, ...playerOptions };
-        const objectElements = ['labels', 'controls'];
-        objectElements.forEach(item => {
-            this.options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ?
-                { ...this.defaultOptions[item], ...playerOptions[item] } :
-                this.defaultOptions[item];
-        });
+        if (playerOptions) {
+            const objectElements = ['labels', 'controls'];
+            objectElements.forEach(item => {
+                this.options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ?
+                    { ...this.defaultOptions[item], ...playerOptions[item] } :
+                    this.defaultOptions[item];
+            });
+        }
     }
 }
 
