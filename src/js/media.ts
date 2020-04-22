@@ -282,7 +282,9 @@ class Media {
      * @memberof Media
      */
     set volume(value) {
-        this.media.volume = value;
+        if (this.media) {
+            this.media.volume = value;
+        }
     }
 
     /**
@@ -302,7 +304,9 @@ class Media {
      * @memberof Media
      */
     set muted(value) {
-        this.media.muted = value;
+        if (this.media) {
+            this.media.muted = value;
+        }
     }
 
     /**
@@ -322,7 +326,9 @@ class Media {
      * @memberof Media
      */
     set playbackRate(value) {
-        this.media.playbackRate = value;
+        if (this.media) {
+            this.media.playbackRate = value;
+        }
     }
 
     /**
@@ -342,7 +348,9 @@ class Media {
      * @memberof Media
      */
     set defaultPlaybackRate(value) {
-        this.media.defaultPlaybackRate = value;
+        if (this.media) {
+            this.media.defaultPlaybackRate = value;
+        }
     }
 
     /**
@@ -362,7 +370,9 @@ class Media {
      * @memberof Media
      */
     set currentTime(value: number) {
-        this.media.currentTime = value;
+        if (this.media) {
+            this.media.currentTime = value;
+        }
     }
 
     /**
@@ -436,7 +446,9 @@ class Media {
      * @memberof Media
      */
     set level(value: number|string|object) {
-        this.media.level = value;
+        if (this.media) {
+            this.media.level = value;
+        }
     }
 
     /**
