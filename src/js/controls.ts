@@ -12,7 +12,7 @@ import EventsList from './interfaces/events-list';
 import Player from './player';
 import { IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
-import { isVideo, removeElement } from './utils/general';
+import { isVideo, isAudio, removeElement } from './utils/general';
 
 /**
  * Controls element.
@@ -287,6 +287,9 @@ class Controls implements PlayerComponent {
             right: [],
         };
 
+        const isVideoEl = isVideo(this.player.getElement());
+        const isAudioEl = isAudio(this.player.getElement());
+
         Object.keys(controls).forEach((position: string) => {
             controls[position]
                 .filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
@@ -296,7 +299,9 @@ class Controls implements PlayerComponent {
                     if (el === 'settings') {
                         this.settings = item;
                     }
-                    this.items[position].push(item);
+                    if (isVideoEl || (el !== 'fullscreen' && isAudioEl)) {
+                        this.items[position].push(item);
+                    }
                 });
         });
 

@@ -4767,6 +4767,8 @@ var Controls = function () {
         middle: [],
         right: []
       };
+      var isVideoEl = general_1.isVideo(this.player.getElement());
+      var isAudioEl = general_1.isAudio(this.player.getElement());
       Object.keys(controls).forEach(function (position) {
         controls[position].filter(function (v, i, a) {
           return a.indexOf(v) === i;
@@ -4778,7 +4780,9 @@ var Controls = function () {
             _this4.settings = item;
           }
 
-          _this4.items[position].push(item);
+          if (isVideoEl || el !== 'fullscreen' && isAudioEl) {
+            _this4.items[position].push(item);
+          }
         });
       });
       this.player.getCustomControls().forEach(function (item) {
@@ -7427,7 +7431,9 @@ var Media = function () {
   }, {
     key: "volume",
     set: function set(value) {
-      this.media.volume = value;
+      if (this.media) {
+        this.media.volume = value;
+      }
     },
     get: function get() {
       return this.media ? this.media.volume : this.element.volume;
@@ -7435,7 +7441,9 @@ var Media = function () {
   }, {
     key: "muted",
     set: function set(value) {
-      this.media.muted = value;
+      if (this.media) {
+        this.media.muted = value;
+      }
     },
     get: function get() {
       return this.media ? this.media.muted : this.element.muted;
@@ -7443,7 +7451,9 @@ var Media = function () {
   }, {
     key: "playbackRate",
     set: function set(value) {
-      this.media.playbackRate = value;
+      if (this.media) {
+        this.media.playbackRate = value;
+      }
     },
     get: function get() {
       return this.media ? this.media.playbackRate : this.element.playbackRate;
@@ -7451,7 +7461,9 @@ var Media = function () {
   }, {
     key: "defaultPlaybackRate",
     set: function set(value) {
-      this.media.defaultPlaybackRate = value;
+      if (this.media) {
+        this.media.defaultPlaybackRate = value;
+      }
     },
     get: function get() {
       return this.media ? this.media.defaultPlaybackRate : this.element.defaultPlaybackRate;
@@ -7459,7 +7471,9 @@ var Media = function () {
   }, {
     key: "currentTime",
     set: function set(value) {
-      this.media.currentTime = value;
+      if (this.media) {
+        this.media.currentTime = value;
+      }
     },
     get: function get() {
       return this.media ? this.media.currentTime : this.element.currentTime;
@@ -7496,7 +7510,9 @@ var Media = function () {
   }, {
     key: "level",
     set: function set(value) {
-      this.media.level = value;
+      if (this.media) {
+        this.media.level = value;
+      }
     },
     get: function get() {
       return this.media ? this.media.level : -1;
