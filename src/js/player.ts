@@ -4,7 +4,7 @@ import 'core-js/features/object/assign';
 import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
-import 'element-closest';
+import 'element-closest/browser';
 
 import Controls from './controls';
 import Track from './interfaces/captions/track';
