@@ -181,17 +181,19 @@ class Progress implements PlayerComponent {
 
         const setInitialProgress = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled') &&
+                !this.player.getElement().getAttribute('op-dvr__enabled')) {
                 this.slider.setAttribute('max', `${el.duration}`);
                 const current = this.player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
                 this.slider.value = current.toString();
                 this.progress.setAttribute('aria-valuemax', el.duration.toString());
-            } else if (this.player.getOptions().showLiveProgress) {
+            } else if (this.player.getElement().getAttribute('op-dvr__enabled')) {
                 this.slider.setAttribute('max', '1');
                 this.slider.value = '1';
                 this.slider.style.backgroundSize = '100% 100%';
                 this.played.value = 1;
                 this.progress.setAttribute('aria-valuemax', '1');
+                this.progress.setAttribute('aria-hidden', 'false');
             } else {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
@@ -204,7 +206,7 @@ class Progress implements PlayerComponent {
 
         this.events.media.progress = (e: Event) => {
             const el = (e.target as HTMLMediaElement);
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled')) {
                 if (el.duration > 0) {
                     for (let i = 0, total = el.buffered.length; i < total; i++) {
                         if (el.buffered.start(el.buffered.length - 1 - i) < el.currentTime) {
@@ -213,20 +215,20 @@ class Progress implements PlayerComponent {
                         }
                     }
                 }
-            } else if (!this.player.getOptions().showLiveProgress && this.progress.getAttribute('aria-hidden') === 'false') {
+            } else if (!this.player.getElement().getAttribute('op-dvr__enabled') && this.progress.getAttribute('aria-hidden') === 'false') {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
         };
         this.events.media.pause = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled')) {
                 const current = el.currentTime;
                 this.progress.setAttribute('aria-valuenow', current.toString());
                 this.progress.setAttribute('aria-valuetext', formatTime(current));
             }
         };
         this.events.media.play = () => {
-            if (this.player.activeElement().duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+            if (this.player.activeElement().duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled')) {
                 this.progress.removeAttribute('aria-valuenow');
                 this.progress.removeAttribute('aria-valuetext');
             }
@@ -234,10 +236,11 @@ class Progress implements PlayerComponent {
         this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity &&
-                (!this.player.getElement().getAttribute('op-live') || this.player.getOptions().showLiveProgress)) {
+                (!this.player.getElement().getAttribute('op-live__enabled') || this.player.getElement().getAttribute('op-dvr__enabled'))) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
                     parseFloat(this.slider.getAttribute('max')) !== el.duration) {
                     this.slider.setAttribute('max', `${el.duration}`);
+                    this.progress.setAttribute('aria-hidden', 'false');
                 }
 
                 // Adjust current time between Media and Ads; with the latter,
@@ -252,11 +255,12 @@ class Progress implements PlayerComponent {
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
                     0 : ((current / el.duration) * 100);
-                
-                if (this.player.getOptions().showLiveProgress && Math.floor(this.played.value) >= 99) {
+
+                if (this.player.getElement().getAttribute('op-dvr__enabled') && Math.floor(this.played.value) >= 99) {
                     lastCurrentTime = el.currentTime;
+                    this.progress.setAttribute('aria-hidden', 'false');
                 }
-            } else if (!this.player.getOptions().showLiveProgress && this.progress.getAttribute('aria-hidden') === 'false') {
+            } else if (!this.player.getElement().getAttribute('op-dvr__enabled') && this.progress.getAttribute('aria-hidden') === 'false') {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
         };
@@ -296,12 +300,12 @@ class Progress implements PlayerComponent {
             this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
                     0 : ((val / el.duration) * 100);
 
-            if (this.player.getOptions().showLiveProgress) {
+            if (this.player.getElement().getAttribute('op-dvr__enabled')) {
                 el.currentTime = (Math.round(this.played.value) >= 99) ? lastCurrentTime : val;
             } else {
                 el.currentTime = val;
             }
-            
+
             this.slider.classList.remove('.op-progress--pressed');
             e.preventDefault();
         };

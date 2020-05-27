@@ -224,7 +224,7 @@ class Volume implements PlayerComponent {
         // Safari's output
         this.events.media.timeupdate = () => {
             if (isAudio(this.player.getElement()) && (this.player.activeElement().duration === Infinity ||
-                this.player.getElement().getAttribute('op-live'))) {
+                this.player.getElement().getAttribute('op-live__enabled'))) {
                 this.button.classList.add('op-control__right');
             }
         };

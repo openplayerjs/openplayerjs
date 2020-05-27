@@ -137,3 +137,8 @@ export const SUPPORTS_HLS = () => {
     // is still in beta to support Safari
     return !!isTypeSupported && !!sourceBufferValidAPI && !IS_SAFARI;
 };
+
+/**
+ * Minimum amount of content in an M3U8 file to determine if DVR mode should be enabled
+ */
+export const DVR_THRESHOLD = 120;

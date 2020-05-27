@@ -1,6 +1,6 @@
 import EventsList from '../interfaces/events-list';
 import Source from '../interfaces/source';
-import { SUPPORTS_HLS } from '../utils/constants';
+import { DVR_THRESHOLD, SUPPORTS_HLS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
 import { isHlsSource } from '../utils/media';
@@ -227,9 +227,9 @@ class HlsMedia extends Native {
         if (event === 'hlsError') {
             const errorDetails = {
                 detail: {
-                    type: 'HLS',
-                    message: data[1].details,
                     data,
+                    message: data[1].details,
+                    type: 'HLS',
                 },
             };
             const errorEvent = addEvent('playererror', errorDetails);
@@ -270,12 +270,16 @@ class HlsMedia extends Native {
                         break;
                 }
             } else {
-                const errorEvent = addEvent(type, details);
-                this.element.dispatchEvent(errorEvent);
+                const err = addEvent(type, details);
+                this.element.dispatchEvent(err);
             }
         } else {
             if (event === 'hlsLevelLoaded' && data[1].details.live === true) {
-                this.element.setAttribute('op-live', 'true');
+                this.element.setAttribute('op-live__enabled', 'true');
+                const timeEvent = addEvent('timeupdate');
+                this.element.dispatchEvent(timeEvent);
+            } else if (event === 'hlsLevelUpdated' && data[1].details.totalduration > DVR_THRESHOLD) {
+                this.element.setAttribute('op-dvr__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
             }

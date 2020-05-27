@@ -1,8 +1,8 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
-import { formatTime } from '../utils/time';
 import { removeElement } from '../utils/general';
+import { formatTime } from '../utils/time';
 
 /**
  * Time element.
@@ -135,7 +135,7 @@ class Time implements PlayerComponent {
 
         const setInitialTime = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled')) {
                 const duration = !isNaN(el.duration) ? el.duration : 0;
                 this.duration.innerText = formatTime(duration);
                 this.current.innerText = formatTime(el.currentTime);
@@ -148,24 +148,31 @@ class Time implements PlayerComponent {
         this.events.media.loadedmetadata = setInitialTime.bind(this);
         this.events.controls.controlschanged = setInitialTime.bind(this);
 
+        const { showLiveLabel } = this.player.getOptions();
+
         this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live')) {
+            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled') &&
+                !this.player.getElement().getAttribute('op-dvr__enabled')) {
                 const duration = formatTime(el.duration);
                 if (!isNaN(el.duration) && duration !== this.duration.innerText) {
                     this.duration.innerText = duration;
                     this.duration.setAttribute('aria-hidden', 'false');
                     this.delimiter.setAttribute('aria-hidden', 'false');
+                } else if (duration !== this.duration.innerText) {
+                    this.current.innerText = showLiveLabel ? this.labels.live : formatTime(el.currentTime);
                 }
                 this.current.innerText = formatTime(el.currentTime);
-            } else if (this.player.getOptions().showLiveProgress) {
+            } else if (this.player.getElement().getAttribute('op-dvr__enabled')) {
                 this.duration.setAttribute('aria-hidden', 'true');
                 this.delimiter.setAttribute('aria-hidden', 'true');
                 this.current.innerText = formatTime(el.currentTime);
-            } else if (!this.player.getOptions().showLiveProgress && this.duration.getAttribute('aria-hidden') === 'false') {
+            } else if (!this.player.getElement().getAttribute('op-dvr__enabled') && this.duration.getAttribute('aria-hidden') === 'false') {
                 this.duration.setAttribute('aria-hidden', 'true');
                 this.delimiter.setAttribute('aria-hidden', 'true');
-                this.current.innerText = this.labels.live;
+                this.current.innerText = showLiveLabel ? this.labels.live : formatTime(el.currentTime);
+            } else {
+                this.current.innerText = showLiveLabel ? this.labels.live : formatTime(el.currentTime);
             }
         };
         this.events.media.ended = () => {

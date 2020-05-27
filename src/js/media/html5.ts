@@ -1,6 +1,8 @@
 import Source from '../interfaces/source';
+import { DVR_THRESHOLD } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isAudio, isVideo } from '../utils/general';
+import { isHlsSource } from '../utils/media';
 import Native from './native';
 
 /**
@@ -13,6 +15,8 @@ class HTML5Media extends Native  {
     private currentLevel: any = null;
 
     private levelList: any[] = [];
+
+    private isStreaming: boolean = false;
 
     /**
      * Creates an instance of NativeMedia.
@@ -33,11 +37,15 @@ class HTML5Media extends Native  {
                 },
             };
             const errorEvent = addEvent('playererror', details);
-            this.element.dispatchEvent(errorEvent);
+            element.dispatchEvent(errorEvent);
         });
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
+
+        this.isStreaming = isHlsSource(mediaFile);
+        this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this));
+
         return this;
     }
 
@@ -66,6 +74,7 @@ class HTML5Media extends Native  {
      * @memberof HTML5Media
      */
     public destroy(): HTML5Media {
+        this.element.removeEventListener('loadeddata', this._isDvrEnabled.bind(this));
         return this;
     }
 
@@ -107,6 +116,15 @@ class HTML5Media extends Native  {
      */
     set src(media: Source) {
         this.element.src = media.src;
+    }
+
+    private _isDvrEnabled(): void {
+        const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
+        if (this.isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
+            this.element.setAttribute('op-dvr__enabled', 'true');
+            const timeEvent = addEvent('timeupdate');
+            this.element.dispatchEvent(timeEvent);
+        }
     }
 }
 
