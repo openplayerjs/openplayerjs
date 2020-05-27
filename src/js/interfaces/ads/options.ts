@@ -26,4 +26,8 @@ export default interface Options {
      * @type string
      */
     url: string;
+    /**
+     * @type string|string[]
+     */
+    src: string | string[];
 }

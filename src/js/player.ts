@@ -59,8 +59,13 @@ class Player {
         const targets = document.querySelectorAll('video.op-player, audio.op-player');
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = (targets[i] as HTMLMediaElement);
-            const player = new Player(target, target.getAttribute('data-op-ads'),
-                !!target.getAttribute('data-op-fill'), JSON.parse(target.getAttribute('data-op-options')));
+            let player;
+            if (target.getAttribute('data-op-settings')) {
+                player = new Player(target, JSON.parse(target.getAttribute('data-op-settings')));
+            } else {
+                player = new Player(target, target.getAttribute('data-op-ads'),
+                    !!target.getAttribute('data-op-fill'), JSON.parse(target.getAttribute('data-op-options')));
+            }
             player.init();
         }
     }
@@ -272,8 +277,9 @@ class Player {
             volumeControl: 'Volume Control',
             volumeSlider: 'Volume Slider',
         },
+        mode: 'responsive',
         onError: () => { },
-        showLiveProgress: false,
+        showLiveLabel: true,
         showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,
@@ -284,19 +290,33 @@ class Player {
      * Create an instance of Player.
      *
      * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
-     * @param {?string} ads  A URL or collection of URLs to play Ads via Google IMA SDK.
+     * @param {?string|string[]|PlayerOptions} options
      * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
      * @param {?PlayerOptions} playerOptions  Options to enhance Hls and Dash players, among other things.
      * @returns {Player}
      * @memberof Player
      */
-    constructor(element: HTMLMediaElement | string, ads?: string | string[], fill?: boolean, playerOptions?: PlayerOptions) {
+    constructor(element: HTMLMediaElement | string, options?: string | string[] | PlayerOptions,
+                fill?: boolean, legacyOptions?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
-            this.ads = ads;
-            this.fill = fill;
+            if (typeof options === 'string' || Array.isArray(options)) {
+                this.ads = options;
+            } else if (options && options.ads && options.ads.src) {
+                this.ads = options.ads.src;
+            }
+            if (fill) {
+                this.fill = fill;
+            } else if (typeof options !== 'string' && !Array.isArray(options)) {
+                this.fill = options && options.mode === 'fill';
+            }
             this.autoplay = this.element.autoplay || false;
-            this._mergeOptions(playerOptions);
+            if (typeof options !== 'string' && !Array.isArray(options)) {
+                this._mergeOptions(options);
+            }
+            if (legacyOptions) {
+                this._mergeOptions(legacyOptions);
+            }
             this.element.volume = this.options.startVolume;
             if (this.options.startTime > 0) {
                 this.element.currentTime = this.options.startTime;
@@ -400,7 +420,8 @@ class Player {
 
         el.controls = true;
         el.setAttribute('id', this.uid);
-        el.removeAttribute('op-live');
+        el.removeAttribute('op-live__enabled');
+        el.removeAttribute('op-dvr__enabled');
         const parent = el.parentElement;
         parent.parentNode.replaceChild(el, parent);
 
