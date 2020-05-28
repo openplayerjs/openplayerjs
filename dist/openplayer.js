@@ -835,10 +835,16 @@ function getExtension(url) {
 exports.getExtension = getExtension;
 
 function isHlsSource(media) {
-  return /\.m3u8/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
+  return /\.m3u8$/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
 }
 
 exports.isHlsSource = isHlsSource;
+
+function isM3USource(media) {
+  return /\.m3u$/i.test(media.src);
+}
+
+exports.isM3USource = isM3USource;
 
 function isDashSource(media) {
   return /\.mpd/i.test(media.src) || media.type === 'application/dash+xml';
@@ -856,6 +862,7 @@ function predictType(url) {
 
   switch (extension) {
     case 'm3u8':
+    case 'm3u':
       type = 'application/x-mpegURL';
       break;
 
@@ -7458,7 +7465,7 @@ var Media = function () {
         } else {
           return new html5_1["default"](this.element, media);
         }
-      } else if (!playHLSNatively && source.isHlsSource(media)) {
+      } else if (source.isM3USource(media) || !playHLSNatively && source.isHlsSource(media)) {
         var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
         return new hls_1["default"](this.element, media, this.autoplay, hlsOptions);
       } else if (source.isDashSource(media)) {

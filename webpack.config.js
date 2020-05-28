@@ -125,10 +125,5 @@ module.exports = {
             },
             cssProcessor: require('cssnano')
         }),
-        // new webpack.ProvidePlugin({
-        //     global: 'global',
-        //     window: 'global/window',
-        //     document: 'global/document'
-        // }),
     ]
 };

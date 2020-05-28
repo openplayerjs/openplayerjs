@@ -42,9 +42,8 @@
   ],
   "scripts": {
     "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production",
-    "release": "npm run build && npm run docs && release-it",
-    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-    "docs": "[ -d ./docs ] && rm -R ./docs; typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
+    "release": "npm run build && release-it",
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "devDependencies": {
@@ -89,7 +88,6 @@
     "stylelint-order": "^4.0.0",
     "ts-loader": "^5.4.5",
     "tslint": "^5.20.1",
-    "typedoc": "^0.16.11",
     "typescript": "^3.8.3",
     "unminified-webpack-plugin": "^2.0.0",
     "url-loader": "^3.0.0",

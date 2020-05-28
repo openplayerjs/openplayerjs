@@ -6,38 +6,24 @@
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Support%20OpenPlayerJS%20by%20giving%20the%20project%20a%20start%20at%20&url=https://www.openplayerjs.com&hashtags=openplayerjs,mediaplayer,vpaid,opensourcerocks,streaming)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
-   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/rafa8626?locale.x=en_US)
+   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs) [![Size](https://img.shields.io/bundlephobia/minzip/openplayerjs/latest?style=flat-square)](https://nodei.co/npm/openplayerjs) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/rafa8626?locale.x=en_US)
 
-This awesome media player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play MP4/MP3, HLS and M(PEG)-DASH, among others.
+Media player that uses HTML5 video/audio elements to play the most popular media in MP4/MP3, HLS and M(PEG)-DASH, among others, and also has the ability to play VMAP, VAST and VPAID Ads.
 
-It also has the ability to play VMAP, VAST and VPAID Ads in an effortless way!
+* Support for **IE11+ (Win8) and all modern browsers**.
+* No dependencies
+* Runs a simple but yet powerful algorithm to check the browser's autoplay capabilities across browsers.
+* Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
+* **Enhance player** adding your own buttons.
+* **Multi Ads**: OpenPlayerJS is **one of the few players that provides the ability to use a single VAST/VPAID source or a VAST/VPAID playlist from several different sources (including URLs and valid XML strings)**. Usually, advertisers take only part of the total traffic of a website. As a result, users view only 10% of the total advertising per day (besides, once the user has seen the Ad, the advertiser's cookie is set, so it will not perform a new request through the server. Therefore, a website benefits when connecting multiple Ads streams.
+* **Play Ads indefinitely**: OpenPlayerJS has the ability to set an ad and play it in an infinite loop; this is desired for ads that are in a heavy text page.
+* **Responsive**: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 
 To see the unleashed power of OpenPlayerJS, **check our [Demo folder](https://github.com/openplayerjs/openplayerjs/tree/master/demo) and our [Code Samples](#code-samples)**.
 
 **We are constantly looking to see if OpenPlayerJS meets your needs; if it does not, please submit an issue indicating what scenarios OpenPlayerJS it's lacking and we will add a sample to demonstrate the solution(s). Your feedback is always extremely valuable!**
 
-## Advantages of using OpenPlayerJS
-
-* **Supports IE11+ (Win8) and all modern browsers**: its CSS and code is compatible with all modern browsers. IE11+ on Win7 requires an MP4/MP3 fallback to work correctly.
-* **Lightweight library**: Less than `20kb` when gzipped.
-* **Monetize video and audio content** with video advertising using VAST, VPAID or VMAP Ads, supported by the amazing [Interactive Media Ads SDK](https://developers.google.com/interactive-media-ads/) (IMA SDK) library.
-* **Multi Ads**: OpenPlayerJS is **one of the few players that provides the ability to use a single VAST/VPAID source or a VAST/VPAID playlist from several different sources (including URLs and valid XML strings)**. Usually, advertisers take only part of the total traffic of a website. As a result, users view only 10% of the total advertising per day (besides, once the user has seen the Ad, the advertiser's cookie is set, so it will not perform a new request through the server. Therefore, a website benefits when connecting multiple Ads streams.
-* **Play Ads indefinitely**: OpenPlayerJS has the ability to set an ad and play it in an infinite loop; this is desired for ads that are in a heavy text page.
-* **Enhance player controls**: You can add your own buttons (see example above).
-* **Accessibility is a priority**: You can even create specific styling for high contrast mode, and support visually impaired people and improve accessibility. See [High Contrast Proof CSS Sprites](https://developer.paciellogroup.com/blog/2010/01/high-contrast-proof-css-sprites/) for more details.
-* **Always up-to-date**: Relying on [Snyk](https://snyk.io/), OpenPlayerJS uses the latest and greatest versions of the packages to ensure it is always updated; also, IMA SDK, [hls.js](https://github.com/video-dev/hls.js/) and [dash.js](https://github.com/Dash-Industry-Forum/dash.js/) use **even-green paths** from their recommended CDN sources to they will be always providing the latest upgrades for OpenPlayerJS.
-* **Smart autoplay algorithm**: Have you ever worried to know if your browser will autoplay media correctly? Forget about it! OpenPlayerJS runs a simple but yet powerful algorithm to check your browser's `autoplay` capabilities.
-* **Responsive**: Always adapts to the screen size (and resize) by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
-* Support for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
-* **Use it without dependencies**, since this player is written in Typescript, compiled and ready to be used!
-
-## Getting Started
-
-OpenPlayerJS requires minimum steps to be installed.
-
-### Prerequisites
-
-The `dist` folder contains the files you will need yo use this awesome library. To obtain it, you can download the repository from `https://github.com/openplayerjs/openplayerjs.git` or use NPM to get it:
+## Installation
 
 ```node
 npm install openplayerjs
@@ -45,33 +31,32 @@ npm install openplayerjs
 
 CDN is also available for better performance. See next section for more details.
 
-### Installation
+## How to use it
 
-Since this player uses HTML5 markup, all the attributes for video/audio tags are available. The only 3 requirements to invoke the player are:
+### HTML
+
+The only 3 requirements to invoke the player are:
 
 * A valid media source, such as MP4, MP3, HLS or M(PEG)-DASH.
 * The `controls` and `playsinline` attributes to provide cross-browser support.
-* The `op-player op-player__media` class names to invoke the player.
+* The `op-player__media` class name to invoke the player. You can add `op-player` class as well, if you don't require any Javascript configuration.
 
-That's it!
+Optionally, if you want to use VTT closed captions, need to add the `track` tag as indicated in the  snippet above; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed.
 
 ```html
 <html>
     <head>
-        <link rel="stylesheet" href="/path/to/openplayer.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css">
     </head>
     <body>
         <video class="op-player op-player__media" controls playsinline>
             <source src="/path/to/video.mp4" type="video/mp4">
+            <track kind="subtitles" src="/path/to/video.vtt" srclang="en" label="English">
         </video>
-        <script src="/path/to/openplayer.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
     </body>
 </html>
 ```
-
-We encourage you to use a CDN service for optimal performance. To do it, in the snippet above, replace `/path/to/openplayer.css` and `/path/to/openplayer.js` with `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.css` and `https://cdn.jsdelivr.net/npm/openplayerjs@[version]/dist/openplayer.min.js`.
-
-**NOTE**: As stated at [jsDeliver website](https://www.jsdelivr.com/), it is recommended to use a `[version]` number in the URL rather than `@latest` for production.
 
 If you are planning to use OpenPlayer in a Node project, you can:
 
@@ -83,31 +68,12 @@ var openplayer = require('/path/to/openplayerjs');
 import OpenPlayer from 'openplayerjs';
 ```
 
-### Adding Closed Captions
-
-OpenPlayerJS supports the use of VTT closed captions by adding the `track` tag as indicated in the following snippet; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed:
-
-```html
-<html>
-    <head>
-        <link rel="stylesheet" href="/path/to/openplayer.css">
-    </head>
-    <body>
-        <video class="op-player op-player__media" controls playsinline>
-            <source src="/path/to/video.mp4" type="video/mp4">
-            <track kind="subtitles" src="/path/to/video.vtt" srclang="en" label="English">
-        </video>
-        <script src="/path/to/openplayer.js"></script>
-    </body>
-</html>
-```
-
 ## Usage with Javascript
 
 Sometimes you need more flexibility instantiating the player; for example, adding cache busting to the VAST/VPAID URL, having a list of Ads URLs, adding new controls, etc. So, for that case, remove the `op-player` class from the video/audio tag (leaving `op-player__media` to preserve styles), and, with Javascript, use the following setup:
 
 ```javascript
-var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VPAID URLs], [`true|false` for fullscreen effect by default], {
+var player = new OpenPlayer('[player ID]', {
     // Controls configuration by default; `levels` can be added as well since it's an optional feature;
     // Each one of the items will have in their class name the `op-control__[left|middle|right]` according
     // to the controls' structure listed below
@@ -118,6 +84,8 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     },
     // Allow items to be contained in a different space outside of `Settings`
     detachMenus,
+    // Player stretching mode: `responsive` (default) or `fullscreen`
+    mode,
     // Number of ms that takes the player to hide the Play button once it starts playing (video only)
     // (bt default, `350`)
     hidePlayBtnTimer,

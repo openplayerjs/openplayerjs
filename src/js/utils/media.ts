@@ -25,7 +25,18 @@ export function getExtension(url: string): string {
  * @returns {boolean}
  */
 export function isHlsSource(media: Source): boolean {
-    return /\.m3u8/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
+    return /\.m3u8$/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
+}
+
+/**
+ * Check if URL is an M3U list.
+ *
+ * @export
+ * @param {Source} media  The target media, including URL and type.
+ * @returns {boolean}
+ */
+export function isM3USource(media: Source): boolean {
+    return /\.m3u$/i.test(media.src);
 }
 
 /**
@@ -59,6 +70,7 @@ export function predictType(url: string): string {
     // Check native media types
     switch (extension) {
         case 'm3u8':
+        case 'm3u':
             type = 'application/x-mpegURL';
             break;
         case 'mpd':
