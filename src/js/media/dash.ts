@@ -166,8 +166,8 @@ class DashMedia extends Native {
         if (event.type === 'error') {
             const details = {
                 detail: {
-                    type: 'M(PEG)-DASH',
                     message: event,
+                    type: 'M(PEG)-DASH',
                 },
             };
             const errorEvent = addEvent('playererror', details);

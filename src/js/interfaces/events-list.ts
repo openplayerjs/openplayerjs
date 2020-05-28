@@ -6,10 +6,5 @@
  * @export
  */
 export default interface EventsList {
-    /**
-     *
-     *
-     * @type object
-     */
     [key: string]: any;
 }

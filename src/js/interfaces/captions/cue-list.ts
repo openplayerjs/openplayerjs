@@ -8,8 +8,5 @@ import Cue from './cue';
  * @export
  */
 export default interface CueList {
-    /**
-     * @type object
-     */
     [language: string]: Cue[];
 }

@@ -7,7 +7,7 @@ import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { getAbsoluteUrl, hasClass, request, removeElement } from '../utils/general';
+import { getAbsoluteUrl, hasClass, removeElement, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
 /**

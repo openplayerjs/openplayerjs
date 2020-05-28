@@ -7,27 +7,27 @@
  */
 export default interface Options {
     /**
-     * @type boolean
+     * Flag to interrupt automatic ad breaks and give end user control over it.
      */
-    autoPlayAdBreaks: boolean;
+    readonly autoPlayAdBreaks: boolean;
     /**
-     * @type boolean
+     * If `true`, enables the IMA SDK URL in debug mode.
      */
-    debug: boolean;
+    readonly debug: boolean;
     /**
-     * @type number
+     * Number of redirection to play Ad (by default, `4`).
      */
-    numRedirects: number;
+    readonly numRedirects: number;
     /**
-     * @type boolean
+     * Play Ad endlessly (mostly used for text Ads).
      */
-    loop: boolean;
+    readonly loop: boolean;
     /**
-     * @type string
+     * The IMA SDK URL to load the plugin.
      */
-    url: string;
+    readonly url: string;
     /**
-     * @type string|string[]
+     * Ad or collection of Ads to be played.
      */
-    src: string | string[];
+    readonly src: string | string[];
 }

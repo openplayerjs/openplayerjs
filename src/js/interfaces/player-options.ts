@@ -4,23 +4,13 @@ import DashOptions from './dash-options';
 /**
  * Player options
  *
- * @description An object that stores potential configuration for HLS and M(PEG)-DASH players
+ * @description An object that stores potential configuration for Ads, HLS and M(PEG)-DASH players, among others.
  * @interface PlayerOptions
  * @export
  */
 export default interface PlayerOptions {
-    /**
-     * @type DashOptions
-     */
-    dash?: DashOptions;
-    /**
-     * @type object
-     */
-    hls?: object;
-
-    ads?: AdsOptions;
-    /**
-     * @type object
-     */
+    readonly dash?: DashOptions;
+    readonly hls?: object;
+    readonly ads?: AdsOptions;
     [key: string]: any;
 }

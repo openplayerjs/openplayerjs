@@ -12,7 +12,7 @@ import EventsList from './interfaces/events-list';
 import Player from './player';
 import { IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
-import { isVideo, isAudio, removeElement } from './utils/general';
+import { isAudio, isVideo, removeElement } from './utils/general';
 
 /**
  * Controls element.

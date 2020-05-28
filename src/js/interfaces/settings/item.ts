@@ -12,44 +12,26 @@ import SettingsSubItem from './subitem';
 export default interface SettingsItem {
     /**
      * Specific class name to be used for:
-     * - event listeners and dispatchers
-     * - specific styling
-     *
-     * @type string
-     * @memberof SettingsItem
+     *  - Event listeners and dispatchers
+     *  - Specific styling
      */
-    className: string;
-
+    readonly className: string;
     /**
      * Identifier to indicate the initial value of `Settings` element when created.
      *
      * This element must exist in the `submenu` attribute (if not empty).
-     * @type string
-     * @memberof SettingsItem
      */
-    default: string;
-
+    readonly default: string;
     /**
      * Unique identifier to avoid collisions with other items.
-     *
-     * @type string
-     * @memberof SettingsItem
      */
-    key: string;
-
+    readonly key: string;
     /**
      * Human-readable name of the item.
-     *
-     * @type string
-     * @memberof SettingsItem
      */
-    name: string;
-
+    readonly name: string;
     /**
      * List of elements to generate a submenu linked to item.
-     *
-     * @type SettingsSubItem[]
-     * @memberof SettingsItem
      */
     subitems?: SettingsSubItem[];
 }

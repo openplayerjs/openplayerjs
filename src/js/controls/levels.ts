@@ -139,7 +139,7 @@ class Levels implements PlayerComponent {
                 const e = addEvent('controlschanged');
                 this.player.getElement().dispatchEvent(e);
             }
-        }
+        };
 
         this.events.media.loadedmetadata = loadLevelsEvent.bind(this);
         this.events.media.manifestLoaded = loadLevelsEvent.bind(this);
