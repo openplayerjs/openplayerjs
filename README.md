@@ -4,9 +4,9 @@
 
 [![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
 
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Try%20the%20best%20open%20source%20player%20and%20give%20it%20a%20star&url=https://www.openplayerjs.com&hashtags=openplayerjs,vast,vpaid,rocks,streaming)
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Support%20OpenPlayerJS%20by%20giving%20the%20project%20a%20start%20at%20&url=https://www.openplayerjs.com&hashtags=openplayerjs,mediaplayer,vpaid,opensourcerocks,streaming)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
-   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs)
+   [![Build Status](https://travis-ci.org/openplayerjs/openplayerjs.svg?branch=master)](https://travis-ci.org/openplayerjs/openplayerjs) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/rafa8626?locale.x=en_US)
 
 This awesome media player mimics the HTML5 video/audio methods/events/properties, and integrates the most popular libraries to play MP4/MP3, HLS and M(PEG)-DASH, among others.
 
@@ -128,14 +128,16 @@ var player = new OpenPlayer('[player ID]', [valid VAST/VPAID URL|List of VAST/VP
     startVolume,
     // Initial play time of media in seconds (by default, `0`)
     startTime,
-    // Allow progress bar to be displayed when using live streamings (by default, `false`)
-    showLiveProgress,
+    // Allow `Live Broadcast` label to be displayed in live streamings (by default, `false`)
+    showLiveLabel,
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
     // Callback to be executed once an error is found (default, `console.error`)
     // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
     onError,
     ads: {
+        // The Ad(s) URLs to be processed
+        src,
         // If set to `false`, allows the user to overwrite the default mechanism to skip Ads
         autoPlayAdBreaks,
         // If set to `true`, load `ima3_debug.js` file for debugging purposes
@@ -275,6 +277,7 @@ In addition to the list above, all [HLS events](https://github.com/video-dev/hls
 12. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
 13. [Addition of a custom control](https://codepen.io/rafa8626/pen/oNXmEza)
 14. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
+15. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
 
 ## Built With
 

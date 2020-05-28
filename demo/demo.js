@@ -7,10 +7,7 @@
     var instances = [];
 
     for (var i = 0, total = players.length; i < total; i++) {
-        instances[i] = new OpenPlayer(players[i].id, null, false, {
-            ads: {
-                debug: false,
-            },
+        instances[i] = new OpenPlayer(players[i].id, {
             hls: {
                 startLevel: -1
             }

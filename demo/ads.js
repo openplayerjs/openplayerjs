@@ -2,11 +2,12 @@
     var destroyBtn = document.querySelector('button.destroy-player');
     var playAdBtn = document.querySelector('button.play-ad');
     var player = document.querySelector('.op-player__media');
-    var instance = new OpenPlayer(player.id, player.getAttribute('data-op-ads'), false, {
+    var instance = new OpenPlayer(player.id, {
         ads: {
             debug: false,
             autoPlayAdBreaks: false,
             numRedirects: 6,
+            src: player.getAttribute('data-op-ads'),
         },
     });
 
