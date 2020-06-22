@@ -56,8 +56,7 @@
         var ads = getUrlParameter('ads');
         ads = ads.replace(/~/g, '%');
 
-        var defaultMedia = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ?
-            'http://techslides.com/demos/samples/sample.mp4' : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
+        var defaultMedia = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
         
         var url = decodeURIComponent(getUrlParameter('file')) || defaultMedia;
         var media = document.createElement(type);
