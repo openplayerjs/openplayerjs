@@ -6440,7 +6440,8 @@ var Progress = function () {
           return true;
         }
 
-        var x = e.originalEvent && e.originalEvent.changedTouches ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+        var changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
+        var x = changedTouches ? changedTouches[0].pageX : e.pageX;
         var pos = x - general_1.offset(_this.progress).left;
         var percentage = pos / _this.progress.offsetWidth;
         var time = percentage * el.duration;

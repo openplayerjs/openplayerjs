@@ -252,7 +252,7 @@ class Progress implements PlayerComponent {
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
                     0 : ((current / el.duration) * 100);
-                
+
                 if (this.player.getOptions().showLiveProgress && Math.floor(this.played.value) >= 99) {
                     lastCurrentTime = el.currentTime;
                 }
@@ -301,7 +301,7 @@ class Progress implements PlayerComponent {
             } else {
                 el.currentTime = val;
             }
-            
+
             this.slider.classList.remove('.op-progress--pressed');
             e.preventDefault();
         };
@@ -348,9 +348,11 @@ class Progress implements PlayerComponent {
             if (el.duration === Infinity) {
                 return true;
             }
-            const x = (e.originalEvent && e.originalEvent.changedTouches) ?
-                e.originalEvent.changedTouches[0].pageX : e.pageX;
 
+            // Android devices (and maybe others) don't consider `originalEvent`. Check for the
+            // existence of them; otherwise, use the event's `changedTouches` element.
+            const changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
+            const x = changedTouches ? changedTouches[0].pageX : e.pageX;
             const pos = x - offset(this.progress).left;
             const percentage = (pos / this.progress.offsetWidth);
             const time = percentage * el.duration;
