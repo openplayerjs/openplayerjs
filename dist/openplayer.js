@@ -2197,7 +2197,7 @@ var store = __webpack_require__(51);
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.6.4',
+  version: '3.6.5',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
 });
@@ -2765,7 +2765,13 @@ if (!set || !clear) {
     defer = bind(port.postMessage, port, 1);
   // Browsers with postMessage, skip WebWorkers
   // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if (global.addEventListener && typeof postMessage == 'function' && !global.importScripts && !fails(post)) {
+  } else if (
+    global.addEventListener &&
+    typeof postMessage == 'function' &&
+    !global.importScripts &&
+    !fails(post) &&
+    location.protocol !== 'file:'
+  ) {
     defer = post;
     global.addEventListener('message', listener, false);
   // IE8-
@@ -8284,6 +8290,7 @@ var Ads = function () {
     this.currentAdsIndex = 0;
     this.lastTimePaused = 0;
     this.mediaStarted = false;
+    this.errorRecoveryAttempts = 0;
     var defaultOpts = {
       autoPlayAdBreaks: true,
       debug: false,
@@ -8591,7 +8598,13 @@ var Ads = function () {
         this.load(true);
         console.warn("Ad warning: ".concat(event.getError().toString()));
       } else {
-        if (this.adsManager) {
+        var iOSAudio = !general_1.isVideo(this.element) && constants_1.IS_IOS;
+
+        if (iOSAudio) {
+          this.errorRecoveryAttempts++;
+        }
+
+        if (this.adsManager && (!iOSAudio || this.errorRecoveryAttempts > 1)) {
           this.adsManager.destroy();
         }
 
@@ -8601,7 +8614,7 @@ var Ads = function () {
           general_1.removeElement(unmuteEl);
         }
 
-        if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
+        if ((!iOSAudio || this.errorRecoveryAttempts > 1) && (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true)) {
           this.adsActive = false;
 
           this._resumeMedia();
