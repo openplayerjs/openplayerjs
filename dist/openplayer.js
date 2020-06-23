@@ -6480,7 +6480,8 @@ var Progress = function () {
           return true;
         }
 
-        var x = e.originalEvent && e.originalEvent.changedTouches ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+        var changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
+        var x = changedTouches ? changedTouches[0].pageX : e.pageX;
         var pos = x - general_1.offset(_this.progress).left;
         var percentage = pos / _this.progress.offsetWidth;
         var time = percentage * el.duration;
@@ -8362,6 +8363,7 @@ var Ads = function () {
     this.currentAdsIndex = 0;
     this.lastTimePaused = 0;
     this.mediaStarted = false;
+    this.errorRecoveryAttempts = 0;
     var defaultOpts = {
       autoPlayAdBreaks: true,
       debug: false,
@@ -8669,7 +8671,13 @@ var Ads = function () {
         this.load(true);
         console.warn("Ad warning: ".concat(event.getError().toString()));
       } else {
-        if (this.adsManager) {
+        var iOSAudio = !general_1.isVideo(this.element) && constants_1.IS_IOS;
+
+        if (iOSAudio) {
+          this.errorRecoveryAttempts++;
+        }
+
+        if (this.adsManager && (!iOSAudio || this.errorRecoveryAttempts > 1)) {
           this.adsManager.destroy();
         }
 
@@ -8679,7 +8687,7 @@ var Ads = function () {
           general_1.removeElement(unmuteEl);
         }
 
-        if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
+        if ((!iOSAudio || this.errorRecoveryAttempts > 1) && (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true)) {
           this.adsActive = false;
 
           this._resumeMedia();

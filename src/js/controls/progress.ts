@@ -352,9 +352,11 @@ class Progress implements PlayerComponent {
             if (el.duration === Infinity) {
                 return true;
             }
-            const x = (e.originalEvent && e.originalEvent.changedTouches) ?
-                e.originalEvent.changedTouches[0].pageX : e.pageX;
 
+            // Android devices (and maybe others) don't consider `originalEvent`. Check for the
+            // existence of them; otherwise, use the event's `changedTouches` element.
+            const changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
+            const x = changedTouches ? changedTouches[0].pageX : e.pageX;
             const pos = x - offset(this.progress).left;
             const percentage = (pos / this.progress.offsetWidth);
             const time = percentage * el.duration;
