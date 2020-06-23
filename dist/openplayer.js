@@ -8599,13 +8599,11 @@ var Ads = function () {
         this.load(true);
         console.warn("Ad warning: ".concat(event.getError().toString()));
       } else {
-        var iOSAudio = !general_1.isVideo(this.element) && constants_1.IS_IOS;
-
-        if (iOSAudio) {
+        if (constants_1.IS_IOS) {
           this.errorRecoveryAttempts++;
         }
 
-        if (this.adsManager && (!iOSAudio || this.errorRecoveryAttempts > 1)) {
+        if (this.adsManager && (!constants_1.IS_IOS || this.errorRecoveryAttempts > 1)) {
           this.adsManager.destroy();
         }
 
@@ -8615,7 +8613,7 @@ var Ads = function () {
           general_1.removeElement(unmuteEl);
         }
 
-        if ((!iOSAudio || this.errorRecoveryAttempts > 1) && (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true)) {
+        if ((!constants_1.IS_IOS || this.errorRecoveryAttempts > 1) && (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true)) {
           this.adsActive = false;
 
           this._resumeMedia();

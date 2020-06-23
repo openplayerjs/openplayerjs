@@ -751,23 +751,20 @@ class Ads {
             this.load(true);
             console.warn(`Ad warning: ${event.getError().toString()}`);
         } else {
-            // In the remote instance that the user decides to place an Ad that reads a video
-            // element inside of an audio tag, avoid destroying the Ads player so it can attempt
-            // playing the Ad's audio. The most common error seen until now in this scenario is:
-            // `Ad error: AdError 1009: The VAST response document is empty.` in iOS audio.
+            // The most common error seen in iOS ads until now is:
+            // `Ad error: AdError 1009: The VAST response document is empty.`
             // Allow error in this scenatio only once, then destroy Ads player.
-            const iOSAudio = !isVideo(this.element) && IS_IOS;
-            if (iOSAudio) {
+            if (IS_IOS) {
                 this.errorRecoveryAttempts++;
             }
-            if (this.adsManager && (!iOSAudio || this.errorRecoveryAttempts > 1)) {
+            if (this.adsManager && (!IS_IOS || this.errorRecoveryAttempts > 1)) {
                 this.adsManager.destroy();
             }
             const unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
             if (unmuteEl) {
                 removeElement(unmuteEl);
             }
-            if ((!iOSAudio || this.errorRecoveryAttempts > 1) &&
+            if ((!IS_IOS || this.errorRecoveryAttempts > 1) &&
                 (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true)) {
                 this.adsActive = false;
                 this._resumeMedia();
