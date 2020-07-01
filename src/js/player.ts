@@ -895,7 +895,7 @@ class Player {
                     const target = this.getContainer();
                     target.insertBefore(volumeEl, target.firstChild);
                 } else {
-                    this.activeElement().muted = false;
+                    this.activeElement().muted = this.element.muted;
                     this.activeElement().volume = this.volume;
                 }
 
