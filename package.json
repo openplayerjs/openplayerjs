@@ -1,6 +1,6 @@
 {
   "name": "openplayerjs",
-  "version": "1.16.6",
+  "version": "1.16.7",
   "homepage": "https://www.openplayerjs.com/",
   "author": {
     "name": "Rafael Miranda",
@@ -42,9 +42,8 @@
   ],
   "scripts": {
     "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production",
-    "release": "npm run build && npm run docs && release-it",
-    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js",
-    "docs": "[ -d ./docs ] && rm -R ./docs; typedoc --out ./docs --mode modules --tsconfig ./tsconfig.json ./src/js/"
+    "release": "npm run build && release-it",
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "devDependencies": {
