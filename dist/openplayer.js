@@ -8291,7 +8291,6 @@ var Ads = function () {
     this.currentAdsIndex = 0;
     this.lastTimePaused = 0;
     this.mediaStarted = false;
-    this.errorRecoveryAttempts = 0;
     var defaultOpts = {
       autoPlayAdBreaks: true,
       debug: false,
@@ -8338,8 +8337,6 @@ var Ads = function () {
       this.adsContainer.tabIndex = -1;
       this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
       this.mediaSources = this.media.src;
-      var e = events_1.addEvent('waiting');
-      this.element.dispatchEvent(e);
       google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
       this.adDisplayContainer = new google.ima.AdDisplayContainer(this.adsContainer, this.element);
       this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
@@ -8559,6 +8556,11 @@ var Ads = function () {
           if (ad.isLinear()) {
             this.adsActive = false;
             this.adsEnded = true;
+            this.intervalTimer = 0;
+            this.adsMuted = false;
+            this.adsStarted = false;
+            this.adsDuration = 0;
+            this.adsCurrentTime = 0;
             this.element.parentElement.classList.remove('op-ads--active');
             this.destroy();
 
@@ -8577,15 +8579,17 @@ var Ads = function () {
   }, {
     key: "_error",
     value: function _error(event) {
+      var error = event.getError();
       var details = {
         detail: {
-          data: event.getError(),
-          message: event.getError().toString(),
+          data: error,
+          message: error.toString(),
           type: 'Ads'
         }
       };
       var errorEvent = events_1.addEvent('playererror', details);
       this.element.dispatchEvent(errorEvent);
+      var fatalErrorCodes = [100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405, 406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005];
 
       if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length - 1) {
         if (this.currentAdsIndex < this.ads.length - 1) {
@@ -8597,14 +8601,13 @@ var Ads = function () {
         this.adsDone = false;
         this.destroy();
         this.load(true);
-        console.warn("Ad warning: ".concat(event.getError().toString()));
+        console.warn("Ad warning: ".concat(error.toString()));
       } else {
-        if (constants_1.IS_IOS) {
-          this.errorRecoveryAttempts++;
-        }
-
-        if (this.adsManager && (!constants_1.IS_IOS || this.errorRecoveryAttempts > 1)) {
+        if (this.adsManager && fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
           this.adsManager.destroy();
+          console.error("Ad error: ".concat(error.toString()));
+        } else {
+          console.warn("Ad warning: ".concat(error.toString()));
         }
 
         var unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
@@ -8613,13 +8616,15 @@ var Ads = function () {
           general_1.removeElement(unmuteEl);
         }
 
-        if ((!constants_1.IS_IOS || this.errorRecoveryAttempts > 1) && (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true)) {
+        if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
           this.adsActive = false;
 
-          this._resumeMedia();
+          if (this.element.src) {
+            this.media.play();
+          } else {
+            this._resumeMedia();
+          }
         }
-
-        console.error("Ad error: ".concat(event.getError().toString()));
       }
     }
   }, {
@@ -8740,7 +8745,10 @@ var Ads = function () {
         this.currentAdsIndex++;
 
         if (this.currentAdsIndex <= this.ads.length - 1) {
-          this.adsManager.destroy();
+          if (this.adsManager) {
+            this.adsManager.destroy();
+          }
+
           this.adsLoader.contentComplete();
           this.playTriggered = true;
           this.adsStarted = true;
@@ -8797,9 +8805,9 @@ var Ads = function () {
       waitPromise(50, this.media.ended).then(function () {
         return _this6.media.play().then(function () {
           return triggerEvent('play');
-        })["catch"](function () {
-          return triggerEvent('ended');
         });
+      })["catch"](function () {
+        return triggerEvent('ended');
       });
     }
   }, {
@@ -8835,7 +8843,10 @@ var Ads = function () {
   }, {
     key: "_resetAdsAfterManualBreak",
     value: function _resetAdsAfterManualBreak() {
-      this.adsManager.destroy();
+      if (this.adsManager) {
+        this.adsManager.destroy();
+      }
+
       this.adsLoader.contentComplete();
       this.adsDone = false;
       this.playTriggered = true;
