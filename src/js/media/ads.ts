@@ -273,15 +273,6 @@ class Ads {
     private mediaStarted: boolean = false;
 
     /**
-     * Counter of attempts the system will recover from an error.
-     *
-     * @private
-     * @type number
-     * @memberof Ads
-     */
-    private errorRecoveryAttempts: number = 0;
-
-    /**
      * Create an instance of Ads.
      *
      * @param {Player} player
@@ -351,9 +342,6 @@ class Ads {
         this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
         this.mediaSources = this.media.src;
 
-        const e = addEvent('waiting');
-        this.element.dispatchEvent(e);
-
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
 
         this.adDisplayContainer =
@@ -376,6 +364,7 @@ class Ads {
             google.ima.AdErrorEvent.Type.AD_ERROR,
             this._error.bind(this),
         );
+
         // Create responsive ad
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', this.resizeAds.bind(this));
@@ -704,6 +693,11 @@ class Ads {
                 if (ad.isLinear()) {
                     this.adsActive = false;
                     this.adsEnded = true;
+                    this.intervalTimer = 0;
+                    this.adsMuted = false;
+                    this.adsStarted = false;
+                    this.adsDuration = 0;
+                    this.adsCurrentTime = 0;
                     this.element.parentElement.classList.remove('op-ads--active');
                     this.destroy();
                     if (this.element.currentTime >= this.element.duration) {
@@ -730,15 +724,22 @@ class Ads {
      * @memberof Ads
      */
     private _error(event: any): void {
+        const error = event.getError();
         const details = {
             detail: {
-                data: event.getError(),
-                message: event.getError().toString(),
+                data: error,
+                message: error.toString(),
                 type: 'Ads',
             },
         };
         const errorEvent = addEvent('playererror', details);
         this.element.dispatchEvent(errorEvent);
+
+        // @see https://support.google.com/admanager/answer/4442429?hl=en
+        const fatalErrorCodes = [
+            100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405,
+            406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005,
+        ];
 
         if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length - 1) {
             if (this.currentAdsIndex < this.ads.length - 1) {
@@ -749,27 +750,30 @@ class Ads {
             this.adsDone = false;
             this.destroy();
             this.load(true);
-            console.warn(`Ad warning: ${event.getError().toString()}`);
+            console.warn(`Ad warning: ${error.toString()}`);
         } else {
-            // The most common error seen in iOS ads until now is:
-            // `Ad error: AdError 1009: The VAST response document is empty.`
-            // Allow error in this scenatio only once, then destroy Ads player.
-            if (IS_IOS) {
-                this.errorRecoveryAttempts++;
-            }
-            if (this.adsManager && (!IS_IOS || this.errorRecoveryAttempts > 1)) {
+            // Unless there's a fatal error, do not destroy the Ads manager
+            if (this.adsManager && fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
                 this.adsManager.destroy();
+                console.error(`Ad error: ${error.toString()}`);
+            } else {
+                console.warn(`Ad warning: ${error.toString()}`);
             }
+
             const unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
             if (unmuteEl) {
                 removeElement(unmuteEl);
             }
-            if ((!IS_IOS || this.errorRecoveryAttempts > 1) &&
-                (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true)) {
+            if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
                 this.adsActive = false;
-                this._resumeMedia();
+                // Sometimes, due to pre-fetch issues, Ads could report an error, but the SDK is able to
+                // play Ads, so check if src was set to determine what action to take
+                if (this.element.src) {
+                    this.media.play();
+                } else {
+                    this._resumeMedia();
+                }
             }
-            console.error(`Ad error: ${event.getError().toString()}`);
         }
     }
 
@@ -936,7 +940,9 @@ class Ads {
         if (Array.isArray(this.ads)) {
             this.currentAdsIndex++;
             if (this.currentAdsIndex <= this.ads.length - 1) {
-                this.adsManager.destroy();
+                if (this.adsManager) {
+                    this.adsManager.destroy();
+                }
                 this.adsLoader.contentComplete();
                 this.playTriggered = true;
                 this.adsStarted = true;
@@ -983,14 +989,12 @@ class Ads {
             if (isReject) {
                 return reject();
             }
-
             setTimeout(resolve, ms);
         });
 
         waitPromise(50, this.media.ended)
-            .then(() => this.media.play().then(() => triggerEvent('play'))
-            .catch(() => triggerEvent('ended')));
-
+            .then(() => this.media.play().then(() => triggerEvent('play')))
+            .catch(() => triggerEvent('ended'));
     }
 
     /**
@@ -1041,7 +1045,9 @@ class Ads {
      * @memberof Ads
      */
     private _resetAdsAfterManualBreak() {
-        this.adsManager.destroy();
+        if (this.adsManager) {
+            this.adsManager.destroy();
+        }
         this.adsLoader.contentComplete();
         this.adsDone = false;
         this.playTriggered = true;
