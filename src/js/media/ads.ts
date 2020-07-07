@@ -343,6 +343,9 @@ class Ads {
         this.mediaSources = this.media.src;
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+        google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
+        google.ima.settings.setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
+        google.ima.settings.setNumRedirects(this.adsOptions.numRedirects);
 
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(
@@ -351,10 +354,6 @@ class Ads {
             );
 
         this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
-        this.adsLoader.getSettings().setDisableCustomPlaybackForIOS10Plus(true);
-        this.adsLoader.getSettings().setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
-        this.adsLoader.getSettings().setNumRedirects(this.adsOptions.numRedirects);
-
         this.adsLoader.addEventListener(
             google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
             this._loaded.bind(this),
@@ -689,7 +688,7 @@ class Ads {
                     this.element.dispatchEvent(volumeEvent);
                 }
                 break;
-            case google.ima.AdEvent.ALL_ADS_COMPLETED:
+            case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
                 if (ad.isLinear()) {
                     this.adsActive = false;
                     this.adsEnded = true;
