@@ -55,7 +55,6 @@
     "babel-loader": "^8.1.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-minify": "^0.5.1",
-    "babili-webpack-plugin": "^0.1.2",
     "chai": "^4.2.0",
     "conventional-changelog": "^3.1.18",
     "coveralls": "^3.0.11",

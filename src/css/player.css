@@ -258,6 +258,13 @@
 .op-controls__settings:before {
     content: '\e800';
 }
+.op-controls__playlist-first:before,
+.op-controls__playlist-previous:before,
+.op-controls__playlist-next:before,
+.op-controls__playlist-last:before,
+.op-controls__playlist-toggle:before {
+    content: '\e800';
+}
 
 /* === Settings =================== */
 .op-settings {
@@ -630,9 +637,7 @@
     position: absolute;
     text-align: center;
     transform: translateY(-40px);
-    transition: -webkit-transform 0.3s ease;
     transition: transform 0.3s ease;
-    transition: transform 0.3s ease,-webkit-transform 0.3s ease;
     width: 100%;
     z-index: 1;
 }
@@ -719,6 +724,29 @@ video:-webkit-media-text-track-display {
     right: 0;
     top: 100%;
     width: 0;
+}
+
+/* === Playlist ================ */
+#op-player__wrapper {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+#op-player__playlist {
+    background: #000;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: all 0.2s ease;
+    width: 300px;
+}
+#op-player__playlist.op-player__playlist--closed {
+    right: -300px;
+}
+.op-player__playlist-item {
+    color: #fff;
+    cursor: pointer;
 }
 
 /* === Ads =================== */

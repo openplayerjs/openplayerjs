@@ -117,29 +117,6 @@ module.exports =
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(0);
-var shared = __webpack_require__(52);
-var has = __webpack_require__(6);
-var uid = __webpack_require__(53);
-var NATIVE_SYMBOL = __webpack_require__(57);
-var USE_SYMBOL_AS_UID = __webpack_require__(88);
-
-var WellKnownSymbolsStore = shared('wks');
-var Symbol = global.Symbol;
-var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : Symbol && Symbol.withoutSetter || uid;
-
-module.exports = function (name) {
-  if (!has(WellKnownSymbolsStore, name)) {
-    if (NATIVE_SYMBOL && has(Symbol, name)) WellKnownSymbolsStore[name] = Symbol[name];
-    else WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
-  } return WellKnownSymbolsStore[name];
-};
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
@@ -328,6 +305,29 @@ function isXml(input) {
 }
 
 exports.isXml = isXml;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(0);
+var shared = __webpack_require__(52);
+var has = __webpack_require__(6);
+var uid = __webpack_require__(53);
+var NATIVE_SYMBOL = __webpack_require__(57);
+var USE_SYMBOL_AS_UID = __webpack_require__(88);
+
+var WellKnownSymbolsStore = shared('wks');
+var Symbol = global.Symbol;
+var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : Symbol && Symbol.withoutSetter || uid;
+
+module.exports = function (name) {
+  if (!has(WellKnownSymbolsStore, name)) {
+    if (NATIVE_SYMBOL && has(Symbol, name)) WellKnownSymbolsStore[name] = Symbol[name];
+    else WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
+  } return WellKnownSymbolsStore[name];
+};
+
 
 /***/ }),
 /* 3 */
@@ -1318,7 +1318,7 @@ module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O)
 
 var defineProperty = __webpack_require__(12).f;
 var has = __webpack_require__(6);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 
@@ -1333,7 +1333,7 @@ module.exports = function (it, TAG, STATIC) {
 /* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 var test = {};
@@ -1522,15 +1522,15 @@ __webpack_require__(128);
 
 var controls_1 = __webpack_require__(129);
 
-var media_1 = __webpack_require__(138);
+var media_1 = __webpack_require__(139);
 
-var ads_1 = __webpack_require__(142);
+var ads_1 = __webpack_require__(143);
 
 var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var media_2 = __webpack_require__(25);
 
@@ -1538,6 +1538,7 @@ var Player = function () {
   function Player(element, options, fill, legacyOptions) {
     _classCallCheck(this, Player);
 
+    this.playlist = [];
     this.events = {};
     this.autoplay = false;
     this.processedAutoplay = false;
@@ -1565,6 +1566,13 @@ var Player = function () {
         off: 'Off',
         pause: 'Pause',
         play: 'Play',
+        playlist: {
+          first: 'First',
+          last: 'Last',
+          next: 'Next',
+          previous: 'Previous',
+          toggle: 'Toggle Playlist'
+        },
         progressRail: 'Time Rail',
         progressSlider: 'Time Slider',
         settings: 'Player Settings',
@@ -1579,6 +1587,7 @@ var Player = function () {
       },
       mode: 'responsive',
       onError: function onError() {},
+      playlist: [],
       showLiveLabel: true,
       showLoaderOnInit: false,
       startTime: 0,
@@ -1628,7 +1637,11 @@ var Player = function () {
       if (this._isValid()) {
         this._wrapInstance();
 
-        this._prepareMedia();
+        if (this.options.playlist.length > 0) {
+          this._loadPlaylist(this.options.playlist);
+        } else {
+          this._prepareMedia();
+        }
 
         this._createPlayButton();
 
@@ -1802,6 +1815,40 @@ var Player = function () {
       this.element.dispatchEvent(e);
     }
   }, {
+    key: "loadPlaylist",
+    value: function loadPlaylist(playlist) {
+      this._loadPlaylist(playlist);
+
+      var e = events_1.addEvent('controlschanged');
+      this.element.dispatchEvent(e);
+    }
+  }, {
+    key: "_prepareMedia",
+    value: function _prepareMedia() {
+      try {
+        this.element.addEventListener('playererror', this.options.onError);
+
+        if (this.autoplay && general_1.isVideo(this.element)) {
+          this.element.addEventListener('canplay', this._autoplay.bind(this));
+        }
+
+        this.media = new media_1["default"](this.element, this.options, this.autoplay, Player.customMedia);
+        var preload = this.element.getAttribute('preload');
+
+        if (this.ads || !preload || preload !== 'none') {
+          this.media.load();
+          this.media.loaded = true;
+        }
+
+        if (!this.autoplay && this.ads) {
+          var adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
+          this.adsInstance = new ads_1["default"](this, this.ads, false, false, adsOptions);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, {
     key: "_isValid",
     value: function _isValid() {
       var el = this.element;
@@ -1856,32 +1903,6 @@ var Player = function () {
       this.controls.create();
     }
   }, {
-    key: "_prepareMedia",
-    value: function _prepareMedia() {
-      try {
-        this.element.addEventListener('playererror', this.options.onError);
-
-        if (this.autoplay && general_1.isVideo(this.element)) {
-          this.element.addEventListener('canplay', this._autoplay.bind(this));
-        }
-
-        this.media = new media_1["default"](this.element, this.options, this.autoplay, Player.customMedia);
-        var preload = this.element.getAttribute('preload');
-
-        if (this.ads || !preload || preload !== 'none') {
-          this.media.load();
-          this.media.loaded = true;
-        }
-
-        if (!this.autoplay && this.ads) {
-          var adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-          this.adsInstance = new ads_1["default"](this, this.ads, false, false, adsOptions);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }, {
     key: "_createUID",
     value: function _createUID() {
       if (this.element.id) {
@@ -1891,7 +1912,7 @@ var Player = function () {
         var uid;
 
         do {
-          uid = "om_".concat(Math.random().toString(36).substr(2, 9));
+          uid = "op_".concat(Math.random().toString(36).substr(2, 9));
         } while (Player.instances[uid] !== undefined);
 
         this.uid = uid;
@@ -2112,6 +2133,56 @@ var Player = function () {
       }
     }
   }, {
+    key: "_loadPlaylist",
+    value: function _loadPlaylist(playlist) {
+      var _this6 = this;
+
+      this.playlist = playlist;
+      var currentMedia = playlist[0];
+      this.element.src = currentMedia.src;
+
+      if (playlist.length > 1) {
+        (function () {
+          var container = document.createElement('div');
+          container.id = 'op-player__playlist';
+          container.className = 'op-player__playlist--closed';
+          playlist.forEach(function (item) {
+            var img = item.thumbnail ? "<img src=\"".concat(item.thumbnail, "\" alt=\"").concat(item.name, "\">") : '';
+            container.innerHTML += "<div class=\"op-player__playlist-item\" data-url=\"".concat(item.src, "\">\n                    ").concat(img, "\n                    <div class=\"op-player__playlist-item-info\">\n                        <span>").concat(item.name, "</span>\n                    </div>\n                </div>");
+          });
+          var wrapper = document.createElement('div');
+          wrapper.id = 'op-player__wrapper';
+
+          _this6.getContainer().parentElement.insertBefore(wrapper, _this6.getContainer());
+
+          wrapper.appendChild(_this6.getContainer());
+          wrapper.appendChild(container);
+          var listItems = container.querySelectorAll('.op-player__playlist-item');
+
+          var _loop = function _loop(i, total) {
+            listItems[i].addEventListener('click', function () {
+              var isPlaying = !_this6.media.paused;
+              _this6.element.src = listItems[i].getAttribute('data-url');
+
+              _this6.load();
+
+              if (isPlaying) {
+                setTimeout(function () {
+                  return _this6.play;
+                }, 100);
+              }
+            });
+          };
+
+          for (var i = 0, total = listItems.length; i < total; ++i) {
+            _loop(i, total);
+          }
+        })();
+      }
+
+      return this._prepareMedia();
+    }
+  }, {
     key: "src",
     set: function set(media) {
       if (this.media instanceof media_1["default"]) {
@@ -2323,7 +2394,7 @@ module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
 /* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var create = __webpack_require__(41);
 var definePropertyModule = __webpack_require__(12);
 
@@ -2403,7 +2474,7 @@ var setPrototypeOf = __webpack_require__(63);
 var setToStringTag = __webpack_require__(44);
 var createNonEnumerableProperty = __webpack_require__(11);
 var redefine = __webpack_require__(15);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var IS_PURE = __webpack_require__(19);
 var Iterators = __webpack_require__(23);
 var IteratorsCore = __webpack_require__(62);
@@ -2496,7 +2567,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 var getPrototypeOf = __webpack_require__(43);
 var createNonEnumerableProperty = __webpack_require__(11);
 var has = __webpack_require__(6);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var IS_PURE = __webpack_require__(19);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -2584,7 +2655,7 @@ module.exports = function (iterator, fn, value, ENTRIES) {
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var Iterators = __webpack_require__(23);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -2602,7 +2673,7 @@ module.exports = function (it) {
 
 var classof = __webpack_require__(67);
 var Iterators = __webpack_require__(23);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var ITERATOR = wellKnownSymbol('iterator');
 
@@ -2619,7 +2690,7 @@ module.exports = function (it) {
 
 var TO_STRING_TAG_SUPPORT = __webpack_require__(45);
 var classofRaw = __webpack_require__(14);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 // ES3 wrong here
@@ -2649,7 +2720,7 @@ module.exports = TO_STRING_TAG_SUPPORT ? classofRaw : function (it) {
 /* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var ITERATOR = wellKnownSymbol('iterator');
 var SAFE_CLOSING = false;
@@ -2704,7 +2775,7 @@ module.exports = global.Promise;
 
 var anObject = __webpack_require__(9);
 var aFunction = __webpack_require__(16);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -3164,7 +3235,7 @@ module.exports = {
 
 var isObject = __webpack_require__(10);
 var isArray = __webpack_require__(87);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -3664,7 +3735,7 @@ var global = __webpack_require__(0);
 var DOMIterables = __webpack_require__(113);
 var ArrayIteratorMethods = __webpack_require__(114);
 var createNonEnumerableProperty = __webpack_require__(11);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var ITERATOR = wellKnownSymbol('iterator');
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
@@ -3827,7 +3898,7 @@ var newPromiseCapabilityModule = __webpack_require__(24);
 var perform = __webpack_require__(29);
 var InternalStateModule = __webpack_require__(18);
 var isForced = __webpack_require__(56);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var V8_VERSION = __webpack_require__(121);
 
 var SPECIES = wellKnownSymbol('species');
@@ -4202,7 +4273,7 @@ module.exports = function (target, src, options) {
 
 var getBuiltIn = __webpack_require__(13);
 var definePropertyModule = __webpack_require__(12);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var DESCRIPTORS = __webpack_require__(8);
 
 var SPECIES = wellKnownSymbol('species');
@@ -4624,19 +4695,21 @@ var levels_1 = __webpack_require__(132);
 
 var play_1 = __webpack_require__(133);
 
-var progress_1 = __webpack_require__(134);
+var playlist_1 = __webpack_require__(134);
 
-var settings_1 = __webpack_require__(135);
+var progress_1 = __webpack_require__(135);
 
-var time_1 = __webpack_require__(136);
+var settings_1 = __webpack_require__(136);
 
-var volume_1 = __webpack_require__(137);
+var time_1 = __webpack_require__(137);
+
+var volume_1 = __webpack_require__(138);
 
 var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var Controls = function () {
   function Controls(player) {
@@ -4651,6 +4724,7 @@ var Controls = function () {
       Fullscreen: fullscreen_1["default"],
       Levels: levels_1["default"],
       Play: play_1["default"],
+      Playlist: playlist_1["default"],
       Progress: progress_1["default"],
       Settings: settings_1["default"],
       Time: time_1["default"],
@@ -4713,7 +4787,7 @@ var Controls = function () {
         };
 
         this.events.mouse.mousemove = function () {
-          if (isMediaVideo && !_this.player.activeElement().paused) {
+          if (isMediaVideo) {
             if (_this.player.activeElement().currentTime) {
               _this.player.loader.setAttribute('aria-hidden', 'true');
 
@@ -4832,6 +4906,20 @@ var Controls = function () {
       var _this4 = this;
 
       var controls = this.player.getOptions().controls;
+
+      if (this.player.playlist.length > 0) {
+        var playlistRef = false;
+        Object.keys(controls).forEach(function (position) {
+          playlistRef = controls[position].find(function (item) {
+            return item === 'playlist';
+          });
+        });
+
+        if (!playlistRef) {
+          controls.left.push('playlist');
+        }
+      }
+
       this.items = {
         left: [],
         middle: [],
@@ -4943,7 +5031,7 @@ var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var time_1 = __webpack_require__(46);
 
@@ -5493,7 +5581,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var Fullscreen = function () {
   function Fullscreen(player, position) {
@@ -5709,7 +5797,7 @@ var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var Levels = function () {
   function Levels(player, position) {
@@ -6032,7 +6120,7 @@ var player_1 = __webpack_require__(48);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var Play = function () {
   function Play(player, position) {
@@ -6242,9 +6330,181 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var general_1 = __webpack_require__(1);
+
+var Playlist = function () {
+  function Playlist(player, position) {
+    _classCallCheck(this, Playlist);
+
+    this.events = {
+      button: {},
+      media: {}
+    };
+    this.player = player;
+    this.labels = player.getOptions().labels;
+    this.position = position;
+    return this;
+  }
+
+  _createClass(Playlist, [{
+    key: "create",
+    value: function create() {
+      var _this = this;
+
+      var playlist = this.player.playlist;
+      var currentItem = playlist.findIndex(function (item) {
+        return item["default"];
+      });
+
+      if (currentItem === -1) {
+        currentItem = 0;
+      }
+
+      var total = playlist.length - 1;
+      this.firstButton = document.createElement('button');
+      this.firstButton.type = 'button';
+      this.firstButton.className = "op-controls__playlist-first op-control__".concat(this.position);
+      this.firstButton.tabIndex = 0;
+      this.firstButton.title = this.labels.playlist.first;
+      this.firstButton.setAttribute('aria-controls', this.player.id);
+      this.firstButton.setAttribute('aria-pressed', 'false');
+      this.firstButton.setAttribute('aria-label', this.labels.playlist.first);
+      this.firstButton.innerHTML = "<span class=\"op-sr\">".concat(this.labels.playlist.first, "</span>");
+      this.player.getControls().getContainer().appendChild(this.firstButton);
+
+      this.events.button.first = function () {
+        currentItem = 0;
+        _this.player.getElement().src = playlist[0].src;
+
+        _this.player.load();
+      };
+
+      this.firstButton.addEventListener('click', this.events.button.first.bind(this));
+      this.prevButton = document.createElement('button');
+      this.prevButton.type = 'button';
+      this.prevButton.className = "op-controls__playlist-previous op-control__".concat(this.position);
+      this.prevButton.tabIndex = 0;
+      this.prevButton.title = this.labels.playlist.previous;
+      this.prevButton.setAttribute('aria-controls', this.player.id);
+      this.prevButton.setAttribute('aria-pressed', 'false');
+      this.prevButton.setAttribute('aria-label', this.labels.playlist.previous);
+      this.prevButton.innerHTML = "<span class=\"op-sr\">".concat(this.labels.playlist.previous, "</span>");
+      this.player.getControls().getContainer().appendChild(this.prevButton);
+
+      this.events.button.previous = function () {
+        var previous = currentItem - 1;
+        var pos = previous < 0 ? 0 : previous;
+        currentItem = pos;
+        _this.player.getElement().src = playlist[pos].src;
+
+        _this.player.load();
+      };
+
+      this.prevButton.addEventListener('click', this.events.button.previous.bind(this));
+      this.nextButton = document.createElement('button');
+      this.nextButton.type = 'button';
+      this.nextButton.className = "op-controls__playlist-next op-control__".concat(this.position);
+      this.nextButton.tabIndex = 0;
+      this.nextButton.title = this.labels.playlist.next;
+      this.nextButton.setAttribute('aria-controls', this.player.id);
+      this.nextButton.setAttribute('aria-pressed', 'false');
+      this.nextButton.setAttribute('aria-label', this.labels.playlist.next);
+      this.nextButton.innerHTML = "<span class=\"op-sr\">".concat(this.labels.playlist.next, "</span>");
+      this.player.getControls().getContainer().appendChild(this.nextButton);
+
+      this.events.button.next = function () {
+        var next = currentItem + 1;
+        var pos = next > total ? total : next;
+        currentItem = pos;
+        _this.player.getElement().src = playlist[pos].src;
+
+        _this.player.load();
+      };
+
+      this.nextButton.addEventListener('click', this.events.button.next.bind(this));
+      this.lastButton = document.createElement('button');
+      this.lastButton.type = 'button';
+      this.lastButton.className = "op-controls__playlist-last op-control__".concat(this.position);
+      this.lastButton.tabIndex = 0;
+      this.lastButton.title = this.labels.playlist.last;
+      this.lastButton.setAttribute('aria-controls', this.player.id);
+      this.lastButton.setAttribute('aria-pressed', 'false');
+      this.lastButton.setAttribute('aria-label', this.labels.playlist.last);
+      this.lastButton.innerHTML = "<span class=\"op-sr\">".concat(this.labels.playlist.last, "</span>");
+      this.player.getControls().getContainer().appendChild(this.lastButton);
+
+      this.events.button.last = function () {
+        currentItem = total;
+        _this.player.getElement().src = playlist[total].src;
+
+        _this.player.load();
+      };
+
+      this.lastButton.addEventListener('click', this.events.button.last.bind(this));
+      this.toggleButton = document.createElement('button');
+      this.toggleButton.type = 'button';
+      this.toggleButton.className = "op-controls__playlist-toggle op-control__".concat(this.position);
+      this.toggleButton.tabIndex = 0;
+      this.toggleButton.title = this.labels.playlist.toggle;
+      this.toggleButton.setAttribute('aria-controls', this.player.id);
+      this.toggleButton.setAttribute('aria-pressed', 'false');
+      this.toggleButton.setAttribute('aria-label', this.labels.playlist.toggle);
+      this.toggleButton.innerHTML = "<span class=\"op-sr\">".concat(this.labels.playlist.toggle, "</span>");
+      this.player.getControls().getContainer().appendChild(this.toggleButton);
+
+      this.events.button.toggle = function () {
+        var target = document.getElementById('op-playlist');
+
+        if (target.classList.contains('op-player__playlist--closed')) {
+          target.classList.remove('op-player__playlist--closed');
+        } else {
+          target.classList.add('op-player__playlist--closed');
+        }
+      };
+
+      this.toggleButton.addEventListener('click', this.events.button.toggle.bind(this));
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.firstButton.removeEventListener('click', this.events.button.first.bind(this));
+      this.prevButton.removeEventListener('click', this.events.button.previous.bind(this));
+      this.nextButton.removeEventListener('click', this.events.button.next.bind(this));
+      this.lastButton.removeEventListener('click', this.events.button.last.bind(this));
+      this.toggleButton.removeEventListener('click', this.events.button.toggle.bind(this));
+      general_1.removeElement(this.firstButton);
+      general_1.removeElement(this.prevButton);
+      general_1.removeElement(this.nextButton);
+      general_1.removeElement(this.lastButton);
+      general_1.removeElement(this.toggleButton);
+    }
+  }]);
+
+  return Playlist;
+}();
+
+exports["default"] = Playlist;
+
+/***/ }),
+/* 135 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var constants_1 = __webpack_require__(5);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var time_1 = __webpack_require__(46);
 
@@ -6615,7 +6875,7 @@ var Progress = function () {
 exports["default"] = Progress;
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6633,7 +6893,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var Settings = function () {
   function Settings(player, position) {
@@ -6895,7 +7155,7 @@ var Settings = function () {
 exports["default"] = Settings;
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6911,7 +7171,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var time_1 = __webpack_require__(46);
 
@@ -7047,7 +7307,7 @@ var Time = function () {
 exports["default"] = Time;
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7067,7 +7327,7 @@ var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var Volume = function () {
   function Volume(player, position) {
@@ -7276,7 +7536,7 @@ var Volume = function () {
 exports["default"] = Volume;
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7294,11 +7554,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var dash_1 = __webpack_require__(139);
+var dash_1 = __webpack_require__(140);
 
-var hls_1 = __webpack_require__(140);
+var hls_1 = __webpack_require__(141);
 
-var html5_1 = __webpack_require__(141);
+var html5_1 = __webpack_require__(142);
 
 var source = __webpack_require__(25);
 
@@ -7614,7 +7874,7 @@ var Media = function () {
 exports["default"] = Media;
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7650,7 +7910,7 @@ var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(25);
 
@@ -7840,7 +8100,7 @@ var DashMedia = function (_native_1$default) {
 exports["default"] = DashMedia;
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7889,7 +8149,7 @@ var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(25);
 
@@ -8164,7 +8424,7 @@ var HlsMedia = function (_native_1$default) {
 exports["default"] = HlsMedia;
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8200,7 +8460,7 @@ var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(25);
 
@@ -8322,7 +8582,7 @@ var HTML5Media = function (_native_1$default) {
 exports["default"] = HTML5Media;
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8342,7 +8602,7 @@ var constants_1 = __webpack_require__(5);
 
 var events_1 = __webpack_require__(7);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(1);
 
 var Ads = function () {
   function Ads(player, ads, autoStart, autoStartMuted, options) {

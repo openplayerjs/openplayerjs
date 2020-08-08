@@ -13,6 +13,7 @@ import CustomMedia from './interfaces/custom-media';
 import EventsList from './interfaces/events-list';
 import PlayerInstanceList from './interfaces/instance';
 import PlayerOptions from './interfaces/player-options';
+import PlaylistItem from './interfaces/playlist-item';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
@@ -22,7 +23,7 @@ import { isAudio, isVideo, removeElement } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
 
 /**
- * OpenMedia Player.
+ * OpenPlayerJS.
  *
  * @description This class generates controls to play native media (such as MP4, MP3, HLS, M(PEG-DASH),
  * and have a unified look-and-feel on all modern browsers (including IE11)
@@ -117,6 +118,8 @@ class Player {
      * @memberof Player
      */
     public loader: HTMLSpanElement;
+
+    public playlist: PlaylistItem[] = [];
 
     /**
      * Unique identified for the current player instance.
@@ -265,6 +268,13 @@ class Player {
             off: 'Off',
             pause: 'Pause',
             play: 'Play',
+            playlist: {
+                first: 'First',
+                last: 'Last',
+                next: 'Next',
+                previous: 'Previous',
+                toggle: 'Toggle Playlist',
+            },
             progressRail: 'Time Rail',
             progressSlider: 'Time Slider',
             settings: 'Player Settings',
@@ -279,6 +289,7 @@ class Player {
         },
         mode: 'responsive',
         onError: () => { },
+        playlist: [],
         showLiveLabel: true,
         showLoaderOnInit: false,
         startTime: 0,
@@ -336,7 +347,11 @@ class Player {
     public init(): void {
         if (this._isValid()) {
             this._wrapInstance();
-            this._prepareMedia();
+            if (this.options.playlist.length > 0) {
+                this._loadPlaylist(this.options.playlist);
+            } else {
+                this._prepareMedia();
+            }
             this._createPlayButton();
             this._createUID();
             this._createControls();
@@ -594,6 +609,45 @@ class Player {
     }
 
     /**
+     *
+     *
+     * @param {PlaylistItem[]} playlist
+     * @memberof Player
+     */
+    public loadPlaylist(playlist: PlaylistItem[]) {
+        this._loadPlaylist(playlist);
+        const e = addEvent('controlschanged');
+        this.element.dispatchEvent(e);
+    }
+
+    /**
+     * Load media and events depending of media type.
+     *
+     * @memberof Player
+     */
+    public _prepareMedia(): void {
+        try {
+            this.element.addEventListener('playererror', this.options.onError);
+            if (this.autoplay && isVideo(this.element)) {
+                this.element.addEventListener('canplay', this._autoplay.bind(this));
+            }
+            this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
+            const preload = this.element.getAttribute('preload');
+            if (this.ads || !preload || preload !== 'none') {
+                this.media.load();
+                this.media.loaded = true;
+            }
+
+            if (!this.autoplay && this.ads) {
+                const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
+                this.adsInstance = new Ads(this, this.ads, false, false, adsOptions);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /**
      * Set a Source object to the current media.
      *
      * @memberof Player
@@ -702,33 +756,6 @@ class Player {
     }
 
     /**
-     * Load media and events depending of media type.
-     *
-     * @memberof Player
-     */
-    private _prepareMedia(): void {
-        try {
-            this.element.addEventListener('playererror', this.options.onError);
-            if (this.autoplay && isVideo(this.element)) {
-                this.element.addEventListener('canplay', this._autoplay.bind(this));
-            }
-            this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
-            const preload = this.element.getAttribute('preload');
-            if (this.ads || !preload || preload !== 'none') {
-                this.media.load();
-                this.media.loaded = true;
-            }
-
-            if (!this.autoplay && this.ads) {
-                const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-                this.adsInstance = new Ads(this, this.ads, false, false, adsOptions);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
-    /**
      * Generate a unique identifier for the current player instance, if no `id` attribute was detected.
      *
      * @private
@@ -741,7 +768,7 @@ class Player {
         } else {
             let uid;
             do {
-                uid = `om_${Math.random().toString(36).substr(2, 9)}`;
+                uid = `op_${Math.random().toString(36).substr(2, 9)}`;
             } while (Player.instances[uid] !== undefined);
             this.uid = uid;
         }
@@ -962,6 +989,59 @@ class Player {
                     this.defaultOptions[item];
             });
         }
+    }
+
+    /**
+     *
+     *
+     * @private
+     * @param {PlaylistItem[]} playlist
+     * @return {void}
+     * @memberof Player
+     */
+    private _loadPlaylist(playlist: PlaylistItem[]) {
+        this.playlist = playlist;
+
+        const currentMedia = playlist[0];
+        this.element.src = currentMedia.src;
+
+        // build DOM for playlist
+        if (playlist.length > 1) {
+            const container = document.createElement('div');
+            container.id = 'op-player__playlist';
+            container.className = 'op-player__playlist--closed';
+
+            playlist.forEach(item => {
+                const img = item.thumbnail ? `<img src="${item.thumbnail}" alt="${item.name}">` : '';
+                container.innerHTML += `<div class="op-player__playlist-item" data-url="${item.src}">
+                    ${img}
+                    <div class="op-player__playlist-item-info">
+                        <span>${item.name}</span>
+                    </div>
+                </div>`;
+            });
+
+            const wrapper = document.createElement('div');
+            wrapper.id = 'op-player__wrapper';
+
+            this.getContainer().parentElement.insertBefore(wrapper, this.getContainer());
+            wrapper.appendChild(this.getContainer());
+            wrapper.appendChild(container);
+
+            const listItems = container.querySelectorAll('.op-player__playlist-item');
+            for (let i = 0, total = listItems.length; i < total; ++i) {
+                listItems[i].addEventListener('click', () => {
+                    const isPlaying = !this.media.paused;
+                    this.element.src = listItems[i].getAttribute('data-url');
+                    this.load();
+                    if (isPlaying) {
+                        setTimeout(() => this.play, 100);
+                    }
+                });
+            }
+        }
+
+        return this._prepareMedia();
     }
 }
 

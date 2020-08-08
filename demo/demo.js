@@ -3,11 +3,15 @@
     var destroyBtn = document.querySelectorAll('button.destroy-player');
     var captionBtn = document.querySelectorAll('button.load-caption');
     var controlBtn = document.querySelectorAll('button.add-control');
+    var playlistBtn = document.querySelectorAll('button.add-playlist');
     var players = document.querySelectorAll('.op-player__media');
     var instances = [];
 
     for (var i = 0, total = players.length; i < total; i++) {
         instances[i] = new OpenPlayer(players[i].id, {
+            ads: {
+                src: players[i].getAttribute('data-op-ads'),
+            },
             hls: {
                 startLevel: -1
             }
@@ -66,6 +70,25 @@
         this.removeEventListener('click', addControl);
     }
 
+    function addPlaylist() {
+        var id = this.closest('.players').querySelector('.op-player').id;
+        var player = OpenPlayer.instances[id];
+        player.loadPlaylist([{
+            src: 'https://www.html5rocks.com/en/tutorials/video/basics/devstories.mp4',
+            name: 'Test 1',
+        }, {
+            src: 'http://thenewcode.com/assets/videos/ocean-small.mp4',
+            name: 'Test 2',
+        }, {
+            src: 'https://playertest.longtailvideo.com/adaptive/vod-with-mp3/manifest.m3u8',
+            name: 'Test 3',
+        }, {
+            src: 'https://demo.unified-streaming.com/video/ateam/ateam.ism/ateam.mpd',
+            name: 'Test 4',
+        },]);
+        this.removeEventListener('click', addPlaylist);
+    }
+
     for (var i = 0, total = sourcesSelector.length; i < total; i++) {
         sourcesSelector[i].addEventListener('change', loadMedia);
     }
@@ -78,6 +101,9 @@
     }
     for (var i = 0, total = controlBtn.length; i < total; i++) {
         controlBtn[i].addEventListener('click', addControl);
+    }
+    for (var i = 0, total = playlistBtn.length; i < total; i++) {
+        playlistBtn[i].addEventListener('click', addPlaylist);
     }
 
     instances[1].getElement().addEventListener('hlsFragParsingMetadata', function (event) {

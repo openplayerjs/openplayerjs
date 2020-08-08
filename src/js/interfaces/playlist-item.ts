@@ -18,4 +18,5 @@ export default interface PlaylistItem {
     group?: string; // group-title
     code?: string; // parent-code
     audioTrack?: string; // audio-track
+    default?: boolean;
 }
