@@ -4679,7 +4679,7 @@ var Controls = function () {
         };
 
         this.events.mouse.mousemove = function () {
-          if (isMediaVideo && !_this.player.activeElement().paused) {
+          if (isMediaVideo) {
             if (_this.player.activeElement().currentTime) {
               _this.player.loader.setAttribute('aria-hidden', 'true');
 

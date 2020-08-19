@@ -150,7 +150,7 @@ class Controls implements PlayerComponent {
                 }
             };
             this.events.mouse.mousemove = () => {
-                if (isMediaVideo && !this.player.activeElement().paused) {
+                if (isMediaVideo) {
                     if (this.player.activeElement().currentTime) {
                         this.player.loader.setAttribute('aria-hidden', 'true');
                         this.player.playBtn.setAttribute('aria-hidden', this.player.isMedia() ? 'false' : 'true');
