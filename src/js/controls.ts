@@ -154,9 +154,9 @@ class Controls implements PlayerComponent {
                     if (this.player.activeElement().currentTime) {
                         this.player.loader.setAttribute('aria-hidden', 'true');
                         this.player.playBtn.setAttribute('aria-hidden', this.player.isMedia() ? 'false' : 'true');
-                    } else if (this.player.getOptions().showLoaderOnInit) {
-                        this.player.playBtn.setAttribute('aria-hidden', 'true');
-                        this.player.loader.setAttribute('aria-hidden', 'false');
+                    } else {
+                        this.player.playBtn.setAttribute('aria-hidden', this.player.getOptions().showLoaderOnInit ? 'true' : 'false');
+                        this.player.loader.setAttribute('aria-hidden', this.player.getOptions().showLoaderOnInit ? 'false' : 'true');
                     }
 
                     this.player.getContainer().classList.remove('op-controls--hidden');
