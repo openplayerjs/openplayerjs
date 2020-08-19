@@ -4684,10 +4684,10 @@ var Controls = function () {
               _this.player.loader.setAttribute('aria-hidden', 'true');
 
               _this.player.playBtn.setAttribute('aria-hidden', _this.player.isMedia() ? 'false' : 'true');
-            } else if (_this.player.getOptions().showLoaderOnInit) {
-              _this.player.playBtn.setAttribute('aria-hidden', 'true');
+            } else {
+              _this.player.playBtn.setAttribute('aria-hidden', _this.player.getOptions().showLoaderOnInit ? 'true' : 'false');
 
-              _this.player.loader.setAttribute('aria-hidden', 'false');
+              _this.player.loader.setAttribute('aria-hidden', _this.player.getOptions().showLoaderOnInit ? 'false' : 'true');
             }
 
             _this.player.getContainer().classList.remove('op-controls--hidden');
