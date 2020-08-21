@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="Audio Minutes" />
+    <title>Audio Minutes</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+    />
+    <style>
+      .hidden {
+        display: none !important;
+      }
+      @keyframes animate {
+        50% {
+          transform: rotateY(0.5turn);
+        }
+        100% {
+          transform: rotateY(1turn);
+        }
+      }
+      audio {
+        display: none;
+      }
+      .card {
+        max-width: 800px;
+        min-height: 150px;
+        position: relative;
+        transform-style: preserve-3d;
+      }
+      .card.video {
+        min-height: 100vh;
+      }
+      .card:not(.hidden) {
+        animation: animate 2s ease-in-out;
+        transition: 0.5s;
+      }
+      .front {
+        z-index: 10;
+      }
+      .back {
+        background: #ccc;
+        border-radius: 5px;
+        min-height: 150px;
+        transform: rotateY(0.5turn);
+      }
+      .audiominutes-player {
+        backface-visibility: hidden;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+      }
+      .card.video .audiominutes-player {
+        height: 100%;
+        max-height: 500px;
+      }
+      .op-player__audio {
+        display: none !important;
+      }
+      .resp-sharing-button__link,
+      .resp-sharing-button__icon {
+        display: inline-block;
+      }
+      .resp-sharing-button__link {
+        color: #fff;
+        margin: 0.5em;
+        text-decoration: none;
+      }
+      .resp-sharing-button {
+        border-radius: 5px;
+        padding: 0.75em;
+        transition: 25ms ease-out;
+      }
+      .resp-sharing-button__icon svg {
+        height: 1em;
+        margin-right: 0.4em;
+        vertical-align: top;
+        width: 1em;
+      }
+      .resp-sharing-button--small svg {
+        margin: 0;
+        vertical-align: middle;
+      }
+      .resp-sharing-button__icon {
+        fill: none;
+        stroke: #fff;
+      }
+      .resp-sharing-button__icon--solid,
+      .resp-sharing-button__icon--solidcircle {
+        fill: #fff;
+        stroke: none;
+      }
+      .resp-sharing-button--twitter {
+        background-color: #55acee;
+      }
+      .resp-sharing-button--twitter:hover {
+        background-color: #2795e9;
+      }
+      .resp-sharing-button--pinterest {
+        background-color: #bd081c;
+      }
+      .resp-sharing-button--pinterest:hover {
+        background-color: #8c0615;
+      }
+      .resp-sharing-button--facebook {
+        background-color: #3b5998;
+      }
+      .resp-sharing-button--facebook:hover {
+        background-color: #2d4373;
+      }
+      .resp-sharing-button--tumblr {
+        background-color: #35465c;
+      }
+      .resp-sharing-button--tumblr:hover {
+        background-color: #222d3c;
+      }
+      .resp-sharing-button--reddit {
+        background-color: #5f99cf;
+      }
+      .resp-sharing-button--reddit:hover {
+        background-color: #3a80c1;
+      }
+      .resp-sharing-button--google {
+        background-color: #dd4b39;
+      }
+      .resp-sharing-button--google:hover {
+        background-color: #c23321;
+      }
+      .resp-sharing-button--linkedin {
+        background-color: #0077b5;
+      }
+      .resp-sharing-button--linkedin:hover {
+        background-color: #046293;
+      }
+      .resp-sharing-button--email {
+        background-color: #777;
+      }
+      .resp-sharing-button--email:hover {
+        background-color: #5e5e5e;
+      }
+      .resp-sharing-button--xing {
+        background-color: #1a7576;
+      }
+      .resp-sharing-button--xing:hover {
+        background-color: #114c4c;
+      }
+      .resp-sharing-button--whatsapp {
+        background-color: #25d366;
+      }
+      .resp-sharing-button--whatsapp:hover {
+        background-color: #1da851;
+      }
+      .resp-sharing-button--hackernews {
+        background-color: #f60;
+      }
+      .resp-sharing-button--hackernews:hover,
+      .resp-sharing-button--hackernews:focus {
+        background-color: #fb6200;
+      }
+      .resp-sharing-button--vk {
+        background-color: #507299;
+      }
+      .resp-sharing-button--vk:hover {
+        background-color: #43648c;
+      }
+      .resp-sharing-button--facebook {
+        background-color: #3b5998;
+        border-color: #3b5998;
+      }
+      .resp-sharing-button--facebook:hover,
+      .resp-sharing-button--facebook:active {
+        background-color: #2d4373;
+        border-color: #2d4373;
+      }
+      .resp-sharing-button--twitter {
+        background-color: #55acee;
+        border-color: #55acee;
+      }
+      .resp-sharing-button--twitter:hover,
+      .resp-sharing-button--twitter:active {
+        background-color: #2795e9;
+        border-color: #2795e9;
+      }
+      .resp-sharing-button--tumblr {
+        background-color: #35465c;
+        border-color: #35465c;
+      }
+      .resp-sharing-button--tumblr:hover,
+      .resp-sharing-button--tumblr:active {
+        background-color: #222d3c;
+        border-color: #222d3c;
+      }
+      .resp-sharing-button--email {
+        background-color: #777;
+        border-color: #777;
+      }
+      .resp-sharing-button--email:hover,
+      .resp-sharing-button--email:active {
+        background-color: #5e5e5e;
+        border-color: #5e5e5e;
+      }
+      .resp-sharing-button--pinterest {
+        background-color: #bd081c;
+        border-color: #bd081c;
+      }
+      .resp-sharing-button--pinterest:hover,
+      .resp-sharing-button--pinterest:active {
+        background-color: #8c0615;
+        border-color: #8c0615;
+      }
+      .resp-sharing-button--linkedin {
+        background-color: #0077b5;
+        border-color: #0077b5;
+      }
+      .resp-sharing-button--linkedin:hover,
+      .resp-sharing-button--linkedin:active {
+        background-color: #046293;
+        border-color: #046293;
+      }
+      .resp-sharing-button--reddit {
+        background-color: #5f99cf;
+        border-color: #5f99cf;
+      }
+      .resp-sharing-button--reddit:hover,
+      .resp-sharing-button--reddit:active {
+        background-color: #3a80c1;
+        border-color: #3a80c1;
+      }
+      .resp-sharing-button--xing {
+        background-color: #1a7576;
+        border-color: #1a7576;
+      }
+      .resp-sharing-button--xing:hover .resp-sharing-button--xing:active {
+        background-color: #114c4c;
+        border-color: #114c4c;
+      }
+      .resp-sharing-button--whatsapp {
+        background-color: #25d366;
+        border-color: #25d366;
+      }
+      .resp-sharing-button--whatsapp:hover,
+      .resp-sharing-button--whatsapp:active {
+        background-color: #1da851;
+        border-color: #1da851;
+      }
+      .resp-sharing-button--hackernews {
+        background-color: #f60;
+        border-color: #f60;
+      }
+      .resp-sharing-button--hackernews:hover
+        .resp-sharing-button--hackernews:active {
+        background-color: #fb6200;
+        border-color: #fb6200;
+      }
+      .resp-sharing-button--vk {
+        background-color: #507299;
+        border-color: #507299;
+      }
+      .resp-sharing-button--vk:hover .resp-sharing-button--vk:active {
+        background-color: #43648c;
+        border-color: #43648c;
+      }
+      .resp-sharing-button--telegram {
+        background-color: #54a9eb;
+      }
+      .resp-sharing-button--telegram:hover {
+        background-color: #4b97d1;
+      }
+      .player-container {
+        background-color: #f1f2f2;
+        border-radius: 5px;
+        color: #444649;
+        display: flex;
+        flex-direction: column;
+        padding: 2px;
+        width: 100%;
+      }
+      .audiominutes-player.video-player {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        margin: 0 20px 10px;
+      }
+      .container > div {
+        flex: 1;
+        margin: 5px 0;
+        width: 100%;
+      }
+      .container:nth-child(1) {
+        flex-direction: row;
+        margin: 10px 15px 0;
+        position: relative;
+      }
+      .container:nth-child(1) .list {
+        display: none;
+      }
+      .container:nth-child(1) .controls {
+        display: flex;
+        justify-content: flex-end;
+        margin-left: 15px;
+      }
+      .container:nth-child(2) {
+        margin: 0 15px 4px;
+      }
+      .container:nth-child(3) {
+        flex-direction: row;
+        position: relative;
+      }
+      .container:nth-child(3) .controls {
+        display: none;
+      }
+      .player-content {
+        background-color: #14aef4;
+        display: flex;
+        flex: 2;
+        max-height: 50px;
+      }
+      .play-pause {
+        align-items: center;
+        background: transparent;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        outline: none;
+        width: 45px;
+        z-index: 1;
+      }
+      .play-pause > i {
+        pointer-events: none;
+        z-index: 0;
+      }
+      .info-content {
+        align-items: flex-start;
+        background-color: #00557e;
+        color: #fff;
+        display: flex;
+        padding: 10px;
+        width: calc(100% - 40px);
+      }
+      .info-content .meta {
+        align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+        margin-right: 20px;
+      }
+      .info-content .meta .title,
+      .info-content .date {
+        font-weight: 700;
+      }
+      .info-content .date {
+        text-align: right;
+        width: 100%;
+      }
+      .list {
+        order: 3;
+        position: relative;
+      }
+      .list .current-item {
+        background-color: #e6e7e9;
+        border: 3px solid #d5d6d7;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 23px;
+        max-height: 218px;
+        min-height: 20px;
+        position: relative;
+        width: 100%;
+      }
+      .list .current-item > span {
+        display: inline-block;
+        height: calc(100% - 20px);
+        overflow: hidden;
+        padding: 10px 0 10px 20px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: calc(100% - 55px);
+      }
+      .list .current-item .arrow-down {
+        cursor: pointer;
+        height: 52px;
+        margin-top: -10px;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+      }
+      .list ul::-webkit-scrollbar {
+        width: 10px;
+      }
+      .list ul::-webkit-scrollbar-thumb {
+        background: #14aef4;
+        border: none;
+        border-radius: 1px;
+      }
+      .list ul {
+        background-color: #e6e7e9;
+        border: 3px solid #d5d6d7;
+        border-radius: 4px;
+        cursor: pointer;
+        display: none;
+        list-style: none;
+        margin: 0;
+        max-height: 113px;
+        min-height: 20px;
+        min-width: 200px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding-left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+      }
+      .list ul.open {
+        display: block;
+      }
+      .list > ul > li {
+        font-size: 23px;
+        padding: 5px 20px;
+        width: calc(100% - 40px);
+      }
+      .list > ul > li:hover {
+        background-color: #f1f2f2;
+        cursor: pointer;
+      }
+      .list ul li:not(:last-of-type) {
+        border-bottom: 3px solid #d5d6d7;
+      }
+      .slider {
+        -webkit-appearance: none;
+        background-image: linear-gradient(
+          to right,
+          #14aef4 0%,
+          #14aef4 0%,
+          #00557e 0%,
+          #00557e
+        );
+        border-radius: 2px;
+        cursor: pointer;
+        height: 8px;
+        margin: 0;
+        margin-bottom: 5px;
+        order: 2;
+        outline: none;
+        width: 100%;
+      }
+      .live-streaming .slider {
+        cursor: default;
+      }
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        background: #005572;
+        cursor: pointer;
+        height: 7px;
+        margin-top: 0;
+        width: 1px;
+      }
+      .slider::-moz-range-thumb {
+        background: #005572;
+        cursor: pointer;
+        height: 7px;
+        margin-top: 0;
+        width: 1px;
+      }
+      .audio_slider::-ms-thumb {
+        background: #005572;
+        cursor: pointer;
+        height: 7px;
+        margin-top: 0;
+        width: 1px;
+      }
+      .markers {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: -3px !important;
+        position: relative;
+      }
+      .markers span {
+        color: #fff;
+        cursor: pointer;
+        position: absolute;
+        width: 0;
+      }
+      .tooltip {
+        box-shadow: 0 3px 20px 0 rgba(0, 0, 0, 0.4);
+        color: #51768a;
+        display: none;
+        width: fit-content !important;
+        position: absolute;
+        top: -134px;
+        left: 10px;
+        background-color: #fff;
+        padding: 5px 15px;
+        font-size: 16px;
+        text-align: left;
+        z-index: 2;
+      }
+      .tooltip:before {
+        border-color: transparent transparent #fff #fff;
+        border-style: solid;
+        border-width: 10px;
+        content: "";
+        display: block;
+        height: 0;
+        left: var(--before-left);
+        position: absolute;
+        top: 25px;
+        transform: rotate(90deg);
+        width: 0;
+        z-index: 1;
+      }
+      .controls {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .controls button {
+        background: transparent;
+        border: none;
+        color: #939193;
+        cursor: pointer;
+        margin: 0;
+        padding: 4px 6px;
+      }
+      .controls .volume {
+        align-items: center;
+        display: flex;
+        outline: none;
+      }
+      .controls .volume-slider {
+        display: none;
+      }
+      .controls .volume-slider.open {
+        display: inline-block;
+        width: 85px;
+      }
+      .controls .share {
+        color: #939193;
+        margin-top: 5px;
+        outline: none;
+        position: relative;
+      }
+      .controls .share h2 {
+        color: #fff;
+        margin: 0 0 10px;
+      }
+      #gallery {
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+        bottom: 0;
+        display: none;
+        height: 100%;
+        left: 0;
+        margin: 0;
+        max-height: 500px;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 20;
+      }
+      #gallery.open {
+        display: block;
+      }
+      #gallery .content {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 20px 10px;
+      }
+      #gallery h2 {
+        color: #fff;
+        margin: 0;
+        text-align: center;
+      }
+      #gallery .close {
+        background: transparent;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      #gallery .close i {
+        font-size: 2em;
+      }
+      .label {
+        flex: 2 !important;
+      }
+      .label > .note {
+        color: #14aef4;
+      }
+      .info {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .info a {
+        color: #000;
+        text-decoration: none;
+      }
+      .help_link {
+        align-items: center;
+        display: flex;
+        font-size: 25px;
+      }
+      .controls,
+      .info {
+        width: auto !important;
+      }
+      img {
+        height: 30px;
+        margin-left: 20px;
+        width: 30px;
+      }
+      @media screen and (min-width: 768px) {
+        .card.video {
+          min-height: 220px;
+        }
+        .audiominutes-player.video-player {
+          flex-direction: row;
+        }
+        .op-player__video {
+          height: 100%;
+          width: 300px;
+        }
+        .op-player__video video {
+          height: 100%;
+        }
+        .audiominutes-player.audio-player .container:not(:nth-child(2)) {
+          flex-direction: row;
+        }
+        .audiominutes-player.audio-player .container:nth-child(3) {
+          margin-left: 10px;
+        }
+        .audiominutes-player.audio-player .container:nth-child(1) .list,
+        .audiominutes-player.audio-player .container:nth-child(3) .controls {
+          display: flex;
+        }
+        .audiominutes-player.audio-player .container:nth-child(1) .controls,
+        .audiominutes-player.audio-player .container:nth-child(2) .list {
+          display: none;
+        }
+        .audiominutes-player.audio-player .player-content {
+          flex: 1;
+          margin-right: 10px !important;
+          max-width: 300px;
+        }
+        .audiominutes-player.audio-player .list {
+          width: calc(100% - 300px);
+        }
+        .audiominutes-player.audio-player .list ul {
+          max-height: 128px;
+        }
+        .audiominutes-player.audio-player .list ul li {
+          padding-top: 10px;
+          width: 100%;
+        }
+        .audiominutes-player.audio-player .label {
+          font-size: 25px;
+          text-align: center;
+        }
+        .audiominutes-player.audio-player .info {
+          align-items: center;
+        }
+        .tooltip {
+          top: -70px;
+        }
+        .audiominutes-player.video-player .player-container {
+          width: calc(100% - 300px);
+        }
+        .audiominutes-player.video-player .tooltip {
+          top: -135px;
+        }
+        #gallery .content {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card hidden">
+      <div class="audiominutes-player front">
+        <div id="media"></div>
+        <div class="player-container">
+          <div class="container">
+            <div class="player-content">
+              <button class="play-pause">
+                <span class="sr-only">Play</span>
+                <i class="fa fa-play fa-lg"></i>
+              </button>
+              <div class="info-content">
+                <div class="meta">
+                  <span class="title">Loading...</span>
+                  <time>0:00</time>
+                </div>
+                <div class="date"><span>Today</span></div>
+              </div>
+            </div>
+            <div class="controls">
+              <button class="rewind">
+                <span class="sr-only">Rewind</span>
+                <i class="fas fa-undo fa-lg"></i>
+              </button>
+              <button class="forward">
+                <span class="sr-only">Forward</span>
+                <i class="fas fa-redo fa-lg"></i>
+              </button>
+              <button class="volume">
+                <span class="sr-only">Volume</span>
+                <i class="volume-icon fas fa-volume-up fa-lg"></i>
+                <input
+                  class="volume-slider"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step=".1"
+                  value="0"
+                  role="slider"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-orientation="horizontal"
+                />
+              </button>
+              <button class="share">
+                <span class="sr-only">Share</span>
+                <i class="fas fa-share-alt fa-lg"></i>
+              </button>
+            </div>
+            <div class="list">
+              <div class="current-item">
+                <span></span>
+                <div class="arrow-down">
+                  <i class="fas fa-angle-right fa-rotate-90 fa-lg"></i>
+                </div>
+              </div>
+              <ul></ul>
+            </div>
+          </div>
+          <div class="container">
+            <div class="list">
+              <div class="current-item">
+                <span></span>
+                <div class="arrow-down">
+                  <i class="fas fa-angle-right fa-rotate-90 fa-lg"></i>
+                </div>
+              </div>
+              <ul></ul>
+            </div>
+            <input
+              class="slider"
+              type="range"
+              min="0"
+              max="0"
+              step=".1"
+              value="0"
+              role="slider"
+            />
+            <div class="markers"></div>
+          </div>
+          <div class="container">
+            <div class="controls">
+              <button class="rewind">
+                <span class="sr-only">Rewind</span>
+                <i class="fas fa-undo fa-lg"></i>
+              </button>
+              <button class="forward">
+                <span class="sr-only">Forward</span>
+                <i class="fas fa-redo fa-lg"></i>
+              </button>
+              <button class="volume">
+                <span class="sr-only">Volume</span>
+                <i class="fas fa-volume-up fa-lg"></i>
+              </button>
+              <button class="share">
+                <span class="sr-only">Share</span>
+                <i class="fas fa-share-alt fa-lg"></i>
+              </button>
+            </div>
+            <div class="label">
+              <span class="note"></span> <span class="speaker"></span>
+            </div>
+            <div class="info">
+              <div class="help_link"><a href="#" target="_blank">?</a></div>
+              <img src="http://cdnprefs.com/test1/audio_logo.png" />
+            </div>
+            <div class="tooltip"></div>
+          </div>
+        </div>
+        <div id="gallery">
+          <h2>Share this minute</h2>
+          <button class="close">
+            <span class="sr-only">Close</span>
+            <i class="fas fa-times fa-lg"></i>
+          </button>
+          <div class="content">
+            <a
+              class="resp-sharing-button__link"
+              href="https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="https://twitter.com/intent/tweet/?text=Listen%20to%20this%20audio%20minute&amp;url=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M23.44 4.83c-.8.37-1.5.38-2.22.02.93-.56.98-.96 1.32-2.02-.88.52-1.86.9-2.9 1.1-.82-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.03.7.1 1.04-3.77-.2-7.12-2-9.36-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.74-.03-1.44-.23-2.05-.57v.06c0 2.2 1.56 4.03 3.64 4.44-.67.2-1.37.2-2.06.08.58 1.8 2.26 3.12 4.25 3.16C5.78 18.1 3.37 18.74 1 18.46c2 1.3 4.4 2.04 6.97 2.04 8.35 0 12.92-6.92 12.92-12.93 0-.2 0-.4-.02-.6.9-.63 1.96-1.22 2.56-2.14z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="https://www.tumblr.com/widgets/share/tool?posttype=link&amp;title=Listen%20to%20this%20audio%20minute&amp;caption=Listen%20to%20this%20audio%20minute&amp;content=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F&amp;canonicalUrl=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F&amp;shareSource=tumblr_share_button"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--tumblr resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M13.5.5v5h5v4h-5V15c0 5 3.5 4.4 6 2.8v4.4c-6.7 3.2-12 0-12-4.2V9.5h-3V6.7c1-.3 2.2-.7 3-1.3.5-.5 1-1.2 1.4-2 .3-.7.6-1.7.7-3h3.8z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="mailto:?subject=Listen%20to%20this%20audio%20minute&amp;body=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F"
+              target="_self"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--email resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M22 4H2C.9 4 0 4.9 0 6v12c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM7.25 14.43l-3.5 2c-.08.05-.17.07-.25.07-.17 0-.34-.1-.43-.25-.14-.24-.06-.55.18-.68l3.5-2c.24-.14.55-.06.68.18.14.24.06.55-.18.68zm4.75.07c-.1 0-.2-.03-.27-.08l-8.5-5.5c-.23-.15-.3-.46-.15-.7.15-.22.46-.3.7-.14L12 13.4l8.23-5.32c.23-.15.54-.08.7.15.14.23.07.54-.16.7l-8.5 5.5c-.08.04-.17.07-.27.07zm8.93 1.75c-.1.16-.26.25-.43.25-.08 0-.17-.02-.25-.07l-3.5-2c-.24-.13-.32-.44-.18-.68s.44-.32.68-.18l3.5 2c.24.13.32.44.18.68z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F&amp;title=Listen%20to%20this%20audio%20minute&amp;summary=Listen%20to%20this%20audio%20minute&amp;source=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--linkedin resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M6.5 21.5h-5v-13h5v13zM4 6.5C2.5 6.5 1.5 5.3 1.5 4s1-2.4 2.5-2.4c1.6 0 2.5 1 2.6 2.5 0 1.4-1 2.5-2.6 2.5zm11.5 6c-1 0-2 1-2 2v7h-5v-13h5V10s1.6-1.5 4-1.5c3 0 5 2.2 5 6.3v6.7h-5v-7c0-1-1-2-2-2z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="https://reddit.com/submit/?url=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F&amp;resubmit=true&amp;title=Listen%20to%20this%20audio%20minute"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M24 11.5c0-1.65-1.35-3-3-3-.96 0-1.86.48-2.42 1.24-1.64-1-3.75-1.64-6.07-1.72.08-1.1.4-3.05 1.52-3.7.72-.4 1.73-.24 3 .5C17.2 6.3 18.46 7.5 20 7.5c1.65 0 3-1.35 3-3s-1.35-3-3-3c-1.38 0-2.54.94-2.88 2.22-1.43-.72-2.64-.8-3.6-.25-1.64.94-1.95 3.47-2 4.55-2.33.08-4.45.7-6.1 1.72C4.86 8.98 3.96 8.5 3 8.5c-1.65 0-3 1.35-3 3 0 1.32.84 2.44 2.05 2.84-.03.22-.05.44-.05.66 0 3.86 4.5 7 10 7s10-3.14 10-7c0-.22-.02-.44-.05-.66 1.2-.4 2.05-1.54 2.05-2.84zM2.3 13.37C1.5 13.07 1 12.35 1 11.5c0-1.1.9-2 2-2 .64 0 1.22.32 1.6.82-1.1.85-1.92 1.9-2.3 3.05zm3.7.13c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2zm9.8 4.8c-1.08.63-2.42.96-3.8.96-1.4 0-2.74-.34-3.8-.95-.24-.13-.32-.44-.2-.68.15-.24.46-.32.7-.18 1.83 1.06 4.76 1.06 6.6 0 .23-.13.53-.05.67.2.14.23.06.54-.18.67zm.2-2.8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm5.7-2.13c-.38-1.16-1.2-2.2-2.3-3.05.38-.5.97-.82 1.6-.82 1.1 0 2 .9 2 2 0 .84-.53 1.57-1.3 1.87z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="https://www.xing.com/app/user?op=share;url=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F;title=Listen%20to%20this%20audio%20minute"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--xing resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M10.2 9.7l-3-5.4C7.2 4 7 4 6.8 4h-5c-.3 0-.4 0-.5.2v.5L4 10 .4 16v.5c0 .2.2.3.4.3h5c.3 0 .4 0 .5-.2l4-6.6v-.5zM24 .2l-.5-.2H18s-.2 0-.3.3l-8 14v.4l5.2 9c0 .2 0 .3.3.3h5.4s.3 0 .4-.2c.2-.2.2-.4 0-.5l-5-8.8L24 .7V.2z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F&amp;t=Listen%20to%20this%20audio%20minute"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--hackernews resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140">
+                    <path
+                      fill-rule="evenodd"
+                      d="M60.94 82.314L17 0h20.08l25.85 52.093c.397.927.86 1.888 1.39 2.883.53.994.995 2.02 1.393 3.08.265.4.463.764.596 1.095.13.334.262.63.395.898.662 1.325 1.26 2.618 1.79 3.877.53 1.26.993 2.42 1.39 3.48 1.06-2.254 2.22-4.673 3.48-7.258 1.26-2.585 2.552-5.27 3.877-8.052L103.49 0h18.69L77.84 83.308v53.087h-16.9v-54.08z"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="http://vk.com/share.php?title=Listen%20to%20this%20audio%20minute&amp;url=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--vk resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M21.547 7h-3.29a.743.743 0 0 0-.655.392s-1.312 2.416-1.734 3.23C14.734 12.813 14 12.126 14 11.11V7.603A1.104 1.104 0 0 0 12.896 6.5h-2.474a1.982 1.982 0 0 0-1.75.813s1.255-.204 1.255 1.49c0 .42.022 1.626.04 2.64a.73.73 0 0 1-1.272.503 21.54 21.54 0 0 1-2.498-4.543.693.693 0 0 0-.63-.403h-2.99a.508.508 0 0 0-.48.685C3.005 10.175 6.918 18 11.38 18h1.878a.742.742 0 0 0 .742-.742v-1.135a.73.73 0 0 1 1.23-.53l2.247 2.112a1.09 1.09 0 0 0 .746.295h2.953c1.424 0 1.424-.988.647-1.753-.546-.538-2.518-2.617-2.518-2.617a1.02 1.02 0 0 1-.078-1.323c.637-.84 1.68-2.212 2.122-2.8.603-.804 1.697-2.507.197-2.507z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+
+            <a
+              class="resp-sharing-button__link"
+              href="https://telegram.me/share/url?text=Listen%20to%20this%20audio%20minute&amp;url=https%3A%2F%2Fwww.audiominutes.com%2Fp%2Fplayer%2F"
+              target="_blank"
+              rel="noopener"
+              aria-label=""
+            >
+              <div
+                class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--small"
+              >
+                <div
+                  aria-hidden="true"
+                  class="resp-sharing-button__icon resp-sharing-button__icon--solid"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M.707 8.475C.275 8.64 0 9.508 0 9.508s.284.867.718 1.03l5.09 1.897 1.986 6.38a1.102 1.102 0 0 0 1.75.527l2.96-2.41a.405.405 0 0 1 .494-.013l5.34 3.87a1.1 1.1 0 0 0 1.046.135 1.1 1.1 0 0 0 .682-.803l3.91-18.795A1.102 1.102 0 0 0 22.5.075L.706 8.475z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="audiominutes-player back"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.3/jsmediatags.min.js"></script>
+    <script>
+      function getUrlParameter(e) {
+        e = e.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var t = new RegExp("[\\?&]" + e + "=([^&#]*)").exec(location.search);
+        return null === t ? "" : decodeURIComponent(t[1].replace(/\+/g, " "));
+      }
+      var type = getUrlParameter("type");
+      function getMimeType(e) {
+        return /\.m3u8/i.test(e) ? "application/x-mpegURL" : "";
+      }
+      const userAgent = window.navigator.userAgent.toLowerCase(),
+        IS_IOS =
+          !!userAgent &&
+          /ipad|iphone|ipod/i.test(userAgent) &&
+          !window.MSStream,
+        IS_ANDROID = !!userAgent && /android/i.test(userAgent);
+      function setMarkers(e, t) {
+        e.querySelector(".markers")
+          .querySelectorAll("span")
+          .forEach((e) => {
+            const a = Math.floor(e.getAttribute("data-offset")),
+              { duration: r } = t.getMedia();
+            if (!Number.isNaN(a) && a <= r && a >= 0) {
+              const t = (100 * a) / r;
+              e.style.left = `${t}%`;
+            }
+          });
+      }
+      function offset(e) {
+        const t = e.getBoundingClientRect();
+        return {
+          left:
+            t.left +
+            (window.pageXOffset || document.documentElement.scrollLeft),
+          top:
+            t.top + (window.pageYOffset || document.documentElement.scrollTop),
+        };
+      }
+      function createDate(e) {
+        const t = e.split(" ");
+        return new Date(t[0]).toLocaleDateString(void 0, {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        });
+      }
+      function extractMeta(e, t, a, r, s) {
+        if (Array.isArray(t))
+          t.forEach((t) => {
+            extractMeta(e, t, a, r, s);
+          });
+        else if (t) {
+          const l = t.replace(/.*?(\{.*?\}).*$/, "$1").trim(),
+            n = /^\{.*?\}$/.test(l);
+          try {
+            if (n) {
+              const t = JSON.parse(l.replace(/" (\w+)"/g, '", "$1"'));
+              if ("info" === t.type)
+                (e.querySelector(".date>span").innerText = createDate(t.date)),
+                  (e.querySelector(".meta>.title").innerText = t.title);
+              else if ("chapter" === t.type) {
+                if (s.length) {
+                  const e = s.length;
+                  s[e - 1].end = t.offset - 1;
+                }
+                s.push({ start: t.offset, index: t.chapindex, title: t.title }),
+                  e.querySelectorAll(".list>ul").forEach((e, a) => {
+                    e.querySelector(`li[data-id="${t.id}"]`) ||
+                      (e.innerHTML += `<li data-offset="${t.offset}" data-id="${
+                        t.id
+                      }" ${0 === a ? "selected" : ""}>${t.title}</li>`);
+                  });
+                const r = e.querySelectorAll(".list>ul>li"),
+                  l = (t) => {
+                    (a.getMedia().currentTime = t.target.getAttribute(
+                      "data-offset"
+                    )),
+                      t.target.closest("ul").classList.remove("open"),
+                      e.querySelectorAll(".current-item").forEach((e) => {
+                        e.querySelector("span").innerText = t.target.innerText;
+                      });
+                  };
+                r.forEach((e) => {
+                  e.addEventListener("click", l);
+                });
+                const n = (t) => {
+                  const a =
+                      t.originalEvent && t.originalEvent.changedTouches
+                        ? t.originalEvent.changedTouches[0].pageX
+                        : t.pageX,
+                    r = e.querySelector(".tooltip"),
+                    s = e.offsetWidth - r.offsetWidth;
+                  let l = a - offset(r).left;
+                  a - offset(e).left >= s
+                    ? (r.style.setProperty("--before-left", `calc(${l}px)`),
+                      (l = s - offset(e.querySelector(".slider")).left))
+                    : ((l = 0), r.style.setProperty("--before-left", 0)),
+                    (r.style.left = l ? `${l}px` : t.target.style.left),
+                    (r.innerText = t.target.getAttribute("data-title")),
+                    (r.style.display = "block");
+                };
+                e.querySelector(`.markers>span[data-id="${t.id}"]`) ||
+                  (e.querySelector(
+                    ".markers"
+                  ).innerHTML += `<span data-offset="${t.offset}" data-id="${t.id}" data-title="${t.title}">l</span>`);
+                e.querySelectorAll(".markers>span").forEach((t) => {
+                  t.addEventListener("mousemove", n),
+                    t.addEventListener("mouseleave", () => {
+                      const t = e.querySelector(".tooltip");
+                      (t.innerText = ""), (t.style.display = "none");
+                    });
+                });
+                e.querySelectorAll(".current-item").forEach((e, a) => {
+                  e.querySelector("span").innerText ||
+                    (e.querySelector("span").innerText = t.title);
+                });
+              } else "speaker" === t.type && r.push(t);
+            } else console.error("Unable to parse string", l);
+          } catch (e) {}
+        }
+      }
+      function formatTime(e) {
+        let t = Math.floor(e),
+          a = Math.floor(t / 60);
+        const r = Math.floor(a / 60),
+          s = (e) => (e < 10 ? `0${e}` : e);
+        return (
+          (a %= 60), (t %= 60), `${r > 0 ? `${s(r)}:` : ""}${s(a)}:${s(t)}`
+        );
+      }
+      async function readMetaData(e, t, a, r) {
+        const { type: s, src: l } = t.getMedia().media.media;
+        if ("audio/mp3" === s || "video/mp4" === s) {
+          window.jsmediatags.read(l, {
+            onSuccess: function (s) {
+              s.tags
+                ? (s.tags.TXXX
+                    ? (s.tags.TXXX.forEach((s) => {
+                        extractMeta(e, s.data.data, t, a, r);
+                      }),
+                      setMarkers(e, t))
+                    : (Object.keys(s.tags).forEach((l) => {
+                        extractMeta(e, s.tags[l].data, t, a, r);
+                      }),
+                      setMarkers(e, t)),
+                  e.classList.contains("hidden") &&
+                    e.classList.remove("hidden"))
+                : console.error("No tags found");
+            },
+            onError: function (e) {
+              console.error(e);
+            },
+          });
+        } else
+          t.getElement().addEventListener("hlsFragParsingMetadata", (s) => {
+            const l = [];
+            s.detail.samples.forEach((e) => {
+              e.data.forEach((e) => {
+                l.push(String.fromCharCode(e));
+              });
+            }),
+              extractMeta(e, l.join("").split("ID3"), t, a, r),
+              setMarkers(e, t),
+              e.classList.contains("hidden") && e.classList.remove("hidden");
+          }),
+            t.getElement().textTracks.addEventListener("addtrack", (s) => {
+              "metadata" === s.track.kind &&
+                ((s.track.mode = "hidden"),
+                s.track.addEventListener("cuechange", (s) => {
+                  const l = s.target.activeCues[0];
+                  l &&
+                    (extractMeta(e, l.value.data, t, a, r),
+                    setMarkers(e, t),
+                    e.classList.contains("hidden") &&
+                      e.classList.remove("hidden"));
+                }));
+            });
+      }
+      var url = decodeURIComponent(getUrlParameter("url")) || "",
+        media = document.createElement(type);
+      (media.id = "media1"),
+        media.setAttribute("playsinline", !0),
+        (media.autoplay = !!getUrlParameter("autoplay") || !1),
+        (media.controls = !0),
+        (media.playsinline = !0),
+        (media.className = "op-player__media"),
+        (media.src = url);
+      const el = document.getElementById("media");
+      el.appendChild(media),
+        el.closest(".audiominutes-player").classList.add(`${type}-player`),
+        el.closest(".card").classList.add(type);
+      const player = new OpenPlayer("media1", null, !1, {
+        controls: {
+          left: ["play", "time"],
+          right: ["fullscreen"],
+          middle: ["progress"],
+        },
+      });
+      player.init();
+      const speakers = [],
+        chapters = [];
+      let forcedPause = !1;
+      const target = el.closest(".card"),
+        slider = target.querySelector(".slider");
+      (IS_IOS || IS_ANDROID) &&
+        target.querySelectorAll(".volume").forEach((e) => {
+          e.remove();
+        });
+      target.querySelectorAll(".volume-slider").forEach((o) => {
+        o.value = player.getMedia().volume.toString();
+      });
+      const updateSlider = (e) => {
+          if (
+            "application/x-mpegURL" === player.getMedia().src[0].type ||
+            slider.classList.contains("pressed")
+          )
+            return;
+          const { target: t } = e;
+          slider.classList.add("pressed");
+          const a = parseFloat(t.min),
+            r = parseFloat(t.max),
+            s = parseFloat(t.value),
+            l = (100 * (s - a)) / (r - a);
+          (player.getMedia().currentTime = s),
+            (slider.style.backgroundImage = `linear-gradient(to right, #14AEF4 0%, #14AEF4 ${l}%, #00557E ${l}%, #00557E)`),
+            slider.classList.remove("pressed"),
+            e.preventDefault();
+        },
+        updateVolume = (e) => {
+          const value = parseFloat(e.target.value);
+          player.getMedia().volume = value;
+          player.getMedia().muted = player.getMedia().volume === 0;
+          const ev = new CustomEvent("volumechange");
+          player.getElement().dispatchEvent(ev);
+        },
+        updateButton = (e) => {
+          const vol = player.getMedia().volume;
+          if (vol <= 0.5 && vol > 0) {
+            e.classList.remove("fa-volume-up");
+            e.classList.add("fa-volume-down");
+            e.classList.remove("fa-volume-off");
+          } else if (vol === 0) {
+            e.classList.remove("fa-volume-up");
+            e.classList.remove("fa-volume-down");
+            e.classList.add("fa-volume-off");
+          } else {
+            e.classList.add("fa-volume-up");
+            e.classList.remove("fa-volume-down");
+            e.classList.remove("fa-volume-off");
+          }
+        };
+      (forcePause = (e) => {
+        (1 !== e.which && 0 !== e.which) ||
+          player.getMedia().paused ||
+          (player.pause(), (forcedPause = !0));
+      }),
+        (releasePause = () => {
+          !0 === forcedPause &&
+            player.getMedia().paused &&
+            (player.play(), (forcedPause = !1));
+        }),
+        (sliderEvents = {
+          input: updateSlider,
+          change: updateSlider,
+          mousedown: forcePause,
+          mouseup: releasePause,
+          touchend: releasePause,
+        }),
+        (volumeEvents = { input: updateVolume, change: updateVolume });
+      Object.keys(sliderEvents).forEach((e) => {
+        slider.addEventListener(e, sliderEvents[e]);
+      }),
+        Object.keys(volumeEvents).forEach((e) => {
+          target.querySelectorAll(".volume-slider").forEach((o) => {
+            o.addEventListener(e, volumeEvents[e]);
+          });
+        }),
+        document.addEventListener("click", (e) => {
+          e.target.closest(".share") ||
+            e.target.closest("#gallery") ||
+            document.getElementById("gallery").classList.remove("open");
+
+          e.target.closest(".current-item") ||
+            document.querySelectorAll(".current-item~ul").forEach((e) => {
+              e.classList.remove("open");
+            });
+          e.target.closest(".volume") ||
+            document.querySelectorAll(".volume-slider").forEach((e) => {
+              e.classList.remove("open");
+            });
+        }),
+        document
+          .getElementById("gallery")
+          .querySelector(".close")
+          .addEventListener("click", () => {
+            document.getElementById("gallery").classList.remove("open");
+          }),
+        target.querySelectorAll(".current-item>span").forEach((e) => {
+          e.addEventListener("click", (e) => {
+            const t = e.target.closest(".current-item").nextElementSibling;
+            t.classList.contains("open")
+              ? t.classList.remove("open")
+              : t.classList.add("open");
+          });
+        }),
+        target.querySelector(".play-pause").addEventListener("click", (e) => {
+          const t = e.target.querySelector("i");
+          player.getMedia().paused
+            ? (player.play(),
+              t.classList.remove("fa-play"),
+              t.classList.add("fa-pause"))
+            : (player.pause(),
+              t.classList.add("fa-play"),
+              t.classList.remove("fa-pause"));
+        }),
+        target.querySelectorAll(".rewind").forEach((e) => {
+          e.addEventListener("click", () => {
+            player.getMedia().currentTime -= 30;
+          });
+        }),
+        target.querySelectorAll(".forward").forEach((e) => {
+          e.addEventListener("click", () => {
+            player.getMedia().currentTime += 30;
+          });
+        }),
+        target.querySelectorAll(".volume-icon").forEach((e) => {
+          e.addEventListener("click", (o) => {
+            const t = o.target.nextElementSibling;
+            t.classList.contains("open")
+              ? t.classList.remove("open")
+              : t.classList.add("open");
+          });
+        }),
+        target.querySelectorAll(".fa-share-alt").forEach((e) => {
+          e.addEventListener("click", () => {
+            const t = document.getElementById("gallery");
+            t.classList.contains("open")
+              ? t.classList.remove("open")
+              : t.classList.add("open");
+          });
+        }),
+        player.getElement().addEventListener("loadedmetadata", (e) => {
+          if (player.getElement().duration !== 1 / 0) {
+            slider.setAttribute("max", `${player.getMedia().duration}`);
+            const e = player.getMedia().currentTime;
+            slider.value = e.toString();
+          }
+          readMetaData(target, player, speakers, chapters);
+        }),
+        player.getElement().addEventListener("durationchange", (e) => {
+          slider.setAttribute("max", `${player.getMedia().duration}`);
+        }),
+        player.getElement().addEventListener("volumechange", (e) => {
+          target.querySelectorAll(".volume-icon").forEach((b) => {
+            updateButton(b);
+          });
+        }),
+        player.getElement().addEventListener("timeupdate", (e) => {
+          const t = player.getMedia().currentTime;
+          if (
+            ((target.querySelector(".meta>time").innerText = formatTime(t)),
+            target
+              .querySelectorAll(".resp-sharing-button__link")
+              .forEach((e) => {
+                e.href = e.href.replace(
+                  /(https%3A%2F%2Fwww\.audiominutes\.com%2Fp%2Fplayer%2F)\d*(?:\.\d+)?/g,
+                  `$1${t}`
+                );
+              }),
+            "application/x-mpegURL" !== player.getMedia().src[0].type)
+          ) {
+            const e = parseFloat(slider.min),
+              a = parseFloat(slider.max);
+            slider.value = t.toString();
+            const r = (100 * (t - e)) / (a - e);
+            slider.style.backgroundImage = `linear-gradient(to right, #14AEF4 0%, #14AEF4 ${r}%, #00557E ${r}%, #00557E)`;
+          }
+          if (chapters.length > 0) {
+            const e = chapters.find((e) => t >= e.start && t <= e.end);
+            e &&
+              (target.querySelectorAll(".current-item").forEach((t) => {
+                t.querySelector("span").innerText = e.title;
+              }),
+              target.querySelectorAll(".list>ul>li").forEach((t, a) => {
+                a === e.index - 1
+                  ? t.classList.add("selected")
+                  : t.classList.remove("selected");
+              }));
+          }
+          if (speakers.length) {
+            const e = speakers.find((e) => t >= e.starttime && t <= e.stoptime);
+            e &&
+              ((target.querySelector(".label>.note").innerText = "Speaking:"),
+              (target.querySelector(
+                ".label>.speaker"
+              ).innerText = `${e.firstname} ${e.lastname}`.trim()));
+          }
+        });
+    </script>
+  </body>
+</html>
