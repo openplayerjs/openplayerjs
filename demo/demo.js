@@ -106,13 +106,19 @@
         playlistBtn[i].addEventListener('click', addPlaylist);
     }
 
-    instances[1].getElement().addEventListener('hlsFragParsingMetadata', function (event) {
-        var encodedTag = event.detail.samples[0].data;
+    instances[1].getElement().addEventListener('readmetadata', function (event) {
+        const { samples } = event.detail;
         var parsedTag = [];
 
-        encodedTag.forEach(function (element) {
-            parsedTag.push(String.fromCharCode(element));
-        });
+        if (samples) {
+            samples.forEach(function (sample) {
+                if (sample && sample.data) {
+                    sample.data.forEach(element => {
+                        parsedTag.push(String.fromCharCode(element));
+                    });
+                }
+            });
+        }
 
         var tagAsString = parsedTag.toString().replace(/,/g, '');
         extractMeta(tagAsString, instances[1].getElement());
