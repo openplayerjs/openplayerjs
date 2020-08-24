@@ -74,13 +74,18 @@ Sometimes you need more flexibility instantiating the player; for example, addin
 
 ```javascript
 var player = new OpenPlayer('[player ID]', {
-    // Controls configuration by default; `levels` can be added as well since it's an optional feature;
-    // Each one of the items will have in their class name the `op-control__[left|middle|right]` according
-    // to the controls' structure listed below
     controls: {
-        left: ['play', 'time', 'volume'],
-        middle: ['progress'],
-        right: ['captions', 'settings', 'fullscreen'],
+        // By default, the player will display the controls for a number of seconds before they are hidden; this option will allow the user to permanently show the controls if they need fully customize them.
+        alwaysVisible: false,
+        // Controls configuration by default; `levels` can be added as well since it's an optional feature;
+        // Each one of the items will have in their class name the `op-control__[left|middle|right]` according
+        // to the controls' structure listed below. also available: `top-left`, `top-middle`, `top-right`, 
+        // `bottom-left`, `bottom-middle` and `bottom-right`
+        layers: {
+            left: ['play', 'time', 'volume'],
+            middle: ['progress'],
+            right: ['captions', 'settings', 'fullscreen'],
+        }
     },
     // Allow items to be contained in a different space outside of `Settings`
     detachMenus,
@@ -96,12 +101,16 @@ var player = new OpenPlayer('[player ID]', {
     startVolume,
     // Initial play time of media in seconds (by default, `0`)
     startTime,
-    // Allow `Live Broadcast` label to be displayed in live streamings (by default, `false`)
-    showLiveLabel,
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
     // Callback to be executed once an error is found (default, `console.error`)
     // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
+    live: {
+        // Allow `Live Broadcast` label to be displayed in live streamings (by default, `false`)
+        showLabel: true,
+        // Allow to show progress bar in live streamings without showing constant updates
+        showProgress: false,
+    }
     onError,
     ads: {
         // The Ad(s) URLs to be processed
@@ -115,7 +124,7 @@ var player = new OpenPlayer('[player ID]', {
         // Maximum number of redirects before the subsequent redirects will be denied (by default, `4`)
         numRedirects,
         // Custom path/URL to IMA SDK
-        url,
+        sdkPath,
     },
     hls: {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
@@ -134,7 +143,7 @@ var player = new OpenPlayer('[player ID]', {
 player.init();
 ```
 
-**NOTE**: In order to use this setup, the video/audio tag(s) need a unique ID.
+**NOTE**: In order to use this setup, the video/audio tag(s) **must** have a unique ID.
 
 ## Usage with Next.js/React
 
@@ -211,6 +220,7 @@ All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Even
 
 Event | Description
 --- | ---
+`readmetadata` | Event executed to grab the media's information, mostly represented in the form of [ID3 tags](https://id3.org/).
 `controlshidden` | Event executed when controls timer stops and hides control bar (video only).
 `controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new caption).
 `captionschanged` | Event triggered when user changes the current caption by selecting a new one from the `Settings` menu.

@@ -45,6 +45,7 @@ class HTML5Media extends Native  {
 
         this.isStreaming = isHlsSource(mediaFile);
         this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this));
+        this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this));
 
         return this;
     }
@@ -75,6 +76,7 @@ class HTML5Media extends Native  {
      */
     public destroy(): HTML5Media {
         this.element.removeEventListener('loadeddata', this._isDvrEnabled.bind(this));
+        this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo.bind(this));
         return this;
     }
 
@@ -125,6 +127,20 @@ class HTML5Media extends Native  {
             const timeEvent = addEvent('timeupdate');
             this.element.dispatchEvent(timeEvent);
         }
+    }
+
+    private _readMediadataInfo(target: HTMLTrackElement): void {
+        if (target.track.kind === 'metadata') {
+            target.track.mode = 'hidden';
+            target.track.addEventListener('cuechange', (e) => {
+                const cue = (e.target as TextTrack).activeCues[0];
+                if (cue) {
+                    const e = addEvent('readmetadata', { detail: cue });
+                    this.element.dispatchEvent(e);
+                }
+            });
+        }
+        
     }
 }
 

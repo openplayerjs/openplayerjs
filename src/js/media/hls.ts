@@ -278,10 +278,13 @@ class HlsMedia extends Native {
                 this.element.setAttribute('op-live__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
-            } else if (event === 'hlsLevelUpdated' && data[1].details.totalduration > DVR_THRESHOLD) {
+            } else if (event === 'hlsLevelUpdated' && data[1].details.live === true && data[1].details.totalduration > DVR_THRESHOLD) {
                 this.element.setAttribute('op-dvr__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
+            } else if (event === 'hlsFragParsingMetadata') {
+                const metaEvent = addEvent('readmetadata', data[1]);
+                this.element.dispatchEvent(metaEvent);
             }
             const e = addEvent(event, data[1]);
             this.element.dispatchEvent(e);
