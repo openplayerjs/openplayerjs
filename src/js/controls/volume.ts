@@ -106,16 +106,26 @@ class Volume implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Volume.
      *
      * @param {Player} player
      * @returns {Volume}
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.volume = this.player.getMedia().volume;
         this.position = position;
+        this.layer = layer;
         return this;
     }
 
@@ -269,7 +279,7 @@ class Volume implements PlayerComponent {
         this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
 
         if (!IS_ANDROID && !IS_IOS) {
-            const controls = this.player.getControls().getContainer();
+            const controls = this.player.getControls().getLayer(this.layer);
             controls.appendChild(this.button);
             controls.appendChild(this.container);
         }

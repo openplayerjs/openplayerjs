@@ -123,16 +123,26 @@ class Settings implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Settings.
      *
      * @param {Player} player
      * @returns {Settings}
      * @memberof Settings
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.position = position;
+        this.layer = layer;
         return this;
     }
 
@@ -207,7 +217,7 @@ class Settings implements PlayerComponent {
             window.addEventListener('resize', this.events.global.resize);
         }
 
-        this.player.getControls().getContainer().appendChild(this.button);
+        this.player.getControls().getLayer(this.layer).appendChild(this.button);
         this.player.getContainer().appendChild(this.menu);
     }
 

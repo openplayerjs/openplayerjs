@@ -96,16 +96,26 @@ class Time implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Time.
      *
      * @param {Player} player
      * @returns {Time}
      * @memberof Time
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.position = position;
+        this.layer = layer;
         return this;
     }
 
@@ -148,7 +158,7 @@ class Time implements PlayerComponent {
         this.events.media.loadedmetadata = setInitialTime.bind(this);
         this.events.controls.controlschanged = setInitialTime.bind(this);
 
-        const { showLiveLabel } = this.player.getOptions();
+        const { showLabel: showLiveLabel } = this.player.getOptions().live;
 
         this.events.media.timeupdate = () => {
             const el = this.player.activeElement();
@@ -189,7 +199,7 @@ class Time implements PlayerComponent {
 
         this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
 
-        const controls = this.player.getControls().getContainer();
+        const controls = this.player.getControls().getLayer(this.layer);
         this.container = document.createElement('span');
         this.container.className = `op-controls-time op-control__${this.position}`;
         this.container.appendChild(this.current);

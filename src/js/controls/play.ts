@@ -66,16 +66,26 @@ class Play implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Play
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Play.
      *
      * @param {Player} player
      * @returns {Play}
      * @memberof Play
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = this.player.getOptions().labels;
         this.position = position;
+        this.layer = layer;
         return this;
     }
 
@@ -94,7 +104,7 @@ class Play implements PlayerComponent {
         this.button.setAttribute('aria-pressed', 'false');
         this.button.setAttribute('aria-label', this.labels.play);
         this.button.innerHTML = `<span class="op-sr">${this.labels.play}/${this.labels.pause}</span>`;
-        this.player.getControls().getContainer().appendChild(this.button);
+        this.player.getControls().getLayer(this.layer).appendChild(this.button);
 
         this.events.media.click = (e: any) => {
             this.button.setAttribute('aria-pressed', 'true');

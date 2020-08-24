@@ -2,7 +2,7 @@ import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Levels from './controls/levels';
 import Play from './controls/play';
-import Playlist from './controls/playlist';
+// import Playlist from './controls/playlist';
 import Progress from './controls/progress';
 import Settings from './controls/settings';
 import Time from './controls/time';
@@ -87,7 +87,7 @@ class Controls implements PlayerComponent {
         Fullscreen,
         Levels,
         Play,
-        Playlist,
+        // Playlist,
         Progress,
         Settings,
         Time,
@@ -136,7 +136,9 @@ class Controls implements PlayerComponent {
         this.player.getElement().addEventListener('controlschanged', this.events.controlschanged);
         this.player.getElement().addEventListener('ended', this.events.ended);
 
-        if (!IS_ANDROID && !IS_IOS) {
+        const { alwaysVisible } = this.player.getOptions().controls;
+
+        if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
                 if (isMediaVideo && !this.player.activeElement().paused) {
                     this._stopControlTimer();
@@ -156,9 +158,9 @@ class Controls implements PlayerComponent {
                     if (this.player.activeElement().currentTime) {
                         this.player.loader.setAttribute('aria-hidden', 'true');
                         this.player.playBtn.setAttribute('aria-hidden', this.player.isMedia() ? 'false' : 'true');
-                    } else if (this.player.getOptions().showLoaderOnInit) {
-                        this.player.playBtn.setAttribute('aria-hidden', 'true');
-                        this.player.loader.setAttribute('aria-hidden', 'false');
+                    } else {
+                        this.player.playBtn.setAttribute('aria-hidden', this.player.getOptions().showLoaderOnInit ? 'true' : 'false');
+                        this.player.loader.setAttribute('aria-hidden', this.player.getOptions().showLoaderOnInit ? 'false' : 'true');
                     }
 
                     this.player.getContainer().classList.remove('op-controls--hidden');
@@ -237,6 +239,15 @@ class Controls implements PlayerComponent {
     }
 
     /**
+     * 
+     * @param {string}
+     * @memberof Controls
+     */
+    public getLayer(layer: string): HTMLDivElement {
+        return this.controls.querySelector(`.op-controls-layer__${layer}`) || this.controls;
+    }
+
+    /**
      * Set timer to hide controls.
      *
      * @private
@@ -282,7 +293,7 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private _setElements(): void {
-        const controls = this.player.getOptions().controls;
+        const controls = this.player.getOptions().controls.layers;
         if (this.player.playlist.length > 0) {
             let playlistRef = false;
             Object.keys(controls).forEach((position: string) => {
@@ -296,20 +307,50 @@ class Controls implements PlayerComponent {
         }
 
         this.items = {
+            'top-left': [],
+            'top-middle': [],
+            'top-right': [],
             left: [],
             middle: [],
             right: [],
+            'bottom-left': [],
+            'bottom-middle': [],
+            'bottom-right': [],
         };
 
         const isVideoEl = isVideo(this.player.getElement());
         const isAudioEl = isAudio(this.player.getElement());
 
-        Object.keys(controls).forEach((position: string) => {
+        const controlPositions = Object.keys(controls);
+        const layersExist = controlPositions.find(item => /^(top|bottom)/.test(item));
+
+        controlPositions.forEach((position: string) => {
+            const [layer, pos] = position.split('-');
+
+            // Create extra layers if top/bottom exist
+            if (pos) {
+                const className = `op-controls-layer__${layer}`;
+                if (!this.controls.querySelector(`.${className}`)) {
+                    const controlLayer = document.createElement('div');
+                    controlLayer.className = className;
+                    this.controls.appendChild(controlLayer);
+                }
+            } else if (layersExist) {
+                const className = 'op-controls-layer__center';
+                if (!this.controls.querySelector(`.${className}`)) {
+                    const controlLayer = document.createElement('div');
+                    controlLayer.className = className;
+                    this.controls.appendChild(controlLayer);
+                }
+            }
+
             controls[position]
+                // remove duplicate values in the same position
                 .filter((v: string, i: number, a: string[]) => a.indexOf(v) === i)
                 .forEach((el: string) => {
+                    const currentLayer = layersExist && !pos ? 'center' : layer;
                     const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
-                    const item = new this.controlEls[className](this.player, position);
+                    const item = new this.controlEls[className](this.player, pos || layer, currentLayer);
                     if (el === 'settings') {
                         this.settings = item;
                     }
@@ -389,7 +430,7 @@ class Controls implements PlayerComponent {
         control.title = item.title;
         control.innerHTML = `<img src="${item.icon}"> <span class="op-sr">${item.title}</span>`;
         control.addEventListener('click', item.click);
-        this.getContainer().appendChild(control);
+        this.getLayer(item.layer).appendChild(control);
     }
 
     /**

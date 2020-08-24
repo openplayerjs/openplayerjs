@@ -119,17 +119,27 @@ class Progress implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Progress.
      *
      * @param {Player} player
      * @returns {Progress}
      * @memberof Progress
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.forcePause = false;
         this.position = position;
+        this.layer = layer;
         return this;
     }
 
@@ -194,7 +204,7 @@ class Progress implements PlayerComponent {
                 this.played.value = 1;
                 this.progress.setAttribute('aria-valuemax', '1');
                 this.progress.setAttribute('aria-hidden', 'false');
-            } else {
+            } else if (this.player.getElement().getAttribute('op-live__enabled') && !this.player.getOptions().live.showProgress) {
                 this.progress.setAttribute('aria-hidden', 'true');
             }
         };
@@ -428,7 +438,7 @@ class Progress implements PlayerComponent {
         document.addEventListener('mousemove', this.events.global.mousemove);
         this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
         this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
-        this.player.getControls().getContainer().appendChild(this.progress);
+        this.player.getControls().getLayer(this.layer).appendChild(this.progress);
     }
 
     /**

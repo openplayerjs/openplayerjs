@@ -98,17 +98,27 @@ class Levels implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Captions.
      *
      * @param {Player} player
      * @memberof Levels
      * @returns {Levels}
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.detachMenu = player.getOptions().detachMenus;
         this.position = position;
+        this.layer = layer;
         return this;
     }
 
@@ -146,7 +156,7 @@ class Levels implements PlayerComponent {
         this.events.media.hlsManifestParsed = loadLevelsEvent.bind(this);
 
         if (this.detachMenu) {
-            this.player.getControls().getContainer().appendChild(this.button);
+            this.player.getControls().getLayer(this.layer).appendChild(this.button);
             this._buildMenu();
             this.events.button.click = () => {
                 if (this.detachMenu) {
@@ -347,7 +357,7 @@ class Levels implements PlayerComponent {
                 </div>`).join('')}
             </div>`;
             this.menu.innerHTML = menu;
-            this.player.getControls().getContainer().appendChild(this.menu);
+            this.player.getControls().getLayer(this.layer).appendChild(this.menu);
         }
     }
 }

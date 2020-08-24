@@ -13,7 +13,7 @@ import { timeToSeconds } from '../utils/time';
 /**
  * Closed Captions element.
  *
- * @description Using `<track>` tags, this class allows the displaying of both local and remote captions
+ * @description Using `<track>` tags, this class allows the displaying of both local and remote captions/subtitles
  * bypassing CORS, and without the use of the `crossorigin` attribute.
  * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
  * @see https://www.html5rocks.com/en/tutorials/track/basics/
@@ -157,24 +157,37 @@ class Captions implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Captions.
      *
      * @param {Player} player
-     * @memberof Captions
      * @returns {Captions}
+     * @memberof Captions
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.detachMenu = player.getOptions().detachMenus;
         this.position = position;
+        this.layer = layer;
         const trackList = this.player.getElement().textTracks;
 
         // Check that `trackList` matches with track tags (if any)
         const tracks = [];
         for (let i = 0, total = trackList.length; i < total; i++) {
-            const selector = `track[kind="subtitles"][srclang="${trackList[i].language}"][label="${trackList[i].label}"]`;
-            const tag = this.player.getElement().querySelector(selector);
+            const selector = [
+                `track[kind="subtitles"][srclang="${trackList[i].language}"][label="${trackList[i].label}"]`,
+                `track[kind="captions"][srclang="${trackList[i].language}"][label="${trackList[i].label}"]`,
+            ];
+            const tag = this.player.getElement().querySelector(selector.join(', '));
             if (tag) {
                 tracks.push(trackList[i]);
             }
@@ -226,14 +239,14 @@ class Captions implements PlayerComponent {
                     <div class="op-settings__submenu-label op-subtitles__option" data-value="captions-off">${this.labels.off}</div>
                 </div>
             </div>`;
-            this.player.getControls().getContainer().appendChild(this.menu);
+            this.player.getControls().getLayer(this.layer).appendChild(this.menu);
         }
 
         // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
         // Otherwise, remove the markup associated with them
         for (let i = 0, tracks = this.player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
             const element = (tracks[i] as HTMLTrackElement);
-            if (element.kind === 'subtitles') {
+            if (element.kind === 'subtitles' || element.kind === 'captions') {
                 if (element.default) {
                     this.default = element.srclang;
                     this.button.setAttribute('data-active-captions', element.srclang);
@@ -354,7 +367,7 @@ class Captions implements PlayerComponent {
         if (this.hasTracks) {
             const target = this.player.getContainer();
             target.insertBefore(this.captions, target.firstChild);
-            this.player.getControls().getContainer().appendChild(this.button);
+            this.player.getControls().getLayer(this.layer).appendChild(this.button);
             this.button.addEventListener('click', this.events.button.click);
         }
 
@@ -527,7 +540,7 @@ class Captions implements PlayerComponent {
         const cues: Cue[] = [];
         Object.keys(track.cues).forEach(index => {
             const j = parseInt(index, 10);
-            const current = track.cues[j];
+            const current = (track.cues[j] as VTTCue);
             cues.push({
                 endTime: current.endTime,
                 identifier: current.id,

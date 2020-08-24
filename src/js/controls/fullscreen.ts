@@ -103,16 +103,26 @@ class Fullscreen implements PlayerComponent {
     private position: string;
 
     /**
+     * Layer where the control item will be placed
+     *
+     * @private
+     * @type {string}
+     * @memberof Captions
+     */
+    private layer: string;
+
+    /**
      * Create an instance of Fullscreen.
      *
      * @param {Player} player
      * @returns {Fullscreen}
      * @memberof Fullscreen
      */
-    constructor(player: Player, position: string) {
+    constructor(player: Player, position: string, layer?: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.position = position;
+        this.layer = layer;
         this.isFullscreen = document.body.classList.contains('op-fullscreen__on');
 
         const target = (document as any);
@@ -164,7 +174,7 @@ class Fullscreen implements PlayerComponent {
 
         this.button.addEventListener('click', this.clickEvent.bind(this));
 
-        this.player.getControls().getContainer().appendChild(this.button);
+        this.player.getControls().getLayer(this.layer).appendChild(this.button);
 
         // Since iPhone still doesn't accept the regular Fullscreen API, use the following events
         if (IS_IPHONE) {

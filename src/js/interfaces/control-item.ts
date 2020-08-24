@@ -9,6 +9,7 @@ export default interface ControlItem {
     readonly icon: string;
     readonly title: string;
     readonly position: 'right' | 'left' | 'middle';
+    readonly layer?: 'top' | 'center' | 'bottom';
     custom?: boolean;
     click(): void;
 }
