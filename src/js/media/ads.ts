@@ -289,7 +289,7 @@ class Ads {
             debug: false,
             loop: false,
             numRedirects: 4,
-            url: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+            sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
         };
         this.player = player;
         this.ads = ads;
@@ -302,7 +302,7 @@ class Ads {
         this.originalVolume = this.element.volume;
         this.adsVolume = this.originalVolume;
 
-        const path = this.adsOptions.debug ? this.adsOptions.url.replace(/(\.js$)/, '_debug.js') : this.adsOptions.url;
+        const path = this.adsOptions.debug ? this.adsOptions.sdkPath.replace(/(\.js$)/, '_debug.js') : this.adsOptions.sdkPath;
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript(path) : new Promise(resolve => resolve());
 

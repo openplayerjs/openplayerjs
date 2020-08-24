@@ -60,13 +60,7 @@ class Player {
         const targets = document.querySelectorAll('video.op-player, audio.op-player');
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = (targets[i] as HTMLMediaElement);
-            let player;
-            if (target.getAttribute('data-op-settings')) {
-                player = new Player(target, JSON.parse(target.getAttribute('data-op-settings')));
-            } else {
-                player = new Player(target, target.getAttribute('data-op-ads'),
-                    !!target.getAttribute('data-op-fill'), JSON.parse(target.getAttribute('data-op-options')));
-            }
+            const player = new Player(target, JSON.parse(target.getAttribute('data-op-settings')));
             player.init();
         }
     }
@@ -247,9 +241,12 @@ class Player {
      */
     private defaultOptions: PlayerOptions = {
         controls: {
-            left: ['play', 'time', 'volume'],
-            middle: ['progress'],
-            right: ['captions', 'settings', 'fullscreen'],
+            alwaysVisible: false,
+            layers: {
+                left: ['play', 'time', 'volume'],
+                middle: ['progress'],
+                right: ['captions', 'settings', 'fullscreen'],
+            }
         },
         detachMenus: false,
         hidePlayBtnTimer: 350,
@@ -290,43 +287,33 @@ class Player {
         mode: 'responsive',
         onError: () => { },
         playlist: [],
-        showLiveLabel: true,
         showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,
         step: 0,
+        live: {
+            showLabel: true,
+            showProgress: false,
+        }
     };
 
     /**
      * Create an instance of Player.
      *
      * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
-     * @param {?string|string[]|PlayerOptions} options
-     * @param {?boolean} fill  Determine if video should be scaled and scrop to fit container.
-     * @param {?PlayerOptions} playerOptions  Options to enhance Hls and Dash players, among other things.
+     * @param {PlayerOptions} playerOptions  Options to enhance Hls and Dash players, among other things.
      * @returns {Player}
      * @memberof Player
      */
-    constructor(element: HTMLMediaElement | string, options?: string | string[] | PlayerOptions,
-                fill?: boolean, legacyOptions?: PlayerOptions) {
+    constructor(element: HTMLMediaElement | string, options?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
-            if (typeof options === 'string' || Array.isArray(options)) {
-                this.ads = options;
-            } else if (options && options.ads && options.ads.src) {
+            if (options && options.ads && options.ads.src) {
                 this.ads = options.ads.src;
-            }
-            if (fill) {
-                this.fill = fill;
-            } else if (typeof options !== 'string' && !Array.isArray(options)) {
-                this.fill = options && options.mode === 'fill';
             }
             this.autoplay = this.element.autoplay || false;
             if (typeof options !== 'string' && !Array.isArray(options)) {
                 this._mergeOptions(options);
-            }
-            if (legacyOptions) {
-                this._mergeOptions(legacyOptions);
             }
             this.element.volume = this.options.startVolume;
             if (this.options.startTime > 0) {
@@ -972,7 +959,7 @@ class Player {
     }
 
     /**
-     * Merge user's configuration wit default configuration.
+     * Merge user's configuration with default configuration.
      *
      * It deals with complex config elements, like `labels` and `controls`.
      * @param playerOptions

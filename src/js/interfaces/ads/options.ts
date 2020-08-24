@@ -25,7 +25,7 @@ export default interface Options {
     /**
      * The IMA SDK URL to load the plugin.
      */
-    readonly url: string;
+    readonly sdkPath: string;
     /**
      * Ad or collection of Ads to be played.
      */
