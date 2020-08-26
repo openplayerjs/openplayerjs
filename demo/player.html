@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -17,6 +18,10 @@
       href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
     />
     <style>
+      html {
+        font-family: sans-serif;
+        line-height: 1.15;
+      }
       .hidden {
         display: none !important;
       }
@@ -54,11 +59,14 @@
         transform: rotateY(0.5turn);
       }
       .audiominutes-player {
+        -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
         left: 0;
         position: absolute;
         top: 0;
+        visibility: visible;
         width: 100%;
+        z-index: 1;
       }
       .card.video .audiominutes-player {
         height: 100%;
@@ -418,7 +426,7 @@
         list-style: none;
         margin: 0;
         max-height: 113px;
-        min-height: 20px;
+        min-height: 28px;
         min-width: 200px;
         overflow-x: hidden;
         overflow-y: auto;
@@ -536,11 +544,12 @@
         color: #939193;
         cursor: pointer;
         margin: 0;
-        padding: 4px 6px;
+        padding: 4px 8px;
       }
       .controls .volume {
         align-items: center;
         display: flex;
+        margin-top: -2px;
         outline: none;
       }
       .controls .volume-slider {
@@ -552,13 +561,16 @@
       }
       .controls .share {
         color: #939193;
-        margin-top: 5px;
         outline: none;
         position: relative;
       }
       .controls .share h2 {
         color: #fff;
         margin: 0 0 10px;
+      }
+      .controls .volume-icon,
+      .controls .fa-share-alt {
+          font-size: 1.5em;
       }
       #gallery {
         background-color: rgba(0, 0, 0, 0.7);
@@ -787,7 +799,19 @@
               </button>
               <button class="volume">
                 <span class="sr-only">Volume</span>
-                <i class="fas fa-volume-up fa-lg"></i>
+                <i class="volume-icon fas fa-volume-up fa-lg"></i>
+                <input
+                  class="volume-slider"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step=".1"
+                  value="0"
+                  role="slider"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-orientation="horizontal"
+                />
               </button>
               <button class="share">
                 <span class="sr-only">Share</span>
@@ -798,8 +822,8 @@
               <span class="note"></span> <span class="speaker"></span>
             </div>
             <div class="info">
-              <div class="help_link"><a href="#" target="_blank">?</a></div>
-              <img src="http://cdnprefs.com/test1/audio_logo.png" />
+              <div class="help_link"><a href="https://www.audiominutes.com/help/" target="_blank">?</a></div>
+              <a href="https://www.audiominutes.com" target="_blank"><img src="http://cdnprefs.com/test1/audio_logo.png" /></a>
             </div>
             <div class="tooltip"></div>
           </div>
@@ -1065,16 +1089,19 @@
           /ipad|iphone|ipod/i.test(userAgent) &&
           !window.MSStream,
         IS_ANDROID = !!userAgent && /android/i.test(userAgent);
+        
       function setMarkers(e, t) {
         e.querySelector(".markers")
           .querySelectorAll("span")
           .forEach((e) => {
             const a = Math.floor(e.getAttribute("data-offset")),
               { duration: r } = t.getMedia();
-            if (!Number.isNaN(a) && a <= r && a >= 0) {
-              const t = (100 * a) / r;
-              e.style.left = `${t}%`;
-            }
+              if (!Number.isNaN(a) && a <= r && a >= 0) {
+                const t = (100 * a) / r;
+                e.style.left = `${t}%`;
+              } else {
+                e.style.left = '100%';
+              }
           });
       }
       function offset(e) {
@@ -1211,9 +1238,8 @@
               });
             }),
               extractMeta(e, l.join("").split("ID3"), t, a, r),
-              setMarkers(e, t),
-              e.classList.contains("hidden") && e.classList.remove("hidden");
-          }),
+              setMarkers(e, t);
+          });
             t.getElement().textTracks.addEventListener("addtrack", (s) => {
               "metadata" === s.track.kind &&
                 ((s.track.mode = "hidden"),
@@ -1221,11 +1247,13 @@
                   const l = s.target.activeCues[0];
                   l &&
                     (extractMeta(e, l.value.data, t, a, r),
-                    setMarkers(e, t),
-                    e.classList.contains("hidden") &&
-                      e.classList.remove("hidden"));
+                    setMarkers(e, t));
                 }));
             });
+            e.classList.contains("hidden") && e.classList.remove("hidden");
+      }
+      if (!type) {
+        throw new Error('No type indicated');
       }
       var url = decodeURIComponent(getUrlParameter("url")) || "",
         media = document.createElement(type);
@@ -1239,6 +1267,7 @@
       const el = document.getElementById("media");
       el.appendChild(media),
         el.closest(".audiominutes-player").classList.add(`${type}-player`),
+        media === 'video' && /\.m3u8$/.test(url) && el.closest(".audiominutes-player").classList.add('live-streaming'),
         el.closest(".card").classList.add(type);
       const player = new OpenPlayer("media1", null, !1, {
         controls: {
@@ -1389,6 +1418,14 @@
               ? t.classList.remove("open")
               : t.classList.add("open");
           });
+        }),
+        player.getElement().addEventListener("play", (e) => {
+          target.querySelector(".play-pause>i").classList.remove("fa-play");
+          target.querySelector(".play-pause>i").classList.add("fa-pause")
+        }),
+        player.getElement().addEventListener("pause", (e) => {
+          target.querySelector(".play-pause>i").classList.add("fa-play");
+          target.querySelector(".play-pause>i").classList.remove("fa-pause")
         }),
         player.getElement().addEventListener("loadedmetadata", (e) => {
           if (player.getElement().duration !== 1 / 0) {
