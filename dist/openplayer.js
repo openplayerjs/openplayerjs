@@ -1428,6 +1428,14 @@ var Native = function () {
       this.element.pause();
     }
   }, {
+    key: "instance",
+    set: function set(customPlayer) {
+      this.customPlayer = customPlayer;
+    },
+    get: function get() {
+      return this.customPlayer;
+    }
+  }, {
     key: "volume",
     set: function set(value) {
       this.element.volume = value;
@@ -1588,17 +1596,17 @@ var Player = function () {
         volumeControl: 'Volume Control',
         volumeSlider: 'Volume Slider'
       },
+      live: {
+        showLabel: true,
+        showProgress: false
+      },
       mode: 'responsive',
       onError: function onError() {},
       playlist: [],
       showLoaderOnInit: false,
       startTime: 0,
       startVolume: 1,
-      step: 0,
-      live: {
-        showLabel: true,
-        showProgress: false
-      }
+      step: 0
     };
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
@@ -7739,6 +7747,11 @@ var Media = function () {
     get: function get() {
       return this.media ? this.media.levels : [];
     }
+  }, {
+    key: "instance",
+    get: function get() {
+      return this.media ? this.media.instance : null;
+    }
   }]);
 
   return Media;
@@ -7805,6 +7818,7 @@ var DashMedia = function (_native_1$default) {
 
     function createInstance() {
       this.player = dashjs.MediaPlayer().create();
+      this.instance = this.player;
     }
 
     _this.promise = typeof dashjs === 'undefined' ? general_1.loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') : new Promise(function (resolve) {
@@ -8104,6 +8118,7 @@ var HlsMedia = function (_native_1$default) {
       var autoplay = !!(this.element.preload === 'auto' || this.autoplay);
       options.autoStartLoad = autoplay;
       this.player = new Hls(this.options);
+      this.instance = this.player;
       this.events = Hls.Events;
       Object.keys(this.events).forEach(function (event) {
         _this3.player.on(_this3.events[event], function () {

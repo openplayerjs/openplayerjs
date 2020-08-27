@@ -246,7 +246,7 @@ class Player {
                 left: ['play', 'time', 'volume'],
                 middle: ['progress'],
                 right: ['captions', 'settings', 'fullscreen'],
-            }
+            },
         },
         detachMenus: false,
         hidePlayBtnTimer: 350,
@@ -284,6 +284,10 @@ class Player {
             volumeControl: 'Volume Control',
             volumeSlider: 'Volume Slider',
         },
+        live: {
+            showLabel: true,
+            showProgress: false,
+        },
         mode: 'responsive',
         onError: () => { },
         playlist: [],
@@ -291,10 +295,6 @@ class Player {
         startTime: 0,
         startVolume: 1,
         step: 0,
-        live: {
-            showLabel: true,
-            showProgress: false,
-        }
     };
 
     /**

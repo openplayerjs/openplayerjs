@@ -37,6 +37,16 @@ abstract class Native {
     public promise: Promise<any>;
 
     /**
+     * The instance of a custom player.
+     *
+     * HLS/Dash have more methods that are related to their custom libraries.
+     *
+     * @type {any}
+     * @memberof Native
+     */
+    private customPlayer: any;
+
+    /**
      * Create an instance of Native.
      *
      * @param {HTMLMediaElement} element The `video/audio` source.
@@ -115,6 +125,23 @@ abstract class Native {
      * @memberof Media
      */
     public abstract get levels(): object[];
+
+    /**
+     *
+     * @memberof Media
+     */
+    public set instance(customPlayer: any) {
+        this.customPlayer = customPlayer;
+    }
+
+    /**
+     *
+     * @returns {any}
+     * @memberof Media
+     */
+    public get instance(): any {
+        return this.customPlayer;
+    }
 
     /**
      * Play current media.

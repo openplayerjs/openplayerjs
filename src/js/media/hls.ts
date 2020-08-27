@@ -190,6 +190,7 @@ class HlsMedia extends Native {
         (options as any).autoStartLoad = autoplay;
 
         this.player = new Hls(this.options);
+        this.instance = this.player;
         this.events = Hls.Events;
         Object.keys(this.events).forEach(event => {
             this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));

@@ -53,6 +53,7 @@ class DashMedia extends Native {
          */
         function createInstance() {
             this.player = dashjs.MediaPlayer().create();
+            this.instance = this.player;
         }
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
