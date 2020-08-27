@@ -470,6 +470,15 @@ class Media {
     }
 
     /**
+     *
+     * @memberof Media
+     * @readonly
+     */
+    get instance() {
+        return this.media ? this.media.instance : null;
+    }
+
+    /**
      * Gather all media sources within the video/audio/iframe tags.
      *
      * It will be grouped inside the `mediaFiles` array. This method basically mimics

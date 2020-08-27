@@ -190,6 +190,7 @@ class HlsMedia extends Native {
         (options as any).autoStartLoad = autoplay;
 
         this.player = new Hls(this.options);
+        this.instance = this.player;
         this.events = Hls.Events;
         Object.keys(this.events).forEach(event => {
             this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
@@ -227,9 +228,9 @@ class HlsMedia extends Native {
         if (event === 'hlsError') {
             const errorDetails = {
                 detail: {
-                    type: 'HLS',
-                    message: data[1].details,
                     data,
+                    message: data[1].details,
+                    type: 'HLS',
                 },
             };
             const errorEvent = addEvent('playererror', errorDetails);
@@ -270,8 +271,8 @@ class HlsMedia extends Native {
                         break;
                 }
             } else {
-                const errorEvent = addEvent(type, details);
-                this.element.dispatchEvent(errorEvent);
+                const ev = addEvent(type, details);
+                this.element.dispatchEvent(ev);
             }
         } else {
             if (event === 'hlsLevelLoaded' && data[1].details.live === true) {

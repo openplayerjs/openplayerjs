@@ -1419,6 +1419,14 @@ var Native = function () {
       this.element.pause();
     }
   }, {
+    key: "instance",
+    set: function set(customPlayer) {
+      this.customPlayer = customPlayer;
+    },
+    get: function get() {
+      return this.customPlayer;
+    }
+  }, {
     key: "volume",
     set: function set(value) {
       this.element.volume = value;
@@ -7559,6 +7567,11 @@ var Media = function () {
     get: function get() {
       return this.media ? this.media.levels : [];
     }
+  }, {
+    key: "instance",
+    get: function get() {
+      return this.media ? this.media.instance : null;
+    }
   }]);
 
   return Media;
@@ -7625,6 +7638,7 @@ var DashMedia = function (_native_1$default) {
 
     function createInstance() {
       this.player = dashjs.MediaPlayer().create();
+      this.instance = this.player;
     }
 
     _this.promise = typeof dashjs === 'undefined' ? general_1.loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') : new Promise(function (resolve) {
@@ -7670,8 +7684,8 @@ var DashMedia = function (_native_1$default) {
       if (event.type === 'error') {
         var details = {
           detail: {
-            type: 'M(PEG)-DASH',
-            message: event
+            message: event,
+            type: 'M(PEG)-DASH'
           }
         };
         var errorEvent = events_1.addEvent('playererror', details);
@@ -7924,6 +7938,8 @@ var HlsMedia = function (_native_1$default) {
       var autoplay = !!(this.element.preload === 'auto' || this.autoplay);
       options.autoStartLoad = autoplay;
       this.player = new Hls(this.options);
+      this.instance = this.player;
+      console.log(this.instance);
       this.events = Hls.Events;
       Object.keys(this.events).forEach(function (event) {
         _this3.player.on(_this3.events[event], function () {
@@ -7954,9 +7970,9 @@ var HlsMedia = function (_native_1$default) {
       if (event === 'hlsError') {
         var errorDetails = {
           detail: {
-            type: 'HLS',
+            data: data,
             message: data[1].details,
-            data: data
+            type: 'HLS'
           }
         };
         var errorEvent = events_1.addEvent('playererror', errorDetails);
@@ -8004,9 +8020,8 @@ var HlsMedia = function (_native_1$default) {
               break;
           }
         } else {
-          var _errorEvent = events_1.addEvent(type, details);
-
-          this.element.dispatchEvent(_errorEvent);
+          var ev = events_1.addEvent(type, details);
+          this.element.dispatchEvent(ev);
         }
       } else {
         if (event === 'hlsLevelLoaded' && data[1].details.live === true) {

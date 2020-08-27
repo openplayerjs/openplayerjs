@@ -53,6 +53,7 @@ class DashMedia extends Native {
          */
         function createInstance() {
             this.player = dashjs.MediaPlayer().create();
+            this.instance = this.player;
         }
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
@@ -166,8 +167,8 @@ class DashMedia extends Native {
         if (event.type === 'error') {
             const details = {
                 detail: {
-                    type: 'M(PEG)-DASH',
                     message: event,
+                    type: 'M(PEG)-DASH',
                 },
             };
             const errorEvent = addEvent('playererror', details);
