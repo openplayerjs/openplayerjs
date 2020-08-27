@@ -7939,7 +7939,6 @@ var HlsMedia = function (_native_1$default) {
       options.autoStartLoad = autoplay;
       this.player = new Hls(this.options);
       this.instance = this.player;
-      console.log(this.instance);
       this.events = Hls.Events;
       Object.keys(this.events).forEach(function (event) {
         _this3.player.on(_this3.events[event], function () {
