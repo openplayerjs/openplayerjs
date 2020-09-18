@@ -8219,7 +8219,7 @@ var HlsMedia = function (_native_1$default) {
 
           this.element.dispatchEvent(_timeEvent);
         } else if (event === 'hlsFragParsingMetadata') {
-          var metaEvent = events_1.addEvent('readmetadata', data[1]);
+          var metaEvent = events_1.addEvent('metadataready', data[1]);
           this.element.dispatchEvent(metaEvent);
         }
 
@@ -8440,7 +8440,7 @@ var HTML5Media = function (_native_1$default) {
           var cue = e.target.activeCues[0];
 
           if (cue) {
-            var _e = events_1.addEvent('readmetadata', {
+            var _e = events_1.addEvent('metadataready', {
               detail: cue
             });
 
