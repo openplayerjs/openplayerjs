@@ -135,7 +135,7 @@ class HTML5Media extends Native  {
             target.track.addEventListener('cuechange', (e) => {
                 const cue = (e.target as TextTrack).activeCues[0];
                 if (cue) {
-                    const e = addEvent('readmetadata', { detail: cue });
+                    const e = addEvent('metadataready', { detail: cue });
                     this.element.dispatchEvent(e);
                 }
             });

@@ -220,7 +220,7 @@ All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Even
 
 Event | Description
 --- | ---
-`readmetadata` | Event executed to grab the media's information, mostly represented in the form of [ID3 tags](https://id3.org/).
+`metadataready` | Event executed to grab the media's information, mostly represented in the form of [ID3 tags](https://id3.org/).
 `controlshidden` | Event executed when controls timer stops and hides control bar (video only).
 `controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new caption).
 `captionschanged` | Event triggered when user changes the current caption by selecting a new one from the `Settings` menu.

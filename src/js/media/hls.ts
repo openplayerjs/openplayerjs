@@ -284,7 +284,7 @@ class HlsMedia extends Native {
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
             } else if (event === 'hlsFragParsingMetadata') {
-                const metaEvent = addEvent('readmetadata', data[1]);
+                const metaEvent = addEvent('metadataready', data[1]);
                 this.element.dispatchEvent(metaEvent);
             }
             const e = addEvent(event, data[1]);
