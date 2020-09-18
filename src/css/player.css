@@ -1,14 +1,3 @@
-@font-face {
-    font-family: 'open-player';
-    font-style: normal;
-    font-weight: normal;
-    src: url('./open-player.eot?77449144');
-    src: url('./open-player.eot?77449144#iefix') format('embedded-opentype'),
-        url('./open-player.woff2?77449144') format('woff2'),
-        url('./open-player.woff?77449144') format('woff'),
-        url('./open-player.ttf?77449144') format('truetype'),
-        url('./open-player.svg?77449144#open-player') format('svg');
-}
 /* === General =================== */
 .op-player {
     background: #000;
@@ -76,7 +65,7 @@
     color: #fff;
     display: flex;
     font-size: 0.85em;
-    padding: 2px 8px;
+    padding: 0 4px;
     pointer-events: all;
     position: absolute;
     transition: bottom 0.3s ease;
@@ -89,7 +78,7 @@
 }
 .op-player__video .op-controls {
     margin-top: 5px;
-    padding: 10px 8px 4px;
+    padding-top: 11px;
 }
 .op-controls > * {
     flex-grow: 0;
@@ -111,7 +100,7 @@
     text-transform: none;
 }
 .op-controls > button {
-    padding: 2px 6px 3px;
+    padding: 2px 4px 3px;
     z-index: 4;
 }
 .op-controls > button > span {
@@ -187,22 +176,10 @@
 .op-controls > button:before {
     color: #fff;
     display: inline-block;
-    font-family: 'open-player';
-    font-size: 1.5em;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: normal;
     height: 15px;
-    justify-content: flex-start;
-    line-height: 1em;
     margin-left: 0.2em;
     margin-right: 0.2em;
-    speak: none;
     text-align: center;
-    text-decoration: inherit;
-    text-transform: none;
     width: 15px;
 }
 .op-controls > .op-control__right {
@@ -229,41 +206,55 @@
 
 /* === Buttons =================== */
 .op-controls__playpause:before {
-    content: '\e810';
+    content: url(svg/play.svg);
 }
 .op-controls__playpause--pause:before {
-    content: '\e80d';
+    content: url(svg/pause.svg);
 }
 .op-controls__playpause--replay:before {
-    content: '\e80c';
+    content: url(svg/replay.svg);
 }
 .op-controls__fullscreen:before {
-    content: '\e811';
+    content: url(svg/fullscreen-off.svg);
+    width: 20px !important;
 }
 .op-controls__fullscreen--out:before {
-    content: '\e812';
+    content: url(svg/fullscreen-on.svg);
+    width: 20px !important;
 }
 .op-controls__mute:before {
-    content: '\e816';
+    content: url(svg/volume.svg);
+    width: 20px !important;
 }
 .op-controls__mute--half:before {
-    content: '\e814';
+    content: url(svg/volume-down.svg);
+    width: 18px !important;
 }
 .op-controls__mute--muted:before {
-    content: '\e815';
+    content: url(svg/mute.svg);
+    width: 18px !important;
 }
 .op-controls__captions:before {
-    content: '\e809';
+    content: url(svg/closed-captions.svg);
+    width: 20px !important;
 }
 .op-controls__settings:before {
-    content: '\e800';
+    content: url(svg/settings.svg);
 }
-.op-controls__playlist-first:before,
-.op-controls__playlist-previous:before,
-.op-controls__playlist-next:before,
-.op-controls__playlist-last:before,
+.op-controls__playlist-loop:before {
+    content: url(svg/loop.svg);
+}
+.op-controls__playlist-shuffle:before {
+    content: url(svg/shuffle.svg);
+}
+.op-controls__playlist-previous:before {
+    content: url(svg/prev.svg);
+}
+.op-controls__playlist-next:before {
+    content: url(svg/next.svg);
+}
 .op-controls__playlist-toggle:before {
-    content: '\e800';
+    content: url(svg/playlist.svg)
 }
 
 /* === Settings =================== */

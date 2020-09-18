@@ -239,7 +239,8 @@ class Controls implements PlayerComponent {
     }
 
     /**
-     * 
+     * Retrieve the layer to append/remove elements from the player controls.
+     *
      * @param {string}
      * @memberof Controls
      */
@@ -307,15 +308,15 @@ class Controls implements PlayerComponent {
         }
 
         this.items = {
-            'top-left': [],
-            'top-middle': [],
-            'top-right': [],
-            left: [],
-            middle: [],
-            right: [],
             'bottom-left': [],
             'bottom-middle': [],
             'bottom-right': [],
+            'left': [],
+            'middle': [],
+            'right': [],
+            'top-left': [],
+            'top-middle': [],
+            'top-right': [],
         };
 
         const isVideoEl = isVideo(this.player.getElement());
