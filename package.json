@@ -44,13 +44,14 @@
     "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-d-file",
     "create-d-file": "npx typescript src/js/**/*.ts -t ES6 --declaration --allowJS --emitDeclarationOnly --skipLibCheck  --moduleResolution node --outDir types",
     "release": "npm run build && release-it",
-    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js && npx tsd"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
     "@release-it/conventional-changelog": "^1.1.0",
+    "@types/node": "^14.11.1",
     "autoprefixer": "^9.7.4",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.1.0",
