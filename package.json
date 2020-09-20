@@ -14,12 +14,12 @@
   },
   "main": "./dist/openplayer.js",
   "style": "./dist/openplayer.css",
-  "types": "./openplayer.d.ts",
+  "types": "./types/player.d.ts",
   "files": [
     "demo/*",
     "dist/*",
     "docs/*",
-    "openplayer.d.ts"
+    "types/*"
   ],
   "keywords": [
     "media",
@@ -41,7 +41,8 @@
     "ima-sdk"
   ],
   "scripts": {
-    "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production",
+    "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-d-file",
+    "create-d-file": "npx typescript src/js/**/*.ts -t ES6 --declaration --allowJS --emitDeclarationOnly --skipLibCheck  --moduleResolution node --outDir types",
     "release": "npm run build && release-it",
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
   },
@@ -86,6 +87,7 @@
     "stylelint": "^13.7.1",
     "stylelint-order": "^4.1.0",
     "ts-loader": "^5.4.5",
+    "tsd": "0.13.1",
     "tslint": "^5.20.1",
     "typescript": "^3.9.7",
     "unminified-webpack-plugin": "^2.0.0",
