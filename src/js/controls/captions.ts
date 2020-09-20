@@ -527,7 +527,7 @@ class Captions implements PlayerComponent {
         const cues: Cue[] = [];
         Object.keys(track.cues).forEach(index => {
             const j = parseInt(index, 10);
-            const current = track.cues[j];
+            const current = (track.cues[j] as VTTCue);
             cues.push({
                 endTime: current.endTime,
                 identifier: current.id,
