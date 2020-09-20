@@ -44,7 +44,7 @@
     "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-d-file",
     "create-d-file": "npx typescript src/js/**/*.ts -t ES6 --declaration --allowJS --emitDeclarationOnly --skipLibCheck  --moduleResolution node --outDir types",
     "release": "npm run build && release-it",
-    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js"
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js && npx tsd"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "devDependencies": {
