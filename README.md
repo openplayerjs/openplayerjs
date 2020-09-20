@@ -21,7 +21,59 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 * **Can play ads in infinite loop**, desired for ads that are in a heavy text page.
 * Always **responsive** by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 
+## IMPORTANT: Migrating from v1.x.x to v2.x.x
+
+In order to achieve a smooth upgrading between version `1.x.x` and `2.x.x`, there is a couple of things to keep in mind:
+
+1. The player will only accept now 2 parameters instead of 4: the **player ID** and the **player options**.
+2. `controls` and `showLiveProgress` properties are now complex object structures, where we can indicate visibility and a new set of extra layers/visibility.
+
+In v1, the way these elements were set up were:
+
+```javascript
+const player = new OpenPlayerJS('player', 'https://ads.example.url/xml', true, {
+    controls: {
+        left: ['play', 'time', 'volume'],
+        middle: ['progress'],
+        right: ['captions', 'settings', 'fullscreen'],
+    },
+    showLiveProgress: false,
+    // ...other player options
+});
+player.init();
+```
+
+Now, in v2:
+
+```javascript
+const player = new OpenPlayerJS('player', {
+    ads: {
+        src: 'https://ads.example.url/xml',
+        // ...other ads options
+    },
+    mode: 'fullscreen', // equivalent to `true` in third argument in v1
+    controls: {
+        alwaysVisible: false,
+        // Also available: `top-left`, `top-middle`,
+        // `top-right`, `bottom-left`, `bottom-middle` and `bottom-right`
+        layers: {
+            left: ['play', 'time', 'volume'],
+            middle: ['progress'],
+            right: ['captions', 'settings', 'fullscreen'],
+        }
+    },
+    live: {
+        showLabel: true,
+        showProgress: false, // equivalent of `showLiveProgress` in v1
+    },
+    // ...other player options
+});
+player.init();
+```
+
 ## Getting Started
+
+The standard template to start using OpenPlayerJS is show in the following snippet.
 
 ```html
 <html>
@@ -36,7 +88,7 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
         <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
         <script>
             // Check the `API and events` link below for more options
-            const player = new OpenPlayer('player');
+            const player = new OpenPlayerJS('player');
             player.init();
         </script>
     </body>
@@ -47,7 +99,7 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 
 If you want to unleash the power of OpenPlayerJS, check the following links to learn how to customize it.
 
-* [Advanced use](./docs/usage.md)
+* [How to use OpenPlayerJS](./docs/usage.md)
 * [API and events](./docs/api.md)
 * [How to add custom controls/players](./docs/customize.md)
 
