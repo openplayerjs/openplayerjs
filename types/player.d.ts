@@ -12,7 +12,6 @@ import CustomMedia from './interfaces/custom-media';
 import EventsList from './interfaces/events-list';
 import PlayerInstanceList from './interfaces/instance';
 import PlayerOptions from './interfaces/player-options';
-import PlaylistItem from './interfaces/playlist-item';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
@@ -83,7 +82,6 @@ declare class Player {
      * @memberof Player
      */
     loader: HTMLSpanElement;
-    playlist: PlaylistItem[];
     /**
      * Unique identified for the current player instance.
      *
@@ -339,13 +337,6 @@ declare class Player {
      */
     addControl(args: ControlItem): void;
     /**
-     *
-     *
-     * @param {PlaylistItem[]} playlist
-     * @memberof Player
-     */
-    loadPlaylist(playlist: PlaylistItem[]): void;
-    /**
      * Load media and events depending of media type.
      *
      * @memberof Player
@@ -447,14 +438,5 @@ declare class Player {
      * @memberof Player
      */
     private _mergeOptions;
-    /**
-     *
-     *
-     * @private
-     * @param {PlaylistItem[]} playlist
-     * @return {void}
-     * @memberof Player
-     */
-    private _loadPlaylist;
 }
 export default Player;
