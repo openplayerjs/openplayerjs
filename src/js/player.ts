@@ -13,7 +13,6 @@ import CustomMedia from './interfaces/custom-media';
 import EventsList from './interfaces/events-list';
 import PlayerInstanceList from './interfaces/instance';
 import PlayerOptions from './interfaces/player-options';
-import PlaylistItem from './interfaces/playlist-item';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
@@ -112,8 +111,6 @@ class Player {
      * @memberof Player
      */
     public loader: HTMLSpanElement;
-
-    public playlist: PlaylistItem[] = [];
 
     /**
      * Unique identified for the current player instance.
@@ -265,13 +262,6 @@ class Player {
             off: 'Off',
             pause: 'Pause',
             play: 'Play',
-            playlist: {
-                first: 'First',
-                last: 'Last',
-                next: 'Next',
-                previous: 'Previous',
-                toggle: 'Toggle Playlist',
-            },
             progressRail: 'Time Rail',
             progressSlider: 'Time Slider',
             settings: 'Player Settings',
@@ -290,7 +280,6 @@ class Player {
         },
         mode: 'responsive',
         onError: () => { },
-        playlist: [],
         showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,
@@ -334,11 +323,7 @@ class Player {
     public init(): void {
         if (this._isValid()) {
             this._wrapInstance();
-            if (this.options.playlist.length > 0) {
-                this._loadPlaylist(this.options.playlist);
-            } else {
-                this._prepareMedia();
-            }
+            this._prepareMedia();
             this._createPlayButton();
             this._createUID();
             this._createControls();
@@ -591,18 +576,6 @@ class Player {
     public addControl(args: ControlItem): void {
         args.custom = true;
         this.customControlItems.push(args);
-        const e = addEvent('controlschanged');
-        this.element.dispatchEvent(e);
-    }
-
-    /**
-     *
-     *
-     * @param {PlaylistItem[]} playlist
-     * @memberof Player
-     */
-    public loadPlaylist(playlist: PlaylistItem[]) {
-        this._loadPlaylist(playlist);
         const e = addEvent('controlschanged');
         this.element.dispatchEvent(e);
     }
@@ -976,59 +949,6 @@ class Player {
                     this.defaultOptions[item];
             });
         }
-    }
-
-    /**
-     *
-     *
-     * @private
-     * @param {PlaylistItem[]} playlist
-     * @return {void}
-     * @memberof Player
-     */
-    private _loadPlaylist(playlist: PlaylistItem[]) {
-        this.playlist = playlist;
-
-        const currentMedia = playlist[0];
-        this.element.src = currentMedia.src;
-
-        // build DOM for playlist
-        if (playlist.length > 1) {
-            const container = document.createElement('div');
-            container.id = 'op-player__playlist';
-            container.className = 'op-player__playlist--closed';
-
-            playlist.forEach(item => {
-                const img = item.thumbnail ? `<img src="${item.thumbnail}" alt="${item.name}">` : '';
-                container.innerHTML += `<div class="op-player__playlist-item" data-url="${item.src}">
-                    ${img}
-                    <div class="op-player__playlist-item-info">
-                        <span>${item.name}</span>
-                    </div>
-                </div>`;
-            });
-
-            const wrapper = document.createElement('div');
-            wrapper.id = 'op-player__wrapper';
-
-            this.getContainer().parentElement.insertBefore(wrapper, this.getContainer());
-            wrapper.appendChild(this.getContainer());
-            wrapper.appendChild(container);
-
-            const listItems = container.querySelectorAll('.op-player__playlist-item');
-            for (let i = 0, total = listItems.length; i < total; ++i) {
-                listItems[i].addEventListener('click', () => {
-                    const isPlaying = !this.media.paused;
-                    this.element.src = listItems[i].getAttribute('data-url');
-                    this.load();
-                    if (isPlaying) {
-                        setTimeout(() => this.play, 100);
-                    }
-                });
-            }
-        }
-
-        return this._prepareMedia();
     }
 }
 

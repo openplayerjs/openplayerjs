@@ -2,7 +2,6 @@ import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Levels from './controls/levels';
 import Play from './controls/play';
-// import Playlist from './controls/playlist';
 import Progress from './controls/progress';
 import Settings from './controls/settings';
 import Time from './controls/time';
@@ -87,7 +86,6 @@ class Controls implements PlayerComponent {
         Fullscreen,
         Levels,
         Play,
-        // Playlist,
         Progress,
         Settings,
         Time,
@@ -295,18 +293,6 @@ class Controls implements PlayerComponent {
      */
     private _setElements(): void {
         const controls = this.player.getOptions().controls.layers;
-        if (this.player.playlist.length > 0) {
-            let playlistRef = false;
-            Object.keys(controls).forEach((position: string) => {
-                playlistRef = controls[position].find((item: string) => item === 'playlist');
-            });
-
-            // If no reference to `playlist` is found, set it by default on the left controls
-            if (!playlistRef) {
-                controls.left.push('playlist');
-            }
-        }
-
         this.items = {
             'bottom-left': [],
             'bottom-middle': [],

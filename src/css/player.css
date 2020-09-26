@@ -241,21 +241,6 @@
 .op-controls__settings:before {
     content: url(svg/settings.svg);
 }
-.op-controls__playlist-loop:before {
-    content: url(svg/loop.svg);
-}
-.op-controls__playlist-shuffle:before {
-    content: url(svg/shuffle.svg);
-}
-.op-controls__playlist-previous:before {
-    content: url(svg/prev.svg);
-}
-.op-controls__playlist-next:before {
-    content: url(svg/next.svg);
-}
-.op-controls__playlist-toggle:before {
-    content: url(svg/playlist.svg)
-}
 
 /* === Settings =================== */
 .op-settings {
@@ -715,29 +700,6 @@ video:-webkit-media-text-track-display {
     right: 0;
     top: 100%;
     width: 0;
-}
-
-/* === Playlist ================ */
-#op-player__wrapper {
-    display: flex;
-    overflow: hidden;
-    position: relative;
-}
-#op-player__playlist {
-    background: #000;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: all 0.2s ease;
-    width: 300px;
-}
-#op-player__playlist.op-player__playlist--closed {
-    right: -300px;
-}
-.op-player__playlist-item {
-    color: #fff;
-    cursor: pointer;
 }
 
 /* === Ads =================== */
