@@ -8590,15 +8590,10 @@ var Ads = function () {
           if (!ad.isLinear()) {
             this._onContentResumeRequested();
           } else {
-            if (!this.media.paused) {
-              this.media.pause();
-            }
-
             if (constants_1.IS_IPHONE && general_1.isVideo(this.element)) {
               this.element.controls = false;
             }
 
-            this.element.parentElement.classList.add('op-ads--active');
             this.adsDuration = ad.getDuration();
             this.adsCurrentTime = ad.getDuration();
 
@@ -8608,7 +8603,6 @@ var Ads = function () {
               var loadedEvent = events_1.addEvent('loadedmetadata');
               this.element.dispatchEvent(loadedEvent);
               this.resizeAds();
-              this.mediaStarted = true;
             }
           }
 
@@ -8616,6 +8610,16 @@ var Ads = function () {
 
         case google.ima.AdEvent.Type.STARTED:
           if (ad.isLinear()) {
+            this.mediaStarted = true;
+
+            if (!this.media.paused) {
+              this.media.pause();
+            }
+
+            if (!this.element.parentElement.classList.contains('op-ads--active')) {
+              this.element.parentElement.classList.add('op-ads--active');
+            }
+
             this.adsActive = true;
             var playEvent = events_1.addEvent('play');
             this.element.dispatchEvent(playEvent);
@@ -8640,7 +8644,7 @@ var Ads = function () {
 
                   _this4.element.dispatchEvent(timeEvent);
                 }
-              }, 300);
+              }, 350);
             }
           }
 
@@ -8944,6 +8948,8 @@ var Ads = function () {
       var height = this.element.parentElement.offsetHeight;
       this.adsRequest.linearAdSlotWidth = width;
       this.adsRequest.linearAdSlotHeight = height;
+      this.adsRequest.nonLinearAdSlotWidth = width;
+      this.adsRequest.nonLinearAdSlotHeight = height / 3;
       this.adsRequest.setAdWillAutoPlay(this.autoStart);
       this.adsRequest.setAdWillPlayMuted(this.autoStartMuted);
       this.adsLoader.requestAds(this.adsRequest);
