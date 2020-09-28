@@ -1579,10 +1579,6 @@ var Player = function () {
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
     if (this.element) {
-      if (options && options.ads && options.ads.src) {
-        this.ads = options.ads.src;
-      }
-
       this.autoplay = this.element.autoplay || false;
 
       if (typeof options !== 'string' && !Array.isArray(options)) {
@@ -1591,8 +1587,16 @@ var Player = function () {
 
       this.element.volume = this.options.startVolume;
 
+      if (this.options.ads && this.options.ads.src) {
+        this.ads = this.options.ads.src;
+      }
+
       if (this.options.startTime > 0) {
         this.element.currentTime = this.options.startTime;
+      }
+
+      if (this.options.mode === 'fill') {
+        this.fill = true;
       }
 
       this.volume = this.element.volume;
