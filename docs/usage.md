@@ -62,7 +62,7 @@ var player = new OpenPlayerJS('[player ID]', {
     },
     // Allow items to be contained in a different space outside of `Settings`
     detachMenus,
-    // Player stretching mode: `responsive` (default) or `fullscreen`
+    // Player stretching mode: `responsive` (default) or `fill`
     mode,
     // Number of ms that takes the player to hide the Play button once it starts playing (video only)
     // (bt default, `350`)

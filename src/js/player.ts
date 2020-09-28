@@ -278,7 +278,7 @@ class Player {
             showLabel: true,
             showProgress: false,
         },
-        mode: 'responsive',
+        mode: 'responsive', // or `fill`
         onError: () => { },
         showLoaderOnInit: false,
         startTime: 0,
@@ -297,16 +297,19 @@ class Player {
     constructor(element: HTMLMediaElement | string, options?: PlayerOptions) {
         this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.element) {
-            if (options && options.ads && options.ads.src) {
-                this.ads = options.ads.src;
-            }
             this.autoplay = this.element.autoplay || false;
             if (typeof options !== 'string' && !Array.isArray(options)) {
                 this._mergeOptions(options);
             }
             this.element.volume = this.options.startVolume;
+            if (this.options.ads && this.options.ads.src) {
+                this.ads = this.options.ads.src;
+            }
             if (this.options.startTime > 0) {
                 this.element.currentTime = this.options.startTime;
+            }
+            if (this.options.mode === 'fill') {
+                this.fill = true;
             }
             this.volume = this.element.volume;
         }
