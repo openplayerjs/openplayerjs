@@ -8031,8 +8031,6 @@ var HlsMedia = function (_native_1$default) {
       var _this5 = this;
 
       if (media_1.isHlsSource(media)) {
-        console.log('aaaaaa');
-
         this._revoke();
 
         this.player = new Hls(this.options);
@@ -8449,15 +8447,10 @@ var Ads = function () {
           if (!ad.isLinear()) {
             this._onContentResumeRequested();
           } else {
-            if (!this.media.paused) {
-              this.media.pause();
-            }
-
             if (constants_1.IS_IPHONE && general_1.isVideo(this.element)) {
               this.element.controls = false;
             }
 
-            this.element.parentElement.classList.add('op-ads--active');
             this.adsDuration = ad.getDuration();
             this.adsCurrentTime = ad.getDuration();
 
@@ -8475,6 +8468,12 @@ var Ads = function () {
 
         case google.ima.AdEvent.Type.STARTED:
           if (ad.isLinear()) {
+            this.element.parentElement.classList.add('op-ads--active');
+
+            if (!this.media.paused) {
+              this.media.pause();
+            }
+
             this.adsActive = true;
             var playEvent = events_1.addEvent('play');
             this.element.dispatchEvent(playEvent);
@@ -8499,7 +8498,7 @@ var Ads = function () {
 
                   _this4.element.dispatchEvent(timeEvent);
                 }
-              }, 300);
+              }, 350);
             }
           }
 
@@ -8803,6 +8802,8 @@ var Ads = function () {
       var height = this.element.parentElement.offsetHeight;
       this.adsRequest.linearAdSlotWidth = width;
       this.adsRequest.linearAdSlotHeight = height;
+      this.adsRequest.nonLinearAdSlotWidth = width;
+      this.adsRequest.nonLinearAdSlotHeight = height / 3;
       this.adsRequest.setAdWillAutoPlay(this.autoStart);
       this.adsRequest.setAdWillPlayMuted(this.autoStartMuted);
       this.adsLoader.requestAds(this.adsRequest);

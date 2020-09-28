@@ -618,13 +618,9 @@ class Ads {
                 if (!ad.isLinear()) {
                     this._onContentResumeRequested();
                 } else {
-                    if (!this.media.paused) {
-                        this.media.pause();
-                    }
                     if (IS_IPHONE && isVideo(this.element)) {
                         this.element.controls = false;
                     }
-                    this.element.parentElement.classList.add('op-ads--active');
                     this.adsDuration = ad.getDuration();
                     this.adsCurrentTime = ad.getDuration();
                     if (!this.mediaStarted && !IS_IOS && !IS_ANDROID) {
@@ -641,6 +637,11 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
+                    this.element.parentElement.classList.add('op-ads--active');
+
+                    if (!this.media.paused) {
+                        this.media.pause();
+                    }
                     this.adsActive = true;
                     const playEvent = addEvent('play');
                     this.element.dispatchEvent(playEvent);
@@ -664,7 +665,7 @@ class Ads {
                                 const timeEvent = addEvent('timeupdate');
                                 this.element.dispatchEvent(timeEvent);
                             }
-                        }, 300);
+                        }, 350);
                     }
                 }
                 break;
@@ -1016,6 +1017,8 @@ class Ads {
         const height = this.element.parentElement.offsetHeight;
         this.adsRequest.linearAdSlotWidth = width;
         this.adsRequest.linearAdSlotHeight = height;
+        this.adsRequest.nonLinearAdSlotWidth = width;
+        this.adsRequest.nonLinearAdSlotHeight = height / 3;
         this.adsRequest.setAdWillAutoPlay(this.autoStart);
         this.adsRequest.setAdWillPlayMuted(this.autoStartMuted);
         this.adsLoader.requestAds(this.adsRequest);
