@@ -636,12 +636,12 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
-                    this.mediaStarted = true;
-                    if (!this.media.paused) {
-                        this.media.pause();
-                    }
                     if (!this.element.parentElement.classList.contains('op-ads--active')) {
                         this.element.parentElement.classList.add('op-ads--active');
+                    }
+
+                    if (!this.media.paused) {
+                        this.media.pause();
                     }
                     this.adsActive = true;
                     const playEvent = addEvent('play');
