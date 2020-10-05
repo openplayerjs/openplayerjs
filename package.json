@@ -13,6 +13,7 @@
     "type": "git"
   },
   "main": "./dist/openplayer.js",
+  "module": "./dist/openplayer-esm.js",
   "style": "./dist/openplayer.css",
   "types": "./types/player.d.ts",
   "files": [
@@ -41,7 +42,7 @@
     "ima-sdk"
   ],
   "scripts": {
-    "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-d-file",
+    "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-d-file && npx typescript -p tsconfig-esm.json",
     "create-d-file": "npx typescript src/js/**/*.ts -t ES6 --declaration --allowJS --emitDeclarationOnly --skipLibCheck  --moduleResolution node --outDir types",
     "release": "npm run build && release-it",
     "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js && npx tsd"

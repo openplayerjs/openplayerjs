@@ -18,6 +18,7 @@
       "preserveConstEnums": true,
       "sourceMap": false,
       "skipLibCheck": true,
+      "strict": true,
       "moduleResolution": "node",
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
