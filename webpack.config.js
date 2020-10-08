@@ -1,42 +1,42 @@
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const path = require("path");
-const UnminifiedWebpackPlugin = require("unminified-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const path = require('path');
+const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 module.exports = {
-    target: "node",
+    target: 'node',
     node: {
-        fs: "empty",
+        fs: 'empty',
     },
     context: __dirname,
     entry: {
-        "openplayer.min.js": "./src/js/player.ts",
-        "openplayer.css": "./src/css/player.css",
-        "openplayer.min.css": "./src/css/player.css",
+        'openplayer.min.js': './src/js/player.ts',
+        'openplayer.css': './src/css/player.css',
+        'openplayer.min.css': './src/css/player.css',
     },
     performance: {
-        hints: "error",
-        maxAssetSize: 300000,
+        hints: 'error',
+        maxAssetSize: 400000,
     },
     output: {
-        path: path.resolve(__dirname, "./dist"),
-        filename: "[name]",
-        publicPath: "/dist/",
-        library: "OpenPlayer",
-        libraryTarget: "umd",
-        libraryExport: "default",
-        globalObject: "this",
+        path: path.resolve(__dirname, './dist'),
+        filename: '[name]',
+        publicPath: '/dist/',
+        library: 'OpenPlayer',
+        libraryTarget: 'umd',
+        libraryExport: 'default',
+        globalObject: 'this',
     },
     module: {
         rules: [
             {
-                enforce: "pre",
+                enforce: 'pre',
                 test: /src\/*\.js$/,
                 exclude: /node_modules/,
 
                 use: [
                     {
-                        loader: "eslint-loader",
+                        loader: 'eslint-loader',
 
                         options: {
                             failOnWarning: true,
@@ -50,13 +50,13 @@ module.exports = {
                 exclude: /node_modules/,
                 use: [
                     {
-                        loader: "babel-loader",
+                        loader: 'babel-loader',
                         options: {
-                            presets: ["@babel/preset-env"],
+                            presets: ['@babel/preset-env'],
                         },
                     },
                     {
-                        loader: "ts-loader",
+                        loader: 'ts-loader',
                     },
                 ],
             },
@@ -64,9 +64,9 @@ module.exports = {
                 test: /src\/*\.js$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: "babel-loader",
+                    loader: 'babel-loader',
                     options: {
-                        presets: ["@babel/preset-env"],
+                        presets: ['@babel/preset-env'],
                     },
                 },
             },
@@ -74,7 +74,7 @@ module.exports = {
                 test: /\.(png|woff|woff2|eot|ttf|svg)$/,
                 use: [
                     {
-                        loader: "url-loader",
+                        loader: 'url-loader',
 
                         options: {
                             limit: 100000,
@@ -88,20 +88,20 @@ module.exports = {
                 use: ExtractTextPlugin.extract({
                     use: [
                         {
-                            loader: "css-loader",
+                            loader: 'css-loader',
                             options: { importLoaders: 1 },
                         },
                         {
-                            loader: "postcss-loader",
+                            loader: 'postcss-loader',
                             options: {
-                                ident: "postcss",
+                                ident: 'postcss',
                                 plugins: [
-                                    require("stylelint")(),
-                                    require("autoprefixer")(),
-                                    require("postcss-cssnext")({
+                                    require('stylelint')(),
+                                    require('autoprefixer')(),
+                                    require('postcss-cssnext')({
                                         browsers: [
-                                            "last 5 versions",
-                                            "ie >= 11",
+                                            'last 5 versions',
+                                            'ie >= 11',
                                         ],
                                         warnForDuplicates: false,
                                     }),
@@ -114,12 +114,12 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: [".ts", ".js"],
+        extensions: ['.ts', '.js'],
     },
     plugins: [
-        new ExtractTextPlugin("[name]"),
+        new ExtractTextPlugin('[name]'),
         new UnminifiedWebpackPlugin({
-            postfix: " ",
+            postfix: ' ',
             exclude: /\.css$/,
         }),
         new OptimizeCssAssetsPlugin({
@@ -129,7 +129,7 @@ module.exports = {
                     removeAll: true,
                 },
             },
-            cssProcessor: require("cssnano"),
+            cssProcessor: require('cssnano'),
         }),
     ],
 };

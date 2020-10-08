@@ -94,7 +94,7 @@ declare class Captions implements PlayerComponent {
      * @type TextTrack
      * @memberof Captions
      */
-    private current;
+    private current?;
     /**
      * Initial language to be used to render captions when turned on, and
      * also as a default value in the `Settings` component.
@@ -144,7 +144,7 @@ declare class Captions implements PlayerComponent {
      * @returns {Captions}
      * @memberof Captions
      */
-    constructor(player: Player, position: string, layer?: string);
+    constructor(player: Player, position: string, layer: string);
     /**
      * Create a button and a container to display captions if tracks are detected.
      *

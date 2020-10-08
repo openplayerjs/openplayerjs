@@ -52,7 +52,7 @@ class Controls implements PlayerComponent {
      * @type number
      * @memberof Controls
      */
-    private timer: number;
+    private timer: number = 0;
 
     /**
      * Main container of control elements.
@@ -277,10 +277,9 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private _stopControlTimer(): void {
-        if (this.timer !== null) {
+        if (this.timer !== 0) {
             clearTimeout(this.timer);
-            delete this.timer;
-            this.timer = null;
+            this.timer = 0;
         }
     }
 
@@ -339,7 +338,7 @@ class Controls implements PlayerComponent {
                     const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
                     const item = new this.controlEls[className](this.player, pos || layer, currentLayer);
                     if (el === 'settings') {
-                        this.settings = item;
+                        this.settings = (item as Settings);
                     }
                     if (isVideoEl || (el !== 'fullscreen' && isAudioEl)) {
                         this.items[position].push(item);
@@ -385,7 +384,7 @@ class Controls implements PlayerComponent {
                 const allowDefault = !this.player.getOptions().detachMenus || item instanceof Settings;
                 if (allowDefault && !item.custom && typeof item.addSettings === 'function') {
                     const menuItem = item.addSettings();
-                    if (Object.keys(menuItem).length) {
+                    if (this.settings && Object.keys(menuItem).length) {
                         this.settings.addItem(
                             menuItem.name,
                             menuItem.key,
@@ -417,7 +416,9 @@ class Controls implements PlayerComponent {
         control.title = item.title;
         control.innerHTML = `<img src="${item.icon}"> <span class="op-sr">${item.title}</span>`;
         control.addEventListener('click', item.click);
-        this.getLayer(item.layer).appendChild(control);
+        if (item.layer) {
+            this.getLayer(item.layer).appendChild(control);
+        }
     }
 
     /**
@@ -430,8 +431,10 @@ class Controls implements PlayerComponent {
     private _destroyCustomControl(item: ControlItem): void {
         const key = item.title.toLowerCase().replace(' ', '-');
         const control = this.getContainer().querySelector(`.op-controls__${key}`);
-        control.removeEventListener('click', item.click);
-        removeElement(control);
+        if (control) {
+            control.removeEventListener('click', item.click);
+            removeElement(control);
+        }
     }
 }
 

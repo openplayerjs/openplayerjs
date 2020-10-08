@@ -116,7 +116,7 @@ class Captions implements PlayerComponent {
      * @type TextTrack
      * @memberof Captions
      */
-    private current: TextTrack;
+    private current?: TextTrack;
 
     /**
      * Initial language to be used to render captions when turned on, and
@@ -172,7 +172,7 @@ class Captions implements PlayerComponent {
      * @returns {Captions}
      * @memberof Captions
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.detachMenu = player.getOptions().detachMenus;
@@ -252,8 +252,9 @@ class Captions implements PlayerComponent {
                     this.button.setAttribute('data-active-captions', element.srclang);
                 }
                 const trackUrl = getAbsoluteUrl(element.src);
-                if (this.trackList[i] && this.trackList[i].language === element.srclang) {
-                    if (this.trackList[i].cues && this.trackList[i].cues.length) {
+                const currTrack = this.trackList[i];
+                if (currTrack && currTrack.language === element.srclang) {
+                    if (currTrack.cues && currTrack.cues.length > 0) {
                         this.tracks[element.srclang] = this._getNativeCues(this.trackList[i]);
                         this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
                     } else {
@@ -290,7 +291,7 @@ class Captions implements PlayerComponent {
             if (this.player.isMedia()) {
                 if (this.current) {
                     const currentCues = this.tracks[this.current.language];
-                    if (currentCues !== undefined) {
+                    if (container && currentCues !== undefined) {
                         const index = this._search(currentCues, this.player.getMedia().currentTime);
                         container.innerHTML = '';
                         if (index > -1 && hasClass(this.button, 'op-controls__captions--on')) {
@@ -379,8 +380,10 @@ class Captions implements PlayerComponent {
         this.events.global.click = (e: Event) => {
             const option = (e.target as HTMLElement);
             if (option.closest(`#${this.player.id}`) && hasClass(option, 'op-subtitles__option')) {
-                const language = option.getAttribute('data-value').replace('captions-', '');
-                this.current = Array.from(this.trackList).filter(item => item.language === language).pop();
+                const langEl = option.getAttribute('data-value');
+                const language = langEl ? langEl.replace('captions-', '') : '';
+                const currentLang = Array.from(this.trackList).filter(item => item.language === language);
+                this.current = currentLang ? currentLang.pop() : undefined;
                 if (this.detachMenu) {
                     if (hasClass(this.button, 'op-controls__captions--on')) {
                         this._hide();
@@ -391,11 +394,15 @@ class Captions implements PlayerComponent {
                         this.button.classList.add('op-controls__captions--on');
                         this.button.setAttribute('data-active-captions', language);
                     }
-                    const captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
-                    for (let i = 0, total = captions.length; i < total; ++i) {
-                        captions[i].setAttribute('aria-checked', 'false');
+                    if (option.parentElement && option.parentElement.parentElement) {
+                        const captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
+                        for (let i = 0, total = captions.length; i < total; ++i) {
+                            captions[i].setAttribute('aria-checked', 'false');
+                        }
                     }
-                    option.parentElement.setAttribute('aria-checked', 'true');
+                    if (option.parentElement) {
+                        option.parentElement.setAttribute('aria-checked', 'true');
+                    }
                     this.menu.setAttribute('aria-hidden', 'false');
                 } else {
                     this._show();
@@ -517,7 +524,7 @@ class Captions implements PlayerComponent {
 
                 entries.push({
                     endTime: timeToSeconds(timecode[3]),
-                    identifier,
+                    identifier: identifier || '',
                     settings: isJson(timecode[5]) ? JSON.parse(timecode[5]) : {},
                     startTime: (initTime === 0) ? 0.200 : initTime,
                     text: cue,
@@ -538,9 +545,10 @@ class Captions implements PlayerComponent {
      */
     private _getNativeCues(track: TextTrack): Cue[] {
         const cues: Cue[] = [];
-        Object.keys(track.cues).forEach(index => {
+        const trackCues = track.cues as TextTrackCueList;
+        Object.keys(trackCues).forEach(index => {
             const j = parseInt(index, 10);
-            const current = (track.cues[j] as VTTCue);
+            const current = (trackCues[j] as VTTCue);
             cues.push({
                 endTime: current.endTime,
                 identifier: current.id,
@@ -563,7 +571,9 @@ class Captions implements PlayerComponent {
         }
 
         const container = this.captions.querySelector('span');
-        container.innerHTML = '';
+        if (container) {
+            container.innerHTML = '';
+        }
         this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
     }
 

@@ -134,7 +134,7 @@ class Progress implements PlayerComponent {
      * @returns {Progress}
      * @memberof Progress
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.forcePause = false;
@@ -248,7 +248,7 @@ class Progress implements PlayerComponent {
             if (el.duration !== Infinity &&
                 (!this.player.getElement().getAttribute('op-live__enabled') || this.player.getElement().getAttribute('op-dvr__enabled'))) {
                 if (!this.slider.getAttribute('max') || this.slider.getAttribute('max') === '0' ||
-                    parseFloat(this.slider.getAttribute('max')) !== el.duration) {
+                    parseFloat(this.slider.getAttribute('max') || '-1') !== el.duration) {
                     this.slider.setAttribute('max', `${el.duration}`);
                     this.progress.setAttribute('aria-hidden', 'false');
                 }

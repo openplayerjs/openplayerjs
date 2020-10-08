@@ -13,8 +13,11 @@ export function getExtension(url: string): string {
     }
 
     const baseUrl = url.split('?')[0];
-    const baseName = baseUrl.split('\\').pop().split('/').pop();
-    return baseName.indexOf('.') > -1 ? baseName.substring(baseName.lastIndexOf('.') + 1) : '';
+    const baseFrags = baseUrl ? baseUrl.split('\\') : null;
+    const baseUrlFragment = baseFrags ? baseFrags.pop() : null;
+    const baseNameFrags = baseUrlFragment ? baseUrlFragment.split('/') : null;
+    const baseName = baseNameFrags ? baseNameFrags.pop() : null;
+    return baseName && baseName.indexOf('.') > -1 ? baseName.substring(baseName.lastIndexOf('.') + 1) : '';
 }
 
 /**
@@ -130,7 +133,7 @@ export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) 
             });
         });
     } else {
-        autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
+        autoplay(!media.paused || 'Promise' in window && playPromise as Promise<any> instanceof Promise);
         media.pause();
         muted(false);
         callback();

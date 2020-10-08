@@ -21,5 +21,5 @@ export default interface CustomMedia {
     /**
      * Store callbacks to determine MIME type based on URL
      */
-    rules?: any[];
+    rules: any[];
 }

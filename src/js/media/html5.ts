@@ -46,7 +46,6 @@ class HTML5Media extends Native  {
         this.isStreaming = isHlsSource(mediaFile);
         this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this));
         this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this));
-
         return this;
     }
 
@@ -101,8 +100,9 @@ class HTML5Media extends Native  {
             this.currentLevel = this.levels[idx];
             const levels = this.element.querySelectorAll('source[title]');
             for (let i = 0, total = levels.length; i < total; ++i) {
-                if (parseInt(this.currentLevel.id, 10) === i) {
-                    this.element.src = levels[i].getAttribute('src');
+                const source = levels[i].getAttribute('src');
+                if (source && parseInt(this.currentLevel.id, 10) === i) {
+                    this.element.src = source;
                 }
             }
         }
@@ -129,18 +129,19 @@ class HTML5Media extends Native  {
         }
     }
 
-    private _readMediadataInfo(target: HTMLTrackElement): void {
+    private _readMediadataInfo(e: object): void {
+        const target = e as HTMLTrackElement;
         if (target.track.kind === 'metadata') {
             target.track.mode = 'hidden';
-            target.track.addEventListener('cuechange', (e) => {
-                const cue = (e.target as TextTrack).activeCues[0];
+            target.track.addEventListener('cuechange', (event) => {
+                const track = (event.target as TextTrack);
+                const cue = track.activeCues ? track.activeCues[0] : null;
                 if (cue) {
-                    const e = addEvent('metadataready', { detail: cue });
-                    this.element.dispatchEvent(e);
+                    const metaDataEvent = addEvent('metadataready', { detail: cue });
+                    this.element.dispatchEvent(metaDataEvent);
                 }
             });
         }
-        
     }
 }
 

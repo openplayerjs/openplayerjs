@@ -68,7 +68,7 @@ declare class Play implements PlayerComponent {
      * @returns {Play}
      * @memberof Play
      */
-    constructor(player: Player, position: string, layer?: string);
+    constructor(player: Player, position: string, layer: string);
     /**
      *
      * @inheritDoc

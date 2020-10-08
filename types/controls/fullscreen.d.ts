@@ -104,7 +104,7 @@ declare class Fullscreen implements PlayerComponent {
      * @returns {Fullscreen}
      * @memberof Fullscreen
      */
-    constructor(player: Player, position: string, layer?: string);
+    constructor(player: Player, position: string, layer: string);
     /**
      * Create a button and set global events to toggle fullscreen.
      *

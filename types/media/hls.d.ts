@@ -61,7 +61,7 @@ declare class HlsMedia extends Native {
      * @param {Source} mediaSource
      * @memberof HlsMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean, options: {});
+    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay?: boolean, options?: object);
     /**
      * Provide support via hls.js if browser does not have native support for HLS
      *

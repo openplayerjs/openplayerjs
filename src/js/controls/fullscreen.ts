@@ -1,6 +1,6 @@
 import PlayerComponent from '../interfaces/component';
 import Player from '../player';
-import { IS_IPHONE } from '../utils/constants';
+import { IS_ANDROID, IS_IPHONE } from '../utils/constants';
 import { removeElement } from '../utils/general';
 
 /**
@@ -56,7 +56,7 @@ class Fullscreen implements PlayerComponent {
      * @type string[]
      * @memberof Fullscreen
      */
-    private fullscreenEvents: string[];
+    private fullscreenEvents: string[] = [];
 
     /**
      * Storage for user's full screen width.
@@ -65,7 +65,7 @@ class Fullscreen implements PlayerComponent {
      * @type number
      * @memberof Fullscreen
      */
-    private fullscreenWidth: number;
+    private fullscreenWidth: number = 0;
 
     /**
      * Storage for user's full screen height.
@@ -74,7 +74,7 @@ class Fullscreen implements PlayerComponent {
      * @type number
      * @memberof Fullscreen
      */
-    private fullscreenHeight: number;
+    private fullscreenHeight: number = 0;
 
     /**
      * Callback when user clicks Fullscreen button.
@@ -118,7 +118,7 @@ class Fullscreen implements PlayerComponent {
      * @returns {Fullscreen}
      * @memberof Fullscreen
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.position = position;
@@ -262,6 +262,15 @@ class Fullscreen implements PlayerComponent {
 
             document.body.classList.add('op-fullscreen__on');
         }
+
+        if (typeof window !== 'undefined' && (IS_ANDROID || IS_IPHONE)) {
+            const screen = window.screen;
+            if (screen.orientation) {
+                if (!this.isFullscreen) {
+                    screen.orientation.lock('landscape');
+                }
+            }
+        }
     }
 
     /**
@@ -316,10 +325,10 @@ class Fullscreen implements PlayerComponent {
     private _resize(width?: number, height?: number): void {
         const wrapper = this.player.getContainer();
         const video = this.player.getElement();
-        wrapper.style.width = width ? '100%' : null;
-        wrapper.style.height = height ? '100%' : null;
-        video.style.width = width ? '100%' : null;
-        video.style.height = height ? '100%' : null;
+        wrapper.style.width = width ? '100%' : 'auto';
+        wrapper.style.height = height ? '100%' : 'auto';
+        video.style.width = width ? '100%' : 'auto';
+        video.style.height = height ? '100%' : 'auto';
     }
 
     /**

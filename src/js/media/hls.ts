@@ -39,7 +39,7 @@ class HlsMedia extends Native {
      * @type number
      * @memberof HlsMedia
      */
-    private recoverDecodingErrorDate: number;
+    private recoverDecodingErrorDate: number = 0;
 
     /**
      * Time in milliseconds to attempt to swap audio codec after an error.
@@ -47,7 +47,7 @@ class HlsMedia extends Native {
      * @type number
      * @memberof HlsMedia
      */
-    private recoverSwapAudioCodecDate: number;
+    private recoverSwapAudioCodecDate: number = 0;
 
     /**
      * Hls options to be passed to the Hls instance.
@@ -57,7 +57,7 @@ class HlsMedia extends Native {
      * @type object
      * @memberof HlsMedia
      */
-    private options: object;
+    private options: any = undefined;
 
     /**
      * Flag to indicate if `autoplay` attribute was set
@@ -75,7 +75,7 @@ class HlsMedia extends Native {
      * @param {Source} mediaSource
      * @memberof HlsMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean = false, options: {}) {
+    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean = false, options?: object) {
         super(element, mediaSource);
         this.options = options;
         this.element = element;
@@ -315,6 +315,7 @@ class HlsMedia extends Native {
             }
         });
         this.player.destroy();
+        this.player = null;
     }
 }
 

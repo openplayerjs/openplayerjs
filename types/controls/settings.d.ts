@@ -119,7 +119,7 @@ declare class Settings implements PlayerComponent {
      * @returns {Settings}
      * @memberof Settings
      */
-    constructor(player: Player, position: string, layer?: string);
+    constructor(player: Player, position: string, layer: string);
     /**
      *
      * @inheritDoc

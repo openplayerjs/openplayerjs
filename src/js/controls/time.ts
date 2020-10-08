@@ -111,7 +111,7 @@ class Time implements PlayerComponent {
      * @returns {Time}
      * @memberof Time
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.position = position;

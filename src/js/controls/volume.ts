@@ -120,7 +120,7 @@ class Volume implements PlayerComponent {
      * @param {Player} player
      * @returns {Volume}
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.volume = this.player.getMedia().volume;
@@ -217,8 +217,9 @@ class Volume implements PlayerComponent {
             el.volume = value;
             el.muted = (el.volume === 0);
             this.volume = value;
-            if (!el.muted && this.player.getContainer().querySelector('.op-player__unmute')) {
-                removeElement(this.player.getContainer().querySelector('.op-player__unmute'));
+            const unmuteEl = this.player.getContainer().querySelector('.op-player__unmute');
+            if (!el.muted && unmuteEl) {
+                removeElement(unmuteEl);
             }
             const e = addEvent('volumechange');
             this.player.getElement().dispatchEvent(e);

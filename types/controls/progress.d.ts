@@ -112,7 +112,7 @@ declare class Progress implements PlayerComponent {
      * @returns {Progress}
      * @memberof Progress
      */
-    constructor(player: Player, position: string, layer?: string);
+    constructor(player: Player, position: string, layer: string);
     /**
      *
      * @inheritDoc

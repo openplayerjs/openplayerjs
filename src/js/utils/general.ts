@@ -8,10 +8,7 @@ declare const ActiveXObject: any;
  * @returns {string}
  */
 export function getAbsoluteUrl(url: string) {
-    let a: HTMLAnchorElement;
-    if (!a) {
-        a = document.createElement('a');
-    }
+    const a: HTMLAnchorElement = document.createElement('a');
     a.href = url;
     return a.href;
 }

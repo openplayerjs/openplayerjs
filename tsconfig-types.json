@@ -1,0 +1,14 @@
+{
+    "buildOnSave": false,
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es6",
+        "declaration": true,
+        "allowJs": true,
+        "emitDeclarationOnly": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "outDir": "./types"
+    },
+    "include": ["./src/js"]
+}

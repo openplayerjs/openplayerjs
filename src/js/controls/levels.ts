@@ -2,6 +2,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Level from '../interfaces/level';
 import SettingsItem from '../interfaces/settings/item';
+import SettingsSubItem from '../interfaces/settings/subitem';
 import Player from '../player';
 import { IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -86,7 +87,7 @@ class Levels implements PlayerComponent {
      * @type string
      * @memberof Levels
      */
-    private default: string;
+    private default: string = '';
 
     /**
      * Position of the button to be indicated as part of its class name
@@ -113,7 +114,7 @@ class Levels implements PlayerComponent {
      * @memberof Levels
      * @returns {Levels}
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.detachMenu = player.getOptions().detachMenus;
@@ -131,8 +132,8 @@ class Levels implements PlayerComponent {
     public create(): void {
         this.default = `${this.player.getMedia().level}`;
         const menuItems = this._formatMenuItems();
-        const defaultLabel = menuItems.length ?
-            menuItems.find((items: any) => items.key === this.default).label : this.labels.auto;
+        const defaultLevel = menuItems.length ? menuItems.find((items: any) => items.key === this.default) : null;
+        const defaultLabel = defaultLevel ? defaultLevel.label : this.labels.auto;
 
         this.button = document.createElement('button');
         this.button.className = `op-controls__levels op-control__${this.position}`;
@@ -210,16 +211,20 @@ class Levels implements PlayerComponent {
             const currentTime = this.player.getMedia().currentTime;
             const isPaused = this.player.getMedia().paused;
             if (option.closest(`#${this.player.id}`) && hasClass(option, 'op-levels__option')) {
-                const level = parseInt(option.getAttribute('data-value').replace('levels-', ''), 10);
+                const levelVal = option.getAttribute('data-value');
+                const level = parseInt(levelVal ? levelVal.replace('levels-', '') : '-1', 10);
                 this.default = `${level}`;
                 if (this.detachMenu) {
                     this.button.setAttribute('data-active-level', `${level}`);
                     this.button.innerHTML = `<span>${option.innerText}</span>`;
-                    const levels = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
+                    const levels = option.parentElement && option.parentElement.parentElement ?
+                        option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item') : [];
                     for (let i = 0, total = levels.length; i < total; ++i) {
                         levels[i].setAttribute('aria-checked', 'false');
                     }
-                    option.parentElement.setAttribute('aria-checked', 'true');
+                    if (option.parentElement) {
+                        option.parentElement.setAttribute('aria-checked', 'true');
+                    }
                     this.menu.setAttribute('aria-hidden', 'false');
                 }
                 this.player.getMedia().level = level;
@@ -276,7 +281,7 @@ class Levels implements PlayerComponent {
         } : {};
     }
 
-    private _formatMenuItems() {
+    private _formatMenuItems(): SettingsSubItem[] {
         const levels = this._gatherLevels();
         const total = levels.length;
         let items = total ? [{ key: '-1', label: this.labels.auto }] : [];
@@ -287,7 +292,7 @@ class Levels implements PlayerComponent {
         }
 
         // Remove duplicated labels
-        items = items.reduce((acc, current) => {
+        items = items.reduce((acc: SettingsSubItem[], current) => {
             const duplicate = acc.find(item => item.label === current.label);
             if (!duplicate) {
                 return acc.concat([current]);

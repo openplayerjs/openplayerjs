@@ -137,7 +137,7 @@ declare class Ads {
      * @type HTMLDivElement
      * @memberof Ads
      */
-    private adsContainer;
+    private adsContainer?;
     /**
      * Container to display Ads.
      *

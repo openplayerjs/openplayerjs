@@ -66,7 +66,7 @@ declare class Player {
      * @type Ads
      * @memberof Player
      */
-    adsInstance?: Ads;
+    adsInstance: Ads;
     /**
      * Button to play media.
      *

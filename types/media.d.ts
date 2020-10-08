@@ -83,7 +83,7 @@ declare class Media {
      * @returns {Media}
      * @memberof Media
      */
-    constructor(element: HTMLMediaElement, options?: PlayerOptions, autoplay?: boolean, customMedia?: CustomMedia);
+    constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay: boolean, customMedia: CustomMedia);
     /**
      * Check if player can play the current media type (MIME type).
      *

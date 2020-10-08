@@ -97,7 +97,7 @@ class Media {
      * @returns {Media}
      * @memberof Media
      */
-    constructor(element: HTMLMediaElement, options?: PlayerOptions, autoplay: boolean = false, customMedia?: CustomMedia) {
+    constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay: boolean = false, customMedia: CustomMedia) {
         this.element = element;
         this.options = options;
         this.mediaFiles = this._getMediaFiles();

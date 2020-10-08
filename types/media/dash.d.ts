@@ -25,7 +25,7 @@ declare class DashMedia extends Native {
      * @memberof DashMedia
      */
     private events;
-    private options;
+    private options?;
     /**
      * Creates an instance of DashMedia.
      *

@@ -9,7 +9,7 @@ export default interface DashOptions {
     /**
      * Key-system-specific string that specifies a required security level for video/audio.
      */
-    readonly robustnessLevel: string;
+    readonly robustnessLevel?: string;
     /**
      * Digital rights management object to allow play restricted media.
      */

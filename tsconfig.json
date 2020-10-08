@@ -22,7 +22,8 @@
       "moduleResolution": "node",
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      "esModuleInterop": true
+      "esModuleInterop": true,
+      "strictPropertyInitialization": false
   },
   "exclude": [
       "node_modules",

@@ -59,7 +59,9 @@ class Player {
         const targets = document.querySelectorAll('video.op-player, audio.op-player');
         for (let i = 0, total = targets.length; i < total; i++) {
             const target = (targets[i] as HTMLMediaElement);
-            const player = new Player(target, JSON.parse(target.getAttribute('data-op-settings')));
+            const settings = target.getAttribute('data-op-settings');
+            const options = settings ? JSON.parse(settings) : {};
+            const player = new Player(target, options);
             player.init();
         }
     }
@@ -93,7 +95,7 @@ class Player {
      * @type Ads
      * @memberof Player
      */
-    public adsInstance?: Ads;
+    public adsInstance: Ads;
 
     /**
      * Button to play media.
@@ -118,7 +120,7 @@ class Player {
      * @type string
      * @memberof Player
      */
-    private uid: string;
+    private uid: string = '';
 
     /**
      * Native video/audio tag to create player instance.
@@ -181,7 +183,7 @@ class Player {
      * @type number
      * @memberof Player
      */
-    private volume: number;
+    private volume: number = 1;
 
     /**
      * Flag that indicates if browser supports autoplay.
@@ -190,7 +192,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    private canAutoplay: boolean;
+    private canAutoplay: boolean = false;
 
     /**
      * Flag that indicates if browser supports autoplay in mute mode.
@@ -200,7 +202,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    private canAutoplayMuted: boolean;
+    private canAutoplayMuted: boolean = false;
 
     /**
      * Flag that indicates if autoplay algorithm has been applied.
@@ -218,7 +220,7 @@ class Player {
      * @type PlayerOptions
      * @memberof Player
      */
-    private options: PlayerOptions;
+    private options: PlayerOptions = {};
 
     /**
      * List of custom controls.
@@ -413,7 +415,9 @@ class Player {
         el.removeAttribute('op-live__enabled');
         el.removeAttribute('op-dvr__enabled');
         const parent = el.parentElement;
-        parent.parentNode.replaceChild(el, parent);
+        if (parent && parent.parentNode) {
+            parent.parentNode.replaceChild(el, parent);
+        }
 
         const e = addEvent('playerdestroyed');
         el.dispatchEvent(e);
@@ -428,7 +432,7 @@ class Player {
      * @memberof Player
      */
     public getContainer(): HTMLElement {
-        return this.element.parentElement;
+        return this.element.parentElement || this.element;
     }
 
     /**
@@ -555,14 +559,14 @@ class Player {
         if (track) {
             track.src = args.src;
             track.label = args.label;
-            track.default = args.default || null;
+            track.default = args.default || false;
         } else {
             track = document.createElement('track');
             track.srclang = args.srclang;
             track.src = args.src;
             track.kind = args.kind;
             track.label = args.label;
-            track.default = args.default || null;
+            track.default = args.default || false;
             el.appendChild(track);
         }
 
@@ -685,7 +689,9 @@ class Player {
         wrapper.tabIndex = 0;
 
         this.element.classList.remove('op-player');
-        this.element.parentElement.insertBefore(wrapper, this.element);
+        if (this.element.parentElement) {
+            this.element.parentElement.insertBefore(wrapper, this.element);
+        }
         wrapper.appendChild(this.element);
 
         wrapper.addEventListener('keydown', () => {
@@ -735,7 +741,10 @@ class Player {
             } while (Player.instances[uid] !== undefined);
             this.uid = uid;
         }
-        this.element.parentElement.id = this.uid;
+
+        if (this.element.parentElement) {
+            this.element.parentElement.id = this.uid;
+        }
     }
 
     /**
@@ -762,8 +771,10 @@ class Player {
         this.loader.tabIndex = -1;
         this.loader.setAttribute('aria-hidden', 'true');
 
-        this.element.parentElement.insertBefore(this.loader, this.element);
-        this.element.parentElement.insertBefore(this.playBtn, this.element);
+        if (this.element.parentElement) {
+            this.element.parentElement.insertBefore(this.loader, this.element);
+            this.element.parentElement.insertBefore(this.playBtn, this.element);
+        }
 
         this.playBtn.addEventListener('click', () => {
             if (this.adsInstance) {

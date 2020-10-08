@@ -74,7 +74,7 @@ class Settings implements PlayerComponent {
      * @type string
      * @memberof Settings
      */
-    private originalOutput: string;
+    private originalOutput: string = '';
 
     /**
      * Event that displays main menu when clicking in Settings button.
@@ -138,7 +138,7 @@ class Settings implements PlayerComponent {
      * @returns {Settings}
      * @memberof Settings
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = player.getOptions().labels;
         this.position = position;
@@ -288,10 +288,17 @@ class Settings implements PlayerComponent {
         menuItem.className = 'op-settings__menu-item';
         menuItem.tabIndex = 0;
         menuItem.setAttribute('role', 'menuitemradio');
-        menuItem.innerHTML = `<div class="op-settings__menu-label" data-value="${key}-${defaultValue}">${name}</div>
-            <div class="op-settings__menu-content">${submenu.find(x => x.key === defaultValue).label}</div>`;
+        menuItem.innerHTML = `<div class="op-settings__menu-label" data-value="${key}-${defaultValue}">${name}</div>`;
 
-        this.menu.querySelector('.op-settings__menu').appendChild(menuItem);
+        const submenuMatch = submenu ? submenu.find(x => x.key === defaultValue) : null;
+        if (submenuMatch) {
+            menuItem.innerHTML += `<div class="op-settings__menu-content">${submenuMatch.label}</div>`;
+        }
+
+        const mainMenu = this.menu.querySelector('.op-settings__menu');
+        if (mainMenu) {
+            mainMenu.appendChild(menuItem);
+        }
         this.originalOutput = this.menu.innerHTML;
 
         // Store the submenu to reach all options for current menu item
@@ -320,28 +327,33 @@ class Settings implements PlayerComponent {
                         this.menu.classList.remove('op-settings--sliding');
                     }, 100);
                 } else if (hasClass(target, 'op-settings__menu-content')) {
-                    const fragments = target.parentElement.querySelector('.op-settings__menu-label')
-                        .getAttribute('data-value').split('-');
-                    fragments.pop();
-                    const current = fragments.join('-').replace(/^\-|\-$/, '');
+                    const labelEl = target.parentElement ? target.parentElement.querySelector('.op-settings__menu-label') : null;
+                    const label = labelEl ? labelEl.getAttribute('data-value') : null;
+                    const fragments = label ? label.split('-') : [];
+                    if (fragments.length > 0) {
+                        fragments.pop();
 
-                    if (typeof this.submenu[current] !== undefined) {
-                        this.menu.classList.add('op-settings--sliding');
-                        setTimeout(() => {
-                            this.menu.innerHTML = this.submenu[current];
-                            this.menu.classList.remove('op-settings--sliding');
-                        }, 100);
+                        const current = fragments.join('-').replace(/^\-|\-$/, '');
+                        if (typeof this.submenu[current] !== undefined) {
+                            this.menu.classList.add('op-settings--sliding');
+                            setTimeout(() => {
+                                this.menu.innerHTML = this.submenu[current];
+                                this.menu.classList.remove('op-settings--sliding');
+                            }, 100);
+                        }
                     }
                 } else if (hasClass(target, 'op-settings__submenu-label')) {
                     const current = target.getAttribute('data-value');
-                    const value = current.replace(`${key}-`, '');
+                    const value = current ? current.replace(`${key}-`, '') : '';
                     const label = target.innerText;
 
                     // Update values in submenu and store
                     const menuTarget = this.menu.querySelector(`#menu-item-${key} .op-settings__submenu-item[aria-checked=true]`);
                     if (menuTarget) {
                         menuTarget.setAttribute('aria-checked', 'false');
-                        target.parentElement.setAttribute('aria-checked', 'true');
+                        if (target.parentElement) {
+                            target.parentElement.setAttribute('aria-checked', 'true');
+                        }
                         this.submenu[key] = this.menu.innerHTML;
 
                         // Restore original menu, and set the new value
@@ -349,8 +361,12 @@ class Settings implements PlayerComponent {
                         setTimeout(() => {
                             this.menu.innerHTML = this.originalOutput;
                             const prev = this.menu.querySelector(`.op-settings__menu-label[data-value="${key}-${defaultValue}"]`);
-                            prev.setAttribute('data-value', `${current}`);
-                            prev.nextElementSibling.innerHTML = label;
+                            if (prev) {
+                                prev.setAttribute('data-value', `${current}`);
+                                if (prev.nextElementSibling) {
+                                    prev.nextElementSibling.innerHTML = label;
+                                }
+                            }
                             defaultValue = value;
                             this.originalOutput = this.menu.innerHTML;
                             this.menu.classList.remove('op-settings--sliding');
@@ -382,8 +398,11 @@ class Settings implements PlayerComponent {
 
         if (this.player.getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length < minItems) {
             delete this.submenu[type];
-            removeElement(this.player.getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`)
-                .closest('.op-settings__menu-item'));
+            const label = this.player.getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`);
+            const menuItem = label ? label.closest('.op-settings__menu-item') : null;
+            if (menuItem) {
+                removeElement(menuItem);
+            }
         }
     }
 }

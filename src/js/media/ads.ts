@@ -129,7 +129,7 @@ class Ads {
      * @type string[]
      * @memberof Ads
      */
-    private events: string[];
+    private events: string[] = [];
 
     /**
      * The VAST/VPAID URL to play Ads.
@@ -162,7 +162,7 @@ class Ads {
      * @type HTMLDivElement
      * @memberof Ads
      */
-    private adsContainer: HTMLDivElement;
+    private adsContainer?: HTMLDivElement;
 
     /**
      * Container to display Ads.
@@ -261,7 +261,7 @@ class Ads {
      * @type Source[]
      * @memberof Ads
      */
-    private mediaSources: Source[];
+    private mediaSources: Source[] = [];
 
     /**
      * Flag to execute `loadedmetadata` and `resize` once.
@@ -290,6 +290,7 @@ class Ads {
             loop: false,
             numRedirects: 4,
             sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+            src: [],
         };
         this.player = player;
         this.ads = ads;
@@ -331,7 +332,7 @@ class Ads {
          * clickable areas of subsequent ads being blocked by old DIVs
          */
         const existingContainer = document.getElementById('op-ads');
-        if (existingContainer) {
+        if (existingContainer && existingContainer.parentNode) {
             existingContainer.parentNode.removeChild(existingContainer);
         }
 
@@ -339,7 +340,9 @@ class Ads {
         this.adsContainer = document.createElement('div');
         this.adsContainer.id = 'op-ads';
         this.adsContainer.tabIndex = -1;
-        this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
+        if (this.element.parentElement) {
+            this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
+        }
         this.mediaSources = this.media.src;
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
@@ -366,9 +369,9 @@ class Ads {
 
         // Create responsive ad
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', this.resizeAds.bind(this));
+            window.addEventListener('resize', () => { this.resizeAds.bind(this); });
         }
-        this.element.addEventListener('loadedmetadata', this.resizeAds.bind(this));
+        this.element.addEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
 
         // Request Ads automatically if `autoplay` was set
         if (this.autoStart === true || this.autoStartMuted === true || force === true) {
@@ -433,9 +436,12 @@ class Ads {
 
         this.events = [];
 
-        const mouseEvents = this.player.getControls().events.mouse;
+        const controls = this.player.getControls();
+        const mouseEvents = controls ? controls.events.mouse : {};
         Object.keys(mouseEvents).forEach((event: string) => {
-            this.adsContainer.removeEventListener(event, mouseEvents[event]);
+            if (this.adsContainer) {
+                this.adsContainer.removeEventListener(event, mouseEvents[event]);
+            }
         });
 
         if (this.adsLoader) {
@@ -457,10 +463,10 @@ class Ads {
         if (IS_IOS || IS_ANDROID) {
             this.element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
         }
-        this.element.removeEventListener('loadedmetadata', this.resizeAds.bind(this));
+        this.element.removeEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
         this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
         if (typeof window !== 'undefined') {
-            window.removeEventListener('resize', this.resizeAds.bind(this));
+            window.removeEventListener('resize', () => { this.resizeAds.bind(this); });
         }
         removeElement(this.adsContainer);
     }
@@ -486,8 +492,8 @@ class Ads {
             if (typeof window !== 'undefined') {
                 timeout = window.requestAnimationFrame(() => {
                     this.adsManager.resize(
-                        width && height ? width : target.offsetWidth,
-                        width && height ? height : target.offsetHeight,
+                        width || target.offsetWidth,
+                        height || target.offsetHeight,
                         mode,
                     );
                 });
@@ -636,7 +642,7 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
-                    if (!this.element.parentElement.classList.contains('op-ads--active')) {
+                    if (this.element.parentElement && !this.element.parentElement.classList.contains('op-ads--active')) {
                         this.element.parentElement.classList.add('op-ads--active');
                     }
 
@@ -678,7 +684,9 @@ class Ads {
                         this.element.dispatchEvent(skipEvent);
                     }
 
-                    this.element.parentElement.classList.remove('op-ads--active');
+                    if (this.element.parentElement) {
+                        this.element.parentElement.classList.remove('op-ads--active');
+                    }
                     this.adsActive = false;
                     clearInterval(this.intervalTimer);
                 }
@@ -699,7 +707,9 @@ class Ads {
                     this.adsStarted = false;
                     this.adsDuration = 0;
                     this.adsCurrentTime = 0;
-                    this.element.parentElement.classList.remove('op-ads--active');
+                    if (this.element.parentElement) {
+                        this.element.parentElement.classList.remove('op-ads--active');
+                    }
                     this.destroy();
                     if (this.element.currentTime >= this.element.duration) {
                         const endedEvent = addEvent('ended');
@@ -761,7 +771,7 @@ class Ads {
                 console.warn(`Ad warning: ${error.toString()}`);
             }
 
-            const unmuteEl = this.element.parentElement.querySelector('.op-player__unmute');
+            const unmuteEl = this.element.parentElement ? this.element.parentElement.querySelector('.op-player__unmute') : null;
             if (unmuteEl) {
                 removeElement(unmuteEl);
             }
@@ -827,9 +837,12 @@ class Ads {
             this.events.push(google.ima.AdEvent.Type.AD_BREAK_READY);
         }
 
-        const mouseEvents = this.player.getControls().events.mouse;
+        const controls = this.player.getControls();
+        const mouseEvents = controls ? controls.events.mouse : {};
         Object.keys(mouseEvents).forEach((event: string) => {
-            this.adsContainer.addEventListener(event, mouseEvents[event]);
+            if (this.adsContainer) {
+                this.adsContainer.addEventListener(event, mouseEvents[event]);
+            }
         });
         this.events.forEach(event => {
             manager.addEventListener(event, this._assign.bind(this));
@@ -844,7 +857,7 @@ class Ads {
             manager.init(
                 this.element.offsetWidth,
                 this.element.offsetHeight,
-                this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
+                this.element.parentElement && this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
                     google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL,
             );
             manager.start();
@@ -923,7 +936,9 @@ class Ads {
                 this.media.src = this.mediaSources;
                 this.media.load();
                 this._prepareMedia();
-                this.element.parentElement.classList.add('op-ads--active');
+                if (this.element.parentElement) {
+                    this.element.parentElement.classList.add('op-ads--active');
+                }
             } else {
                 const event = addEvent('loadedmetadata');
                 this.element.dispatchEvent(event);
@@ -979,7 +994,9 @@ class Ads {
         this.adsStarted = false;
         this.adsDuration = 0;
         this.adsCurrentTime = 0;
-        this.element.parentElement.classList.remove('op-ads--active');
+        if (this.element.parentElement) {
+            this.element.parentElement.classList.remove('op-ads--active');
+        }
 
         const triggerEvent = (eventName: string): void => {
             const event = addEvent(eventName);
@@ -1014,8 +1031,8 @@ class Ads {
             this.adsRequest.adTagUrl = ads;
         }
 
-        const width = this.element.parentElement.offsetWidth;
-        const height = this.element.parentElement.offsetHeight;
+        const width = this.element.parentElement ? this.element.parentElement.offsetWidth : 0;
+        const height = this.element.parentElement ? this.element.parentElement.offsetHeight : 0;
         this.adsRequest.linearAdSlotWidth = width;
         this.adsRequest.linearAdSlotHeight = height;
         this.adsRequest.nonLinearAdSlotWidth = width;

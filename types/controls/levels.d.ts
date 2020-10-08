@@ -93,7 +93,7 @@ declare class Levels implements PlayerComponent {
      * @memberof Levels
      * @returns {Levels}
      */
-    constructor(player: Player, position: string, layer?: string);
+    constructor(player: Player, position: string, layer: string);
     /**
      * Create a button and a container to display levels (if any).
      *

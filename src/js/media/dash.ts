@@ -35,7 +35,7 @@ class DashMedia extends Native {
      */
     private events: EventsList = {};
 
-    private options: DashOptions;
+    private options?: DashOptions = {};
 
     /**
      * Creates an instance of DashMedia.
@@ -48,19 +48,15 @@ class DashMedia extends Native {
         super(element, mediaSource);
         this.options = options;
 
-        /**
-         * @private
-         */
-        function createInstance() {
-            this.player = dashjs.MediaPlayer().create();
-            this.instance = this.player;
-        }
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
             loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
             new Promise(resolve => resolve());
 
-        this.promise.then(createInstance.bind(this));
+        this.promise.then(() => {
+            this.player = dashjs.MediaPlayer().create();
+            this.instance = this.player;
+        });
         return this;
     }
 
@@ -189,7 +185,7 @@ class DashMedia extends Native {
             Object.keys(this.events).forEach(event => {
                 this.player.off(this.events[event], this._assign.bind(this));
             });
-            this.events = null;
+            this.events = [];
         }
         this.player.reset();
     }

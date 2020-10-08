@@ -95,7 +95,7 @@ declare class Time implements PlayerComponent {
      * @returns {Time}
      * @memberof Time
      */
-    constructor(player: Player, position: string, layer?: string);
+    constructor(player: Player, position: string, layer: string);
     /**
      * When no duration (Infinity) is detected, the `Live Broadcast` will be displayed.
      *

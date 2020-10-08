@@ -81,7 +81,7 @@ class Play implements PlayerComponent {
      * @returns {Play}
      * @memberof Play
      */
-    constructor(player: Player, position: string, layer?: string) {
+    constructor(player: Player, position: string, layer: string) {
         this.player = player;
         this.labels = this.player.getOptions().labels;
         this.position = position;
