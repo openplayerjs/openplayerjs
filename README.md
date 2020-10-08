@@ -13,7 +13,7 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 ## Advantages
 
 * Supports **IE11+ (Win8) and all modern browsers**.
-* No dependencies, since it is written in Typescript.
+* **No dependencies**, since it is written in Typescript.
 * Runs a simple but yet powerful algorithm to **check the browser's autoplay capabilities** across browsers.
 * Supports for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 * **Enhance your player** adding your own buttons. Check [here](./docs/customize.md) for more details.
