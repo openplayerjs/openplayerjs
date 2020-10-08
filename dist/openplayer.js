@@ -119,7 +119,7 @@ module.exports =
 
 var global = __webpack_require__(0);
 var shared = __webpack_require__(52);
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var uid = __webpack_require__(53);
 var NATIVE_SYMBOL = __webpack_require__(57);
 var USE_SYMBOL_AS_UID = __webpack_require__(88);
@@ -440,17 +440,6 @@ exports.DVR_THRESHOLD = 120;
 
 /***/ }),
 /* 6 */
-/***/ (function(module, exports) {
-
-var hasOwnProperty = {}.hasOwnProperty;
-
-module.exports = function (it, key) {
-  return hasOwnProperty.call(it, key);
-};
-
-
-/***/ }),
-/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -481,6 +470,17 @@ function addEvent(event, details) {
 
 exports.addEvent = addEvent;
 exports.events = ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'];
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+var hasOwnProperty = {}.hasOwnProperty;
+
+module.exports = function (it, key) {
+  return hasOwnProperty.call(it, key);
+};
+
 
 /***/ }),
 /* 8 */
@@ -592,7 +592,7 @@ module.exports = function (it) {
 
 var global = __webpack_require__(0);
 var createNonEnumerableProperty = __webpack_require__(11);
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var setGlobal = __webpack_require__(35);
 var inspectSource = __webpack_require__(36);
 var InternalStateModule = __webpack_require__(18);
@@ -659,7 +659,7 @@ var NATIVE_WEAK_MAP = __webpack_require__(79);
 var global = __webpack_require__(0);
 var isObject = __webpack_require__(10);
 var createNonEnumerableProperty = __webpack_require__(11);
-var objectHas = __webpack_require__(6);
+var objectHas = __webpack_require__(7);
 var sharedKey = __webpack_require__(37);
 var hiddenKeys = __webpack_require__(38);
 
@@ -1024,7 +1024,7 @@ var propertyIsEnumerableModule = __webpack_require__(49);
 var createPropertyDescriptor = __webpack_require__(17);
 var toIndexedObject = __webpack_require__(26);
 var toPrimitive = __webpack_require__(33);
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var IE8_DOM_DEFINE = __webpack_require__(50);
 
 var nativeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
@@ -1295,7 +1295,7 @@ module.exports = Object.keys || function keys(O) {
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var toObject = __webpack_require__(22);
 var sharedKey = __webpack_require__(37);
 var CORRECT_PROTOTYPE_GETTER = __webpack_require__(96);
@@ -1319,7 +1319,7 @@ module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O)
 /***/ (function(module, exports, __webpack_require__) {
 
 var defineProperty = __webpack_require__(12).f;
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var wellKnownSymbol = __webpack_require__(1);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
@@ -1545,7 +1545,7 @@ var ads_1 = __importDefault(__webpack_require__(142));
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -2282,7 +2282,7 @@ module.exports = function (key) {
 /* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var toIndexedObject = __webpack_require__(26);
 var indexOf = __webpack_require__(83).indexOf;
 var hiddenKeys = __webpack_require__(38);
@@ -2524,7 +2524,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 
 var getPrototypeOf = __webpack_require__(43);
 var createNonEnumerableProperty = __webpack_require__(11);
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var wellKnownSymbol = __webpack_require__(1);
 var IS_PURE = __webpack_require__(19);
 
@@ -3011,7 +3011,7 @@ module.exports = typeof WeakMap === 'function' && /native code/.test(inspectSour
 /* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 var ownKeys = __webpack_require__(81);
 var getOwnPropertyDescriptorModule = __webpack_require__(30);
 var definePropertyModule = __webpack_require__(12);
@@ -3267,7 +3267,7 @@ module.exports = DESCRIPTORS ? Object.defineProperties : function defineProperti
 
 var DESCRIPTORS = __webpack_require__(8);
 var fails = __webpack_require__(4);
-var has = __webpack_require__(6);
+var has = __webpack_require__(7);
 
 var defineProperty = Object.defineProperty;
 var cache = {};
@@ -4681,7 +4681,7 @@ var volume_1 = __importDefault(__webpack_require__(137));
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -5037,7 +5037,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -5602,6 +5602,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
+var events_1 = __webpack_require__(6);
+
 var general_1 = __webpack_require__(2);
 
 var Fullscreen = function () {
@@ -5654,8 +5656,13 @@ var Fullscreen = function () {
       this.player.getControls().getLayer(this.layer).appendChild(this.button);
 
       if (constants_1.IS_IPHONE) {
-        this.player.getElement().addEventListener('webkitbeginfullscreen', function () {
+        this.player.getElement().addEventListener('webkitbeginfullscreen', function (e) {
           _this.isFullscreen = true;
+          var orientationEvent = window.document.createEvent( 'Event' );
+          orientationEvent.initEvent( 'orientationchange', true, true );
+          orientationEvent.orientation = -90;
+          orientationEvent.mode = 'landscape';
+          window.dispatchEvent( orientationEvent );
 
           _this._setFullscreenData(true);
 
@@ -5742,13 +5749,9 @@ var Fullscreen = function () {
       }
 
       if (typeof window !== 'undefined' && (constants_1.IS_ANDROID || constants_1.IS_IPHONE)) {
-        var screen = window.screen;
-
-        if (screen.orientation) {
-          if (!this.isFullscreen) {
-            screen.orientation.lock('landscape');
-          }
-        }
+        document.addEventListener('webkitbeginfullscreen', function(e) {
+          console.log(e);
+        });
       }
     }
   }, {
@@ -5830,7 +5833,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -6165,7 +6168,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var player_1 = __importDefault(__webpack_require__(48));
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -7233,7 +7236,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -7870,7 +7873,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -8114,7 +8117,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -8439,7 +8442,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 
@@ -8609,7 +8612,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var constants_1 = __webpack_require__(5);
 
-var events_1 = __webpack_require__(7);
+var events_1 = __webpack_require__(6);
 
 var general_1 = __webpack_require__(2);
 

@@ -1,4 +1,5 @@
 import { IS_ANDROID, IS_IPHONE } from '../utils/constants';
+import { addEvent } from '../utils/events';
 import { removeElement } from '../utils/general';
 class Fullscreen {
     constructor(player, position, layer) {
@@ -121,12 +122,8 @@ class Fullscreen {
             document.body.classList.add('op-fullscreen__on');
         }
         if (typeof window !== 'undefined' && (IS_ANDROID || IS_IPHONE)) {
-            const screen = window.screen;
-            if (screen.orientation) {
-                if (!this.isFullscreen) {
-                    screen.orientation.lock('landscape');
-                }
-            }
+            const orientationEv = addEvent('orientationchange');
+            window.dispatchEvent(orientationEv);
         }
     }
     _fullscreenChange() {
