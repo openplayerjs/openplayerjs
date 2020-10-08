@@ -48,13 +48,13 @@ class Ads {
         if (!this.adsOptions.autoPlayAdBreaks && !force) {
             return;
         }
-        const existingContainer = document.getElementById('op-ads');
+        const existingContainer = this.player.getContainer().querySelector('.op-ads');
         if (existingContainer && existingContainer.parentNode) {
             existingContainer.parentNode.removeChild(existingContainer);
         }
         this.adsStarted = true;
         this.adsContainer = document.createElement('div');
-        this.adsContainer.id = 'op-ads';
+        this.adsContainer.className = 'op-ads';
         this.adsContainer.tabIndex = -1;
         if (this.element.parentElement) {
             this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
