@@ -7,6 +7,7 @@
  */
 export default interface ControlItem {
     readonly icon: string;
+    readonly svg: string;
     readonly title: string;
     readonly position: 'right' | 'left' | 'middle';
     readonly layer?: 'top' | 'center' | 'bottom';
