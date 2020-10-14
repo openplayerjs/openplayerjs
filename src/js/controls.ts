@@ -414,7 +414,12 @@ class Controls implements PlayerComponent {
         control.className = `op-controls__${key} op-control__${item.position}`;
         control.tabIndex = 0;
         control.title = item.title;
-        control.innerHTML = `<img src="${item.icon}"> <span class="op-sr">${item.title}</span>`;
+        if(item.icon) { 
+            control.innerHTML = `<img src="${item.icon}"> <span class="op-sr">${item.title}</span>`;
+        }
+        else {
+            control.innerHTML = `${item.svg} <span class="op-sr">${item.title}</span>`;    
+        }
         control.addEventListener('click', item.click);
         if (item.layer) {
             this.getLayer(item.layer).appendChild(control);
