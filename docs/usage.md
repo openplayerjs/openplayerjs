@@ -53,7 +53,8 @@ var player = new OpenPlayerJS('[player ID]', {
         // Controls configuration by default; `levels` can be added as well since it's an optional feature;
         // Each one of the items will have in their class name the `op-control__[left|middle|right]` according
         // to the controls' structure listed below. Also available: `top-left`, `top-middle`,
-        // `top-right`, `bottom-left`, `bottom-middle` and `bottom-right`
+        // `top-right`, `bottom-left`, `bottom-middle` and `bottom-right`.
+        // If you use `main`, it will be appended to the media's container to create elements.
         layers: {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],

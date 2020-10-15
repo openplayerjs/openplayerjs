@@ -4988,14 +4988,19 @@ var Controls = function () {
     value: function _createCustomControl(item) {
       var control = document.createElement('button');
       var key = item.title.toLowerCase().replace(' ', '-');
+      var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(item.icon, "\">") : item.icon;
       control.className = "op-controls__".concat(key, " op-control__").concat(item.position);
       control.tabIndex = 0;
       control.title = item.title;
-      control.innerHTML = "<img src=\"".concat(item.icon, "\"> <span class=\"op-sr\">").concat(item.title, "</span>");
+      control.innerHTML = "".concat(icon, " <span class=\"op-sr\">").concat(item.title, "</span>");
       control.addEventListener('click', item.click);
 
       if (item.layer) {
-        this.getLayer(item.layer).appendChild(control);
+        if (item.layer === 'main') {
+          this.player.getContainer().appendChild(control);
+        } else {
+          this.getLayer(item.layer).appendChild(control);
+        }
       }
     }
   }, {
