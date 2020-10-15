@@ -164,6 +164,7 @@ class Controls {
             'top-left': [],
             'top-middle': [],
             'top-right': [],
+            'main': [],
         };
         const isVideoEl = isVideo(this.player.getElement());
         const isAudioEl = isAudio(this.player.getElement());
@@ -202,6 +203,10 @@ class Controls {
             });
         });
         this.player.getCustomControls().forEach(item => {
+            const [layer, pos] = item.position.split('-');
+            const currentLayer = layersExist && !pos ? 'center' : layer;
+            item.layer = currentLayer;
+            item.position = pos || layer;
             if (item.position === 'right') {
                 this.items[item.position].unshift(item);
             }

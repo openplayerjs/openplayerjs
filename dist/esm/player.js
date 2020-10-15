@@ -85,9 +85,7 @@ class Player {
             if (this.options.startTime > 0) {
                 this.element.currentTime = this.options.startTime;
             }
-            if (this.options.mode === 'fill') {
-                this.fill = true;
-            }
+            this.fill = this.options.mode === 'fill';
             this.volume = this.element.volume;
         }
         return this;

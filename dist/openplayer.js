@@ -1632,10 +1632,7 @@ var Player = function () {
         this.element.currentTime = this.options.startTime;
       }
 
-      if (this.options.mode === 'fill') {
-        this.fill = true;
-      }
-
+      this.fill = this.options.mode === 'fill';
       this.volume = this.element.volume;
     }
 
@@ -4894,7 +4891,8 @@ var Controls = function () {
         'right': [],
         'top-left': [],
         'top-middle': [],
-        'top-right': []
+        'top-right': [],
+        'main': []
       };
       var isVideoEl = general_1.isVideo(this.player.getElement());
       var isAudioEl = general_1.isAudio(this.player.getElement());
@@ -4946,6 +4944,15 @@ var Controls = function () {
         });
       });
       this.player.getCustomControls().forEach(function (item) {
+        var _item$position$split = item.position.split('-'),
+            _item$position$split2 = _slicedToArray(_item$position$split, 2),
+            layer = _item$position$split2[0],
+            pos = _item$position$split2[1];
+
+        var currentLayer = layersExist && !pos ? 'center' : layer;
+        item.layer = currentLayer;
+        item.position = pos || layer;
+
         if (item.position === 'right') {
           _this4.items[item.position].unshift(item);
         } else {

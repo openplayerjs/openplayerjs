@@ -302,6 +302,7 @@ class Controls implements PlayerComponent {
             'top-left': [],
             'top-middle': [],
             'top-right': [],
+            'main': [],
         };
 
         const isVideoEl = isVideo(this.player.getElement());
@@ -350,6 +351,11 @@ class Controls implements PlayerComponent {
         // If position is right, always prepend so Settings and Fullscreen are the last items;
         // otherwise, append new controls
         this.player.getCustomControls().forEach(item => {
+            const [layer, pos] = item.position.split('-');
+            const currentLayer = layersExist && !pos ? 'center' : layer;
+            item.layer = currentLayer;
+            item.position = pos || layer;
+
             if (item.position === 'right') {
                 this.items[item.position].unshift(item);
             } else {

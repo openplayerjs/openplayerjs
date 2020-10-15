@@ -8,8 +8,8 @@
 export default interface ControlItem {
     readonly icon: string;
     readonly title: string;
-    readonly position: 'right' | 'left' | 'middle';
-    readonly layer?: 'top' | 'center' | 'bottom' | 'main';
+    position: 'right' | 'left' | 'middle' | string;
+    layer?: 'top' | 'center' | 'bottom' | 'main' | string;
     custom?: boolean;
     click(): void;
 }
