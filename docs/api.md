@@ -1,4 +1,6 @@
-# API
+# API/Events
+
+## API
 
 If you need more control over the player, OpenPlayerJS stores an instance of each player in the document. To have access to a specific instance, use the media `id` and use `OpenPlayerJS.instances` element.
 
@@ -33,7 +35,7 @@ Method | Description
 `id` | Retrieve current player's unique identifier.
 `src` | Retrieve/set the current Source list associated with the player.
 
-# Events
+## Events
 
 Using the code below, you can attach/dispatch any valid event, using [`CustomEvent`](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent), like this:
 

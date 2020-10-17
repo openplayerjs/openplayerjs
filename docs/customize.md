@@ -1,6 +1,16 @@
 # Customizations
 
-## Add Controls
+## Modify Look
+
+OpenPlayerJS now offers the ability to move elements into new DOM layers, in an attempt to achieve more flexibility for you.
+
+In the following diagram, you will see a representation of the areas that the player offers (**main** is only for video, though).
+
+The default controls are situated at the left, middle and right layers, so by using CSS3 (specially flexbox) and setting the control items in the new different layers, you can create more complex players.
+
+<img width="1280" alt="layers" src="https://user-images.githubusercontent.com/910829/96354476-24eb9800-10a5-11eb-9ebf-90abc16d6c0d.png">
+
+## Add Control
 
 Do you need to add a new control (or multiple ones) to your player and you are concerned about the complexity of it? This snippet can help you with your endeavor.
 
@@ -10,14 +20,15 @@ player.addControl({
   icon:'/path/to/image',
   title: '[TOOLTIP LABEL]',
   // Possible values: 'bottom-left', 'bottom-middle', 'bottom-right',
-  // 'left', 'middle', 'right', 'top-left', 'top-middle', 'top-right'
+  // 'left', 'middle', 'right', 'top-left', 'top-middle', 'top-right',
+  // or `main` to add it in the video area
   position: 'right',
   click: () => {}, // the operation it executes
 });
 player.init();
 ```
 
-## Add Player
+## Add External Player API
 
 One of the most attractive parts of OpenPlayerJS is the ability to adapt other players API into its own.
 

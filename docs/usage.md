@@ -121,7 +121,7 @@ player.init();
 
 **NOTE**: In order to use this setup, the video/audio tag(s) **must** have a unique ID.
 
-## Next.js/React
+## React/Next.js
 
 Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can see in the example below.
 

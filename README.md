@@ -21,7 +21,7 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 * **Can play ads in infinite loop**, desired for ads that are in a heavy text page.
 * Always **responsive** by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 
-## IMPORTANT: Migrating from v1.x.x to v2.x.x
+## :warning: IMPORTANT: Migrating from v1.x.x to v2.x.x :warning:
 
 In order to achieve a smooth upgrading between version `1.x.x` and `2.x.x`, there is a couple of things to keep in mind:
 
@@ -55,7 +55,7 @@ const player = new OpenPlayerJS('player', {
     controls: {
         alwaysVisible: false,
         // Also available: `top-left`, `top-middle`,
-        // `top-right`, `bottom-left`, `bottom-middle` and `bottom-right`
+        // `top-right`, `bottom-left`, `bottom-middle` and `bottom-right` or `main`
         layers: {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
@@ -97,13 +97,23 @@ The standard template to start using OpenPlayerJS is show in the following snipp
 
 ## Usage and API Guides
 
-If you want to unleash the power of OpenPlayerJS, check the following links to learn how to customize it.
+If you want to unleash the power of OpenPlayerJS, learn more about OpenPlayerJS by checking the following links.
 
 * [How to use OpenPlayerJS](./docs/usage.md)
+  * [HTML](./docs/usage.md#html)
+  * [Javascript](./docs/usage.md#javascript)
+  * [React/Next.js](./docs/usage.md#javascript)
 * [API and events](./docs/api.md)
-* [How to add custom controls/players](./docs/customize.md)
+  * [API](./docs/api.md#api)
+  * [Events](./docs/api.md#events)
+* [NEW! Player Customizations](./docs/customize.md)
+  * [Modify Look](./docs/customize.md#modify-look)
+  * [Add Control](./docs/customize.md#add-control)
+  * [Add External Player API](./docs/customize.md#add-external-player-api)
 
 ## Code Samples
+
+To get you started, check the following examples. We always welcome new samples.
 
 1. [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
@@ -121,6 +131,7 @@ If you want to unleash the power of OpenPlayerJS, check the following links to l
 14. [Addition of a custom control](https://codepen.io/rafa8626/pen/oNXmEza)
 15. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
 16. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
+17. [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
 
 ## Built With
 
