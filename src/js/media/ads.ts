@@ -287,6 +287,7 @@ class Ads {
         const defaultOpts = {
             autoPlayAdBreaks: true,
             debug: false,
+            language: 'en',
             loop: false,
             numRedirects: 4,
             sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
@@ -349,6 +350,7 @@ class Ads {
         google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
         google.ima.settings.setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
         google.ima.settings.setNumRedirects(this.adsOptions.numRedirects);
+        google.ima.settings.setLocale(this.adsOptions.language);
 
         this.adDisplayContainer =
             new google.ima.AdDisplayContainer(

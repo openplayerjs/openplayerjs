@@ -19,6 +19,10 @@ export default interface Options {
      */
     readonly numRedirects: number;
     /**
+     * Language of Ads, specified in standard langugae code (en, en_sa, jp, etc.)
+     */
+    readonly language: string;
+    /**
      * Play Ad endlessly (mostly used for text Ads).
      */
     readonly loop: boolean;

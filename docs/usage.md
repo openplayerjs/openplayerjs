@@ -92,6 +92,8 @@ var player = new OpenPlayerJS('[player ID]', {
         autoPlayAdBreaks,
         // If set to `true`, load `ima3_debug.js` file for debugging purposes
         debug,
+        // Language for ads (for more details, check: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization)
+        language,
         // If set to `true`, play infintely an Ad
         loop,
         // Maximum number of redirects before the subsequent redirects will be denied (by default, `4`)
