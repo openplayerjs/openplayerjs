@@ -115,7 +115,9 @@ If you want to unleash the power of OpenPlayerJS, learn more about OpenPlayerJS 
 
 ## Code Samples
 
-To get you started, check the following examples. We always welcome new samples.
+**In 2.x.x, the `demo` folder is now removed in favor of code samples.**
+
+If you need a reference on how to use OpenPlayerJS in some of the most common scenarios, check the following links:
 
 1. [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
