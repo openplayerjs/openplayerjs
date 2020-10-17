@@ -703,7 +703,7 @@ video:-webkit-media-text-track-display {
 }
 
 /* === Ads =================== */
-#op-ads {
+.op-ads {
     height: 100%;
     left: 0;
     position: absolute;
@@ -725,10 +725,10 @@ video:-webkit-media-text-track-display {
 .op-ads--active .op-controls > .op-control__right ~ .op-control__right {
     margin-left: auto;
 }
-.op-ads--active #op-ads {
+.op-ads--active .op-ads {
     z-index: 1;
 }
-.op-player[data-fullscreen='true'].op-ads--active #op-ads {
+.op-player[data-fullscreen='true'].op-ads--active .op-ads {
     z-index: 2147483645;
 }
 
@@ -755,7 +755,7 @@ video:-webkit-media-text-track-display {
     z-index: -100;
 }
 .op-player__full .op-player__media,
-.op-player__full #op-ads {
+.op-player__full .op-ads {
     height: auto;
     left: 50%;
     min-height: 100%;

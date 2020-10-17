@@ -164,6 +164,7 @@ class Controls {
             'top-left': [],
             'top-middle': [],
             'top-right': [],
+            'main': [],
         };
         const isVideoEl = isVideo(this.player.getElement());
         const isAudioEl = isAudio(this.player.getElement());
@@ -202,6 +203,10 @@ class Controls {
             });
         });
         this.player.getCustomControls().forEach(item => {
+            const [layer, pos] = item.position.split('-');
+            const currentLayer = layersExist && !pos ? 'center' : layer;
+            item.layer = currentLayer;
+            item.position = pos || layer;
             if (item.position === 'right') {
                 this.items[item.position].unshift(item);
             }
@@ -238,13 +243,19 @@ class Controls {
     _createCustomControl(item) {
         const control = document.createElement('button');
         const key = item.title.toLowerCase().replace(' ', '-');
+        const icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? `<img src="${item.icon}">` : item.icon;
         control.className = `op-controls__${key} op-control__${item.position}`;
         control.tabIndex = 0;
         control.title = item.title;
-        control.innerHTML = `<img src="${item.icon}"> <span class="op-sr">${item.title}</span>`;
+        control.innerHTML = `${icon} <span class="op-sr">${item.title}</span>`;
         control.addEventListener('click', item.click);
         if (item.layer) {
-            this.getLayer(item.layer).appendChild(control);
+            if (item.layer === 'main') {
+                this.player.getContainer().appendChild(control);
+            }
+            else {
+                this.getLayer(item.layer).appendChild(control);
+            }
         }
     }
     _destroyCustomControl(item) {

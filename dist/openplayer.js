@@ -1632,10 +1632,7 @@ var Player = function () {
         this.element.currentTime = this.options.startTime;
       }
 
-      if (this.options.mode === 'fill') {
-        this.fill = true;
-      }
-
+      this.fill = this.options.mode === 'fill';
       this.volume = this.element.volume;
     }
 
@@ -4894,7 +4891,8 @@ var Controls = function () {
         'right': [],
         'top-left': [],
         'top-middle': [],
-        'top-right': []
+        'top-right': [],
+        'main': []
       };
       var isVideoEl = general_1.isVideo(this.player.getElement());
       var isAudioEl = general_1.isAudio(this.player.getElement());
@@ -4946,6 +4944,15 @@ var Controls = function () {
         });
       });
       this.player.getCustomControls().forEach(function (item) {
+        var _item$position$split = item.position.split('-'),
+            _item$position$split2 = _slicedToArray(_item$position$split, 2),
+            layer = _item$position$split2[0],
+            pos = _item$position$split2[1];
+
+        var currentLayer = layersExist && !pos ? 'center' : layer;
+        item.layer = currentLayer;
+        item.position = pos || layer;
+
         if (item.position === 'right') {
           _this4.items[item.position].unshift(item);
         } else {
@@ -4988,14 +4995,19 @@ var Controls = function () {
     value: function _createCustomControl(item) {
       var control = document.createElement('button');
       var key = item.title.toLowerCase().replace(' ', '-');
+      var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(item.icon, "\">") : item.icon;
       control.className = "op-controls__".concat(key, " op-control__").concat(item.position);
       control.tabIndex = 0;
       control.title = item.title;
-      control.innerHTML = "<img src=\"".concat(item.icon, "\"> <span class=\"op-sr\">").concat(item.title, "</span>");
+      control.innerHTML = "".concat(icon, " <span class=\"op-sr\">").concat(item.title, "</span>");
       control.addEventListener('click', item.click);
 
       if (item.layer) {
-        this.getLayer(item.layer).appendChild(control);
+        if (item.layer === 'main') {
+          this.player.getContainer().appendChild(control);
+        } else {
+          this.getLayer(item.layer).appendChild(control);
+        }
       }
     }
   }, {
@@ -8672,7 +8684,7 @@ var Ads = function () {
         return;
       }
 
-      var existingContainer = document.getElementById('op-ads');
+      var existingContainer = this.player.getContainer().querySelector('.op-ads');
 
       if (existingContainer && existingContainer.parentNode) {
         existingContainer.parentNode.removeChild(existingContainer);
@@ -8680,7 +8692,7 @@ var Ads = function () {
 
       this.adsStarted = true;
       this.adsContainer = document.createElement('div');
-      this.adsContainer.id = 'op-ads';
+      this.adsContainer.className = 'op-ads';
       this.adsContainer.tabIndex = -1;
 
       if (this.element.parentElement) {
