@@ -28,7 +28,9 @@ In order to achieve a smooth upgrading between version `1.x.x` and `2.x.x`, ther
 1. The player will only accept now 2 parameters instead of 4: the **player ID** and the **player options**.
 2. `controls` and `showLiveProgress` properties are now complex object structures, where we can indicate visibility and a new set of extra layers/visibility.
 
-In v1, the way these elements were set up were:
+To simplify this even more:
+
+### v1.x.x
 
 ```javascript
 const player = new OpenPlayerJS('player', 'https://ads.example.url/xml', true, {
@@ -43,15 +45,15 @@ const player = new OpenPlayerJS('player', 'https://ads.example.url/xml', true, {
 player.init();
 ```
 
-Now, in v2:
+### v2.x.x
 
 ```javascript
 const player = new OpenPlayerJS('player', {
     ads: {
-        src: 'https://ads.example.url/xml',
+        src: 'https://ads.example.url/xml', // equivalent to the second argument in v1.x.x
         // ...other ads options
     },
-    mode: 'fullscreen', // equivalent to `true` in third argument in v1
+    mode: 'fullscreen', // equivalent to `true` in third argument in v1.x.x
     controls: {
         alwaysVisible: false,
         // Also available: `top-left`, `top-middle`,
@@ -64,7 +66,7 @@ const player = new OpenPlayerJS('player', {
     },
     live: {
         showLabel: true,
-        showProgress: false, // equivalent of `showLiveProgress` in v1
+        showProgress: false, // equivalent of `showLiveProgress` in v1.x.x
     },
     // ...other player options
 });
