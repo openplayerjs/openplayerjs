@@ -159,12 +159,12 @@ class Controls {
             'bottom-middle': [],
             'bottom-right': [],
             'left': [],
+            'main': [],
             'middle': [],
             'right': [],
             'top-left': [],
             'top-middle': [],
             'top-right': [],
-            'main': [],
         };
         const isVideoEl = isVideo(this.player.getElement());
         const isAudioEl = isAudio(this.player.getElement());

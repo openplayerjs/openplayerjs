@@ -4882,17 +4882,18 @@ var Controls = function () {
       var _this4 = this;
 
       var controls = this.player.getOptions().controls.layers;
+      console.log(this.player.getOptions())
       this.items = {
         'bottom-left': [],
         'bottom-middle': [],
         'bottom-right': [],
         'left': [],
+        'main': [],
         'middle': [],
         'right': [],
         'top-left': [],
         'top-middle': [],
-        'top-right': [],
-        'main': []
+        'top-right': []
       };
       var isVideoEl = general_1.isVideo(this.player.getElement());
       var isAudioEl = general_1.isAudio(this.player.getElement());
@@ -4959,6 +4960,7 @@ var Controls = function () {
           _this4.items[item.position].push(item);
         }
       });
+      console.log( _this4.items)
     }
   }, {
     key: "_buildElements",
