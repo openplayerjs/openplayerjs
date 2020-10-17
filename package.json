@@ -17,7 +17,6 @@
   "module": "./dist/esm/player.js",
   "types": "./types/player.d.ts",
   "files": [
-    "demo/*",
     "dist/*",
     "docs/*",
     "types/*"
