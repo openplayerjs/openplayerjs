@@ -585,6 +585,11 @@
 .op-ads--active .op-controls .op-controls__progress--seek::-ms-track {
     cursor: default;
 }
+.op-ads--active .op-controls .op-control__hide-in-ad {
+    cursor: default;
+    display: none;
+    pointer-events: none;
+}
 
 /* === Tooltip ================== */
 .op-controls__tooltip {

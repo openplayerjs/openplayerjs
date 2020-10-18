@@ -8,6 +8,7 @@
 export default interface ControlItem {
     readonly icon: string;
     readonly title: string;
+    readonly showInAds: boolean;
     position: 'right' | 'left' | 'middle' | string;
     layer?: 'top' | 'center' | 'bottom' | 'main' | string;
     custom?: boolean;

@@ -23,6 +23,7 @@ player.addControl({
   // 'left', 'middle', 'right', 'top-left', 'top-middle', 'top-right',
   // or `main` to add it in the video area
   position: 'right',
+  showInAds: false, // or true
   click: () => {}, // the operation it executes
 });
 player.init();

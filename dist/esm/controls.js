@@ -244,7 +244,7 @@ class Controls {
         const control = document.createElement('button');
         const key = item.title.toLowerCase().replace(' ', '-');
         const icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? `<img src="${item.icon}">` : item.icon;
-        control.className = `op-controls__${key} op-control__${item.position}`;
+        control.className = `op-controls__${key} op-control__${item.position} ${item.showInAds ? '' : 'op-control__hide-in-ad'}`;
         control.tabIndex = 0;
         control.title = item.title;
         control.innerHTML = `${icon} <span class="op-sr">${item.title}</span>`;

@@ -4882,7 +4882,6 @@ var Controls = function () {
       var _this4 = this;
 
       var controls = this.player.getOptions().controls.layers;
-      console.log(this.player.getOptions())
       this.items = {
         'bottom-left': [],
         'bottom-middle': [],
@@ -4960,7 +4959,6 @@ var Controls = function () {
           _this4.items[item.position].push(item);
         }
       });
-      console.log( _this4.items)
     }
   }, {
     key: "_buildElements",
@@ -4998,7 +4996,7 @@ var Controls = function () {
       var control = document.createElement('button');
       var key = item.title.toLowerCase().replace(' ', '-');
       var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(item.icon, "\">") : item.icon;
-      control.className = "op-controls__".concat(key, " op-control__").concat(item.position);
+      control.className = "op-controls__".concat(key, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
       control.tabIndex = 0;
       control.title = item.title;
       control.innerHTML = "".concat(icon, " <span class=\"op-sr\">").concat(item.title, "</span>");
