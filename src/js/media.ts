@@ -2,6 +2,7 @@ import CustomMedia from './interfaces/custom-media';
 import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import DashMedia from './media/dash';
+import FlvMedia from './media/flv';
 import HlsMedia from './media/hls';
 import HTML5Media from './media/html5';
 import * as source from './utils/media';
@@ -553,6 +554,13 @@ class Media {
         } else if (source.isDashSource(media)) {
             const dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
             return new DashMedia(this.element, media, dashOptions);
+        } else if (source.isFlvSource(media)) {
+            const flvOptions = this.options && this.options.flv ? this.options.flv : {
+                debug: false,
+                type: 'flv',
+                url: media.src,
+            };
+            return new FlvMedia(this.element, media, flvOptions);
         }
 
         return new HTML5Media(this.element, media);

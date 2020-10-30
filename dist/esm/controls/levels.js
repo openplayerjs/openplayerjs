@@ -1,6 +1,7 @@
-import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { IS_ANDROID, IS_IOS, NAV } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { hasClass, removeElement } from '../utils/general';
+import { isDashSource, isHlsSource } from '../utils/media';
 class Levels {
     constructor(player, position, layer) {
         this.events = {
@@ -118,16 +119,40 @@ class Levels {
                 e.preventDefault();
             }
         };
+        const connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;
+        this.events.global.connection = () => {
+            const media = this.player.getMedia().media.media;
+            if (!isDashSource(media) && !isHlsSource(media)) {
+                let type = connection.effectiveType;
+                const levels = this.levels.map(item => (Object.assign(Object.assign({}, item), { resolution: parseInt(item.label.replace('p', ''), 10) })));
+                let level = levels.find(item => item.resolution < 360);
+                if (type === '4g') {
+                    level = levels.find(item => item.resolution >= 720);
+                }
+                else if (type === '3g') {
+                    level = levels.find(item => item.resolution >= 360 && item.resolution < 720);
+                }
+                if (level) {
+                    this.player.pause();
+                    this.player.getMedia().level = level.id;
+                    this.player.play();
+                }
+                type = connection.effectiveType;
+            }
+        };
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().addEventListener(event, this.events.media[event]);
         });
         document.addEventListener('click', this.events.global.click);
+        connection.addEventListener('change', this.events.global.connection);
     }
     destroy() {
+        const connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
         document.removeEventListener('click', this.events.global.click);
+        connection.addEventListener('change', this.events.global.connection);
         if (this.detachMenu) {
             this.button.removeEventListener('click', this.events.button.click);
             removeElement(this.button);

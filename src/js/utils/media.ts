@@ -54,6 +54,17 @@ export function isDashSource(media: Source): boolean {
 }
 
 /**
+ * Check if URL is an FLV element.
+ *
+ * @export
+ * @param {Source} media  The target media, including URL and type.
+ * @returns {boolean}
+ */
+export function isFlvSource(media: Source): boolean {
+    return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].indexOf(media.type) > -1;
+}
+
+/**
  * Get a base MIME type using a URL anc hecking its file extension;
  * it will default to `video/mp4` if nothing found
  *

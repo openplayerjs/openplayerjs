@@ -189,7 +189,7 @@ class HlsMedia extends Native {
         const autoplay = !!(this.element.preload === 'auto' || this.autoplay);
         (options as any).autoStartLoad = autoplay;
 
-        this.player = new Hls(this.options);
+        this.player = new Hls(options);
         this.instance = this.player;
         this.events = Hls.Events;
         Object.keys(this.events).forEach(event => {
@@ -291,6 +291,7 @@ class HlsMedia extends Native {
             this.element.dispatchEvent(e);
         }
     }
+
     /**
      * Remove all hls.js events and destroy hlsjs player instance.
      *

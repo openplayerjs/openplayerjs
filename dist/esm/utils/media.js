@@ -18,6 +18,9 @@ export function isM3USource(media) {
 export function isDashSource(media) {
     return /\.mpd/i.test(media.src) || media.type === 'application/dash+xml';
 }
+export function isFlvSource(media) {
+    return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].indexOf(media.type) > -1;
+}
 export function predictType(url) {
     const extension = getExtension(url);
     let type;

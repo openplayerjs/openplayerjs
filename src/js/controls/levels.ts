@@ -4,9 +4,10 @@ import Level from '../interfaces/level';
 import SettingsItem from '../interfaces/settings/item';
 import SettingsSubItem from '../interfaces/settings/subitem';
 import Player from '../player';
-import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { IS_ANDROID, IS_IOS, NAV } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { hasClass, removeElement } from '../utils/general';
+import { isDashSource, isHlsSource } from '../utils/media';
 
 /**
  * Levels element.
@@ -236,18 +237,50 @@ class Levels implements PlayerComponent {
             }
         };
 
+        const connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;
+        this.events.global.connection = () => {
+            // Check connectivity to switch levels (only HTML5 since HLS and Dash can use adaptive streaming)
+            const media = this.player.getMedia().media.media;
+            if (!isDashSource(media) && !isHlsSource(media)) {
+                let type = connection.effectiveType;
+
+                const levels = this.levels.map(item => ({
+                    ...item,
+                    resolution: parseInt(item.label.replace('p', ''), 10),
+                }));
+
+                let level = levels.find(item => item.resolution < 360);
+                if (type === '4g') {
+                    level = levels.find(item => item.resolution >= 720);
+                } else if (type === '3g') {
+                    level = levels.find(item => item.resolution >= 360 && item.resolution < 720);
+                }
+
+                if (level) {
+                    this.player.pause();
+                    this.player.getMedia().level = level.id;
+                    this.player.play();
+                }
+                type = connection.effectiveType;
+            }
+        };
+
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().addEventListener(event, this.events.media[event]);
         });
 
         document.addEventListener('click', this.events.global.click);
+        connection.addEventListener('change', this.events.global.connection);
     }
 
     public destroy(): void {
+        const connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;
+
         Object.keys(this.events.media).forEach(event => {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
         document.removeEventListener('click', this.events.global.click);
+        connection.addEventListener('change', this.events.global.connection);
         if (this.detachMenu) {
             this.button.removeEventListener('click', this.events.button.click);
             removeElement(this.button);

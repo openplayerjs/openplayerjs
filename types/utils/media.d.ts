@@ -32,6 +32,14 @@ export declare function isM3USource(media: Source): boolean;
  */
 export declare function isDashSource(media: Source): boolean;
 /**
+ * Check if URL is an FLV element.
+ *
+ * @export
+ * @param {Source} media  The target media, including URL and type.
+ * @returns {boolean}
+ */
+export declare function isFlvSource(media: Source): boolean;
+/**
  * Get a base MIME type using a URL anc hecking its file extension;
  * it will default to `video/mp4` if nothing found
  *
