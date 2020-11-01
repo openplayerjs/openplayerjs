@@ -114,6 +114,9 @@ var player = new OpenPlayerJS('[player ID]', {
         // (http://vm2.dashif.org/dash.js/docs/jsdocs/MediaPlayer.vo.protection.ProtectionData.html)
         drm,
     },
+    flv: {
+        // all FLV options available at https://github.com/bilibili/flv.js/blob/master/docs/api.md#mediadatasource
+    },
 });
 // Don't forget to start the player
 player.init();
