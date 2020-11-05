@@ -431,6 +431,14 @@ class Ads {
     }
     _onContentResumeRequested() {
         if (this.adsOptions.loop) {
+            if (Array.isArray(this.ads)) {
+                if (this.currentAdsIndex === this.ads.length - 1) {
+                    this.currentAdsIndex = 0;
+                }
+                else {
+                    this.currentAdsIndex++;
+                }
+            }
             this.destroy();
             this.adsLoader.contentComplete();
             this.playTriggered = true;
