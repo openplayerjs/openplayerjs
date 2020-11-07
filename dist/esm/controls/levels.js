@@ -144,7 +144,9 @@ class Levels {
             this.player.getElement().addEventListener(event, this.events.media[event]);
         });
         document.addEventListener('click', this.events.global.click);
-        connection.addEventListener('change', this.events.global.connection);
+        if (connection) {
+            connection.addEventListener('change', this.events.global.connection);
+        }
     }
     destroy() {
         const connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;
@@ -152,7 +154,9 @@ class Levels {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
         document.removeEventListener('click', this.events.global.click);
-        connection.addEventListener('change', this.events.global.connection);
+        if (connection) {
+            connection.addEventListener('change', this.events.global.connection);
+        }
         if (this.detachMenu) {
             this.button.removeEventListener('click', this.events.button.click);
             removeElement(this.button);

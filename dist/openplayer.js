@@ -6053,7 +6053,10 @@ var Levels = function () {
         _this.player.getElement().addEventListener(event, _this.events.media[event]);
       });
       document.addEventListener('click', this.events.global.click);
-      connection.addEventListener('change', this.events.global.connection);
+
+      if (connection) {
+        connection.addEventListener('change', this.events.global.connection);
+      }
     }
   }, {
     key: "destroy",
@@ -6065,7 +6068,10 @@ var Levels = function () {
         _this2.player.getElement().removeEventListener(event, _this2.events.media[event]);
       });
       document.removeEventListener('click', this.events.global.click);
-      connection.addEventListener('change', this.events.global.connection);
+
+      if (connection) {
+        connection.addEventListener('change', this.events.global.connection);
+      }
 
       if (this.detachMenu) {
         this.button.removeEventListener('click', this.events.button.click);

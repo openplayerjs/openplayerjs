@@ -270,7 +270,9 @@ class Levels implements PlayerComponent {
         });
 
         document.addEventListener('click', this.events.global.click);
-        connection.addEventListener('change', this.events.global.connection);
+        if (connection) {
+            connection.addEventListener('change', this.events.global.connection);
+        }
     }
 
     public destroy(): void {
@@ -280,7 +282,9 @@ class Levels implements PlayerComponent {
             this.player.getElement().removeEventListener(event, this.events.media[event]);
         });
         document.removeEventListener('click', this.events.global.click);
-        connection.addEventListener('change', this.events.global.connection);
+        if (connection) {
+            connection.addEventListener('change', this.events.global.connection);
+        }
         if (this.detachMenu) {
             this.button.removeEventListener('click', this.events.button.click);
             removeElement(this.button);
