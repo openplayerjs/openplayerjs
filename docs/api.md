@@ -60,9 +60,9 @@ Event | Description
 `playerdestroyed` | Event executed when an instance of OpenPlayerJS is destroyed (useful to remove extra elements created with the player's help).
 `adsloaded` | Event when Ads have been loaded successfully and can be played.
 `adsstart` | Event when Ads start being played.
-`adsfirstquartile` | Event triggered when Ad reached the first quarter of its length.
+`adsfirstQuartile` | Event triggered when Ad reached the first quarter of its length.
 `adsmidpoint` | Event triggered when Ad reached half of its length.
-`adsthirdquartile` | Event triggered when Ad reached the third quarter of its length.
+`adsthirdQuartile` | Event triggered when Ad reached the third quarter of its length.
 `adscomplete` | Event triggered when Ad reached the end of its length.
 `adsskipped` | Event triggered when user skips the Ad.
 `adsvolumeChange` | Event triggered when user increases/decreases the volume of Ad.
