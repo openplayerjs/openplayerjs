@@ -33,9 +33,7 @@ class Controls {
     create() {
         this.player.getElement().controls = false;
         const isMediaVideo = isVideo(this.player.getElement());
-        this.controls = document.createElement('div');
-        this.controls.className = 'op-controls';
-        this.player.getContainer().appendChild(this.controls);
+        this._createControlsLayer();
         this._buildElements();
         this.events.controlschanged = () => {
             this.destroy();
@@ -131,6 +129,13 @@ class Controls {
     getLayer(layer) {
         return this.controls.querySelector(`.op-controls-layer__${layer}`) || this.controls;
     }
+    _createControlsLayer() {
+        if (!this.controls) {
+            this.controls = document.createElement('div');
+            this.controls.className = 'op-controls';
+            this.player.getContainer().appendChild(this.controls);
+        }
+    }
     _startControlTimer(time) {
         const el = this.player.activeElement();
         this._stopControlTimer();
@@ -170,6 +175,7 @@ class Controls {
         const isAudioEl = isAudio(this.player.getElement());
         const controlPositions = Object.keys(controls);
         const layersExist = controlPositions.find(item => /^(top|bottom)/.test(item));
+        this._createControlsLayer();
         controlPositions.forEach((position) => {
             const [layer, pos] = position.split('-');
             if (pos) {

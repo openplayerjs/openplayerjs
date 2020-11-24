@@ -115,10 +115,7 @@ class Controls implements PlayerComponent {
 
         const isMediaVideo = isVideo(this.player.getElement());
 
-        this.controls = document.createElement('div');
-        this.controls.className = 'op-controls';
-        this.player.getContainer().appendChild(this.controls);
-
+        this._createControlsLayer();
         this._buildElements();
 
         this.events.controlschanged = () => {
@@ -246,6 +243,14 @@ class Controls implements PlayerComponent {
         return this.controls.querySelector(`.op-controls-layer__${layer}`) || this.controls;
     }
 
+    private _createControlsLayer() {
+        if (!this.controls) {
+            this.controls = document.createElement('div');
+            this.controls.className = 'op-controls';
+            this.player.getContainer().appendChild(this.controls);
+        }
+    }
+
     /**
      * Set timer to hide controls.
      *
@@ -310,6 +315,7 @@ class Controls implements PlayerComponent {
 
         const controlPositions = Object.keys(controls);
         const layersExist = controlPositions.find(item => /^(top|bottom)/.test(item));
+        this._createControlsLayer();
 
         controlPositions.forEach((position: string) => {
             const [layer, pos] = position.split('-');
