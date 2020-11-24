@@ -94,6 +94,7 @@ declare class Controls implements PlayerComponent {
      * @memberof Controls
      */
     getLayer(layer: string): HTMLDivElement;
+    private _createControlsLayer;
     /**
      * Set timer to hide controls.
      *

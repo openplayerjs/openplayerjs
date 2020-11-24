@@ -11,7 +11,9 @@ class DashMedia extends Native {
         this.options = options;
         this.promise = (typeof dashjs === 'undefined') ?
             loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
-            new Promise(resolve => resolve());
+            new Promise(resolve => {
+                resolve({});
+            });
         this.promise.then(() => {
             this.player = dashjs.MediaPlayer().create();
             this.instance = this.player;

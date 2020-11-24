@@ -27,7 +27,9 @@ class HlsMedia extends Native {
         this.autoplay = autoplay;
         this.promise = (typeof Hls === 'undefined') ?
             loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') :
-            new Promise(resolve => resolve());
+            new Promise(resolve => {
+                resolve({});
+            });
         this.promise.then(this._create.bind(this));
         return this;
     }

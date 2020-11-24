@@ -49,7 +49,7 @@ export function loadScript(url: string) {
         script.async = true;
         script.onload = () => {
             removeElement(script);
-            resolve();
+            resolve({});
         };
         script.onerror = () => {
             removeElement(script);

@@ -70,7 +70,7 @@ class Media {
             }
         }
         this.promisePlay = new Promise(resolve => {
-            resolve();
+            resolve({});
         }).then(this.media.promise.then(this.media.play()));
         return this.promisePlay;
     }

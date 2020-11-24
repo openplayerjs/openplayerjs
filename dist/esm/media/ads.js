@@ -41,7 +41,9 @@ class Ads {
         this.adsVolume = this.originalVolume;
         const path = this.adsOptions.debug ? this.adsOptions.sdkPath.replace(/(\.js$)/, '_debug.js') : this.adsOptions.sdkPath;
         this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-            loadScript(path) : new Promise(resolve => resolve());
+            loadScript(path) : new Promise(resolve => {
+            resolve({});
+        });
         this.promise.then(this.load.bind(this));
         return this;
     }
@@ -97,7 +99,7 @@ class Ads {
             }
         };
         return new Promise(resolve => {
-            resolve();
+            resolve({});
         }).then(play);
     }
     pause() {

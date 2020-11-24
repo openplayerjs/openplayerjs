@@ -57,7 +57,7 @@ abstract class Native {
         this.element = element;
         this.media = media;
         this.promise = new Promise(resolve => {
-            resolve();
+            resolve({});
         });
     }
 

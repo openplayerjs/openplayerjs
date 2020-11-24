@@ -24,7 +24,9 @@ class FlvMedia extends Native {
         this.media = mediaSource;
         this.promise = (typeof flvjs === 'undefined') ?
             loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js') :
-            new Promise(resolve => resolve());
+            new Promise(resolve => {
+                resolve({});
+            });
         this.promise.then(this._create.bind(this));
         return this;
     }
