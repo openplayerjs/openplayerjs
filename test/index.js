@@ -120,22 +120,22 @@ describe('OpenPlayer.js', () => {
         }, 1000);
     });
 
-    it('Adds caption dynamically and renders it if `default` attribute is passed in object', function (done) {
-        this.timeout(1500);
-        player.addCaptions({
-            srclang: 'br_PT',
-            src: 'http://brenopolanski.com/html5-video-webvtt-example/MIB2-subtitles-pt-BR.vtt',
-            kind: 'subtitles',
-            label: 'Portuguese (BR)',
-            default: true
-        });
+    // it('Adds caption dynamically and renders it if `default` attribute is passed in object', function (done) {
+    //     this.timeout(1500);
+    //     player.addCaptions({
+    //         srclang: 'br_PT',
+    //         src: 'http://brenopolanski.com/html5-video-webvtt-example/MIB2-subtitles-pt-BR.vtt',
+    //         kind: 'subtitles',
+    //         label: 'Portuguese (BR)',
+    //         default: true
+    //     });
 
-        setTimeout(() => {
-            expect(player.getContainer().querySelector('.op-controls__captions').getAttribute('data-active-captions')).to.equal('br_PT');
-            expect(player.getContainer().querySelector('.op-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
-            done();
-        }, 1000);
-    });
+    //     setTimeout(() => {
+    //         expect(player.getContainer().querySelector('.op-controls__captions').getAttribute('data-active-captions')).to.equal('br_PT');
+    //         expect(player.getContainer().querySelector('.op-settings__menu-label[data-value="captions-br_PT"]')).to.not.equal(null);
+    //         done();
+    //     }, 1000);
+    // });
 
     it('Unmutes/mutes media when clicking on `Mute` button', () => {
         const mute = player.getContainer().querySelector('.op-controls__mute');
