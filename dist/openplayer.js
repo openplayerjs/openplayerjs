@@ -9067,12 +9067,12 @@ var Ads = function () {
 
       if (typeof window !== 'undefined') {
         window.addEventListener('resize', function () {
-          _this.resizeAds.bind(_this);
+          _this.resizeAds();
         });
       }
 
       this.element.addEventListener('loadedmetadata', function () {
-        _this.resizeAds.bind(_this);
+        _this.resizeAds();
       });
 
       if (this.autoStart === true || this.autoStartMuted === true || force === true) {

@@ -373,9 +373,13 @@ class Ads {
 
         // Create responsive ad
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', () => { this.resizeAds.bind(this); });
+            window.addEventListener('resize', () => {
+                this.resizeAds();
+            });
         }
-        this.element.addEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
+        this.element.addEventListener('loadedmetadata', () => {
+            this.resizeAds();
+        });
 
         // Request Ads automatically if `autoplay` was set
         if (this.autoStart === true || this.autoStartMuted === true || force === true) {

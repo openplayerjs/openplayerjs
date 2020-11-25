@@ -74,9 +74,13 @@ class Ads {
         this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
         this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', () => { this.resizeAds.bind(this); });
+            window.addEventListener('resize', () => {
+                this.resizeAds();
+            });
         }
-        this.element.addEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
+        this.element.addEventListener('loadedmetadata', () => {
+            this.resizeAds();
+        });
         if (this.autoStart === true || this.autoStartMuted === true || force === true) {
             if (!this.adsDone) {
                 this.adsDone = true;
