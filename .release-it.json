@@ -9,7 +9,7 @@
     },
     "github": {
         "release": true,
-        "releaseName": "%s"
+        "releaseName": "${version}"
     },
     "dist": {}
 }
