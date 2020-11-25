@@ -137,6 +137,7 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 16. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
 17. [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
 18. [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
+19. [Fully customized audio player](https://codepen.io/rafa8626/pen/ExPLVRE)
 
 ## Built With
 
