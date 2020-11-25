@@ -104,7 +104,7 @@
     margin-top: 5px;
     padding-top: 11px;
 }
-.op-controls > * {
+.op-controls * {
     -webkit-box-flex: 0;
         -ms-flex-positive: 0;
             flex-grow: 0;
@@ -112,7 +112,7 @@
 }
 .op-player__play,
 .op-settings__back,
-.op-controls > button {
+.op-controls button {
     -webkit-appearance: button;
        -moz-appearance: button;
             appearance: button;
@@ -127,11 +127,11 @@
     position: relative;
     text-transform: none;
 }
-.op-controls > button {
+.op-controls button {
     padding: 2px 4px 3px;
     z-index: 4;
 }
-.op-controls > button > span {
+.op-controls button > span {
     color: #fff;
 }
 .op-player__loader {
@@ -195,16 +195,16 @@
 }
 .op-player__play::-moz-focus-inner,
 .op-settings__back,
-.op-controls > button::-moz-focus-inner {
+.op-controls button::-moz-focus-inner {
     border-style: none;
     padding: 0;
 }
 .op-player__play:-moz-focusing,
 .op-settings__back,
-.op-controls > button:-moz-focusing {
+.op-controls button:-moz-focusing {
     outline: 1px dotted ButtonText;
 }
-.op-controls > button:before {
+.op-controls button:before {
     color: #fff;
     display: inline-block;
     height: 15px;
@@ -213,26 +213,26 @@
     text-align: center;
     width: 15px;
 }
-.op-controls > .op-control__right {
+.op-controls .op-control__right {
     margin-left: auto;
 }
-.op-controls > .op-control__right ~ .op-control__right {
+.op-controls .op-control__right ~ .op-control__right {
     margin-left: 0;
 }
-.op-controls > button:hover {
+.op-controls button:hover {
     opacity: 0.5;
 }
-.op-controls > .op-control--no-hover:hover {
+.op-controls .op-control--no-hover:hover {
     opacity: 1;
 }
 .op-controls input[type='range'],
-.op-controls > button {
+.op-controls button {
     -ms-touch-action: manipulation;
         touch-action: manipulation;
 }
 
 /* === Time =================== */
-.op-controls > .op-controls-time {
+.op-controls .op-controls-time {
     margin: 4px 3px 0;
 }
 
@@ -479,15 +479,15 @@
 .op-controls progress::-moz-progress-bar {
     background: 0 0;
 }
-.op-controls > .op-controls__progress {
+.op-controls .op-controls__progress {
     -webkit-box-flex: 2;
         -ms-flex-positive: 2;
             flex-grow: 2;
 }
-.op-controls > .op-controls__progress,
-.op-controls > .op-controls__progress:hover,
-.op-controls > .op-controls__volume,
-.op-controls > .op-controls__volume:hover {
+.op-controls .op-controls__progress,
+.op-controls .op-controls__progress:hover,
+.op-controls .op-controls__volume,
+.op-controls .op-controls__volume:hover {
     cursor: pointer;
 }
 .op-controls__progress,
@@ -640,7 +640,7 @@
     margin-left: 0;
     width: 70px;
 }
-.op-controls > .op-controls__mute:before {
+.op-controls .op-controls__mute:before {
     text-align: left;
 }
 .op-player__video .op-controls__volume {
@@ -801,7 +801,7 @@ video:-webkit-media-text-track-display {
 .op-ads--active .op-controls__fullscreen {
     float: right;
 }
-.op-ads--active .op-controls > .op-control__right ~ .op-control__right {
+.op-ads--active .op-controls .op-control__right ~ .op-control__right {
     margin-left: auto;
 }
 .op-ads--active .op-ads {
@@ -814,12 +814,12 @@ video:-webkit-media-text-track-display {
 /* === Focus =================== */
 .op-player:focus,
 .op-player__play:focus,
-.op-player > .op-controls > *:focus {
+.op-player > .op-controls *:focus {
     outline: dotted 1px #999;
 }
 .op-player.op-player__keyboard--inactive:focus,
 .op-player.op-player__keyboard--inactive .op-player__play:focus,
-.op-player.op-player__keyboard--inactive > .op-controls > *:focus {
+.op-player.op-player__keyboard--inactive > .op-controls *:focus {
     outline: none;
 }
 
