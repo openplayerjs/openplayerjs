@@ -5,7 +5,6 @@
     "git": {
         "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs",
         "requireCleanWorkingDir": false,
-        "tagName": "v%s",
         "addUntrackedFiles": true
     },
     "github": {
