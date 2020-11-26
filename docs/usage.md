@@ -118,6 +118,8 @@ var player = new OpenPlayerJS('[player ID]', {
         // all FLV options available at https://github.com/bilibili/flv.js/blob/master/docs/api.md#mediadatasource
     },
     // Force the player to have a specific width/height (default for both: 0)
+    // They can accept a string with the number and unit (`100%`, `350px`)
+    // or just a number of pixels
     width,
     height,
 });
