@@ -1627,6 +1627,7 @@ var Player = function () {
         }
       },
       detachMenus: false,
+      height: 0,
       hidePlayBtnTimer: 350,
       labels: {
         auto: 'Auto',
@@ -1664,7 +1665,8 @@ var Player = function () {
       showLoaderOnInit: false,
       startTime: 0,
       startVolume: 1,
-      step: 0
+      step: 0,
+      width: 0
     };
     this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
 
@@ -1685,7 +1687,6 @@ var Player = function () {
         this.element.currentTime = this.options.startTime;
       }
 
-      this.fill = this.options.mode === 'fill';
       this.volume = this.element.volume;
     }
 
@@ -1945,8 +1946,34 @@ var Player = function () {
         }
       });
 
-      if (this.fill) {
-        this._fill();
+      if (this.options.mode === 'fill' && !general_1.isAudio(this.element) && !constants_1.IS_IPHONE) {
+        this.getContainer().classList.add('op-player__full');
+      } else if (this.options.mode === 'fit' && !general_1.isAudio(this.element)) {
+        var container = this.getContainer();
+
+        if (container.parentElement) {
+          var fitWrapper = document.createElement('div');
+          fitWrapper.className = 'op-player__fit--wrapper';
+          fitWrapper.tabIndex = 0;
+          container.parentElement.insertBefore(fitWrapper, container);
+          container.classList.add('op-player__fit');
+        }
+      } else {
+        var style = '';
+
+        if (this.options.width) {
+          var width = typeof this.options.width === 'number' ? "".concat(this.options.width, "px") : this.options.width;
+          style += "width: ".concat(width, " !important;");
+        }
+
+        if (this.options.height) {
+          var height = typeof this.options.height === 'number' ? "".concat(this.options.height, "px") : this.options.height;
+          style += "height: ".concat(height, " !important;");
+        }
+
+        if (style) {
+          wrapper.setAttribute('style', style);
+        }
       }
     }
   }, {
@@ -2172,13 +2199,6 @@ var Player = function () {
             return _this4.play();
           }
         });
-      }
-    }
-  }, {
-    key: "_fill",
-    value: function _fill() {
-      if (!general_1.isAudio(this.element) && !constants_1.IS_IPHONE) {
-        this.getContainer().classList.add('op-player__full');
       }
     }
   }, {

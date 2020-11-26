@@ -140,16 +140,6 @@ class Player {
     private ads?: string | string[];
 
     /**
-     * Flag to determine if player must be scaled and scrop to fit parent container
-     * (only for video elements)
-     *
-     * @private
-     * @type boolean
-     * @memberof Player
-     */
-    private fill?: boolean;
-
-    /**
      * Instance of Media object.
      *
      * @type Media
@@ -248,6 +238,7 @@ class Player {
             },
         },
         detachMenus: false,
+        height: 0,
         hidePlayBtnTimer: 350,
         labels: {
             auto: 'Auto',
@@ -280,12 +271,13 @@ class Player {
             showLabel: true,
             showProgress: false,
         },
-        mode: 'responsive', // or `fill`
+        mode: 'responsive', // or `fill` or `fit`
         onError: () => { },
         showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,
         step: 0,
+        width: 0,
     };
 
     /**
@@ -310,7 +302,6 @@ class Player {
             if (this.options.startTime > 0) {
                 this.element.currentTime = this.options.startTime;
             }
-            this.fill = this.options.mode === 'fill';
             this.volume = this.element.volume;
         }
         return this;
@@ -704,8 +695,34 @@ class Player {
             }
         });
 
-        if (this.fill) {
-            this._fill();
+        if (this.options.mode === 'fill' && !isAudio(this.element) && !IS_IPHONE) {
+            // Create fill effect on video, scaling and croping dimensions relative to its parent, setting just a class.
+            // This method centers the video view using pure CSS in both Ads and Media.
+            // @see https://slicejack.com/fullscreen-html5-video-background-css/
+            this.getContainer().classList.add('op-player__full');
+        } else if (this.options.mode === 'fit' && !isAudio(this.element)) {
+            const container = this.getContainer();
+            if (container.parentElement) {
+                const fitWrapper = document.createElement('div');
+                fitWrapper.className = 'op-player__fit--wrapper';
+                fitWrapper.tabIndex = 0;
+                container.parentElement.insertBefore(fitWrapper, container);
+                container.classList.add('op-player__fit');
+            }
+        } else {
+            let style = '';
+            if (this.options.width) {
+                const width = typeof this.options.width === 'number' ? `${this.options.width}px` : this.options.width;
+                style += `width: ${width} !important;`;
+            }
+            if (this.options.height) {
+                const height = typeof this.options.height === 'number' ? `${this.options.height}px` : this.options.height;
+                style += `height: ${height} !important;`;
+            }
+
+            if (style) {
+                wrapper.setAttribute('style', style);
+            }
         }
     }
 
@@ -926,20 +943,6 @@ class Player {
                     return this.play();
                 }
             });
-        }
-    }
-
-    /**
-     * Create fill effect on video, scaling and croping dimensions relative to its parent, setting just a class.
-     *
-     * This methods centers the video view using pure CSS in both Ads and Media.
-     * @see https://slicejack.com/fullscreen-html5-video-background-css/
-     * @private
-     * @memberof Player
-     */
-    private _fill(): void {
-        if (!isAudio(this.element) && !IS_IPHONE) {
-            this.getContainer().classList.add('op-player__full');
         }
     }
 

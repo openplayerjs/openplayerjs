@@ -63,7 +63,7 @@ var player = new OpenPlayerJS('[player ID]', {
     },
     // Allow items to be contained in a different space outside of `Settings`
     detachMenus,
-    // Player stretching mode: `responsive` (default) or `fill`
+    // Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)
     mode,
     // Number of ms that takes the player to hide the Play button once it starts playing (video only)
     // (bt default, `350`)
@@ -117,6 +117,9 @@ var player = new OpenPlayerJS('[player ID]', {
     flv: {
         // all FLV options available at https://github.com/bilibili/flv.js/blob/master/docs/api.md#mediadatasource
     },
+    // Force the player to have a specific width/height (default for both: 0)
+    width,
+    height,
 });
 // Don't forget to start the player
 player.init();
