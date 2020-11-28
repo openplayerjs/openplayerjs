@@ -5,3 +5,4 @@ ts-dist/
 coverage/
 .history/
 .DS_Store
+.nyc_output

@@ -1956,6 +1956,7 @@ var Player = function () {
           fitWrapper.className = 'op-player__fit--wrapper';
           fitWrapper.tabIndex = 0;
           container.parentElement.insertBefore(fitWrapper, container);
+          fitWrapper.appendChild(container);
           container.classList.add('op-player__fit');
         }
       } else {
