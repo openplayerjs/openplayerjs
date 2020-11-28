@@ -33,6 +33,7 @@ class Player {
                 },
             },
             detachMenus: false,
+            height: 0,
             hidePlayBtnTimer: 350,
             labels: {
                 auto: 'Auto',
@@ -71,6 +72,7 @@ class Player {
             startTime: 0,
             startVolume: 1,
             step: 0,
+            width: 0,
         };
         this.element = element instanceof HTMLMediaElement ? element : document.getElementById(element);
         if (this.element) {
@@ -85,7 +87,6 @@ class Player {
             if (this.options.startTime > 0) {
                 this.element.currentTime = this.options.startTime;
             }
-            this.fill = this.options.mode === 'fill';
             this.volume = this.element.volume;
         }
         return this;
@@ -302,8 +303,32 @@ class Player {
                 wrapper.classList.add('op-player__keyboard--inactive');
             }
         });
-        if (this.fill) {
-            this._fill();
+        if (this.options.mode === 'fill' && !isAudio(this.element) && !IS_IPHONE) {
+            this.getContainer().classList.add('op-player__full');
+        }
+        else if (this.options.mode === 'fit' && !isAudio(this.element)) {
+            const container = this.getContainer();
+            if (container.parentElement) {
+                const fitWrapper = document.createElement('div');
+                fitWrapper.className = 'op-player__fit--wrapper';
+                fitWrapper.tabIndex = 0;
+                container.parentElement.insertBefore(fitWrapper, container);
+                container.classList.add('op-player__fit');
+            }
+        }
+        else {
+            let style = '';
+            if (this.options.width) {
+                const width = typeof this.options.width === 'number' ? `${this.options.width}px` : this.options.width;
+                style += `width: ${width} !important;`;
+            }
+            if (this.options.height) {
+                const height = typeof this.options.height === 'number' ? `${this.options.height}px` : this.options.height;
+                style += `height: ${height} !important;`;
+            }
+            if (style) {
+                wrapper.setAttribute('style', style);
+            }
         }
     }
     _createControls() {
@@ -477,11 +502,6 @@ class Player {
                     return this.play();
                 }
             });
-        }
-    }
-    _fill() {
-        if (!isAudio(this.element) && !IS_IPHONE) {
-            this.getContainer().classList.add('op-player__full');
         }
     }
     _mergeOptions(playerOptions) {

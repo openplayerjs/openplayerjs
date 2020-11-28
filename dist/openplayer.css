@@ -847,6 +847,28 @@ video:-webkit-media-text-track-display {
     width: auto !important;
 }
 
+/* === Fit effect ======= */
+.op-player__fit--wrapper {
+    position: relative;
+}
+.op-player.op-player__fit {
+    background: #000;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+.op-player__fit .op-player__media,
+.op-player__fit .op-ads {
+    border: 0;
+    display: block;
+    height: 100%;
+    min-height: 100%;
+    width: 100%;
+}
+
 /* === Device-specific rules ========= */
 .op-player__ios--iphone .op-player__play {
     margin-top: -5px;

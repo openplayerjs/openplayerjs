@@ -105,15 +105,6 @@ declare class Player {
      */
     private ads?;
     /**
-     * Flag to determine if player must be scaled and scrop to fit parent container
-     * (only for video elements)
-     *
-     * @private
-     * @type boolean
-     * @memberof Player
-     */
-    private fill?;
-    /**
      * Instance of Media object.
      *
      * @type Media
@@ -420,15 +411,6 @@ declare class Player {
      * @memberof Player
      */
     private _autoplay;
-    /**
-     * Create fill effect on video, scaling and croping dimensions relative to its parent, setting just a class.
-     *
-     * This methods centers the video view using pure CSS in both Ads and Media.
-     * @see https://slicejack.com/fullscreen-html5-video-background-css/
-     * @private
-     * @memberof Player
-     */
-    private _fill;
     /**
      * Merge user's configuration with default configuration.
      *
