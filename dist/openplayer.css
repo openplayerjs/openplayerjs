@@ -849,8 +849,9 @@ video:-webkit-media-text-track-display {
 
 /* === Fit effect ======= */
 .op-player__fit--wrapper {
-    min-height: 250px;
+    height: 100%;
     position: relative;
+    width: 100%;
 }
 .op-player.op-player__fit {
     background: #000;
