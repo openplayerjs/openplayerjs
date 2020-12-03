@@ -714,7 +714,6 @@ video:-webkit-media-text-track-display {
     position: absolute;
     top: 0;
     width: 100%;
-    z-index: -1;
 }
 .op-ads--active {
     overflow: hidden;
