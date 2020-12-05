@@ -123,7 +123,7 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
 3. [Using `fill` mode](https://codepen.io/rafa8626/pen/xxZXQoO)
 4. [Using `fit` mode](https://codepen.io/rafa8626/pen/abmboKV)
-5. [Using Ads](https://codepen.io/rafa8626/pen/vVYKav)
+5. [Using Ads (linear and non-linear samples)](https://codepen.io/rafa8626/pen/vVYKav)
 6. [Removing controls and using `preload="none"`](https://codepen.io/rafa8626/pen/OJyMwxX)
 7. [Add source after initialization (useful for AJAX)](https://codepen.io/rafa8626/pen/YzzgJrK)
 8. [Fully customized audio player](https://codepen.io/rafa8626/pen/ExPLVRE)
