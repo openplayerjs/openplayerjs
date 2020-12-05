@@ -1,6 +1,7 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
+import { EVENT_OPTIONS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { hasClass, removeElement } from '../utils/general';
 
@@ -196,14 +197,14 @@ class Play implements PlayerComponent {
         };
 
         Object.keys(this.events.media).forEach(event => {
-            element.addEventListener(event, this.events.media[event]);
+            element.addEventListener(event, this.events.media[event], EVENT_OPTIONS);
         });
 
-        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
+        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged, EVENT_OPTIONS);
 
-        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
 
-        this.button.addEventListener('click', this.events.media.click);
+        this.button.addEventListener('click', this.events.media.click, EVENT_OPTIONS);
     }
 
     /**

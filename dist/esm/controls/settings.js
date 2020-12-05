@@ -1,3 +1,4 @@
+import { EVENT_OPTIONS } from '../utils/constants';
 import { hasClass, removeElement } from '../utils/general';
 class Settings {
     constructor(player, position, layer) {
@@ -62,13 +63,13 @@ class Settings {
             }
         };
         this.events.global.resize = this.hideEvent.bind(this);
-        this.button.addEventListener('click', this.clickEvent.bind(this));
+        this.button.addEventListener('click', this.clickEvent.bind(this), EVENT_OPTIONS);
         Object.keys(this.events).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event]);
+            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
         });
-        document.addEventListener('click', this.events.global.click);
+        document.addEventListener('click', this.events.global.click, EVENT_OPTIONS);
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', this.events.global.resize);
+            window.addEventListener('resize', this.events.global.resize, EVENT_OPTIONS);
         }
         this.player.getControls().getLayer(this.layer).appendChild(this.button);
         this.player.getContainer().appendChild(this.menu);
@@ -193,8 +194,8 @@ class Settings {
                 this.hideEvent();
             }
         };
-        document.addEventListener('click', this.events.global['settings.submenu']);
-        this.player.getElement().addEventListener('controlshidden', this.hideEvent);
+        document.addEventListener('click', this.events.global['settings.submenu'], EVENT_OPTIONS);
+        this.player.getElement().addEventListener('controlshidden', this.hideEvent, EVENT_OPTIONS);
     }
     removeItem(id, type, minItems = 2) {
         const target = this.player.getElement().querySelector(`.op-settings__submenu-label[data-value=${type}-${id}]`);

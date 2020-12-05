@@ -1,4 +1,4 @@
-import { IS_ANDROID, IS_IPHONE } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IPHONE } from '../utils/constants';
 import { removeElement } from '../utils/general';
 class Fullscreen {
     constructor(player, position, layer) {
@@ -37,23 +37,23 @@ class Fullscreen {
             'msfullscreenchange',
         ];
         this._setFullscreenData(false);
-        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
         this.fullscreenEvents.forEach(event => {
-            document.addEventListener(event, this._fullscreenChange.bind(this));
+            document.addEventListener(event, this._fullscreenChange.bind(this), EVENT_OPTIONS);
         });
-        this.button.addEventListener('click', this.clickEvent.bind(this));
+        this.button.addEventListener('click', this.clickEvent.bind(this), EVENT_OPTIONS);
         this.player.getControls().getLayer(this.layer).appendChild(this.button);
         if (IS_IPHONE) {
             this.player.getElement().addEventListener('webkitbeginfullscreen', () => {
                 this.isFullscreen = true;
                 this._setFullscreenData(true);
                 document.body.classList.add('op-fullscreen__on');
-            });
+            }, EVENT_OPTIONS);
             this.player.getElement().addEventListener('webkitendfullscreen', () => {
                 this.isFullscreen = false;
                 this._setFullscreenData(false);
                 document.body.classList.remove('op-fullscreen__on');
-            });
+            }, EVENT_OPTIONS);
         }
     }
     destroy() {

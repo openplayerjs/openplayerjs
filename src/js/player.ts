@@ -16,7 +16,7 @@ import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo, removeElement } from './utils/general';
 import { isAutoplaySupported } from './utils/media';
@@ -583,9 +583,9 @@ class Player {
      */
     public _prepareMedia(): void {
         try {
-            this.element.addEventListener('playererror', this.options.onError);
+            this.element.addEventListener('playererror', this.options.onError, EVENT_OPTIONS);
             if (this.autoplay && isVideo(this.element)) {
-                this.element.addEventListener('canplay', this._autoplay.bind(this));
+                this.element.addEventListener('canplay', this._autoplay.bind(this), EVENT_OPTIONS);
             }
             this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
             const preload = this.element.getAttribute('preload');
@@ -687,13 +687,13 @@ class Player {
             if (wrapper.classList.contains('op-player__keyboard--inactive')) {
                 wrapper.classList.remove('op-player__keyboard--inactive');
             }
-        });
+        }, EVENT_OPTIONS);
 
         wrapper.addEventListener('click', () => {
             if (!wrapper.classList.contains('op-player__keyboard--inactive')) {
                 wrapper.classList.add('op-player__keyboard--inactive');
             }
-        });
+        }, EVENT_OPTIONS);
 
         if (this.options.mode === 'fill' && !isAudio(this.element) && !IS_IPHONE) {
             // Create fill effect on video, scaling and croping dimensions relative to its parent, setting just a class.
@@ -801,7 +801,7 @@ class Player {
             } else {
                 this.activeElement().pause();
             }
-        });
+        }, EVENT_OPTIONS);
     }
 
     /**
@@ -882,7 +882,7 @@ class Player {
         }
 
         Object.keys(this.events).forEach(event => {
-            this.element.addEventListener(event, this.events[event]);
+            this.element.addEventListener(event, this.events[event], EVENT_OPTIONS);
         });
     }
 
@@ -928,7 +928,7 @@ class Player {
 
                         // Remove element
                         removeElement(volumeEl);
-                    });
+                    }, EVENT_OPTIONS);
 
                     const target = this.getContainer();
                     target.insertBefore(volumeEl, target.firstChild);

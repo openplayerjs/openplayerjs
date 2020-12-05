@@ -5,7 +5,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
-import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { getAbsoluteUrl, hasClass, removeElement, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
@@ -369,7 +369,7 @@ class Captions implements PlayerComponent {
             const target = this.player.getContainer();
             target.insertBefore(this.captions, target.firstChild);
             this.player.getControls().getLayer(this.layer).appendChild(this.button);
-            this.button.addEventListener('click', this.events.button.click);
+            this.button.addEventListener('click', this.events.button.click, EVENT_OPTIONS);
         }
 
         // For the following workflow it is required to have more than 1 language available
@@ -414,14 +414,14 @@ class Captions implements PlayerComponent {
         };
 
         if (this.detachMenu) {
-            this.button.addEventListener('mouseover', this.events.button.mouseover);
-            this.menu.addEventListener('mouseover', this.events.button.mouseover);
-            this.menu.addEventListener('mouseout', this.events.button.mouseout);
-            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+            this.button.addEventListener('mouseover', this.events.button.mouseover, EVENT_OPTIONS);
+            this.menu.addEventListener('mouseover', this.events.button.mouseover, EVENT_OPTIONS);
+            this.menu.addEventListener('mouseout', this.events.button.mouseout, EVENT_OPTIONS);
+            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout, EVENT_OPTIONS);
         }
 
         if (typeof this.events.global.click !== 'undefined') {
-            document.addEventListener('click', this.events.global.click);
+            document.addEventListener('click', this.events.global.click, EVENT_OPTIONS);
         }
     }
 
@@ -574,7 +574,7 @@ class Captions implements PlayerComponent {
         if (container) {
             container.innerHTML = '';
         }
-        this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
+        this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate, EVENT_OPTIONS);
     }
 
     /**

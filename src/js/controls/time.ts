@@ -1,6 +1,7 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
+import { EVENT_OPTIONS } from '../utils/constants';
 import { removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 
@@ -194,10 +195,10 @@ class Time implements PlayerComponent {
         };
 
         Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event]);
+            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
         });
 
-        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
+        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged, EVENT_OPTIONS);
 
         const controls = this.player.getControls().getLayer(this.layer);
         this.container = document.createElement('span');

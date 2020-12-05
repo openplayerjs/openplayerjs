@@ -1,4 +1,4 @@
-import { DVR_THRESHOLD } from '../utils/constants';
+import { DVR_THRESHOLD, EVENT_OPTIONS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isAudio, isVideo } from '../utils/general';
 import { isHlsSource } from '../utils/media';
@@ -19,13 +19,13 @@ class HTML5Media extends Native {
             };
             const errorEvent = addEvent('playererror', details);
             element.dispatchEvent(errorEvent);
-        });
+        }, EVENT_OPTIONS);
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
         this.isStreaming = isHlsSource(mediaFile);
-        this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this));
-        this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this));
+        this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this), EVENT_OPTIONS);
+        this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this), EVENT_OPTIONS);
         return this;
     }
     canPlayType(mimeType) {
@@ -91,7 +91,7 @@ class HTML5Media extends Native {
                     const metaDataEvent = addEvent('metadataready', { detail: cue });
                     this.element.dispatchEvent(metaDataEvent);
                 }
-            });
+            }, EVENT_OPTIONS);
         }
     }
 }

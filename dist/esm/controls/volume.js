@@ -1,4 +1,4 @@
-import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isAudio, removeElement } from '../utils/general';
 class Volume {
@@ -124,14 +124,14 @@ class Volume {
             const event = addEvent('volumechange');
             this.player.getElement().dispatchEvent(event);
         };
-        this.button.addEventListener('click', this.events.button.click);
+        this.button.addEventListener('click', this.events.button.click, EVENT_OPTIONS);
         Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event]);
+            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
         });
         Object.keys(this.events.slider).forEach(event => {
-            this.slider.addEventListener(event, this.events.slider[event]);
+            this.slider.addEventListener(event, this.events.slider[event], EVENT_OPTIONS);
         });
-        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
         if (!IS_ANDROID && !IS_IOS) {
             const controls = this.player.getControls().getLayer(this.layer);
             controls.appendChild(this.button);

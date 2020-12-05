@@ -6,7 +6,7 @@ import Progress from './controls/progress';
 import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
-import { IS_ANDROID, IS_IOS } from './utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo, removeElement } from './utils/general';
 class Controls {
@@ -43,8 +43,8 @@ class Controls {
         this.events.ended = () => {
             this.player.getContainer().classList.remove('op-controls--hidden');
         };
-        this.player.getElement().addEventListener('controlschanged', this.events.controlschanged);
-        this.player.getElement().addEventListener('ended', this.events.ended);
+        this.player.getElement().addEventListener('controlschanged', this.events.controlschanged, EVENT_OPTIONS);
+        this.player.getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
         const { alwaysVisible } = this.player.getOptions().controls;
         if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
@@ -91,10 +91,10 @@ class Controls {
                 this._stopControlTimer();
             };
             Object.keys(this.events.media).forEach(event => {
-                this.player.getElement().addEventListener(event, this.events.media[event]);
+                this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
             Object.keys(this.events.mouse).forEach(event => {
-                this.player.getContainer().addEventListener(event, this.events.mouse[event]);
+                this.player.getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
             });
             this._startControlTimer(3000);
         }
@@ -254,7 +254,7 @@ class Controls {
         control.tabIndex = 0;
         control.title = item.title;
         control.innerHTML = `${icon} <span class="op-sr">${item.title}</span>`;
-        control.addEventListener('click', item.click);
+        control.addEventListener('click', item.click, EVENT_OPTIONS);
         if (item.layer) {
             if (item.layer === 'main') {
                 this.player.getContainer().appendChild(control);

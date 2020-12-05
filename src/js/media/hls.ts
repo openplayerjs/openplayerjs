@@ -1,6 +1,6 @@
 import EventsList from '../interfaces/events-list';
 import Source from '../interfaces/source';
-import { DVR_THRESHOLD, SUPPORTS_HLS } from '../utils/constants';
+import { DVR_THRESHOLD, EVENT_OPTIONS, SUPPORTS_HLS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
 import { isHlsSource } from '../utils/media';
@@ -203,13 +203,13 @@ class HlsMedia extends Native {
                 if (this.player) {
                     this.player.startLoad();
                 }
-            });
+            }, EVENT_OPTIONS);
 
             this.element.addEventListener('pause', () => {
                 if (this.player) {
                     this.player.stopLoad();
                 }
-            });
+            }, EVENT_OPTIONS);
         }
     }
 

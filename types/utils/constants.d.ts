@@ -109,3 +109,9 @@ export declare const SUPPORTS_HLS: () => boolean;
  * Minimum amount of content in an M3U8 file to determine if DVR mode should be enabled
  */
 export declare const DVR_THRESHOLD = 120;
+/**
+ * Event options to be passed when using `addEventListener` for browser optimizations
+ */
+export declare const EVENT_OPTIONS: boolean | {
+    passive: boolean;
+};

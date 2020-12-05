@@ -1,4 +1,4 @@
-import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { getAbsoluteUrl, hasClass, removeElement, request } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
@@ -191,7 +191,7 @@ class Captions {
             const target = this.player.getContainer();
             target.insertBefore(this.captions, target.firstChild);
             this.player.getControls().getLayer(this.layer).appendChild(this.button);
-            this.button.addEventListener('click', this.events.button.click);
+            this.button.addEventListener('click', this.events.button.click, EVENT_OPTIONS);
         }
         if ((this.trackList.length <= 1 && !this.detachMenu) || (!this.trackList.length && this.detachMenu)) {
             return;
@@ -234,13 +234,13 @@ class Captions {
             }
         };
         if (this.detachMenu) {
-            this.button.addEventListener('mouseover', this.events.button.mouseover);
-            this.menu.addEventListener('mouseover', this.events.button.mouseover);
-            this.menu.addEventListener('mouseout', this.events.button.mouseout);
-            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+            this.button.addEventListener('mouseover', this.events.button.mouseover, EVENT_OPTIONS);
+            this.menu.addEventListener('mouseover', this.events.button.mouseover, EVENT_OPTIONS);
+            this.menu.addEventListener('mouseout', this.events.button.mouseout, EVENT_OPTIONS);
+            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout, EVENT_OPTIONS);
         }
         if (typeof this.events.global.click !== 'undefined') {
-            document.addEventListener('click', this.events.global.click);
+            document.addEventListener('click', this.events.global.click, EVENT_OPTIONS);
         }
     }
     destroy() {
@@ -346,7 +346,7 @@ class Captions {
         if (container) {
             container.innerHTML = '';
         }
-        this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
+        this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate, EVENT_OPTIONS);
     }
     _hide() {
         this.captions.classList.remove('op-captions--on');

@@ -123,6 +123,49 @@ module.exports =
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.EVENT_OPTIONS = exports.DVR_THRESHOLD = exports.SUPPORTS_HLS = exports.HAS_MSE = exports.IS_STOCK_ANDROID = exports.IS_SAFARI = exports.IS_FIREFOX = exports.IS_CHROME = exports.IS_EDGE = exports.IS_IE = exports.IS_ANDROID = exports.IS_IOS = exports.IS_IPOD = exports.IS_IPHONE = exports.IS_IPAD = exports.UA = exports.NAV = void 0;
+exports.NAV = typeof window !== 'undefined' ? window.navigator : null;
+exports.UA = exports.NAV ? exports.NAV.userAgent.toLowerCase() : null;
+exports.IS_IPAD = exports.UA ? /ipad/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPHONE = exports.UA ? /iphone/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPOD = exports.UA ? /ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IOS = exports.UA ? /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_ANDROID = exports.UA ? /android/i.test(exports.UA) : false;
+exports.IS_IE = exports.UA ? /(trident|microsoft)/i.test(exports.NAV.appName) : false;
+exports.IS_EDGE = exports.NAV ? 'msLaunchUri' in exports.NAV && !('documentMode' in document) : false;
+exports.IS_CHROME = exports.UA ? /chrome/i.test(exports.UA) : false;
+exports.IS_FIREFOX = exports.UA ? /firefox/i.test(exports.UA) : false;
+exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROME : false;
+exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
+exports.HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
+
+exports.SUPPORTS_HLS = function () {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  var mediaSource = window.MediaSource || window.WebKitMediaSource;
+  var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
+  var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
+  var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
+  return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
+};
+
+exports.DVR_THRESHOLD = 120;
+exports.EVENT_OPTIONS = exports.IS_IE ? false : {
+  passive: true
+};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.isXml = exports.offset = exports.hasClass = exports.request = exports.removeElement = exports.loadScript = exports.isAudio = exports.isVideo = exports.getAbsoluteUrl = void 0;
 
 function getAbsoluteUrl(url) {
@@ -303,7 +346,7 @@ function isXml(input) {
 exports.isXml = isXml;
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -324,46 +367,6 @@ module.exports = function (name) {
   } return WellKnownSymbolsStore[name];
 };
 
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.DVR_THRESHOLD = exports.SUPPORTS_HLS = exports.HAS_MSE = exports.IS_STOCK_ANDROID = exports.IS_SAFARI = exports.IS_FIREFOX = exports.IS_CHROME = exports.IS_EDGE = exports.IS_IE = exports.IS_ANDROID = exports.IS_IOS = exports.IS_IPOD = exports.IS_IPHONE = exports.IS_IPAD = exports.UA = exports.NAV = void 0;
-exports.NAV = typeof window !== 'undefined' ? window.navigator : null;
-exports.UA = exports.NAV ? exports.NAV.userAgent.toLowerCase() : null;
-exports.IS_IPAD = exports.UA ? /ipad/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_IPHONE = exports.UA ? /iphone/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_IPOD = exports.UA ? /ipod/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_IOS = exports.UA ? /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_ANDROID = exports.UA ? /android/i.test(exports.UA) : false;
-exports.IS_IE = exports.UA ? /(trident|microsoft)/i.test(exports.NAV.appName) : false;
-exports.IS_EDGE = exports.NAV ? 'msLaunchUri' in exports.NAV && !('documentMode' in document) : false;
-exports.IS_CHROME = exports.UA ? /chrome/i.test(exports.UA) : false;
-exports.IS_FIREFOX = exports.UA ? /firefox/i.test(exports.UA) : false;
-exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROME : false;
-exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
-exports.HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
-
-exports.SUPPORTS_HLS = function () {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  var mediaSource = window.MediaSource || window.WebKitMediaSource;
-  var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
-  var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
-  var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
-  return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
-};
-
-exports.DVR_THRESHOLD = 120;
 
 /***/ }),
 /* 4 */
@@ -1471,7 +1474,7 @@ module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O)
 
 var defineProperty = __webpack_require__(12).f;
 var has = __webpack_require__(7);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 
@@ -1486,7 +1489,7 @@ module.exports = function (it, TAG, STATIC) {
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 var test = {};
@@ -1596,11 +1599,11 @@ var media_1 = __importDefault(__webpack_require__(142));
 
 var ads_1 = __importDefault(__webpack_require__(147));
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var media_2 = __webpack_require__(14);
 
@@ -1880,10 +1883,10 @@ var Player = function () {
     key: "_prepareMedia",
     value: function _prepareMedia() {
       try {
-        this.element.addEventListener('playererror', this.options.onError);
+        this.element.addEventListener('playererror', this.options.onError, constants_1.EVENT_OPTIONS);
 
         if (this.autoplay && general_1.isVideo(this.element)) {
-          this.element.addEventListener('canplay', this._autoplay.bind(this));
+          this.element.addEventListener('canplay', this._autoplay.bind(this), constants_1.EVENT_OPTIONS);
         }
 
         this.media = new media_1["default"](this.element, this.options, this.autoplay, Player.customMedia);
@@ -1939,12 +1942,12 @@ var Player = function () {
         if (wrapper.classList.contains('op-player__keyboard--inactive')) {
           wrapper.classList.remove('op-player__keyboard--inactive');
         }
-      });
+      }, constants_1.EVENT_OPTIONS);
       wrapper.addEventListener('click', function () {
         if (!wrapper.classList.contains('op-player__keyboard--inactive')) {
           wrapper.classList.add('op-player__keyboard--inactive');
         }
-      });
+      }, constants_1.EVENT_OPTIONS);
 
       if (this.options.mode === 'fill' && !general_1.isAudio(this.element) && !constants_1.IS_IPHONE) {
         this.getContainer().classList.add('op-player__full');
@@ -2043,7 +2046,7 @@ var Player = function () {
         } else {
           _this2.activeElement().pause();
         }
-      });
+      }, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "_setEvents",
@@ -2147,7 +2150,7 @@ var Player = function () {
       }
 
       Object.keys(this.events).forEach(function (event) {
-        _this3.element.addEventListener(event, _this3.events[event]);
+        _this3.element.addEventListener(event, _this3.events[event], constants_1.EVENT_OPTIONS);
       });
     }
   }, {
@@ -2183,7 +2186,7 @@ var Player = function () {
               _this4.element.dispatchEvent(event);
 
               general_1.removeElement(volumeEl);
-            });
+            }, constants_1.EVENT_OPTIONS);
 
             var target = _this4.getContainer();
 
@@ -2318,7 +2321,7 @@ var store = __webpack_require__(38);
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.7.0',
+  version: '3.8.0',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
 });
@@ -2410,7 +2413,7 @@ module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
 /* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 var create = __webpack_require__(43);
 var definePropertyModule = __webpack_require__(12);
 
@@ -2490,7 +2493,7 @@ var setPrototypeOf = __webpack_require__(64);
 var setToStringTag = __webpack_require__(46);
 var createNonEnumerableProperty = __webpack_require__(11);
 var redefine = __webpack_require__(15);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 var IS_PURE = __webpack_require__(18);
 var Iterators = __webpack_require__(22);
 var IteratorsCore = __webpack_require__(63);
@@ -2583,7 +2586,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 var getPrototypeOf = __webpack_require__(45);
 var createNonEnumerableProperty = __webpack_require__(11);
 var has = __webpack_require__(7);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 var IS_PURE = __webpack_require__(18);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -2666,7 +2669,7 @@ module.exports = function (iterator) {
 /* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 var Iterators = __webpack_require__(22);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -2684,7 +2687,7 @@ module.exports = function (it) {
 
 var classof = __webpack_require__(68);
 var Iterators = __webpack_require__(22);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var ITERATOR = wellKnownSymbol('iterator');
 
@@ -2701,7 +2704,7 @@ module.exports = function (it) {
 
 var TO_STRING_TAG_SUPPORT = __webpack_require__(47);
 var classofRaw = __webpack_require__(25);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 // ES3 wrong here
@@ -2731,7 +2734,7 @@ module.exports = TO_STRING_TAG_SUPPORT ? classofRaw : function (it) {
 /* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var ITERATOR = wellKnownSymbol('iterator');
 var SAFE_CLOSING = false;
@@ -2824,7 +2827,7 @@ module.exports = global.Promise;
 
 var anObject = __webpack_require__(8);
 var aFunction = __webpack_require__(16);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -3272,13 +3275,14 @@ var arraySpeciesCreate = __webpack_require__(89);
 
 var push = [].push;
 
-// `Array.prototype.{ forEach, map, filter, some, every, find, findIndex }` methods implementation
+// `Array.prototype.{ forEach, map, filter, some, every, find, findIndex, filterOut }` methods implementation
 var createMethod = function (TYPE) {
   var IS_MAP = TYPE == 1;
   var IS_FILTER = TYPE == 2;
   var IS_SOME = TYPE == 3;
   var IS_EVERY = TYPE == 4;
   var IS_FIND_INDEX = TYPE == 6;
+  var IS_FILTER_OUT = TYPE == 7;
   var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
   return function ($this, callbackfn, that, specificCreate) {
     var O = toObject($this);
@@ -3287,7 +3291,7 @@ var createMethod = function (TYPE) {
     var length = toLength(self.length);
     var index = 0;
     var create = specificCreate || arraySpeciesCreate;
-    var target = IS_MAP ? create($this, length) : IS_FILTER ? create($this, 0) : undefined;
+    var target = IS_MAP ? create($this, length) : IS_FILTER || IS_FILTER_OUT ? create($this, 0) : undefined;
     var value, result;
     for (;length > index; index++) if (NO_HOLES || index in self) {
       value = self[index];
@@ -3299,7 +3303,10 @@ var createMethod = function (TYPE) {
           case 5: return value;             // find
           case 6: return index;             // findIndex
           case 2: push.call(target, value); // filter
-        } else if (IS_EVERY) return false;  // every
+        } else switch (TYPE) {
+          case 4: return false;             // every
+          case 7: push.call(target, value); // filterOut
+        }
       }
     }
     return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : target;
@@ -3327,7 +3334,10 @@ module.exports = {
   find: createMethod(5),
   // `Array.prototype.findIndex` method
   // https://tc39.github.io/ecma262/#sec-array.prototype.findIndex
-  findIndex: createMethod(6)
+  findIndex: createMethod(6),
+  // `Array.prototype.filterOut` method
+  // https://github.com/tc39/proposal-array-filtering
+  filterOut: createMethod(7)
 };
 
 
@@ -3337,7 +3347,7 @@ module.exports = {
 
 var isObject = __webpack_require__(10);
 var isArray = __webpack_require__(90);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -3880,7 +3890,7 @@ var newPromiseCapabilityModule = __webpack_require__(23);
 var perform = __webpack_require__(29);
 var InternalStateModule = __webpack_require__(26);
 var isForced = __webpack_require__(57);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 var IS_NODE = __webpack_require__(48);
 var V8_VERSION = __webpack_require__(122);
 
@@ -4258,7 +4268,7 @@ module.exports = function (target, src, options) {
 
 var getBuiltIn = __webpack_require__(13);
 var definePropertyModule = __webpack_require__(12);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 var DESCRIPTORS = __webpack_require__(9);
 
 var SPECIES = wellKnownSymbol('species');
@@ -4462,7 +4472,7 @@ var global = __webpack_require__(0);
 var DOMIterables = __webpack_require__(125);
 var ArrayIteratorMethods = __webpack_require__(126);
 var createNonEnumerableProperty = __webpack_require__(11);
-var wellKnownSymbol = __webpack_require__(2);
+var wellKnownSymbol = __webpack_require__(3);
 
 var ITERATOR = wellKnownSymbol('iterator');
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
@@ -4757,11 +4767,11 @@ var time_1 = __importDefault(__webpack_require__(140));
 
 var volume_1 = __importDefault(__webpack_require__(141));
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var Controls = function () {
   function Controls(player) {
@@ -4813,8 +4823,8 @@ var Controls = function () {
         _this.player.getContainer().classList.remove('op-controls--hidden');
       };
 
-      this.player.getElement().addEventListener('controlschanged', this.events.controlschanged);
-      this.player.getElement().addEventListener('ended', this.events.ended);
+      this.player.getElement().addEventListener('controlschanged', this.events.controlschanged, constants_1.EVENT_OPTIONS);
+      this.player.getElement().addEventListener('ended', this.events.ended, constants_1.EVENT_OPTIONS);
       var alwaysVisible = this.player.getOptions().controls.alwaysVisible;
 
       if (!alwaysVisible && !constants_1.IS_ANDROID && !constants_1.IS_IOS) {
@@ -4875,10 +4885,10 @@ var Controls = function () {
         };
 
         Object.keys(this.events.media).forEach(function (event) {
-          _this.player.getElement().addEventListener(event, _this.events.media[event]);
+          _this.player.getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
         });
         Object.keys(this.events.mouse).forEach(function (event) {
-          _this.player.getContainer().addEventListener(event, _this.events.mouse[event]);
+          _this.player.getContainer().addEventListener(event, _this.events.mouse[event], constants_1.EVENT_OPTIONS);
         });
 
         this._startControlTimer(3000);
@@ -5092,7 +5102,7 @@ var Controls = function () {
       control.tabIndex = 0;
       control.title = item.title;
       control.innerHTML = "".concat(icon, " <span class=\"op-sr\">").concat(item.title, "</span>");
-      control.addEventListener('click', item.click);
+      control.addEventListener('click', item.click, constants_1.EVENT_OPTIONS);
 
       if (item.layer) {
         if (item.layer === 'main') {
@@ -5139,11 +5149,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var time_1 = __webpack_require__(49);
 
@@ -5366,7 +5376,7 @@ var Captions = function () {
         var target = this.player.getContainer();
         target.insertBefore(this.captions, target.firstChild);
         this.player.getControls().getLayer(this.layer).appendChild(this.button);
-        this.button.addEventListener('click', this.events.button.click);
+        this.button.addEventListener('click', this.events.button.click, constants_1.EVENT_OPTIONS);
       }
 
       if (this.trackList.length <= 1 && !this.detachMenu || !this.trackList.length && this.detachMenu) {
@@ -5425,14 +5435,14 @@ var Captions = function () {
       };
 
       if (this.detachMenu) {
-        this.button.addEventListener('mouseover', this.events.button.mouseover);
-        this.menu.addEventListener('mouseover', this.events.button.mouseover);
-        this.menu.addEventListener('mouseout', this.events.button.mouseout);
-        this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+        this.button.addEventListener('mouseover', this.events.button.mouseover, constants_1.EVENT_OPTIONS);
+        this.menu.addEventListener('mouseover', this.events.button.mouseover, constants_1.EVENT_OPTIONS);
+        this.menu.addEventListener('mouseout', this.events.button.mouseout, constants_1.EVENT_OPTIONS);
+        this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout, constants_1.EVENT_OPTIONS);
       }
 
       if (typeof this.events.global.click !== 'undefined') {
-        document.addEventListener('click', this.events.global.click);
+        document.addEventListener('click', this.events.global.click, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
@@ -5566,7 +5576,7 @@ var Captions = function () {
         container.innerHTML = '';
       }
 
-      this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate);
+      this.player.getElement().addEventListener('timeupdate', this.events.media.timeupdate, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "_hide",
@@ -5704,9 +5714,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var Fullscreen = function () {
   function Fullscreen(player, position, layer) {
@@ -5750,11 +5760,11 @@ var Fullscreen = function () {
 
       this._setFullscreenData(false);
 
-      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), constants_1.EVENT_OPTIONS);
       this.fullscreenEvents.forEach(function (event) {
-        document.addEventListener(event, _this._fullscreenChange.bind(_this));
+        document.addEventListener(event, _this._fullscreenChange.bind(_this), constants_1.EVENT_OPTIONS);
       });
-      this.button.addEventListener('click', this.clickEvent.bind(this));
+      this.button.addEventListener('click', this.clickEvent.bind(this), constants_1.EVENT_OPTIONS);
       this.player.getControls().getLayer(this.layer).appendChild(this.button);
 
       if (constants_1.IS_IPHONE) {
@@ -5764,14 +5774,14 @@ var Fullscreen = function () {
           _this._setFullscreenData(true);
 
           document.body.classList.add('op-fullscreen__on');
-        });
+        }, constants_1.EVENT_OPTIONS);
         this.player.getElement().addEventListener('webkitendfullscreen', function () {
           _this.isFullscreen = false;
 
           _this._setFullscreenData(false);
 
           document.body.classList.remove('op-fullscreen__on');
-        });
+        }, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
@@ -5932,11 +5942,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var media_1 = __webpack_require__(14);
 
@@ -6048,11 +6058,11 @@ var Levels = function () {
           }
         };
 
-        this.button.addEventListener('click', this.events.button.click);
-        this.button.addEventListener('mouseover', this.events.button.mouseover);
-        this.menu.addEventListener('mouseover', this.events.button.mouseover);
-        this.menu.addEventListener('mouseout', this.events.button.mouseout);
-        this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+        this.button.addEventListener('click', this.events.button.click, constants_1.EVENT_OPTIONS);
+        this.button.addEventListener('mouseover', this.events.button.mouseover, constants_1.EVENT_OPTIONS);
+        this.menu.addEventListener('mouseover', this.events.button.mouseover, constants_1.EVENT_OPTIONS);
+        this.menu.addEventListener('mouseout', this.events.button.mouseout, constants_1.EVENT_OPTIONS);
+        this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout, constants_1.EVENT_OPTIONS);
       }
 
       this.events.global.click = function (e) {
@@ -6136,12 +6146,12 @@ var Levels = function () {
       };
 
       Object.keys(this.events.media).forEach(function (event) {
-        _this.player.getElement().addEventListener(event, _this.events.media[event]);
+        _this.player.getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
       });
-      document.addEventListener('click', this.events.global.click);
+      document.addEventListener('click', this.events.global.click, constants_1.EVENT_OPTIONS);
 
       if (connection) {
-        connection.addEventListener('change', this.events.global.connection);
+        connection.addEventListener('change', this.events.global.connection, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
@@ -6156,7 +6166,7 @@ var Levels = function () {
       document.removeEventListener('click', this.events.global.click);
 
       if (connection) {
-        connection.addEventListener('change', this.events.global.connection);
+        connection.removeEventListener('change', this.events.global.connection);
       }
 
       if (this.detachMenu) {
@@ -6320,9 +6330,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var player_1 = __importDefault(__webpack_require__(50));
 
+var constants_1 = __webpack_require__(1);
+
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var Play = function () {
   function Play(player, position, layer) {
@@ -6474,11 +6486,11 @@ var Play = function () {
       };
 
       Object.keys(this.events.media).forEach(function (event) {
-        element.addEventListener(event, _this.events.media[event]);
+        element.addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
       });
-      this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
-      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
-      this.button.addEventListener('click', this.events.media.click);
+      this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged, constants_1.EVENT_OPTIONS);
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), constants_1.EVENT_OPTIONS);
+      this.button.addEventListener('click', this.events.media.click, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "destroy",
@@ -6533,9 +6545,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var time_1 = __webpack_require__(49);
 
@@ -6834,16 +6846,16 @@ var Progress = function () {
       }
 
       Object.keys(this.events.media).forEach(function (event) {
-        _this.player.getElement().addEventListener(event, _this.events.media[event]);
+        _this.player.getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
       });
       Object.keys(this.events.slider).forEach(function (event) {
-        _this.slider.addEventListener(event, _this.events.slider[event]);
+        _this.slider.addEventListener(event, _this.events.slider[event], constants_1.EVENT_OPTIONS);
       });
-      this.progress.addEventListener('keydown', this.player.getEvents().keydown);
-      this.progress.addEventListener('mousemove', this.events.container.mousemove);
-      document.addEventListener('mousemove', this.events.global.mousemove);
-      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
-      this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
+      this.progress.addEventListener('keydown', this.player.getEvents().keydown, constants_1.EVENT_OPTIONS);
+      this.progress.addEventListener('mousemove', this.events.container.mousemove, constants_1.EVENT_OPTIONS);
+      document.addEventListener('mousemove', this.events.global.mousemove, constants_1.EVENT_OPTIONS);
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), constants_1.EVENT_OPTIONS);
+      this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged, constants_1.EVENT_OPTIONS);
       this.player.getControls().getLayer(this.layer).appendChild(this.progress);
     }
   }, {
@@ -6925,7 +6937,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var general_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(1);
+
+var general_1 = __webpack_require__(2);
 
 var Settings = function () {
   function Settings(player, position, layer) {
@@ -7012,14 +7026,14 @@ var Settings = function () {
       };
 
       this.events.global.resize = this.hideEvent.bind(this);
-      this.button.addEventListener('click', this.clickEvent.bind(this));
+      this.button.addEventListener('click', this.clickEvent.bind(this), constants_1.EVENT_OPTIONS);
       Object.keys(this.events).forEach(function (event) {
-        _this.player.getElement().addEventListener(event, _this.events.media[event]);
+        _this.player.getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
       });
-      document.addEventListener('click', this.events.global.click);
+      document.addEventListener('click', this.events.global.click, constants_1.EVENT_OPTIONS);
 
       if (typeof window !== 'undefined') {
-        window.addEventListener('resize', this.events.global.resize);
+        window.addEventListener('resize', this.events.global.resize, constants_1.EVENT_OPTIONS);
       }
 
       this.player.getControls().getLayer(this.layer).appendChild(this.button);
@@ -7188,8 +7202,8 @@ var Settings = function () {
         }
       };
 
-      document.addEventListener('click', this.events.global['settings.submenu']);
-      this.player.getElement().addEventListener('controlshidden', this.hideEvent);
+      document.addEventListener('click', this.events.global['settings.submenu'], constants_1.EVENT_OPTIONS);
+      this.player.getElement().addEventListener('controlshidden', this.hideEvent, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "removeItem",
@@ -7235,7 +7249,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var general_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(1);
+
+var general_1 = __webpack_require__(2);
 
 var time_1 = __webpack_require__(49);
 
@@ -7337,9 +7353,9 @@ var Time = function () {
       };
 
       Object.keys(this.events.media).forEach(function (event) {
-        _this.player.getElement().addEventListener(event, _this.events.media[event]);
+        _this.player.getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
       });
-      this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
+      this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged, constants_1.EVENT_OPTIONS);
       var controls = this.player.getControls().getLayer(this.layer);
       this.container = document.createElement('span');
       this.container.className = "op-controls-time op-control__".concat(this.position);
@@ -7386,11 +7402,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var Volume = function () {
   function Volume(player, position, layer) {
@@ -7549,14 +7565,14 @@ var Volume = function () {
         _this.player.getElement().dispatchEvent(event);
       };
 
-      this.button.addEventListener('click', this.events.button.click);
+      this.button.addEventListener('click', this.events.button.click, constants_1.EVENT_OPTIONS);
       Object.keys(this.events.media).forEach(function (event) {
-        _this.player.getElement().addEventListener(event, _this.events.media[event]);
+        _this.player.getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
       });
       Object.keys(this.events.slider).forEach(function (event) {
-        _this.slider.addEventListener(event, _this.events.slider[event]);
+        _this.slider.addEventListener(event, _this.events.slider[event], constants_1.EVENT_OPTIONS);
       });
-      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+      this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), constants_1.EVENT_OPTIONS);
 
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         var controls = this.player.getControls().getLayer(this.layer);
@@ -8032,11 +8048,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var media_1 = __webpack_require__(14);
 
@@ -8276,11 +8292,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var media_1 = __webpack_require__(14);
 
@@ -8500,11 +8516,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var media_1 = __webpack_require__(14);
 
@@ -8606,12 +8622,12 @@ var HlsMedia = function (_native_1$default) {
           if (_this3.player) {
             _this3.player.startLoad();
           }
-        });
+        }, constants_1.EVENT_OPTIONS);
         this.element.addEventListener('pause', function () {
           if (_this3.player) {
             _this3.player.stopLoad();
           }
-        });
+        }, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
@@ -8825,11 +8841,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var media_1 = __webpack_require__(14);
 
@@ -8859,7 +8875,7 @@ var HTML5Media = function (_native_1$default) {
       };
       var errorEvent = events_1.addEvent('playererror', details);
       element.dispatchEvent(errorEvent);
-    });
+    }, constants_1.EVENT_OPTIONS);
 
     if (!general_1.isAudio(element) && !general_1.isVideo(element)) {
       throw new TypeError('Native method only supports video/audio tags');
@@ -8867,9 +8883,9 @@ var HTML5Media = function (_native_1$default) {
 
     _this.isStreaming = media_1.isHlsSource(mediaFile);
 
-    _this.element.addEventListener('loadeddata', _this._isDvrEnabled.bind(_assertThisInitialized(_this)));
+    _this.element.addEventListener('loadeddata', _this._isDvrEnabled.bind(_assertThisInitialized(_this)), constants_1.EVENT_OPTIONS);
 
-    _this.element.textTracks.addEventListener('addtrack', _this._readMediadataInfo.bind(_assertThisInitialized(_this)));
+    _this.element.textTracks.addEventListener('addtrack', _this._readMediadataInfo.bind(_assertThisInitialized(_this)), constants_1.EVENT_OPTIONS);
 
     return _possibleConstructorReturn(_this, _assertThisInitialized(_this));
   }
@@ -8922,7 +8938,7 @@ var HTML5Media = function (_native_1$default) {
 
             _this2.element.dispatchEvent(metaDataEvent);
           }
-        });
+        }, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
@@ -8995,11 +9011,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(1);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(1);
+var general_1 = __webpack_require__(2);
 
 var Ads = function () {
   function Ads(player, ads, autoStart, autoStartMuted, options) {
@@ -9083,18 +9099,18 @@ var Ads = function () {
       google.ima.settings.setLocale(this.adsOptions.language);
       this.adDisplayContainer = new google.ima.AdDisplayContainer(this.adsContainer, this.element);
       this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
-      this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
-      this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
+      this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this), constants_1.EVENT_OPTIONS);
+      this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this), constants_1.EVENT_OPTIONS);
 
       if (typeof window !== 'undefined') {
         window.addEventListener('resize', function () {
           _this.resizeAds();
-        });
+        }, constants_1.EVENT_OPTIONS);
       }
 
       this.element.addEventListener('loadedmetadata', function () {
         _this.resizeAds();
-      });
+      }, constants_1.EVENT_OPTIONS);
 
       if (this.autoStart === true || this.autoStartMuted === true || force === true) {
         if (!this.adsDone) {
@@ -9401,8 +9417,8 @@ var Ads = function () {
     value: function _start(manager) {
       var _this6 = this;
 
-      manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this));
-      manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this));
+      manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this), constants_1.EVENT_OPTIONS);
+      manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this), constants_1.EVENT_OPTIONS);
       this.events = [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED];
 
       if (!this.adsOptions.autoPlayAdBreaks) {
@@ -9413,11 +9429,11 @@ var Ads = function () {
       var mouseEvents = controls ? controls.events.mouse : {};
       Object.keys(mouseEvents).forEach(function (event) {
         if (_this6.adsContainer) {
-          _this6.adsContainer.addEventListener(event, mouseEvents[event]);
+          _this6.adsContainer.addEventListener(event, mouseEvents[event], constants_1.EVENT_OPTIONS);
         }
       });
       this.events.forEach(function (event) {
-        manager.addEventListener(event, _this6._assign.bind(_this6));
+        manager.addEventListener(event, _this6._assign.bind(_this6), constants_1.EVENT_OPTIONS);
       });
 
       if (this.autoStart === true || this.playTriggered === true) {
@@ -9445,7 +9461,7 @@ var Ads = function () {
 
       if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
         this.preloadContent = this._contentLoadedAction;
-        this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+        this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this), constants_1.EVENT_OPTIONS);
         this.element.load();
       } else {
         this._contentLoadedAction();
@@ -9493,8 +9509,8 @@ var Ads = function () {
         this.adsDone = false;
         this.load(true);
       } else {
-        this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-        this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+        this.element.addEventListener('ended', this._contentEndedListener.bind(this), constants_1.EVENT_OPTIONS);
+        this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this), constants_1.EVENT_OPTIONS);
 
         if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
           this.media.src = this.mediaSources;

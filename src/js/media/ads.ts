@@ -2,7 +2,7 @@ import Options from '../interfaces/ads/options';
 import Source from '../interfaces/source';
 import Media from '../media';
 import Player from '../player';
-import { IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, isXml, loadScript, removeElement } from '../utils/general';
 
@@ -364,22 +364,24 @@ class Ads {
         this.adsLoader.addEventListener(
             google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
             this._loaded.bind(this),
+            EVENT_OPTIONS,
         );
 
         this.adsLoader.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
             this._error.bind(this),
+            EVENT_OPTIONS,
         );
 
         // Create responsive ad
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', () => {
                 this.resizeAds();
-            });
+            }, EVENT_OPTIONS);
         }
         this.element.addEventListener('loadedmetadata', () => {
             this.resizeAds();
-        });
+        }, EVENT_OPTIONS);
 
         // Request Ads automatically if `autoplay` was set
         if (this.autoStart === true || this.autoStartMuted === true || force === true) {
@@ -820,10 +822,10 @@ class Ads {
         // Add listeners to the required events.
         manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-            this._onContentPauseRequested.bind(this));
+            this._onContentPauseRequested.bind(this), EVENT_OPTIONS);
         manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
-            this._onContentResumeRequested.bind(this));
+            this._onContentResumeRequested.bind(this), EVENT_OPTIONS);
 
         this.events = [
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
@@ -849,11 +851,11 @@ class Ads {
         const mouseEvents = controls ? controls.events.mouse : {};
         Object.keys(mouseEvents).forEach((event: string) => {
             if (this.adsContainer) {
-                this.adsContainer.addEventListener(event, mouseEvents[event]);
+                this.adsContainer.addEventListener(event, mouseEvents[event], EVENT_OPTIONS);
             }
         });
         this.events.forEach(event => {
-            manager.addEventListener(event, this._assign.bind(this));
+            manager.addEventListener(event, this._assign.bind(this), EVENT_OPTIONS);
         });
 
         if (this.autoStart === true || this.playTriggered === true) {
@@ -886,7 +888,7 @@ class Ads {
         this.adDisplayContainer.initialize();
         if (IS_IOS || IS_ANDROID) {
             this.preloadContent = this._contentLoadedAction;
-            this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+            this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this), EVENT_OPTIONS);
             this.element.load();
         } else {
             this._contentLoadedAction();
@@ -945,8 +947,8 @@ class Ads {
             this.adsDone = false;
             this.load(true);
         } else {
-            this.element.addEventListener('ended', this._contentEndedListener.bind(this));
-            this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+            this.element.addEventListener('ended', this._contentEndedListener.bind(this), EVENT_OPTIONS);
+            this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this), EVENT_OPTIONS);
             if (IS_IOS || IS_ANDROID) {
                 this.media.src = this.mediaSources;
                 this.media.load();

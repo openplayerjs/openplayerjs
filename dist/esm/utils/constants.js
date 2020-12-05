@@ -28,3 +28,4 @@ export const SUPPORTS_HLS = () => {
     return !!isTypeSupported && !!sourceBufferValidAPI && !IS_SAFARI;
 };
 export const DVR_THRESHOLD = 120;
+export const EVENT_OPTIONS = IS_IE ? false : { passive: true };

@@ -1,7 +1,7 @@
 import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
-import { IS_ANDROID, IS_IOS } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
 import { hasClass, offset, removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 
@@ -426,18 +426,18 @@ class Progress implements PlayerComponent {
         }
 
         Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event]);
+            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
         });
 
         Object.keys(this.events.slider).forEach(event => {
-            this.slider.addEventListener(event, this.events.slider[event]);
+            this.slider.addEventListener(event, this.events.slider[event], EVENT_OPTIONS);
         });
 
-        this.progress.addEventListener('keydown', this.player.getEvents().keydown);
-        this.progress.addEventListener('mousemove', this.events.container.mousemove);
-        document.addEventListener('mousemove', this.events.global.mousemove);
-        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
-        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged);
+        this.progress.addEventListener('keydown', this.player.getEvents().keydown, EVENT_OPTIONS);
+        this.progress.addEventListener('mousemove', this.events.container.mousemove, EVENT_OPTIONS);
+        document.addEventListener('mousemove', this.events.global.mousemove, EVENT_OPTIONS);
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged, EVENT_OPTIONS);
         this.player.getControls().getLayer(this.layer).appendChild(this.progress);
     }
 

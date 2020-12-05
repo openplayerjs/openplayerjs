@@ -4,7 +4,7 @@ import Level from '../interfaces/level';
 import SettingsItem from '../interfaces/settings/item';
 import SettingsSubItem from '../interfaces/settings/subitem';
 import Player from '../player';
-import { IS_ANDROID, IS_IOS, NAV } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, NAV } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { hasClass, removeElement } from '../utils/general';
 import { isDashSource, isHlsSource } from '../utils/media';
@@ -200,11 +200,11 @@ class Levels implements PlayerComponent {
                 }
             };
 
-            this.button.addEventListener('click', this.events.button.click);
-            this.button.addEventListener('mouseover', this.events.button.mouseover);
-            this.menu.addEventListener('mouseover', this.events.button.mouseover);
-            this.menu.addEventListener('mouseout', this.events.button.mouseout);
-            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout);
+            this.button.addEventListener('click', this.events.button.click, EVENT_OPTIONS);
+            this.button.addEventListener('mouseover', this.events.button.mouseover, EVENT_OPTIONS);
+            this.menu.addEventListener('mouseover', this.events.button.mouseover, EVENT_OPTIONS);
+            this.menu.addEventListener('mouseout', this.events.button.mouseout, EVENT_OPTIONS);
+            this.player.getElement().addEventListener('controlshidden', this.events.button.mouseout, EVENT_OPTIONS);
         }
 
         this.events.global.click = (e: Event) => {
@@ -266,12 +266,12 @@ class Levels implements PlayerComponent {
         };
 
         Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event]);
+            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
         });
 
-        document.addEventListener('click', this.events.global.click);
+        document.addEventListener('click', this.events.global.click, EVENT_OPTIONS);
         if (connection) {
-            connection.addEventListener('change', this.events.global.connection);
+            connection.addEventListener('change', this.events.global.connection, EVENT_OPTIONS);
         }
     }
 
@@ -283,7 +283,7 @@ class Levels implements PlayerComponent {
         });
         document.removeEventListener('click', this.events.global.click);
         if (connection) {
-            connection.addEventListener('change', this.events.global.connection);
+            connection.removeEventListener('change', this.events.global.connection);
         }
         if (this.detachMenu) {
             this.button.removeEventListener('click', this.events.button.click);

@@ -1,6 +1,6 @@
 import PlayerComponent from '../interfaces/component';
 import Player from '../player';
-import { IS_ANDROID, IS_IPHONE } from '../utils/constants';
+import { EVENT_OPTIONS, IS_ANDROID, IS_IPHONE } from '../utils/constants';
 import { removeElement } from '../utils/general';
 
 /**
@@ -166,13 +166,13 @@ class Fullscreen implements PlayerComponent {
 
         this._setFullscreenData(false);
 
-        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this));
+        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
 
         this.fullscreenEvents.forEach(event => {
-            document.addEventListener(event, this._fullscreenChange.bind(this));
+            document.addEventListener(event, this._fullscreenChange.bind(this), EVENT_OPTIONS);
         });
 
-        this.button.addEventListener('click', this.clickEvent.bind(this));
+        this.button.addEventListener('click', this.clickEvent.bind(this), EVENT_OPTIONS);
 
         this.player.getControls().getLayer(this.layer).appendChild(this.button);
 
@@ -182,12 +182,12 @@ class Fullscreen implements PlayerComponent {
                 this.isFullscreen = true;
                 this._setFullscreenData(true);
                 document.body.classList.add('op-fullscreen__on');
-            });
+            }, EVENT_OPTIONS);
             this.player.getElement().addEventListener('webkitendfullscreen', () => {
                 this.isFullscreen = false;
                 this._setFullscreenData(false);
                 document.body.classList.remove('op-fullscreen__on');
-            });
+            }, EVENT_OPTIONS);
         }
     }
 

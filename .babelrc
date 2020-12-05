@@ -4,7 +4,8 @@
     [
       "@babel/preset-env",
       {
-        "targets": "last 5 versions, ie >= 11"
+        "targets": ">0.5%",
+        "useBuiltIns": "usage"
       }
     ]
   ]
