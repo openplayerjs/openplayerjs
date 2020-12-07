@@ -9379,8 +9379,11 @@ var Ads = function () {
         this.load(true);
         console.warn("Ad warning: ".concat(error.toString()));
       } else {
-        if (this.adsManager && fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
-          this.adsManager.destroy();
+        if (fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
+          if (this.adsManager) {
+            this.adsManager.destroy();
+          }
+
           console.error("Ad error: ".concat(error.toString()));
         } else {
           console.warn("Ad warning: ".concat(error.toString()));

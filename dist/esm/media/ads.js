@@ -332,8 +332,10 @@ class Ads {
             console.warn(`Ad warning: ${error.toString()}`);
         }
         else {
-            if (this.adsManager && fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
-                this.adsManager.destroy();
+            if (fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
+                if (this.adsManager) {
+                    this.adsManager.destroy();
+                }
                 console.error(`Ad error: ${error.toString()}`);
             }
             else {
