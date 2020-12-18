@@ -93,6 +93,8 @@ var player = new OpenPlayerJS('[player ID]', {
         autoPlayAdBreaks,
         // If set to `true`, load `ima3_debug.js` file for debugging purposes
         debug,
+        // If set to `true`, the Ads will preload so other actions can be executed with `adsloaded` event
+        enablePreloading,
         // Language for ads (for more details, check: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization)
         language,
         // If set to `true`, play infintely an Ad
