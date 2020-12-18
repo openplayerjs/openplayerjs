@@ -23,6 +23,7 @@ class Ads {
         const defaultOpts = {
             autoPlayAdBreaks: true,
             debug: false,
+            enablePreloading: true,
             language: 'en',
             loop: false,
             numRedirects: 4,
@@ -81,7 +82,7 @@ class Ads {
         this.element.addEventListener('loadedmetadata', () => {
             this.resizeAds();
         }, EVENT_OPTIONS);
-        if (this.autoStart === true || this.autoStartMuted === true || force === true) {
+        if (this.autoStart === true || this.autoStartMuted === true || force === true || this.adsOptions.enablePreloading === true) {
             if (!this.adsDone) {
                 this.adsDone = true;
                 this.adDisplayContainer.initialize();
@@ -359,6 +360,7 @@ class Ads {
     _loaded(adsManagerLoadedEvent) {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
+        adsRenderingSettings.enablePreloading = this.adsOptions.enablePreloading;
         this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
         this._start(this.adsManager);
     }
@@ -392,7 +394,7 @@ class Ads {
         this.events.forEach(event => {
             manager.addEventListener(event, this._assign.bind(this), EVENT_OPTIONS);
         });
-        if (this.autoStart === true || this.playTriggered === true) {
+        if (this.autoStart === true || this.playTriggered === true || this.adsOptions.enablePreloading === true) {
             this.playTriggered = false;
             if (!this.adsDone) {
                 this._initNotDoneAds();

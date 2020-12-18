@@ -15,6 +15,10 @@ export default interface Options {
      */
     readonly debug: boolean;
     /**
+     * If `true`, enables the IMA SDK Ads preloading.
+     */
+    readonly enablePreloading: boolean;
+    /**
      * Number of redirection to play Ad (by default, `4`).
      */
     readonly numRedirects: number;

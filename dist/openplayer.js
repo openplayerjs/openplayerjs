@@ -9041,6 +9041,7 @@ var Ads = function () {
     var defaultOpts = {
       autoPlayAdBreaks: true,
       debug: false,
+      enablePreloading: true,
       language: 'en',
       loop: false,
       numRedirects: 4,
@@ -9112,7 +9113,7 @@ var Ads = function () {
         _this.resizeAds();
       }, constants_1.EVENT_OPTIONS);
 
-      if (this.autoStart === true || this.autoStartMuted === true || force === true) {
+      if (this.autoStart === true || this.autoStartMuted === true || force === true || this.adsOptions.enablePreloading === true) {
         if (!this.adsDone) {
           this.adsDone = true;
           this.adDisplayContainer.initialize();
@@ -9411,6 +9412,7 @@ var Ads = function () {
     value: function _loaded(adsManagerLoadedEvent) {
       var adsRenderingSettings = new google.ima.AdsRenderingSettings();
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
+      adsRenderingSettings.enablePreloading = this.adsOptions.enablePreloading;
       this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
 
       this._start(this.adsManager);
@@ -9439,7 +9441,7 @@ var Ads = function () {
         manager.addEventListener(event, _this6._assign.bind(_this6), constants_1.EVENT_OPTIONS);
       });
 
-      if (this.autoStart === true || this.playTriggered === true) {
+      if (this.autoStart === true || this.playTriggered === true || this.adsOptions.enablePreloading === true) {
         this.playTriggered = false;
 
         if (!this.adsDone) {

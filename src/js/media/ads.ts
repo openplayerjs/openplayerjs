@@ -287,6 +287,7 @@ class Ads {
         const defaultOpts = {
             autoPlayAdBreaks: true,
             debug: false,
+            enablePreloading: true,
             language: 'en',
             loop: false,
             numRedirects: 4,
@@ -384,7 +385,7 @@ class Ads {
         }, EVENT_OPTIONS);
 
         // Request Ads automatically if `autoplay` was set
-        if (this.autoStart === true || this.autoStartMuted === true || force === true) {
+        if (this.autoStart === true || this.autoStartMuted === true || force === true || this.adsOptions.enablePreloading === true) {
             if (!this.adsDone) {
                 this.adsDone = true;
                 this.adDisplayContainer.initialize();
@@ -809,6 +810,7 @@ class Ads {
     private _loaded(adsManagerLoadedEvent: any): void {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
+        adsRenderingSettings.enablePreloading = this.adsOptions.enablePreloading;
         // Get the ads manager.
         this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
         this._start(this.adsManager);
@@ -860,7 +862,7 @@ class Ads {
             manager.addEventListener(event, this._assign.bind(this), EVENT_OPTIONS);
         });
 
-        if (this.autoStart === true || this.playTriggered === true) {
+        if (this.autoStart === true || this.playTriggered === true || this.adsOptions.enablePreloading === true) {
             this.playTriggered = false;
             if (!this.adsDone) {
                 this._initNotDoneAds();
