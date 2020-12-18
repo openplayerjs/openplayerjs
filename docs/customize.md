@@ -18,6 +18,7 @@ Do you need to add a new control (or multiple ones) to your player and you are c
 const player = new OpenPlayerJS('[PLAYER ID]');
 player.addControl({
   icon:'/path/to/image',
+  id: '[MY CONTROL ID]',
   title: '[TOOLTIP LABEL]',
   // Possible values: 'bottom-left', 'bottom-middle', 'bottom-right',
   // 'left', 'middle', 'right', 'top-left', 'top-middle', 'top-right',

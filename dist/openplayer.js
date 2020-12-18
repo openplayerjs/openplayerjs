@@ -5096,10 +5096,10 @@ var Controls = function () {
     key: "_createCustomControl",
     value: function _createCustomControl(item) {
       var control = document.createElement('button');
-      var key = item.title.toLowerCase().replace(' ', '-');
       var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(item.icon, "\">") : item.icon;
-      control.className = "op-controls__".concat(key, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
+      control.className = "op-controls__".concat(item.id, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
       control.tabIndex = 0;
+      control.id = item.id;
       control.title = item.title;
       control.innerHTML = "".concat(icon, " <span class=\"op-sr\">").concat(item.title, "</span>");
       control.addEventListener('click', item.click, constants_1.EVENT_OPTIONS);
