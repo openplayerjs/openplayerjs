@@ -97,8 +97,13 @@ class Ads {
                 return;
             }
             if (this.adsManager) {
+                if (this.adsActive === false) {
+                    this.adsManager.start();
+                }
+                else {
+                    this.adsManager.resume();
+                }
                 this.adsActive = true;
-                this.adsManager.resume();
                 const e = addEvent('play');
                 this.element.dispatchEvent(e);
             }
@@ -394,7 +399,7 @@ class Ads {
         this.events.forEach(event => {
             manager.addEventListener(event, this._assign.bind(this), EVENT_OPTIONS);
         });
-        if (this.autoStart === true || this.playTriggered === true || this.adsOptions.enablePreloading === true) {
+        if (this.autoStart === true || this.playTriggered === true) {
             this.playTriggered = false;
             if (!this.adsDone) {
                 this._initNotDoneAds();
@@ -407,6 +412,10 @@ class Ads {
             this.element.dispatchEvent(e);
             const event = addEvent('playing');
             this.element.dispatchEvent(event);
+        }
+        else if (this.adsOptions.enablePreloading === true) {
+            manager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement && this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
+                google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
         }
     }
     _initNotDoneAds() {

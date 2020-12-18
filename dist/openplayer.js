@@ -9135,10 +9135,13 @@ var Ads = function () {
         }
 
         if (_this2.adsManager) {
+          if (_this2.adsActive === false) {
+            _this2.adsManager.start();
+          } else {
+            _this2.adsManager.resume();
+          }
+
           _this2.adsActive = true;
-
-          _this2.adsManager.resume();
-
           var e = events_1.addEvent('play');
 
           _this2.element.dispatchEvent(e);
@@ -9441,7 +9444,7 @@ var Ads = function () {
         manager.addEventListener(event, _this6._assign.bind(_this6), constants_1.EVENT_OPTIONS);
       });
 
-      if (this.autoStart === true || this.playTriggered === true || this.adsOptions.enablePreloading === true) {
+      if (this.autoStart === true || this.playTriggered === true) {
         this.playTriggered = false;
 
         if (!this.adsDone) {
@@ -9456,6 +9459,8 @@ var Ads = function () {
         this.element.dispatchEvent(e);
         var event = events_1.addEvent('playing');
         this.element.dispatchEvent(event);
+      } else if (this.adsOptions.enablePreloading === true) {
+        manager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement && this.element.parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
       }
     }
   }, {
