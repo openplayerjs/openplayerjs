@@ -407,7 +407,8 @@ class Ads {
             }
 
             if (this.adsManager) {
-                if (this.adsActive === false) {
+                // No timer interval and no adsActive mean it's a potential initial ad play
+                if (!this.intervalTimer && this.adsActive === false) {
                     this.adsManager.start();
                 } else {
                     this.adsManager.resume();

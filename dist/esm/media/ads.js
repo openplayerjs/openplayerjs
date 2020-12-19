@@ -97,7 +97,7 @@ class Ads {
                 return;
             }
             if (this.adsManager) {
-                if (this.adsActive === false) {
+                if (!this.intervalTimer && this.adsActive === false) {
                     this.adsManager.start();
                 }
                 else {

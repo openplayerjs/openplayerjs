@@ -9160,7 +9160,7 @@ var Ads = function () {
         }
 
         if (_this2.adsManager) {
-          if (_this2.adsActive === false) {
+          if (!_this2.intervalTimer && _this2.adsActive === false) {
             _this2.adsManager.start();
           } else {
             _this2.adsManager.resume();
