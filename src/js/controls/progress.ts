@@ -317,9 +317,7 @@ class Progress implements PlayerComponent {
             }
 
             this.slider.classList.remove('.op-progress--pressed');
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         };
 
         /**
@@ -375,9 +373,7 @@ class Progress implements PlayerComponent {
             this.slider.value = time.toString();
             updateSlider(e);
             forcePause(e);
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         };
 
         this.events.slider.input = updateSlider.bind(this);
@@ -494,14 +490,10 @@ class Progress implements PlayerComponent {
 
         if (key === 35 && !isAd) {
             el.currentTime = el.duration;
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         } else if (key === 36 && !isAd) {
             el.currentTime = 0;
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         } else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
             el.currentTime += key === 37 ? (step * -1) : step;
             if (el.currentTime < 0) {
@@ -509,9 +501,7 @@ class Progress implements PlayerComponent {
             } else if (el.currentTime >= el.duration) {
                 el.currentTime = el.duration;
             }
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         }
     }
 }

@@ -342,9 +342,7 @@ class Fullscreen implements PlayerComponent {
         const key = e.which || e.keyCode || 0;
         if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
             this.toggleFullscreen();
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         }
     }
 }

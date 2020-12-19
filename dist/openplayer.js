@@ -153,7 +153,7 @@ exports.SUPPORTS_HLS = function () {
 
 exports.DVR_THRESHOLD = 120;
 exports.EVENT_OPTIONS = exports.IS_IE ? false : {
-  passive: true
+  passive: false
 };
 
 /***/ }),
@@ -5915,10 +5915,7 @@ var Fullscreen = function () {
 
       if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
         this.toggleFullscreen();
-
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       }
     }
   }]);
@@ -6104,9 +6101,7 @@ var Levels = function () {
             _this.player.play();
           }
 
-          if (constants_1.EVENT_OPTIONS === false) {
-            e.preventDefault();
-          }
+          e.preventDefault();
         }
       };
 
@@ -6387,9 +6382,7 @@ var Play = function () {
           el.pause();
         }
 
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       };
 
       this.events.media.play = function () {
@@ -6525,9 +6518,7 @@ var Play = function () {
           el.pause();
         }
 
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       }
     }
   }]);
@@ -6759,9 +6750,7 @@ var Progress = function () {
 
         _this.slider.classList.remove('.op-progress--pressed');
 
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       };
 
       var forcePause = function forcePause(e) {
@@ -6803,10 +6792,7 @@ var Progress = function () {
         _this.slider.value = time.toString();
         updateSlider(e);
         forcePause(e);
-
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       };
 
       this.events.slider.input = updateSlider.bind(this);
@@ -6909,16 +6895,10 @@ var Progress = function () {
 
       if (key === 35 && !isAd) {
         el.currentTime = el.duration;
-
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       } else if (key === 36 && !isAd) {
         el.currentTime = 0;
-
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       } else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
         el.currentTime += key === 37 ? step * -1 : step;
 
@@ -6928,9 +6908,7 @@ var Progress = function () {
           el.currentTime = el.duration;
         }
 
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       }
     }
   }]);
@@ -7629,10 +7607,7 @@ var Volume = function () {
         var newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
         el.volume = newVol;
         el.muted = !(newVol > 0);
-
-        if (constants_1.EVENT_OPTIONS === false) {
-          e.preventDefault();
-        }
+        e.preventDefault();
       }
     }
   }]);

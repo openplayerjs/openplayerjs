@@ -116,9 +116,7 @@ class Levels {
                 if (!isPaused) {
                     this.player.play();
                 }
-                if (EVENT_OPTIONS === false) {
-                    e.preventDefault();
-                }
+                e.preventDefault();
             }
         };
         const connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;

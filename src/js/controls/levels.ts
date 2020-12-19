@@ -233,9 +233,7 @@ class Levels implements PlayerComponent {
                 if (!isPaused) {
                     this.player.play();
                 }
-                if (EVENT_OPTIONS === false) {
-                    e.preventDefault();
-                }
+                e.preventDefault();
             }
         };
 

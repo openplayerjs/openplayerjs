@@ -167,9 +167,7 @@ class Progress {
                 el.currentTime = val;
             }
             this.slider.classList.remove('.op-progress--pressed');
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         };
         const forcePause = (e) => {
             const el = this.player.activeElement();
@@ -204,9 +202,7 @@ class Progress {
             this.slider.value = time.toString();
             updateSlider(e);
             forcePause(e);
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         };
         this.events.slider.input = updateSlider.bind(this);
         this.events.slider.change = updateSlider.bind(this);
@@ -293,15 +289,11 @@ class Progress {
         const step = el.duration !== Infinity ? newStep : 0;
         if (key === 35 && !isAd) {
             el.currentTime = el.duration;
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         }
         else if (key === 36 && !isAd) {
             el.currentTime = 0;
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         }
         else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
             el.currentTime += key === 37 ? (step * -1) : step;
@@ -311,9 +303,7 @@ class Progress {
             else if (el.currentTime >= el.duration) {
                 el.currentTime = el.duration;
             }
-            if (EVENT_OPTIONS === false) {
-                e.preventDefault();
-            }
+            e.preventDefault();
         }
     }
 }
