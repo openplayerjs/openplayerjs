@@ -37,7 +37,9 @@ class Play {
             else {
                 el.pause();
             }
-            e.preventDefault();
+            if (EVENT_OPTIONS === false) {
+                e.preventDefault();
+            }
         };
         this.events.media.play = () => {
             if (this.player.activeElement().ended) {
@@ -140,7 +142,9 @@ class Play {
             else {
                 el.pause();
             }
-            e.preventDefault();
+            if (EVENT_OPTIONS === false) {
+                e.preventDefault();
+            }
         }
     }
 }

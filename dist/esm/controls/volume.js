@@ -158,7 +158,9 @@ class Volume {
             const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
             el.volume = newVol;
             el.muted = !(newVol > 0);
-            e.preventDefault();
+            if (EVENT_OPTIONS === false) {
+                e.preventDefault();
+            }
         }
     }
 }
