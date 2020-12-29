@@ -23,7 +23,7 @@ class Ads {
         const defaultOpts = {
             autoPlayAdBreaks: true,
             debug: false,
-            enablePreloading: true,
+            enablePreloading: false,
             language: 'en',
             loop: false,
             numRedirects: 4,
