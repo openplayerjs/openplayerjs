@@ -238,6 +238,9 @@
     content: url(svg/closed-captions.svg);
     width: 20px !important;
 }
+.op-controls__captions.op-controls__captions--on:before {
+    filter: invert(73%) sepia(71%) saturate(6868%) hue-rotate(356deg) brightness(101%) contrast(126%);
+}
 .op-controls__settings:before {
     content: url(svg/settings.svg);
 }
