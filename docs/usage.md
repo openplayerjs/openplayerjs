@@ -78,6 +78,9 @@ var player = new OpenPlayerJS('[player ID]', {
     // Allow loader to be displayed when loading video (by default, `false`)
     showLoaderOnInit,
     // Callback to be executed once an error is found (default, `console.error`)
+    onError,
+    // If `levels` configuration is added, set programatically the default level
+    defaultLevel,
     // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
     live: {
         // Allow `Live Broadcast` label to be displayed in live streamings (by default, `false`)
@@ -85,7 +88,6 @@ var player = new OpenPlayerJS('[player ID]', {
         // Allow to show progress bar in live streamings without showing constant updates
         showProgress: false,
     }
-    onError,
     ads: {
         // The Ad(s) URLs to be processed
         src,

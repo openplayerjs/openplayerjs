@@ -237,6 +237,7 @@ class Player {
                 right: ['captions', 'settings', 'fullscreen'],
             },
         },
+        defaultLevel: null,
         detachMenus: false,
         height: 0,
         hidePlayBtnTimer: 350,

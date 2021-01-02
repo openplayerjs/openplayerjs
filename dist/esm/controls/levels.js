@@ -19,7 +19,7 @@ class Levels {
         return this;
     }
     create() {
-        this.default = `${this.player.getMedia().level}`;
+        this.default = `${this.player.getOptions().defaultLevel || this.player.getMedia().level}`;
         const menuItems = this._formatMenuItems();
         const defaultLevel = menuItems.length ? menuItems.find((items) => items.key === this.default) : null;
         const defaultLabel = defaultLevel ? defaultLevel.label : this.labels.auto;
@@ -116,6 +116,13 @@ class Levels {
                 if (!isPaused) {
                     this.player.play();
                 }
+                const event = addEvent('levelchanged', {
+                    detail: {
+                        label: option.innerText.trim(),
+                        level,
+                    },
+                });
+                this.player.getElement().dispatchEvent(event);
                 e.preventDefault();
             }
         };

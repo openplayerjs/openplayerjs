@@ -17,7 +17,7 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 * Runs a simple but yet powerful algorithm to **check the browser's autoplay capabilities** across browsers.
 * Supports for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 * **Enhance your player** adding your own buttons. Check [here](./docs/customize.md) for more details.
-* Provides the ability to use a single VAST/VPAID source or a VAST/VPAID playlist from several different sources (including URLs and valid XML strings).
+* Provides the ability to use a **single VAST/VPAID** source or a **VAST/VPAID playlist** from several different sources (including URLs and valid XML strings).
 * **Can play ads in infinite loop**, desired for ads that are in a heavy text page.
 * Always **responsive** by default, for both video/audio tags; a new **`fill`** mode is also included to scale and crop media relative to its parent container.
 

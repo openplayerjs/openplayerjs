@@ -1629,6 +1629,7 @@ var Player = function () {
           right: ['captions', 'settings', 'fullscreen']
         }
       },
+      defaultLevel: null,
       detachMenus: false,
       height: 0,
       hidePlayBtnTimer: 350,
@@ -5974,7 +5975,7 @@ var Levels = function () {
     value: function create() {
       var _this = this;
 
-      this["default"] = "".concat(this.player.getMedia().level);
+      this["default"] = "".concat(this.player.getOptions().defaultLevel || this.player.getMedia().level);
 
       var menuItems = this._formatMenuItems();
 
@@ -6100,6 +6101,15 @@ var Levels = function () {
           if (!isPaused) {
             _this.player.play();
           }
+
+          var event = events_1.addEvent('levelchanged', {
+            detail: {
+              label: option.innerText.trim(),
+              level: level
+            }
+          });
+
+          _this.player.getElement().dispatchEvent(event);
 
           e.preventDefault();
         }

@@ -56,6 +56,7 @@ Event | Description
 `controlshidden` | Event executed when controls timer stops and hides control bar (video only).
 `controlschanged` | Event triggered when an element modified the state of the controls and they regenerate (i.e., adding new caption).
 `captionschanged` | Event triggered when user changes the current caption by selecting a new one from the `Settings` menu.
+`levelchanged` | Event triggered when user changes the current level (if actvated) by selecting a new one from the `Settings` menu.
 `playererror` | Event executed when any error has occurred within the OpenPlayerJS instance; a response will be sent via `onError` config callback. See [Usage with Javascript](#usage-with-javascript) for more details.
 `playerdestroyed` | Event executed when an instance of OpenPlayerJS is destroyed (useful to remove extra elements created with the player's help).
 `adsloaded` | Event when Ads have been loaded successfully and can be played.
@@ -70,3 +71,13 @@ Event | Description
 `adsmediaended` | Event executed when an Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad).
 
 In addition to the list above, all [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are supported using the same approach described above, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
+
+### Error Events
+
+In order to determine if an error is being triggered with OpenPlayerJS, you can use the following snippet, since the `playererror` event contains the type of error (`Ads`, `Hls`, `Dash`, etc.), and all the information you will need to customize the error experience:
+
+```javascript
+player.getElement().addEventListener('playererror', function(e) {
+    console.log(e); // { type, message, data }
+});
+```
