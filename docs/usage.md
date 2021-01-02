@@ -79,7 +79,7 @@ var player = new OpenPlayerJS('[player ID]', {
     showLoaderOnInit,
     // Callback to be executed once an error is found (default, `console.error`)
     onError,
-    // If `levels` configuration is added, set programatically the default level
+    // If `levels` configuration is added, set programatically the default level as a numeric ID of the level (-1 for auto, default: `null`)
     defaultLevel,
     // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
     live: {
