@@ -131,7 +131,9 @@ class Levels implements PlayerComponent {
      * @memberof Levels
      */
     public create(): void {
-        this.default = `${this.player.getOptions().defaultLevel || this.player.getMedia().level}`;
+        const initialLevel = this.player.getOptions().defaultLevel !== null ?
+            parseInt(this.player.getOptions().defaultLevel, 10) : this.player.getMedia().level;
+        this.default = `${initialLevel}`;
         const menuItems = this._formatMenuItems();
         const defaultLevel = menuItems.length ? menuItems.find((items: any) => items.key === this.default) : null;
         const defaultLabel = defaultLevel ? defaultLevel.label : this.labels.auto;
