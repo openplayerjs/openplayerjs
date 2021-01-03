@@ -5975,7 +5975,8 @@ var Levels = function () {
     value: function create() {
       var _this = this;
 
-      this["default"] = "".concat(this.player.getOptions().defaultLevel || this.player.getMedia().level);
+      var initialLevel = this.player.getOptions().defaultLevel !== null ? parseInt(this.player.getOptions().defaultLevel, 10) : this.player.getMedia().level;
+      this["default"] = "".concat(initialLevel);
 
       var menuItems = this._formatMenuItems();
 
