@@ -4937,7 +4937,7 @@ var Controls = function () {
   }, {
     key: "_createControlsLayer",
     value: function _createControlsLayer() {
-      if (!this.controls) {
+      if (!this.controls || !this.player.getContainer().querySelector('.op-controls')) {
         this.controls = document.createElement('div');
         this.controls.className = 'op-controls';
         this.player.getContainer().appendChild(this.controls);
@@ -6201,7 +6201,7 @@ var Levels = function () {
 
       return subitems.length > 2 ? {
         className: 'op-levels__option',
-        "default": '-1',
+        "default": this["default"] || '-1',
         key: 'levels',
         name: this.labels.levels,
         subitems: subitems

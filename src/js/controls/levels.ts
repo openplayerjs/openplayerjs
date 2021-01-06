@@ -321,7 +321,7 @@ class Levels implements PlayerComponent {
         // Avoid implementing submenu for levels if only 2 options were available
         return subitems.length > 2 ? {
             className: 'op-levels__option',
-            default: '-1',
+            default: this.default || '-1',
             key: 'levels',
             name: this.labels.levels,
             subitems,

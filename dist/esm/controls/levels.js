@@ -183,7 +183,7 @@ class Levels {
         const subitems = this._formatMenuItems();
         return subitems.length > 2 ? {
             className: 'op-levels__option',
-            default: '-1',
+            default: this.default || '-1',
             key: 'levels',
             name: this.labels.levels,
             subitems,

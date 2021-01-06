@@ -244,7 +244,7 @@ class Controls implements PlayerComponent {
     }
 
     private _createControlsLayer() {
-        if (!this.controls) {
+        if (!this.controls || !this.player.getContainer().querySelector('.op-controls')) {
             this.controls = document.createElement('div');
             this.controls.className = 'op-controls';
             this.player.getContainer().appendChild(this.controls);
