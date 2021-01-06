@@ -137,6 +137,7 @@ class Levels implements PlayerComponent {
         const menuItems = this._formatMenuItems();
         const defaultLevel = menuItems.length ? menuItems.find((items: any) => items.key === this.default) : null;
         const defaultLabel = defaultLevel ? defaultLevel.label : this.labels.auto;
+        let levelSet = false;
 
         this.button = document.createElement('button');
         this.button.className = `op-controls__levels op-control__${this.position}`;
@@ -150,8 +151,12 @@ class Levels implements PlayerComponent {
         const loadLevelsEvent = () => {
             if (!this.levels.length) {
                 this._gatherLevels.bind(this);
+                this.player.getMedia().level = initialLevel;
                 const e = addEvent('controlschanged');
                 this.player.getElement().dispatchEvent(e);
+            } else if (!levelSet) {
+                this.player.getMedia().level = initialLevel;
+                levelSet = true;
             }
         };
 

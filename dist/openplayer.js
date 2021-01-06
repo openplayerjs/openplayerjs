@@ -5984,6 +5984,7 @@ var Levels = function () {
         return items.key === _this["default"];
       }) : null;
       var defaultLabel = defaultLevel ? defaultLevel.label : this.labels.auto;
+      var levelSet = false;
       this.button = document.createElement('button');
       this.button.className = "op-controls__levels op-control__".concat(this.position);
       this.button.tabIndex = 0;
@@ -5997,9 +5998,13 @@ var Levels = function () {
         if (!_this.levels.length) {
           _this._gatherLevels.bind(_this);
 
+          _this.player.getMedia().level = initialLevel;
           var e = events_1.addEvent('controlschanged');
 
           _this.player.getElement().dispatchEvent(e);
+        } else if (!levelSet) {
+          _this.player.getMedia().level = initialLevel;
+          levelSet = true;
         }
       };
 
