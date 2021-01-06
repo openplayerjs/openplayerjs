@@ -532,11 +532,13 @@ class Ads {
      * @memberof Ads
      */
     set volume(value: number) {
-        this.adsVolume = value;
-        this.adsManager.setVolume(value);
-        this.media.volume = value;
-        this.media.muted = (value === 0);
-        this.adsMuted = (value === 0);
+        if (this.adsManager) {
+            this.adsVolume = value;
+            this.adsManager.setVolume(value);
+            this.media.volume = value;
+            this.media.muted = (value === 0);
+            this.adsMuted = (value === 0);
+        }
     }
 
     /**
@@ -555,16 +557,18 @@ class Ads {
      * @memberof Ads
      */
     set muted(value: boolean) {
-        if (value === true) {
-            this.adsManager.setVolume(0);
-            this.adsMuted = true;
-            this.media.muted = true;
-            this.media.volume = 0;
-        } else {
-            this.adsManager.setVolume(this.adsVolume);
-            this.adsMuted = false;
-            this.media.muted = false;
-            this.media.volume = this.adsVolume;
+        if (this.adsManager) {
+            if (value === true) {
+                this.adsManager.setVolume(0);
+                this.adsMuted = true;
+                this.media.muted = true;
+                this.media.volume = 0;
+            } else {
+                this.adsManager.setVolume(this.adsVolume);
+                this.adsMuted = false;
+                this.media.muted = false;
+                this.media.volume = this.adsVolume;
+            }
         }
     }
 
