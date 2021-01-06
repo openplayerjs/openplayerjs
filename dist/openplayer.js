@@ -9443,7 +9443,7 @@ var Ads = function () {
 
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this), constants_1.EVENT_OPTIONS);
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this), constants_1.EVENT_OPTIONS);
-      this.events = [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED];
+      this.events = [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.RESUMED, google.ima.AdEvent.Type.USER_CLOSE, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED];
 
       if (!this.adsOptions.autoPlayAdBreaks) {
         this.events.push(google.ima.AdEvent.Type.AD_BREAK_READY);
@@ -9687,11 +9687,13 @@ var Ads = function () {
   }, {
     key: "volume",
     set: function set(value) {
-      this.adsVolume = value;
-      this.adsManager.setVolume(value);
-      this.media.volume = value;
-      this.media.muted = value === 0;
-      this.adsMuted = value === 0;
+      if (this.adsManager) {
+        this.adsVolume = value;
+        this.adsManager.setVolume(value);
+        this.media.volume = value;
+        this.media.muted = value === 0;
+        this.adsMuted = value === 0;
+      }
     },
     get: function get() {
       return this.adsVolume;
@@ -9699,16 +9701,18 @@ var Ads = function () {
   }, {
     key: "muted",
     set: function set(value) {
-      if (value === true) {
-        this.adsManager.setVolume(0);
-        this.adsMuted = true;
-        this.media.muted = true;
-        this.media.volume = 0;
-      } else {
-        this.adsManager.setVolume(this.adsVolume);
-        this.adsMuted = false;
-        this.media.muted = false;
-        this.media.volume = this.adsVolume;
+      if (this.adsManager) {
+        if (value === true) {
+          this.adsManager.setVolume(0);
+          this.adsMuted = true;
+          this.media.muted = true;
+          this.media.volume = 0;
+        } else {
+          this.adsManager.setVolume(this.adsVolume);
+          this.adsMuted = false;
+          this.media.muted = false;
+          this.media.volume = this.adsVolume;
+        }
       }
     },
     get: function get() {
