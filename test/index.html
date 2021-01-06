@@ -17,9 +17,10 @@
             <section>
                 <h1>OpenPlayer.js</h1>
                 <div class="players">
-                    <video class="op-player__media" id="video" playsinline controls crossorigin="anonymous">
-                        <source src="https://vs2.cdn.nashrin.com/a/jjjjjjjj/all.m3u8">
-                      </video>
+                    <video id="player1" class="op-player__media" controls playsinline>
+                        <source src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4" type="video/mp4">
+                        <track label="English" kind="subtitles" srclang="en" src="http://www.mediaelementjs.com/dist/mediaelement.vtt" default>
+                    </video>
                 </div>
             </section>
         </div>
@@ -28,24 +29,10 @@
         <script src="../node_modules/chai/chai.js"></script>
         <script src="../dist/openplayer.js"></script>
         <script>
-            const player = new OpenPlayerJS('video', {
-                ads: {
-                    src: '<VAST>There is no ad to show with your specifications.</VAST>'
-                },
-                defaultLevel: 0,
-                controls: {
-                    layers: {
-                        left: ['play', 'time', 'volume'],
-                        middle: ['progress'],
-                        right: ['levels', 'captions', 'settings', 'fullscreen'],
-                    }
-                },
-                hls: {
-                    debug: true,
-                    enableWorker: true,
-                }
-            });
-            player.init();
+            mocha.setup('bdd');
+            var expect = chai.expect;
         </script>
+        <script src="index.js"></script>
+        <script>mocha.run();</script>
     </body>
 </html>
