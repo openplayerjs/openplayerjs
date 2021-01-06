@@ -844,6 +844,8 @@ class Ads {
             google.ima.AdEvent.Type.LOADED,
             google.ima.AdEvent.Type.MIDPOINT,
             google.ima.AdEvent.Type.PAUSED,
+            google.ima.AdEvent.Type.RESUMED,
+            google.ima.AdEvent.Type.USER_CLOSE,
             google.ima.AdEvent.Type.STARTED,
             google.ima.AdEvent.Type.THIRD_QUARTILE,
             google.ima.AdEvent.Type.SKIPPED,
