@@ -239,6 +239,7 @@ class Player {
         },
         defaultLevel: null,
         detachMenus: false,
+        forceNative: true,
         height: 0,
         hidePlayBtnTimer: 350,
         labels: {

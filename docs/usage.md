@@ -63,6 +63,8 @@ var player = new OpenPlayerJS('[player ID]', {
     },
     // Allow items to be contained in a different space outside of `Settings`
     detachMenus,
+    // Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js)
+    forceNative,
     // Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)
     mode,
     // Number of ms that takes the player to hide the Play button once it starts playing (video only)

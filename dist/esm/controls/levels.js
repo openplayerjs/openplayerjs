@@ -37,9 +37,11 @@ class Levels {
         const loadLevelsEvent = () => {
             if (!this.levels.length) {
                 this._gatherLevels.bind(this);
-                this.player.getMedia().level = initialLevel;
-                const e = addEvent('controlschanged');
-                this.player.getElement().dispatchEvent(e);
+                setTimeout(() => {
+                    this.player.getMedia().level = initialLevel;
+                    const e = addEvent('controlschanged');
+                    this.player.getElement().dispatchEvent(e);
+                }, 0);
             }
             else if (!levelSet) {
                 this.player.getMedia().level = initialLevel;

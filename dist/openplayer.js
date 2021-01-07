@@ -1631,6 +1631,7 @@ var Player = function () {
       },
       defaultLevel: null,
       detachMenus: false,
+      forceNative: true,
       height: 0,
       hidePlayBtnTimer: 350,
       labels: {
@@ -5998,10 +5999,12 @@ var Levels = function () {
         if (!_this.levels.length) {
           _this._gatherLevels.bind(_this);
 
-          _this.player.getMedia().level = initialLevel;
-          var e = events_1.addEvent('controlschanged');
+          setTimeout(function () {
+            _this.player.getMedia().level = initialLevel;
+            var e = events_1.addEvent('controlschanged');
 
-          _this.player.getElement().dispatchEvent(e);
+            _this.player.getElement().dispatchEvent(e);
+          }, 0);
         } else if (!levelSet) {
           _this.player.getMedia().level = initialLevel;
           levelSet = true;
@@ -7752,14 +7755,7 @@ var Media = function () {
           _this.media = new html5_1["default"](_this.element, media);
         }
 
-        var canPlay = _this.canPlayType(media.type);
-
-        if (!canPlay) {
-          _this.media = new html5_1["default"](_this.element, media);
-          return _this.canPlayType(media.type);
-        }
-
-        return canPlay;
+        return _this.media.canPlayType(media.type);
       });
 
       try {
@@ -7853,6 +7849,12 @@ var Media = function () {
       var _this4 = this;
 
       var playHLSNatively = this.element.canPlayType('application/vnd.apple.mpegurl') || this.element.canPlayType('application/x-mpegURL');
+      var activeLevels = false;
+      Object.keys(this.options.controls.layers).forEach(function (layer) {
+        if (_this4.options.controls.layers[layer].indexOf('levels') > -1) {
+          activeLevels = true;
+        }
+      });
 
       if (Object.keys(this.customMedia.media).length) {
         var customRef;
@@ -7872,7 +7874,11 @@ var Media = function () {
         } else {
           return new html5_1["default"](this.element, media);
         }
-      } else if (!playHLSNatively && source.isHlsSource(media)) {
+      } else if (source.isHlsSource(media)) {
+        if (playHLSNatively && this.options.forceNative && !activeLevels) {
+          return new html5_1["default"](this.element, media);
+        }
+
         var hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
         return new hls_1["default"](this.element, media, this.autoplay, hlsOptions);
       } else if (source.isDashSource(media)) {
@@ -9407,12 +9413,6 @@ var Ads = function () {
           console.error("Ad error: ".concat(error.toString()));
         } else {
           console.warn("Ad warning: ".concat(error.toString()));
-        }
-
-        var unmuteEl = this.element.parentElement ? this.element.parentElement.querySelector('.op-player__unmute') : null;
-
-        if (unmuteEl) {
-          general_1.removeElement(unmuteEl);
         }
 
         if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
