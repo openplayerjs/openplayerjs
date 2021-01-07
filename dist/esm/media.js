@@ -38,12 +38,7 @@ class Media {
             catch (e) {
                 this.media = new HTML5Media(this.element, media);
             }
-            const canPlay = this.canPlayType(media.type);
-            if (!canPlay) {
-                this.media = new HTML5Media(this.element, media);
-                return this.canPlayType(media.type);
-            }
-            return canPlay;
+            return this.media.canPlayType(media.type);
         });
         try {
             if (this.media === null) {
@@ -214,6 +209,12 @@ class Media {
     _invoke(media) {
         const playHLSNatively = this.element.canPlayType('application/vnd.apple.mpegurl') ||
             this.element.canPlayType('application/x-mpegURL');
+        let activeLevels = false;
+        Object.keys(this.options.controls.layers).forEach(layer => {
+            if (this.options.controls.layers[layer].indexOf('levels') > -1) {
+                activeLevels = true;
+            }
+        });
         if (Object.keys(this.customMedia.media).length) {
             let customRef;
             this.customMedia.rules.forEach((rule) => {
@@ -232,7 +233,10 @@ class Media {
                 return new HTML5Media(this.element, media);
             }
         }
-        else if (!playHLSNatively && source.isHlsSource(media)) {
+        else if (source.isHlsSource(media)) {
+            if (playHLSNatively && this.options.forceNative && !activeLevels) {
+                return new HTML5Media(this.element, media);
+            }
             const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
             return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
         }

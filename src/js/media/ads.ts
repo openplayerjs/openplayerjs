@@ -792,11 +792,6 @@ class Ads {
             } else {
                 console.warn(`Ad warning: ${error.toString()}`);
             }
-
-            const unmuteEl = this.element.parentElement ? this.element.parentElement.querySelector('.op-player__unmute') : null;
-            if (unmuteEl) {
-                removeElement(unmuteEl);
-            }
             if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
                 this.adsActive = false;
                 // Sometimes, due to pre-fetch issues, Ads could report an error, but the SDK is able to

@@ -150,13 +150,7 @@ class Media {
                 this.media = new HTML5Media(this.element, media);
             }
 
-            // If not valid, make one last attempt to check if it plays with native HTML5
-            const canPlay = this.canPlayType(media.type);
-            if (!canPlay) {
-                this.media = new HTML5Media(this.element, media);
-                return this.canPlayType(media.type);
-            }
-            return canPlay;
+            return this.media.canPlayType(media.type);
         });
 
         try {
@@ -531,6 +525,12 @@ class Media {
     private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
         const playHLSNatively = this.element.canPlayType('application/vnd.apple.mpegurl') ||
             this.element.canPlayType('application/x-mpegURL');
+        let activeLevels = false;
+        Object.keys(this.options.controls.layers).forEach(layer => {
+            if (this.options.controls.layers[layer].indexOf('levels') > -1) {
+                activeLevels = true;
+            }
+        });
 
         if (Object.keys(this.customMedia.media).length) {
             let customRef: any;
@@ -548,7 +548,10 @@ class Media {
             } else {
                 return new HTML5Media(this.element, media);
             }
-        } else if (!playHLSNatively && source.isHlsSource(media)) {
+        } else if (source.isHlsSource(media)) {
+            if (playHLSNatively && this.options.forceNative && !activeLevels) {
+                return new HTML5Media(this.element, media);
+            }
             const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
             return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
         } else if (source.isDashSource(media)) {
