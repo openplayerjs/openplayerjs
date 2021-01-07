@@ -801,7 +801,7 @@ class Ads {
                 this.adsActive = false;
                 // Sometimes, due to pre-fetch issues, Ads could report an error, but the SDK is able to
                 // play Ads, so check if src was set to determine what action to take
-                if (this.element.src) {
+                if ((IS_IOS || IS_ANDROID) && this.element.src) {
                     this.media.play();
                 } else {
                     this._resumeMedia();
