@@ -9418,7 +9418,7 @@ var Ads = function () {
         if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
           this.adsActive = false;
 
-          if (this.element.src) {
+          if ((constants_1.IS_IOS || constants_1.IS_ANDROID) && this.element.src) {
             this.media.play();
           } else {
             this._resumeMedia();
