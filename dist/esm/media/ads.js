@@ -357,12 +357,7 @@ class Ads {
             }
             if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
                 this.adsActive = false;
-                if ((IS_IOS || IS_ANDROID) && this.element.src) {
-                    this.media.play();
-                }
-                else {
-                    this._resumeMedia();
-                }
+                this._resumeMedia();
             }
         }
     }
