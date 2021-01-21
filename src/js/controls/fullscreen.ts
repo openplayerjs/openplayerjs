@@ -325,10 +325,34 @@ class Fullscreen implements PlayerComponent {
     private _resize(width?: number, height?: number): void {
         const wrapper = this.player.getContainer();
         const video = this.player.getElement();
-        wrapper.style.width = width ? '100%' : 'auto';
-        wrapper.style.height = height ? '100%' : 'auto';
-        video.style.width = width ? '100%' : 'auto';
-        video.style.height = height ? '100%' : 'auto';
+        const options = this.player.getOptions();
+        let styles = '';
+        if (width) {
+            wrapper.style.width = '100%';
+            video.style.width = '100%';
+        } else if (options.width) {
+            const defaultWidth = typeof options.width === 'number' ? `${options.width}px` : options.width;
+            styles += `width: ${defaultWidth} !important;`;
+            video.style.removeProperty('width');
+        } else {
+            video.style.removeProperty('width');
+            wrapper.style.removeProperty('width');
+        }
+        if (height) {
+            video.style.height = '100%';
+            wrapper.style.height = '100%';
+        } else if (options.height) {
+            const defaultHeight = typeof options.height === 'number' ? `${options.height}px` : options.height;
+            styles += `height: ${defaultHeight} !important;`;
+            video.style.removeProperty('height');
+        } else {
+            video.style.removeProperty('height');
+            wrapper.style.removeProperty('height');
+        }
+
+        if (styles) {
+            wrapper.setAttribute('style', styles);
+        }
     }
 
     /**

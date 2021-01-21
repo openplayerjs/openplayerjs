@@ -5905,10 +5905,36 @@ var Fullscreen = function () {
     value: function _resize(width, height) {
       var wrapper = this.player.getContainer();
       var video = this.player.getElement();
-      wrapper.style.width = width ? '100%' : 'auto';
-      wrapper.style.height = height ? '100%' : 'auto';
-      video.style.width = width ? '100%' : 'auto';
-      video.style.height = height ? '100%' : 'auto';
+      var options = this.player.getOptions();
+      var styles = '';
+
+      if (width) {
+        wrapper.style.width = '100%';
+        video.style.width = '100%';
+      } else if (options.width) {
+        var defaultWidth = typeof options.width === 'number' ? "".concat(options.width, "px") : options.width;
+        styles += "width: ".concat(defaultWidth, " !important;");
+        video.style.removeProperty('width');
+      } else {
+        video.style.removeProperty('width');
+        wrapper.style.removeProperty('width');
+      }
+
+      if (height) {
+        video.style.height = '100%';
+        wrapper.style.height = '100%';
+      } else if (options.height) {
+        var defaultHeight = typeof options.height === 'number' ? "".concat(options.height, "px") : options.height;
+        styles += "height: ".concat(defaultHeight, " !important;");
+        video.style.removeProperty('height');
+      } else {
+        video.style.removeProperty('height');
+        wrapper.style.removeProperty('height');
+      }
+
+      if (styles) {
+        wrapper.setAttribute('style', styles);
+      }
     }
   }, {
     key: "_keydownEvent",
