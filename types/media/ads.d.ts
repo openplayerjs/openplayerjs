@@ -444,5 +444,6 @@ declare class Ads {
      * @memberof Ads
      */
     private _prepareMedia;
+    private _setMediaVolume;
 }
 export default Ads;
