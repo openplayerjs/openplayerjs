@@ -175,27 +175,24 @@ class Ads {
         if (this.adsManager) {
             this.adsVolume = value;
             this.adsManager.setVolume(value);
-            this.media.volume = value;
-            this.media.muted = (value === 0);
+            this._setMediaVolume(value);
             this.adsMuted = (value === 0);
         }
     }
     get volume() {
-        return this.adsVolume;
+        return this.adsManager.getVolume();
     }
     set muted(value) {
         if (this.adsManager) {
-            if (value === true) {
+            if (value) {
                 this.adsManager.setVolume(0);
                 this.adsMuted = true;
-                this.media.muted = true;
-                this.media.volume = 0;
+                this._setMediaVolume(0);
             }
             else {
                 this.adsManager.setVolume(this.adsVolume);
                 this.adsMuted = false;
-                this.media.muted = false;
-                this.media.volume = this.adsVolume;
+                this._setMediaVolume(this.adsVolume);
             }
         }
     }
@@ -286,6 +283,7 @@ class Ads {
                 }
                 break;
             case google.ima.AdEvent.Type.VOLUME_CHANGED:
+                this._setMediaVolume(this.volume);
             case google.ima.AdEvent.Type.VOLUME_MUTED:
                 if (ad.isLinear()) {
                     const volumeEvent = addEvent('volumechange');
@@ -604,6 +602,10 @@ class Ads {
         this.media.currentTime = this.lastTimePaused;
         this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
         this._resumeMedia();
+    }
+    _setMediaVolume(volume) {
+        this.media.volume = volume;
+        this.media.muted = volume === 0;
     }
 }
 export default Ads;

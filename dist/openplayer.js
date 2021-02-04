@@ -9368,6 +9368,8 @@ var Ads = function () {
           break;
 
         case google.ima.AdEvent.Type.VOLUME_CHANGED:
+          this._setMediaVolume(this.volume);
+
         case google.ima.AdEvent.Type.VOLUME_MUTED:
           if (ad.isLinear()) {
             var volumeEvent = events_1.addEvent('volumechange');
@@ -9723,6 +9725,12 @@ var Ads = function () {
       this._resumeMedia();
     }
   }, {
+    key: "_setMediaVolume",
+    value: function _setMediaVolume(volume) {
+      this.media.volume = volume;
+      this.media.muted = volume === 0;
+    }
+  }, {
     key: "playRequested",
     set: function set(value) {
       this.playTriggered = value;
@@ -9733,28 +9741,29 @@ var Ads = function () {
       if (this.adsManager) {
         this.adsVolume = value;
         this.adsManager.setVolume(value);
-        this.media.volume = value;
-        this.media.muted = value === 0;
+
+        this._setMediaVolume(value);
+
         this.adsMuted = value === 0;
       }
     },
     get: function get() {
-      return this.adsVolume;
+      return this.adsManager.getVolume();
     }
   }, {
     key: "muted",
     set: function set(value) {
       if (this.adsManager) {
-        if (value === true) {
+        if (value) {
           this.adsManager.setVolume(0);
           this.adsMuted = true;
-          this.media.muted = true;
-          this.media.volume = 0;
+
+          this._setMediaVolume(0);
         } else {
           this.adsManager.setVolume(this.adsVolume);
           this.adsMuted = false;
-          this.media.muted = false;
-          this.media.volume = this.adsVolume;
+
+          this._setMediaVolume(this.adsVolume);
         }
       }
     },
