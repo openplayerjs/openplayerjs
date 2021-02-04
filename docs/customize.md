@@ -26,6 +26,13 @@ player.addControl({
   position: 'right',
   showInAds: false, // or true
   click: () => {}, // the operation it executes
+  subitems: [{    // optional list of items to render a menu
+      id: '[ITEM ID]', 
+      label: '[ITEM LABEL]', 
+      title: '[TOOLTIP ITEM]', // optional
+      icon:'/path/to/item-image', // optional
+      click: () => {}
+   }],
 });
 player.init();
 ```

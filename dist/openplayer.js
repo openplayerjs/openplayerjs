@@ -5095,8 +5095,40 @@ var Controls = function () {
       this.controls.dispatchEvent(e);
     }
   }, {
+    key: "_hideCustomMenu",
+    value: function _hideCustomMenu(menu) {
+      var timeout;
+
+      if (timeout && typeof window !== 'undefined') {
+        window.cancelAnimationFrame(timeout);
+      }
+
+      if (typeof window !== 'undefined') {
+        timeout = window.requestAnimationFrame(function () {
+          menu.setAttribute('aria-hidden', 'true');
+        });
+      }
+    }
+  }, {
+    key: "_toggleCustomMenu",
+    value: function _toggleCustomMenu(event, menu, item) {
+      var menus = this.player.getContainer().querySelectorAll('.op-settings');
+      menus.forEach(function (m) {
+        if (m.getAttribute('aria-hidden') === 'false' && m.id !== menu.id) {
+          m.setAttribute('aria-hidden', 'true');
+        }
+      });
+      menu.setAttribute('aria-hidden', menu.getAttribute('aria-hidden') === 'true' ? 'false' : 'true');
+
+      if (typeof item.click === 'function') {
+        item.click(event);
+      }
+    }
+  }, {
     key: "_createCustomControl",
     value: function _createCustomControl(item) {
+      var _this6 = this;
+
       var control = document.createElement('button');
       var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(item.icon, "\">") : item.icon;
       control.className = "op-controls__".concat(item.id, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
@@ -5104,7 +5136,39 @@ var Controls = function () {
       control.id = item.id;
       control.title = item.title;
       control.innerHTML = "".concat(icon, " <span class=\"op-sr\">").concat(item.title, "</span>");
-      control.addEventListener('click', item.click, constants_1.EVENT_OPTIONS);
+
+      if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+        var menu = document.createElement('div');
+        menu.className = 'op-settings op-settings__custom';
+        menu.id = "".concat(item.id, "-menu");
+        menu.setAttribute('aria-hidden', 'true');
+        var items = item.subitems.map(function (s) {
+          var itemIcon = '';
+
+          if (s.icon) {
+            itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? "<img src=\"".concat(s.icon, "\">") : s.icon;
+          }
+
+          return "<div class=\"op-settings__menu-item\" tabindex=\"0\" ".concat(s.title ? "title=\"".concat(s.title, "\"") : '', " role=\"menuitemradio\">\n                    <div class=\"op-settings__menu-label\" id=\"").concat(s.id, "\" data-value=\"").concat(item.id, "-").concat(s.id, "\">").concat(itemIcon, " ").concat(s.label, "</div>\n                </div>");
+        });
+        menu.innerHTML = "<div class=\"op-settings__menu\" role=\"menu\">".concat(items.join(''), "</div>");
+        this.player.getContainer().appendChild(menu);
+        item.subitems.forEach(function (subitem) {
+          var menuItem = menu.querySelector("#".concat(subitem.id));
+
+          if (menuItem && subitem.click && typeof subitem.click === 'function') {
+            menuItem.addEventListener('click', subitem.click, constants_1.EVENT_OPTIONS);
+          }
+        });
+        control.addEventListener('click', function (e) {
+          return _this6._toggleCustomMenu(e, menu, item);
+        }, constants_1.EVENT_OPTIONS);
+        this.player.getElement().addEventListener('controlshidden', function () {
+          return _this6._hideCustomMenu(menu);
+        }, constants_1.EVENT_OPTIONS);
+      } else if (typeof item.click === 'function') {
+        control.addEventListener('click', item.click, constants_1.EVENT_OPTIONS);
+      }
 
       if (item.layer) {
         if (item.layer === 'main') {
@@ -5117,11 +5181,37 @@ var Controls = function () {
   }, {
     key: "_destroyCustomControl",
     value: function _destroyCustomControl(item) {
+      var _this7 = this;
+
       var key = item.title.toLowerCase().replace(' ', '-');
       var control = this.getContainer().querySelector(".op-controls__".concat(key));
 
       if (control) {
-        control.removeEventListener('click', item.click);
+        if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+          var menu = this.player.getContainer().querySelector("#".concat(item.id, "-menu"));
+
+          if (menu) {
+            item.subitems.forEach(function (subitem) {
+              var menuItem = menu.querySelector("#".concat(subitem.id));
+
+              if (menuItem && subitem.click && typeof subitem.click === 'function') {
+                menuItem.removeEventListener('click', subitem.click);
+              }
+            });
+            control.removeEventListener('click', function (e) {
+              return _this7._toggleCustomMenu(e, menu, item);
+            });
+            this.player.getElement().removeEventListener('controlshidden', function () {
+              return _this7._hideCustomMenu(menu);
+            });
+            general_1.removeElement(menu);
+          }
+        }
+
+        if (typeof item.click === 'function') {
+          control.removeEventListener('click', item.click);
+        }
+
         general_1.removeElement(control);
       }
     }

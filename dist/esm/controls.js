@@ -246,6 +246,29 @@ class Controls {
         const e = addEvent('controlschanged');
         this.controls.dispatchEvent(e);
     }
+    _hideCustomMenu(menu) {
+        let timeout;
+        if (timeout && typeof window !== 'undefined') {
+            window.cancelAnimationFrame(timeout);
+        }
+        if (typeof window !== 'undefined') {
+            timeout = window.requestAnimationFrame(() => {
+                menu.setAttribute('aria-hidden', 'true');
+            });
+        }
+    }
+    _toggleCustomMenu(event, menu, item) {
+        const menus = this.player.getContainer().querySelectorAll('.op-settings');
+        menus.forEach(m => {
+            if (m.getAttribute('aria-hidden') === 'false' && m.id !== menu.id) {
+                m.setAttribute('aria-hidden', 'true');
+            }
+        });
+        menu.setAttribute('aria-hidden', menu.getAttribute('aria-hidden') === 'true' ? 'false' : 'true');
+        if (typeof item.click === 'function') {
+            item.click(event);
+        }
+    }
     _createCustomControl(item) {
         const control = document.createElement('button');
         const icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? `<img src="${item.icon}">` : item.icon;
@@ -254,7 +277,34 @@ class Controls {
         control.id = item.id;
         control.title = item.title;
         control.innerHTML = `${icon} <span class="op-sr">${item.title}</span>`;
-        control.addEventListener('click', item.click, EVENT_OPTIONS);
+        if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+            const menu = document.createElement('div');
+            menu.className = 'op-settings op-settings__custom';
+            menu.id = `${item.id}-menu`;
+            menu.setAttribute('aria-hidden', 'true');
+            const items = item.subitems.map(s => {
+                let itemIcon = '';
+                if (s.icon) {
+                    itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? `<img src="${s.icon}">` : s.icon;
+                }
+                return `<div class="op-settings__menu-item" tabindex="0" ${s.title ? `title="${s.title}"` : ''} role="menuitemradio">
+                    <div class="op-settings__menu-label" id="${s.id}" data-value="${item.id}-${s.id}">${itemIcon} ${s.label}</div>
+                </div>`;
+            });
+            menu.innerHTML = `<div class="op-settings__menu" role="menu">${items.join('')}</div>`;
+            this.player.getContainer().appendChild(menu);
+            item.subitems.forEach(subitem => {
+                const menuItem = menu.querySelector(`#${subitem.id}`);
+                if (menuItem && subitem.click && typeof subitem.click === 'function') {
+                    menuItem.addEventListener('click', subitem.click, EVENT_OPTIONS);
+                }
+            });
+            control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
+            this.player.getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
+        }
+        else if (typeof item.click === 'function') {
+            control.addEventListener('click', item.click, EVENT_OPTIONS);
+        }
         if (item.layer) {
             if (item.layer === 'main') {
                 this.player.getContainer().appendChild(control);
@@ -268,7 +318,23 @@ class Controls {
         const key = item.title.toLowerCase().replace(' ', '-');
         const control = this.getContainer().querySelector(`.op-controls__${key}`);
         if (control) {
-            control.removeEventListener('click', item.click);
+            if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+                const menu = this.player.getContainer().querySelector(`#${item.id}-menu`);
+                if (menu) {
+                    item.subitems.forEach(subitem => {
+                        const menuItem = menu.querySelector(`#${subitem.id}`);
+                        if (menuItem && subitem.click && typeof subitem.click === 'function') {
+                            menuItem.removeEventListener('click', subitem.click);
+                        }
+                    });
+                    control.removeEventListener('click', (e) => this._toggleCustomMenu(e, menu, item));
+                    this.player.getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
+                    removeElement(menu);
+                }
+            }
+            if (typeof item.click === 'function') {
+                control.removeEventListener('click', item.click);
+            }
             removeElement(control);
         }
     }

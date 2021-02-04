@@ -129,6 +129,15 @@ declare class Controls implements PlayerComponent {
      */
     private _buildElements;
     /**
+     * Calback to hide custom menu.
+     *
+     * @private
+     * @param {HTMLDivElement} menu
+     * @memberof Controls
+     */
+    private _hideCustomMenu;
+    private _toggleCustomMenu;
+    /**
      * Create a button for custom control items and activate `click` event on it.
      *
      * @private
@@ -138,6 +147,8 @@ declare class Controls implements PlayerComponent {
     private _createCustomControl;
     /**
      * Remove a custom control button and deactivate `click` event on it.
+     *
+     * If a submenu item was detected, remove also the events for each item and destroy the menu.
      *
      * @private
      * @param {ControlItem} item

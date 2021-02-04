@@ -285,6 +285,12 @@
     padding: 5px 15px;
     vertical-align: middle;
 }
+.op-settings__menu-label > img,
+.op-settings__menu-label > svg,
+.op-settings__submenu-label > img,
+.op-settings__submenu-label > svg {
+    max-height: 20px;
+}
 .op-settings__submenu-item,
 .op-settings__submenu-label {
     display: block;
