@@ -737,12 +737,31 @@ class Ads {
                     }
                 }
                 break;
+            default:
+                break;
         }
 
         // Assign events prefixed with `ads` to main element so user
-        // can listen to these events
-        const e = addEvent(`ads${event.type}`);
-        this.element.dispatchEvent(e);
+        // can listen to these events, except if the system detects a non-fatal error
+        if (event.type === google.ima.AdEvent.Type.LOG) {
+            const adData = event.getAdData();
+            if (adData['adError']) {
+                const message = adData['adError'].getMessage();
+                console.warn(`Ad warning: Non-fatal error occurred: ${message}`);
+                const details = {
+                    detail: {
+                        data: adData['adError'],
+                        message,
+                        type: 'Ads',
+                    },
+                };
+                const errorEvent = addEvent('playererror', details);
+                this.element.dispatchEvent(errorEvent);
+            }
+        } else {
+            const e = addEvent(`ads${event.type}`);
+            this.element.dispatchEvent(e);
+        }
     }
 
     /**
@@ -834,6 +853,17 @@ class Ads {
         this.events = [
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
             google.ima.AdEvent.Type.CLICK,
+            google.ima.AdEvent.Type.VIDEO_CLICKED,
+            google.ima.AdEvent.Type.VIDEO_ICON_CLICKED,
+            google.ima.AdEvent.Type.AD_PROGRESS,
+            google.ima.AdEvent.Type.AD_BUFFERING,
+            google.ima.AdEvent.Type.IMPRESSION,
+            google.ima.AdEvent.Type.DURATION_CHANGE,
+            google.ima.AdEvent.Type.USER_CLOSE,
+            google.ima.AdEvent.Type.LINEAR_CHANGED,
+            google.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED,
+            google.ima.AdEvent.Type.AD_METADATA,
+            google.ima.AdEvent.Type.INTERACTION,
             google.ima.AdEvent.Type.COMPLETE,
             google.ima.AdEvent.Type.FIRST_QUARTILE,
             google.ima.AdEvent.Type.LOADED,
@@ -846,6 +876,7 @@ class Ads {
             google.ima.AdEvent.Type.SKIPPED,
             google.ima.AdEvent.Type.VOLUME_CHANGED,
             google.ima.AdEvent.Type.VOLUME_MUTED,
+            google.ima.AdEvent.Type.LOG,
         ];
 
         if (!this.adsOptions.autoPlayAdBreaks) {
