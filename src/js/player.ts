@@ -275,6 +275,9 @@ class Player {
         },
         mode: 'responsive', // or `fill` or `fit`
         onError: () => { },
+        progress: {
+            duration: 0,
+        },
         showLoaderOnInit: false,
         startTime: 0,
         startVolume: 1,

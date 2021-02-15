@@ -19,7 +19,7 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 * **Enhance your player** adding your own buttons. Check [here](./docs/customize.md) for more details.
 * Provides the ability to use a **single VAST/VPAID** source or a **VAST/VPAID playlist** from several different sources (including URLs and valid XML strings).
 * **Can play ads in infinite loop**, desired for ads that are in a heavy text page.
-* Always **responsive** by default, for both video/audio tags; for video, **`fill`** and **fit** modes are available to either scale and crop media relative to its parent container, or to attempt to make the media fit its parent container (including black bars), respectively.
+* Always **responsive** by default, for both video/audio tags; for video, **`fill`** and **`fit`** modes are available to either scale and crop media relative to its parent container, or to attempt to make the media fit its parent container (including black bars), respectively.
 
 ## :warning: IMPORTANT: Migrating from v1.x.x to v2.x.x :warning:
 

@@ -27,11 +27,11 @@ class Time {
         this.duration = document.createElement('time');
         this.duration.className = 'op-controls__duration';
         this.duration.setAttribute('aria-hidden', 'false');
-        this.duration.innerText = '0:00';
+        this.duration.innerText = formatTime(this.player.getOptions().progress.duration);
         const setInitialTime = () => {
             const el = this.player.activeElement();
             if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled')) {
-                const duration = !isNaN(el.duration) ? el.duration : 0;
+                const duration = !isNaN(el.duration) ? el.duration : this.player.getOptions().progress.duration;
                 this.duration.innerText = formatTime(duration);
                 this.current.innerText = formatTime(el.currentTime);
             }
@@ -74,7 +74,7 @@ class Time {
         };
         this.events.media.ended = () => {
             const el = this.player.activeElement();
-            const duration = !isNaN(el.duration) ? el.duration : 0;
+            const duration = !isNaN(el.duration) ? el.duration : this.player.getOptions().progress.duration;
             if (this.player.isMedia()) {
                 this.duration.innerText = formatTime(duration);
             }

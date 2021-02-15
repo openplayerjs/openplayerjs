@@ -70,6 +70,9 @@ class Player {
             },
             mode: 'responsive',
             onError: () => { },
+            progress: {
+                duration: 0,
+            },
             showLoaderOnInit: false,
             startTime: 0,
             startVolume: 1,

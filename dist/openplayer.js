@@ -1667,6 +1667,9 @@ var Player = function () {
       },
       mode: 'responsive',
       onError: function onError() {},
+      progress: {
+        duration: 0
+      },
       showLoaderOnInit: false,
       startTime: 0,
       startVolume: 1,
@@ -6841,7 +6844,7 @@ var Progress = function () {
           var max = parseFloat(_this.slider.max);
           _this.slider.value = current.toString();
           _this.slider.style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
-          _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : current / el.duration * 100;
+          _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? _this.player.getOptions().progress.duration : current / el.duration * 100;
 
           if (_this.player.getElement().getAttribute('op-dvr__enabled') && Math.floor(_this.played.value) >= 99) {
             lastCurrentTime = el.currentTime;
@@ -6862,7 +6865,7 @@ var Progress = function () {
 
         _this.progress.setAttribute('aria-valuemax', el.duration.toString());
 
-        _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : current / el.duration * 100;
+        _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? _this.player.getOptions().progress.duration : current / el.duration * 100;
       };
 
       this.events.media.ended = function () {
@@ -6889,7 +6892,7 @@ var Progress = function () {
         var max = parseFloat(target.max);
         var val = parseFloat(target.value);
         _this.slider.style.backgroundSize = "".concat((val - min) * 100 / (max - min), "% 100%");
-        _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? 0 : val / el.duration * 100;
+        _this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? _this.player.getOptions().progress.duration : val / el.duration * 100;
 
         if (_this.player.getElement().getAttribute('op-dvr__enabled')) {
           el.currentTime = Math.round(_this.played.value) >= 99 ? lastCurrentTime : val;
@@ -7040,7 +7043,7 @@ var Progress = function () {
       var isAd = this.player.isAd();
       var key = e.which || e.keyCode || 0;
       var newStep = this.player.getOptions().step ? this.player.getOptions().step : el.duration * 0.05;
-      var step = el.duration !== Infinity ? newStep : 0;
+      var step = el.duration !== Infinity ? newStep : this.player.getOptions().progress.duration;
 
       if (key === 35 && !isAd) {
         el.currentTime = el.duration;
@@ -7437,13 +7440,13 @@ var Time = function () {
       this.duration = document.createElement('time');
       this.duration.className = 'op-controls__duration';
       this.duration.setAttribute('aria-hidden', 'false');
-      this.duration.innerText = '0:00';
+      this.duration.innerText = time_1.formatTime(this.player.getOptions().progress.duration);
 
       var setInitialTime = function setInitialTime() {
         var el = _this.player.activeElement();
 
         if (el.duration !== Infinity && !_this.player.getElement().getAttribute('op-live__enabled')) {
-          var duration = !isNaN(el.duration) ? el.duration : 0;
+          var duration = !isNaN(el.duration) ? el.duration : _this.player.getOptions().progress.duration;
           _this.duration.innerText = time_1.formatTime(duration);
           _this.current.innerText = time_1.formatTime(el.currentTime);
         } else {
@@ -7494,7 +7497,7 @@ var Time = function () {
       this.events.media.ended = function () {
         var el = _this.player.activeElement();
 
-        var duration = !isNaN(el.duration) ? el.duration : 0;
+        var duration = !isNaN(el.duration) ? el.duration : _this.player.getOptions().progress.duration;
 
         if (_this.player.isMedia()) {
           _this.duration.innerText = time_1.formatTime(duration);

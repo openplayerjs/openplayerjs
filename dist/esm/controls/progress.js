@@ -123,7 +123,7 @@ class Progress {
                 this.slider.value = current.toString();
                 this.slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                    0 : ((current / el.duration) * 100);
+                    this.player.getOptions().progress.duration : ((current / el.duration) * 100);
                 if (this.player.getElement().getAttribute('op-dvr__enabled') && Math.floor(this.played.value) >= 99) {
                     lastCurrentTime = el.currentTime;
                     this.progress.setAttribute('aria-hidden', 'false');
@@ -139,7 +139,7 @@ class Progress {
             this.slider.setAttribute('max', `${el.duration}`);
             this.progress.setAttribute('aria-valuemax', el.duration.toString());
             this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                0 : ((current / el.duration) * 100);
+                this.player.getOptions().progress.duration : ((current / el.duration) * 100);
         };
         this.events.media.ended = () => {
             this.slider.style.backgroundSize = '0% 100%';
@@ -159,7 +159,7 @@ class Progress {
             const val = parseFloat(target.value);
             this.slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
             this.played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                0 : ((val / el.duration) * 100);
+                this.player.getOptions().progress.duration : ((val / el.duration) * 100);
             if (this.player.getElement().getAttribute('op-dvr__enabled')) {
                 el.currentTime = (Math.round(this.played.value) >= 99) ? lastCurrentTime : val;
             }
@@ -286,7 +286,7 @@ class Progress {
         const isAd = this.player.isAd();
         const key = e.which || e.keyCode || 0;
         const newStep = this.player.getOptions().step ? this.player.getOptions().step : el.duration * 0.05;
-        const step = el.duration !== Infinity ? newStep : 0;
+        const step = el.duration !== Infinity ? newStep : this.player.getOptions().progress.duration;
         if (key === 35 && !isAd) {
             el.currentTime = el.duration;
             e.preventDefault();

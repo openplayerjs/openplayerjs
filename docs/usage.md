@@ -108,9 +108,6 @@ var player = new OpenPlayerJS('[player ID]', {
         // Custom path/URL to IMA SDK
         sdkPath,
     },
-    hls: {
-        // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
-    },
     dash: {
         // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,
         // HW_SECURE_DECODE, HW_SECURE_ALL
@@ -122,6 +119,13 @@ var player = new OpenPlayerJS('[player ID]', {
     },
     flv: {
         // all FLV options available at https://github.com/bilibili/flv.js/blob/master/docs/api.md#mediadatasource
+    },
+    hls: {
+        // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
+    },
+    progress: {
+        // The default duration to show while loading the media (default: 0)
+        duration
     },
     // Force the player to have a specific width/height (default for both: 0)
     // They can accept a string with the number and unit (`100%`, `350px`)
