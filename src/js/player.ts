@@ -579,6 +579,25 @@ class Player {
     }
 
     /**
+     * Remove a control to the list (whether custom or not).
+     *
+     * @param {string} controlName
+     * @memberof Player
+     */
+    public removeControl(controlName: string): void {
+        const { layers } = this.getOptions().controls;
+        Object.keys(layers).forEach(layer => {
+            layers[layer].forEach((item: string, idx: number) => {
+                if (item === controlName) {
+                    layers[layer].splice(idx, 1);
+                }
+            });
+        });
+        const e = addEvent('controlschanged');
+        this.element.dispatchEvent(e);
+    }
+
+    /**
      * Load media and events depending of media type.
      *
      * @memberof Player

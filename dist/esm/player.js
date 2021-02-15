@@ -239,6 +239,18 @@ class Player {
         const e = addEvent('controlschanged');
         this.element.dispatchEvent(e);
     }
+    removeControl(controlName) {
+        const { layers } = this.getOptions().controls;
+        Object.keys(layers).forEach(layer => {
+            layers[layer].forEach((item, idx) => {
+                if (item === controlName) {
+                    layers[layer].splice(idx, 1);
+                }
+            });
+        });
+        const e = addEvent('controlschanged');
+        this.element.dispatchEvent(e);
+    }
     _prepareMedia() {
         try {
             this.element.addEventListener('playererror', this.options.onError, EVENT_OPTIONS);

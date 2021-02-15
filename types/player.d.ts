@@ -328,6 +328,13 @@ declare class Player {
      */
     addControl(args: ControlItem): void;
     /**
+     * Remove a control to the list (whether custom or not).
+     *
+     * @param {string} controlName
+     * @memberof Player
+     */
+    removeControl(controlName: string): void;
+    /**
      * Load media and events depending of media type.
      *
      * @memberof Player

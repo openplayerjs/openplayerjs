@@ -1882,6 +1882,20 @@ var Player = function () {
       this.element.dispatchEvent(e);
     }
   }, {
+    key: "removeControl",
+    value: function removeControl(controlName) {
+      var layers = this.getOptions().controls.layers;
+      Object.keys(layers).forEach(function (layer) {
+        layers[layer].forEach(function (item, idx) {
+          if (item === controlName) {
+            layers[layer].splice(idx, 1);
+          }
+        });
+      });
+      var e = events_1.addEvent('controlschanged');
+      this.element.dispatchEvent(e);
+    }
+  }, {
     key: "_prepareMedia",
     value: function _prepareMedia() {
       try {
