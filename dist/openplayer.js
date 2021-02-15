@@ -5330,12 +5330,7 @@ var Captions = function () {
         this.menu = document.createElement('div');
         this.menu.className = 'op-settings op-captions__menu';
         this.menu.setAttribute('aria-hidden', 'true');
-        this.button.classList.add('op-control--no-hover');
-        this.menu = document.createElement('div');
-        this.menu.className = 'op-settings op-captions__menu';
-        this.menu.setAttribute('aria-hidden', 'true');
         this.menu.innerHTML = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\" aria-checked=\"".concat(this["default"] === 'off' ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label op-subtitles__option\" data-value=\"captions-off\">").concat(this.labels.off, "</div>\n                </div>\n            </div>");
-        this.player.getControls().getLayer(this.layer).appendChild(this.menu);
       }
 
       var _loop = function _loop(i, total, _tracks) {
@@ -5484,7 +5479,17 @@ var Captions = function () {
       if (this.hasTracks) {
         var target = this.player.getContainer();
         target.insertBefore(this.captions, target.firstChild);
-        this.player.getControls().getLayer(this.layer).appendChild(this.button);
+
+        if (this.detachMenu) {
+          var itemContainer = document.createElement('div');
+          itemContainer.className = "op-controls__container op-control__".concat(this.position);
+          itemContainer.appendChild(this.button);
+          itemContainer.appendChild(this.menu);
+          this.player.getControls().getLayer(this.layer).appendChild(itemContainer);
+        } else {
+          this.player.getControls().getLayer(this.layer).appendChild(this.button);
+        }
+
         this.button.addEventListener('click', this.events.button.click, constants_1.EVENT_OPTIONS);
       }
 
@@ -6149,8 +6154,6 @@ var Levels = function () {
       this.events.media.hlsManifestParsed = loadLevelsEvent.bind(this);
 
       if (this.detachMenu) {
-        this.player.getControls().getLayer(this.layer).appendChild(this.button);
-
         this._buildMenu();
 
         this.events.button.click = function () {
@@ -6447,7 +6450,11 @@ var Levels = function () {
           return "\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                    aria-checked=\"".concat(_this4["default"] === item.key ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"levels-").concat(item.key, "\">").concat(item.label, "</div>\n                </div>");
         }).join(''), "\n            </div>");
         this.menu.innerHTML = menu;
-        this.player.getControls().getLayer(this.layer).appendChild(this.menu);
+        var itemContainer = document.createElement('div');
+        itemContainer.className = "op-controls__container op-control__".concat(this.position);
+        itemContainer.appendChild(this.button);
+        itemContainer.appendChild(this.menu);
+        this.player.getControls().getLayer(this.layer).appendChild(itemContainer);
       }
     }
   }]);

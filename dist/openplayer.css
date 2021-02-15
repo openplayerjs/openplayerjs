@@ -124,6 +124,9 @@
 .op-controls button > span {
     color: #fff;
 }
+.op-controls .op-controls__container {
+    position: relative;
+}
 .op-player__loader {
     display: block;
     height: 60px;
@@ -704,8 +707,11 @@
 }
 .op-captions__menu {
     bottom: 36px;
+    left: 50%;
+    min-width: 73px;
     overflow: visible;
-    right: 59px;
+    -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
     z-index: 10;
 }
 .op-captions__menu:after {
@@ -733,9 +739,11 @@ video:-webkit-media-text-track-display {
 /* === Levels ================ */
 .op-levels__menu {
     bottom: 36px;
+    left: 50%;
     min-width: 73px;
     overflow: visible;
-    right: 30px;
+    -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
     z-index: 10;
 }
 .op-levels__menu:after {

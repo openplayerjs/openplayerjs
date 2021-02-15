@@ -230,16 +230,11 @@ class Captions implements PlayerComponent {
             this.menu = document.createElement('div');
             this.menu.className = 'op-settings op-captions__menu';
             this.menu.setAttribute('aria-hidden', 'true');
-            this.button.classList.add('op-control--no-hover');
-            this.menu = document.createElement('div');
-            this.menu.className = 'op-settings op-captions__menu';
-            this.menu.setAttribute('aria-hidden', 'true');
             this.menu.innerHTML = `<div class="op-settings__menu" role="menu" id="menu-item-captions">
                 <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio" aria-checked="${this.default === 'off' ? 'true' : 'false'}">
                     <div class="op-settings__submenu-label op-subtitles__option" data-value="captions-off">${this.labels.off}</div>
                 </div>
             </div>`;
-            this.player.getControls().getLayer(this.layer).appendChild(this.menu);
         }
 
         // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
@@ -368,7 +363,15 @@ class Captions implements PlayerComponent {
         if (this.hasTracks) {
             const target = this.player.getContainer();
             target.insertBefore(this.captions, target.firstChild);
-            this.player.getControls().getLayer(this.layer).appendChild(this.button);
+            if (this.detachMenu) {
+                const itemContainer = document.createElement('div');
+                itemContainer.className = `op-controls__container op-control__${this.position}`;
+                itemContainer.appendChild(this.button);
+                itemContainer.appendChild(this.menu);
+                this.player.getControls().getLayer(this.layer).appendChild(itemContainer);
+            } else {
+                this.player.getControls().getLayer(this.layer).appendChild(this.button);
+            }
             this.button.addEventListener('click', this.events.button.click, EVENT_OPTIONS);
         }
 

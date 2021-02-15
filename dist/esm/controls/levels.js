@@ -52,7 +52,6 @@ class Levels {
         this.events.media.manifestLoaded = loadLevelsEvent.bind(this);
         this.events.media.hlsManifestParsed = loadLevelsEvent.bind(this);
         if (this.detachMenu) {
-            this.player.getControls().getLayer(this.layer).appendChild(this.button);
             this._buildMenu();
             this.events.button.click = () => {
                 if (this.detachMenu) {
@@ -269,7 +268,11 @@ class Levels {
                 </div>`).join('')}
             </div>`;
             this.menu.innerHTML = menu;
-            this.player.getControls().getLayer(this.layer).appendChild(this.menu);
+            const itemContainer = document.createElement('div');
+            itemContainer.className = `op-controls__container op-control__${this.position}`;
+            itemContainer.appendChild(this.button);
+            itemContainer.appendChild(this.menu);
+            this.player.getControls().getLayer(this.layer).appendChild(itemContainer);
         }
     }
 }
