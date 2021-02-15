@@ -1887,6 +1887,8 @@ var Player = function () {
   }, {
     key: "removeControl",
     value: function removeControl(controlName) {
+      var _this2 = this;
+
       var layers = this.getOptions().controls.layers;
       Object.keys(layers).forEach(function (layer) {
         layers[layer].forEach(function (item, idx) {
@@ -1894,6 +1896,11 @@ var Player = function () {
             layers[layer].splice(idx, 1);
           }
         });
+      });
+      this.customControlItems.forEach(function (item, idx) {
+        if (item.id === controlName) {
+          _this2.customControlItems.splice(idx, 1);
+        }
       });
       var e = events_1.addEvent('controlschanged');
       this.element.dispatchEvent(e);
@@ -2032,7 +2039,7 @@ var Player = function () {
   }, {
     key: "_createPlayButton",
     value: function _createPlayButton() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (general_1.isAudio(this.element)) {
         return;
@@ -2056,170 +2063,170 @@ var Player = function () {
       }
 
       this.playBtn.addEventListener('click', function () {
-        if (_this2.adsInstance) {
-          _this2.adsInstance.playRequested = _this2.activeElement().paused;
+        if (_this3.adsInstance) {
+          _this3.adsInstance.playRequested = _this3.activeElement().paused;
         }
 
-        if (_this2.activeElement().paused) {
-          _this2.activeElement().play();
+        if (_this3.activeElement().paused) {
+          _this3.activeElement().play();
         } else {
-          _this2.activeElement().pause();
+          _this3.activeElement().pause();
         }
       }, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "_setEvents",
     value: function _setEvents() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (general_1.isVideo(this.element)) {
         this.events.loadedmetadata = function () {
-          var el = _this3.activeElement();
+          var el = _this4.activeElement();
 
-          if (_this3.options.showLoaderOnInit && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-            _this3.loader.setAttribute('aria-hidden', 'false');
+          if (_this4.options.showLoaderOnInit && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
+            _this4.loader.setAttribute('aria-hidden', 'false');
 
-            _this3.playBtn.setAttribute('aria-hidden', 'true');
+            _this4.playBtn.setAttribute('aria-hidden', 'true');
           } else {
-            _this3.loader.setAttribute('aria-hidden', 'true');
+            _this4.loader.setAttribute('aria-hidden', 'true');
 
-            _this3.playBtn.setAttribute('aria-hidden', 'false');
+            _this4.playBtn.setAttribute('aria-hidden', 'false');
           }
 
           if (el.paused) {
-            _this3.playBtn.classList.remove('op-player__play--paused');
+            _this4.playBtn.classList.remove('op-player__play--paused');
 
-            _this3.playBtn.setAttribute('aria-pressed', 'false');
+            _this4.playBtn.setAttribute('aria-pressed', 'false');
           }
         };
 
         this.events.waiting = function () {
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
+          _this4.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', 'false');
+          _this4.loader.setAttribute('aria-hidden', 'false');
         };
 
         this.events.seeking = function () {
-          var el = _this3.activeElement();
+          var el = _this4.activeElement();
 
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
+          _this4.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this3.loader.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
+          _this4.loader.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
         };
 
         this.events.seeked = function () {
-          var el = _this3.activeElement();
+          var el = _this4.activeElement();
 
           if (Math.round(el.currentTime) === 0) {
-            _this3.playBtn.setAttribute('aria-hidden', 'true');
+            _this4.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this3.loader.setAttribute('aria-hidden', 'false');
+            _this4.loader.setAttribute('aria-hidden', 'false');
           } else {
-            _this3.playBtn.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
+            _this4.playBtn.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
 
-            _this3.loader.setAttribute('aria-hidden', 'true');
+            _this4.loader.setAttribute('aria-hidden', 'true');
           }
         };
 
         this.events.play = function () {
-          _this3.playBtn.classList.add('op-player__play--paused');
+          _this4.playBtn.classList.add('op-player__play--paused');
 
-          _this3.playBtn.title = _this3.options.labels.pause;
+          _this4.playBtn.title = _this4.options.labels.pause;
 
-          _this3.loader.setAttribute('aria-hidden', 'true');
+          _this4.loader.setAttribute('aria-hidden', 'true');
 
-          if (_this3.options.showLoaderOnInit) {
-            _this3.playBtn.setAttribute('aria-hidden', 'true');
+          if (_this4.options.showLoaderOnInit) {
+            _this4.playBtn.setAttribute('aria-hidden', 'true');
           } else {
             setTimeout(function () {
-              _this3.playBtn.setAttribute('aria-hidden', 'true');
-            }, _this3.options.hidePlayBtnTimer);
+              _this4.playBtn.setAttribute('aria-hidden', 'true');
+            }, _this4.options.hidePlayBtnTimer);
           }
         };
 
         this.events.playing = function () {
-          _this3.loader.setAttribute('aria-hidden', 'true');
+          _this4.loader.setAttribute('aria-hidden', 'true');
 
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
+          _this4.playBtn.setAttribute('aria-hidden', 'true');
         };
 
         this.events.pause = function () {
-          var el = _this3.activeElement();
+          var el = _this4.activeElement();
 
-          _this3.playBtn.classList.remove('op-player__play--paused');
+          _this4.playBtn.classList.remove('op-player__play--paused');
 
-          _this3.playBtn.title = _this3.options.labels.play;
+          _this4.playBtn.title = _this4.options.labels.play;
 
-          if (_this3.options.showLoaderOnInit && Math.round(el.currentTime) === 0) {
-            _this3.playBtn.setAttribute('aria-hidden', 'true');
+          if (_this4.options.showLoaderOnInit && Math.round(el.currentTime) === 0) {
+            _this4.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this3.loader.setAttribute('aria-hidden', 'false');
+            _this4.loader.setAttribute('aria-hidden', 'false');
           } else {
-            _this3.playBtn.setAttribute('aria-hidden', 'false');
+            _this4.playBtn.setAttribute('aria-hidden', 'false');
 
-            _this3.loader.setAttribute('aria-hidden', 'true');
+            _this4.loader.setAttribute('aria-hidden', 'true');
           }
         };
 
         this.events.ended = function () {
-          _this3.loader.setAttribute('aria-hidden', 'true');
+          _this4.loader.setAttribute('aria-hidden', 'true');
 
-          _this3.playBtn.setAttribute('aria-hidden', 'true');
+          _this4.playBtn.setAttribute('aria-hidden', 'true');
         };
       }
 
       Object.keys(this.events).forEach(function (event) {
-        _this3.element.addEventListener(event, _this3.events[event], constants_1.EVENT_OPTIONS);
+        _this4.element.addEventListener(event, _this4.events[event], constants_1.EVENT_OPTIONS);
       });
     }
   }, {
     key: "_autoplay",
     value: function _autoplay() {
-      var _this4 = this;
+      var _this5 = this;
 
       if (!this.processedAutoplay) {
         this.processedAutoplay = true;
         this.element.removeEventListener('canplay', this._autoplay.bind(this));
         media_2.isAutoplaySupported(this.element, function (autoplay) {
-          _this4.canAutoplay = autoplay;
+          _this5.canAutoplay = autoplay;
         }, function (muted) {
-          _this4.canAutoplayMuted = muted;
+          _this5.canAutoplayMuted = muted;
         }, function () {
-          if (_this4.canAutoplayMuted) {
-            _this4.activeElement().muted = true;
-            _this4.activeElement().volume = 0;
+          if (_this5.canAutoplayMuted) {
+            _this5.activeElement().muted = true;
+            _this5.activeElement().volume = 0;
             var e = events_1.addEvent('volumechange');
 
-            _this4.element.dispatchEvent(e);
+            _this5.element.dispatchEvent(e);
 
             var volumeEl = document.createElement('div');
-            var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? _this4.options.labels.tap : _this4.options.labels.click;
+            var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? _this5.options.labels.tap : _this5.options.labels.click;
             volumeEl.className = 'op-player__unmute';
             volumeEl.innerHTML = "<span>".concat(action, "</span>");
             volumeEl.tabIndex = 0;
             volumeEl.addEventListener('click', function () {
-              _this4.activeElement().muted = false;
-              _this4.activeElement().volume = _this4.volume;
+              _this5.activeElement().muted = false;
+              _this5.activeElement().volume = _this5.volume;
               var event = events_1.addEvent('volumechange');
 
-              _this4.element.dispatchEvent(event);
+              _this5.element.dispatchEvent(event);
 
               general_1.removeElement(volumeEl);
             }, constants_1.EVENT_OPTIONS);
 
-            var target = _this4.getContainer();
+            var target = _this5.getContainer();
 
             target.insertBefore(volumeEl, target.firstChild);
           } else {
-            _this4.activeElement().muted = _this4.element.muted;
-            _this4.activeElement().volume = _this4.volume;
+            _this5.activeElement().muted = _this5.element.muted;
+            _this5.activeElement().volume = _this5.volume;
           }
 
-          if (_this4.ads) {
-            var adsOptions = _this4.options && _this4.options.ads ? _this4.options.ads : undefined;
-            _this4.adsInstance = new ads_1["default"](_this4, _this4.ads, _this4.canAutoplay, _this4.canAutoplayMuted, adsOptions);
-          } else if (_this4.canAutoplay || _this4.canAutoplayMuted) {
-            return _this4.play();
+          if (_this5.ads) {
+            var adsOptions = _this5.options && _this5.options.ads ? _this5.options.ads : undefined;
+            _this5.adsInstance = new ads_1["default"](_this5, _this5.ads, _this5.canAutoplay, _this5.canAutoplayMuted, adsOptions);
+          } else if (_this5.canAutoplay || _this5.canAutoplayMuted) {
+            return _this5.play();
           }
         });
       }
@@ -2227,14 +2234,14 @@ var Player = function () {
   }, {
     key: "_mergeOptions",
     value: function _mergeOptions(playerOptions) {
-      var _this5 = this;
+      var _this6 = this;
 
       this.options = Object.assign(Object.assign({}, this.defaultOptions), playerOptions);
 
       if (playerOptions) {
         var objectElements = ['labels', 'controls'];
         objectElements.forEach(function (item) {
-          _this5.options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, _this5.defaultOptions[item]), playerOptions[item]) : _this5.defaultOptions[item];
+          _this6.options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, _this6.defaultOptions[item]), playerOptions[item]) : _this6.defaultOptions[item];
         });
       }
     }

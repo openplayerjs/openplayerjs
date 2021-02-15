@@ -596,6 +596,13 @@ class Player {
                 }
             });
         });
+
+        // Check custom controls and remove reference there as well
+        this.customControlItems.forEach((item: ControlItem, idx: number) => {
+            if (item.id === controlName) {
+                this.customControlItems.splice(idx, 1);
+            }
+        });
         const e = addEvent('controlschanged');
         this.element.dispatchEvent(e);
     }

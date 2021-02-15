@@ -251,6 +251,11 @@ class Player {
                 }
             });
         });
+        this.customControlItems.forEach((item, idx) => {
+            if (item.id === controlName) {
+                this.customControlItems.splice(idx, 1);
+            }
+        });
         const e = addEvent('controlschanged');
         this.element.dispatchEvent(e);
     }
