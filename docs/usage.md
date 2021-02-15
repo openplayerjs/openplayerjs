@@ -124,7 +124,7 @@ var player = new OpenPlayerJS('[player ID]', {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
     },
     progress: {
-        // The default duration to show while loading the media (default: 0)
+        // The default duration in seconds to show while loading the media (default: 0)
         duration
     },
     // Force the player to have a specific width/height (default for both: 0)
