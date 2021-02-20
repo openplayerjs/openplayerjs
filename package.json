@@ -99,7 +99,7 @@
   },
   "dependencies": {
     "auto-changelog": "^1.16.4",
-    "core-js": "^3.8.3",
+    "core-js": "^3.9.0",
     "custom-event-polyfill": "^1.0.7",
     "element-closest": "^3.0.2",
     "global": "^4.4.0"
