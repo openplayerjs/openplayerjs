@@ -15,4 +15,9 @@ export default interface ControlItem {
     custom?: boolean;
     subitems?: Array<{id: string, label: string, title?: string, icon?: string, click(): void}>;
     click(event: any): void;
+    mouseenter?(event: any): void;
+    mouseleave?(event: any): void;
+    keydown?(event: any): void;
+    blur?(event: any): void;
+    focus?(event: any): void;
 }

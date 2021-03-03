@@ -5190,8 +5190,28 @@ var Controls = function () {
         this.player.getElement().addEventListener('controlshidden', function () {
           return _this6._hideCustomMenu(menu);
         }, constants_1.EVENT_OPTIONS);
-      } else if (typeof item.click === 'function') {
+      } else if (item.click && typeof item.click === 'function') {
         control.addEventListener('click', item.click, constants_1.EVENT_OPTIONS);
+      }
+
+      if (item.mouseenter && typeof item.mouseenter === 'function') {
+        control.addEventListener('mouseenter', item.mouseenter, constants_1.EVENT_OPTIONS);
+      }
+
+      if (item.mouseleave && typeof item.mouseleave === 'function') {
+        control.addEventListener('mouseenter', item.mouseleave, constants_1.EVENT_OPTIONS);
+      }
+
+      if (item.keydown && typeof item.keydown === 'function') {
+        control.addEventListener('keydown', item.keydown, constants_1.EVENT_OPTIONS);
+      }
+
+      if (item.blur && typeof item.blur === 'function') {
+        control.addEventListener('blur', item.blur, constants_1.EVENT_OPTIONS);
+      }
+
+      if (item.focus && typeof item.focus === 'function') {
+        control.addEventListener('focus', item.focus, constants_1.EVENT_OPTIONS);
       }
 
       if (item.layer) {
@@ -5232,8 +5252,28 @@ var Controls = function () {
           }
         }
 
-        if (typeof item.click === 'function') {
+        if (item.click && typeof item.click === 'function') {
           control.removeEventListener('click', item.click);
+        }
+
+        if (item.mouseenter && typeof item.mouseenter === 'function') {
+          control.removeEventListener('mouseenter', item.mouseenter);
+        }
+
+        if (item.mouseleave && typeof item.mouseleave === 'function') {
+          control.removeEventListener('mouseenter', item.mouseleave);
+        }
+
+        if (item.keydown && typeof item.keydown === 'function') {
+          control.removeEventListener('keydown', item.keydown);
+        }
+
+        if (item.blur && typeof item.blur === 'function') {
+          control.removeEventListener('blur', item.blur);
+        }
+
+        if (item.focus && typeof item.focus === 'function') {
+          control.removeEventListener('focus', item.focus);
         }
 
         general_1.removeElement(control);

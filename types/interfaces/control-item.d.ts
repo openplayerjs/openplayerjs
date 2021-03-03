@@ -21,4 +21,9 @@ export default interface ControlItem {
         click(): void;
     }>;
     click(event: any): void;
+    mouseenter?(event: any): void;
+    mouseleave?(event: any): void;
+    keydown?(event: any): void;
+    blur?(event: any): void;
+    focus?(event: any): void;
 }

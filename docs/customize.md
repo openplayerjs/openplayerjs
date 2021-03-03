@@ -25,14 +25,19 @@ player.addControl({
   // or `main` to add it in the video area
   position: 'right',
   showInAds: false, // or true
-  click: () => {}, // the operation it executes
   subitems: [{    // optional list of items to render a menu
       id: '[ITEM ID]', 
       label: '[ITEM LABEL]', 
       title: '[TOOLTIP ITEM]', // optional
       icon:'/path/to/item-image', // optional
-      click: () => {}
+      click: () => {},
    }],
+  click: () => {},
+  mouseenter: () => {},
+  mouseleave: () => {},
+  keydown: () => {},
+  blur: () => {},
+  focus: () => {},
 });
 player.init();
 ```

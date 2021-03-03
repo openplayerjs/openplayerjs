@@ -302,8 +302,23 @@ class Controls {
             control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
             this.player.getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         }
-        else if (typeof item.click === 'function') {
+        else if (item.click && typeof item.click === 'function') {
             control.addEventListener('click', item.click, EVENT_OPTIONS);
+        }
+        if (item.mouseenter && typeof item.mouseenter === 'function') {
+            control.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
+        }
+        if (item.mouseleave && typeof item.mouseleave === 'function') {
+            control.addEventListener('mouseenter', item.mouseleave, EVENT_OPTIONS);
+        }
+        if (item.keydown && typeof item.keydown === 'function') {
+            control.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
+        }
+        if (item.blur && typeof item.blur === 'function') {
+            control.addEventListener('blur', item.blur, EVENT_OPTIONS);
+        }
+        if (item.focus && typeof item.focus === 'function') {
+            control.addEventListener('focus', item.focus, EVENT_OPTIONS);
         }
         if (item.layer) {
             if (item.layer === 'main') {
@@ -332,8 +347,23 @@ class Controls {
                     removeElement(menu);
                 }
             }
-            if (typeof item.click === 'function') {
+            if (item.click && typeof item.click === 'function') {
                 control.removeEventListener('click', item.click);
+            }
+            if (item.mouseenter && typeof item.mouseenter === 'function') {
+                control.removeEventListener('mouseenter', item.mouseenter);
+            }
+            if (item.mouseleave && typeof item.mouseleave === 'function') {
+                control.removeEventListener('mouseenter', item.mouseleave);
+            }
+            if (item.keydown && typeof item.keydown === 'function') {
+                control.removeEventListener('keydown', item.keydown);
+            }
+            if (item.blur && typeof item.blur === 'function') {
+                control.removeEventListener('blur', item.blur);
+            }
+            if (item.focus && typeof item.focus === 'function') {
+                control.removeEventListener('focus', item.focus);
             }
             removeElement(control);
         }
