@@ -180,7 +180,7 @@ class Ads {
         }
     }
     get volume() {
-        return this.adsManager.getVolume();
+        return this.adsManager ? this.adsManager.getVolume() : this.originalVolume;
     }
     set muted(value) {
         if (this.adsManager) {

@@ -9900,7 +9900,7 @@ var Ads = function () {
       }
     },
     get: function get() {
-      return this.adsManager.getVolume();
+      return this.adsManager ? this.adsManager.getVolume() : this.originalVolume;
     }
   }, {
     key: "muted",

@@ -547,7 +547,7 @@ class Ads {
      * @memberof Ads
      */
     get volume(): number {
-        return this.adsManager.getVolume();
+        return this.adsManager ? this.adsManager.getVolume() : this.originalVolume;
     }
 
     /**
