@@ -47,14 +47,19 @@ Sometimes you need more flexibility instantiating the player; for example, addin
 
 ```javascript
 var player = new OpenPlayerJS('[player ID]', {
+    // The configuration related to the player's controls; by default, the available controls are: 'play', 
+    // 'time', 'volume', 'progress', 'captions', 'settings' and 'fullscreen'. There's an optional 
+    // 'levels' control to display different quality levels. More of this described below.
     controls: {
         // By default, the player will display the controls for a number of seconds before they are hidden; this option will allow the user to permanently show the controls if they need fully customize them.
         alwaysVisible: false,
-        // Controls configuration by default; `levels` can be added as well since it's an optional feature;
-        // Each one of the items will have in their class name the `op-control__[left|middle|right]` according
-        // to the controls' structure listed below. Also available: `top-left`, `top-middle`,
-        // `top-right`, `bottom-left`, `bottom-middle` and `bottom-right`.
-        // If you use `main`, it will be appended to the media's container to create elements.
+        // Controls positioning in the player. Each one of the control items can be enclosed in a
+        // specific layer, and it will have in its class name the `op-control__[left|middle|right]`
+        // according to the controls' structure listed below. By default, the layers are 'left', 'middle'
+        // and 'right'. Also available: 'main', 'top-left', 'top-middle', 'top-right', 'bottom-left', 
+        // 'bottom-middle' and 'bottom-right'. 
+        // If you use the layer 'main', whatever control is in it will be appended to the media's main 
+        // container. This layer is ONLY available for video elements.
         layers: {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
@@ -139,6 +144,12 @@ player.init();
 
 **NOTE**: In order to use this setup, the video/audio tag(s) **must** have a unique ID.
 
+### **About the `levels` control**
+
+The `levels` option is not a default one since it requires specific configuration to make it work with HTML5, or just works with streaming elements that have different resolutions.
+
+To see a working example of it, using both scenarios, check [this sample](https://codepen.io/rafa8626/pen/ExxXvZx?editors=1000).
+
 ## React/Next.js
 
 Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can see in the example below.
@@ -161,3 +172,8 @@ export default function Sample() {
         </div>
     );
 ```
+
+## Controls
+
+; 
+        // 
