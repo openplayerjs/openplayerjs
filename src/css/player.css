@@ -72,6 +72,9 @@
     width: 100%;
     z-index: 3;
 }
+.op-controls.op-controls__stacked {
+    flex-direction: column;
+}
 .op-controls--hidden .op-controls {
     bottom: -36px;
     pointer-events: none;
@@ -185,7 +188,19 @@
     text-align: center;
     width: 15px;
 }
+.op-controls-layer__top,
+.op-controls-layer__center,
+.op-controls-layer__bottom {
+    display: flex;
+}
+.op-controls .op-control__left {
+    justify-self: flex-start;
+}
+.op-controls .op-control__middle {
+    justify-self: center;
+}
 .op-controls .op-control__right {
+    justify-self: flex-end;
     margin-left: auto;
 }
 .op-controls .op-control__right ~ .op-control__right {
@@ -467,6 +482,10 @@
     margin-left: -8px;
     position: absolute;
     width: 100%;
+}
+.op-player__video .op-controls.op-controls__stacked .op-controls__progress {
+    bottom: 0;
+    position: relative;
 }
 .op-controls progress::-webkit-progress-value {
     background: currentColor;

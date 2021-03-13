@@ -179,6 +179,9 @@ class Controls {
         controlPositions.forEach((position) => {
             const [layer, pos] = position.split('-');
             if (pos) {
+                if (!this.controls.classList.contains('op-controls__stacked')) {
+                    this.controls.classList.add('op-controls__stacked');
+                }
                 const className = `op-controls-layer__${layer}`;
                 if (!this.controls.querySelector(`.${className}`)) {
                     const controlLayer = document.createElement('div');

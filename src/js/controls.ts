@@ -322,6 +322,9 @@ class Controls implements PlayerComponent {
 
             // Create extra layers if top/bottom exist
             if (pos) {
+                if (!this.controls.classList.contains('op-controls__stacked')) {
+                    this.controls.classList.add('op-controls__stacked');
+                }
                 const className = `op-controls-layer__${layer}`;
                 if (!this.controls.querySelector(`.${className}`)) {
                     const controlLayer = document.createElement('div');
