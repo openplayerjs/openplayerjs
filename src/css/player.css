@@ -227,7 +227,7 @@
 }
 .op-controls__mute:before {
     content: url(svg/volume.svg);
-    width: 20px !important;
+    width: 18px !important;
 }
 .op-controls__mute--half:before {
     content: url(svg/volume-down.svg);
