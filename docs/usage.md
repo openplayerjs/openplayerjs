@@ -66,14 +66,15 @@ var player = new OpenPlayerJS('[player ID]', {
             right: ['captions', 'settings', 'fullscreen'],
         }
     },
-    // Allow items to be contained in a different space outside of `Settings`
+    // Allow items that have menu items inside `Settings` to be contained in their own separate menu; 
+    // geerally speaking, the menu will float above the control item it belongs to (by default, false)
     detachMenus,
     // Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js)
     forceNative,
     // Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)
     mode,
     // Number of ms that takes the player to hide the Play button once it starts playing (video only)
-    // (bt default, `350`)
+    // (by default, `350`)
     hidePlayBtnTimer,
     // Number of seconds to rewind/forward media
     // (by default, player will rewind/forward 5% of the total duration of media)
@@ -128,8 +129,11 @@ var player = new OpenPlayerJS('[player ID]', {
     hls: {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
     },
+    // Configuration related to the progres bar
     progress: {
-        // The default duration in seconds to show while loading the media (default: 0)
+        // The default duration in seconds to show while loading the media (default: 0).
+        // This is to improve some of the UX when the player hasn't detected the metadata
+        // of the media yet, but you don't want to show a 00:00 duration
         duration
     },
     // Force the player to have a specific width/height (default for both: 0)
@@ -144,7 +148,7 @@ player.init();
 
 **NOTE**: In order to use this setup, the video/audio tag(s) **must** have a unique ID.
 
-### **About the `levels` control**
+### About the `levels` control
 
 The `levels` option is not a default one since it requires specific configuration to make it work with HTML5, or just works with streaming elements that have different resolutions.
 
@@ -172,8 +176,3 @@ export default function Sample() {
         </div>
     );
 ```
-
-## Controls
-
-; 
-        // 
