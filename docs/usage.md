@@ -51,8 +51,9 @@ var player = new OpenPlayerJS('[player ID]', {
     // 'time', 'volume', 'progress', 'captions', 'settings' and 'fullscreen'. There's an optional 
     // 'levels' control to display different quality levels. More of this described below.
     controls: {
-        // By default, the player will display the controls for a number of seconds before they are hidden; this option will allow the user to permanently show the controls if they need fully customize them.
-        alwaysVisible: false,
+        // By default, the player will display the controls for a number of seconds before they are hidden; 
+        // this option will allow the user to permanently show the controls if they need fully customize them. By default, `false`
+        alwaysVisible,
         // Controls positioning in the player. Each one of the control items can be enclosed in a
         // specific layer, and it will have in its class name the `op-control__[left|middle|right]`
         // according to the controls' structure listed below. By default, the layers are 'left', 'middle'
@@ -67,7 +68,7 @@ var player = new OpenPlayerJS('[player ID]', {
         }
     },
     // Allow items that have menu items inside `Settings` to be contained in their own separate menu; 
-    // geerally speaking, the menu will float above the control item it belongs to (by default, false)
+    // generally speaking, the menu will float above the control item it belongs to (by default, false)
     detachMenus,
     // Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js)
     forceNative,
@@ -91,10 +92,10 @@ var player = new OpenPlayerJS('[player ID]', {
     defaultLevel,
     // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
     live: {
-        // Allow `Live Broadcast` label to be displayed in live streamings (by default, `false`)
-        showLabel: true,
-        // Allow to show progress bar in live streamings without showing constant updates
-        showProgress: false,
+        // Allow `Live Broadcast` label to be displayed in live streamings (by default, `true`)
+        showLabel,
+        // Allow to show progress bar in live streamings without showing constant updates (by default, `false`)
+        showProgress,
     }
     ads: {
         // The Ad(s) URLs to be processed
@@ -135,6 +136,8 @@ var player = new OpenPlayerJS('[player ID]', {
         // This is to improve some of the UX when the player hasn't detected the metadata
         // of the media yet, but you don't want to show a 00:00 duration
         duration
+        // Flag to show only current time, or show both time and duration (by default, `false`)
+        showCurrentTimeOnly
     },
     // Force the player to have a specific width/height (default for both: 0)
     // They can accept a string with the number and unit (`100%`, `350px`)

@@ -24,7 +24,7 @@ class DashMedia extends Native {
      * @type dashjs
      * @memberof DashMedia
      */
-    private player: any;
+    #player: any;
 
     /**
      * DashJS events that will be triggered in Player.
@@ -33,9 +33,9 @@ class DashMedia extends Native {
      * @type EventsList
      * @memberof DashMedia
      */
-    private events: EventsList = {};
+    #events: EventsList = {};
 
-    private options?: DashOptions = {};
+    #options?: DashOptions = {};
 
     /**
      * Creates an instance of DashMedia.
@@ -46,7 +46,7 @@ class DashMedia extends Native {
      */
     constructor(element: HTMLMediaElement, mediaSource: Source, options?: DashOptions) {
         super(element, mediaSource);
-        this.options = options;
+        this.#options = options;
 
         this.promise = (typeof dashjs === 'undefined') ?
             // Ever-green script
@@ -56,8 +56,8 @@ class DashMedia extends Native {
             });
 
         this.promise.then(() => {
-            this.player = dashjs.MediaPlayer().create();
-            this.instance = this.player;
+            this.#player = dashjs.MediaPlayer().create();
+            this.instance = this.#player;
         });
         return this;
     }
@@ -78,15 +78,15 @@ class DashMedia extends Native {
      */
     public load() {
         this._preparePlayer();
-        this.player.attachSource(this.media.src);
+        this.#player.attachSource(this.media.src);
 
         const e = addEvent('loadedmetadata');
         this.element.dispatchEvent(e);
 
-        if (!this.events) {
-            this.events = dashjs.MediaPlayer.events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], this._assign.bind(this));
+        if (!this.#events) {
+            this.#events = dashjs.MediaPlayer.events;
+            Object.keys(this.#events).forEach(event => {
+                this.#player.on(this.#events[event], this._assign.bind(this));
             });
         }
     }
@@ -108,21 +108,21 @@ class DashMedia extends Native {
     set src(media: Source) {
         if (isDashSource(media)) {
             this._revoke();
-            this.player = dashjs.MediaPlayer().create();
+            this.#player = dashjs.MediaPlayer().create();
             this._preparePlayer();
-            this.player.attachSource(media.src);
+            this.#player.attachSource(media.src);
 
-            this.events = dashjs.MediaPlayer.events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], this._assign.bind(this));
+            this.#events = dashjs.MediaPlayer.events;
+            Object.keys(this.#events).forEach(event => {
+                this.#player.on(this.#events[event], this._assign.bind(this));
             });
         }
     }
 
     get levels() {
         const levels: any = [];
-        if (this.player) {
-            const bitrates = this.player.getBitrateInfoListFor('video');
+        if (this.#player) {
+            const bitrates = this.#player.getBitrateInfoListFor('video');
             if (bitrates.length) {
                 bitrates.forEach((item: number) => {
                     if (bitrates[item]) {
@@ -142,15 +142,15 @@ class DashMedia extends Native {
 
     set level(level: number) {
         if (level === 0) {
-            this.player.setAutoSwitchQuality(true);
+            this.#player.setAutoSwitchQuality(true);
         } else {
-            this.player.setAutoSwitchQuality(false);
-            this.player.setQualityFor('video', level);
+            this.#player.setAutoSwitchQuality(false);
+            this.#player.setQualityFor('video', level);
         }
     }
 
     get level() {
-        return this.player ? this.player.getQualityFor('video') : -1;
+        return this.#player ? this.#player.getQualityFor('video') : -1;
     }
 
     /**
@@ -183,13 +183,13 @@ class DashMedia extends Native {
      * @memberof DashMedia
      */
     private _revoke(): void {
-        if (this.events) {
-            Object.keys(this.events).forEach(event => {
-                this.player.off(this.events[event], this._assign.bind(this));
+        if (this.#events) {
+            Object.keys(this.#events).forEach(event => {
+                this.#player.off(this.#events[event], this._assign.bind(this));
             });
-            this.events = [];
+            this.#events = [];
         }
-        this.player.reset();
+        this.#player.reset();
     }
 
     /**
@@ -201,8 +201,8 @@ class DashMedia extends Native {
      */
     private _preparePlayer() {
         // In version 3x, `getDebug` is deprecated
-        if (typeof this.player.getDebug().setLogToBrowserConsole === 'undefined') {
-            this.player.updateSettings({
+        if (typeof this.#player.getDebug().setLogToBrowserConsole === 'undefined') {
+            this.#player.updateSettings({
                 debug: {
                     logLevel: dashjs.Debug.LOG_LEVEL_NONE,
                 },
@@ -212,19 +212,19 @@ class DashMedia extends Native {
                 },
             });
         } else {
-            this.player.getDebug().setLogToBrowserConsole(false);
-            this.player.setScheduleWhilePaused(false);
-            this.player.setFastSwitchEnabled(true);
+            this.#player.getDebug().setLogToBrowserConsole(false);
+            this.#player.setScheduleWhilePaused(false);
+            this.#player.setFastSwitchEnabled(true);
         }
-        this.player.initialize();
-        this.player.attachView(this.element);
-        this.player.setAutoPlay(false);
+        this.#player.initialize();
+        this.#player.attachView(this.element);
+        this.#player.setAutoPlay(false);
 
         // If DRM is set, load protection data
-        if (this.options && typeof this.options.drm === 'object' && Object.keys(this.options.drm).length) {
-            this.player.setProtectionData(this.options.drm);
-            if (this.options.robustnessLevel && this.options.robustnessLevel) {
-                this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
+        if (this.#options && typeof this.#options.drm === 'object' && Object.keys(this.#options.drm).length) {
+            this.#player.setProtectionData(this.#options.drm);
+            if (this.#options.robustnessLevel && this.#options.robustnessLevel) {
+                this.#player.getProtectionController().setRobustnessLevel(this.#options.robustnessLevel);
             }
         }
     }

@@ -44,7 +44,7 @@ abstract class Native {
      * @type {any}
      * @memberof Native
      */
-    private customPlayer: any;
+    #customPlayer: any;
 
     /**
      * Create an instance of Native.
@@ -131,7 +131,7 @@ abstract class Native {
      * @memberof Media
      */
     public set instance(customPlayer: any) {
-        this.customPlayer = customPlayer;
+        this.#customPlayer = customPlayer;
     }
 
     /**
@@ -140,7 +140,7 @@ abstract class Native {
      * @memberof Media
      */
     public get instance(): any {
-        return this.customPlayer;
+        return this.#customPlayer;
     }
 
     /**

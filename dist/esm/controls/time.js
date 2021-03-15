@@ -1,105 +1,144 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _player, _current, _delimiter, _duration, _container, _events, _labels, _position, _layer;
 import { EVENT_OPTIONS } from '../utils/constants';
 import { removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 class Time {
     constructor(player, position, layer) {
-        this.events = {
+        _player.set(this, void 0);
+        _current.set(this, void 0);
+        _delimiter.set(this, void 0);
+        _duration.set(this, void 0);
+        _container.set(this, void 0);
+        _events.set(this, {
             controls: {},
             media: {},
-        };
-        this.player = player;
-        this.labels = player.getOptions().labels;
-        this.position = position;
-        this.layer = layer;
+        });
+        _labels.set(this, void 0);
+        _position.set(this, void 0);
+        _layer.set(this, void 0);
+        __classPrivateFieldSet(this, _player, player);
+        __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+        __classPrivateFieldSet(this, _position, position);
+        __classPrivateFieldSet(this, _layer, layer);
         return this;
     }
     create() {
-        this.current = document.createElement('time');
-        this.current.className = 'op-controls__current';
-        this.current.setAttribute('role', 'timer');
-        this.current.setAttribute('aria-live', 'off');
-        this.current.setAttribute('aria-hidden', 'false');
-        this.current.innerText = '0:00';
-        this.delimiter = document.createElement('span');
-        this.delimiter.className = 'op-controls__time-delimiter';
-        this.delimiter.setAttribute('aria-hidden', 'false');
-        this.delimiter.innerText = '/';
-        this.duration = document.createElement('time');
-        this.duration.className = 'op-controls__duration';
-        this.duration.setAttribute('aria-hidden', 'false');
-        this.duration.innerText = formatTime(this.player.getOptions().progress.duration);
+        __classPrivateFieldSet(this, _current, document.createElement('time'));
+        __classPrivateFieldGet(this, _current).className = 'op-controls__current';
+        __classPrivateFieldGet(this, _current).setAttribute('role', 'timer');
+        __classPrivateFieldGet(this, _current).setAttribute('aria-live', 'off');
+        __classPrivateFieldGet(this, _current).setAttribute('aria-hidden', 'false');
+        __classPrivateFieldGet(this, _current).innerText = '0:00';
+        const showOnlyCurrent = __classPrivateFieldGet(this, _player).getOptions().progress.showCurrentTimeOnly;
+        if (!showOnlyCurrent) {
+            __classPrivateFieldSet(this, _delimiter, document.createElement('span'));
+            __classPrivateFieldGet(this, _delimiter).className = 'op-controls__time-delimiter';
+            __classPrivateFieldGet(this, _delimiter).setAttribute('aria-hidden', 'false');
+            __classPrivateFieldGet(this, _delimiter).innerText = '/';
+            __classPrivateFieldSet(this, _duration, document.createElement('time'));
+            __classPrivateFieldGet(this, _duration).className = 'op-controls__duration';
+            __classPrivateFieldGet(this, _duration).setAttribute('aria-hidden', 'false');
+            __classPrivateFieldGet(this, _duration).innerText = formatTime(__classPrivateFieldGet(this, _player).getOptions().progress.duration);
+        }
         const setInitialTime = () => {
-            const el = this.player.activeElement();
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled')) {
-                const duration = !isNaN(el.duration) ? el.duration : this.player.getOptions().progress.duration;
-                this.duration.innerText = formatTime(duration);
-                this.current.innerText = formatTime(el.currentTime);
+            const el = __classPrivateFieldGet(this, _player).activeElement();
+            if (el.duration !== Infinity && !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-live__enabled')) {
+                if (!showOnlyCurrent) {
+                    const duration = !isNaN(el.duration) ? el.duration : __classPrivateFieldGet(this, _player).getOptions().progress.duration;
+                    __classPrivateFieldGet(this, _duration).innerText = formatTime(duration);
+                }
+                __classPrivateFieldGet(this, _current).innerText = formatTime(el.currentTime);
             }
             else {
-                this.duration.setAttribute('aria-hidden', 'true');
-                this.delimiter.setAttribute('aria-hidden', 'true');
+                if (!showOnlyCurrent) {
+                    __classPrivateFieldGet(this, _duration).setAttribute('aria-hidden', 'true');
+                }
+                __classPrivateFieldGet(this, _delimiter).setAttribute('aria-hidden', 'true');
             }
         };
-        this.events.media.loadedmetadata = setInitialTime.bind(this);
-        this.events.controls.controlschanged = setInitialTime.bind(this);
-        const { showLabel: showLiveLabel } = this.player.getOptions().live;
-        this.events.media.timeupdate = () => {
-            const el = this.player.activeElement();
-            if (el.duration !== Infinity && !this.player.getElement().getAttribute('op-live__enabled') &&
-                !this.player.getElement().getAttribute('op-dvr__enabled')) {
+        __classPrivateFieldGet(this, _events).media.loadedmetadata = setInitialTime.bind(this);
+        __classPrivateFieldGet(this, _events).controls.controlschanged = setInitialTime.bind(this);
+        const { showLabel: showLiveLabel } = __classPrivateFieldGet(this, _player).getOptions().live;
+        __classPrivateFieldGet(this, _events).media.timeupdate = () => {
+            const el = __classPrivateFieldGet(this, _player).activeElement();
+            if (el.duration !== Infinity && !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-live__enabled') &&
+                !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-dvr__enabled')) {
                 const duration = formatTime(el.duration);
-                if (!isNaN(el.duration) && duration !== this.duration.innerText) {
-                    this.duration.innerText = duration;
-                    this.duration.setAttribute('aria-hidden', 'false');
-                    this.delimiter.setAttribute('aria-hidden', 'false');
+                if (!showOnlyCurrent && !isNaN(el.duration) && duration !== __classPrivateFieldGet(this, _duration).innerText) {
+                    __classPrivateFieldGet(this, _duration).innerText = duration;
+                    __classPrivateFieldGet(this, _duration).setAttribute('aria-hidden', 'false');
+                    __classPrivateFieldGet(this, _delimiter).setAttribute('aria-hidden', 'false');
                 }
-                else if (duration !== this.duration.innerText) {
-                    this.current.innerText = showLiveLabel ? this.labels.live : formatTime(el.currentTime);
+                else if (showOnlyCurrent || duration !== __classPrivateFieldGet(this, _duration).innerText) {
+                    __classPrivateFieldGet(this, _current).innerText = showLiveLabel ? __classPrivateFieldGet(this, _labels).live : formatTime(el.currentTime);
                 }
-                this.current.innerText = formatTime(el.currentTime);
+                __classPrivateFieldGet(this, _current).innerText = formatTime(el.currentTime);
             }
-            else if (this.player.getElement().getAttribute('op-dvr__enabled')) {
-                this.duration.setAttribute('aria-hidden', 'true');
-                this.delimiter.setAttribute('aria-hidden', 'true');
-                this.current.innerText = formatTime(el.currentTime);
+            else if (__classPrivateFieldGet(this, _player).getElement().getAttribute('op-dvr__enabled')) {
+                if (!showOnlyCurrent) {
+                    __classPrivateFieldGet(this, _duration).setAttribute('aria-hidden', 'true');
+                    __classPrivateFieldGet(this, _delimiter).setAttribute('aria-hidden', 'true');
+                }
+                __classPrivateFieldGet(this, _current).innerText = formatTime(el.currentTime);
             }
-            else if (!this.player.getElement().getAttribute('op-dvr__enabled') && this.duration.getAttribute('aria-hidden') === 'false') {
-                this.duration.setAttribute('aria-hidden', 'true');
-                this.delimiter.setAttribute('aria-hidden', 'true');
-                this.current.innerText = showLiveLabel ? this.labels.live : formatTime(el.currentTime);
+            else if (showOnlyCurrent || (!__classPrivateFieldGet(this, _player).getElement().getAttribute('op-dvr__enabled') &&
+                __classPrivateFieldGet(this, _duration).getAttribute('aria-hidden') === 'false')) {
+                if (!showOnlyCurrent) {
+                    __classPrivateFieldGet(this, _duration).setAttribute('aria-hidden', 'true');
+                    __classPrivateFieldGet(this, _delimiter).setAttribute('aria-hidden', 'true');
+                }
+                __classPrivateFieldGet(this, _current).innerText = showLiveLabel ? __classPrivateFieldGet(this, _labels).live : formatTime(el.currentTime);
             }
             else {
-                this.current.innerText = showLiveLabel ? this.labels.live : formatTime(el.currentTime);
+                __classPrivateFieldGet(this, _current).innerText = showLiveLabel ? __classPrivateFieldGet(this, _labels).live : formatTime(el.currentTime);
             }
         };
-        this.events.media.ended = () => {
-            const el = this.player.activeElement();
-            const duration = !isNaN(el.duration) ? el.duration : this.player.getOptions().progress.duration;
-            if (this.player.isMedia()) {
-                this.duration.innerText = formatTime(duration);
+        __classPrivateFieldGet(this, _events).media.ended = () => {
+            const el = __classPrivateFieldGet(this, _player).activeElement();
+            const duration = !isNaN(el.duration) ? el.duration : __classPrivateFieldGet(this, _player).getOptions().progress.duration;
+            if (!showOnlyCurrent && __classPrivateFieldGet(this, _player).isMedia()) {
+                __classPrivateFieldGet(this, _duration).innerText = formatTime(duration);
             }
         };
-        Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
+        Object.keys(__classPrivateFieldGet(this, _events).media).forEach(event => {
+            __classPrivateFieldGet(this, _player).getElement().addEventListener(event, __classPrivateFieldGet(this, _events).media[event], EVENT_OPTIONS);
         });
-        this.player.getControls().getContainer().addEventListener('controlschanged', this.events.controls.controlschanged, EVENT_OPTIONS);
-        const controls = this.player.getControls().getLayer(this.layer);
-        this.container = document.createElement('span');
-        this.container.className = `op-controls-time op-control__${this.position}`;
-        this.container.appendChild(this.current);
-        this.container.appendChild(this.delimiter);
-        this.container.appendChild(this.duration);
-        controls.appendChild(this.container);
+        __classPrivateFieldGet(this, _player).getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged, EVENT_OPTIONS);
+        const controls = __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer));
+        __classPrivateFieldSet(this, _container, document.createElement('span'));
+        __classPrivateFieldGet(this, _container).className = `op-controls-time op-control__${__classPrivateFieldGet(this, _position)}`;
+        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _current));
+        if (!showOnlyCurrent) {
+            __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _delimiter));
+            __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _duration));
+        }
+        controls.appendChild(__classPrivateFieldGet(this, _container));
     }
     destroy() {
-        Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().removeEventListener(event, this.events.media[event]);
+        Object.keys(__classPrivateFieldGet(this, _events).media).forEach(event => {
+            __classPrivateFieldGet(this, _player).getElement().removeEventListener(event, __classPrivateFieldGet(this, _events).media[event]);
         });
-        this.player.getControls().getContainer().removeEventListener('controlschanged', this.events.controls.controlschanged);
-        removeElement(this.current);
-        removeElement(this.delimiter);
-        removeElement(this.duration);
-        removeElement(this.container);
+        __classPrivateFieldGet(this, _player).getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged);
+        removeElement(__classPrivateFieldGet(this, _current));
+        if (!__classPrivateFieldGet(this, _player).getOptions().progress.showCurrentTimeOnly) {
+            removeElement(__classPrivateFieldGet(this, _delimiter));
+            removeElement(__classPrivateFieldGet(this, _duration));
+        }
+        removeElement(__classPrivateFieldGet(this, _container));
     }
 }
+_player = new WeakMap(), _current = new WeakMap(), _delimiter = new WeakMap(), _duration = new WeakMap(), _container = new WeakMap(), _events = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
 export default Time;

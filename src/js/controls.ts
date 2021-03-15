@@ -43,7 +43,7 @@ class Controls implements PlayerComponent {
      * @type Settings
      * @memberof Controls
      */
-    private settings: Settings;
+    #settings: Settings;
 
     /**
      * Element that stores the time to hide controls.
@@ -52,7 +52,7 @@ class Controls implements PlayerComponent {
      * @type number
      * @memberof Controls
      */
-    private timer: number = 0;
+    #timer: number = 0;
 
     /**
      * Main container of control elements.
@@ -61,7 +61,7 @@ class Controls implements PlayerComponent {
      * @type HTMLDivElement
      * @memberof Controls
      */
-    private controls: HTMLDivElement;
+    #controls: HTMLDivElement;
 
     /**
      * Instance of OpenPlayer.
@@ -70,7 +70,7 @@ class Controls implements PlayerComponent {
      * @type Player
      * @memberof Controls
      */
-    private player: Player;
+    #player: Player;
 
     /**
      * Storage for all the control elements.
@@ -79,9 +79,9 @@ class Controls implements PlayerComponent {
      * @type any
      * @memberof Controls
      */
-    private items: any;
+    #items: any;
 
-    private controlEls: any = {
+    #controlEls: any = {
         Captions,
         Fullscreen,
         Levels,
@@ -100,7 +100,7 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     constructor(player: Player) {
-        this.player = player;
+        this.#player = player;
         this._setElements();
         return this;
     }
@@ -111,9 +111,9 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     public create(): void {
-        this.player.getElement().controls = false;
+        this.#player.getElement().controls = false;
 
-        const isMediaVideo = isVideo(this.player.getElement());
+        const isMediaVideo = isVideo(this.#player.getElement());
 
         this._createControlsLayer();
         this._buildElements();
@@ -125,63 +125,63 @@ class Controls implements PlayerComponent {
         };
 
         this.events.ended = () => {
-            this.player.getContainer().classList.remove('op-controls--hidden');
+            this.#player.getContainer().classList.remove('op-controls--hidden');
         };
 
-        this.player.getElement().addEventListener('controlschanged', this.events.controlschanged, EVENT_OPTIONS);
-        this.player.getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
+        this.#player.getElement().addEventListener('controlschanged', this.events.controlschanged, EVENT_OPTIONS);
+        this.#player.getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
 
-        const { alwaysVisible } = this.player.getOptions().controls;
+        const { alwaysVisible } = this.#player.getOptions().controls;
 
         if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
-                if (isMediaVideo && !this.player.activeElement().paused) {
+                if (isMediaVideo && !this.#player.activeElement().paused) {
                     this._stopControlTimer();
-                    if (this.player.activeElement().currentTime) {
-                        this.player.playBtn.setAttribute('aria-hidden', this.player.isMedia() ? 'false' : 'true');
-                        this.player.loader.setAttribute('aria-hidden', 'true');
-                    } else if (this.player.getOptions().showLoaderOnInit) {
-                        this.player.playBtn.setAttribute('aria-hidden', 'true');
-                        this.player.loader.setAttribute('aria-hidden', 'false');
+                    if (this.#player.activeElement().currentTime) {
+                        this.#player.playBtn.setAttribute('aria-hidden', this.#player.isMedia() ? 'false' : 'true');
+                        this.#player.loader.setAttribute('aria-hidden', 'true');
+                    } else if (this.#player.getOptions().showLoaderOnInit) {
+                        this.#player.playBtn.setAttribute('aria-hidden', 'true');
+                        this.#player.loader.setAttribute('aria-hidden', 'false');
                     }
-                    this.player.getContainer().classList.remove('op-controls--hidden');
+                    this.#player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mousemove = () => {
                 if (isMediaVideo) {
-                    if (this.player.activeElement().currentTime) {
-                        this.player.loader.setAttribute('aria-hidden', 'true');
-                        this.player.playBtn.setAttribute('aria-hidden', this.player.isMedia() ? 'false' : 'true');
+                    if (this.#player.activeElement().currentTime) {
+                        this.#player.loader.setAttribute('aria-hidden', 'true');
+                        this.#player.playBtn.setAttribute('aria-hidden', this.#player.isMedia() ? 'false' : 'true');
                     } else {
-                        this.player.playBtn.setAttribute('aria-hidden', this.player.getOptions().showLoaderOnInit ? 'true' : 'false');
-                        this.player.loader.setAttribute('aria-hidden', this.player.getOptions().showLoaderOnInit ? 'false' : 'true');
+                        this.#player.playBtn.setAttribute('aria-hidden', this.#player.getOptions().showLoaderOnInit ? 'true' : 'false');
+                        this.#player.loader.setAttribute('aria-hidden', this.#player.getOptions().showLoaderOnInit ? 'false' : 'true');
                     }
 
-                    this.player.getContainer().classList.remove('op-controls--hidden');
+                    this.#player.getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mouseleave = () => {
-                if (isMediaVideo && !this.player.activeElement().paused) {
+                if (isMediaVideo && !this.#player.activeElement().paused) {
                     this._startControlTimer(1000);
                 }
             };
             this.events.media.play = () => {
                 if (isMediaVideo) {
-                    this._startControlTimer(this.player.getOptions().hidePlayBtnTimer);
+                    this._startControlTimer(this.#player.getOptions().hidePlayBtnthis.#timer);
                 }
             };
             this.events.media.pause = () => {
-                this.player.getContainer().classList.remove('op-controls--hidden');
+                this.#player.getContainer().classList.remove('op-controls--hidden');
                 this._stopControlTimer();
             };
             Object.keys(this.events.media).forEach(event => {
-                this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
+                this.#player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
 
             Object.keys(this.events.mouse).forEach(event => {
-                this.player.getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
+                this.#player.getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
             });
 
             // Initial countdown to hide controls
@@ -197,21 +197,21 @@ class Controls implements PlayerComponent {
     public destroy(): void {
         if (!IS_ANDROID && !IS_IOS) {
             Object.keys(this.events.mouse).forEach(event => {
-                this.player.getContainer().removeEventListener(event, this.events.mouse[event]);
+                this.#player.getContainer().removeEventListener(event, this.events.mouse[event]);
             });
 
             Object.keys(this.events.media).forEach(event => {
-                this.player.getElement().removeEventListener(event, this.events.media[event]);
+                this.#player.getElement().removeEventListener(event, this.events.media[event]);
             });
 
             this._stopControlTimer();
         }
 
-        this.player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
-        this.player.getElement().removeEventListener('ended', this.events.ended);
+        this.#player.getElement().removeEventListener('controlschanged', this.events.controlschanged);
+        this.#player.getElement().removeEventListener('ended', this.events.ended);
 
-        Object.keys(this.items).forEach((position: string) => {
-            this.items[position].forEach((item: any) => {
+        Object.keys(this.#items).forEach((position: string) => {
+            this.#items[position].forEach((item: any) => {
                 if (item.custom) {
                     this._destroyCustomControl(item);
                 } else if (typeof item.destroy === 'function') {
@@ -220,7 +220,7 @@ class Controls implements PlayerComponent {
             });
         });
 
-        removeElement(this.controls);
+        removeElement(this.#controls);
     }
 
     /**
@@ -230,7 +230,7 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     public getContainer(): HTMLDivElement {
-        return this.controls;
+        return this.#controls;
     }
 
     /**
@@ -240,14 +240,14 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     public getLayer(layer: string): HTMLDivElement {
-        return this.controls.querySelector(`.op-controls-layer__${layer}`) || this.controls;
+        return this.#controls.querySelector(`.op-controls-layer__${layer}`) || this.#controls;
     }
 
     private _createControlsLayer() {
-        if (!this.controls || !this.player.getContainer().querySelector('.op-controls')) {
-            this.controls = document.createElement('div');
-            this.controls.className = 'op-controls';
-            this.player.getContainer().appendChild(this.controls);
+        if (!this.#controls || !this.#player.getContainer().querySelector('.op-controls')) {
+            this.#controls = document.createElement('div');
+            this.#controls.className = 'op-controls';
+            this.#player.getContainer().appendChild(this.#controls);
         }
     }
 
@@ -259,17 +259,17 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private _startControlTimer(time: number): void {
-        const el = this.player.activeElement();
+        const el = this.#player.activeElement();
         this._stopControlTimer();
 
         if (typeof window !== 'undefined') {
-            this.timer = window.setTimeout(() => {
-                if ((!el.paused || !el.ended) && isVideo(this.player.getElement())) {
-                    this.player.getContainer().classList.add('op-controls--hidden');
-                    this.player.playBtn.setAttribute('aria-hidden', 'true');
+            this.#timer = window.setTimeout(() => {
+                if ((!el.paused || !el.ended) && isVideo(this.#player.getElement())) {
+                    this.#player.getContainer().classList.add('op-controls--hidden');
+                    this.#player.playBtn.setAttribute('aria-hidden', 'true');
                     this._stopControlTimer();
                     const event = addEvent('controlshidden');
-                    this.player.getElement().dispatchEvent(event);
+                    this.#player.getElement().dispatchEvent(event);
                 }
             }, time);
         }
@@ -282,9 +282,9 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private _stopControlTimer(): void {
-        if (this.timer !== 0) {
-            clearTimeout(this.timer);
-            this.timer = 0;
+        if (this.#timer !== 0) {
+            clearTimeout(this.#timer);
+            this.#timer = 0;
         }
     }
 
@@ -296,8 +296,8 @@ class Controls implements PlayerComponent {
      * @memberof Controls
      */
     private _setElements(): void {
-        const controls = this.player.getOptions().controls.layers;
-        this.items = {
+        const controls = this.#player.getOptions().controls.layers;
+        this.#items = {
             'bottom-left': [],
             'bottom-middle': [],
             'bottom-right': [],
@@ -310,8 +310,8 @@ class Controls implements PlayerComponent {
             'top-right': [],
         };
 
-        const isVideoEl = isVideo(this.player.getElement());
-        const isAudioEl = isAudio(this.player.getElement());
+        const isVideoEl = isVideo(this.#player.getElement());
+        const isAudioEl = isAudio(this.#player.getElement());
 
         const controlPositions = Object.keys(controls);
         const layersExist = controlPositions.find(item => /^(top|bottom)/.test(item));
@@ -322,21 +322,21 @@ class Controls implements PlayerComponent {
 
             // Create extra layers if top/bottom exist
             if (pos) {
-                if (!this.controls.classList.contains('op-controls__stacked')) {
-                    this.controls.classList.add('op-controls__stacked');
+                if (!this.#controls.classList.contains('op-controls__stacked')) {
+                    this.#controls.classList.add('op-controls__stacked');
                 }
                 const className = `op-controls-layer__${layer}`;
-                if (!this.controls.querySelector(`.${className}`)) {
+                if (!this.#controls.querySelector(`.${className}`)) {
                     const controlLayer = document.createElement('div');
                     controlLayer.className = className;
-                    this.controls.appendChild(controlLayer);
+                    this.#controls.appendChild(controlLayer);
                 }
             } else if (layersExist) {
                 const className = 'op-controls-layer__center';
-                if (!this.controls.querySelector(`.${className}`)) {
+                if (!this.#controls.querySelector(`.${className}`)) {
                     const controlLayer = document.createElement('div');
                     controlLayer.className = className;
-                    this.controls.appendChild(controlLayer);
+                    this.#controls.appendChild(controlLayer);
                 }
             }
 
@@ -346,12 +346,12 @@ class Controls implements PlayerComponent {
                 .forEach((el: string) => {
                     const currentLayer = layersExist && !pos ? 'center' : layer;
                     const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
-                    const item = new this.controlEls[className](this.player, pos || layer, currentLayer);
+                    const item = new this.#controlEls[className](this.#player, pos || layer, currentLayer);
                     if (el === 'settings') {
-                        this.settings = (item as Settings);
+                        this.#settings = (item as Settings);
                     }
                     if (isVideoEl || (el !== 'fullscreen' && isAudioEl)) {
-                        this.items[position].push(item);
+                        this.#items[position].push(item);
                     }
                 });
         });
@@ -359,16 +359,16 @@ class Controls implements PlayerComponent {
         // Append/prepend the custom items (if any) depending on their position:
         // If position is right, always prepend so Settings and Fullscreen are the last items;
         // otherwise, append new controls
-        this.player.getCustomControls().forEach(item => {
+        this.#player.getCustomControls().forEach(item => {
             const [layer, pos] = item.position.split('-');
             const currentLayer = layersExist && !pos ? 'center' : layer;
             item.layer = currentLayer;
             item.position = pos || layer;
 
             if (item.position === 'right') {
-                this.items[item.position].unshift(item);
+                this.#items[item.position].unshift(item);
             } else {
-                this.items[item.position].push(item);
+                this.#items[item.position].push(item);
             }
         });
     }
@@ -384,8 +384,8 @@ class Controls implements PlayerComponent {
      */
     private _buildElements(): void {
         // Loop controls to build them and register events
-        Object.keys(this.items).forEach((position: string) => {
-            this.items[position].forEach((item: any) => {
+        Object.keys(this.#items).forEach((position: string) => {
+            this.#items[position].forEach((item: any) => {
                 if (item.custom) {
                     this._createCustomControl(item);
                 } else {
@@ -394,13 +394,13 @@ class Controls implements PlayerComponent {
             });
         });
 
-        Object.keys(this.items).forEach((position: string) => {
-            this.items[position].forEach((item: any) => {
-                const allowDefault = !this.player.getOptions().detachMenus || item instanceof Settings;
+        Object.keys(this.#items).forEach((position: string) => {
+            this.#items[position].forEach((item: any) => {
+                const allowDefault = !this.#player.getOptions().detachMenus || item instanceof Settings;
                 if (allowDefault && !item.custom && typeof item.addSettings === 'function') {
                     const menuItem = item.addSettings();
-                    if (this.settings && Object.keys(menuItem).length) {
-                        this.settings.addItem(
+                    if (this.#settings && Object.keys(menuItem).length) {
+                        this.#settings.addItem(
                             menuItem.name,
                             menuItem.key,
                             menuItem.default,
@@ -413,7 +413,7 @@ class Controls implements PlayerComponent {
         });
 
         const e = addEvent('controlschanged');
-        this.controls.dispatchEvent(e);
+        this.#controls.dispatchEvent(e);
     }
 
     /**
@@ -437,7 +437,7 @@ class Controls implements PlayerComponent {
     }
 
     private _toggleCustomMenu(event: any, menu: HTMLDivElement, item: ControlItem) {
-        const menus = this.player.getContainer().querySelectorAll('.op-settings');
+        const menus = this.#player.getContainer().querySelectorAll('.op-settings');
         menus.forEach(m => {
             if (m.getAttribute('aria-hidden') === 'false' && m.id !== menu.id) {
                 m.setAttribute('aria-hidden', 'true');
@@ -482,7 +482,7 @@ class Controls implements PlayerComponent {
             });
 
             menu.innerHTML = `<div class="op-settings__menu" role="menu">${items.join('')}</div>`;
-            this.player.getContainer().appendChild(menu);
+            this.#player.getContainer().appendChild(menu);
 
             item.subitems.forEach(subitem => {
                 const menuItem = menu.querySelector(`#${subitem.id}`);
@@ -495,7 +495,7 @@ class Controls implements PlayerComponent {
             // click event (if created)
             control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
 
-            this.player.getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
+            this.#player.getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         } else if (item.click && typeof item.click === 'function') {
             control.addEventListener('click', item.click, EVENT_OPTIONS);
         }
@@ -516,7 +516,7 @@ class Controls implements PlayerComponent {
         }
         if (item.layer) {
             if (item.layer === 'main') {
-                this.player.getContainer().appendChild(control);
+                this.#player.getContainer().appendChild(control);
             } else {
                 this.getLayer(item.layer).appendChild(control);
             }
@@ -537,7 +537,7 @@ class Controls implements PlayerComponent {
         const control = this.getContainer().querySelector(`.op-controls__${key}`);
         if (control) {
             if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
-                const menu = (this.player.getContainer().querySelector(`#${item.id}-menu`) as HTMLDivElement);
+                const menu = (this.#player.getContainer().querySelector(`#${item.id}-menu`) as HTMLDivElement);
                 if (menu) {
                     item.subitems.forEach(subitem => {
                         const menuItem = menu.querySelector(`#${subitem.id}`);
@@ -548,7 +548,7 @@ class Controls implements PlayerComponent {
 
                     control.removeEventListener('click', (e) => this._toggleCustomMenu(e, menu, item));
 
-                    this.player.getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
+                    this.#player.getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
                     removeElement(menu);
                 }
             }

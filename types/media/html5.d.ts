@@ -7,9 +7,7 @@ import Native from './native';
  * @class NativeMedia
  */
 declare class HTML5Media extends Native {
-    private currentLevel;
-    private levelList;
-    private isStreaming;
+    #private;
     /**
      * Creates an instance of NativeMedia.
      *

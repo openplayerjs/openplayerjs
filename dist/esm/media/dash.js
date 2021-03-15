@@ -1,3 +1,17 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _player, _events, _options;
 import { HAS_MSE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
@@ -6,17 +20,18 @@ import Native from './native';
 class DashMedia extends Native {
     constructor(element, mediaSource, options) {
         super(element, mediaSource);
-        this.events = {};
-        this.options = {};
-        this.options = options;
+        _player.set(this, void 0);
+        _events.set(this, {});
+        _options.set(this, {});
+        __classPrivateFieldSet(this, _options, options);
         this.promise = (typeof dashjs === 'undefined') ?
             loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
             new Promise(resolve => {
                 resolve({});
             });
         this.promise.then(() => {
-            this.player = dashjs.MediaPlayer().create();
-            this.instance = this.player;
+            __classPrivateFieldSet(this, _player, dashjs.MediaPlayer().create());
+            this.instance = __classPrivateFieldGet(this, _player);
         });
         return this;
     }
@@ -25,13 +40,13 @@ class DashMedia extends Native {
     }
     load() {
         this._preparePlayer();
-        this.player.attachSource(this.media.src);
+        __classPrivateFieldGet(this, _player).attachSource(this.media.src);
         const e = addEvent('loadedmetadata');
         this.element.dispatchEvent(e);
-        if (!this.events) {
-            this.events = dashjs.MediaPlayer.events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], this._assign.bind(this));
+        if (!__classPrivateFieldGet(this, _events)) {
+            __classPrivateFieldSet(this, _events, dashjs.MediaPlayer.events);
+            Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
+                __classPrivateFieldGet(this, _player).on(__classPrivateFieldGet(this, _events)[event], this._assign.bind(this));
             });
         }
     }
@@ -41,19 +56,19 @@ class DashMedia extends Native {
     set src(media) {
         if (isDashSource(media)) {
             this._revoke();
-            this.player = dashjs.MediaPlayer().create();
+            __classPrivateFieldSet(this, _player, dashjs.MediaPlayer().create());
             this._preparePlayer();
-            this.player.attachSource(media.src);
-            this.events = dashjs.MediaPlayer.events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], this._assign.bind(this));
+            __classPrivateFieldGet(this, _player).attachSource(media.src);
+            __classPrivateFieldSet(this, _events, dashjs.MediaPlayer.events);
+            Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
+                __classPrivateFieldGet(this, _player).on(__classPrivateFieldGet(this, _events)[event], this._assign.bind(this));
             });
         }
     }
     get levels() {
         const levels = [];
-        if (this.player) {
-            const bitrates = this.player.getBitrateInfoListFor('video');
+        if (__classPrivateFieldGet(this, _player)) {
+            const bitrates = __classPrivateFieldGet(this, _player).getBitrateInfoListFor('video');
             if (bitrates.length) {
                 bitrates.forEach((item) => {
                     if (bitrates[item]) {
@@ -72,15 +87,15 @@ class DashMedia extends Native {
     }
     set level(level) {
         if (level === 0) {
-            this.player.setAutoSwitchQuality(true);
+            __classPrivateFieldGet(this, _player).setAutoSwitchQuality(true);
         }
         else {
-            this.player.setAutoSwitchQuality(false);
-            this.player.setQualityFor('video', level);
+            __classPrivateFieldGet(this, _player).setAutoSwitchQuality(false);
+            __classPrivateFieldGet(this, _player).setQualityFor('video', level);
         }
     }
     get level() {
-        return this.player ? this.player.getQualityFor('video') : -1;
+        return __classPrivateFieldGet(this, _player) ? __classPrivateFieldGet(this, _player).getQualityFor('video') : -1;
     }
     _assign(event) {
         if (event.type === 'error') {
@@ -99,17 +114,17 @@ class DashMedia extends Native {
         }
     }
     _revoke() {
-        if (this.events) {
-            Object.keys(this.events).forEach(event => {
-                this.player.off(this.events[event], this._assign.bind(this));
+        if (__classPrivateFieldGet(this, _events)) {
+            Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
+                __classPrivateFieldGet(this, _player).off(__classPrivateFieldGet(this, _events)[event], this._assign.bind(this));
             });
-            this.events = [];
+            __classPrivateFieldSet(this, _events, []);
         }
-        this.player.reset();
+        __classPrivateFieldGet(this, _player).reset();
     }
     _preparePlayer() {
-        if (typeof this.player.getDebug().setLogToBrowserConsole === 'undefined') {
-            this.player.updateSettings({
+        if (typeof __classPrivateFieldGet(this, _player).getDebug().setLogToBrowserConsole === 'undefined') {
+            __classPrivateFieldGet(this, _player).updateSettings({
                 debug: {
                     logLevel: dashjs.Debug.LOG_LEVEL_NONE,
                 },
@@ -120,19 +135,20 @@ class DashMedia extends Native {
             });
         }
         else {
-            this.player.getDebug().setLogToBrowserConsole(false);
-            this.player.setScheduleWhilePaused(false);
-            this.player.setFastSwitchEnabled(true);
+            __classPrivateFieldGet(this, _player).getDebug().setLogToBrowserConsole(false);
+            __classPrivateFieldGet(this, _player).setScheduleWhilePaused(false);
+            __classPrivateFieldGet(this, _player).setFastSwitchEnabled(true);
         }
-        this.player.initialize();
-        this.player.attachView(this.element);
-        this.player.setAutoPlay(false);
-        if (this.options && typeof this.options.drm === 'object' && Object.keys(this.options.drm).length) {
-            this.player.setProtectionData(this.options.drm);
-            if (this.options.robustnessLevel && this.options.robustnessLevel) {
-                this.player.getProtectionController().setRobustnessLevel(this.options.robustnessLevel);
+        __classPrivateFieldGet(this, _player).initialize();
+        __classPrivateFieldGet(this, _player).attachView(this.element);
+        __classPrivateFieldGet(this, _player).setAutoPlay(false);
+        if (__classPrivateFieldGet(this, _options) && typeof __classPrivateFieldGet(this, _options).drm === 'object' && Object.keys(__classPrivateFieldGet(this, _options).drm).length) {
+            __classPrivateFieldGet(this, _player).setProtectionData(__classPrivateFieldGet(this, _options).drm);
+            if (__classPrivateFieldGet(this, _options).robustnessLevel && __classPrivateFieldGet(this, _options).robustnessLevel) {
+                __classPrivateFieldGet(this, _player).getProtectionController().setRobustnessLevel(__classPrivateFieldGet(this, _options).robustnessLevel);
             }
         }
     }
 }
+_player = new WeakMap(), _events = new WeakMap(), _options = new WeakMap();
 export default DashMedia;

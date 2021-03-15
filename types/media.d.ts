@@ -1,9 +1,6 @@
 import CustomMedia from './interfaces/custom-media';
 import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
-import DashMedia from './media/dash';
-import HlsMedia from './media/hls';
-import HTML5Media from './media/html5';
 /**
  * Media element.
  *
@@ -12,67 +9,7 @@ import HTML5Media from './media/html5';
  * @class Media
  */
 declare class Media {
-    /**
-     * The video/audio tag that contains media to be played.
-     *
-     * @type HTMLMediaElement
-     * @memberof Media
-     */
-    element: HTMLMediaElement;
-    /**
-     * Object that instantiates class of current media.
-     *
-     * @type (HTML5Media|HlsMedia|DashMedia|any)
-     * @memberof Media
-     */
-    media: HTML5Media | HlsMedia | DashMedia | any;
-    /**
-     * Collection of media sources available within the video/audio tag.
-     *
-     * @type Source[]
-     * @memberof Media
-     */
-    mediaFiles: Source[];
-    /**
-     * Promise to be resolved once media starts playing to avoid race issues.
-     *
-     * @see [[Media.play]]
-     * @see [[Media.pause]]
-     * @private
-     * @type Promise<void>
-     * @memberof Media
-     */
-    private promisePlay;
-    /**
-     * Media options to be passed to Hls and/or Dash players.
-     *
-     * @private
-     * @type PlayerOptions
-     * @memberof Media
-     */
-    private options;
-    /**
-     * Flag to indicate if `autoplay` attribute was set
-     *
-     * @private
-     * @type boolean
-     * @memberof HlsMedia
-     */
-    private autoplay;
-    /**
-     * Flag that indicates if initial load has occurred.
-     *
-     * @type boolean
-     * @memberof Player
-     */
-    private mediaLoaded;
-    /**
-     * Collection of additional (non-native) media
-     *
-     * @type CustomMedia
-     * @memberof Player
-     */
-    private customMedia;
+    #private;
     /**
      * Create an instance of Media.
      *
@@ -149,6 +86,36 @@ declare class Media {
      * @readonly
      */
     get src(): Source[];
+    /**
+     * Set the current media to have a reference of the one being played.
+     *
+     * @param {Source} media
+     * @memberof Media
+     */
+    set current(media: Source);
+    /**
+     * Get the current media being played.
+     *
+     * @type Source
+     * @memberof Media
+     * @readonly
+     */
+    get current(): Source;
+    /**
+     * Set the list of media associated with the current player.
+     *
+     * @param {Source[]} sources
+     * @memberof Media
+     */
+    set mediaFiles(sources: Source[]);
+    /**
+     * Get the list of media associated with the current player.
+     *
+     * @type Source[]
+     * @memberof Media
+     * @readonly
+     */
+    get mediaFiles(): Source[];
     /**
      *
      * @see [[Native.volume]]

@@ -21,7 +21,7 @@ class Media {
      * @type HTMLMediaElement
      * @memberof Media
      */
-    public element: HTMLMediaElement;
+    #element: HTMLMediaElement;
 
     /**
      * Object that instantiates class of current media.
@@ -29,7 +29,7 @@ class Media {
      * @type (HTML5Media|HlsMedia|DashMedia|any)
      * @memberof Media
      */
-    public media: HTML5Media | HlsMedia | DashMedia | any;
+    #media: HTML5Media | HlsMedia | DashMedia | any;
 
     /**
      * Collection of media sources available within the video/audio tag.
@@ -37,7 +37,7 @@ class Media {
      * @type Source[]
      * @memberof Media
      */
-    public mediaFiles: Source[];
+    #files: Source[];
 
     /**
      * Promise to be resolved once media starts playing to avoid race issues.
@@ -48,7 +48,7 @@ class Media {
      * @type Promise<void>
      * @memberof Media
      */
-    private promisePlay: Promise<void>;
+    #promisePlay: Promise<void>;
 
     /**
      * Media options to be passed to Hls and/or Dash players.
@@ -57,36 +57,44 @@ class Media {
      * @type PlayerOptions
      * @memberof Media
      */
-    private options: PlayerOptions;
+    #options: PlayerOptions;
 
     /**
      * Flag to indicate if `autoplay` attribute was set
      *
      * @private
      * @type boolean
-     * @memberof HlsMedia
+     * @memberof Media
      */
-    private autoplay: boolean;
+    #autoplay: boolean;
 
     /**
      * Flag that indicates if initial load has occurred.
      *
      * @type boolean
-     * @memberof Player
+     * @memberof Media
      */
-    private mediaLoaded: boolean = false;
+    #mediaLoaded: boolean = false;
 
     /**
      * Collection of additional (non-native) media
      *
      * @type CustomMedia
-     * @memberof Player
+     * @memberof Media
      */
-    private customMedia: CustomMedia = {
+    #customMedia: CustomMedia = {
         media: {},
         optionsKey: {},
         rules: [],
     };
+
+    /**
+     * Reference to current media being played
+     *
+     * @type Source
+     * @memberof Media
+     */
+    #currentSrc: Source;
 
     /**
      * Create an instance of Media.
@@ -99,11 +107,11 @@ class Media {
      * @memberof Media
      */
     constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay: boolean = false, customMedia: CustomMedia) {
-        this.element = element;
-        this.options = options;
-        this.mediaFiles = this._getMediaFiles();
-        this.customMedia = customMedia;
-        this.autoplay = autoplay;
+        this.#element = element;
+        this.#options = options;
+        this.#files = this._getMediaFiles();
+        this.#customMedia = customMedia;
+        this.#autoplay = autoplay;
         return this;
     }
 
@@ -115,7 +123,7 @@ class Media {
      * @returns {boolean}
      */
     public canPlayType(mimeType: string): boolean {
-        return this.media.canPlayType(mimeType);
+        return this.#media.canPlayType(mimeType);
     }
 
     /**
@@ -130,40 +138,40 @@ class Media {
      * @see [[Native.load]]
      */
     public load(): Promise<void>|void {
-        if (!this.mediaFiles.length) {
+        if (!this.#files.length) {
             throw new TypeError('Media not set');
         }
 
         // Remove previous media if any is detected and it's different from current one
-        if (this.media && typeof this.media.destroy === 'function') {
-            const sameMedia = this.mediaFiles.length === 1 && this.mediaFiles[0].src === this.media.media.src;
+        if (this.#media && typeof this.#media.destroy === 'function') {
+            const sameMedia = this.#files.length === 1 && this.#files[0].src === this.#media.media.src;
             if (!sameMedia) {
-                this.media.destroy();
+                this.#media.destroy();
             }
         }
 
         // Loop until first playable source is found
-        this.mediaFiles.some(media => {
+        this.#files.some(media => {
             try {
-                this.media = this._invoke(media);
+                this.#media = this._invoke(media);
             } catch (e) {
-                this.media = new HTML5Media(this.element, media);
+                this.#media = new HTML5Media(this.#element, media);
             }
 
-            return this.media.canPlayType(media.type);
+            return this.#media.canPlayType(media.type);
         });
 
         try {
-            if (this.media === null) {
+            if (this.#media === null) {
                 throw new TypeError('Media cannot be played with any valid media type');
             }
 
-            return this.media.promise.then(() => {
-                this.media.load();
+            return this.#media.promise.then(() => {
+                this.#media.load();
             });
         } catch (e) {
             // destroy media
-            this.media.destroy();
+            this.#media.destroy();
             throw e;
         }
     }
@@ -184,17 +192,17 @@ class Media {
             if (promiseLoad) {
                 this.loaded = true;
                 return promiseLoad.then(() => {
-                    this.media.play();
+                    this.#media.play();
                 });
             }
         }
 
         // Wait until any other Promise is resolved to execute the Play action
-        this.promisePlay = new Promise(resolve => {
+        this.#promisePlay = new Promise(resolve => {
             resolve({});
-        }).then(this.media.promise.then(this.media.play()));
+        }).then(this.#media.promise.then(this.#media.play()));
 
-        return this.promisePlay;
+        return this.#promisePlay;
     }
 
     /**
@@ -207,12 +215,12 @@ class Media {
      * @memberof Media
      */
     public pause(): void {
-        if (this.promisePlay !== undefined) {
-            this.promisePlay.then(() => {
-                this.media.pause();
+        if (this.#promisePlay !== undefined) {
+            this.#promisePlay.then(() => {
+                this.#media.pause();
             });
         } else {
-            this.media.pause();
+            this.#media.pause();
         }
     }
 
@@ -224,7 +232,7 @@ class Media {
      * @memberof Media
      */
     public destroy(): void {
-        this.media.destroy();
+        this.#media.destroy();
     }
 
     /**
@@ -236,27 +244,28 @@ class Media {
      */
     set src(media) {
         if (typeof media === 'string') {
-            this.mediaFiles.push({
+            this.#files.push({
                 src: media,
                 type: source.predictType(media),
             });
         } else if (Array.isArray(media)) {
-            this.mediaFiles = media;
+            this.#files = media;
         } else if (typeof media === 'object') {
-            this.mediaFiles.push(media);
+            this.#files.push(media);
         }
 
-        this.mediaFiles.some(file => {
+        this.#files.some(file => {
             return this.canPlayType(file.type);
         });
 
         // Save copy of original file to restore it when player is destroyed
-        if (this.element.src) {
-            this.element.setAttribute('data-op-file', this.mediaFiles[0].src);
+        if (this.#element.src) {
+            this.#element.setAttribute('data-op-file', this.#files[0].src);
         }
 
-        this.element.src = this.mediaFiles[0].src;
-        this.media.src = this.mediaFiles[0];
+        this.#element.src = this.#files[0].src;
+        this.#media.src = this.#files[0];
+        this.current = this.#files[0];
     }
 
     /**
@@ -268,7 +277,49 @@ class Media {
      * @readonly
      */
     get src(): Source[] {
-        return this.mediaFiles;
+        return this.#files;
+    }
+
+    /**
+     * Set the current media to have a reference of the one being played.
+     *
+     * @param {Source} media
+     * @memberof Media
+     */
+    set current(media: Source) {
+        this.#currentSrc = media;
+    }
+
+    /**
+     * Get the current media being played.
+     *
+     * @type Source
+     * @memberof Media
+     * @readonly
+     */
+    get current(): Source {
+        return this.#currentSrc;
+    }
+
+    /**
+     * Set the list of media associated with the current player.
+     *
+     * @param {Source[]} sources
+     * @memberof Media
+     */
+    set mediaFiles(sources: Source[]) {
+        this.#files = sources;
+    }
+
+    /**
+     * Get the list of media associated with the current player.
+     *
+     * @type Source[]
+     * @memberof Media
+     * @readonly
+     */
+    get mediaFiles(): Source[] {
+        return this.#files;
     }
 
     /**
@@ -277,8 +328,8 @@ class Media {
      * @memberof Media
      */
     set volume(value) {
-        if (this.media) {
-            this.media.volume = value;
+        if (this.#media) {
+            this.#media.volume = value;
         }
     }
 
@@ -290,7 +341,7 @@ class Media {
      * @readonly
      */
     get volume(): number {
-        return this.media ? this.media.volume : this.element.volume;
+        return this.#media ? this.#media.volume : this.#element.volume;
     }
 
     /**
@@ -299,8 +350,8 @@ class Media {
      * @memberof Media
      */
     set muted(value) {
-        if (this.media) {
-            this.media.muted = value;
+        if (this.#media) {
+            this.#media.muted = value;
         }
     }
 
@@ -312,7 +363,7 @@ class Media {
      * @readonly
      */
     get muted(): boolean {
-        return this.media ? this.media.muted : this.element.muted;
+        return this.#media ? this.#media.muted : this.#element.muted;
     }
 
     /**
@@ -321,8 +372,8 @@ class Media {
      * @memberof Media
      */
     set playbackRate(value) {
-        if (this.media) {
-            this.media.playbackRate = value;
+        if (this.#media) {
+            this.#media.playbackRate = value;
         }
     }
 
@@ -334,7 +385,7 @@ class Media {
      * @readonly
      */
     get playbackRate(): number {
-        return this.media ? this.media.playbackRate : this.element.playbackRate;
+        return this.#media ? this.#media.playbackRate : this.#element.playbackRate;
     }
 
     /**
@@ -343,8 +394,8 @@ class Media {
      * @memberof Media
      */
     set defaultPlaybackRate(value) {
-        if (this.media) {
-            this.media.defaultPlaybackRate = value;
+        if (this.#media) {
+            this.#media.defaultPlaybackRate = value;
         }
     }
 
@@ -356,7 +407,7 @@ class Media {
      * @readonly
      */
     get defaultPlaybackRate(): number {
-        return this.media ? this.media.defaultPlaybackRate : this.element.defaultPlaybackRate;
+        return this.#media ? this.#media.defaultPlaybackRate : this.#element.defaultPlaybackRate;
     }
 
     /**
@@ -365,8 +416,8 @@ class Media {
      * @memberof Media
      */
     set currentTime(value: number) {
-        if (this.media) {
-            this.media.currentTime = value;
+        if (this.#media) {
+            this.#media.currentTime = value;
         }
     }
 
@@ -378,7 +429,7 @@ class Media {
      * @readonly
      */
     get currentTime(): number {
-        return this.media ? this.media.currentTime : this.element.currentTime;
+        return this.#media ? this.#media.currentTime : this.#element.currentTime;
     }
 
     /**
@@ -389,10 +440,10 @@ class Media {
      * @readonly
      */
     get duration(): number {
-        const duration = this.media ? this.media.duration : this.element.duration;
+        const duration = this.#media ? this.#media.duration : this.#element.duration;
         // To seek backwards in a live streaming (mobile devices)
-        if (duration === Infinity && this.element.seekable && this.element.seekable.length) {
-            return this.element.seekable.end(0);
+        if (duration === Infinity && this.#element.seekable && this.#element.seekable.length) {
+            return this.#element.seekable.end(0);
         }
         return duration;
     }
@@ -405,7 +456,7 @@ class Media {
      * @readonly
      */
     get paused(): boolean {
-        return this.media ? this.media.paused : this.element.paused;
+        return this.#media ? this.#media.paused : this.#element.paused;
     }
 
     /**
@@ -416,7 +467,7 @@ class Media {
      * @readonly
      */
     get ended(): boolean {
-        return this.media ? this.media.ended : this.element.ended;
+        return this.#media ? this.#media.ended : this.#element.ended;
     }
 
     /**
@@ -424,7 +475,7 @@ class Media {
      * @memberof Media
      */
     set loaded(loaded: boolean) {
-        this.mediaLoaded = loaded;
+        this.#mediaLoaded = loaded;
     }
 
     /**
@@ -433,7 +484,7 @@ class Media {
      * @memberof Media
      */
     get loaded(): boolean {
-        return this.mediaLoaded;
+        return this.#mediaLoaded;
     }
 
     /**
@@ -441,8 +492,8 @@ class Media {
      * @memberof Media
      */
     set level(value: number|string|object) {
-        if (this.media) {
-            this.media.level = value;
+        if (this.#media) {
+            this.#media.level = value;
         }
     }
 
@@ -452,7 +503,7 @@ class Media {
      * @readonly
      */
     get level(): number|string|object {
-        return this.media ? this.media.level : -1;
+        return this.#media ? this.#media.level : -1;
     }
 
     /**
@@ -461,7 +512,7 @@ class Media {
      * @readonly
      */
     get levels() {
-        return this.media ? this.media.levels : [];
+        return this.#media ? this.#media.levels : [];
     }
 
     /**
@@ -470,7 +521,7 @@ class Media {
      * @readonly
      */
     get instance() {
-        return this.media ? this.media.instance : null;
+        return this.#media ? this.#media.instance : null;
     }
 
     /**
@@ -484,14 +535,14 @@ class Media {
      */
     private _getMediaFiles(): Source[] {
         const mediaFiles = [];
-        const sourceTags = this.element.querySelectorAll('source');
-        const nodeSource = this.element.src;
+        const sourceTags = this.#element.querySelectorAll('source');
+        const nodeSource = this.#element.src;
 
         // Consider if node contains the `src` and `type` attributes
         if (nodeSource) {
             mediaFiles.push({
                 src: nodeSource,
-                type: this.element.getAttribute('type') || source.predictType(nodeSource),
+                type: this.#element.getAttribute('type') || source.predictType(nodeSource),
             });
         }
 
@@ -523,50 +574,53 @@ class Media {
      * @memberof Media
      */
     private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
-        const playHLSNatively = this.element.canPlayType('application/vnd.apple.mpegurl') ||
-            this.element.canPlayType('application/x-mpegURL');
+        const playHLSNatively = this.#element.canPlayType('application/vnd.apple.mpegurl') ||
+            this.#element.canPlayType('application/x-mpegURL');
+
+        this.#currentSrc = media;
+
         let activeLevels = false;
-        Object.keys(this.options.controls.layers).forEach(layer => {
-            if (this.options.controls.layers[layer].indexOf('levels') > -1) {
+        Object.keys(this.#options.controls.layers).forEach(layer => {
+            if (this.#options.controls.layers[layer].indexOf('levels') > -1) {
                 activeLevels = true;
             }
         });
 
-        if (Object.keys(this.customMedia.media).length) {
+        if (Object.keys(this.#customMedia.media).length) {
             let customRef: any;
-            this.customMedia.rules.forEach((rule: any) => {
+            this.#customMedia.rules.forEach((rule: any) => {
                 const type = rule(media.src);
                 if (type) {
-                    const customMedia = this.customMedia.media[type] as any;
-                    const customOptions = this.options[this.customMedia.optionsKey[type]] || undefined;
-                    customRef = customMedia(this.element, media, this.autoplay, customOptions);
+                    const customMedia = this.#customMedia.media[type] as any;
+                    const customOptions = this.#options[this.#customMedia.optionsKey[type]] || undefined;
+                    customRef = customMedia(this.#element, media, this.#autoplay, customOptions);
                 }
             });
             if (customRef) {
                 customRef.create();
                 return customRef;
             } else {
-                return new HTML5Media(this.element, media);
+                return new HTML5Media(this.#element, media);
             }
         } else if (source.isHlsSource(media)) {
-            if (playHLSNatively && this.options.forceNative && !activeLevels) {
-                return new HTML5Media(this.element, media);
+            if (playHLSNatively && this.#options.forceNative && !activeLevels) {
+                return new HTML5Media(this.#element, media);
             }
-            const hlsOptions = this.options && this.options.hls ? this.options.hls : undefined;
-            return new HlsMedia(this.element, media, this.autoplay, hlsOptions);
+            const hlsOptions = this.#options && this.#options.hls ? this.#options.hls : undefined;
+            return new HlsMedia(this.#element, media, this.#autoplay, hlsOptions);
         } else if (source.isDashSource(media)) {
-            const dashOptions = this.options && this.options.dash ? this.options.dash : undefined;
-            return new DashMedia(this.element, media, dashOptions);
+            const dashOptions = this.#options && this.#options.dash ? this.#options.dash : undefined;
+            return new DashMedia(this.#element, media, dashOptions);
         } else if (source.isFlvSource(media)) {
-            const flvOptions = this.options && this.options.flv ? this.options.flv : {
+            const flvOptions = this.#options && this.#options.flv ? this.#options.flv : {
                 debug: false,
                 type: 'flv',
                 url: media.src,
             };
-            return new FlvMedia(this.element, media, flvOptions);
+            return new FlvMedia(this.#element, media, flvOptions);
         }
 
-        return new HTML5Media(this.element, media);
+        return new HTML5Media(this.#element, media);
     }
 }
 

@@ -95,7 +95,7 @@ class Player {
      * @type Ads
      * @memberof Player
      */
-    public adsInstance: Ads;
+    #adsInstance: Ads;
 
     /**
      * Button to play media.
@@ -120,7 +120,7 @@ class Player {
      * @type string
      * @memberof Player
      */
-    private uid: string = '';
+    #uid: string = '';
 
     /**
      * Native video/audio tag to create player instance.
@@ -128,7 +128,7 @@ class Player {
      * @type HTMLMediaElement
      * @memberof Player
      */
-    private element: HTMLMediaElement;
+    #element: HTMLMediaElement;
 
     /**
      * URL that defines a valid Ad XML file to be read by Google IMA SDK
@@ -137,7 +137,7 @@ class Player {
      * @type string|string[]
      * @memberof Player
      */
-    private ads?: string | string[];
+    #ads?: string | string[];
 
     /**
      * Instance of Media object.
@@ -145,7 +145,7 @@ class Player {
      * @type Media
      * @memberof Player
      */
-    private media: Media;
+    #media: Media;
 
     /**
      * Events that will be triggered in Player to show/hide Play button and loader element,
@@ -154,7 +154,7 @@ class Player {
      * @type EventsList
      * @memberof Player
      */
-    private events: EventsList = {};
+    #events: EventsList = {};
 
     /**
      * Flag to determine if player can autoplay media.
@@ -163,7 +163,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    private autoplay: boolean = false;
+    #autoplay: boolean = false;
 
     /**
      * Storage for original volume level vaue, when testing browser's autoplay capabilities
@@ -173,7 +173,7 @@ class Player {
      * @type number
      * @memberof Player
      */
-    private volume: number = 1;
+    #volume: number = 1;
 
     /**
      * Flag that indicates if browser supports autoplay.
@@ -182,7 +182,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    private canAutoplay: boolean = false;
+    #canAutoplay: boolean = false;
 
     /**
      * Flag that indicates if browser supports autoplay in mute mode.
@@ -192,7 +192,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    private canAutoplayMuted: boolean = false;
+    #canAutoplayMuted: boolean = false;
 
     /**
      * Flag that indicates if autoplay algorithm has been applied.
@@ -201,7 +201,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    private processedAutoplay: boolean = false;
+    #processedAutoplay: boolean = false;
 
     /**
      * Container for other player options.
@@ -210,7 +210,7 @@ class Player {
      * @type PlayerOptions
      * @memberof Player
      */
-    private options: PlayerOptions = {};
+    #options: PlayerOptions = {};
 
     /**
      * List of custom controls.
@@ -219,7 +219,7 @@ class Player {
      * @type ControlItem[]
      * @memberof Player
      */
-    private customControlItems: ControlItem[] = [];
+    #customControlItems: ControlItem[] = [];
 
     /**
      * Default configuration for player.
@@ -228,7 +228,7 @@ class Player {
      * @type PlayerOptions
      * @memberof Player
      */
-    private defaultOptions: PlayerOptions = {
+    #defaultOptions: PlayerOptions = {
         controls: {
             alwaysVisible: false,
             layers: {
@@ -277,6 +277,7 @@ class Player {
         onError: () => { },
         progress: {
             duration: 0,
+            showCurrentTimeOnly: false,
         },
         showLoaderOnInit: false,
         startTime: 0,
@@ -294,20 +295,20 @@ class Player {
      * @memberof Player
      */
     constructor(element: HTMLMediaElement | string, options?: PlayerOptions) {
-        this.element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
-        if (this.element) {
-            this.autoplay = this.element.autoplay || false;
+        this.#element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
+        if (this.#element) {
+            this.#autoplay = this.#element.autoplay || false;
             if (typeof options !== 'string' && !Array.isArray(options)) {
                 this._mergeOptions(options);
             }
-            this.element.volume = this.options.startVolume;
-            if (this.options.ads && this.options.ads.src) {
-                this.ads = this.options.ads.src;
+            this.#element.volume = this.#options.startVolume;
+            if (this.#options.ads && this.#options.ads.src) {
+                this.#ads = this.#options.ads.src;
             }
-            if (this.options.startTime > 0) {
-                this.element.currentTime = this.options.startTime;
+            if (this.#options.startTime > 0) {
+                this.#element.currentTime = this.#options.startTime;
             }
-            this.volume = this.element.volume;
+            this.#volume = this.#element.volume;
         }
         return this;
     }
@@ -339,7 +340,7 @@ class Player {
      */
     public load(): void {
         if (this.isMedia()) {
-            this.media.load();
+            this.#media.load();
         }
     }
 
@@ -350,14 +351,14 @@ class Player {
      * @memberof Player
      */
     public play(): Promise<void> {
-        if (this.media && !this.media.loaded) {
-            this.media.load();
-            this.media.loaded = true;
+        if (this.#media && !this.#media.loaded) {
+            this.#media.load();
+            this.#media.loaded = true;
         }
-        if (this.adsInstance) {
-            return this.adsInstance.play();
+        if (this.#adsInstance) {
+            return this.#adsInstance.play();
         } else {
-           return this.media.play();
+           return this.#media.play();
         }
     }
 
@@ -368,10 +369,10 @@ class Player {
      * @memberof Player
      */
     public pause(): void {
-        if (this.adsInstance) {
-            this.adsInstance.pause();
+        if (this.#adsInstance) {
+            this.#adsInstance.pause();
         } else {
-            this.media.pause();
+            this.#media.pause();
         }
     }
 
@@ -382,30 +383,30 @@ class Player {
      * @memberof Player
      */
     public destroy(): void {
-        if (this.adsInstance) {
-            this.adsInstance.pause();
-            this.adsInstance.destroy();
+        if (this.#adsInstance) {
+            this.#adsInstance.pause();
+            this.#adsInstance.destroy();
         }
 
-        const el = (this.element as HTMLMediaElement);
-        this.media.destroy();
+        const el = (this.#element as HTMLMediaElement);
+        this.#media.destroy();
 
-        Object.keys(this.events).forEach(event => {
-            el.removeEventListener(event, this.events[event]);
+        Object.keys(this.#events).forEach(event => {
+            el.removeEventListener(event, this.#events[event]);
         });
 
-        if (this.autoplay && !this.processedAutoplay && isVideo(this.element)) {
+        if (this.#autoplay && !this.#processedAutoplay && isVideo(this.#element)) {
             el.removeEventListener('canplay', this._autoplay.bind(this));
         }
         this.controls.destroy();
 
-        if (isVideo(this.element)) {
+        if (isVideo(this.#element)) {
             removeElement(this.playBtn);
             removeElement(this.loader);
         }
 
         el.controls = true;
-        el.setAttribute('id', this.uid);
+        el.setAttribute('id', this.#uid);
         el.removeAttribute('op-live__enabled');
         el.removeAttribute('op-dvr__enabled');
         const parent = el.parentElement;
@@ -426,7 +427,7 @@ class Player {
      * @memberof Player
      */
     public getContainer(): HTMLElement {
-        return this.element.parentElement || this.element;
+        return this.#element.parentElement || this.#element;
     }
 
     /**
@@ -447,7 +448,7 @@ class Player {
      * @memberof Player
      */
     public getCustomControls(): ControlItem[] {
-        return this.customControlItems;
+        return this.#customControlItems;
     }
 
     /**
@@ -458,7 +459,7 @@ class Player {
      * @memberof Player
      */
     public getElement(): HTMLMediaElement {
-        return this.element;
+        return this.#element;
     }
 
     /**
@@ -469,7 +470,7 @@ class Player {
      * @memberof Player
      */
     public getEvents(): EventsList {
-        return this.events;
+        return this.#events;
     }
 
     /**
@@ -479,7 +480,7 @@ class Player {
      * @memberof Player
      */
     public getOptions(): PlayerOptions {
-        return this.options;
+        return this.#options;
     }
 
     /**
@@ -489,7 +490,7 @@ class Player {
      * @memberof Player
      */
     public activeElement(): Ads | Media {
-        return this.adsInstance && this.adsInstance.adsStarted ? this.adsInstance : this.media;
+        return this.#adsInstance && this.#adsInstance.started() ? this.#adsInstance : this.#media;
     }
 
     /**
@@ -519,7 +520,7 @@ class Player {
      * @memberof Player
      */
     public getMedia(): Media {
-        return this.media;
+        return this.#media;
     }
 
     /**
@@ -529,7 +530,7 @@ class Player {
      * @memberof Player
      */
     public getAd(): Ads {
-        return this.adsInstance;
+        return this.#adsInstance;
     }
     /**
      * Append a new `<track>` tag to the video/audio tag and dispatch event
@@ -540,13 +541,13 @@ class Player {
      */
     public addCaptions(args: Track): void {
         if (args.default) {
-            const tracks = this.element.querySelectorAll('track');
+            const tracks = this.#element.querySelectorAll('track');
             for (let i = 0, total = tracks.length; i < total; i++) {
                 (tracks[i] as HTMLTrackElement).default = false;
             }
         }
 
-        const el = this.element;
+        const el = this.#element;
 
         // If captions have been added previously, just update URL and default status
         let track = (el.querySelector(`track[srclang="${args.srclang}"][kind="${args.kind}"]`) as HTMLTrackElement);
@@ -576,9 +577,9 @@ class Player {
      */
     public addControl(args: ControlItem): void {
         args.custom = true;
-        this.customControlItems.push(args);
+        this.#customControlItems.push(args);
         const e = addEvent('controlschanged');
-        this.element.dispatchEvent(e);
+        this.#element.dispatchEvent(e);
     }
 
     /**
@@ -598,13 +599,13 @@ class Player {
         });
 
         // Check custom controls and remove reference there as well
-        this.customControlItems.forEach((item: ControlItem, idx: number) => {
+        this.#customControlItems.forEach((item: ControlItem, idx: number) => {
             if (item.id === controlName) {
-                this.customControlItems.splice(idx, 1);
+                this.#customControlItems.splice(idx, 1);
             }
         });
         const e = addEvent('controlschanged');
-        this.element.dispatchEvent(e);
+        this.#element.dispatchEvent(e);
     }
 
     /**
@@ -614,20 +615,20 @@ class Player {
      */
     public _prepareMedia(): void {
         try {
-            this.element.addEventListener('playererror', this.options.onError, EVENT_OPTIONS);
-            if (this.autoplay && isVideo(this.element)) {
-                this.element.addEventListener('canplay', this._autoplay.bind(this), EVENT_OPTIONS);
+            this.#element.addEventListener('playererror', this.#options.onError, EVENT_OPTIONS);
+            if (this.#autoplay && isVideo(this.#element)) {
+                this.#element.addEventListener('canplay', this._autoplay.bind(this), EVENT_OPTIONS);
             }
-            this.media = new Media(this.element, this.options, this.autoplay, Player.customMedia);
-            const preload = this.element.getAttribute('preload');
-            if (this.ads || !preload || preload !== 'none') {
-                this.media.load();
-                this.media.loaded = true;
+            this.#media = new Media(this.#element, this.#options, this.#autoplay, Player.customMedia);
+            const preload = this.#element.getAttribute('preload');
+            if (this.#ads || !preload || preload !== 'none') {
+                this.#media.load();
+                this.#media.loaded = true;
             }
 
-            if (!this.autoplay && this.ads) {
-                const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-                this.adsInstance = new Ads(this, this.ads, false, false, adsOptions);
+            if (!this.#autoplay && this.#ads) {
+                const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
+                this.#adsInstance = new Ads(this, this.#ads, false, false, adsOptions);
             }
         } catch (e) {
             console.error(e);
@@ -640,9 +641,9 @@ class Player {
      * @memberof Player
      */
     set src(media: Source[]) {
-        if (this.media instanceof Media) {
-            this.media.mediaFiles = [];
-            this.media.src = media;
+        if (this.#media instanceof Media) {
+            this.#media.mediaFiles = [];
+            this.#media.src = media;
         }
     }
 
@@ -654,7 +655,7 @@ class Player {
      * @readonly
      */
     get src(): Source[] {
-        return this.media.src;
+        return this.#media.src;
     }
 
     /**
@@ -665,7 +666,7 @@ class Player {
      * @readonly
      */
     get id(): string {
-        return this.uid;
+        return this.#uid;
     }
 
     /**
@@ -678,7 +679,7 @@ class Player {
      * @return {boolean}
      */
     private _isValid(): boolean {
-        const el = this.element;
+        const el = this.#element;
 
         if (el instanceof HTMLElement === false) {
             return false;
@@ -705,14 +706,14 @@ class Player {
     private _wrapInstance(): void {
         const wrapper = document.createElement('div');
         wrapper.className = 'op-player op-player__keyboard--inactive';
-        wrapper.className += isAudio(this.element) ? ' op-player__audio' : ' op-player__video';
+        wrapper.className += isAudio(this.#element) ? ' op-player__audio' : ' op-player__video';
         wrapper.tabIndex = 0;
 
-        this.element.classList.remove('op-player');
-        if (this.element.parentElement) {
-            this.element.parentElement.insertBefore(wrapper, this.element);
+        this.#element.classList.remove('op-player');
+        if (this.#element.parentElement) {
+            this.#element.parentElement.insertBefore(wrapper, this.#element);
         }
-        wrapper.appendChild(this.element);
+        wrapper.appendChild(this.#element);
 
         wrapper.addEventListener('keydown', () => {
             if (wrapper.classList.contains('op-player__keyboard--inactive')) {
@@ -726,12 +727,12 @@ class Player {
             }
         }, EVENT_OPTIONS);
 
-        if (this.options.mode === 'fill' && !isAudio(this.element) && !IS_IPHONE) {
+        if (this.#options.mode === 'fill' && !isAudio(this.#element) && !IS_IPHONE) {
             // Create fill effect on video, scaling and croping dimensions relative to its parent, setting just a class.
             // This method centers the video view using pure CSS in both Ads and Media.
             // @see https://slicejack.com/fullscreen-html5-video-background-css/
             this.getContainer().classList.add('op-player__full');
-        } else if (this.options.mode === 'fit' && !isAudio(this.element)) {
+        } else if (this.#options.mode === 'fit' && !isAudio(this.#element)) {
             const container = this.getContainer();
             if (container.parentElement) {
                 const fitWrapper = document.createElement('div');
@@ -743,12 +744,12 @@ class Player {
             }
         } else {
             let style = '';
-            if (this.options.width) {
-                const width = typeof this.options.width === 'number' ? `${this.options.width}px` : this.options.width;
+            if (this.#options.width) {
+                const width = typeof this.#options.width === 'number' ? `${this.#options.width}px` : this.#options.width;
                 style += `width: ${width} !important;`;
             }
-            if (this.options.height) {
-                const height = typeof this.options.height === 'number' ? `${this.options.height}px` : this.options.height;
+            if (this.#options.height) {
+                const height = typeof this.#options.height === 'number' ? `${this.#options.height}px` : this.#options.height;
                 style += `height: ${height} !important;`;
             }
 
@@ -764,7 +765,7 @@ class Player {
      * @memberof Player
      */
     private _createControls(): void {
-        if (IS_IPHONE && isVideo(this.element)) {
+        if (IS_IPHONE && isVideo(this.#element)) {
             this.getContainer().classList.add('op-player__ios--iphone');
         }
         this.controls = new Controls(this);
@@ -778,19 +779,19 @@ class Player {
      * @memberof Player
      */
     private _createUID(): void {
-        if (this.element.id) {
-            this.uid = this.element.id;
-            this.element.removeAttribute('id');
+        if (this.#element.id) {
+            this.#uid = this.#element.id;
+            this.#element.removeAttribute('id');
         } else {
             let uid;
             do {
                 uid = `op_${Math.random().toString(36).substr(2, 9)}`;
             } while (Player.instances[uid] !== undefined);
-            this.uid = uid;
+            this.#uid = uid;
         }
 
-        if (this.element.parentElement) {
-            this.element.parentElement.id = this.uid;
+        if (this.#element.parentElement) {
+            this.#element.parentElement.id = this.#uid;
         }
     }
 
@@ -801,15 +802,15 @@ class Player {
      * @memberof Player
      */
     private _createPlayButton(): void {
-        if (isAudio(this.element)) {
+        if (isAudio(this.#element)) {
             return;
         }
 
         this.playBtn = document.createElement('button');
         this.playBtn.className = 'op-player__play';
         this.playBtn.tabIndex = 0;
-        this.playBtn.title = this.options.labels.play;
-        this.playBtn.innerHTML = `<span>${this.options.labels.play}</span>`;
+        this.playBtn.title = this.#options.labels.play;
+        this.playBtn.innerHTML = `<span>${this.#options.labels.play}</span>`;
         this.playBtn.setAttribute('aria-pressed', 'false');
         this.playBtn.setAttribute('aria-hidden', 'false');
 
@@ -818,14 +819,14 @@ class Player {
         this.loader.tabIndex = -1;
         this.loader.setAttribute('aria-hidden', 'true');
 
-        if (this.element.parentElement) {
-            this.element.parentElement.insertBefore(this.loader, this.element);
-            this.element.parentElement.insertBefore(this.playBtn, this.element);
+        if (this.#element.parentElement) {
+            this.#element.parentElement.insertBefore(this.loader, this.#element);
+            this.#element.parentElement.insertBefore(this.playBtn, this.#element);
         }
 
         this.playBtn.addEventListener('click', () => {
-            if (this.adsInstance) {
-                this.adsInstance.playRequested = this.activeElement().paused;
+            if (this.#adsInstance) {
+                this.#adsInstance.playRequested = this.activeElement().paused;
             }
             if (this.activeElement().paused) {
                 this.activeElement().play();
@@ -843,10 +844,10 @@ class Player {
      * @memberof Player
      */
     private _setEvents(): void {
-        if (isVideo(this.element)) {
-            this.events.loadedmetadata = () => {
+        if (isVideo(this.#element)) {
+            this.#events.loadedmetadata = () => {
                 const el = this.activeElement();
-                if (this.options.showLoaderOnInit && !IS_IOS && !IS_ANDROID) {
+                if (this.#options.showLoaderOnInit && !IS_IOS && !IS_ANDROID) {
                     this.loader.setAttribute('aria-hidden', 'false');
                     this.playBtn.setAttribute('aria-hidden', 'true');
                 } else {
@@ -858,16 +859,16 @@ class Player {
                     this.playBtn.setAttribute('aria-pressed', 'false');
                 }
             };
-            this.events.waiting = () => {
+            this.#events.waiting = () => {
                 this.playBtn.setAttribute('aria-hidden', 'true');
                 this.loader.setAttribute('aria-hidden', 'false');
             };
-            this.events.seeking = () => {
+            this.#events.seeking = () => {
                 const el = this.activeElement();
                 this.playBtn.setAttribute('aria-hidden', 'true');
                 this.loader.setAttribute('aria-hidden', el instanceof Media ? 'false' : 'true');
             };
-            this.events.seeked = () => {
+            this.#events.seeked = () => {
                 const el = this.activeElement();
                 if (Math.round(el.currentTime) === 0) {
                     this.playBtn.setAttribute('aria-hidden', 'true');
@@ -877,28 +878,28 @@ class Player {
                     this.loader.setAttribute('aria-hidden', 'true');
                 }
             };
-            this.events.play = () => {
+            this.#events.play = () => {
                 this.playBtn.classList.add('op-player__play--paused');
-                this.playBtn.title = this.options.labels.pause;
+                this.playBtn.title = this.#options.labels.pause;
                 this.loader.setAttribute('aria-hidden', 'true');
-                if (this.options.showLoaderOnInit) {
+                if (this.#options.showLoaderOnInit) {
                     this.playBtn.setAttribute('aria-hidden', 'true');
                 } else {
                     setTimeout(() => {
                         this.playBtn.setAttribute('aria-hidden', 'true');
-                    }, this.options.hidePlayBtnTimer);
+                    }, this.#options.hidePlayBtnTimer);
                 }
             };
-            this.events.playing = () => {
+            this.#events.playing = () => {
                 this.loader.setAttribute('aria-hidden', 'true');
                 this.playBtn.setAttribute('aria-hidden', 'true');
             };
-            this.events.pause = () => {
+            this.#events.pause = () => {
                 const el = this.activeElement();
                 this.playBtn.classList.remove('op-player__play--paused');
-                this.playBtn.title = this.options.labels.play;
+                this.playBtn.title = this.#options.labels.play;
 
-                if (this.options.showLoaderOnInit && Math.round(el.currentTime) === 0) {
+                if (this.#options.showLoaderOnInit && Math.round(el.currentTime) === 0) {
                     this.playBtn.setAttribute('aria-hidden', 'true');
                     this.loader.setAttribute('aria-hidden', 'false');
                 } else {
@@ -906,14 +907,14 @@ class Player {
                     this.loader.setAttribute('aria-hidden', 'true');
                 }
             };
-            this.events.ended = () => {
+            this.#events.ended = () => {
                 this.loader.setAttribute('aria-hidden', 'true');
                 this.playBtn.setAttribute('aria-hidden', 'true');
             };
         }
 
-        Object.keys(this.events).forEach(event => {
-            this.element.addEventListener(event, this.events[event], EVENT_OPTIONS);
+        Object.keys(this.#events).forEach(event => {
+            this.#element.addEventListener(event, this.#events[event], EVENT_OPTIONS);
         });
     }
 
@@ -927,35 +928,35 @@ class Player {
      * @memberof Player
      */
     private _autoplay() {
-        if (!this.processedAutoplay) {
-            this.processedAutoplay = true;
-            this.element.removeEventListener('canplay', this._autoplay.bind(this));
+        if (!this.#processedAutoplay) {
+            this.#processedAutoplay = true;
+            this.#element.removeEventListener('canplay', this._autoplay.bind(this));
 
-            isAutoplaySupported(this.element, autoplay => {
-                this.canAutoplay = autoplay;
+            isAutoplaySupported(this.#element, autoplay => {
+                this.#canAutoplay = autoplay;
             }, muted => {
-                this.canAutoplayMuted = muted;
+                this.#canAutoplayMuted = muted;
             }, () => {
-                if (this.canAutoplayMuted) {
+                if (this.#canAutoplayMuted) {
                     this.activeElement().muted = true;
                     this.activeElement().volume = 0;
 
                     const e = addEvent('volumechange');
-                    this.element.dispatchEvent(e);
+                    this.#element.dispatchEvent(e);
 
                     // Insert element to unmute if browser allows autoplay with muted media
                     const volumeEl = document.createElement('div');
-                    const action = IS_IOS || IS_ANDROID ? this.options.labels.tap : this.options.labels.click;
+                    const action = IS_IOS || IS_ANDROID ? this.#options.labels.tap : this.#options.labels.click;
                     volumeEl.className = 'op-player__unmute';
                     volumeEl.innerHTML = `<span>${action}</span>`;
                     volumeEl.tabIndex = 0;
 
                     volumeEl.addEventListener('click', () => {
                         this.activeElement().muted = false;
-                        this.activeElement().volume = this.volume;
+                        this.activeElement().volume = this.#volume;
 
                         const event = addEvent('volumechange');
-                        this.element.dispatchEvent(event);
+                        this.#element.dispatchEvent(event);
 
                         // Remove element
                         removeElement(volumeEl);
@@ -964,14 +965,14 @@ class Player {
                     const target = this.getContainer();
                     target.insertBefore(volumeEl, target.firstChild);
                 } else {
-                    this.activeElement().muted = this.element.muted;
-                    this.activeElement().volume = this.volume;
+                    this.activeElement().muted = this.#element.muted;
+                    this.activeElement().volume = this.#volume;
                 }
 
-                if (this.ads) {
-                    const adsOptions = this.options && this.options.ads ? this.options.ads : undefined;
-                    this.adsInstance = new Ads(this, this.ads, this.canAutoplay, this.canAutoplayMuted, adsOptions);
-                } else if (this.canAutoplay || this.canAutoplayMuted) {
+                if (this.#ads) {
+                    const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
+                    this.#adsInstance = new Ads(this, this.#ads, this.#canAutoplay, this.#canAutoplayMuted, adsOptions);
+                } else if (this.#canAutoplay || this.#canAutoplayMuted) {
                     return this.play();
                 }
             });
@@ -987,13 +988,13 @@ class Player {
      * @memberof Player
      */
     private _mergeOptions(playerOptions?: PlayerOptions): void {
-        this.options = { ...this.defaultOptions, ...playerOptions };
+        this.#options = { ...this.#defaultOptions, ...playerOptions };
         if (playerOptions) {
             const objectElements = ['labels', 'controls'];
             objectElements.forEach(item => {
-                this.options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ?
-                    { ...this.defaultOptions[item], ...playerOptions[item] } :
-                    this.defaultOptions[item];
+                this.#options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ?
+                    { ...this.#defaultOptions[item], ...playerOptions[item] } :
+                    this.#defaultOptions[item];
             });
         }
     }

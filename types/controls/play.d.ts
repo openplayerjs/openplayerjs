@@ -10,57 +10,7 @@ import Player from '../player';
  * @implements PlayerComponent
  */
 declare class Play implements PlayerComponent {
-    /**
-     * Instance of OpenPlayer.
-     *
-     * @private
-     * @type Player
-     * @memberof Play
-     */
-    private player;
-    /**
-     * Button to play/pause media.
-     *
-     * @private
-     * @type HTMLButtonElement
-     * @memberof Play
-     */
-    private button;
-    /**
-     * Events that will be triggered in Play element:
-     *  - controls (when `controlschanged` event is being triggered)
-     *  - media (to toggle button's class and play/pause media)
-     *
-     * @private
-     * @see [[Controls._buildElements]]
-     * @type EventsList
-     * @memberof Play
-     */
-    private events;
-    /**
-     * Default labels from player's config
-     *
-     * @private
-     * @type object
-     * @memberof Play
-     */
-    private labels;
-    /**
-     * Position of the button to be indicated as part of its class name
-     *
-     * @private
-     * @type {string}
-     * @memberof Play
-     */
-    private position;
-    /**
-     * Layer where the control item will be placed
-     *
-     * @private
-     * @type {string}
-     * @memberof Play
-     */
-    private layer;
+    #private;
     /**
      * Create an instance of Play.
      *

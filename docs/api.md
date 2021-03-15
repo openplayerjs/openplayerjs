@@ -23,8 +23,8 @@ Method | Description
 `addControl` | Append a new button to the video/audio tag with the possibility dispatch a custom callback so it gets registered/loaded in the player, via `controlschanged` event. It requires an object with `icon` URL/path, `id` for the button, the `position` of the button and a `click` callback to dispatch an action. For more details on how to create a custom control element, read [Add Control](customize.md#add-control).
 `removeControl` | Remove a control from the control bar using the name indicated in the `layers` configuration (`play`, `progress`, `time`, etc.); it can be a default element or a custom control.
 `destroy` | Destroy OpenMedia Player instance (including all events associated) and return the `video/audio` tag to its original state.
-`getAd` | Retrieve an instance of the `Ads` object.
-`getMedia` | Retrieve an instance of the `Media` object.
+`getAd` | Retrieve an instance of the `Ads` object. More information at [Ad instance](api.md#ad-instance)
+`getMedia` | Retrieve an instance of the `Media` object. More information at [Media instance](api.md#media-instance)
 `activeElement` | Retrieve the current media object (could be `Ads` or any other media type).
 `getContainer` | Retrieve the parent element (with `op-player` class) of the native video/audio tag.
 `getControls` | Retrieve an instance of the controls object used in the player instance.
@@ -35,6 +35,55 @@ Method | Description
 `isMedia` | Check if current media is an instance of a native media type.
 `id` | Retrieve current player's unique identifier.
 `src` | Retrieve/set the current Source list associated with the player.
+
+### `Media` instance
+
+This object has the basic getters/setters that can be performed in regular video/audio tag:
+
+- play
+- pause
+- canPlayType
+- load
+- volume
+- muted
+- ended
+- paused
+- currentTime
+- duration
+- defaultPlaybackRate
+- playbackRate
+
+On top of that, the Media object has the following methods:
+
+Method | Description
+--- | ---
+`destroy` | Destroy the Media instance (including all events associated).
+`src` | Set/get a list of media sources asociated with the player; each object contains `src` and `type`.
+`current` | Set/get the current media element being played: `getMedia().currentSrc`. It returns an object that contains `src` and `type`.
+`mediaFiles` | Set/get the list of elements that are associated with the current media; the list of objects contains  `src` and `type`.
+`level` | Set/get a level; it could set/return a number, string or an object.
+`levels` | Return a list of levels (if any)
+
+### `Ad` instance
+
+This object has access to the entity that manages Ads in OpenPlayerJS. It also has access to the following standard setters/getters:
+
+- play
+- pause
+- load (it accepts a boolean to force a reload to reinitialize the Ads container)
+- volume
+- muted
+- ended
+- paused
+- currentTime
+- duration
+
+Method | Description
+--- | ---
+`destroy` | Destroy the Media instance (including all events associated).
+`resizeAds` | Set the width/height of an Ad
+`getAdsManager` | Obtain an instance of the IMA ads manager; all that you can have access to is documented [here](https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdsManager)
+`started` | Flag to determine if Ad started or not
 
 ## Events
 

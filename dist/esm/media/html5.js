@@ -1,3 +1,17 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _currentLevel, _levelList, _isStreaming;
 import { DVR_THRESHOLD, EVENT_OPTIONS } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isAudio, isVideo } from '../utils/general';
@@ -6,9 +20,9 @@ import Native from './native';
 class HTML5Media extends Native {
     constructor(element, mediaFile) {
         super(element, mediaFile);
-        this.currentLevel = null;
-        this.levelList = [];
-        this.isStreaming = false;
+        _currentLevel.set(this, null);
+        _levelList.set(this, []);
+        _isStreaming.set(this, false);
         element.addEventListener('error', (e) => {
             const details = {
                 detail: {
@@ -23,7 +37,7 @@ class HTML5Media extends Native {
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
-        this.isStreaming = isHlsSource(mediaFile);
+        __classPrivateFieldSet(this, _isStreaming, isHlsSource(mediaFile));
         this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this), EVENT_OPTIONS);
         this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this), EVENT_OPTIONS);
         return this;
@@ -40,7 +54,7 @@ class HTML5Media extends Native {
         return this;
     }
     get levels() {
-        if (!this.levelList.length) {
+        if (!__classPrivateFieldGet(this, _levelList).length) {
             const levels = this.element.querySelectorAll('source[title]');
             for (let i = 0, total = levels.length; i < total; ++i) {
                 const level = {
@@ -48,33 +62,33 @@ class HTML5Media extends Native {
                     id: `${i}`,
                     label: levels[i].getAttribute('title'),
                 };
-                this.levelList.push(level);
+                __classPrivateFieldGet(this, _levelList).push(level);
             }
         }
-        return this.levelList;
+        return __classPrivateFieldGet(this, _levelList);
     }
     set level(level) {
-        const idx = this.levelList.findIndex((item) => parseInt(item.id, 10) === level);
+        const idx = __classPrivateFieldGet(this, _levelList).findIndex((item) => parseInt(item.id, 10) === level);
         if (idx > -1) {
-            this.currentLevel = this.levels[idx];
+            __classPrivateFieldSet(this, _currentLevel, this.levels[idx]);
             const levels = this.element.querySelectorAll('source[title]');
             for (let i = 0, total = levels.length; i < total; ++i) {
                 const source = levels[i].getAttribute('src');
-                if (source && parseInt(this.currentLevel.id, 10) === i) {
+                if (source && parseInt(__classPrivateFieldGet(this, _currentLevel).id, 10) === i) {
                     this.element.src = source;
                 }
             }
         }
     }
     get level() {
-        return this.currentLevel ? this.currentLevel.id : '-1';
+        return __classPrivateFieldGet(this, _currentLevel) ? __classPrivateFieldGet(this, _currentLevel).id : '-1';
     }
     set src(media) {
         this.element.src = media.src;
     }
     _isDvrEnabled() {
         const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
-        if (this.isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
+        if (__classPrivateFieldGet(this, _isStreaming) && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
             this.element.setAttribute('op-dvr__enabled', 'true');
             const timeEvent = addEvent('timeupdate');
             this.element.dispatchEvent(timeEvent);
@@ -95,4 +109,5 @@ class HTML5Media extends Native {
         }
     }
 }
+_currentLevel = new WeakMap(), _levelList = new WeakMap(), _isStreaming = new WeakMap();
 export default HTML5Media;

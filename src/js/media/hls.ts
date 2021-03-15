@@ -22,7 +22,7 @@ class HlsMedia extends Native {
      * @type Hls
      * @memberof HlsMedia
      */
-    private player: any;
+    #player: any;
 
     /**
      * Hls events that will be triggered in Player.
@@ -31,7 +31,7 @@ class HlsMedia extends Native {
      * @type EventsList
      * @memberof HlsMedia
      */
-    private events: EventsList = {};
+    #events: EventsList = {};
 
     /**
      * Time in milliseconds to attempt to recover media after an error.
@@ -39,7 +39,7 @@ class HlsMedia extends Native {
      * @type number
      * @memberof HlsMedia
      */
-    private recoverDecodingErrorDate: number = 0;
+    #recoverDecodingErrorDate: number = 0;
 
     /**
      * Time in milliseconds to attempt to swap audio codec after an error.
@@ -47,7 +47,7 @@ class HlsMedia extends Native {
      * @type number
      * @memberof HlsMedia
      */
-    private recoverSwapAudioCodecDate: number = 0;
+    #recoverSwapAudioCodecDate: number = 0;
 
     /**
      * Hls options to be passed to the Hls instance.
@@ -57,7 +57,7 @@ class HlsMedia extends Native {
      * @type object
      * @memberof HlsMedia
      */
-    private options: any = undefined;
+    #options: any = undefined;
 
     /**
      * Flag to indicate if `autoplay` attribute was set
@@ -66,7 +66,7 @@ class HlsMedia extends Native {
      * @type boolean
      * @memberof HlsMedia
      */
-    private autoplay: boolean;
+    #autoplay: boolean;
 
     /**
      * Creates an instance of HlsMedia.
@@ -77,10 +77,10 @@ class HlsMedia extends Native {
      */
     constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean = false, options?: object) {
         super(element, mediaSource);
-        this.options = options;
+        this.#options = options;
         this.element = element;
         this.media = mediaSource;
-        this.autoplay = autoplay;
+        this.#autoplay = autoplay;
         this.promise = (typeof Hls === 'undefined') ?
             // Ever-green script
             loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') :
@@ -108,17 +108,17 @@ class HlsMedia extends Native {
      * @memberof HlsMedia
      */
     public load(): void {
-        this.player.detachMedia();
-        this.player.loadSource(this.media.src);
-        this.player.attachMedia(this.element);
+        this.#player.detachMedia();
+        this.#player.loadSource(this.media.src);
+        this.#player.attachMedia(this.element);
 
         const e = addEvent('loadedmetadata');
         this.element.dispatchEvent(e);
 
-        if (!this.events) {
-            this.events = Hls.Events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
+        if (!this.#events) {
+            this.#events = Hls.Events;
+            Object.keys(this.#events).forEach(event => {
+                this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
             });
         }
     }
@@ -140,22 +140,22 @@ class HlsMedia extends Native {
     set src(media: Source) {
         if (isHlsSource(media)) {
             this._revoke();
-            this.player = new Hls(this.options);
-            this.player.loadSource(media.src);
-            this.player.attachMedia(this.element);
+            this.#player = new Hls(this.#options);
+            this.#player.loadSource(media.src);
+            this.#player.attachMedia(this.element);
 
-            this.events = Hls.Events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
+            this.#events = Hls.Events;
+            Object.keys(this.#events).forEach(event => {
+                this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
             });
         }
     }
 
     get levels() {
         const levels: any = [];
-        if (this.player && this.player.levels && this.player.levels.length) {
-            Object.keys(this.player.levels).forEach(item => {
-                const { height, name } = this.player.levels[item];
+        if (this.#player && this.#player.levels && this.#player.levels.length) {
+            Object.keys(this.#player.levels).forEach(item => {
+                const { height, name } = this.#player.levels[item];
                 const level = {
                     height,
                     id: item,
@@ -168,11 +168,11 @@ class HlsMedia extends Native {
     }
 
     set level(level: number) {
-        this.player.currentLevel = level;
+        this.#player.currentLevel = level;
     }
 
     get level() {
-        return this.player ? this.player.currentLevel : -1;
+        return this.#player ? this.#player.currentLevel : -1;
     }
 
     /**
@@ -184,30 +184,30 @@ class HlsMedia extends Native {
      * @memberof HlsMedia
      */
     private _create() {
-        let { options } = this;
-        if (!options) {
-            options = {};
+        let playerOptions = this.#options;
+        if (!playerOptions) {
+            playerOptions = {};
         }
-        const autoplay = !!(this.element.preload === 'auto' || this.autoplay);
-        (options as any).autoStartLoad = autoplay;
+        const autoplay = !!(this.element.preload === 'auto' || this.#autoplay);
+        (playerOptions as any).autoStartLoad = autoplay;
 
-        this.player = new Hls(options);
-        this.instance = this.player;
-        this.events = Hls.Events;
-        Object.keys(this.events).forEach(event => {
-            this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
+        this.#player = new Hls(playerOptions);
+        this.instance = this.#player;
+        this.#events = Hls.Events;
+        Object.keys(this.#events).forEach(event => {
+            this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
         });
 
         if (!autoplay) {
             this.element.addEventListener('play', () => {
-                if (this.player) {
-                    this.player.startLoad();
+                if (this.#player) {
+                    this.#player.startLoad();
                 }
             }, EVENT_OPTIONS);
 
             this.element.addEventListener('pause', () => {
-                if (this.player) {
-                    this.player.stopLoad();
+                if (this.#player) {
+                    this.#player.stopLoad();
                 }
             }, EVENT_OPTIONS);
         }
@@ -245,14 +245,14 @@ class HlsMedia extends Native {
                 switch (type) {
                     case 'mediaError':
                         const now = new Date().getTime();
-                        if (!this.recoverDecodingErrorDate || (now - this.recoverDecodingErrorDate) > 3000) {
-                            this.recoverDecodingErrorDate = new Date().getTime();
-                            this.player.recoverMediaError();
-                        } else if (!this.recoverSwapAudioCodecDate || (now - this.recoverSwapAudioCodecDate) > 3000) {
-                            this.recoverSwapAudioCodecDate = new Date().getTime();
+                        if (!this.#recoverDecodingErrorDate || (now - this.#recoverDecodingErrorDate) > 3000) {
+                            this.#recoverDecodingErrorDate = new Date().getTime();
+                            this.#player.recoverMediaError();
+                        } else if (!this.#recoverSwapAudioCodecDate || (now - this.#recoverSwapAudioCodecDate) > 3000) {
+                            this.#recoverSwapAudioCodecDate = new Date().getTime();
                             console.warn('Attempting to swap Audio Codec and recover from media error');
-                            this.player.swapAudioCodec();
-                            this.player.recoverMediaError();
+                            this.#player.swapAudioCodec();
+                            this.#player.recoverMediaError();
                         } else {
                             const msg = 'Cannot recover, last media error recovery failed';
                             console.error(msg);
@@ -267,7 +267,7 @@ class HlsMedia extends Native {
                         this.element.dispatchEvent(networkEvent);
                         break;
                     default:
-                        this.player.destroy();
+                        this.#player.destroy();
                         const fatalEvent = addEvent(type, details);
                         this.element.dispatchEvent(fatalEvent);
                         break;
@@ -300,25 +300,25 @@ class HlsMedia extends Native {
      * @memberof HlsMedia
      */
     private _revoke(): void {
-        this.player.stopLoad();
-        if (this.events) {
-            Object.keys(this.events).forEach(event => {
-                this.player.off(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
+        this.#player.stopLoad();
+        if (this.#events) {
+            Object.keys(this.#events).forEach(event => {
+                this.#player.off(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
             });
         }
         this.element.removeEventListener('play', () => {
-            if (this.player) {
-                this.player.startLoad();
+            if (this.#player) {
+                this.#player.startLoad();
             }
         });
 
         this.element.removeEventListener('pause', () => {
-            if (this.player) {
-                this.player.stopLoad();
+            if (this.#player) {
+                this.#player.stopLoad();
             }
         });
-        this.player.destroy();
-        this.player = null;
+        this.#player.destroy();
+        this.#player = null;
     }
 }
 

@@ -11,6 +11,7 @@ import Source from '../interfaces/source';
  * @class Native
  */
 declare abstract class Native {
+    #private;
     /**
      * Native video/audio tag.
      *
@@ -32,15 +33,6 @@ declare abstract class Native {
      * @memberof Native
      */
     promise: Promise<any>;
-    /**
-     * The instance of a custom player.
-     *
-     * HLS/Dash have more methods that are related to their custom libraries.
-     *
-     * @type {any}
-     * @memberof Native
-     */
-    private customPlayer;
     /**
      * Create an instance of Native.
      *

@@ -459,6 +459,15 @@
 .op-controls--hidden .op-controls .op-controls__progress--seek::-ms-thumb {
     background: transparent;
 }
+.op-player__media[op-live__enabled]:not([op-dvr__enabled]) + .op-controls .op-controls__progress--seek {
+    display: none;
+}
+.op-player__media[op-live__enabled]:not([op-dvr__enabled]) + .op-controls .op-controls__progress,
+.op-player__media[op-live__enabled]:not([op-dvr__enabled]) + .op-controls .op-controls__progress--played,
+.op-player__media[op-live__enabled]:not([op-dvr__enabled]) + .op-controls .op-controls__progress--buffer {
+    background-color: #eee;
+    pointer-events: none;
+}
 .op-controls progress {
     display: inline-block;
     vertical-align: baseline;

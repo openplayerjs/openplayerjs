@@ -9,6 +9,7 @@ import Player from './player';
  * @implements PlayerComponent
  */
 declare class Controls implements PlayerComponent {
+    #private;
     /**
      * Events that will be triggered in Controls element:
      *  - mouse (to show/hide controls after specific number of seconds)
@@ -19,47 +20,6 @@ declare class Controls implements PlayerComponent {
      * @memberof Controls
      */
     events: EventsList;
-    /**
-     * Instance of Settings object.
-     *
-     * @private
-     * @type Settings
-     * @memberof Controls
-     */
-    private settings;
-    /**
-     * Element that stores the time to hide controls.
-     *
-     * @private
-     * @type number
-     * @memberof Controls
-     */
-    private timer;
-    /**
-     * Main container of control elements.
-     *
-     * @private
-     * @type HTMLDivElement
-     * @memberof Controls
-     */
-    private controls;
-    /**
-     * Instance of OpenPlayer.
-     *
-     * @private
-     * @type Player
-     * @memberof Controls
-     */
-    private player;
-    /**
-     * Storage for all the control elements.
-     *
-     * @private
-     * @type any
-     * @memberof Controls
-     */
-    private items;
-    private controlEls;
     /**
      * Create an instance of Controls.
      *

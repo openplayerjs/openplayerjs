@@ -23,6 +23,7 @@ import Ads from './media/ads';
  * @class Player
  */
 declare class Player {
+    #private;
     /**
      * Collection of OpenPlayer instances.
      *
@@ -61,13 +62,6 @@ declare class Player {
      */
     controls: Controls;
     /**
-     * Instance of Ads object.
-     *
-     * @type Ads
-     * @memberof Player
-     */
-    adsInstance: Ads;
-    /**
      * Button to play media.
      *
      * @type HTMLButtonElement
@@ -82,109 +76,6 @@ declare class Player {
      * @memberof Player
      */
     loader: HTMLSpanElement;
-    /**
-     * Unique identified for the current player instance.
-     *
-     * @type string
-     * @memberof Player
-     */
-    private uid;
-    /**
-     * Native video/audio tag to create player instance.
-     *
-     * @type HTMLMediaElement
-     * @memberof Player
-     */
-    private element;
-    /**
-     * URL that defines a valid Ad XML file to be read by Google IMA SDK
-     *
-     * @see https://developers.google.com/interactive-media-ads/docs/sdks/html5/tags
-     * @type string|string[]
-     * @memberof Player
-     */
-    private ads?;
-    /**
-     * Instance of Media object.
-     *
-     * @type Media
-     * @memberof Player
-     */
-    private media;
-    /**
-     * Events that will be triggered in Player to show/hide Play button and loader element,
-     * and to interact with the player using a keyboard for accessibility purposes.
-     *
-     * @type EventsList
-     * @memberof Player
-     */
-    private events;
-    /**
-     * Flag to determine if player can autoplay media.
-     *
-     * @see [[Player._autoplay]]
-     * @type boolean
-     * @memberof Player
-     */
-    private autoplay;
-    /**
-     * Storage for original volume level vaue, when testing browser's autoplay capabilities
-     * to restore it back.
-     *
-     * @see [[Player._autoplay]]
-     * @type number
-     * @memberof Player
-     */
-    private volume;
-    /**
-     * Flag that indicates if browser supports autoplay.
-     *
-     * @see [[Player._autoplay]]
-     * @type boolean
-     * @memberof Player
-     */
-    private canAutoplay;
-    /**
-     * Flag that indicates if browser supports autoplay in mute mode.
-     *
-     * This is the case with iOS.
-     * @see [[Player._autoplay]]
-     * @type boolean
-     * @memberof Player
-     */
-    private canAutoplayMuted;
-    /**
-     * Flag that indicates if autoplay algorithm has been applied.
-     *
-     * @see [[Player._autoplay]]
-     * @type boolean
-     * @memberof Player
-     */
-    private processedAutoplay;
-    /**
-     * Container for other player options.
-     *
-     * @private
-     * @type PlayerOptions
-     * @memberof Player
-     */
-    private options;
-    /**
-     * List of custom controls.
-     *
-     * @private
-     * @type ControlItem[]
-     * @memberof Player
-     */
-    private customControlItems;
-    /**
-     * Default configuration for player.
-     *
-     * @private
-     * @type PlayerOptions
-     * @memberof Player
-     */
-    private defaultOptions;
     /**
      * Create an instance of Player.
      *

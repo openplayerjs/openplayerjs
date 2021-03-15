@@ -1,5 +1,20 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _customPlayer;
 class Native {
     constructor(element, media) {
+        _customPlayer.set(this, void 0);
         this.element = element;
         this.media = media;
         this.promise = new Promise(resolve => {
@@ -7,10 +22,10 @@ class Native {
         });
     }
     set instance(customPlayer) {
-        this.customPlayer = customPlayer;
+        __classPrivateFieldSet(this, _customPlayer, customPlayer);
     }
     get instance() {
-        return this.customPlayer;
+        return __classPrivateFieldGet(this, _customPlayer);
     }
     play() {
         return this.element.play();
@@ -58,4 +73,5 @@ class Native {
         return this.element.ended;
     }
 }
+_customPlayer = new WeakMap();
 export default Native;

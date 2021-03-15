@@ -12,11 +12,11 @@ import Native from './native';
  * @class NativeMedia
  */
 class HTML5Media extends Native  {
-    private currentLevel: any = null;
+    #currentLevel: any = null;
 
-    private levelList: any[] = [];
+    #levelList: any[] = [];
 
-    private isStreaming: boolean = false;
+    #isStreaming: boolean = false;
 
     /**
      * Creates an instance of NativeMedia.
@@ -43,7 +43,7 @@ class HTML5Media extends Native  {
             throw new TypeError('Native method only supports video/audio tags');
         }
 
-        this.isStreaming = isHlsSource(mediaFile);
+        this.#isStreaming = isHlsSource(mediaFile);
         this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this), EVENT_OPTIONS);
         this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this), EVENT_OPTIONS);
         return this;
@@ -80,7 +80,7 @@ class HTML5Media extends Native  {
     }
 
     get levels(): object[] {
-        if (!this.levelList.length) {
+        if (!this.#levelList.length) {
             const levels = this.element.querySelectorAll('source[title]');
             for (let i = 0, total = levels.length; i < total; ++i) {
                 const level = {
@@ -88,20 +88,20 @@ class HTML5Media extends Native  {
                     id: `${i}`,
                     label: levels[i].getAttribute('title'),
                 };
-                this.levelList.push(level);
+                this.#levelList.push(level);
             }
         }
-        return this.levelList;
+        return this.#levelList;
     }
 
     set level(level: any) {
-        const idx = this.levelList.findIndex((item: any) => parseInt(item.id, 10) === level);
+        const idx = this.#levelList.findIndex((item: any) => parseInt(item.id, 10) === level);
         if (idx > -1) {
-            this.currentLevel = this.levels[idx];
+            this.#currentLevel = this.levels[idx];
             const levels = this.element.querySelectorAll('source[title]');
             for (let i = 0, total = levels.length; i < total; ++i) {
                 const source = levels[i].getAttribute('src');
-                if (source && parseInt(this.currentLevel.id, 10) === i) {
+                if (source && parseInt(this.#currentLevel.id, 10) === i) {
                     this.element.src = source;
                 }
             }
@@ -109,7 +109,7 @@ class HTML5Media extends Native  {
     }
 
     get level(): any {
-        return this.currentLevel ? this.currentLevel.id : '-1';
+        return this.#currentLevel ? this.#currentLevel.id : '-1';
     }
 
     /**
@@ -122,7 +122,7 @@ class HTML5Media extends Native  {
 
     private _isDvrEnabled(): void {
         const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
-        if (this.isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
+        if (this.#isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
             this.element.setAttribute('op-dvr__enabled', 'true');
             const timeEvent = addEvent('timeupdate');
             this.element.dispatchEvent(timeEvent);

@@ -24,7 +24,7 @@ class Volume implements PlayerComponent {
      * @type Player
      * @memberof Settings
      */
-    private player: Player;
+    #player: Player;
 
     /**
      * Mute button.
@@ -33,7 +33,7 @@ class Volume implements PlayerComponent {
      * @type HTMLButtonElement
      * @memberof Volume
      */
-    private button: HTMLButtonElement;
+    #button: HTMLButtonElement;
 
     /**
      * Container for volume elements (display and slider input).
@@ -42,7 +42,7 @@ class Volume implements PlayerComponent {
      * @type HTMLDivElement
      * @memberof Volume
      */
-    private container: HTMLDivElement;
+    #container: HTMLDivElement;
 
     /**
      * Element that displays the media's current volume level.
@@ -51,7 +51,7 @@ class Volume implements PlayerComponent {
      * @type HTMLProgressElement
      * @memberof Volume
      */
-    private display: HTMLProgressElement;
+    #display: HTMLProgressElement;
 
     /**
      * Element that allows changing media's current volume.
@@ -60,7 +60,7 @@ class Volume implements PlayerComponent {
      * @type HTMLInputElement
      * @memberof Volume
      */
-    private slider: HTMLInputElement;
+    #slider: HTMLInputElement;
 
     /**
      * Events that will be triggered in Volume element:
@@ -72,7 +72,7 @@ class Volume implements PlayerComponent {
      * @type EventsList
      * @memberof Volume
      */
-    private events: EventsList = {
+    #events: EventsList = {
         button: {},
         media: {},
         slider: {},
@@ -85,7 +85,7 @@ class Volume implements PlayerComponent {
      * @type number
      * @memberof Volume
      */
-    private volume: number;
+    #volume: number;
 
     /**
      * Default labels from player's config
@@ -94,7 +94,7 @@ class Volume implements PlayerComponent {
      * @type object
      * @memberof Volume
      */
-    private labels: any;
+    #labels: any;
 
     /**
      * Position of the button to be indicated as part of its class name
@@ -103,7 +103,7 @@ class Volume implements PlayerComponent {
      * @type {string}
      * @memberof Volume
      */
-    private position: string;
+    #position: string;
 
     /**
      * Layer where the control item will be placed
@@ -112,7 +112,7 @@ class Volume implements PlayerComponent {
      * @type {string}
      * @memberof Captions
      */
-    private layer: string;
+    #layer: string;
 
     /**
      * Create an instance of Volume.
@@ -121,11 +121,11 @@ class Volume implements PlayerComponent {
      * @returns {Volume}
      */
     constructor(player: Player, position: string, layer: string) {
-        this.player = player;
-        this.labels = player.getOptions().labels;
-        this.volume = this.player.getMedia().volume;
-        this.position = position;
-        this.layer = layer;
+        this.#player = player;
+        this.#labels = player.getOptions().labels;
+        this.#volume = this.#player.getMedia().volume;
+        this.#position = position;
+        this.#layer = layer;
         return this;
     }
 
@@ -135,45 +135,45 @@ class Volume implements PlayerComponent {
      * @memberof Volume
      */
     public create(): void {
-        this.container = document.createElement('div');
-        this.container.className = `op-controls__volume op-control__${this.position}`;
-        this.container.tabIndex = 0;
-        this.container.setAttribute('aria-valuemin', '0');
-        this.container.setAttribute('aria-valuemax', '100');
-        this.container.setAttribute('aria-valuenow', `${this.volume}`);
-        this.container.setAttribute('aria-valuetext', `${this.labels.volume}: ${this.volume}`);
-        this.container.setAttribute('aria-orientation', 'vertical');
-        this.container.setAttribute('aria-label', this.labels.volumeSlider);
+        this.#container = document.createElement('div');
+        this.#container.className = `op-controls__volume op-control__${this.#position}`;
+        this.#container.tabIndex = 0;
+        this.#container.setAttribute('aria-valuemin', '0');
+        this.#container.setAttribute('aria-valuemax', '100');
+        this.#container.setAttribute('aria-valuenow', `${this.#volume}`);
+        this.#container.setAttribute('aria-valuetext', `${this.#labels.volume}: ${this.#volume}`);
+        this.#container.setAttribute('aria-orientation', 'vertical');
+        this.#container.setAttribute('aria-label', this.#labels.volumeSlider);
 
-        this.slider = document.createElement('input');
-        this.slider.type = 'range';
-        this.slider.className = 'op-controls__volume--input';
-        this.slider.tabIndex = -1;
-        this.slider.value = this.player.getMedia().volume.toString();
-        this.slider.setAttribute('min', '0');
-        this.slider.setAttribute('max', '1');
-        this.slider.setAttribute('step', '0.1');
-        this.slider.setAttribute('aria-label', this.labels.volumeControl);
+        this.#slider = document.createElement('input');
+        this.#slider.type = 'range';
+        this.#slider.className = 'op-controls__volume--input';
+        this.#slider.tabIndex = -1;
+        this.#slider.value = this.#player.getMedia().volume.toString();
+        this.#slider.setAttribute('min', '0');
+        this.#slider.setAttribute('max', '1');
+        this.#slider.setAttribute('step', '0.1');
+        this.#slider.setAttribute('aria-label', this.#labels.volumeControl);
 
-        this.display = document.createElement('progress');
-        this.display.className = 'op-controls__volume--display';
-        this.display.setAttribute('max', '10');
-        this.display.setAttribute('role', 'presentation');
-        this.display.value = this.player.getMedia().volume * 10;
+        this.#display = document.createElement('progress');
+        this.#display.className = 'op-controls__volume--display';
+        this.#display.setAttribute('max', '10');
+        this.#display.setAttribute('role', 'presentation');
+        this.#display.value = this.#player.getMedia().volume * 10;
 
-        this.container.appendChild(this.slider);
-        this.container.appendChild(this.display);
+        this.#container.appendChild(this.#slider);
+        this.#container.appendChild(this.#display);
 
         // Use as backup when mute is clicked
-        this.button = document.createElement('button');
-        this.button.type = 'button';
-        this.button.className = 'op-controls__mute';
-        this.button.tabIndex = 0;
-        this.button.title = this.labels.mute;
-        this.button.setAttribute('aria-controls', this.player.id);
-        this.button.setAttribute('aria-pressed', 'false');
-        this.button.setAttribute('aria-label', this.labels.mute);
-        this.button.innerHTML = `<span class="op-sr">${this.labels.mute}</span>`;
+        this.#button = document.createElement('button');
+        this.#button.type = 'button';
+        this.#button.className = `op-controls__mute op-control__${this.#position}`;
+        this.#button.tabIndex = 0;
+        this.#button.title = this.#labels.mute;
+        this.#button.setAttribute('aria-controls', this.#player.id);
+        this.#button.setAttribute('aria-pressed', 'false');
+        this.#button.setAttribute('aria-label', this.#labels.mute);
+        this.#button.innerHTML = `<span class="op-sr">${this.#labels.mute}</span>`;
 
         /**
          * @private
@@ -183,10 +183,10 @@ class Volume implements PlayerComponent {
             const mediaVolume = element.volume * 1;
             const vol = Math.floor(mediaVolume * 100);
 
-            this.slider.value = `${element.volume}`;
-            this.display.value = (mediaVolume * 10);
-            this.container.setAttribute('aria-valuenow', `${vol}`);
-            this.container.setAttribute('aria-valuetext', `${this.labels.volume}: ${vol}`);
+            this.#slider.value = `${element.volume}`;
+            this.#display.value = (mediaVolume * 10);
+            this.#container.setAttribute('aria-valuenow', `${vol}`);
+            this.#container.setAttribute('aria-valuetext', `${this.#labels.volume}: ${vol}`);
         };
 
         /**
@@ -196,14 +196,14 @@ class Volume implements PlayerComponent {
         const updateButton = (element: any) => {
             const vol = element.volume;
             if (vol <= 0.5 && vol > 0) {
-                this.button.classList.remove('op-controls__mute--muted');
-                this.button.classList.add('op-controls__mute--half');
+                this.#button.classList.remove('op-controls__mute--muted');
+                this.#button.classList.add('op-controls__mute--half');
             } else if (vol === 0) {
-                this.button.classList.add('op-controls__mute--muted');
-                this.button.classList.remove('op-controls__mute--half');
+                this.#button.classList.add('op-controls__mute--muted');
+                this.#button.classList.remove('op-controls__mute--half');
             } else {
-                this.button.classList.remove('op-controls__mute--muted');
-                this.button.classList.remove('op-controls__mute--half');
+                this.#button.classList.remove('op-controls__mute--muted');
+                this.#button.classList.remove('op-controls__mute--half');
             }
         };
 
@@ -212,77 +212,73 @@ class Volume implements PlayerComponent {
          * @param {Event} event
          */
         const updateVolume = (event: Event) => {
-            const el = this.player.activeElement();
+            const el = this.#player.activeElement();
             const value = parseFloat((event.target as HTMLInputElement).value);
             el.volume = value;
             el.muted = (el.volume === 0);
-            this.volume = value;
-            const unmuteEl = this.player.getContainer().querySelector('.op-player__unmute');
+            this.#volume = value;
+            const unmuteEl = this.#player.getContainer().querySelector('.op-player__unmute');
             if (!el.muted && unmuteEl) {
                 removeElement(unmuteEl);
             }
             const e = addEvent('volumechange');
-            this.player.getElement().dispatchEvent(e);
+            this.#player.getElement().dispatchEvent(e);
         };
 
-        this.events.media.volumechange = () => {
-            const el = this.player.activeElement();
+        this.#events.media.volumechange = () => {
+            const el = this.#player.activeElement();
             updateSlider(el);
             updateButton(el);
         };
-
-        // If a source is live, ensure that Volume controls move to the right for audio to mimic
-        // Safari's output
-        this.events.media.timeupdate = () => {
-            if (isAudio(this.player.getElement()) && (this.player.activeElement().duration === Infinity ||
-                this.player.getElement().getAttribute('op-live__enabled'))) {
-                this.button.classList.add('op-control__right');
+        this.#events.media.timeupdate = () => {
+            if (isAudio(this.#player.getElement()) && (this.#player.activeElement().duration === Infinity ||
+                this.#player.getElement().getAttribute('op-live__enabled'))) {
             }
         };
-        this.events.media.loadedmetadata = () => {
-            const el = this.player.activeElement();
+        this.#events.media.loadedmetadata = () => {
+            const el = this.#player.activeElement();
             if (el.muted) {
                 el.volume = 0;
             }
             const e = addEvent('volumechange');
-            this.player.getElement().dispatchEvent(e);
+            this.#player.getElement().dispatchEvent(e);
         };
-        this.events.slider.input = updateVolume.bind(this);
-        this.events.slider.change = updateVolume.bind(this);
+        this.#events.slider.input = updateVolume.bind(this);
+        this.#events.slider.change = updateVolume.bind(this);
 
-        this.events.button.click = () => {
-            this.button.setAttribute('aria-pressed', 'true');
-            const el = this.player.activeElement();
+        this.#events.button.click = () => {
+            this.#button.setAttribute('aria-pressed', 'true');
+            const el = this.#player.activeElement();
             el.muted = !el.muted;
 
             if (el.muted) {
                 el.volume = 0;
-                this.button.title = this.labels.unmute;
-                this.button.setAttribute('aria-label', this.labels.unmute);
+                this.#button.title = this.#labels.unmute;
+                this.#button.setAttribute('aria-label', this.#labels.unmute);
             } else {
-                el.volume = this.volume;
-                this.button.title = this.labels.mute;
-                this.button.setAttribute('aria-label', this.labels.mute);
+                el.volume = this.#volume;
+                this.#button.title = this.#labels.mute;
+                this.#button.setAttribute('aria-label', this.#labels.mute);
             }
             const event = addEvent('volumechange');
-            this.player.getElement().dispatchEvent(event);
+            this.#player.getElement().dispatchEvent(event);
         };
 
-        this.button.addEventListener('click', this.events.button.click, EVENT_OPTIONS);
-        Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
+        this.#button.addEventListener('click', this.#events.button.click, EVENT_OPTIONS);
+        Object.keys(this.#events.media).forEach(event => {
+            this.#player.getElement().addEventListener(event, this.#events.media[event], EVENT_OPTIONS);
         });
 
-        Object.keys(this.events.slider).forEach(event => {
-            this.slider.addEventListener(event, this.events.slider[event], EVENT_OPTIONS);
+        Object.keys(this.#events.slider).forEach(event => {
+            this.#slider.addEventListener(event, this.#events.slider[event], EVENT_OPTIONS);
         });
 
-        this.player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        this.#player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
 
         if (!IS_ANDROID && !IS_IOS) {
-            const controls = this.player.getControls().getLayer(this.layer);
-            controls.appendChild(this.button);
-            controls.appendChild(this.container);
+            const controls = this.#player.getControls().getLayer(this.#layer);
+            controls.appendChild(this.#button);
+            controls.appendChild(this.#container);
         }
     }
 
@@ -292,20 +288,20 @@ class Volume implements PlayerComponent {
      * @memberof Volume
      */
     public destroy(): void {
-        this.button.removeEventListener('click', this.events.button.click);
-        Object.keys(this.events.media).forEach(event => {
-            this.player.getElement().removeEventListener(event, this.events.media[event]);
+        this.#button.removeEventListener('click', this.#events.button.click);
+        Object.keys(this.#events.media).forEach(event => {
+            this.#player.getElement().removeEventListener(event, this.#events.media[event]);
         });
 
-        Object.keys(this.events.slider).forEach(event => {
-            this.slider.removeEventListener(event, this.events.slider[event]);
+        Object.keys(this.#events.slider).forEach(event => {
+            this.#slider.removeEventListener(event, this.#events.slider[event]);
         });
 
-        this.player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
 
-        removeElement(this.slider);
-        removeElement(this.display);
-        removeElement(this.container);
+        removeElement(this.#slider);
+        removeElement(this.#display);
+        removeElement(this.#container);
     }
 
     /**
@@ -317,7 +313,7 @@ class Volume implements PlayerComponent {
      */
     private _keydownEvent(e: KeyboardEvent) {
         const key = e.which || e.keyCode || 0;
-        const el = this.player.activeElement();
+        const el = this.#player.activeElement();
         if (key === 38 || key === 40) {
             const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
             el.volume = newVol;

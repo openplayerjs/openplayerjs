@@ -11,6 +11,7 @@ import Player from '../player';
  * @implements PlayerComponent
  */
 declare class Fullscreen implements PlayerComponent {
+    #private;
     /**
      * Flag to determine if fullscreen is available natively.
      *
@@ -18,85 +19,6 @@ declare class Fullscreen implements PlayerComponent {
      * @memberof Fullscreen
      */
     fullScreenEnabled: boolean;
-    /**
-     * Instance of OpenPlayer.
-     *
-     * @private
-     * @type Player
-     * @memberof Fullscreen
-     */
-    private player;
-    /**
-     * Flag to determine if media is currently being played in fullscreen mode.
-     *
-     * @private
-     * @type boolean
-     * @memberof Fullscreen
-     */
-    private isFullscreen;
-    /**
-     * Button to toggle fullscreen effect.
-     *
-     * @private
-     * @type HTMLButtonElement
-     * @memberof Fullscreen
-     */
-    private button;
-    /**
-     * List of events when fullscreen change is fired.
-     *
-     * @private
-     * @type string[]
-     * @memberof Fullscreen
-     */
-    private fullscreenEvents;
-    /**
-     * Storage for user's full screen width.
-     *
-     * @private
-     * @type number
-     * @memberof Fullscreen
-     */
-    private fullscreenWidth;
-    /**
-     * Storage for user's full screen height.
-     *
-     * @private
-     * @type number
-     * @memberof Fullscreen
-     */
-    private fullscreenHeight;
-    /**
-     * Callback when user clicks Fullscreen button.
-     *
-     * @private
-     * @memberof Fullscreen
-     */
-    private clickEvent;
-    /**
-     * Default labels from player's config
-     *
-     * @private
-     * @type object
-     * @memberof Fullscreen
-     */
-    private labels;
-    /**
-     * Position of the button to be indicated as part of its class name
-     *
-     * @private
-     * @type {string}
-     * @memberof Fullscreen
-     */
-    private position;
-    /**
-     * Layer where the control item will be placed
-     *
-     * @private
-     * @type {string}
-     * @memberof Captions
-     */
-    private layer;
     /**
      * Create an instance of Fullscreen.
      *

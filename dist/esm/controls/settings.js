@@ -1,41 +1,61 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _player, _submenu, _button, _menu, _events, _originalOutput, _labels, _position, _layer;
 import { EVENT_OPTIONS } from '../utils/constants';
 import { hasClass, removeElement } from '../utils/general';
 class Settings {
     constructor(player, position, layer) {
-        this.submenu = {};
-        this.events = {
+        _player.set(this, void 0);
+        _submenu.set(this, {});
+        _button.set(this, void 0);
+        _menu.set(this, void 0);
+        _events.set(this, {
             global: {},
             media: {},
-        };
-        this.originalOutput = '';
-        this.player = player;
-        this.labels = player.getOptions().labels;
-        this.position = position;
-        this.layer = layer;
+        });
+        _originalOutput.set(this, '');
+        _labels.set(this, void 0);
+        _position.set(this, void 0);
+        _layer.set(this, void 0);
+        __classPrivateFieldSet(this, _player, player);
+        __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+        __classPrivateFieldSet(this, _position, position);
+        __classPrivateFieldSet(this, _layer, layer);
         return this;
     }
     create() {
-        this.button = document.createElement('button');
-        this.button.className = `op-controls__settings op-control__${this.position}`;
-        this.button.tabIndex = 0;
-        this.button.title = this.labels.settings;
-        this.button.setAttribute('aria-controls', this.player.id);
-        this.button.setAttribute('aria-pressed', 'false');
-        this.button.setAttribute('aria-label', this.labels.settings);
-        this.button.innerHTML = `<span class="op-sr">${this.labels.settings}</span>`;
-        this.menu = document.createElement('div');
-        this.menu.className = 'op-settings';
-        this.menu.setAttribute('aria-hidden', 'true');
-        this.menu.innerHTML = '<div class="op-settings__menu" role="menu"></div>';
+        __classPrivateFieldSet(this, _button, document.createElement('button'));
+        __classPrivateFieldGet(this, _button).className = `op-controls__settings op-control__${__classPrivateFieldGet(this, _position)}`;
+        __classPrivateFieldGet(this, _button).tabIndex = 0;
+        __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).settings;
+        __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+        __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
+        __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).settings);
+        __classPrivateFieldGet(this, _button).innerHTML = `<span class="op-sr">${__classPrivateFieldGet(this, _labels).settings}</span>`;
+        __classPrivateFieldSet(this, _menu, document.createElement('div'));
+        __classPrivateFieldGet(this, _menu).className = 'op-settings';
+        __classPrivateFieldGet(this, _menu).setAttribute('aria-hidden', 'true');
+        __classPrivateFieldGet(this, _menu).innerHTML = '<div class="op-settings__menu" role="menu"></div>';
         this.clickEvent = () => {
-            this.button.setAttribute('aria-pressed', 'true');
-            const menus = this.player.getContainer().querySelectorAll('.op-settings');
+            __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'true');
+            const menus = __classPrivateFieldGet(this, _player).getContainer().querySelectorAll('.op-settings');
             for (let i = 0, total = menus.length; i < total; ++i) {
-                if (menus[i] !== this.menu) {
+                if (menus[i] !== __classPrivateFieldGet(this, _menu)) {
                     menus[i].setAttribute('aria-hidden', 'true');
                 }
             }
-            this.menu.setAttribute('aria-hidden', (this.menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false'));
+            __classPrivateFieldGet(this, _menu).setAttribute('aria-hidden', (__classPrivateFieldGet(this, _menu).getAttribute('aria-hidden') === 'false' ? 'true' : 'false'));
         };
         this.hideEvent = () => {
             let timeout;
@@ -44,8 +64,8 @@ class Settings {
             }
             if (typeof window !== 'undefined') {
                 timeout = window.requestAnimationFrame(() => {
-                    this.menu.innerHTML = this.originalOutput;
-                    this.menu.setAttribute('aria-hidden', 'true');
+                    __classPrivateFieldGet(this, _menu).innerHTML = __classPrivateFieldGet(this, _originalOutput);
+                    __classPrivateFieldGet(this, _menu).setAttribute('aria-hidden', 'true');
                 });
             }
         };
@@ -53,54 +73,54 @@ class Settings {
             const { id, type } = e.detail;
             this.removeItem(id, type);
         };
-        this.events.media.controlshidden = this.hideEvent.bind(this);
-        this.events.media.settingremoved = this.removeEvent.bind(this);
-        this.events.media.play = this.hideEvent.bind(this);
-        this.events.media.pause = this.hideEvent.bind(this);
-        this.events.global.click = (e) => {
-            if (e.target.closest(`#${this.player.id}`) && hasClass(e.target, 'op-speed__option')) {
-                this.player.getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
+        __classPrivateFieldGet(this, _events).media.controlshidden = this.hideEvent.bind(this);
+        __classPrivateFieldGet(this, _events).media.settingremoved = this.removeEvent.bind(this);
+        __classPrivateFieldGet(this, _events).media.play = this.hideEvent.bind(this);
+        __classPrivateFieldGet(this, _events).media.pause = this.hideEvent.bind(this);
+        __classPrivateFieldGet(this, _events).global.click = (e) => {
+            if (e.target.closest(`#${__classPrivateFieldGet(this, _player).id}`) && hasClass(e.target, 'op-speed__option')) {
+                __classPrivateFieldGet(this, _player).getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
             }
         };
-        this.events.global.resize = this.hideEvent.bind(this);
-        this.button.addEventListener('click', this.clickEvent.bind(this), EVENT_OPTIONS);
-        Object.keys(this.events).forEach(event => {
-            this.player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _events).global.resize = this.hideEvent.bind(this);
+        __classPrivateFieldGet(this, _button).addEventListener('click', this.clickEvent.bind(this), EVENT_OPTIONS);
+        Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
+            __classPrivateFieldGet(this, _player).getElement().addEventListener(event, __classPrivateFieldGet(this, _events).media[event], EVENT_OPTIONS);
         });
-        document.addEventListener('click', this.events.global.click, EVENT_OPTIONS);
+        document.addEventListener('click', __classPrivateFieldGet(this, _events).global.click, EVENT_OPTIONS);
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', this.events.global.resize, EVENT_OPTIONS);
+            window.addEventListener('resize', __classPrivateFieldGet(this, _events).global.resize, EVENT_OPTIONS);
         }
-        this.player.getControls().getLayer(this.layer).appendChild(this.button);
-        this.player.getContainer().appendChild(this.menu);
+        __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
+        __classPrivateFieldGet(this, _player).getContainer().appendChild(__classPrivateFieldGet(this, _menu));
     }
     destroy() {
-        this.button.removeEventListener('click', this.clickEvent.bind(this));
-        Object.keys(this.events).forEach(event => {
-            this.player.getElement().removeEventListener(event, this.events.media[event]);
+        __classPrivateFieldGet(this, _button).removeEventListener('click', this.clickEvent.bind(this));
+        Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
+            __classPrivateFieldGet(this, _player).getElement().removeEventListener(event, __classPrivateFieldGet(this, _events).media[event]);
         });
-        document.removeEventListener('click', this.events.global.click);
+        document.removeEventListener('click', __classPrivateFieldGet(this, _events).global.click);
         if (typeof window !== 'undefined') {
-            window.removeEventListener('resize', this.events.global.resize);
+            window.removeEventListener('resize', __classPrivateFieldGet(this, _events).global.resize);
         }
-        if (this.events.global['settings.submenu'] !== undefined) {
-            document.removeEventListener('click', this.events.global['settings.submenu']);
-            this.player.getElement().removeEventListener('controlshidden', this.hideEvent);
+        if (__classPrivateFieldGet(this, _events).global['settings.submenu'] !== undefined) {
+            document.removeEventListener('click', __classPrivateFieldGet(this, _events).global['settings.submenu']);
+            __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlshidden', this.hideEvent);
         }
-        removeElement(this.menu);
-        removeElement(this.button);
+        removeElement(__classPrivateFieldGet(this, _menu));
+        removeElement(__classPrivateFieldGet(this, _button));
     }
     addSettings() {
         return {
             className: 'op-speed__option',
-            default: this.player && this.player.getMedia() ? this.player.getMedia().defaultPlaybackRate.toString() : '1',
+            default: __classPrivateFieldGet(this, _player) && __classPrivateFieldGet(this, _player).getMedia() ? __classPrivateFieldGet(this, _player).getMedia().defaultPlaybackRate.toString() : '1',
             key: 'speed',
-            name: this.labels.speed,
+            name: __classPrivateFieldGet(this, _labels).speed,
             subitems: [
                 { key: '0.25', label: '0.25' },
                 { key: '0.5', label: '0.5' },
                 { key: '0.75', label: '0.75' },
-                { key: '1', label: this.labels.speedNormal },
+                { key: '1', label: __classPrivateFieldGet(this, _labels).speedNormal },
                 { key: '1.25', label: '1.25' },
                 { key: '1.5', label: '1.5' },
                 { key: '2', label: '2' },
@@ -117,11 +137,11 @@ class Settings {
         if (submenuMatch) {
             menuItem.innerHTML += `<div class="op-settings__menu-content">${submenuMatch.label}</div>`;
         }
-        const mainMenu = this.menu.querySelector('.op-settings__menu');
+        const mainMenu = __classPrivateFieldGet(this, _menu).querySelector('.op-settings__menu');
         if (mainMenu) {
             mainMenu.appendChild(menuItem);
         }
-        this.originalOutput = this.menu.innerHTML;
+        __classPrivateFieldSet(this, _originalOutput, __classPrivateFieldGet(this, _menu).innerHTML);
         if (submenu) {
             const subItems = `
                 <div class="op-settings__header">
@@ -134,16 +154,16 @@ class Settings {
                         <div class="op-settings__submenu-label ${className || ''}" data-value="${key}-${item.key}">${item.label}</div>
                     </div>`).join('')}
                 </div>`;
-            this.submenu[key] = subItems;
+            __classPrivateFieldGet(this, _submenu)[key] = subItems;
         }
-        this.events.global['settings.submenu'] = (e) => {
+        __classPrivateFieldGet(this, _events).global['settings.submenu'] = (e) => {
             const target = e.target;
-            if (target.closest(`#${this.player.id}`)) {
+            if (target.closest(`#${__classPrivateFieldGet(this, _player).id}`)) {
                 if (hasClass(target, 'op-settings__back')) {
-                    this.menu.classList.add('op-settings--sliding');
+                    __classPrivateFieldGet(this, _menu).classList.add('op-settings--sliding');
                     setTimeout(() => {
-                        this.menu.innerHTML = this.originalOutput;
-                        this.menu.classList.remove('op-settings--sliding');
+                        __classPrivateFieldGet(this, _menu).innerHTML = __classPrivateFieldGet(this, _originalOutput);
+                        __classPrivateFieldGet(this, _menu).classList.remove('op-settings--sliding');
                     }, 100);
                 }
                 else if (hasClass(target, 'op-settings__menu-content')) {
@@ -153,11 +173,11 @@ class Settings {
                     if (fragments.length > 0) {
                         fragments.pop();
                         const current = fragments.join('-').replace(/^\-|\-$/, '');
-                        if (typeof this.submenu[current] !== undefined) {
-                            this.menu.classList.add('op-settings--sliding');
+                        if (typeof __classPrivateFieldGet(this, _submenu)[current] !== undefined) {
+                            __classPrivateFieldGet(this, _menu).classList.add('op-settings--sliding');
                             setTimeout(() => {
-                                this.menu.innerHTML = this.submenu[current];
-                                this.menu.classList.remove('op-settings--sliding');
+                                __classPrivateFieldGet(this, _menu).innerHTML = __classPrivateFieldGet(this, _submenu)[current];
+                                __classPrivateFieldGet(this, _menu).classList.remove('op-settings--sliding');
                             }, 100);
                         }
                     }
@@ -166,17 +186,17 @@ class Settings {
                     const current = target.getAttribute('data-value');
                     const value = current ? current.replace(`${key}-`, '') : '';
                     const label = target.innerText;
-                    const menuTarget = this.menu.querySelector(`#menu-item-${key} .op-settings__submenu-item[aria-checked=true]`);
+                    const menuTarget = __classPrivateFieldGet(this, _menu).querySelector(`#menu-item-${key} .op-settings__submenu-item[aria-checked=true]`);
                     if (menuTarget) {
                         menuTarget.setAttribute('aria-checked', 'false');
                         if (target.parentElement) {
                             target.parentElement.setAttribute('aria-checked', 'true');
                         }
-                        this.submenu[key] = this.menu.innerHTML;
-                        this.menu.classList.add('op-settings--sliding');
+                        __classPrivateFieldGet(this, _submenu)[key] = __classPrivateFieldGet(this, _menu).innerHTML;
+                        __classPrivateFieldGet(this, _menu).classList.add('op-settings--sliding');
                         setTimeout(() => {
-                            this.menu.innerHTML = this.originalOutput;
-                            const prev = this.menu.querySelector(`.op-settings__menu-label[data-value="${key}-${defaultValue}"]`);
+                            __classPrivateFieldGet(this, _menu).innerHTML = __classPrivateFieldGet(this, _originalOutput);
+                            const prev = __classPrivateFieldGet(this, _menu).querySelector(`.op-settings__menu-label[data-value="${key}-${defaultValue}"]`);
                             if (prev) {
                                 prev.setAttribute('data-value', `${current}`);
                                 if (prev.nextElementSibling) {
@@ -184,8 +204,8 @@ class Settings {
                                 }
                             }
                             defaultValue = value;
-                            this.originalOutput = this.menu.innerHTML;
-                            this.menu.classList.remove('op-settings--sliding');
+                            __classPrivateFieldSet(this, _originalOutput, __classPrivateFieldGet(this, _menu).innerHTML);
+                            __classPrivateFieldGet(this, _menu).classList.remove('op-settings--sliding');
                         }, 100);
                     }
                 }
@@ -194,17 +214,17 @@ class Settings {
                 this.hideEvent();
             }
         };
-        document.addEventListener('click', this.events.global['settings.submenu'], EVENT_OPTIONS);
-        this.player.getElement().addEventListener('controlshidden', this.hideEvent, EVENT_OPTIONS);
+        document.addEventListener('click', __classPrivateFieldGet(this, _events).global['settings.submenu'], EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _player).getElement().addEventListener('controlshidden', this.hideEvent, EVENT_OPTIONS);
     }
     removeItem(id, type, minItems = 2) {
-        const target = this.player.getElement().querySelector(`.op-settings__submenu-label[data-value=${type}-${id}]`);
+        const target = __classPrivateFieldGet(this, _player).getElement().querySelector(`.op-settings__submenu-label[data-value=${type}-${id}]`);
         if (target) {
             removeElement(target);
         }
-        if (this.player.getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length < minItems) {
-            delete this.submenu[type];
-            const label = this.player.getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`);
+        if (__classPrivateFieldGet(this, _player).getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length < minItems) {
+            delete __classPrivateFieldGet(this, _submenu)[type];
+            const label = __classPrivateFieldGet(this, _player).getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`);
             const menuItem = label ? label.closest('.op-settings__menu-item') : null;
             if (menuItem) {
                 removeElement(menuItem);
@@ -212,4 +232,5 @@ class Settings {
         }
     }
 }
+_player = new WeakMap(), _submenu = new WeakMap(), _button = new WeakMap(), _menu = new WeakMap(), _events = new WeakMap(), _originalOutput = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
 export default Settings;

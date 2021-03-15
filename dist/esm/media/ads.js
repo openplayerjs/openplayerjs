@@ -1,25 +1,52 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _adsEnded, _adsDone, _adsActive, _adsStarted, _intervalTimer, _adsVolume, _adsMuted, _adsDuration, _adsCurrentTime, _adsManager, _player, _media, _element, _events, _ads, _promise, _adsLoader, _adsContainer, _adDisplayContainer, _adsRequest, _autoStart, _autoStartMuted, _playTriggered, _adsOptions, _currentAdsIndex, _originalVolume, _preloadContent, _lastTimePaused, _mediaSources, _mediaStarted;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, isXml, loadScript, removeElement } from '../utils/general';
 class Ads {
     constructor(player, ads, autoStart, autoStartMuted, options) {
-        this.adsEnded = false;
-        this.adsDone = false;
-        this.adsActive = false;
-        this.adsStarted = false;
-        this.intervalTimer = 0;
-        this.adsMuted = false;
-        this.adsDuration = 0;
-        this.adsCurrentTime = 0;
-        this.adsManager = null;
-        this.events = [];
-        this.autoStart = false;
-        this.autoStartMuted = false;
-        this.playTriggered = false;
-        this.currentAdsIndex = 0;
-        this.lastTimePaused = 0;
-        this.mediaSources = [];
-        this.mediaStarted = false;
+        _adsEnded.set(this, false);
+        _adsDone.set(this, false);
+        _adsActive.set(this, false);
+        _adsStarted.set(this, false);
+        _intervalTimer.set(this, 0);
+        _adsVolume.set(this, void 0);
+        _adsMuted.set(this, false);
+        _adsDuration.set(this, 0);
+        _adsCurrentTime.set(this, 0);
+        _adsManager.set(this, null);
+        _player.set(this, void 0);
+        _media.set(this, void 0);
+        _element.set(this, void 0);
+        _events.set(this, []);
+        _ads.set(this, void 0);
+        _promise.set(this, void 0);
+        _adsLoader.set(this, void 0);
+        _adsContainer.set(this, void 0);
+        _adDisplayContainer.set(this, void 0);
+        _adsRequest.set(this, void 0);
+        _autoStart.set(this, false);
+        _autoStartMuted.set(this, false);
+        _playTriggered.set(this, false);
+        _adsOptions.set(this, void 0);
+        _currentAdsIndex.set(this, 0);
+        _originalVolume.set(this, void 0);
+        _preloadContent.set(this, void 0);
+        _lastTimePaused.set(this, 0);
+        _mediaSources.set(this, []);
+        _mediaStarted.set(this, false);
         const defaultOpts = {
             autoPlayAdBreaks: true,
             debug: false,
@@ -30,82 +57,83 @@ class Ads {
             sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
             src: [],
         };
-        this.player = player;
-        this.ads = ads;
-        this.media = player.getMedia();
-        this.element = player.getElement();
-        this.autoStart = autoStart || false;
-        this.autoStartMuted = autoStartMuted || false;
-        this.adsOptions = Object.assign(Object.assign({}, defaultOpts), options);
-        this.playTriggered = false;
-        this.originalVolume = this.element.volume;
-        this.adsVolume = this.originalVolume;
-        const path = this.adsOptions.debug ? this.adsOptions.sdkPath.replace(/(\.js$)/, '_debug.js') : this.adsOptions.sdkPath;
-        this.promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
+        __classPrivateFieldSet(this, _player, player);
+        __classPrivateFieldSet(this, _ads, ads);
+        __classPrivateFieldSet(this, _media, player.getMedia());
+        __classPrivateFieldSet(this, _element, player.getElement());
+        __classPrivateFieldSet(this, _autoStart, autoStart || false);
+        __classPrivateFieldSet(this, _autoStartMuted, autoStartMuted || false);
+        __classPrivateFieldSet(this, _adsOptions, Object.assign(Object.assign({}, defaultOpts), options));
+        __classPrivateFieldSet(this, _playTriggered, false);
+        __classPrivateFieldSet(this, _originalVolume, __classPrivateFieldGet(this, _element).volume);
+        __classPrivateFieldSet(this, _adsVolume, __classPrivateFieldGet(this, _originalVolume));
+        const path = __classPrivateFieldGet(this, _adsOptions).debug ? __classPrivateFieldGet(this, _adsOptions).sdkPath.replace(/(\.js$)/, '_debug.js') : __classPrivateFieldGet(this, _adsOptions).sdkPath;
+        __classPrivateFieldSet(this, _promise, (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript(path) : new Promise(resolve => {
             resolve({});
+        }));
+        __classPrivateFieldGet(this, _promise).then(() => {
+            this.load();
         });
-        this.promise.then(this.load.bind(this));
         return this;
     }
     load(force = false) {
-        if (!this.adsOptions.autoPlayAdBreaks && !force) {
+        if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks && !force) {
             return;
         }
-        const existingContainer = this.player.getContainer().querySelector('.op-ads');
+        const existingContainer = __classPrivateFieldGet(this, _player).getContainer().querySelector('.op-ads');
         if (existingContainer && existingContainer.parentNode) {
             existingContainer.parentNode.removeChild(existingContainer);
         }
-        this.adsStarted = true;
-        this.adsContainer = document.createElement('div');
-        this.adsContainer.className = 'op-ads';
-        this.adsContainer.tabIndex = -1;
-        if (this.element.parentElement) {
-            this.element.parentElement.insertBefore(this.adsContainer, this.element.nextSibling);
+        __classPrivateFieldSet(this, _adsStarted, true);
+        __classPrivateFieldSet(this, _adsContainer, document.createElement('div'));
+        __classPrivateFieldGet(this, _adsContainer).className = 'op-ads';
+        __classPrivateFieldGet(this, _adsContainer).tabIndex = -1;
+        if (__classPrivateFieldGet(this, _element).parentElement) {
+            __classPrivateFieldGet(this, _element).parentElement.insertBefore(__classPrivateFieldGet(this, _adsContainer), __classPrivateFieldGet(this, _element).nextSibling);
         }
-        this.mediaSources = this.media.src;
+        __classPrivateFieldSet(this, _mediaSources, __classPrivateFieldGet(this, _media).src);
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
-        google.ima.settings.setAutoPlayAdBreaks(this.adsOptions.autoPlayAdBreaks);
-        google.ima.settings.setNumRedirects(this.adsOptions.numRedirects);
-        google.ima.settings.setLocale(this.adsOptions.language);
-        this.adDisplayContainer =
-            new google.ima.AdDisplayContainer(this.adsContainer, this.element);
-        this.adsLoader = new google.ima.AdsLoader(this.adDisplayContainer);
-        this.adsLoader.addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this), EVENT_OPTIONS);
-        this.adsLoader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this), EVENT_OPTIONS);
+        google.ima.settings.setAutoPlayAdBreaks(__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks);
+        google.ima.settings.setNumRedirects(__classPrivateFieldGet(this, _adsOptions).numRedirects);
+        google.ima.settings.setLocale(__classPrivateFieldGet(this, _adsOptions).language);
+        __classPrivateFieldSet(this, _adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _adsContainer), __classPrivateFieldGet(this, _element)));
+        __classPrivateFieldSet(this, _adsLoader, new google.ima.AdsLoader(__classPrivateFieldGet(this, _adDisplayContainer)));
+        __classPrivateFieldGet(this, _adsLoader).addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _adsLoader).addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this), EVENT_OPTIONS);
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', () => {
                 this.resizeAds();
             }, EVENT_OPTIONS);
         }
-        this.element.addEventListener('loadedmetadata', () => {
+        __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', () => {
             this.resizeAds();
         }, EVENT_OPTIONS);
-        if (this.autoStart === true || this.autoStartMuted === true || force === true || this.adsOptions.enablePreloading === true) {
-            if (!this.adsDone) {
-                this.adsDone = true;
-                this.adDisplayContainer.initialize();
+        if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _autoStartMuted) === true || force === true || __classPrivateFieldGet(this, _adsOptions).enablePreloading === true) {
+            if (!__classPrivateFieldGet(this, _adsDone)) {
+                __classPrivateFieldSet(this, _adsDone, true);
+                __classPrivateFieldGet(this, _adDisplayContainer).initialize();
             }
             this._requestAds();
         }
     }
     play() {
         const play = () => {
-            if (!this.adsDone) {
+            if (!__classPrivateFieldGet(this, _adsDone)) {
                 this._initNotDoneAds();
                 return;
             }
-            if (this.adsManager) {
-                if (!this.intervalTimer && this.adsActive === false) {
-                    this.adsManager.start();
+            if (__classPrivateFieldGet(this, _adsManager)) {
+                if (!__classPrivateFieldGet(this, _intervalTimer) && __classPrivateFieldGet(this, _adsActive) === false) {
+                    __classPrivateFieldGet(this, _adsManager).start();
                 }
                 else {
-                    this.adsManager.resume();
+                    __classPrivateFieldGet(this, _adsManager).resume();
                 }
-                this.adsActive = true;
+                __classPrivateFieldSet(this, _adsActive, true);
                 const e = addEvent('play');
-                this.element.dispatchEvent(e);
+                __classPrivateFieldGet(this, _element).dispatchEvent(e);
             }
         };
         return new Promise(resolve => {
@@ -113,48 +141,48 @@ class Ads {
         }).then(play);
     }
     pause() {
-        if (this.adsManager) {
-            this.adsActive = false;
-            this.adsManager.pause();
+        if (__classPrivateFieldGet(this, _adsManager)) {
+            __classPrivateFieldSet(this, _adsActive, false);
+            __classPrivateFieldGet(this, _adsManager).pause();
             const e = addEvent('pause');
-            this.element.dispatchEvent(e);
+            __classPrivateFieldGet(this, _element).dispatchEvent(e);
         }
     }
     destroy() {
-        if (this.events) {
-            this.events.forEach(event => {
-                this.adsManager.removeEventListener(event, this._assign.bind(this));
+        if (__classPrivateFieldGet(this, _events)) {
+            __classPrivateFieldGet(this, _events).forEach(event => {
+                __classPrivateFieldGet(this, _adsManager).removeEventListener(event, this._assign.bind(this));
             });
         }
-        this.events = [];
-        const controls = this.player.getControls();
+        __classPrivateFieldSet(this, _events, []);
+        const controls = __classPrivateFieldGet(this, _player).getControls();
         const mouseEvents = controls ? controls.events.mouse : {};
         Object.keys(mouseEvents).forEach((event) => {
-            if (this.adsContainer) {
-                this.adsContainer.removeEventListener(event, mouseEvents[event]);
+            if (__classPrivateFieldGet(this, _adsContainer)) {
+                __classPrivateFieldGet(this, _adsContainer).removeEventListener(event, mouseEvents[event]);
             }
         });
-        if (this.adsLoader) {
-            this.adsLoader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
-            this.adsLoader.removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
+        if (__classPrivateFieldGet(this, _adsLoader)) {
+            __classPrivateFieldGet(this, _adsLoader).removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this));
+            __classPrivateFieldGet(this, _adsLoader).removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this));
         }
-        const destroy = !Array.isArray(this.ads) || this.currentAdsIndex > this.ads.length;
-        if (this.adsManager && destroy) {
-            this.adsManager.destroy();
+        const destroy = !Array.isArray(__classPrivateFieldGet(this, _ads)) || __classPrivateFieldGet(this, _currentAdsIndex) > __classPrivateFieldGet(this, _ads).length;
+        if (__classPrivateFieldGet(this, _adsManager) && destroy) {
+            __classPrivateFieldGet(this, _adsManager).destroy();
         }
         if (IS_IOS || IS_ANDROID) {
-            this.element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+            __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
         }
-        this.element.removeEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
-        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
+        __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
+        __classPrivateFieldGet(this, _element).removeEventListener('ended', this._contentEndedListener.bind(this));
         if (typeof window !== 'undefined') {
             window.removeEventListener('resize', () => { this.resizeAds.bind(this); });
         }
-        removeElement(this.adsContainer);
+        removeElement(__classPrivateFieldGet(this, _adsContainer));
     }
     resizeAds(width, height) {
-        if (this.adsManager) {
-            const target = this.element;
+        if (__classPrivateFieldGet(this, _adsManager)) {
+            const target = __classPrivateFieldGet(this, _element);
             const mode = target.getAttribute('data-fullscreen') === 'true' ?
                 google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
             let timeout;
@@ -163,56 +191,62 @@ class Ads {
             }
             if (typeof window !== 'undefined') {
                 timeout = window.requestAnimationFrame(() => {
-                    this.adsManager.resize(width || target.offsetWidth, height || target.offsetHeight, mode);
+                    __classPrivateFieldGet(this, _adsManager).resize(width || target.offsetWidth, height || target.offsetHeight, mode);
                 });
             }
         }
     }
+    getAdsManager() {
+        return __classPrivateFieldGet(this, _adsManager);
+    }
+    started() {
+        return __classPrivateFieldGet(this, _adsStarted);
+    }
     set playRequested(value) {
-        this.playTriggered = value;
+        __classPrivateFieldSet(this, _playTriggered, value);
     }
     set volume(value) {
-        if (this.adsManager) {
-            this.adsVolume = value;
-            this.adsManager.setVolume(value);
+        if (__classPrivateFieldGet(this, _adsManager)) {
+            __classPrivateFieldSet(this, _adsVolume, value);
+            __classPrivateFieldGet(this, _adsManager).setVolume(value);
             this._setMediaVolume(value);
-            this.adsMuted = (value === 0);
+            __classPrivateFieldSet(this, _adsMuted, (value === 0));
         }
     }
     get volume() {
-        return this.adsManager ? this.adsManager.getVolume() : this.originalVolume;
+        return __classPrivateFieldGet(this, _adsManager) ? __classPrivateFieldGet(this, _adsManager).getVolume() : __classPrivateFieldGet(this, _originalVolume);
     }
     set muted(value) {
-        if (this.adsManager) {
+        if (__classPrivateFieldGet(this, _adsManager)) {
             if (value) {
-                this.adsManager.setVolume(0);
-                this.adsMuted = true;
+                __classPrivateFieldGet(this, _adsManager).setVolume(0);
+                __classPrivateFieldSet(this, _adsMuted, true);
                 this._setMediaVolume(0);
             }
             else {
-                this.adsManager.setVolume(this.adsVolume);
-                this.adsMuted = false;
-                this._setMediaVolume(this.adsVolume);
+                __classPrivateFieldGet(this, _adsManager).setVolume(__classPrivateFieldGet(this, _adsVolume));
+                __classPrivateFieldSet(this, _adsMuted, false);
+                this._setMediaVolume(__classPrivateFieldGet(this, _adsVolume));
             }
         }
     }
     get muted() {
-        return this.adsMuted;
+        return __classPrivateFieldGet(this, _adsMuted);
     }
     set currentTime(value) {
-        this.adsCurrentTime = value;
+        __classPrivateFieldSet(this, _adsCurrentTime, value);
     }
     get currentTime() {
-        return this.adsCurrentTime;
+        return __classPrivateFieldGet(this, _adsCurrentTime);
     }
     get duration() {
-        return this.adsDuration;
+        return __classPrivateFieldGet(this, _adsDuration);
     }
     get paused() {
-        return !this.adsActive;
+        return !__classPrivateFieldGet(this, _adsActive);
     }
     get ended() {
-        return this.adsEnded;
+        return __classPrivateFieldGet(this, _adsEnded);
     }
     _assign(event) {
         const ad = event.getAd();
@@ -222,49 +256,49 @@ class Ads {
                     this._onContentResumeRequested();
                 }
                 else {
-                    if (IS_IPHONE && isVideo(this.element)) {
-                        this.element.controls = false;
+                    if (IS_IPHONE && isVideo(__classPrivateFieldGet(this, _element))) {
+                        __classPrivateFieldGet(this, _element).controls = false;
                     }
-                    this.adsDuration = ad.getDuration();
-                    this.adsCurrentTime = ad.getDuration();
-                    if (!this.mediaStarted && !IS_IOS && !IS_ANDROID) {
+                    __classPrivateFieldSet(this, _adsDuration, ad.getDuration());
+                    __classPrivateFieldSet(this, _adsCurrentTime, ad.getDuration());
+                    if (!__classPrivateFieldGet(this, _mediaStarted) && !IS_IOS && !IS_ANDROID) {
                         const waitingEvent = addEvent('waiting');
-                        this.element.dispatchEvent(waitingEvent);
+                        __classPrivateFieldGet(this, _element).dispatchEvent(waitingEvent);
                         const loadedEvent = addEvent('loadedmetadata');
-                        this.element.dispatchEvent(loadedEvent);
+                        __classPrivateFieldGet(this, _element).dispatchEvent(loadedEvent);
                         this.resizeAds();
                     }
                 }
                 break;
             case google.ima.AdEvent.Type.STARTED:
                 if (ad.isLinear()) {
-                    if (this.element.parentElement && !this.element.parentElement.classList.contains('op-ads--active')) {
-                        this.element.parentElement.classList.add('op-ads--active');
+                    if (__classPrivateFieldGet(this, _element).parentElement && !__classPrivateFieldGet(this, _element).parentElement.classList.contains('op-ads--active')) {
+                        __classPrivateFieldGet(this, _element).parentElement.classList.add('op-ads--active');
                     }
-                    if (!this.media.paused) {
-                        this.media.pause();
+                    if (!__classPrivateFieldGet(this, _media).paused) {
+                        __classPrivateFieldGet(this, _media).pause();
                     }
-                    this.adsActive = true;
+                    __classPrivateFieldSet(this, _adsActive, true);
                     const playEvent = addEvent('play');
-                    this.element.dispatchEvent(playEvent);
+                    __classPrivateFieldGet(this, _element).dispatchEvent(playEvent);
                     let resized;
                     if (!resized) {
                         this.resizeAds();
                         resized = true;
                     }
-                    if (this.media.ended) {
-                        this.adsEnded = false;
+                    if (__classPrivateFieldGet(this, _media).ended) {
+                        __classPrivateFieldSet(this, _adsEnded, false);
                         const endEvent = addEvent('adsmediaended');
-                        this.element.dispatchEvent(endEvent);
+                        __classPrivateFieldGet(this, _element).dispatchEvent(endEvent);
                     }
                     if (typeof window !== 'undefined') {
-                        this.intervalTimer = window.setInterval(() => {
-                            if (this.adsActive === true) {
-                                this.adsCurrentTime = Math.round(this.adsManager.getRemainingTime());
+                        __classPrivateFieldSet(this, _intervalTimer, window.setInterval(() => {
+                            if (__classPrivateFieldGet(this, _adsActive) === true) {
+                                __classPrivateFieldSet(this, _adsCurrentTime, Math.round(__classPrivateFieldGet(this, _adsManager).getRemainingTime()));
                                 const timeEvent = addEvent('timeupdate');
-                                this.element.dispatchEvent(timeEvent);
+                                __classPrivateFieldGet(this, _element).dispatchEvent(timeEvent);
                             }
-                        }, 350);
+                        }, 350));
                     }
                 }
                 break;
@@ -273,13 +307,13 @@ class Ads {
                 if (ad.isLinear()) {
                     if (event.type === google.ima.AdEvent.Type.SKIPPED) {
                         const skipEvent = addEvent('adsskipped');
-                        this.element.dispatchEvent(skipEvent);
+                        __classPrivateFieldGet(this, _element).dispatchEvent(skipEvent);
                     }
-                    if (this.element.parentElement) {
-                        this.element.parentElement.classList.remove('op-ads--active');
+                    if (__classPrivateFieldGet(this, _element).parentElement) {
+                        __classPrivateFieldGet(this, _element).parentElement.classList.remove('op-ads--active');
                     }
-                    this.adsActive = false;
-                    clearInterval(this.intervalTimer);
+                    __classPrivateFieldSet(this, _adsActive, false);
+                    clearInterval(__classPrivateFieldGet(this, _intervalTimer));
                 }
                 break;
             case google.ima.AdEvent.Type.VOLUME_CHANGED:
@@ -287,25 +321,25 @@ class Ads {
             case google.ima.AdEvent.Type.VOLUME_MUTED:
                 if (ad.isLinear()) {
                     const volumeEvent = addEvent('volumechange');
-                    this.element.dispatchEvent(volumeEvent);
+                    __classPrivateFieldGet(this, _element).dispatchEvent(volumeEvent);
                 }
                 break;
             case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
                 if (ad.isLinear()) {
-                    this.adsActive = false;
-                    this.adsEnded = true;
-                    this.intervalTimer = 0;
-                    this.adsMuted = false;
-                    this.adsStarted = false;
-                    this.adsDuration = 0;
-                    this.adsCurrentTime = 0;
-                    if (this.element.parentElement) {
-                        this.element.parentElement.classList.remove('op-ads--active');
+                    __classPrivateFieldSet(this, _adsActive, false);
+                    __classPrivateFieldSet(this, _adsEnded, true);
+                    __classPrivateFieldSet(this, _intervalTimer, 0);
+                    __classPrivateFieldSet(this, _adsMuted, false);
+                    __classPrivateFieldSet(this, _adsStarted, false);
+                    __classPrivateFieldSet(this, _adsDuration, 0);
+                    __classPrivateFieldSet(this, _adsCurrentTime, 0);
+                    if (__classPrivateFieldGet(this, _element).parentElement) {
+                        __classPrivateFieldGet(this, _element).parentElement.classList.remove('op-ads--active');
                     }
                     this.destroy();
-                    if (this.element.currentTime >= this.element.duration) {
+                    if (__classPrivateFieldGet(this, _element).currentTime >= __classPrivateFieldGet(this, _element).duration) {
                         const endedEvent = addEvent('ended');
-                        this.element.dispatchEvent(endedEvent);
+                        __classPrivateFieldGet(this, _element).dispatchEvent(endedEvent);
                     }
                 }
                 break;
@@ -325,12 +359,12 @@ class Ads {
                     },
                 };
                 const errorEvent = addEvent('playererror', details);
-                this.element.dispatchEvent(errorEvent);
+                __classPrivateFieldGet(this, _element).dispatchEvent(errorEvent);
             }
         }
         else {
             const e = addEvent(`ads${event.type}`);
-            this.element.dispatchEvent(e);
+            __classPrivateFieldGet(this, _element).dispatchEvent(e);
         }
     }
     _error(event) {
@@ -343,34 +377,34 @@ class Ads {
             },
         };
         const errorEvent = addEvent('playererror', details);
-        this.element.dispatchEvent(errorEvent);
+        __classPrivateFieldGet(this, _element).dispatchEvent(errorEvent);
         const fatalErrorCodes = [
             100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405,
             406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005,
         ];
-        if (Array.isArray(this.ads) && this.ads.length > 1 && this.currentAdsIndex <= this.ads.length - 1) {
-            if (this.currentAdsIndex < this.ads.length - 1) {
-                this.currentAdsIndex++;
+        if (Array.isArray(__classPrivateFieldGet(this, _ads)) && __classPrivateFieldGet(this, _ads).length > 1 && __classPrivateFieldGet(this, _currentAdsIndex) <= __classPrivateFieldGet(this, _ads).length - 1) {
+            if (__classPrivateFieldGet(this, _currentAdsIndex) < __classPrivateFieldGet(this, _ads).length - 1) {
+                __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
             }
-            this.playTriggered = true;
-            this.adsStarted = true;
-            this.adsDone = false;
+            __classPrivateFieldSet(this, _playTriggered, true);
+            __classPrivateFieldSet(this, _adsStarted, true);
+            __classPrivateFieldSet(this, _adsDone, false);
             this.destroy();
             this.load(true);
             console.warn(`Ad warning: ${error.toString()}`);
         }
         else {
             if (fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
-                if (this.adsManager) {
-                    this.adsManager.destroy();
+                if (__classPrivateFieldGet(this, _adsManager)) {
+                    __classPrivateFieldGet(this, _adsManager).destroy();
                 }
                 console.error(`Ad error: ${error.toString()}`);
             }
             else {
                 console.warn(`Ad warning: ${error.toString()}`);
             }
-            if (this.autoStart === true || this.autoStartMuted === true || this.adsStarted === true) {
-                this.adsActive = false;
+            if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _autoStartMuted) === true || __classPrivateFieldGet(this, _adsStarted) === true) {
+                __classPrivateFieldSet(this, _adsActive, false);
                 this._resumeMedia();
             }
         }
@@ -378,14 +412,14 @@ class Ads {
     _loaded(adsManagerLoadedEvent) {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
         adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-        adsRenderingSettings.enablePreloading = this.adsOptions.enablePreloading;
-        this.adsManager = adsManagerLoadedEvent.getAdsManager(this.element, adsRenderingSettings);
-        this._start(this.adsManager);
+        adsRenderingSettings.enablePreloading = __classPrivateFieldGet(this, _adsOptions).enablePreloading;
+        __classPrivateFieldSet(this, _adsManager, adsManagerLoadedEvent.getAdsManager(__classPrivateFieldGet(this, _element), adsRenderingSettings));
+        this._start(__classPrivateFieldGet(this, _adsManager));
     }
     _start(manager) {
         manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this), EVENT_OPTIONS);
         manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this), EVENT_OPTIONS);
-        this.events = [
+        __classPrivateFieldSet(this, _events, [
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
             google.ima.AdEvent.Type.CLICK,
             google.ima.AdEvent.Type.VIDEO_CLICKED,
@@ -412,126 +446,126 @@ class Ads {
             google.ima.AdEvent.Type.VOLUME_CHANGED,
             google.ima.AdEvent.Type.VOLUME_MUTED,
             google.ima.AdEvent.Type.LOG,
-        ];
-        if (!this.adsOptions.autoPlayAdBreaks) {
-            this.events.push(google.ima.AdEvent.Type.AD_BREAK_READY);
+        ]);
+        if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks) {
+            __classPrivateFieldGet(this, _events).push(google.ima.AdEvent.Type.AD_BREAK_READY);
         }
-        const controls = this.player.getControls();
+        const controls = __classPrivateFieldGet(this, _player).getControls();
         const mouseEvents = controls ? controls.events.mouse : {};
         Object.keys(mouseEvents).forEach((event) => {
-            if (this.adsContainer) {
-                this.adsContainer.addEventListener(event, mouseEvents[event], EVENT_OPTIONS);
+            if (__classPrivateFieldGet(this, _adsContainer)) {
+                __classPrivateFieldGet(this, _adsContainer).addEventListener(event, mouseEvents[event], EVENT_OPTIONS);
             }
         });
-        this.events.forEach(event => {
+        __classPrivateFieldGet(this, _events).forEach(event => {
             manager.addEventListener(event, this._assign.bind(this), EVENT_OPTIONS);
         });
-        if (this.autoStart === true || this.playTriggered === true) {
-            this.playTriggered = false;
-            if (!this.adsDone) {
+        if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _playTriggered) === true) {
+            __classPrivateFieldSet(this, _playTriggered, false);
+            if (!__classPrivateFieldGet(this, _adsDone)) {
                 this._initNotDoneAds();
                 return;
             }
-            manager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement && this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
+            manager.init(__classPrivateFieldGet(this, _element).offsetWidth, __classPrivateFieldGet(this, _element).offsetHeight, __classPrivateFieldGet(this, _element).parentElement && __classPrivateFieldGet(this, _element).parentElement.getAttribute('data-fullscreen') === 'true' ?
                 google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
             manager.start();
             const e = addEvent('play');
-            this.element.dispatchEvent(e);
+            __classPrivateFieldGet(this, _element).dispatchEvent(e);
             const event = addEvent('playing');
-            this.element.dispatchEvent(event);
+            __classPrivateFieldGet(this, _element).dispatchEvent(event);
         }
-        else if (this.adsOptions.enablePreloading === true) {
-            manager.init(this.element.offsetWidth, this.element.offsetHeight, this.element.parentElement && this.element.parentElement.getAttribute('data-fullscreen') === 'true' ?
+        else if (__classPrivateFieldGet(this, _adsOptions).enablePreloading === true) {
+            manager.init(__classPrivateFieldGet(this, _element).offsetWidth, __classPrivateFieldGet(this, _element).offsetHeight, __classPrivateFieldGet(this, _element).parentElement && __classPrivateFieldGet(this, _element).parentElement.getAttribute('data-fullscreen') === 'true' ?
                 google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
         }
     }
     _initNotDoneAds() {
-        this.adsDone = true;
-        this.adDisplayContainer.initialize();
+        __classPrivateFieldSet(this, _adsDone, true);
+        __classPrivateFieldGet(this, _adDisplayContainer).initialize();
         if (IS_IOS || IS_ANDROID) {
-            this.preloadContent = this._contentLoadedAction;
-            this.element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this), EVENT_OPTIONS);
-            this.element.load();
+            __classPrivateFieldSet(this, _preloadContent, this._contentLoadedAction);
+            __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', this._contentLoadedAction.bind(this), EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _element).load();
         }
         else {
             this._contentLoadedAction();
         }
     }
     _contentEndedListener() {
-        this.adsEnded = true;
-        this.adsActive = false;
-        this.adsStarted = false;
-        this.adsLoader.contentComplete();
+        __classPrivateFieldSet(this, _adsEnded, true);
+        __classPrivateFieldSet(this, _adsActive, false);
+        __classPrivateFieldSet(this, _adsStarted, false);
+        __classPrivateFieldGet(this, _adsLoader).contentComplete();
     }
     _onContentPauseRequested() {
-        this.element.removeEventListener('ended', this._contentEndedListener.bind(this));
-        this.lastTimePaused = this.media.currentTime;
-        if (this.adsStarted) {
-            this.media.pause();
+        __classPrivateFieldGet(this, _element).removeEventListener('ended', this._contentEndedListener.bind(this));
+        __classPrivateFieldSet(this, _lastTimePaused, __classPrivateFieldGet(this, _media).currentTime);
+        if (__classPrivateFieldGet(this, _adsStarted)) {
+            __classPrivateFieldGet(this, _media).pause();
         }
         else {
-            this.adsStarted = true;
+            __classPrivateFieldSet(this, _adsStarted, true);
         }
         const e = addEvent('play');
-        this.element.dispatchEvent(e);
+        __classPrivateFieldGet(this, _element).dispatchEvent(e);
     }
     _onContentResumeRequested() {
-        if (this.adsOptions.loop) {
-            if (Array.isArray(this.ads)) {
-                if (this.currentAdsIndex === this.ads.length - 1) {
-                    this.currentAdsIndex = 0;
+        if (__classPrivateFieldGet(this, _adsOptions).loop) {
+            if (Array.isArray(__classPrivateFieldGet(this, _ads))) {
+                if (__classPrivateFieldGet(this, _currentAdsIndex) === __classPrivateFieldGet(this, _ads).length - 1) {
+                    __classPrivateFieldSet(this, _currentAdsIndex, 0);
                 }
                 else {
-                    this.currentAdsIndex++;
+                    __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
                 }
             }
             this.destroy();
-            this.adsLoader.contentComplete();
-            this.playTriggered = true;
-            this.adsStarted = true;
-            this.adsDone = false;
+            __classPrivateFieldGet(this, _adsLoader).contentComplete();
+            __classPrivateFieldSet(this, _playTriggered, true);
+            __classPrivateFieldSet(this, _adsStarted, true);
+            __classPrivateFieldSet(this, _adsDone, false);
             this.load(true);
         }
         else {
-            this.element.addEventListener('ended', this._contentEndedListener.bind(this), EVENT_OPTIONS);
-            this.element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this), EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _element).addEventListener('ended', this._contentEndedListener.bind(this), EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this), EVENT_OPTIONS);
             if (IS_IOS || IS_ANDROID) {
-                this.media.src = this.mediaSources;
-                this.media.load();
+                __classPrivateFieldGet(this, _media).src = __classPrivateFieldGet(this, _mediaSources);
+                __classPrivateFieldGet(this, _media).load();
                 this._prepareMedia();
-                if (this.element.parentElement) {
-                    this.element.parentElement.classList.add('op-ads--active');
+                if (__classPrivateFieldGet(this, _element).parentElement) {
+                    __classPrivateFieldGet(this, _element).parentElement.classList.add('op-ads--active');
                 }
             }
             else {
                 const event = addEvent('loadedmetadata');
-                this.element.dispatchEvent(event);
+                __classPrivateFieldGet(this, _element).dispatchEvent(event);
             }
         }
     }
     _loadedMetadataHandler() {
-        if (Array.isArray(this.ads)) {
-            this.currentAdsIndex++;
-            if (this.currentAdsIndex <= this.ads.length - 1) {
-                if (this.adsManager) {
-                    this.adsManager.destroy();
+        if (Array.isArray(__classPrivateFieldGet(this, _ads))) {
+            __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
+            if (__classPrivateFieldGet(this, _currentAdsIndex) <= __classPrivateFieldGet(this, _ads).length - 1) {
+                if (__classPrivateFieldGet(this, _adsManager)) {
+                    __classPrivateFieldGet(this, _adsManager).destroy();
                 }
-                this.adsLoader.contentComplete();
-                this.playTriggered = true;
-                this.adsStarted = true;
-                this.adsDone = false;
+                __classPrivateFieldGet(this, _adsLoader).contentComplete();
+                __classPrivateFieldSet(this, _playTriggered, true);
+                __classPrivateFieldSet(this, _adsStarted, true);
+                __classPrivateFieldSet(this, _adsDone, false);
                 this._requestAds();
             }
             else {
-                if (!this.adsOptions.autoPlayAdBreaks) {
+                if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks) {
                     this._resetAdsAfterManualBreak();
                 }
                 this._prepareMedia();
             }
         }
-        else if (this.element.seekable.length) {
-            if (this.element.seekable.end(0) > this.lastTimePaused) {
-                if (!this.adsOptions.autoPlayAdBreaks) {
+        else if (__classPrivateFieldGet(this, _element).seekable.length) {
+            if (__classPrivateFieldGet(this, _element).seekable.end(0) > __classPrivateFieldGet(this, _lastTimePaused)) {
+                if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks) {
                     this._resetAdsAfterManualBreak();
                 }
                 this._prepareMedia();
@@ -542,17 +576,17 @@ class Ads {
         }
     }
     _resumeMedia() {
-        this.intervalTimer = 0;
-        this.adsMuted = false;
-        this.adsStarted = false;
-        this.adsDuration = 0;
-        this.adsCurrentTime = 0;
-        if (this.element.parentElement) {
-            this.element.parentElement.classList.remove('op-ads--active');
+        __classPrivateFieldSet(this, _intervalTimer, 0);
+        __classPrivateFieldSet(this, _adsMuted, false);
+        __classPrivateFieldSet(this, _adsStarted, false);
+        __classPrivateFieldSet(this, _adsDuration, 0);
+        __classPrivateFieldSet(this, _adsCurrentTime, 0);
+        if (__classPrivateFieldGet(this, _element).parentElement) {
+            __classPrivateFieldGet(this, _element).parentElement.classList.remove('op-ads--active');
         }
         const triggerEvent = (eventName) => {
             const event = addEvent(eventName);
-            this.element.dispatchEvent(event);
+            __classPrivateFieldGet(this, _element).dispatchEvent(event);
         };
         const waitPromise = (ms, isReject) => new Promise((resolve, reject) => {
             if (isReject) {
@@ -560,52 +594,53 @@ class Ads {
             }
             setTimeout(resolve, ms);
         });
-        waitPromise(50, this.media.ended)
-            .then(() => this.media.play().then(() => triggerEvent('play')))
+        waitPromise(50, __classPrivateFieldGet(this, _media).ended)
+            .then(() => __classPrivateFieldGet(this, _media).play().then(() => triggerEvent('play')))
             .catch(() => triggerEvent('ended'));
     }
     _requestAds() {
-        this.adsRequest = new google.ima.AdsRequest();
-        const ads = Array.isArray(this.ads) ? this.ads[this.currentAdsIndex] : this.ads;
+        __classPrivateFieldSet(this, _adsRequest, new google.ima.AdsRequest());
+        const ads = Array.isArray(__classPrivateFieldGet(this, _ads)) ? __classPrivateFieldGet(this, _ads)[__classPrivateFieldGet(this, _currentAdsIndex)] : __classPrivateFieldGet(this, _ads);
         if (isXml(ads)) {
-            this.adsRequest.adsResponse = ads;
+            __classPrivateFieldGet(this, _adsRequest).adsResponse = ads;
         }
         else {
-            this.adsRequest.adTagUrl = ads;
+            __classPrivateFieldGet(this, _adsRequest).adTagUrl = ads;
         }
-        const width = this.element.parentElement ? this.element.parentElement.offsetWidth : 0;
-        const height = this.element.parentElement ? this.element.parentElement.offsetHeight : 0;
-        this.adsRequest.linearAdSlotWidth = width;
-        this.adsRequest.linearAdSlotHeight = height;
-        this.adsRequest.nonLinearAdSlotWidth = width;
-        this.adsRequest.nonLinearAdSlotHeight = height / 3;
-        this.adsRequest.setAdWillAutoPlay(this.autoStart);
-        this.adsRequest.setAdWillPlayMuted(this.autoStartMuted);
-        this.adsLoader.requestAds(this.adsRequest);
+        const width = __classPrivateFieldGet(this, _element).parentElement ? __classPrivateFieldGet(this, _element).parentElement.offsetWidth : 0;
+        const height = __classPrivateFieldGet(this, _element).parentElement ? __classPrivateFieldGet(this, _element).parentElement.offsetHeight : 0;
+        __classPrivateFieldGet(this, _adsRequest).linearAdSlotWidth = width;
+        __classPrivateFieldGet(this, _adsRequest).linearAdSlotHeight = height;
+        __classPrivateFieldGet(this, _adsRequest).nonLinearAdSlotWidth = width;
+        __classPrivateFieldGet(this, _adsRequest).nonLinearAdSlotHeight = height / 3;
+        __classPrivateFieldGet(this, _adsRequest).setAdWillAutoPlay(__classPrivateFieldGet(this, _autoStart));
+        __classPrivateFieldGet(this, _adsRequest).setAdWillPlayMuted(__classPrivateFieldGet(this, _autoStartMuted));
+        __classPrivateFieldGet(this, _adsLoader).requestAds(__classPrivateFieldGet(this, _adsRequest));
     }
     _contentLoadedAction() {
-        if (this.preloadContent) {
-            this.element.removeEventListener('loadedmetadata', this.preloadContent.bind(this));
-            this.preloadContent = null;
+        if (__classPrivateFieldGet(this, _preloadContent)) {
+            __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', __classPrivateFieldGet(this, _preloadContent).bind(this));
+            __classPrivateFieldSet(this, _preloadContent, null);
         }
         this._requestAds();
     }
     _resetAdsAfterManualBreak() {
-        if (this.adsManager) {
-            this.adsManager.destroy();
+        if (__classPrivateFieldGet(this, _adsManager)) {
+            __classPrivateFieldGet(this, _adsManager).destroy();
         }
-        this.adsLoader.contentComplete();
-        this.adsDone = false;
-        this.playTriggered = true;
+        __classPrivateFieldGet(this, _adsLoader).contentComplete();
+        __classPrivateFieldSet(this, _adsDone, false);
+        __classPrivateFieldSet(this, _playTriggered, true);
     }
     _prepareMedia() {
-        this.media.currentTime = this.lastTimePaused;
-        this.element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+        __classPrivateFieldGet(this, _media).currentTime = __classPrivateFieldGet(this, _lastTimePaused);
+        __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
         this._resumeMedia();
     }
     _setMediaVolume(volume) {
-        this.media.volume = volume;
-        this.media.muted = volume === 0;
+        __classPrivateFieldGet(this, _media).volume = volume;
+        __classPrivateFieldGet(this, _media).muted = volume === 0;
     }
 }
+_adsEnded = new WeakMap(), _adsDone = new WeakMap(), _adsActive = new WeakMap(), _adsStarted = new WeakMap(), _intervalTimer = new WeakMap(), _adsVolume = new WeakMap(), _adsMuted = new WeakMap(), _adsDuration = new WeakMap(), _adsCurrentTime = new WeakMap(), _adsManager = new WeakMap(), _player = new WeakMap(), _media = new WeakMap(), _element = new WeakMap(), _events = new WeakMap(), _ads = new WeakMap(), _promise = new WeakMap(), _adsLoader = new WeakMap(), _adsContainer = new WeakMap(), _adDisplayContainer = new WeakMap(), _adsRequest = new WeakMap(), _autoStart = new WeakMap(), _autoStartMuted = new WeakMap(), _playTriggered = new WeakMap(), _adsOptions = new WeakMap(), _currentAdsIndex = new WeakMap(), _originalVolume = new WeakMap(), _preloadContent = new WeakMap(), _lastTimePaused = new WeakMap(), _mediaSources = new WeakMap(), _mediaStarted = new WeakMap();
 export default Ads;

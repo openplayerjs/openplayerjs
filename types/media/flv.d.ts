@@ -8,30 +8,7 @@ import Native from './native';
  * @class FlvMedia
  */
 declare class FlvMedia extends Native {
-    /**
-     * Instance of flv.js player.
-     *
-     * @type flvjs
-     * @memberof FlvMedia
-     */
-    private player;
-    /**
-     * Hls events that will be triggered in Player.
-     *
-     * @see https://github.com/video-dev/hls.js/blob/master/src/events.js
-     * @type EventsList
-     * @memberof HlsMedia
-     */
-    private events;
-    /**
-     * Flv options to be passed to the flvplayer instance.
-     *
-     * @see https://github.com/bilibili/flv.js/blob/master/docs/api.md
-     * @private
-     * @type object
-     * @memberof FlvMedia
-     */
-    private options;
+    #private;
     /**
      * Creates an instance of FlvMedia.
      *

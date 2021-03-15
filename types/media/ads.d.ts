@@ -8,232 +8,7 @@ import Player from '../player';
  * @class Ads
  */
 declare class Ads {
-    /**
-     * Flag to indicate when player has finished playing all Ads.
-     *
-     * Type of Ads could be: pre-roll, mid-roll, post-roll or combination of them.
-     * @type boolean
-     * @memberof Ads
-     */
-    adsEnded: boolean;
-    /**
-     * Flag to indicate that individual Ad has been played.
-     *
-     * @type boolean
-     * @memberof Ads
-     */
-    adsDone: boolean;
-    /**
-     * Flag to indicate that current Ad is being played.
-     *
-     * @type boolean
-     * @memberof Ads
-     */
-    adsActive: boolean;
-    /**
-     * Flag to indicate that Ads are ready to being played.
-     *
-     * @type boolean
-     * @memberof Ads
-     */
-    adsStarted: boolean;
-    /**
-     * Element to present changes in current time while Ad is being played.
-     *
-     * @type number
-     * @memberof Ads
-     */
-    intervalTimer: number;
-    /**
-     * Store the current Ad's volume level.
-     *
-     * @type number
-     * @memberof Ads
-     */
-    adsVolume: number;
-    /**
-     * Flag to indicate if Ad is currently muted or not.
-     *
-     * @type boolean
-     * @memberof Ads
-     */
-    adsMuted: boolean;
-    /**
-     * Store the current Ad's duration.
-     *
-     * @type number
-     * @memberof Ads
-     */
-    adsDuration: number;
-    /**
-     * Store the current Ad's current time position to be passed in the `timeupdate` event.
-     *
-     * @type number
-     * @memberof Ads
-     */
-    adsCurrentTime: number;
-    /**
-     * Object which handles playing ads after they've been received from the server.
-     *
-     * @see https://tinyurl.com/ybjas4ut
-     * @type google.ima.AdsManager
-     * @memberof Ads
-     */
-    adsManager: any;
-    /**
-     * Instance of OpenPlayer.
-     *
-     * @private
-     * @type Player
-     * @memberof Captions
-     */
-    private player;
-    /**
-     * Instance of Media object to execute actions once Ad has ended/skipped.
-     *
-     * @type Media
-     * @memberof Ads
-     */
-    private media;
-    /**
-     * Native video/audio tag to execute native events.
-     *
-     * @type HTMLMediaElement
-     * @memberof Ads
-     */
-    private element;
-    /**
-     * List of IMA SDK events to be executed.
-     *
-     * @type string[]
-     * @memberof Ads
-     */
-    private events;
-    /**
-     * The VAST/VPAID URL to play Ads.
-     *
-     * @type string|string[]
-     * @memberof Ads
-     */
-    private ads;
-    /**
-     * Promise to start all IMA SDK elements, once the library has been loaded.
-     *
-     * @type Promise<any>
-     * @memberof Ads
-     */
-    private promise;
-    /**
-     * Object which allows to request ads from ad servers or a dynamic ad insertion stream.
-     *
-     * @see https://tinyurl.com/ycwp4ufd
-     * @type google.ima.AdsLoader
-     * @memberof Ads
-     */
-    private adsLoader;
-    /**
-     * Element in which Ads will be created.
-     *
-     * @type HTMLDivElement
-     * @memberof Ads
-     */
-    private adsContainer?;
-    /**
-     * Container to display Ads.
-     *
-     * @see https://tinyurl.com/ya3zksso
-     * @type google.ima.adDisplayContainer
-     * @memberof Ads
-     */
-    private adDisplayContainer;
-    /**
-     * Object containing the data used to request ads from the server.
-     *
-     * @see https://tinyurl.com/ya8bxjf4
-     * @type google.ima.adsRequest
-     * @memberof Ads
-     */
-    private adsRequest;
-    /**
-     * Flag to indicate if Ad should be played automatically with sound
-     *
-     * @type boolean
-     * @memberof Ads
-     */
-    private autoStart;
-    /**
-     * Flag to indicate if Ad should be played automatically without sound
-     *
-     * @private
-     * @type {boolean}
-     * @memberof Ads
-     */
-    private autoStartMuted;
-    /**
-     * Flag to indicate if player requested play.
-     *
-     * This will help if the play was triggered before Ads were ready.
-     * @private
-     * @type boolean
-     * @memberof Ads
-     */
-    private playTriggered;
-    /**
-     * Configuration elements passed to Ads, including IMA SDK location
-     *
-     * @private
-     * @type Options
-     * @memberof Ads
-     */
-    private adsOptions;
-    /**
-     * Current Ad; used when passing a list of Ads
-     *
-     * @private
-     * @type number
-     * @memberof Ads
-     */
-    private currentAdsIndex;
-    /**
-     * Store original volume from media.
-     *
-     * @private
-     * @type number
-     * @memberof Ads
-     */
-    private originalVolume;
-    /**
-     *
-     *
-     * @private
-     * @type {*}
-     * @memberof Ads
-     */
-    private preloadContent;
-    /**
-     * Timer to update media's `currentTime`
-     *
-     * @private
-     * @type number
-     * @memberof Ads
-     */
-    private lastTimePaused;
-    /**
-     * List of media sources from the `media` element.
-     *
-     * @private
-     * @type Source[]
-     * @memberof Ads
-     */
-    private mediaSources;
-    /**
-     * Flag to execute `loadedmetadata` and `resize` once.
-     *
-     * @private
-     * @type boolean
-     * @memberof Ads
-     */
-    private mediaStarted;
+    #private;
     /**
      * Create an instance of Ads.
      *
@@ -280,8 +55,23 @@ declare class Ads {
      */
     resizeAds(width?: number, height?: number): void;
     /**
+     * Obtain an instance of the IMA adsManager.
+     *
+     * @returns {google.ima.AdsManager}
+     * @memberof Ads
+     */
+    getAdsManager(): any;
+    /**
+     * Flag if the ad has started or not.
+     *
+     * @returns {boolean}
+     * @memberof Ads
+     */
+    started(): boolean;
+    /**
      * Update the `playTriggered` flag
      *
+     * @param {boolean} value
      * @memberof Ads
      */
     set playRequested(value: boolean);

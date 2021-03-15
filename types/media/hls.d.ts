@@ -8,52 +8,7 @@ import Native from './native';
  * @class HlsMedia
  */
 declare class HlsMedia extends Native {
-    /**
-     * Instance of hls.js player.
-     *
-     * @type Hls
-     * @memberof HlsMedia
-     */
-    private player;
-    /**
-     * Hls events that will be triggered in Player.
-     *
-     * @see https://github.com/video-dev/hls.js/blob/master/src/events.js
-     * @type EventsList
-     * @memberof HlsMedia
-     */
-    private events;
-    /**
-     * Time in milliseconds to attempt to recover media after an error.
-     *
-     * @type number
-     * @memberof HlsMedia
-     */
-    private recoverDecodingErrorDate;
-    /**
-     * Time in milliseconds to attempt to swap audio codec after an error.
-     *
-     * @type number
-     * @memberof HlsMedia
-     */
-    private recoverSwapAudioCodecDate;
-    /**
-     * Hls options to be passed to the Hls instance.
-     *
-     * @see https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning
-     * @private
-     * @type object
-     * @memberof HlsMedia
-     */
-    private options;
-    /**
-     * Flag to indicate if `autoplay` attribute was set
-     *
-     * @private
-     * @type boolean
-     * @memberof HlsMedia
-     */
-    private autoplay;
+    #private;
     /**
      * Creates an instance of HlsMedia.
      *

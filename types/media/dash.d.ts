@@ -10,22 +10,7 @@ import Native from './native';
  * @class DashMedia
  */
 declare class DashMedia extends Native {
-    /**
-     * Instance of dashjs player.
-     *
-     * @type dashjs
-     * @memberof DashMedia
-     */
-    private player;
-    /**
-     * DashJS events that will be triggered in Player.
-     *
-     * @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html
-     * @type EventsList
-     * @memberof DashMedia
-     */
-    private events;
-    private options?;
+    #private;
     /**
      * Creates an instance of DashMedia.
      *

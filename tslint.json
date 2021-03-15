@@ -13,6 +13,7 @@
         "only-arrow-functions": [true, "allow-named-functions"],
         "interface-name": [true, "never-prefix"],
         "indent": [true, "spaces", 4],
+        "member-access": false,
         "no-irregular-whitespace": true,
         "max-line-length": {
             "options": [140]

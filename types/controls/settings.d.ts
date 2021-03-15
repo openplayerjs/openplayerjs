@@ -13,56 +13,7 @@ import Player from '../player';
  * @implements PlayerComponent
  */
 declare class Settings implements PlayerComponent {
-    /**
-     * Instance of OpenPlayer.
-     *
-     * @private
-     * @type Player
-     * @memberof Settings
-     */
-    private player;
-    /**
-     * Collection of items associated with a specific menu item.
-     *
-     * @private
-     * @type SettingsSubMenu
-     * @memberof Settings
-     */
-    private submenu;
-    /**
-     * Button to toggle menu's visibility.
-     *
-     * @private
-     * @type HTMLButtonElement
-     * @memberof Settings
-     */
-    private button;
-    /**
-     * HTML markup to display Settings options.
-     *
-     * @private
-     * @type HTMLElement
-     * @memberof Settings
-     */
-    private menu;
-    /**
-     * Events that will be triggered in Settings element:
-     *  - global (to hide menu on resize and manipulate speed levels, and to manipulate submenu elements)
-     *  - media (to hide menu when media is played/paused or when `controls.hide` is triggered)
-     *
-     * @private
-     * @type EventsList
-     * @memberof Settings
-     */
-    private events;
-    /**
-     * Storage of the initial state of the menu's markup.
-     *
-     * @private
-     * @type string
-     * @memberof Settings
-     */
-    private originalOutput;
+    #private;
     /**
      * Event that displays main menu when clicking in Settings button.
      *
@@ -88,30 +39,6 @@ declare class Settings implements PlayerComponent {
      * @memberof Settings
      */
     private removeEvent;
-    /**
-     * Default labels from player's config
-     *
-     * @private
-     * @type object
-     * @memberof Settings
-     */
-    private labels;
-    /**
-     * Position of the button to be indicated as part of its class name
-     *
-     * @private
-     * @type {string}
-     * @memberof Settings
-     */
-    private position;
-    /**
-     * Layer where the control item will be placed
-     *
-     * @private
-     * @type {string}
-     * @memberof Captions
-     */
-    private layer;
     /**
      * Create an instance of Settings.
      *

@@ -22,7 +22,7 @@ class FlvMedia extends Native {
      * @type flvjs
      * @memberof FlvMedia
      */
-    private player: any;
+    #player: any;
 
     /**
      * Hls events that will be triggered in Player.
@@ -31,7 +31,7 @@ class FlvMedia extends Native {
      * @type EventsList
      * @memberof HlsMedia
      */
-    private events: EventsList = {};
+    #events: EventsList = {};
 
     /**
      * Flv options to be passed to the flvplayer instance.
@@ -41,7 +41,7 @@ class FlvMedia extends Native {
      * @type object
      * @memberof FlvMedia
      */
-    private options: any = undefined;
+    #options: any = undefined;
 
     /**
      * Creates an instance of FlvMedia.
@@ -52,7 +52,7 @@ class FlvMedia extends Native {
      */
     constructor(element: HTMLMediaElement, mediaSource: Source, options?: object) {
         super(element, mediaSource);
-        this.options = options;
+        this.#options = options;
         this.element = element;
         this.media = mediaSource;
         this.promise = (typeof flvjs === 'undefined') ?
@@ -82,18 +82,18 @@ class FlvMedia extends Native {
      * @memberof FlvMedia
      */
     public load(): void {
-        this.player.unload();
-        this.player.detachMediaElement();
-        this.player.attachMediaElement(this.element);
-        this.player.load();
+        this.#player.unload();
+        this.#player.detachMediaElement();
+        this.#player.attachMediaElement(this.element);
+        this.#player.load();
 
         const e = addEvent('loadedmetadata');
         this.element.dispatchEvent(e);
 
-        if (!this.events) {
-            this.events = flvjs.Events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
+        if (!this.#events) {
+            this.#events = flvjs.Events;
+            Object.keys(this.#events).forEach(event => {
+                this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
             });
         }
     }
@@ -121,9 +121,9 @@ class FlvMedia extends Native {
 
     get levels() {
         const levels: any = [];
-        if (this.player && this.player.levels && this.player.levels.length) {
-            Object.keys(this.player.levels).forEach(item => {
-                const { height, name } = this.player.levels[item];
+        if (this.#player && this.#player.levels && this.#player.levels.length) {
+            Object.keys(this.#player.levels).forEach(item => {
+                const { height, name } = this.#player.levels[item];
                 const level = {
                     height,
                     id: item,
@@ -136,11 +136,11 @@ class FlvMedia extends Native {
     }
 
     set level(level: number) {
-        this.player.currentLevel = level;
+        this.#player.currentLevel = level;
     }
 
     get level() {
-        return this.player ? this.player.currentLevel : -1;
+        return this.#player ? this.#player.currentLevel : -1;
     }
 
     /**
@@ -152,17 +152,17 @@ class FlvMedia extends Native {
      * @memberof FlvMedia
      */
     private _create() {
-        const { configs, ...rest } = this.options;
+        const { configs, ...rest } = this.#options;
         flvjs.LoggingControl.enableDebug = rest && rest.debug ? rest.debug : false;
         flvjs.LoggingControl.enableVerbose = rest && rest.debug ? rest.debug : false;
         const options = { ...rest, type: 'flv', url: this.media.src };
-        this.player = flvjs.createPlayer(options, configs);
-        this.instance = this.player;
+        this.#player = flvjs.createPlayer(options, configs);
+        this.instance = this.#player;
 
-        if (!this.events) {
-            this.events = flvjs.Events;
-            Object.keys(this.events).forEach(event => {
-                this.player.on(this.events[event], (...args: any[]) => this._assign(this.events[event], args));
+        if (!this.#events) {
+            this.#events = flvjs.Events;
+            Object.keys(this.#events).forEach(event => {
+                this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
             });
         }
     }
@@ -202,8 +202,8 @@ class FlvMedia extends Native {
      * @memberof FlvMedia
      */
     private _revoke(): void {
-        this.player.destroy();
-        this.player = null;
+        this.#player.destroy();
+        this.#player = null;
     }
 }
 
