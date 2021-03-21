@@ -98,6 +98,7 @@ class Progress {
             }
         };
         let lastCurrentTime = 0;
+        const defaultDuration = __classPrivateFieldGet(this, _player).getOptions().progress.duration || 0;
         __classPrivateFieldGet(this, _events).media.loadedmetadata = setInitialProgress.bind(this);
         __classPrivateFieldGet(this, _events).controls.controlschanged = setInitialProgress.bind(this);
         __classPrivateFieldGet(this, _events).media.progress = (e) => {
@@ -149,7 +150,7 @@ class Progress {
                 __classPrivateFieldGet(this, _slider).value = current.toString();
                 __classPrivateFieldGet(this, _slider).style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
                 __classPrivateFieldGet(this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                    __classPrivateFieldGet(this, _player).getOptions().progress.duration : ((current / el.duration) * 100);
+                    defaultDuration : ((current / el.duration) * 100);
                 if (__classPrivateFieldGet(this, _player).getElement().getAttribute('op-dvr__enabled') && Math.floor(__classPrivateFieldGet(this, _played).value) >= 99) {
                     lastCurrentTime = el.currentTime;
                     __classPrivateFieldGet(this, _progress).setAttribute('aria-hidden', 'false');
@@ -166,7 +167,7 @@ class Progress {
             __classPrivateFieldGet(this, _slider).setAttribute('max', `${el.duration}`);
             __classPrivateFieldGet(this, _progress).setAttribute('aria-valuemax', el.duration.toString());
             __classPrivateFieldGet(this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                __classPrivateFieldGet(this, _player).getOptions().progress.duration : ((current / el.duration) * 100);
+                defaultDuration : ((current / el.duration) * 100);
         };
         __classPrivateFieldGet(this, _events).media.ended = () => {
             __classPrivateFieldGet(this, _slider).style.backgroundSize = '0% 100%';
@@ -186,7 +187,7 @@ class Progress {
             const val = parseFloat(target.value);
             __classPrivateFieldGet(this, _slider).style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
             __classPrivateFieldGet(this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                __classPrivateFieldGet(this, _player).getOptions().progress.duration : ((val / el.duration) * 100);
+                defaultDuration : ((val / el.duration) * 100);
             if (__classPrivateFieldGet(this, _player).getElement().getAttribute('op-dvr__enabled')) {
                 el.currentTime = (Math.round(__classPrivateFieldGet(this, _played).value) >= 99) ? lastCurrentTime : val;
             }

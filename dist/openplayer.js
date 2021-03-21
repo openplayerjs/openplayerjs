@@ -7294,6 +7294,7 @@ var Progress = function () {
       };
 
       var lastCurrentTime = 0;
+      var defaultDuration = __classPrivateFieldGet(this, _player).getOptions().progress.duration || 0;
       __classPrivateFieldGet(this, _events).media.loadedmetadata = setInitialProgress.bind(this);
       __classPrivateFieldGet(this, _events).controls.controlschanged = setInitialProgress.bind(this);
 
@@ -7349,7 +7350,7 @@ var Progress = function () {
           var max = parseFloat(__classPrivateFieldGet(_this, _slider).max);
           __classPrivateFieldGet(_this, _slider).value = current.toString();
           __classPrivateFieldGet(_this, _slider).style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
-          __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? __classPrivateFieldGet(_this, _player).getOptions().progress.duration : current / el.duration * 100;
+          __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
 
           if (__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled') && Math.floor(__classPrivateFieldGet(_this, _played).value) >= 99) {
             lastCurrentTime = el.currentTime;
@@ -7370,7 +7371,7 @@ var Progress = function () {
 
         __classPrivateFieldGet(_this, _progress).setAttribute('aria-valuemax', el.duration.toString());
 
-        __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? __classPrivateFieldGet(_this, _player).getOptions().progress.duration : current / el.duration * 100;
+        __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
       };
 
       __classPrivateFieldGet(this, _events).media.ended = function () {
@@ -7397,7 +7398,7 @@ var Progress = function () {
         var max = parseFloat(target.max);
         var val = parseFloat(target.value);
         __classPrivateFieldGet(_this, _slider).style.backgroundSize = "".concat((val - min) * 100 / (max - min), "% 100%");
-        __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? __classPrivateFieldGet(_this, _player).getOptions().progress.duration : val / el.duration * 100;
+        __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : val / el.duration * 100;
 
         if (__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled')) {
           el.currentTime = Math.round(__classPrivateFieldGet(_this, _played).value) >= 99 ? lastCurrentTime : val;
