@@ -231,6 +231,9 @@ class Media {
                 src,
                 type: item.getAttribute('type') || source.predictType(src),
             });
+            if (i === 0) {
+                __classPrivateFieldSet(this, _currentSrc, mediaFiles[0]);
+            }
         }
         if (!mediaFiles.length) {
             mediaFiles.push({

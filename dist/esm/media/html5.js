@@ -23,11 +23,65 @@ class HTML5Media extends Native {
         _currentLevel.set(this, null);
         _levelList.set(this, []);
         _isStreaming.set(this, false);
+        let retryCount = 0;
+        let started = false;
+        let timer;
+        function timeout() {
+            if (!started) {
+                started = true;
+                timer = setInterval(() => {
+                    if (retryCount >= 30) {
+                        clearInterval(timer);
+                        const message = 'Media download failed part-way due to a network error';
+                        const details = {
+                            detail: {
+                                data: { message, error: 2 },
+                                message,
+                                type: 'HTML5',
+                            },
+                        };
+                        const errorEvent = addEvent('playererror', details);
+                        element.dispatchEvent(errorEvent);
+                        retryCount = 0;
+                        started = false;
+                    }
+                    else {
+                        retryCount++;
+                    }
+                }, 1000);
+            }
+        }
+        element.addEventListener('playing', () => {
+            if (timer) {
+                clearInterval(timer);
+                retryCount = 0;
+                started = false;
+            }
+        });
+        element.addEventListener('stalled', timeout);
         element.addEventListener('error', (e) => {
+            let defaultMessage;
+            switch (e.target.error.code) {
+                case e.target.error.MEDIA_ERR_ABORTED:
+                    defaultMessage = 'Media playback aborted';
+                    break;
+                case e.target.error.MEDIA_ERR_NETWORK:
+                    defaultMessage = 'Media download failed part-way due to a network error';
+                    break;
+                case e.target.error.MEDIA_ERR_DECODE:
+                    defaultMessage = 'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
+                    break;
+                case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                    defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
+                    break;
+                default:
+                    defaultMessage = 'Unknown error occurred.';
+                    break;
+            }
             const details = {
                 detail: {
-                    data: e,
-                    message: e.message,
+                    data: Object.assign(Object.assign({}, e), { message: e.message || defaultMessage, error: e.target.error.code }),
+                    message: e.message || defaultMessage,
                     type: 'HTML5',
                 },
             };

@@ -281,16 +281,6 @@ class Media {
     }
 
     /**
-     * Set the current media to have a reference of the one being played.
-     *
-     * @param {Source} media
-     * @memberof Media
-     */
-    set current(media: Source) {
-        this.#currentSrc = media;
-    }
-
-    /**
      * Get the current media being played.
      *
      * @type Source
@@ -554,6 +544,12 @@ class Media {
                 src,
                 type: item.getAttribute('type') || source.predictType(src),
             });
+
+            // If tag has the attribute `preload` set as `none`, the current media will
+            // be the first one on the list of sources
+            if (i === 0) {
+                this.#currentSrc = mediaFiles[0];
+            }
         }
 
         if (!mediaFiles.length) {

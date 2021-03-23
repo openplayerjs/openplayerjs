@@ -14,7 +14,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _player, _button, _container, _display, _slider, _events, _volume, _labels, _position, _layer;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { isAudio, removeElement } from '../utils/general';
+import { isAudio, rangeTouchPolyfill, removeElement } from '../utils/general';
 class Volume {
     constructor(player, position, layer) {
         _player.set(this, void 0);
@@ -129,6 +129,9 @@ class Volume {
         };
         __classPrivateFieldGet(this, _events).slider.input = updateVolume.bind(this);
         __classPrivateFieldGet(this, _events).slider.change = updateVolume.bind(this);
+        if (IS_ANDROID || IS_IOS) {
+            __classPrivateFieldGet(this, _events).slider.touchend = rangeTouchPolyfill;
+        }
         __classPrivateFieldGet(this, _events).button.click = () => {
             __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'true');
             const el = __classPrivateFieldGet(this, _player).activeElement();

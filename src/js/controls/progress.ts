@@ -2,7 +2,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { hasClass, offset, removeElement } from '../utils/general';
+import { hasClass, isAudio, offset, rangeTouchPolyfill, removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 
 /**
@@ -190,6 +190,9 @@ class Progress implements PlayerComponent {
         }
 
         const setInitialProgress = () => {
+            if (this.#slider.classList.contains('error')) {
+                this.#slider.classList.remove('error');
+            }
             const el = this.#player.activeElement();
             if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled') &&
                 !this.#player.getElement().getAttribute('op-dvr__enabled')) {
@@ -211,6 +214,7 @@ class Progress implements PlayerComponent {
 
         let lastCurrentTime = 0;
         const defaultDuration = this.#player.getOptions().progress.duration || 0;
+        const isAudioEl = isAudio(this.#player.getElement());
 
         this.#events.media.loadedmetadata = setInitialProgress.bind(this);
         this.#events.controls.controlschanged = setInitialProgress.bind(this);
@@ -231,6 +235,22 @@ class Progress implements PlayerComponent {
                 this.#progress.setAttribute('aria-hidden', 'true');
             }
         };
+        this.#events.media.waiting = () => {
+            if (isAudioEl && !this.#slider.classList.contains('loading')) {
+                this.#slider.classList.add('loading');
+            }
+            if (isAudioEl && this.#slider.classList.contains('error')) {
+                this.#slider.classList.remove('error');
+            }
+        };
+        this.#events.media.playererror = () => {
+            if (isAudioEl && !this.#slider.classList.contains('error')) {
+                this.#slider.classList.add('error');
+            }
+            if (isAudioEl && this.#slider.classList.contains('loading')) {
+                this.#slider.classList.remove('loading');
+            }
+        };
         this.#events.media.pause = () => {
             const el = this.#player.activeElement();
             if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled')) {
@@ -240,9 +260,23 @@ class Progress implements PlayerComponent {
             }
         };
         this.#events.media.play = () => {
+            if (isAudioEl && this.#slider.classList.contains('loading')) {
+                this.#slider.classList.remove('loading');
+            }
+            if (isAudioEl && this.#slider.classList.contains('error')) {
+                this.#slider.classList.remove('error');
+            }
             if (this.#player.activeElement().duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled')) {
                 this.#progress.removeAttribute('aria-valuenow');
                 this.#progress.removeAttribute('aria-valuetext');
+            }
+        };
+        this.#events.media.playing = () => {
+            if (isAudioEl && this.#slider.classList.contains('loading')) {
+                this.#slider.classList.remove('loading');
+            }
+            if (isAudioEl && this.#slider.classList.contains('error')) {
+                this.#slider.classList.remove('error');
             }
         };
         this.#events.media.timeupdate = () => {
@@ -345,13 +379,17 @@ class Progress implements PlayerComponent {
          *
          * @private
          */
-        const releasePause = () => {
+        const releasePause = (e: any) => {
             const el = this.#player.activeElement();
             if (this.#forcePause === true && this.#player.isMedia()) {
                 if (el.paused) {
                     el.play();
                     this.#forcePause = false;
                 }
+            }
+
+            if (IS_ANDROID || IS_IOS) {
+                rangeTouchPolyfill(e);
             }
         };
 
@@ -384,7 +422,6 @@ class Progress implements PlayerComponent {
         this.#events.slider.change = updateSlider.bind(this);
         this.#events.slider.mousedown = forcePause.bind(this);
         this.#events.slider.mouseup = releasePause.bind(this);
-
         this.#events.slider.touchstart = mobileForcePause.bind(this);
         this.#events.slider.touchend = releasePause.bind(this);
 

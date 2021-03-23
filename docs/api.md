@@ -58,8 +58,8 @@ On top of that, the Media object has the following methods:
 Method | Description
 --- | ---
 `destroy` | Destroy the Media instance (including all events associated).
-`src` | Set/get a list of media sources asociated with the player; each object contains `src` and `type`.
-`current` | Set/get the current media element being played: `getMedia().currentSrc`. It returns an object that contains `src` and `type`.
+`src` | Set/get a list of media sources asociated with the player; each object must contain `src` and `type`.
+`current` | Obtain the current media element being played: `getMedia().currentSrc`. It returns an object that contains `src` and `type`.
 `mediaFiles` | Set/get the list of elements that are associated with the current media; the list of objects contains  `src` and `type`.
 `level` | Set/get a level; it could set/return a number, string or an object.
 `levels` | Return a list of levels (if any)

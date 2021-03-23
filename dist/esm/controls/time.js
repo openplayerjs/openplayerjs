@@ -53,6 +53,15 @@ class Time {
             __classPrivateFieldGet(this, _duration).setAttribute('aria-hidden', 'false');
             __classPrivateFieldGet(this, _duration).innerText = formatTime(__classPrivateFieldGet(this, _player).getOptions().progress.duration);
         }
+        const controls = __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer));
+        __classPrivateFieldSet(this, _container, document.createElement('span'));
+        __classPrivateFieldGet(this, _container).className = `op-controls-time op-control__${__classPrivateFieldGet(this, _position)}`;
+        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _current));
+        if (!showOnlyCurrent) {
+            __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _delimiter));
+            __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _duration));
+        }
+        controls.appendChild(__classPrivateFieldGet(this, _container));
         const setInitialTime = () => {
             const el = __classPrivateFieldGet(this, _player).activeElement();
             if (el.duration !== Infinity && !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-live__enabled')) {
@@ -117,15 +126,6 @@ class Time {
             __classPrivateFieldGet(this, _player).getElement().addEventListener(event, __classPrivateFieldGet(this, _events).media[event], EVENT_OPTIONS);
         });
         __classPrivateFieldGet(this, _player).getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged, EVENT_OPTIONS);
-        const controls = __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer));
-        __classPrivateFieldSet(this, _container, document.createElement('span'));
-        __classPrivateFieldGet(this, _container).className = `op-controls-time op-control__${__classPrivateFieldGet(this, _position)}`;
-        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _current));
-        if (!showOnlyCurrent) {
-            __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _delimiter));
-            __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _duration));
-        }
-        controls.appendChild(__classPrivateFieldGet(this, _container));
     }
     destroy() {
         Object.keys(__classPrivateFieldGet(this, _events).media).forEach(event => {

@@ -15,7 +15,7 @@ var _player, _button, _events, _labels, _position, _layer;
 import Player from '../player';
 import { EVENT_OPTIONS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { hasClass, removeElement } from '../utils/general';
+import { hasClass, isAudio, removeElement } from '../utils/general';
 class Play {
     constructor(player, position, layer) {
         _player.set(this, void 0);
@@ -58,6 +58,7 @@ class Play {
             }
             e.preventDefault();
         };
+        const isAudioEl = isAudio(__classPrivateFieldGet(this, _player).getElement());
         __classPrivateFieldGet(this, _events).media.play = () => {
             if (__classPrivateFieldGet(this, _player).activeElement().ended) {
                 if (__classPrivateFieldGet(this, _player).isMedia()) {
@@ -120,11 +121,17 @@ class Play {
             __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).play;
             __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).play);
         };
-        __classPrivateFieldGet(this, _events).media['adsmediaended'] = () => {
+        __classPrivateFieldGet(this, _events).media.adsmediaended = () => {
             __classPrivateFieldGet(this, _button).classList.remove('op-controls__playpause--replay');
             __classPrivateFieldGet(this, _button).classList.add('op-controls__playpause--pause');
             __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).pause;
             __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).pause);
+        };
+        __classPrivateFieldGet(this, _events).media.playererror = () => {
+            if (isAudioEl) {
+                const el = __classPrivateFieldGet(this, _player).activeElement();
+                el.pause();
+            }
         };
         const element = __classPrivateFieldGet(this, _player).getElement();
         __classPrivateFieldGet(this, _events).controls.controlschanged = () => {

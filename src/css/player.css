@@ -1,4 +1,12 @@
 /* === General =================== */
+@keyframes progress {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: -75px 0;
+    }
+}
 .op-player {
     background: #000;
     font-family: sans-serif;
@@ -219,7 +227,7 @@
 
 /* === Time =================== */
 .op-controls .op-controls-time {
-    margin: 4px 3px 0;
+    margin: 4px 3px;
 }
 
 /* === Buttons =================== */
@@ -438,6 +446,17 @@
 .op-controls input[type='range']::-ms-ticks-before,
 .op-controls input[type='range']::-ms-ticks-after {
     display: none !important;
+}
+.op-controls .op-controls__progress--seek.loading {
+    animation: progress 2s linear infinite;
+    background: linear-gradient(-45deg, rgba(255, 255, 255, 0.3) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.3) 75%, transparent 75%, transparent);
+    background-repeat: repeat-x;
+    background-size: 25px 25px;
+}
+.op-controls .op-controls__progress--seek.error {
+    background: linear-gradient(-45deg, #f00 25%, transparent 25%, transparent 50%, #f00 50%, #f00 75%, transparent 75%, transparent);
+    background-repeat: repeat-x;
+    background-size: 25px 25px;
 }
 .op-controls--hidden .op-controls .op-controls__progress--seek::-webkit-slider-thumb {
     background: transparent;

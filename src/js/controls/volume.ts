@@ -3,7 +3,7 @@ import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { isAudio, removeElement } from '../utils/general';
+import { isAudio, rangeTouchPolyfill, removeElement } from '../utils/general';
 
 /**
  * Volume controller element.
@@ -245,6 +245,10 @@ class Volume implements PlayerComponent {
         };
         this.#events.slider.input = updateVolume.bind(this);
         this.#events.slider.change = updateVolume.bind(this);
+
+        if (IS_ANDROID || IS_IOS) {
+            this.#events.slider.touchend = rangeTouchPolyfill;
+        }
 
         this.#events.button.click = () => {
             this.#button.setAttribute('aria-pressed', 'true');

@@ -148,6 +148,16 @@ class Time implements PlayerComponent {
             this.#duration.innerText = formatTime(this.#player.getOptions().progress.duration);
         }
 
+        const controls = this.#player.getControls().getLayer(this.#layer);
+        this.#container = document.createElement('span');
+        this.#container.className = `op-controls-time op-control__${this.#position}`;
+        this.#container.appendChild(this.#current);
+        if (!showOnlyCurrent) {
+            this.#container.appendChild(this.#delimiter);
+            this.#container.appendChild(this.#duration);
+        }
+        controls.appendChild(this.#container);
+
         const setInitialTime = () => {
             const el = this.#player.activeElement();
             if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled')) {
@@ -212,16 +222,6 @@ class Time implements PlayerComponent {
         });
 
         this.#player.getControls().getContainer().addEventListener('controlschanged', this.#events.controls.controlschanged, EVENT_OPTIONS);
-
-        const controls = this.#player.getControls().getLayer(this.#layer);
-        this.#container = document.createElement('span');
-        this.#container.className = `op-controls-time op-control__${this.#position}`;
-        this.#container.appendChild(this.#current);
-        if (!showOnlyCurrent) {
-            this.#container.appendChild(this.#delimiter);
-            this.#container.appendChild(this.#duration);
-        }
-        controls.appendChild(this.#container);
     }
 
     /**

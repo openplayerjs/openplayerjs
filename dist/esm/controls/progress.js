@@ -13,7 +13,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _player, _progress, _slider, _buffer, _played, _tooltip, _events, _forcePause, _labels, _position, _layer;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { hasClass, offset, removeElement } from '../utils/general';
+import { hasClass, isAudio, offset, rangeTouchPolyfill, removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 class Progress {
     constructor(player, position, layer) {
@@ -77,6 +77,9 @@ class Progress {
             __classPrivateFieldGet(this, _progress).appendChild(__classPrivateFieldGet(this, _tooltip));
         }
         const setInitialProgress = () => {
+            if (__classPrivateFieldGet(this, _slider).classList.contains('error')) {
+                __classPrivateFieldGet(this, _slider).classList.remove('error');
+            }
             const el = __classPrivateFieldGet(this, _player).activeElement();
             if (el.duration !== Infinity && !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-live__enabled') &&
                 !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-dvr__enabled')) {
@@ -99,6 +102,7 @@ class Progress {
         };
         let lastCurrentTime = 0;
         const defaultDuration = __classPrivateFieldGet(this, _player).getOptions().progress.duration || 0;
+        const isAudioEl = isAudio(__classPrivateFieldGet(this, _player).getElement());
         __classPrivateFieldGet(this, _events).media.loadedmetadata = setInitialProgress.bind(this);
         __classPrivateFieldGet(this, _events).controls.controlschanged = setInitialProgress.bind(this);
         __classPrivateFieldGet(this, _events).media.progress = (e) => {
@@ -118,6 +122,22 @@ class Progress {
                 __classPrivateFieldGet(this, _progress).setAttribute('aria-hidden', 'true');
             }
         };
+        __classPrivateFieldGet(this, _events).media.waiting = () => {
+            if (isAudioEl && !__classPrivateFieldGet(this, _slider).classList.contains('loading')) {
+                __classPrivateFieldGet(this, _slider).classList.add('loading');
+            }
+            if (isAudioEl && __classPrivateFieldGet(this, _slider).classList.contains('error')) {
+                __classPrivateFieldGet(this, _slider).classList.remove('error');
+            }
+        };
+        __classPrivateFieldGet(this, _events).media.playererror = () => {
+            if (isAudioEl && !__classPrivateFieldGet(this, _slider).classList.contains('error')) {
+                __classPrivateFieldGet(this, _slider).classList.add('error');
+            }
+            if (isAudioEl && __classPrivateFieldGet(this, _slider).classList.contains('loading')) {
+                __classPrivateFieldGet(this, _slider).classList.remove('loading');
+            }
+        };
         __classPrivateFieldGet(this, _events).media.pause = () => {
             const el = __classPrivateFieldGet(this, _player).activeElement();
             if (el.duration !== Infinity && !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-live__enabled')) {
@@ -127,9 +147,23 @@ class Progress {
             }
         };
         __classPrivateFieldGet(this, _events).media.play = () => {
+            if (isAudioEl && __classPrivateFieldGet(this, _slider).classList.contains('loading')) {
+                __classPrivateFieldGet(this, _slider).classList.remove('loading');
+            }
+            if (isAudioEl && __classPrivateFieldGet(this, _slider).classList.contains('error')) {
+                __classPrivateFieldGet(this, _slider).classList.remove('error');
+            }
             if (__classPrivateFieldGet(this, _player).activeElement().duration !== Infinity && !__classPrivateFieldGet(this, _player).getElement().getAttribute('op-live__enabled')) {
                 __classPrivateFieldGet(this, _progress).removeAttribute('aria-valuenow');
                 __classPrivateFieldGet(this, _progress).removeAttribute('aria-valuetext');
+            }
+        };
+        __classPrivateFieldGet(this, _events).media.playing = () => {
+            if (isAudioEl && __classPrivateFieldGet(this, _slider).classList.contains('loading')) {
+                __classPrivateFieldGet(this, _slider).classList.remove('loading');
+            }
+            if (isAudioEl && __classPrivateFieldGet(this, _slider).classList.contains('error')) {
+                __classPrivateFieldGet(this, _slider).classList.remove('error');
             }
         };
         __classPrivateFieldGet(this, _events).media.timeupdate = () => {
@@ -208,13 +242,16 @@ class Progress {
                 }
             }
         };
-        const releasePause = () => {
+        const releasePause = (e) => {
             const el = __classPrivateFieldGet(this, _player).activeElement();
             if (__classPrivateFieldGet(this, _forcePause) === true && __classPrivateFieldGet(this, _player).isMedia()) {
                 if (el.paused) {
                     el.play();
                     __classPrivateFieldSet(this, _forcePause, false);
                 }
+            }
+            if (IS_ANDROID || IS_IOS) {
+                rangeTouchPolyfill(e);
             }
         };
         const mobileForcePause = (e) => {

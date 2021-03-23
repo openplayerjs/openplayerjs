@@ -171,6 +171,24 @@ export function offset(el: HTMLElement) {
     };
 }
 
+export function rangeTouchPolyfill(e: any) {
+    const input = (e.target as HTMLInputElement);
+    const val = (e.pageX - input.getBoundingClientRect().left) /
+     (input.getBoundingClientRect().right - input.getBoundingClientRect().left);
+    let max = parseInt(input.getAttribute('max') || '0', 10);
+    const segment = 1 / (max - 1);
+    const segmentArr = [];
+    max++;
+
+    for (let i = 0; i < max; i++) {
+      segmentArr.push(segment * i);
+    }
+
+    const segCopy = segmentArr.slice();
+    const index = segmentArr.sort((a, b) => Math.abs(val - a) - Math.abs(val - b) )[0];
+    input.value = `${segCopy.indexOf(index) + 1}`;
+  }
+
 /**
  * Determine if string is a valid XML structure.
  *

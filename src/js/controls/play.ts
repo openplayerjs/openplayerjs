@@ -3,7 +3,7 @@ import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { EVENT_OPTIONS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { hasClass, removeElement } from '../utils/general';
+import { hasClass, isAudio, removeElement } from '../utils/general';
 
 /**
  * Play/pause element.
@@ -121,6 +121,9 @@ class Play implements PlayerComponent {
 
             e.preventDefault();
         };
+
+        const isAudioEl = isAudio(this.#player.getElement());
+
         this.#events.media.play = () => {
             if (this.#player.activeElement().ended) {
                 if (this.#player.isMedia()) {
@@ -181,11 +184,17 @@ class Play implements PlayerComponent {
             this.#button.title = this.#labels.play;
             this.#button.setAttribute('aria-label', this.#labels.play);
         };
-        this.#events.media['adsmediaended'] = () => {
+        this.#events.media.adsmediaended = () => {
             this.#button.classList.remove('op-controls__playpause--replay');
             this.#button.classList.add('op-controls__playpause--pause');
             this.#button.title = this.#labels.pause;
             this.#button.setAttribute('aria-label', this.#labels.pause);
+        };
+        this.#events.media.playererror = () => {
+            if (isAudioEl) {
+                const el = this.#player.activeElement();
+                el.pause();
+            }
         };
 
         const element = this.#player.getElement();

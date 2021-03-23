@@ -166,7 +166,7 @@ exports.EVENT_OPTIONS = exports.IS_IE ? false : {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isXml = exports.offset = exports.hasClass = exports.request = exports.removeElement = exports.loadScript = exports.isAudio = exports.isVideo = exports.getAbsoluteUrl = void 0;
+exports.isXml = exports.rangeTouchPolyfill = exports.offset = exports.hasClass = exports.request = exports.removeElement = exports.loadScript = exports.isAudio = exports.isVideo = exports.getAbsoluteUrl = void 0;
 
 function getAbsoluteUrl(url) {
   var a = document.createElement('a');
@@ -307,6 +307,27 @@ function offset(el) {
 }
 
 exports.offset = offset;
+
+function rangeTouchPolyfill(e) {
+  var input = e.target;
+  var val = (e.pageX - input.getBoundingClientRect().left) / (input.getBoundingClientRect().right - input.getBoundingClientRect().left);
+  var max = parseInt(input.getAttribute('max') || '0', 10);
+  var segment = 1 / (max - 1);
+  var segmentArr = [];
+  max++;
+
+  for (var i = 0; i < max; i++) {
+    segmentArr.push(segment * i);
+  }
+
+  var segCopy = segmentArr.slice();
+  var index = segmentArr.sort(function (a, b) {
+    return Math.abs(val - a) - Math.abs(val - b);
+  })[0];
+  input.value = "".concat(segCopy.indexOf(index) + 1);
+}
+
+exports.rangeTouchPolyfill = rangeTouchPolyfill;
 
 function isXml(input) {
   var parsedXml;
@@ -6963,6 +6984,8 @@ var Play = function () {
         e.preventDefault();
       };
 
+      var isAudioEl = general_1.isAudio(__classPrivateFieldGet(this, _player).getElement());
+
       __classPrivateFieldGet(this, _events).media.play = function () {
         if (__classPrivateFieldGet(_this, _player).activeElement().ended) {
           if (__classPrivateFieldGet(_this, _player).isMedia()) {
@@ -7044,7 +7067,7 @@ var Play = function () {
         __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).play);
       };
 
-      __classPrivateFieldGet(this, _events).media['adsmediaended'] = function () {
+      __classPrivateFieldGet(this, _events).media.adsmediaended = function () {
         __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--replay');
 
         __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--pause');
@@ -7052,6 +7075,14 @@ var Play = function () {
         __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).pause;
 
         __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).pause);
+      };
+
+      __classPrivateFieldGet(this, _events).media.playererror = function () {
+        if (isAudioEl) {
+          var el = __classPrivateFieldGet(_this, _player).activeElement();
+
+          el.pause();
+        }
       };
 
       var element = __classPrivateFieldGet(this, _player).getElement();
@@ -7269,6 +7300,10 @@ var Progress = function () {
       }
 
       var setInitialProgress = function setInitialProgress() {
+        if (__classPrivateFieldGet(_this, _slider).classList.contains('error')) {
+          __classPrivateFieldGet(_this, _slider).classList.remove('error');
+        }
+
         var el = __classPrivateFieldGet(_this, _player).activeElement();
 
         if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled') && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled')) {
@@ -7295,6 +7330,7 @@ var Progress = function () {
 
       var lastCurrentTime = 0;
       var defaultDuration = __classPrivateFieldGet(this, _player).getOptions().progress.duration || 0;
+      var isAudioEl = general_1.isAudio(__classPrivateFieldGet(this, _player).getElement());
       __classPrivateFieldGet(this, _events).media.loadedmetadata = setInitialProgress.bind(this);
       __classPrivateFieldGet(this, _events).controls.controlschanged = setInitialProgress.bind(this);
 
@@ -7315,6 +7351,26 @@ var Progress = function () {
         }
       };
 
+      __classPrivateFieldGet(this, _events).media.waiting = function () {
+        if (isAudioEl && !__classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _slider).classList.add('loading');
+        }
+
+        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('error')) {
+          __classPrivateFieldGet(_this, _slider).classList.remove('error');
+        }
+      };
+
+      __classPrivateFieldGet(this, _events).media.playererror = function () {
+        if (isAudioEl && !__classPrivateFieldGet(_this, _slider).classList.contains('error')) {
+          __classPrivateFieldGet(_this, _slider).classList.add('error');
+        }
+
+        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _slider).classList.remove('loading');
+        }
+      };
+
       __classPrivateFieldGet(this, _events).media.pause = function () {
         var el = __classPrivateFieldGet(_this, _player).activeElement();
 
@@ -7328,10 +7384,28 @@ var Progress = function () {
       };
 
       __classPrivateFieldGet(this, _events).media.play = function () {
+        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _slider).classList.remove('loading');
+        }
+
+        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('error')) {
+          __classPrivateFieldGet(_this, _slider).classList.remove('error');
+        }
+
         if (__classPrivateFieldGet(_this, _player).activeElement().duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled')) {
           __classPrivateFieldGet(_this, _progress).removeAttribute('aria-valuenow');
 
           __classPrivateFieldGet(_this, _progress).removeAttribute('aria-valuetext');
+        }
+      };
+
+      __classPrivateFieldGet(this, _events).media.playing = function () {
+        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _slider).classList.remove('loading');
+        }
+
+        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('error')) {
+          __classPrivateFieldGet(_this, _slider).classList.remove('error');
         }
       };
 
@@ -7425,7 +7499,7 @@ var Progress = function () {
         }
       };
 
-      var releasePause = function releasePause() {
+      var releasePause = function releasePause(e) {
         var el = __classPrivateFieldGet(_this, _player).activeElement();
 
         if (__classPrivateFieldGet(_this, _forcePause) === true && __classPrivateFieldGet(_this, _player).isMedia()) {
@@ -7434,6 +7508,10 @@ var Progress = function () {
 
             __classPrivateFieldSet(_this, _forcePause, false);
           }
+        }
+
+        if (constants_1.IS_ANDROID || constants_1.IS_IOS) {
+          general_1.rangeTouchPolyfill(e);
         }
       };
 
@@ -8084,6 +8162,22 @@ var Time = function () {
         __classPrivateFieldGet(this, _duration).innerText = time_1.formatTime(__classPrivateFieldGet(this, _player).getOptions().progress.duration);
       }
 
+      var controls = __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer));
+
+      __classPrivateFieldSet(this, _container, document.createElement('span'));
+
+      __classPrivateFieldGet(this, _container).className = "op-controls-time op-control__".concat(__classPrivateFieldGet(this, _position));
+
+      __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _current));
+
+      if (!showOnlyCurrent) {
+        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _delimiter));
+
+        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _duration));
+      }
+
+      controls.appendChild(__classPrivateFieldGet(this, _container));
+
       var setInitialTime = function setInitialTime() {
         var el = __classPrivateFieldGet(_this, _player).activeElement();
 
@@ -8161,22 +8255,6 @@ var Time = function () {
       });
 
       __classPrivateFieldGet(this, _player).getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged, constants_1.EVENT_OPTIONS);
-
-      var controls = __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer));
-
-      __classPrivateFieldSet(this, _container, document.createElement('span'));
-
-      __classPrivateFieldGet(this, _container).className = "op-controls-time op-control__".concat(__classPrivateFieldGet(this, _position));
-
-      __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _current));
-
-      if (!showOnlyCurrent) {
-        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _delimiter));
-
-        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _duration));
-      }
-
-      controls.appendChild(__classPrivateFieldGet(this, _container));
     }
   }, {
     key: "destroy",
@@ -8429,6 +8507,10 @@ var Volume = function () {
 
       __classPrivateFieldGet(this, _events).slider.input = updateVolume.bind(this);
       __classPrivateFieldGet(this, _events).slider.change = updateVolume.bind(this);
+
+      if (constants_1.IS_ANDROID || constants_1.IS_IOS) {
+        __classPrivateFieldGet(this, _events).slider.touchend = general_1.rangeTouchPolyfill;
+      }
 
       __classPrivateFieldGet(this, _events).button.click = function () {
         __classPrivateFieldGet(_this, _button).setAttribute('aria-pressed', 'true');
@@ -8754,6 +8836,10 @@ var Media = function () {
           src: src,
           type: item.getAttribute('type') || source.predictType(src)
         });
+
+        if (i === 0) {
+          __classPrivateFieldSet(this, _currentSrc, mediaFiles[0]);
+        }
       }
 
       if (!mediaFiles.length) {
@@ -9980,11 +10066,78 @@ var HTML5Media = function (_native_1$default) {
 
     _isStreaming.set(_assertThisInitialized(_this), false);
 
+    var retryCount = 0;
+    var started = false;
+    var timer;
+
+    function timeout() {
+      if (!started) {
+        started = true;
+        timer = setInterval(function () {
+          if (retryCount >= 30) {
+            clearInterval(timer);
+            var message = 'Media download failed part-way due to a network error';
+            var details = {
+              detail: {
+                data: {
+                  message: message,
+                  error: 2
+                },
+                message: message,
+                type: 'HTML5'
+              }
+            };
+            var errorEvent = events_1.addEvent('playererror', details);
+            element.dispatchEvent(errorEvent);
+            retryCount = 0;
+            started = false;
+          } else {
+            retryCount++;
+          }
+        }, 1000);
+      }
+    }
+
+    element.addEventListener('playing', function () {
+      if (timer) {
+        clearInterval(timer);
+        retryCount = 0;
+        started = false;
+      }
+    });
+    element.addEventListener('stalled', timeout);
     element.addEventListener('error', function (e) {
+      var defaultMessage;
+
+      switch (e.target.error.code) {
+        case e.target.error.MEDIA_ERR_ABORTED:
+          defaultMessage = 'Media playback aborted';
+          break;
+
+        case e.target.error.MEDIA_ERR_NETWORK:
+          defaultMessage = 'Media download failed part-way due to a network error';
+          break;
+
+        case e.target.error.MEDIA_ERR_DECODE:
+          defaultMessage = 'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
+          break;
+
+        case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
+          break;
+
+        default:
+          defaultMessage = 'Unknown error occurred.';
+          break;
+      }
+
       var details = {
         detail: {
-          data: e,
-          message: e.message,
+          data: Object.assign(Object.assign({}, e), {
+            message: e.message || defaultMessage,
+            error: e.target.error.code
+          }),
+          message: e.message || defaultMessage,
           type: 'HTML5'
         }
       };

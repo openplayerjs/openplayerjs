@@ -68,6 +68,7 @@ export declare function offset(el: HTMLElement): {
     left: number;
     top: number;
 };
+export declare function rangeTouchPolyfill(e: any): void;
 /**
  * Determine if string is a valid XML structure.
  *
