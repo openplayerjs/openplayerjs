@@ -35,7 +35,7 @@ class Player {
         _media.set(this, void 0);
         _events.set(this, {});
         _autoplay_1.set(this, false);
-        _volume.set(this, 1);
+        _volume.set(this, void 0);
         _canAutoplay.set(this, false);
         _canAutoplayMuted.set(this, false);
         _processedAutoplay.set(this, false);
@@ -104,7 +104,7 @@ class Player {
             if (typeof options !== 'string' && !Array.isArray(options)) {
                 this._mergeOptions(options);
             }
-            __classPrivateFieldGet(this, _element).volume = __classPrivateFieldGet(this, _options).startVolume;
+            __classPrivateFieldGet(this, _element).volume = __classPrivateFieldGet(this, _options).startVolume || 1;
             if (__classPrivateFieldGet(this, _options).ads && __classPrivateFieldGet(this, _options).ads.src) {
                 __classPrivateFieldSet(this, _ads, __classPrivateFieldGet(this, _options).ads.src);
             }
@@ -507,7 +507,7 @@ class Player {
         if (!__classPrivateFieldGet(this, _processedAutoplay)) {
             __classPrivateFieldSet(this, _processedAutoplay, true);
             __classPrivateFieldGet(this, _element).removeEventListener('canplay', this._autoplay.bind(this));
-            isAutoplaySupported(__classPrivateFieldGet(this, _element), autoplay => {
+            isAutoplaySupported(__classPrivateFieldGet(this, _element), __classPrivateFieldGet(this, _volume), autoplay => {
                 __classPrivateFieldSet(this, _canAutoplay, autoplay);
             }, muted => {
                 __classPrivateFieldSet(this, _canAutoplayMuted, muted);

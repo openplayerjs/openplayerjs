@@ -47,7 +47,7 @@ export function predictType(url) {
     }
     return type;
 }
-export function isAutoplaySupported(media, autoplay, muted, callback) {
+export function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
     const playPromise = media.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
@@ -64,7 +64,7 @@ export function isAutoplaySupported(media, autoplay, muted, callback) {
                 muted(true);
                 return callback();
             }).catch(() => {
-                media.volume = 1;
+                media.volume = defaultVol;
                 media.muted = false;
                 autoplay(false);
                 muted(false);

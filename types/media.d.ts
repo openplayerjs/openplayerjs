@@ -87,13 +87,6 @@ declare class Media {
      */
     get src(): Source[];
     /**
-     * Set the current media to have a reference of the one being played.
-     *
-     * @param {Source} media
-     * @memberof Media
-     */
-    set current(media: Source);
-    /**
      * Get the current media being played.
      *
      * @type Source

@@ -265,7 +265,7 @@ class Media {
 
         this.#element.src = this.#files[0].src;
         this.#media.src = this.#files[0];
-        this.current = this.#files[0];
+        this.#currentSrc = this.#files[0];
     }
 
     /**

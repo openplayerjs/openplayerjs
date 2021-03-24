@@ -115,7 +115,8 @@ export function predictType(url: string): string {
  * @param {function} muted  Callback to determine if browser requires media to be muted.
  * @param {function} callback  Custom callback after prior checks have been run.
  */
-export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void {
+export function isAutoplaySupported(media: HTMLMediaElement, defaultVol: number, autoplay: (n: any) => any,
+                                    muted: (n: any) => any, callback: () => any): void {
     const playPromise = media.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
@@ -136,7 +137,7 @@ export function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) 
                 return callback();
             }).catch(() => {
                 // Both muted and unmuted autoplay failed. Fallback to click to play.
-                media.volume = 1;
+                media.volume = defaultVol;
                 media.muted = false;
                 autoplay(false);
                 muted(false);

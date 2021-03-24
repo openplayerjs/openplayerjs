@@ -166,14 +166,14 @@ class Player {
     #autoplay: boolean = false;
 
     /**
-     * Storage for original volume level vaue, when testing browser's autoplay capabilities
+     * Storage for original volume level value, when testing browser's autoplay capabilities
      * to restore it back.
      *
      * @see [[Player._autoplay]]
      * @type number
      * @memberof Player
      */
-    #volume: number = 1;
+    #volume: number;
 
     /**
      * Flag that indicates if browser supports autoplay.
@@ -301,7 +301,8 @@ class Player {
             if (typeof options !== 'string' && !Array.isArray(options)) {
                 this._mergeOptions(options);
             }
-            this.#element.volume = this.#options.startVolume;
+            this.#element.volume = this.#options.startVolume || 1;
+
             if (this.#options.ads && this.#options.ads.src) {
                 this.#ads = this.#options.ads.src;
             }
@@ -932,7 +933,7 @@ class Player {
             this.#processedAutoplay = true;
             this.#element.removeEventListener('canplay', this._autoplay.bind(this));
 
-            isAutoplaySupported(this.#element, autoplay => {
+            isAutoplaySupported(this.#element, this.#volume, autoplay => {
                 this.#canAutoplay = autoplay;
             }, muted => {
                 this.#canAutoplayMuted = muted;

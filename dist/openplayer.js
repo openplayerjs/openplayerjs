@@ -689,7 +689,7 @@ function predictType(url) {
 
 exports.predictType = predictType;
 
-function isAutoplaySupported(media, autoplay, muted, callback) {
+function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
   var playPromise = media.play();
 
   if (playPromise !== undefined) {
@@ -707,7 +707,7 @@ function isAutoplaySupported(media, autoplay, muted, callback) {
         muted(true);
         return callback();
       })["catch"](function () {
-        media.volume = 1;
+        media.volume = defaultVol;
         media.muted = false;
         autoplay(false);
         muted(false);
@@ -1699,7 +1699,7 @@ var Player = function () {
 
     _autoplay_1.set(this, false);
 
-    _volume.set(this, 1);
+    _volume.set(this, void 0);
 
     _canAutoplay.set(this, false);
 
@@ -1778,7 +1778,7 @@ var Player = function () {
         this._mergeOptions(options);
       }
 
-      __classPrivateFieldGet(this, _element).volume = __classPrivateFieldGet(this, _options).startVolume;
+      __classPrivateFieldGet(this, _element).volume = __classPrivateFieldGet(this, _options).startVolume || 1;
 
       if (__classPrivateFieldGet(this, _options).ads && __classPrivateFieldGet(this, _options).ads.src) {
         __classPrivateFieldSet(this, _ads, __classPrivateFieldGet(this, _options).ads.src);
@@ -2299,7 +2299,7 @@ var Player = function () {
 
         __classPrivateFieldGet(this, _element).removeEventListener('canplay', this._autoplay.bind(this));
 
-        media_2.isAutoplaySupported(__classPrivateFieldGet(this, _element), function (autoplay) {
+        media_2.isAutoplaySupported(__classPrivateFieldGet(this, _element), __classPrivateFieldGet(this, _volume), function (autoplay) {
           __classPrivateFieldSet(_this5, _canAutoplay, autoplay);
         }, function (muted) {
           __classPrivateFieldSet(_this5, _canAutoplayMuted, muted);
@@ -8934,16 +8934,14 @@ var Media = function () {
 
       __classPrivateFieldGet(this, _element).src = __classPrivateFieldGet(this, _files)[0].src;
       __classPrivateFieldGet(this, _media).src = __classPrivateFieldGet(this, _files)[0];
-      this.current = __classPrivateFieldGet(this, _files)[0];
+
+      __classPrivateFieldSet(this, _currentSrc, __classPrivateFieldGet(this, _files)[0]);
     },
     get: function get() {
       return __classPrivateFieldGet(this, _files);
     }
   }, {
     key: "current",
-    set: function set(media) {
-      __classPrivateFieldSet(this, _currentSrc, media);
-    },
     get: function get() {
       return __classPrivateFieldGet(this, _currentSrc);
     }

@@ -60,4 +60,4 @@ export declare function predictType(url: string): string;
  * @param {function} muted  Callback to determine if browser requires media to be muted.
  * @param {function} callback  Custom callback after prior checks have been run.
  */
-export declare function isAutoplaySupported(media: HTMLMediaElement, autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void;
+export declare function isAutoplaySupported(media: HTMLMediaElement, defaultVol: number, autoplay: (n: any) => any, muted: (n: any) => any, callback: () => any): void;

@@ -124,13 +124,10 @@ class Media {
         }
         __classPrivateFieldGet(this, _element).src = __classPrivateFieldGet(this, _files)[0].src;
         __classPrivateFieldGet(this, _media).src = __classPrivateFieldGet(this, _files)[0];
-        this.current = __classPrivateFieldGet(this, _files)[0];
+        __classPrivateFieldSet(this, _currentSrc, __classPrivateFieldGet(this, _files)[0]);
     }
     get src() {
         return __classPrivateFieldGet(this, _files);
-    }
-    set current(media) {
-        __classPrivateFieldSet(this, _currentSrc, media);
     }
     get current() {
         return __classPrivateFieldGet(this, _currentSrc);
