@@ -29,6 +29,7 @@
       "node_modules",
       "ts-dist",
       "dist",
+      "test",
       "webpack.config.js"
-  ]
+  ],
 }

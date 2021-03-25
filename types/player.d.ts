@@ -55,13 +55,6 @@ declare class Player {
      */
     static addMedia(name: string, mimeType: string, valid: (url: string) => string, media: any): void;
     /**
-     * Instance of Controls object.
-     *
-     * @type Controls
-     * @memberof Player
-     */
-    controls: Controls;
-    /**
      * Button to play media.
      *
      * @type HTMLButtonElement

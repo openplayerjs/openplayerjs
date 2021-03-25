@@ -478,17 +478,11 @@ Object.defineProperty(exports, "__esModule", {
 exports.events = exports.addEvent = void 0;
 
 function addEvent(event, details) {
-  if (typeof event !== 'string') {
-    throw new Error('Event name must be a string');
-  }
-
   var detail = {};
 
-  if (details) {
-    detail = details.detail ? {
+  if (details && details.detail) {
+    detail = {
       detail: details.detail
-    } : {
-      detail: details
     };
   }
 
@@ -1647,7 +1641,7 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _adsInstance, _uid, _element, _ads, _media, _events, _autoplay_1, _volume, _canAutoplay, _canAutoplayMuted, _processedAutoplay, _options, _customControlItems, _defaultOptions;
+var _controls, _adsInstance, _uid, _element, _ads, _media, _events, _autoplay_1, _volume, _canAutoplay, _canAutoplayMuted, _processedAutoplay, _options, _customControlItems, _defaultOptions;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -1684,6 +1678,8 @@ var media_2 = __webpack_require__(14);
 var Player = function () {
   function Player(element, options) {
     _classCallCheck(this, Player);
+
+    _controls.set(this, void 0);
 
     _adsInstance.set(this, void 0);
 
@@ -1857,7 +1853,9 @@ var Player = function () {
 
       var el = __classPrivateFieldGet(this, _element);
 
-      __classPrivateFieldGet(this, _media).destroy();
+      if (__classPrivateFieldGet(this, _media)) {
+        __classPrivateFieldGet(this, _media).destroy();
+      }
 
       Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
         el.removeEventListener(event, __classPrivateFieldGet(_this, _events)[event]);
@@ -1867,7 +1865,9 @@ var Player = function () {
         el.removeEventListener('canplay', this._autoplay.bind(this));
       }
 
-      this.controls.destroy();
+      if (__classPrivateFieldGet(this, _controls)) {
+        __classPrivateFieldGet(this, _controls).destroy();
+      }
 
       if (general_1.isVideo(__classPrivateFieldGet(this, _element))) {
         general_1.removeElement(this.playBtn);
@@ -1895,7 +1895,7 @@ var Player = function () {
   }, {
     key: "getControls",
     value: function getControls() {
-      return this.controls;
+      return __classPrivateFieldGet(this, _controls);
     }
   }, {
     key: "getCustomControls",
@@ -2121,8 +2121,9 @@ var Player = function () {
         this.getContainer().classList.add('op-player__ios--iphone');
       }
 
-      this.controls = new controls_1["default"](this);
-      this.controls.create();
+      __classPrivateFieldSet(this, _controls, new controls_1["default"](this));
+
+      __classPrivateFieldGet(this, _controls).create();
     }
   }, {
     key: "_createUID",
@@ -2400,7 +2401,7 @@ var Player = function () {
   return Player;
 }();
 
-_adsInstance = new WeakMap(), _uid = new WeakMap(), _element = new WeakMap(), _ads = new WeakMap(), _media = new WeakMap(), _events = new WeakMap(), _autoplay_1 = new WeakMap(), _volume = new WeakMap(), _canAutoplay = new WeakMap(), _canAutoplayMuted = new WeakMap(), _processedAutoplay = new WeakMap(), _options = new WeakMap(), _customControlItems = new WeakMap(), _defaultOptions = new WeakMap();
+_controls = new WeakMap(), _adsInstance = new WeakMap(), _uid = new WeakMap(), _element = new WeakMap(), _ads = new WeakMap(), _media = new WeakMap(), _events = new WeakMap(), _autoplay_1 = new WeakMap(), _volume = new WeakMap(), _canAutoplay = new WeakMap(), _canAutoplayMuted = new WeakMap(), _processedAutoplay = new WeakMap(), _options = new WeakMap(), _customControlItems = new WeakMap(), _defaultOptions = new WeakMap();
 Player.instances = {};
 Player.customMedia = {
   media: {},

@@ -87,7 +87,7 @@ class Player {
      * @type Controls
      * @memberof Player
      */
-    public controls: Controls;
+    #controls: Controls;
 
     /**
      * Instance of Ads object.
@@ -390,7 +390,9 @@ class Player {
         }
 
         const el = (this.#element as HTMLMediaElement);
-        this.#media.destroy();
+        if (this.#media) {
+            this.#media.destroy();
+        }
 
         Object.keys(this.#events).forEach(event => {
             el.removeEventListener(event, this.#events[event]);
@@ -399,7 +401,9 @@ class Player {
         if (this.#autoplay && !this.#processedAutoplay && isVideo(this.#element)) {
             el.removeEventListener('canplay', this._autoplay.bind(this));
         }
-        this.controls.destroy();
+        if (this.#controls) {
+            this.#controls.destroy();
+        }
 
         if (isVideo(this.#element)) {
             removeElement(this.playBtn);
@@ -439,7 +443,7 @@ class Player {
      * @memberof Player
      */
     public getControls(): Controls {
-        return this.controls;
+        return this.#controls;
     }
 
     /**
@@ -769,8 +773,8 @@ class Player {
         if (IS_IPHONE && isVideo(this.#element)) {
             this.getContainer().classList.add('op-player__ios--iphone');
         }
-        this.controls = new Controls(this);
-        this.controls.create();
+        this.#controls = new Controls(this);
+        this.#controls.create();
     }
 
     /**

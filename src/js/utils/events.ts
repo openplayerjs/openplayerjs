@@ -8,13 +8,9 @@
  * @returns {CustomEvent}
  */
 export function addEvent(event: string, details?: CustomEventInit): CustomEvent {
-    if (typeof event !== 'string') {
-        throw new Error('Event name must be a string');
-    }
-
     let detail = {};
-    if (details) {
-        detail = details.detail ? { detail: details.detail } : { detail: details };
+    if (details && details.detail) {
+        detail = { detail: details.detail };
     }
     return new CustomEvent(event, detail);
 }
