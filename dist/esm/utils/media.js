@@ -1,7 +1,4 @@
 export function getExtension(url) {
-    if (typeof url !== 'string') {
-        throw new Error('`url` argument must be a string');
-    }
     const baseUrl = url.split('?')[0];
     const baseFrags = baseUrl ? baseUrl.split('\\') : null;
     const baseUrlFragment = baseFrags ? baseFrags.pop() : null;
@@ -40,6 +37,9 @@ export function predictType(url) {
             break;
         case 'webm':
             type = 'video/webm';
+            break;
+        case 'ogg':
+            type = 'video/ogg';
             break;
         default:
             type = 'video/mp4';

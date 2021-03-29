@@ -813,9 +813,7 @@ class Ads {
         ];
 
         if (Array.isArray(this.#ads) && this.#ads.length > 1 && this.#currentAdsIndex <= this.#ads.length - 1) {
-            if (this.#currentAdsIndex < this.#ads.length - 1) {
-                this.#currentAdsIndex++;
-            }
+            this.#currentAdsIndex++;
             this.#playTriggered = true;
             this.#adsStarted = true;
             this.#adsDone = false;

@@ -383,9 +383,7 @@ class Ads {
             406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005,
         ];
         if (Array.isArray(__classPrivateFieldGet(this, _ads)) && __classPrivateFieldGet(this, _ads).length > 1 && __classPrivateFieldGet(this, _currentAdsIndex) <= __classPrivateFieldGet(this, _ads).length - 1) {
-            if (__classPrivateFieldGet(this, _currentAdsIndex) < __classPrivateFieldGet(this, _ads).length - 1) {
-                __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
-            }
+            __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
             __classPrivateFieldSet(this, _playTriggered, true);
             __classPrivateFieldSet(this, _adsStarted, true);
             __classPrivateFieldSet(this, _adsDone, false);

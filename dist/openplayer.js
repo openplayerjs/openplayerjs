@@ -204,7 +204,9 @@ function loadScript(url) {
       reject();
     };
 
-    document.head.appendChild(script);
+    if (document.head) {
+      document.head.appendChild(script);
+    }
   });
 }
 
@@ -609,10 +611,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.isAutoplaySupported = exports.predictType = exports.isFlvSource = exports.isDashSource = exports.isM3USource = exports.isHlsSource = exports.getExtension = void 0;
 
 function getExtension(url) {
-  if (typeof url !== 'string') {
-    throw new Error('`url` argument must be a string');
-  }
-
   var baseUrl = url.split('?')[0];
   var baseFrags = baseUrl ? baseUrl.split('\\') : null;
   var baseUrlFragment = baseFrags ? baseFrags.pop() : null;
@@ -671,6 +669,10 @@ function predictType(url) {
 
     case 'webm':
       type = 'video/webm';
+      break;
+
+    case 'ogg':
+      type = 'video/ogg';
       break;
 
     default:
@@ -5026,7 +5028,7 @@ var Controls = function () {
 
         this.events.media.play = function () {
           if (isMediaVideo) {
-            _this._startControlTimer(__classPrivateFieldGet(__classPrivateFieldGet(_this, _player).getOptions().hidePlayBtnthis, _timer));
+            _this._startControlTimer(__classPrivateFieldGet(_this, _player).getOptions().hidePlayBtnTimer);
           }
         };
 
@@ -10797,9 +10799,7 @@ var Ads = function () {
       var fatalErrorCodes = [100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405, 406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005];
 
       if (Array.isArray(__classPrivateFieldGet(this, _ads)) && __classPrivateFieldGet(this, _ads).length > 1 && __classPrivateFieldGet(this, _currentAdsIndex) <= __classPrivateFieldGet(this, _ads).length - 1) {
-        if (__classPrivateFieldGet(this, _currentAdsIndex) < __classPrivateFieldGet(this, _ads).length - 1) {
-          __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
-        }
+        __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
 
         __classPrivateFieldSet(this, _playTriggered, true);
 

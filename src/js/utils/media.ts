@@ -8,10 +8,6 @@ import Source from '../interfaces/source';
  * @returns {string}
  */
 export function getExtension(url: string): string {
-    if (typeof url !== 'string') {
-        throw new Error('`url` argument must be a string');
-    }
-
     const baseUrl = url.split('?')[0];
     const baseFrags = baseUrl ? baseUrl.split('\\') : null;
     const baseUrlFragment = baseFrags ? baseFrags.pop() : null;
@@ -95,6 +91,9 @@ export function predictType(url: string): string {
             break;
         case 'webm':
             type = 'video/webm';
+            break;
+        case 'ogg':
+            type = 'video/ogg';
             break;
         default:
             type = 'video/mp4';

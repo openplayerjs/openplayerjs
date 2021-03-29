@@ -101,7 +101,7 @@ class Controls {
             };
             this.events.media.play = () => {
                 if (isMediaVideo) {
-                    this._startControlTimer(__classPrivateFieldGet(__classPrivateFieldGet(this, _player).getOptions().hidePlayBtnthis, _timer));
+                    this._startControlTimer(__classPrivateFieldGet(this, _player).getOptions().hidePlayBtnTimer);
                 }
             };
             this.events.media.pause = () => {

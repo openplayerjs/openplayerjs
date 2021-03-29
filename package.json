@@ -45,7 +45,7 @@
     "create-d-types": "npx typescript -p tsconfig-types.json",
     "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; npx typescript -p tsconfig-esm.json",
     "release": "npm run build && release-it",
-    "test": "cross-env TS_NODE_FILES=true mocha --exit --require ts-node/register --colors -r jsdom-global/register test/**/*.ts",
+    "test": "cross-env TS_NODE_FILES=true mocha --exit --require ts-node/register --colors -r jsdom-global/register --timeout 5000 test/**/*.ts",
     "coverage": "nyc npm run test"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
@@ -54,6 +54,7 @@
     "@babel/preset-env": "^7.12.7",
     "@release-it/conventional-changelog": "^1.1.4",
     "@types/chai": "^4.2.15",
+    "@types/jsdom": "^16.2.9",
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.35",
     "autoprefixer": "^9.8.6",

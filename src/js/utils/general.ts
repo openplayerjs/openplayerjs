@@ -55,7 +55,9 @@ export function loadScript(url: string) {
             removeElement(script);
             reject();
         };
-        document.head.appendChild(script);
+        if (document.head) {
+            document.head.appendChild(script);
+        }
     });
 }
 

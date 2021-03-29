@@ -22,7 +22,9 @@ export function loadScript(url) {
             removeElement(script);
             reject();
         };
-        document.head.appendChild(script);
+        if (document.head) {
+            document.head.appendChild(script);
+        }
     });
 }
 export function removeElement(node) {
