@@ -10798,7 +10798,7 @@ var Ads = function () {
 
       var fatalErrorCodes = [100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405, 406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005];
 
-      if (Array.isArray(__classPrivateFieldGet(this, _ads)) && __classPrivateFieldGet(this, _ads).length > 1 && __classPrivateFieldGet(this, _currentAdsIndex) <= __classPrivateFieldGet(this, _ads).length - 1) {
+      if (Array.isArray(__classPrivateFieldGet(this, _ads)) && __classPrivateFieldGet(this, _ads).length > 1 && __classPrivateFieldGet(this, _currentAdsIndex) < __classPrivateFieldGet(this, _ads).length - 1) {
         __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
 
         __classPrivateFieldSet(this, _playTriggered, true);

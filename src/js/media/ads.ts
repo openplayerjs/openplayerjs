@@ -812,7 +812,7 @@ class Ads {
             406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005,
         ];
 
-        if (Array.isArray(this.#ads) && this.#ads.length > 1 && this.#currentAdsIndex <= this.#ads.length - 1) {
+        if (Array.isArray(this.#ads) && this.#ads.length > 1 && this.#currentAdsIndex < this.#ads.length - 1) {
             this.#currentAdsIndex++;
             this.#playTriggered = true;
             this.#adsStarted = true;
