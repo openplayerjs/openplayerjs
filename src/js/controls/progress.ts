@@ -2,7 +2,7 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { hasClass, isAudio, offset, rangeTouchPolyfill, removeElement } from '../utils/general';
+import { hasClass, isAudio, offset, removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 
 /**
@@ -355,7 +355,6 @@ class Progress implements PlayerComponent {
             }
 
             this.#slider.classList.remove('.op-progress--pressed');
-            e.preventDefault();
         };
 
         /**
@@ -379,17 +378,13 @@ class Progress implements PlayerComponent {
          *
          * @private
          */
-        const releasePause = (e: any) => {
+        const releasePause = () => {
             const el = this.#player.activeElement();
             if (this.#forcePause === true && this.#player.isMedia()) {
                 if (el.paused) {
                     el.play();
                     this.#forcePause = false;
                 }
-            }
-
-            if (IS_ANDROID || IS_IOS) {
-                rangeTouchPolyfill(e);
             }
         };
 
@@ -415,7 +410,6 @@ class Progress implements PlayerComponent {
             this.#slider.value = time.toString();
             updateSlider(e);
             forcePause(e);
-            e.preventDefault();
         };
 
         this.#events.slider.input = updateSlider.bind(this);

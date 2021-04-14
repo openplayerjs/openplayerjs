@@ -13,7 +13,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _player, _progress, _slider, _buffer, _played, _tooltip, _events, _forcePause, _labels, _position, _layer;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { hasClass, isAudio, offset, rangeTouchPolyfill, removeElement } from '../utils/general';
+import { hasClass, isAudio, offset, removeElement } from '../utils/general';
 import { formatTime } from '../utils/time';
 class Progress {
     constructor(player, position, layer) {
@@ -229,7 +229,6 @@ class Progress {
                 el.currentTime = val;
             }
             __classPrivateFieldGet(this, _slider).classList.remove('.op-progress--pressed');
-            e.preventDefault();
         };
         const forcePause = (e) => {
             const el = __classPrivateFieldGet(this, _player).activeElement();
@@ -242,16 +241,13 @@ class Progress {
                 }
             }
         };
-        const releasePause = (e) => {
+        const releasePause = () => {
             const el = __classPrivateFieldGet(this, _player).activeElement();
             if (__classPrivateFieldGet(this, _forcePause) === true && __classPrivateFieldGet(this, _player).isMedia()) {
                 if (el.paused) {
                     el.play();
                     __classPrivateFieldSet(this, _forcePause, false);
                 }
-            }
-            if (IS_ANDROID || IS_IOS) {
-                rangeTouchPolyfill(e);
             }
         };
         const mobileForcePause = (e) => {
@@ -267,7 +263,6 @@ class Progress {
             __classPrivateFieldGet(this, _slider).value = time.toString();
             updateSlider(e);
             forcePause(e);
-            e.preventDefault();
         };
         __classPrivateFieldGet(this, _events).slider.input = updateSlider.bind(this);
         __classPrivateFieldGet(this, _events).slider.change = updateSlider.bind(this);

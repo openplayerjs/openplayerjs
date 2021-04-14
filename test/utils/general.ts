@@ -56,9 +56,6 @@ describe('utils/general', () => {
     // it('returns the offset of a DOM element', () => {
     //     general.offset
     // });
-    // it('polyfills the input range for mobile devices', () => {
-    //     general.rangeTouchPolyfill
-    // });
     it('checks if string is a valid XML source', () => {
         expect(general.isXml('<invalid>')).to.equal(false);
         expect(general.isXml(`<note>
