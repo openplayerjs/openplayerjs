@@ -98,7 +98,7 @@ var event = new CustomEvent('ended');
 player.getElement().dispatchEvent(event);
 ```
 
-All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayerJS, and it incorporates some custom ones, mostly related to Ads:
+All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayerJS, including:
 
 Event | Description
 --- | ---
@@ -109,16 +109,27 @@ Event | Description
 `levelchanged` | Event triggered when user changes the current level (if actvated) by selecting a new one from the `Settings` menu.
 `playererror` | Event executed when any error has occurred within the OpenPlayerJS instance; a response will be sent via `onError` config callback. See [Usage with Javascript](usage.md#javascript) for more details.
 `playerdestroyed` | Event executed when an instance of OpenPlayerJS is destroyed (useful to remove extra elements created with the player's help).
-`adsloaded` | Event when Ads have been loaded successfully and can be played.
-`adsstart` | Event when Ads start being played.
-`adsfirstQuartile` | Event triggered when Ad reached the first quarter of its length.
-`adsmidpoint` | Event triggered when Ad reached half of its length.
-`adsthirdQuartile` | Event triggered when Ad reached the third quarter of its length.
-`adscomplete` | Event triggered when Ad reached the end of its length.
-`adsskipped` | Event triggered when user skips the Ad.
-`adsvolumeChange` | Event triggered when user increases/decreases the volume of Ad.
-`adsallAdsCompleted` | Event triggered when all Ads have been played.
-`adsmediaended` | Event executed when an Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad).
+
+In terms of Ads, the following table described the events associated and their equivalences in terms of VAST/VPAID, so you use a standardize set of events for all cases:
+
+Event | Dispatched when... | VPAID equivalent
+--- | --- | ---
+`adsloaded` | Ads have been loaded successfully and can be played. | AdLoaded
+`adsstart` | Ads start being played. | AdVideoStart/AdStarted/AdPlaying
+`adsfirstQuartile` | Ad reached the first quarter of its length. | AdVideoFirstQuartile
+`adsmidpoint` | Ad reached half of its length. | AdVideoMidpoint
+`adsthirdQuartile` | Ad reached the third quarter of its length. | AdVideoThirdQuartile
+`adscomplete` | Ad reached the end of its length. | AdVideoComplete
+`adsskipped` | user skips the Ad. | AdSkipped
+`adsvolumeChange` | user increases/decreases the volume of Ad. | AdVolumeChange
+`adsallAdsCompleted` | all Ads have been played. | AdStopped
+`adsmediaended` | Ad is going to be played after media has ended playing (currently used to change the Replay icon to Pause when playing a postroll Ad). |
+`adsdurationChange` | Ad has all the necessary data to change the duration time; it is the equivalent of HTML5 media's `durationchange`. |
+`adsimpression` | Ad reports an impression and it will be on;y executed once for a given playback event. | AdImpressin
+`adsadProgress` | Ad plays; it is the equivalent of HTML5 media's `timeupdate`. |
+`adsclick` | user clicks in the Ads area. | AdClickThru
+`adspause` | user pauses the Ad. | AdPaused
+`adsmute` | user mutes the Ad. | AdVolumeChange
 
 In addition to the list above, all [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are supported using the same approach described above, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
 
