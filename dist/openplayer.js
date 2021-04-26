@@ -1794,7 +1794,7 @@ var Player = function () {
     key: "load",
     value: function load() {
       if (this.isMedia()) {
-        __classPrivateFieldGet(this, _media).load();
+        return __classPrivateFieldGet(this, _media).load();
       }
     }
   }, {

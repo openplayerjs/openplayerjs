@@ -92,7 +92,7 @@ declare class Player {
      * HLS and M(PEG)-DASH perform more operations during loading if browser does not support them natively.
      * @memberof Player
      */
-    load(): void;
+    load(): Promise<void> | void;
     /**
      * Play media.
      *

@@ -339,9 +339,9 @@ class Player {
      * HLS and M(PEG)-DASH perform more operations during loading if browser does not support them natively.
      * @memberof Player
      */
-    public load(): void {
+    public load(): Promise<void>|void {
         if (this.isMedia()) {
-            this.#media.load();
+            return this.#media.load();
         }
     }
 
