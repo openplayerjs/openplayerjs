@@ -89,6 +89,7 @@ class Player {
             },
             mode: 'responsive',
             onError: () => { },
+            pauseOthers: true,
             progress: {
                 duration: 0,
                 showCurrentTimeOnly: false,

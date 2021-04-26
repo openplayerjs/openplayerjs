@@ -275,6 +275,7 @@ class Player {
         },
         mode: 'responsive', // or `fill` or `fit`
         onError: () => { },
+        pauseOthers: true,
         progress: {
             duration: 0,
             showCurrentTimeOnly: false,

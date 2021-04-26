@@ -1735,6 +1735,7 @@ var Player = function () {
       },
       mode: 'responsive',
       onError: function onError() {},
+      pauseOthers: true,
       progress: {
         duration: 0,
         showCurrentTimeOnly: false
@@ -6988,12 +6989,14 @@ var Play = function () {
 
           __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).pause);
 
-          Object.keys(player_1["default"].instances).forEach(function (key) {
-            if (key !== __classPrivateFieldGet(_this, _player).id) {
-              var target = player_1["default"].instances[key].activeElement();
-              target.pause();
-            }
-          });
+          if (__classPrivateFieldGet(_this, _player).getOptions().pauseOthers) {
+            Object.keys(player_1["default"].instances).forEach(function (key) {
+              if (key !== __classPrivateFieldGet(_this, _player).id) {
+                var target = player_1["default"].instances[key].activeElement();
+                target.pause();
+              }
+            });
+          }
         }
       };
 

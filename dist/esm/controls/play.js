@@ -75,12 +75,14 @@ class Play {
                 __classPrivateFieldGet(this, _button).classList.add('op-controls__playpause--pause');
                 __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).pause;
                 __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).pause);
-                Object.keys(Player.instances).forEach(key => {
-                    if (key !== __classPrivateFieldGet(this, _player).id) {
-                        const target = Player.instances[key].activeElement();
-                        target.pause();
-                    }
-                });
+                if (__classPrivateFieldGet(this, _player).getOptions().pauseOthers) {
+                    Object.keys(Player.instances).forEach(key => {
+                        if (key !== __classPrivateFieldGet(this, _player).id) {
+                            const target = Player.instances[key].activeElement();
+                            target.pause();
+                        }
+                    });
+                }
             }
         };
         __classPrivateFieldGet(this, _events).media.loadedmetadata = () => {

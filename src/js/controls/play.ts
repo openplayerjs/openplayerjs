@@ -140,12 +140,14 @@ class Play implements PlayerComponent {
                 this.#button.title = this.#labels.pause;
                 this.#button.setAttribute('aria-label', this.#labels.pause);
 
-                Object.keys(Player.instances).forEach(key => {
-                    if (key !== this.#player.id) {
-                        const target = Player.instances[key].activeElement();
-                        target.pause();
-                    }
-                });
+                if (this.#player.getOptions().pauseOthers) {
+                    Object.keys(Player.instances).forEach(key => {
+                        if (key !== this.#player.id) {
+                            const target = Player.instances[key].activeElement();
+                            target.pause();
+                        }
+                    });
+                }
             }
         };
         this.#events.media.loadedmetadata = () => {

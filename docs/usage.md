@@ -144,6 +144,8 @@ var player = new OpenPlayerJS('[player ID]', {
     // or just a number of pixels
     width,
     height,
+    // Flag to allow multiple instances of the player to play at the same time (by default, `true`)
+    pauseOthers,
 });
 // Don't forget to start the player
 player.init();
