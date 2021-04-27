@@ -86,7 +86,7 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 12. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
 13. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
 14. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
-15. [Addition of a custom control](https://codepen.io/rafa8626/pen/oNXmEza)
+15. [Seamless transitions using custom control](https://codepen.io/rafa8626/pen/oNXmEza)
 16. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
 17. [Using `Levels` and setting width/height](https://codepen.io/rafa8626/pen/ExxXvZx)
 18. [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
