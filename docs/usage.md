@@ -181,3 +181,32 @@ export default function Sample() {
         </div>
     );
 ```
+
+Check the [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB) and [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln) samples for more information.
+
+## Vue.js
+
+Using OpenPlayerJS with Vue.js is not as different as the example above; however, since Vue 3.x allows the user to use variables with reactivity, the variable that OpenPlayerJS must be assigned to **MUST NOT be reactive**; otherwise, due the changes introduced in 2.7.2 version, the main methods such as `play()`, `pause()`, `init()`, etc., will be attempted to be called via a Vue observer proxy variable, instead of an OpenPlayerJS instance.
+
+A valid example of how to use OpenPlayerJS with Vue is as follows:
+
+```javascript
+const app = Vue.createApp({
+  data() {
+    return {
+      // This is key: a variable preceded by `$` is a non-reactive variable, and this is what we need to make it work with OpenPlayerJS
+      $player: null,
+    }
+  },
+  mounted() {
+    this.$player = new OpenPlayerJS('player', {
+        showLoaderOnInit: false,
+        pauseOthers: false,
+    });
+    this.$player.init();
+},
+});
+app.mount('#app');
+```
+
+Check the [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo) sample for more information.

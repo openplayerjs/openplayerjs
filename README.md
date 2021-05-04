@@ -87,11 +87,13 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 13. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
 14. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
 15. [Seamless transitions using custom control](https://codepen.io/rafa8626/pen/oNXmEza)
-16. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
-17. [Using `Levels` and setting width/height](https://codepen.io/rafa8626/pen/ExxXvZx)
-18. [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
-19. [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
-20. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
+16. [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB)
+17. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
+18. [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo)
+19. [Using `Levels` and setting width/height](https://codepen.io/rafa8626/pen/ExxXvZx)
+20. [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
+21. [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
+22. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
 
 ## Built With
 
