@@ -109,7 +109,7 @@ class DashMedia extends Native {
             this.element.dispatchEvent(errorEvent);
         }
         else {
-            const e = addEvent(event.type, event);
+            const e = addEvent(event.type, { detail: event });
             this.element.dispatchEvent(e);
         }
     }

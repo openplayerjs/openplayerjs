@@ -9286,7 +9286,9 @@ var DashMedia = function (_native_1$default) {
         var errorEvent = events_1.addEvent('playererror', details);
         this.element.dispatchEvent(errorEvent);
       } else {
-        var e = events_1.addEvent(event.type, event);
+        var e = events_1.addEvent(event.type, {
+          detail: event
+        });
         this.element.dispatchEvent(e);
       }
     }
