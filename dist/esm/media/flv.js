@@ -119,7 +119,7 @@ class FlvMedia extends Native {
             this.element.dispatchEvent(errorEvent);
         }
         else {
-            const e = addEvent(event, data);
+            const e = addEvent(event, { detail: { data } });
             this.element.dispatchEvent(e);
         }
     }

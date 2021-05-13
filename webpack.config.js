@@ -16,7 +16,7 @@ module.exports = {
     },
     performance: {
         hints: 'error',
-        maxAssetSize: 400000,
+        maxAssetSize: 500000,
     },
     output: {
         path: path.resolve(__dirname, './dist'),

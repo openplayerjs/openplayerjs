@@ -2,6 +2,8 @@
     "buildOnSave": false,
     "compileOnSave": false,
     "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "target": "es6",
         "declaration": true,
         "allowJs": true,

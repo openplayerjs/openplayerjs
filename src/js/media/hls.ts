@@ -256,24 +256,24 @@ class HlsMedia extends Native {
                         } else {
                             const msg = 'Cannot recover, last media error recovery failed';
                             console.error(msg);
-                            const mediaEvent = addEvent(type, details);
+                            const mediaEvent = addEvent(type, { detail: { data: details }});
                             this.element.dispatchEvent(mediaEvent);
                         }
                         break;
                     case 'networkError':
                         const message = 'Network error';
                         console.error(message);
-                        const networkEvent = addEvent(type, details);
+                        const networkEvent = addEvent(type, { detail: { data: details }});
                         this.element.dispatchEvent(networkEvent);
                         break;
                     default:
                         this.#player.destroy();
-                        const fatalEvent = addEvent(type, details);
+                        const fatalEvent = addEvent(type, { detail: { data: details }});
                         this.element.dispatchEvent(fatalEvent);
                         break;
                 }
             } else {
-                const err = addEvent(type, details);
+                const err = addEvent(type, { detail: { data: details }});
                 this.element.dispatchEvent(err);
             }
         } else {
@@ -286,10 +286,10 @@ class HlsMedia extends Native {
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
             } else if (event === 'hlsFragParsingMetadata') {
-                const metaEvent = addEvent('metadataready', data[1]);
+                const metaEvent = addEvent('metadataready', { detail: { data: data[1] } });
                 this.element.dispatchEvent(metaEvent);
             }
-            const e = addEvent(event, data[1]);
+            const e = addEvent(event, { detail: { data: data[1] } });
             this.element.dispatchEvent(e);
         }
     }

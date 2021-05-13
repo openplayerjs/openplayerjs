@@ -131,7 +131,7 @@ Event | Dispatched when... | VPAID equivalent
 `adspause` | user pauses the Ad. | AdPaused
 `adsmute` | user mutes the Ad. | AdVolumeChange
 
-In addition to the list above, all [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are supported using the same approach described above, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`.
+In addition to the list above, all [HLS events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#runtime-events) and [HLS error events](https://github.com/video-dev/hls.js/blob/master/docs/API.md#errors) are supported using the same approach described above, including all their details. For the error ones, they are classified as `networkError`, `mediaError`, `muxError` and `otherError`. The proper way to use them is by using the prefix `hls` and then in camel case notation the name of the event, since not always we will have the `Hls` object available right away. For the full list of events mapped as described, please check the [events.ts file](https://github.com/video-dev/hls.js/blob/master/src/events.ts#L56).
 
 ### Error Events
 

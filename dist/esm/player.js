@@ -18,7 +18,7 @@ import 'core-js/features/object/assign';
 import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
-import 'element-closest/browser';
+import './utils/closest';
 import Controls from './controls';
 import Media from './media';
 import Ads from './media/ads';
