@@ -98,6 +98,40 @@ var event = new CustomEvent('ended');
 player.getElement().dispatchEvent(event);
 ```
 
+If you need to access additional infomation about any event (if available), check the `detail` object when you listen for an event. For example, when using HLS.js events:
+
+```javascript
+player.getElement().addEventListener('hlsManifestParsed', function(e) {
+    /* it will return an object with the following elements:
+    {
+        altAudio
+        audio
+        audioTracks
+        firstLevel
+        levels
+        stats
+        subtitleTracks
+        video
+    }
+    */
+    console.log(e.detail.data);
+});
+
+player.getElement().addEventListener('hlsLevelLoaded', function(e) {
+    /* it will return an object with the following elements:
+    {
+        deliveryDirectives
+        details:
+        id
+        level
+        networkDetails
+        stats
+    }
+    */
+   console.log(e.detail.data);
+});
+```
+
 All [HTML5 media events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Media_events) are supported by OpenPlayerJS, including:
 
 Event | Description
