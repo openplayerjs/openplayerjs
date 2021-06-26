@@ -1,36 +1,34 @@
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to set private field on non-instance");
-    }
-    privateMap.set(receiver, value);
-    return value;
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _player, _isFullscreen, _button, _fullscreenEvents, _fullscreenWidth, _fullscreenHeight, _clickEvent, _labels, _position, _layer;
+var _Fullscreen_player, _Fullscreen_isFullscreen, _Fullscreen_button, _Fullscreen_fullscreenEvents, _Fullscreen_fullscreenWidth, _Fullscreen_fullscreenHeight, _Fullscreen_clickEvent, _Fullscreen_labels, _Fullscreen_position, _Fullscreen_layer;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IPHONE } from '../utils/constants';
 import { removeElement } from '../utils/general';
 class Fullscreen {
     constructor(player, position, layer) {
-        _player.set(this, void 0);
-        _isFullscreen.set(this, void 0);
-        _button.set(this, void 0);
-        _fullscreenEvents.set(this, []);
-        _fullscreenWidth.set(this, 0);
-        _fullscreenHeight.set(this, 0);
-        _clickEvent.set(this, void 0);
-        _labels.set(this, void 0);
-        _position.set(this, void 0);
-        _layer.set(this, void 0);
-        __classPrivateFieldSet(this, _player, player);
-        __classPrivateFieldSet(this, _labels, player.getOptions().labels);
-        __classPrivateFieldSet(this, _position, position);
-        __classPrivateFieldSet(this, _layer, layer);
-        __classPrivateFieldSet(this, _isFullscreen, document.body.classList.contains('op-fullscreen__on'));
+        _Fullscreen_player.set(this, void 0);
+        _Fullscreen_isFullscreen.set(this, void 0);
+        _Fullscreen_button.set(this, void 0);
+        _Fullscreen_fullscreenEvents.set(this, []);
+        _Fullscreen_fullscreenWidth.set(this, 0);
+        _Fullscreen_fullscreenHeight.set(this, 0);
+        _Fullscreen_clickEvent.set(this, void 0);
+        _Fullscreen_labels.set(this, void 0);
+        _Fullscreen_position.set(this, void 0);
+        _Fullscreen_layer.set(this, void 0);
+        __classPrivateFieldSet(this, _Fullscreen_player, player, "f");
+        __classPrivateFieldSet(this, _Fullscreen_labels, player.getOptions().labels, "f");
+        __classPrivateFieldSet(this, _Fullscreen_position, position, "f");
+        __classPrivateFieldSet(this, _Fullscreen_layer, layer, "f");
+        __classPrivateFieldSet(this, _Fullscreen_isFullscreen, document.body.classList.contains('op-fullscreen__on'), "f");
         const target = document;
         this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled ||
             target.msFullscreenEnabled || target.webkitSupportsFullscreen ||
@@ -38,67 +36,67 @@ class Fullscreen {
         return this;
     }
     create() {
-        __classPrivateFieldSet(this, _button, document.createElement('button'));
-        __classPrivateFieldGet(this, _button).type = 'button';
-        __classPrivateFieldGet(this, _button).className = `op-controls__fullscreen op-control__${__classPrivateFieldGet(this, _position)}`;
-        __classPrivateFieldGet(this, _button).tabIndex = 0;
-        __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).fullscreen;
-        __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
-        __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
-        __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).fullscreen);
-        __classPrivateFieldGet(this, _button).innerHTML = `<span class="op-sr">${__classPrivateFieldGet(this, _labels).fullscreen}</span>`;
-        __classPrivateFieldSet(this, _clickEvent, () => {
-            __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'true');
+        __classPrivateFieldSet(this, _Fullscreen_button, document.createElement('button'), "f");
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").type = 'button';
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").className = `op-controls__fullscreen op-control__${__classPrivateFieldGet(this, _Fullscreen_position, "f")}`;
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").tabIndex = 0;
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").title = __classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen;
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Fullscreen_player, "f").id);
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-pressed', 'false');
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen);
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").innerHTML = `<span class="op-sr">${__classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen}</span>`;
+        __classPrivateFieldSet(this, _Fullscreen_clickEvent, () => {
+            __classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-pressed', 'true');
             this.toggleFullscreen();
-        });
-        __classPrivateFieldSet(this, _fullscreenEvents, [
+        }, "f");
+        __classPrivateFieldSet(this, _Fullscreen_fullscreenEvents, [
             'fullscreenchange',
             'mozfullscreenchange',
             'webkitfullscreenchange',
             'msfullscreenchange',
-        ]);
+        ], "f");
         this._setFullscreenData(false);
-        __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _fullscreenEvents).forEach(event => {
+        __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Fullscreen_fullscreenEvents, "f").forEach(event => {
             document.addEventListener(event, this._fullscreenChange.bind(this), EVENT_OPTIONS);
         });
-        __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _clickEvent).bind(this), EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Fullscreen_clickEvent, "f").bind(this), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Fullscreen_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Fullscreen_layer, "f")).appendChild(__classPrivateFieldGet(this, _Fullscreen_button, "f"));
         if (IS_IPHONE) {
-            __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitbeginfullscreen', () => {
-                __classPrivateFieldSet(this, _isFullscreen, true);
+            __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitbeginfullscreen', () => {
+                __classPrivateFieldSet(this, _Fullscreen_isFullscreen, true, "f");
                 this._setFullscreenData(true);
                 document.body.classList.add('op-fullscreen__on');
             }, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitendfullscreen', () => {
-                __classPrivateFieldSet(this, _isFullscreen, false);
+            __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitendfullscreen', () => {
+                __classPrivateFieldSet(this, _Fullscreen_isFullscreen, false, "f");
                 this._setFullscreenData(false);
                 document.body.classList.remove('op-fullscreen__on');
             }, EVENT_OPTIONS);
         }
     }
     destroy() {
-        __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
-        __classPrivateFieldGet(this, _fullscreenEvents).forEach(event => {
+        __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        __classPrivateFieldGet(this, _Fullscreen_fullscreenEvents, "f").forEach(event => {
             document.removeEventListener(event, this._fullscreenChange.bind(this));
         });
         if (IS_IPHONE) {
-            __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitbeginfullscreen', () => {
-                __classPrivateFieldSet(this, _isFullscreen, true);
+            __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitbeginfullscreen', () => {
+                __classPrivateFieldSet(this, _Fullscreen_isFullscreen, true, "f");
                 this._setFullscreenData(false);
                 document.body.classList.add('op-fullscreen__on');
             });
-            __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitendfullscreen', () => {
-                __classPrivateFieldSet(this, _isFullscreen, false);
+            __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitendfullscreen', () => {
+                __classPrivateFieldSet(this, _Fullscreen_isFullscreen, false, "f");
                 this._setFullscreenData(true);
                 document.body.classList.remove('op-fullscreen__on');
             });
         }
-        __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _clickEvent).bind(this));
-        removeElement(__classPrivateFieldGet(this, _button));
+        __classPrivateFieldGet(this, _Fullscreen_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Fullscreen_clickEvent, "f").bind(this));
+        removeElement(__classPrivateFieldGet(this, _Fullscreen_button, "f"));
     }
     toggleFullscreen() {
-        if (__classPrivateFieldGet(this, _isFullscreen)) {
+        if (__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
             const target = document;
             if (target.exitFullscreen) {
                 target.exitFullscreen();
@@ -118,9 +116,9 @@ class Fullscreen {
             document.body.classList.remove('op-fullscreen__on');
         }
         else {
-            const video = __classPrivateFieldGet(this, _player).getElement();
-            __classPrivateFieldSet(this, _fullscreenWidth, window.screen.width);
-            __classPrivateFieldSet(this, _fullscreenHeight, window.screen.height);
+            const video = __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement();
+            __classPrivateFieldSet(this, _Fullscreen_fullscreenWidth, window.screen.width, "f");
+            __classPrivateFieldSet(this, _Fullscreen_fullscreenHeight, window.screen.height, "f");
             if (video.requestFullscreen) {
                 video.parentElement.requestFullscreen();
             }
@@ -144,21 +142,21 @@ class Fullscreen {
         if (typeof window !== 'undefined' && (IS_ANDROID || IS_IPHONE)) {
             const screen = window.screen;
             if (screen.orientation) {
-                if (!__classPrivateFieldGet(this, _isFullscreen)) {
+                if (!__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
                     screen.orientation.lock('landscape');
                 }
             }
         }
     }
     _fullscreenChange() {
-        const width = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenWidth);
-        const height = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenHeight);
-        this._setFullscreenData(!__classPrivateFieldGet(this, _isFullscreen));
-        if (__classPrivateFieldGet(this, _player).isAd()) {
-            __classPrivateFieldGet(this, _player).getAd().resizeAds(width, height);
+        const width = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? 0 : __classPrivateFieldGet(this, _Fullscreen_fullscreenWidth, "f");
+        const height = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? 0 : __classPrivateFieldGet(this, _Fullscreen_fullscreenHeight, "f");
+        this._setFullscreenData(!__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f"));
+        if (__classPrivateFieldGet(this, _Fullscreen_player, "f").isAd()) {
+            __classPrivateFieldGet(this, _Fullscreen_player, "f").getAd().resizeAds(width, height);
         }
-        __classPrivateFieldSet(this, _isFullscreen, !__classPrivateFieldGet(this, _isFullscreen));
-        if (__classPrivateFieldGet(this, _isFullscreen)) {
+        __classPrivateFieldSet(this, _Fullscreen_isFullscreen, !__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f"), "f");
+        if (__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
             document.body.classList.add('op-fullscreen__on');
         }
         else {
@@ -167,18 +165,18 @@ class Fullscreen {
         this._resize(width, height);
     }
     _setFullscreenData(state) {
-        __classPrivateFieldGet(this, _player).getContainer().setAttribute('data-fullscreen', (!!state).toString());
+        __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().setAttribute('data-fullscreen', (!!state).toString());
         if (state) {
-            __classPrivateFieldGet(this, _button).classList.add('op-controls__fullscreen--out');
+            __classPrivateFieldGet(this, _Fullscreen_button, "f").classList.add('op-controls__fullscreen--out');
         }
         else {
-            __classPrivateFieldGet(this, _button).classList.remove('op-controls__fullscreen--out');
+            __classPrivateFieldGet(this, _Fullscreen_button, "f").classList.remove('op-controls__fullscreen--out');
         }
     }
     _resize(width, height) {
-        const wrapper = __classPrivateFieldGet(this, _player).getContainer();
-        const video = __classPrivateFieldGet(this, _player).getElement();
-        const options = __classPrivateFieldGet(this, _player).getOptions();
+        const wrapper = __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer();
+        const video = __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement();
+        const options = __classPrivateFieldGet(this, _Fullscreen_player, "f").getOptions();
         let styles = '';
         if (width) {
             wrapper.style.width = '100%';
@@ -218,5 +216,5 @@ class Fullscreen {
         }
     }
 }
-_player = new WeakMap(), _isFullscreen = new WeakMap(), _button = new WeakMap(), _fullscreenEvents = new WeakMap(), _fullscreenWidth = new WeakMap(), _fullscreenHeight = new WeakMap(), _clickEvent = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _Fullscreen_button = new WeakMap(), _Fullscreen_fullscreenEvents = new WeakMap(), _Fullscreen_fullscreenWidth = new WeakMap(), _Fullscreen_fullscreenHeight = new WeakMap(), _Fullscreen_clickEvent = new WeakMap(), _Fullscreen_labels = new WeakMap(), _Fullscreen_position = new WeakMap(), _Fullscreen_layer = new WeakMap();
 export default Fullscreen;

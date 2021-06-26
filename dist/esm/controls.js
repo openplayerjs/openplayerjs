@@ -1,17 +1,15 @@
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to set private field on non-instance");
-    }
-    privateMap.set(receiver, value);
-    return value;
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _settings, _timer, _controls, _player, _items, _controlEls;
+var _Controls_settings, _Controls_timer, _Controls_controls, _Controls_player, _Controls_items, _Controls_controlEls;
 import Captions from './controls/captions';
 import Fullscreen from './controls/fullscreen';
 import Levels from './controls/levels';
@@ -29,12 +27,12 @@ class Controls {
             media: {},
             mouse: {},
         };
-        _settings.set(this, void 0);
-        _timer.set(this, 0);
-        _controls.set(this, void 0);
-        _player.set(this, void 0);
-        _items.set(this, void 0);
-        _controlEls.set(this, {
+        _Controls_settings.set(this, void 0);
+        _Controls_timer.set(this, 0);
+        _Controls_controls.set(this, void 0);
+        _Controls_player.set(this, void 0);
+        _Controls_items.set(this, void 0);
+        _Controls_controlEls.set(this, {
             Captions,
             Fullscreen,
             Levels,
@@ -44,13 +42,13 @@ class Controls {
             Time,
             Volume,
         });
-        __classPrivateFieldSet(this, _player, player);
+        __classPrivateFieldSet(this, _Controls_player, player, "f");
         this._setElements();
         return this;
     }
     create() {
-        __classPrivateFieldGet(this, _player).getElement().controls = false;
-        const isMediaVideo = isVideo(__classPrivateFieldGet(this, _player).getElement());
+        __classPrivateFieldGet(this, _Controls_player, "f").getElement().controls = false;
+        const isMediaVideo = isVideo(__classPrivateFieldGet(this, _Controls_player, "f").getElement());
         this._createControlsLayer();
         this._buildElements();
         this.events.controlschanged = () => {
@@ -59,60 +57,60 @@ class Controls {
             this.create();
         };
         this.events.ended = () => {
-            __classPrivateFieldGet(this, _player).getContainer().classList.remove('op-controls--hidden');
+            __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
         };
-        __classPrivateFieldGet(this, _player).getElement().addEventListener('controlschanged', this.events.controlschanged, EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _player).getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
-        const { alwaysVisible } = __classPrivateFieldGet(this, _player).getOptions().controls;
+        __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlschanged', this.events.controlschanged, EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
+        const { alwaysVisible } = __classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls;
         if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
             this.events.mouse.mouseenter = () => {
-                if (isMediaVideo && !__classPrivateFieldGet(this, _player).activeElement().paused) {
+                if (isMediaVideo && !__classPrivateFieldGet(this, _Controls_player, "f").activeElement().paused) {
                     this._stopControlTimer();
-                    if (__classPrivateFieldGet(this, _player).activeElement().currentTime) {
-                        __classPrivateFieldGet(this, _player).playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(this, _player).isMedia() ? 'false' : 'true');
-                        __classPrivateFieldGet(this, _player).loader.setAttribute('aria-hidden', 'true');
+                    if (__classPrivateFieldGet(this, _Controls_player, "f").activeElement().currentTime) {
+                        __classPrivateFieldGet(this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(this, _Controls_player, "f").isMedia() ? 'false' : 'true');
+                        __classPrivateFieldGet(this, _Controls_player, "f").loader.setAttribute('aria-hidden', 'true');
                     }
-                    else if (__classPrivateFieldGet(this, _player).getOptions().showLoaderOnInit) {
-                        __classPrivateFieldGet(this, _player).playBtn.setAttribute('aria-hidden', 'true');
-                        __classPrivateFieldGet(this, _player).loader.setAttribute('aria-hidden', 'false');
+                    else if (__classPrivateFieldGet(this, _Controls_player, "f").getOptions().showLoaderOnInit) {
+                        __classPrivateFieldGet(this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', 'true');
+                        __classPrivateFieldGet(this, _Controls_player, "f").loader.setAttribute('aria-hidden', 'false');
                     }
-                    __classPrivateFieldGet(this, _player).getContainer().classList.remove('op-controls--hidden');
+                    __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mousemove = () => {
                 if (isMediaVideo) {
-                    if (__classPrivateFieldGet(this, _player).activeElement().currentTime) {
-                        __classPrivateFieldGet(this, _player).loader.setAttribute('aria-hidden', 'true');
-                        __classPrivateFieldGet(this, _player).playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(this, _player).isMedia() ? 'false' : 'true');
+                    if (__classPrivateFieldGet(this, _Controls_player, "f").activeElement().currentTime) {
+                        __classPrivateFieldGet(this, _Controls_player, "f").loader.setAttribute('aria-hidden', 'true');
+                        __classPrivateFieldGet(this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(this, _Controls_player, "f").isMedia() ? 'false' : 'true');
                     }
                     else {
-                        __classPrivateFieldGet(this, _player).playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(this, _player).getOptions().showLoaderOnInit ? 'true' : 'false');
-                        __classPrivateFieldGet(this, _player).loader.setAttribute('aria-hidden', __classPrivateFieldGet(this, _player).getOptions().showLoaderOnInit ? 'false' : 'true');
+                        __classPrivateFieldGet(this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(this, _Controls_player, "f").getOptions().showLoaderOnInit ? 'true' : 'false');
+                        __classPrivateFieldGet(this, _Controls_player, "f").loader.setAttribute('aria-hidden', __classPrivateFieldGet(this, _Controls_player, "f").getOptions().showLoaderOnInit ? 'false' : 'true');
                     }
-                    __classPrivateFieldGet(this, _player).getContainer().classList.remove('op-controls--hidden');
+                    __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
                     this._startControlTimer(2500);
                 }
             };
             this.events.mouse.mouseleave = () => {
-                if (isMediaVideo && !__classPrivateFieldGet(this, _player).activeElement().paused) {
+                if (isMediaVideo && !__classPrivateFieldGet(this, _Controls_player, "f").activeElement().paused) {
                     this._startControlTimer(1000);
                 }
             };
             this.events.media.play = () => {
                 if (isMediaVideo) {
-                    this._startControlTimer(__classPrivateFieldGet(this, _player).getOptions().hidePlayBtnTimer);
+                    this._startControlTimer(__classPrivateFieldGet(this, _Controls_player, "f").getOptions().hidePlayBtnTimer);
                 }
             };
             this.events.media.pause = () => {
-                __classPrivateFieldGet(this, _player).getContainer().classList.remove('op-controls--hidden');
+                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
                 this._stopControlTimer();
             };
             Object.keys(this.events.media).forEach(event => {
-                __classPrivateFieldGet(this, _player).getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
+                __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
             Object.keys(this.events.mouse).forEach(event => {
-                __classPrivateFieldGet(this, _player).getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
+                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
             });
             this._startControlTimer(3000);
         }
@@ -120,17 +118,17 @@ class Controls {
     destroy() {
         if (!IS_ANDROID && !IS_IOS) {
             Object.keys(this.events.mouse).forEach(event => {
-                __classPrivateFieldGet(this, _player).getContainer().removeEventListener(event, this.events.mouse[event]);
+                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().removeEventListener(event, this.events.mouse[event]);
             });
             Object.keys(this.events.media).forEach(event => {
-                __classPrivateFieldGet(this, _player).getElement().removeEventListener(event, this.events.media[event]);
+                __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener(event, this.events.media[event]);
             });
             this._stopControlTimer();
         }
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlschanged', this.events.controlschanged);
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('ended', this.events.ended);
-        Object.keys(__classPrivateFieldGet(this, _items)).forEach((position) => {
-            __classPrivateFieldGet(this, _items)[position].forEach((item) => {
+        __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('controlschanged', this.events.controlschanged);
+        __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('ended', this.events.ended);
+        Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach((position) => {
+            __classPrivateFieldGet(this, _Controls_items, "f")[position].forEach((item) => {
                 if (item.custom) {
                     this._destroyCustomControl(item);
                 }
@@ -139,45 +137,45 @@ class Controls {
                 }
             });
         });
-        removeElement(__classPrivateFieldGet(this, _controls));
+        removeElement(__classPrivateFieldGet(this, _Controls_controls, "f"));
     }
     getContainer() {
-        return __classPrivateFieldGet(this, _controls);
+        return __classPrivateFieldGet(this, _Controls_controls, "f");
     }
     getLayer(layer) {
-        return __classPrivateFieldGet(this, _controls).querySelector(`.op-controls-layer__${layer}`) || __classPrivateFieldGet(this, _controls);
+        return __classPrivateFieldGet(this, _Controls_controls, "f").querySelector(`.op-controls-layer__${layer}`) || __classPrivateFieldGet(this, _Controls_controls, "f");
     }
     _createControlsLayer() {
-        if (!__classPrivateFieldGet(this, _controls) || !__classPrivateFieldGet(this, _player).getContainer().querySelector('.op-controls')) {
-            __classPrivateFieldSet(this, _controls, document.createElement('div'));
-            __classPrivateFieldGet(this, _controls).className = 'op-controls';
-            __classPrivateFieldGet(this, _player).getContainer().appendChild(__classPrivateFieldGet(this, _controls));
+        if (!__classPrivateFieldGet(this, _Controls_controls, "f") || !__classPrivateFieldGet(this, _Controls_player, "f").getContainer().querySelector('.op-controls')) {
+            __classPrivateFieldSet(this, _Controls_controls, document.createElement('div'), "f");
+            __classPrivateFieldGet(this, _Controls_controls, "f").className = 'op-controls';
+            __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(__classPrivateFieldGet(this, _Controls_controls, "f"));
         }
     }
     _startControlTimer(time) {
-        const el = __classPrivateFieldGet(this, _player).activeElement();
+        const el = __classPrivateFieldGet(this, _Controls_player, "f").activeElement();
         this._stopControlTimer();
         if (typeof window !== 'undefined') {
-            __classPrivateFieldSet(this, _timer, window.setTimeout(() => {
-                if ((!el.paused || !el.ended) && isVideo(__classPrivateFieldGet(this, _player).getElement())) {
-                    __classPrivateFieldGet(this, _player).getContainer().classList.add('op-controls--hidden');
-                    __classPrivateFieldGet(this, _player).playBtn.setAttribute('aria-hidden', 'true');
+            __classPrivateFieldSet(this, _Controls_timer, window.setTimeout(() => {
+                if ((!el.paused || !el.ended) && isVideo(__classPrivateFieldGet(this, _Controls_player, "f").getElement())) {
+                    __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.add('op-controls--hidden');
+                    __classPrivateFieldGet(this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', 'true');
                     this._stopControlTimer();
                     const event = addEvent('controlshidden');
-                    __classPrivateFieldGet(this, _player).getElement().dispatchEvent(event);
+                    __classPrivateFieldGet(this, _Controls_player, "f").getElement().dispatchEvent(event);
                 }
-            }, time));
+            }, time), "f");
         }
     }
     _stopControlTimer() {
-        if (__classPrivateFieldGet(this, _timer) !== 0) {
-            clearTimeout(__classPrivateFieldGet(this, _timer));
-            __classPrivateFieldSet(this, _timer, 0);
+        if (__classPrivateFieldGet(this, _Controls_timer, "f") !== 0) {
+            clearTimeout(__classPrivateFieldGet(this, _Controls_timer, "f"));
+            __classPrivateFieldSet(this, _Controls_timer, 0, "f");
         }
     }
     _setElements() {
-        const controls = __classPrivateFieldGet(this, _player).getOptions().controls.layers;
-        __classPrivateFieldSet(this, _items, {
+        const controls = __classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls.layers;
+        __classPrivateFieldSet(this, _Controls_items, {
             'bottom-left': [],
             'bottom-middle': [],
             'bottom-right': [],
@@ -188,31 +186,31 @@ class Controls {
             'top-left': [],
             'top-middle': [],
             'top-right': [],
-        });
-        const isVideoEl = isVideo(__classPrivateFieldGet(this, _player).getElement());
-        const isAudioEl = isAudio(__classPrivateFieldGet(this, _player).getElement());
+        }, "f");
+        const isVideoEl = isVideo(__classPrivateFieldGet(this, _Controls_player, "f").getElement());
+        const isAudioEl = isAudio(__classPrivateFieldGet(this, _Controls_player, "f").getElement());
         const controlPositions = Object.keys(controls);
         const layersExist = controlPositions.find(item => /^(top|bottom)/.test(item));
         this._createControlsLayer();
         controlPositions.forEach((position) => {
             const [layer, pos] = position.split('-');
             if (pos) {
-                if (!__classPrivateFieldGet(this, _controls).classList.contains('op-controls__stacked')) {
-                    __classPrivateFieldGet(this, _controls).classList.add('op-controls__stacked');
+                if (!__classPrivateFieldGet(this, _Controls_controls, "f").classList.contains('op-controls__stacked')) {
+                    __classPrivateFieldGet(this, _Controls_controls, "f").classList.add('op-controls__stacked');
                 }
                 const className = `op-controls-layer__${layer}`;
-                if (!__classPrivateFieldGet(this, _controls).querySelector(`.${className}`)) {
+                if (!__classPrivateFieldGet(this, _Controls_controls, "f").querySelector(`.${className}`)) {
                     const controlLayer = document.createElement('div');
                     controlLayer.className = className;
-                    __classPrivateFieldGet(this, _controls).appendChild(controlLayer);
+                    __classPrivateFieldGet(this, _Controls_controls, "f").appendChild(controlLayer);
                 }
             }
             else if (layersExist) {
                 const className = 'op-controls-layer__center';
-                if (!__classPrivateFieldGet(this, _controls).querySelector(`.${className}`)) {
+                if (!__classPrivateFieldGet(this, _Controls_controls, "f").querySelector(`.${className}`)) {
                     const controlLayer = document.createElement('div');
                     controlLayer.className = className;
-                    __classPrivateFieldGet(this, _controls).appendChild(controlLayer);
+                    __classPrivateFieldGet(this, _Controls_controls, "f").appendChild(controlLayer);
                 }
             }
             controls[position]
@@ -220,31 +218,31 @@ class Controls {
                 .forEach((el) => {
                 const currentLayer = layersExist && !pos ? 'center' : layer;
                 const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
-                const item = new (__classPrivateFieldGet(this, _controlEls)[className])(__classPrivateFieldGet(this, _player), pos || layer, currentLayer);
+                const item = new (__classPrivateFieldGet(this, _Controls_controlEls, "f")[className])(__classPrivateFieldGet(this, _Controls_player, "f"), pos || layer, currentLayer);
                 if (el === 'settings') {
-                    __classPrivateFieldSet(this, _settings, item);
+                    __classPrivateFieldSet(this, _Controls_settings, item, "f");
                 }
                 if (isVideoEl || (el !== 'fullscreen' && isAudioEl)) {
-                    __classPrivateFieldGet(this, _items)[position].push(item);
+                    __classPrivateFieldGet(this, _Controls_items, "f")[position].push(item);
                 }
             });
         });
-        __classPrivateFieldGet(this, _player).getCustomControls().forEach(item => {
+        __classPrivateFieldGet(this, _Controls_player, "f").getCustomControls().forEach(item => {
             const [layer, pos] = item.position.split('-');
             const currentLayer = layersExist && !pos ? 'center' : layer;
             item.layer = currentLayer;
             item.position = pos || layer;
             if (item.position === 'right') {
-                __classPrivateFieldGet(this, _items)[item.position].unshift(item);
+                __classPrivateFieldGet(this, _Controls_items, "f")[item.position].unshift(item);
             }
             else {
-                __classPrivateFieldGet(this, _items)[item.position].push(item);
+                __classPrivateFieldGet(this, _Controls_items, "f")[item.position].push(item);
             }
         });
     }
     _buildElements() {
-        Object.keys(__classPrivateFieldGet(this, _items)).forEach((position) => {
-            __classPrivateFieldGet(this, _items)[position].forEach((item) => {
+        Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach((position) => {
+            __classPrivateFieldGet(this, _Controls_items, "f")[position].forEach((item) => {
                 if (item.custom) {
                     this._createCustomControl(item);
                 }
@@ -253,19 +251,19 @@ class Controls {
                 }
             });
         });
-        Object.keys(__classPrivateFieldGet(this, _items)).forEach((position) => {
-            __classPrivateFieldGet(this, _items)[position].forEach((item) => {
-                const allowDefault = !__classPrivateFieldGet(this, _player).getOptions().detachMenus || item instanceof Settings;
+        Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach((position) => {
+            __classPrivateFieldGet(this, _Controls_items, "f")[position].forEach((item) => {
+                const allowDefault = !__classPrivateFieldGet(this, _Controls_player, "f").getOptions().detachMenus || item instanceof Settings;
                 if (allowDefault && !item.custom && typeof item.addSettings === 'function') {
                     const menuItem = item.addSettings();
-                    if (__classPrivateFieldGet(this, _settings) && Object.keys(menuItem).length) {
-                        __classPrivateFieldGet(this, _settings).addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems, menuItem.className);
+                    if (__classPrivateFieldGet(this, _Controls_settings, "f") && Object.keys(menuItem).length) {
+                        __classPrivateFieldGet(this, _Controls_settings, "f").addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems, menuItem.className);
                     }
                 }
             });
         });
         const e = addEvent('controlschanged');
-        __classPrivateFieldGet(this, _controls).dispatchEvent(e);
+        __classPrivateFieldGet(this, _Controls_controls, "f").dispatchEvent(e);
     }
     _hideCustomMenu(menu) {
         let timeout;
@@ -279,7 +277,7 @@ class Controls {
         }
     }
     _toggleCustomMenu(event, menu, item) {
-        const menus = __classPrivateFieldGet(this, _player).getContainer().querySelectorAll('.op-settings');
+        const menus = __classPrivateFieldGet(this, _Controls_player, "f").getContainer().querySelectorAll('.op-settings');
         menus.forEach(m => {
             if (m.getAttribute('aria-hidden') === 'false' && m.id !== menu.id) {
                 m.setAttribute('aria-hidden', 'true');
@@ -297,7 +295,7 @@ class Controls {
         control.tabIndex = 0;
         control.id = item.id;
         control.title = item.title;
-        control.innerHTML = `${icon} <span class="op-sr">${item.title}</span>`;
+        control.innerHTML = item.content || `${icon} <span class="op-sr">${item.title}</span>`;
         if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
             const menu = document.createElement('div');
             menu.className = 'op-settings op-settings__custom';
@@ -313,7 +311,7 @@ class Controls {
                 </div>`;
             });
             menu.innerHTML = `<div class="op-settings__menu" role="menu">${items.join('')}</div>`;
-            __classPrivateFieldGet(this, _player).getContainer().appendChild(menu);
+            __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(menu);
             item.subitems.forEach(subitem => {
                 const menuItem = menu.querySelector(`#${subitem.id}`);
                 if (menuItem && subitem.click && typeof subitem.click === 'function') {
@@ -321,7 +319,7 @@ class Controls {
                 }
             });
             control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _player).getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         }
         else if (item.click && typeof item.click === 'function') {
             control.addEventListener('click', item.click, EVENT_OPTIONS);
@@ -343,11 +341,14 @@ class Controls {
         }
         if (item.layer) {
             if (item.layer === 'main') {
-                __classPrivateFieldGet(this, _player).getContainer().appendChild(control);
+                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(control);
             }
             else {
                 this.getLayer(item.layer).appendChild(control);
             }
+        }
+        if (item.init && typeof item.init === 'function') {
+            item.init(__classPrivateFieldGet(this, _Controls_player, "f"));
         }
     }
     _destroyCustomControl(item) {
@@ -355,7 +356,7 @@ class Controls {
         const control = this.getContainer().querySelector(`.op-controls__${key}`);
         if (control) {
             if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
-                const menu = __classPrivateFieldGet(this, _player).getContainer().querySelector(`#${item.id}-menu`);
+                const menu = __classPrivateFieldGet(this, _Controls_player, "f").getContainer().querySelector(`#${item.id}-menu`);
                 if (menu) {
                     item.subitems.forEach(subitem => {
                         const menuItem = menu.querySelector(`#${subitem.id}`);
@@ -364,7 +365,7 @@ class Controls {
                         }
                     });
                     control.removeEventListener('click', (e) => this._toggleCustomMenu(e, menu, item));
-                    __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
+                    __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
                     removeElement(menu);
                 }
             }
@@ -387,8 +388,11 @@ class Controls {
                 control.removeEventListener('focus', item.focus);
             }
             removeElement(control);
+            if (item.destroy && typeof item.destroy === 'function') {
+                item.destroy(__classPrivateFieldGet(this, _Controls_player, "f"));
+            }
         }
     }
 }
-_settings = new WeakMap(), _timer = new WeakMap(), _controls = new WeakMap(), _player = new WeakMap(), _items = new WeakMap(), _controlEls = new WeakMap();
+_Controls_settings = new WeakMap(), _Controls_timer = new WeakMap(), _Controls_controls = new WeakMap(), _Controls_player = new WeakMap(), _Controls_items = new WeakMap(), _Controls_controlEls = new WeakMap();
 export default Controls;

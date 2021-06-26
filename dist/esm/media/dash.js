@@ -1,17 +1,15 @@
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to set private field on non-instance");
-    }
-    privateMap.set(receiver, value);
-    return value;
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
 };
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _player, _events, _options;
+var _DashMedia_player, _DashMedia_events, _DashMedia_options;
 import { HAS_MSE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { loadScript } from '../utils/general';
@@ -20,18 +18,18 @@ import Native from './native';
 class DashMedia extends Native {
     constructor(element, mediaSource, options) {
         super(element, mediaSource);
-        _player.set(this, void 0);
-        _events.set(this, {});
-        _options.set(this, {});
-        __classPrivateFieldSet(this, _options, options);
+        _DashMedia_player.set(this, void 0);
+        _DashMedia_events.set(this, {});
+        _DashMedia_options.set(this, {});
+        __classPrivateFieldSet(this, _DashMedia_options, options, "f");
         this.promise = (typeof dashjs === 'undefined') ?
             loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
             new Promise(resolve => {
                 resolve({});
             });
         this.promise.then(() => {
-            __classPrivateFieldSet(this, _player, dashjs.MediaPlayer().create());
-            this.instance = __classPrivateFieldGet(this, _player);
+            __classPrivateFieldSet(this, _DashMedia_player, dashjs.MediaPlayer().create(), "f");
+            this.instance = __classPrivateFieldGet(this, _DashMedia_player, "f");
         });
         return this;
     }
@@ -40,13 +38,13 @@ class DashMedia extends Native {
     }
     load() {
         this._preparePlayer();
-        __classPrivateFieldGet(this, _player).attachSource(this.media.src);
+        __classPrivateFieldGet(this, _DashMedia_player, "f").attachSource(this.media.src);
         const e = addEvent('loadedmetadata');
         this.element.dispatchEvent(e);
-        if (!__classPrivateFieldGet(this, _events)) {
-            __classPrivateFieldSet(this, _events, dashjs.MediaPlayer.events);
-            Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
-                __classPrivateFieldGet(this, _player).on(__classPrivateFieldGet(this, _events)[event], this._assign.bind(this));
+        if (!__classPrivateFieldGet(this, _DashMedia_events, "f")) {
+            __classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
+            Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(event => {
+                __classPrivateFieldGet(this, _DashMedia_player, "f").on(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign.bind(this));
             });
         }
     }
@@ -56,19 +54,19 @@ class DashMedia extends Native {
     set src(media) {
         if (isDashSource(media)) {
             this._revoke();
-            __classPrivateFieldSet(this, _player, dashjs.MediaPlayer().create());
+            __classPrivateFieldSet(this, _DashMedia_player, dashjs.MediaPlayer().create(), "f");
             this._preparePlayer();
-            __classPrivateFieldGet(this, _player).attachSource(media.src);
-            __classPrivateFieldSet(this, _events, dashjs.MediaPlayer.events);
-            Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
-                __classPrivateFieldGet(this, _player).on(__classPrivateFieldGet(this, _events)[event], this._assign.bind(this));
+            __classPrivateFieldGet(this, _DashMedia_player, "f").attachSource(media.src);
+            __classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
+            Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(event => {
+                __classPrivateFieldGet(this, _DashMedia_player, "f").on(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign.bind(this));
             });
         }
     }
     get levels() {
         const levels = [];
-        if (__classPrivateFieldGet(this, _player)) {
-            const bitrates = __classPrivateFieldGet(this, _player).getBitrateInfoListFor('video');
+        if (__classPrivateFieldGet(this, _DashMedia_player, "f")) {
+            const bitrates = __classPrivateFieldGet(this, _DashMedia_player, "f").getBitrateInfoListFor('video');
             if (bitrates.length) {
                 bitrates.forEach((item) => {
                     if (bitrates[item]) {
@@ -87,15 +85,15 @@ class DashMedia extends Native {
     }
     set level(level) {
         if (level === 0) {
-            __classPrivateFieldGet(this, _player).setAutoSwitchQuality(true);
+            __classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(true);
         }
         else {
-            __classPrivateFieldGet(this, _player).setAutoSwitchQuality(false);
-            __classPrivateFieldGet(this, _player).setQualityFor('video', level);
+            __classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(false);
+            __classPrivateFieldGet(this, _DashMedia_player, "f").setQualityFor('video', level);
         }
     }
     get level() {
-        return __classPrivateFieldGet(this, _player) ? __classPrivateFieldGet(this, _player).getQualityFor('video') : -1;
+        return __classPrivateFieldGet(this, _DashMedia_player, "f") ? __classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : -1;
     }
     _assign(event) {
         if (event.type === 'error') {
@@ -114,17 +112,17 @@ class DashMedia extends Native {
         }
     }
     _revoke() {
-        if (__classPrivateFieldGet(this, _events)) {
-            Object.keys(__classPrivateFieldGet(this, _events)).forEach(event => {
-                __classPrivateFieldGet(this, _player).off(__classPrivateFieldGet(this, _events)[event], this._assign.bind(this));
+        if (__classPrivateFieldGet(this, _DashMedia_events, "f")) {
+            Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(event => {
+                __classPrivateFieldGet(this, _DashMedia_player, "f").off(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign.bind(this));
             });
-            __classPrivateFieldSet(this, _events, []);
+            __classPrivateFieldSet(this, _DashMedia_events, [], "f");
         }
-        __classPrivateFieldGet(this, _player).reset();
+        __classPrivateFieldGet(this, _DashMedia_player, "f").reset();
     }
     _preparePlayer() {
-        if (typeof __classPrivateFieldGet(this, _player).getDebug().setLogToBrowserConsole === 'undefined') {
-            __classPrivateFieldGet(this, _player).updateSettings({
+        if (typeof __classPrivateFieldGet(this, _DashMedia_player, "f").getDebug().setLogToBrowserConsole === 'undefined') {
+            __classPrivateFieldGet(this, _DashMedia_player, "f").updateSettings({
                 debug: {
                     logLevel: dashjs.Debug.LOG_LEVEL_NONE,
                 },
@@ -135,20 +133,20 @@ class DashMedia extends Native {
             });
         }
         else {
-            __classPrivateFieldGet(this, _player).getDebug().setLogToBrowserConsole(false);
-            __classPrivateFieldGet(this, _player).setScheduleWhilePaused(false);
-            __classPrivateFieldGet(this, _player).setFastSwitchEnabled(true);
+            __classPrivateFieldGet(this, _DashMedia_player, "f").getDebug().setLogToBrowserConsole(false);
+            __classPrivateFieldGet(this, _DashMedia_player, "f").setScheduleWhilePaused(false);
+            __classPrivateFieldGet(this, _DashMedia_player, "f").setFastSwitchEnabled(true);
         }
-        __classPrivateFieldGet(this, _player).initialize();
-        __classPrivateFieldGet(this, _player).attachView(this.element);
-        __classPrivateFieldGet(this, _player).setAutoPlay(false);
-        if (__classPrivateFieldGet(this, _options) && typeof __classPrivateFieldGet(this, _options).drm === 'object' && Object.keys(__classPrivateFieldGet(this, _options).drm).length) {
-            __classPrivateFieldGet(this, _player).setProtectionData(__classPrivateFieldGet(this, _options).drm);
-            if (__classPrivateFieldGet(this, _options).robustnessLevel && __classPrivateFieldGet(this, _options).robustnessLevel) {
-                __classPrivateFieldGet(this, _player).getProtectionController().setRobustnessLevel(__classPrivateFieldGet(this, _options).robustnessLevel);
+        __classPrivateFieldGet(this, _DashMedia_player, "f").initialize();
+        __classPrivateFieldGet(this, _DashMedia_player, "f").attachView(this.element);
+        __classPrivateFieldGet(this, _DashMedia_player, "f").setAutoPlay(false);
+        if (__classPrivateFieldGet(this, _DashMedia_options, "f") && typeof __classPrivateFieldGet(this, _DashMedia_options, "f").drm === 'object' && Object.keys(__classPrivateFieldGet(this, _DashMedia_options, "f").drm).length) {
+            __classPrivateFieldGet(this, _DashMedia_player, "f").setProtectionData(__classPrivateFieldGet(this, _DashMedia_options, "f").drm);
+            if (__classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel && __classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel) {
+                __classPrivateFieldGet(this, _DashMedia_player, "f").getProtectionController().setRobustnessLevel(__classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel);
             }
         }
     }
 }
-_player = new WeakMap(), _events = new WeakMap(), _options = new WeakMap();
+_DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia_options = new WeakMap();
 export default DashMedia;

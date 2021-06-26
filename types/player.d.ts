@@ -70,6 +70,14 @@ declare class Player {
      */
     loader: HTMLSpanElement;
     /**
+     * Adapter to toggle between different players.
+     * Useful for Chromecast integration.
+     *
+     * @type unknown
+     * @memberof Player
+     */
+    proxy: any;
+    /**
      * Create an instance of Player.
      *
      * @param {(HTMLMediaElement|string)} element  A video/audio tag or its identifier.
@@ -224,6 +232,7 @@ declare class Player {
      * @memberof Player
      */
     _prepareMedia(): void;
+    enableDefaultPlayer(): void;
     /**
      * Set a Source object to the current media.
      *
@@ -259,7 +268,7 @@ declare class Player {
     /**
      * Wrap media instance within a DIV tag.
      *
-     * It detects also wheter the user is using a mouse, or TAB for accessibility purposes.
+     * It detects also whether the user is using a mouse, or TAB for accessibility purposes.
      * @private
      * @memberof Player
      */
@@ -295,7 +304,7 @@ declare class Player {
     /**
      * Attempt to autoplay media depending on browser's capabilities.
      *
-     * It does not consider autoplaying Ads since that workflow is established already as part
+     * It does not consider auto playing Ads since that workflow is established already as part
      * of that object.
      * @see [[Ads.constructor]]
      * @private
