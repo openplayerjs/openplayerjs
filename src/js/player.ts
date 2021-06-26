@@ -115,6 +115,15 @@ class Player {
     public loader: HTMLSpanElement;
 
     /**
+     * Adapter to toggle between different players.
+     * Useful for Chromecast integration.
+     *
+     * @type unknown
+     * @memberof Player
+     */
+    public proxy: any = null;
+
+    /**
      * Unique identified for the current player instance.
      *
      * @type string
@@ -641,6 +650,25 @@ class Player {
         }
     }
 
+    public enableDefaultPlayer() {
+        let paused = true;
+        let currentTime = 0;
+
+        if (this.proxy && !this.proxy.paused) {
+            paused = false;
+            currentTime = this.proxy.currentTime;
+            this.proxy.pause();
+        }
+
+        this.proxy = this;
+        this.getElement().addEventListener('loadedmetadata', () => {
+            this.getMedia().currentTime = currentTime;
+            if (!paused) {
+                this.play();
+            }
+        });
+    }
+
     /**
      * Set a Source object to the current media.
      *
@@ -705,7 +733,7 @@ class Player {
     /**
      * Wrap media instance within a DIV tag.
      *
-     * It detects also wheter the user is using a mouse, or TAB for accessibility purposes.
+     * It detects also whether the user is using a mouse, or TAB for accessibility purposes.
      * @private
      * @memberof Player
      */
@@ -734,7 +762,7 @@ class Player {
         }, EVENT_OPTIONS);
 
         if (this.#options.mode === 'fill' && !isAudio(this.#element) && !IS_IPHONE) {
-            // Create fill effect on video, scaling and croping dimensions relative to its parent, setting just a class.
+            // Create fill effect on video, scaling and cropping dimensions relative to its parent, setting just a class.
             // This method centers the video view using pure CSS in both Ads and Media.
             // @see https://slicejack.com/fullscreen-html5-video-background-css/
             this.getContainer().classList.add('op-player__full');
@@ -927,7 +955,7 @@ class Player {
     /**
      * Attempt to autoplay media depending on browser's capabilities.
      *
-     * It does not consider autoplaying Ads since that workflow is established already as part
+     * It does not consider auto playing Ads since that workflow is established already as part
      * of that object.
      * @see [[Ads.constructor]]
      * @private

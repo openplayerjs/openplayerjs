@@ -20,6 +20,7 @@ player.addControl({
   icon:'/path/to/image',
   id: '[MY CONTROL ID]',
   title: '[TOOLTIP LABEL]',
+  content: '', // Can override the content generated inside the control
   // Possible values: 'bottom-left', 'bottom-middle', 'bottom-right',
   // 'left', 'middle', 'right', 'top-left', 'top-middle', 'top-right',
   // or `main` to add it in the video area
@@ -32,12 +33,14 @@ player.addControl({
       icon:'/path/to/item-image', // optional
       click: () => {},
    }],
+  init: (player) => {}, // Pass an instance of the player for advanced operations
   click: () => {},
   mouseenter: () => {},
   mouseleave: () => {},
   keydown: () => {},
   blur: () => {},
   focus: () => {},
+  destroy: (player) => {}, // Pass an instance of the player for advanced operations
 });
 player.init();
 ```

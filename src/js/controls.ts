@@ -463,7 +463,7 @@ class Controls implements PlayerComponent {
         control.tabIndex = 0;
         control.id = item.id;
         control.title = item.title;
-        control.innerHTML = `${icon} <span class="op-sr">${item.title}</span>`;
+        control.innerHTML = item.content || `${icon} <span class="op-sr">${item.title}</span>`;
 
         // In the event we have subitems for a custom control, create menu and attach events for each item
         if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
@@ -521,6 +521,12 @@ class Controls implements PlayerComponent {
                 this.getLayer(item.layer).appendChild(control);
             }
         }
+
+        // If there's an initial set of operations to dispatch as soon as the control
+        // is created, dispatch them
+        if (item.init && typeof item.init === 'function') {
+            item.init(this.#player);
+        }
     }
 
     /**
@@ -571,6 +577,12 @@ class Controls implements PlayerComponent {
                 control.removeEventListener('focus', item.focus);
             }
             removeElement(control);
+
+            // If there's an initial set of operations to dispatch as soon as the control
+            // is created, dispatch them
+            if (item.destroy && typeof item.destroy === 'function') {
+                item.destroy(this.#player);
+            }
         }
     }
 }

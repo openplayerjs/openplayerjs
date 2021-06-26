@@ -13,8 +13,11 @@ export default interface ControlItem {
     position: 'right' | 'left' | 'middle' | string;
     layer?: 'top' | 'center' | 'bottom' | 'main' | string;
     custom?: boolean;
+    content?: string;
     subitems?: Array<{id: string, label: string, title?: string, icon?: string, click(): void}>;
     click(event: any): void;
+    init?(player: any): void;
+    destroy?(player: any): void;
     mouseenter?(event: any): void;
     mouseleave?(event: any): void;
     keydown?(event: any): void;
