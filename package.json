@@ -108,7 +108,7 @@
   },
   "dependencies": {
     "auto-changelog": "^1.16.4",
-    "core-js": "^3.15.1",
+    "core-js": "^3.15.2",
     "custom-event-polyfill": "^1.0.7",
     "element-closest": "^3.0.2",
     "global": "^4.4.0"
