@@ -420,6 +420,8 @@ class Player {
             removeElement(this.loader);
         }
 
+        this.#element.removeEventListener('playererror', this.#options.onError);
+
         el.controls = true;
         el.setAttribute('id', this.#uid);
         el.removeAttribute('op-live__enabled');

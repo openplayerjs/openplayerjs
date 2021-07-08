@@ -46,5 +46,8 @@ declare class HTML5Media extends Native {
     set src(media: Source);
     private _isDvrEnabled;
     private _readMediadataInfo;
+    private _setTimeout;
+    private _clearTimeout;
+    private _dispatchError;
 }
 export default HTML5Media;

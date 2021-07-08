@@ -18,6 +18,12 @@ class HTML5Media extends Native  {
 
     #isStreaming: boolean = false;
 
+    #retryCount: number = 0;
+
+    #started: boolean = false;
+
+    #timer: any;
+
     /**
      * Creates an instance of NativeMedia.
      *
@@ -29,78 +35,14 @@ class HTML5Media extends Native  {
     constructor(element: HTMLMediaElement, mediaFile: Source) {
         super(element, mediaFile);
 
-        let retryCount = 0;
-        let started = false;
-        let timer: any;
-
-        // After 30 seconds, if the media is stalled, dispatch an error
-        function timeout() {
-            if (!started) {
-                started = true;
-                timer = setInterval(() => {
-                    if (retryCount >= 30) {
-                        clearInterval(timer);
-                        const message = 'Media download failed part-way due to a network error';
-                        const details = {
-                            detail: {
-                                data: { message, error: 2},
-                                message,
-                                type: 'HTML5',
-                            },
-                        };
-                        const errorEvent = addEvent('playererror', details);
-                        element.dispatchEvent(errorEvent);
-                        retryCount = 0;
-                        started = false;
-                    } else {
-                        retryCount++;
-                    }
-                }, 1000);
-            }
-        }
-
-        element.addEventListener('playing', () => {
-            if (timer) {
-                clearInterval(timer);
-                retryCount = 0;
-                started = false;
-            }
-        });
-        element.addEventListener('stalled', timeout);
-        element.addEventListener('error', (e: any) => {
-            let defaultMessage;
-            switch (e.target.error.code) {
-                case e.target.error.MEDIA_ERR_ABORTED:
-                    defaultMessage = 'Media playback aborted';
-                    break;
-                case e.target.error.MEDIA_ERR_NETWORK:
-                    defaultMessage = 'Media download failed part-way due to a network error';
-                    break;
-                case e.target.error.MEDIA_ERR_DECODE:
-                    defaultMessage =  'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
-                    break;
-                case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                    defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
-                    break;
-                default:
-                    defaultMessage = 'Unknown error occurred.';
-                    break;
-            }
-            const details = {
-                detail: {
-                    data: { ...e, message: e.message || defaultMessage, error: e.target.error.code },
-                    message: e.message || defaultMessage,
-                    type: 'HTML5',
-                },
-            };
-            const errorEvent = addEvent('playererror', details);
-            element.dispatchEvent(errorEvent);
-        }, EVENT_OPTIONS);
         if (!isAudio(element) && !isVideo(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
 
         this.#isStreaming = isHlsSource(mediaFile);
+        this.element.addEventListener('playing', this._clearTimeout.bind(this), EVENT_OPTIONS);
+        this.element.addEventListener('stalled', this._setTimeout.bind(this), EVENT_OPTIONS);
+        this.element.addEventListener('error', this._dispatchError.bind(this), EVENT_OPTIONS);
         this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this), EVENT_OPTIONS);
         this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this), EVENT_OPTIONS);
         return this;
@@ -131,6 +73,9 @@ class HTML5Media extends Native  {
      * @memberof HTML5Media
      */
     public destroy(): HTML5Media {
+        this.element.removeEventListener('playing', this._clearTimeout.bind(this));
+        this.element.removeEventListener('stalled', this._setTimeout.bind(this));
+        this.element.removeEventListener('error', this._dispatchError.bind(this));
         this.element.removeEventListener('loadeddata', this._isDvrEnabled.bind(this));
         this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo.bind(this));
         return this;
@@ -199,6 +144,69 @@ class HTML5Media extends Native  {
                 }
             }, EVENT_OPTIONS);
         }
+    }
+
+    private _setTimeout() {
+        if (!this.#started) {
+            this.#started = true;
+            this.#timer = setInterval(() => {
+                if (this.#retryCount >= 30) {
+                    clearInterval(this.#timer);
+                    const message = 'Media download failed part-way due to a network error';
+                    const details = {
+                        detail: {
+                            data: { message, error: 2},
+                            message,
+                            type: 'HTML5',
+                        },
+                    };
+                    const errorEvent = addEvent('playererror', details);
+                    this.element.dispatchEvent(errorEvent);
+                    this.#retryCount = 0;
+                    this.#started = false;
+                } else {
+                    this.#retryCount++;
+                }
+            }, 1000);
+        }
+    }
+
+    private _clearTimeout() {
+        if (this.#timer) {
+            clearInterval(this.#timer);
+            this.#retryCount = 0;
+            this.#started = false;
+        }
+    }
+
+    private _dispatchError(e: any) {
+        let defaultMessage;
+        switch (e.target.error.code) {
+            case e.target.error.MEDIA_ERR_ABORTED:
+                defaultMessage = 'Media playback aborted';
+                break;
+            case e.target.error.MEDIA_ERR_NETWORK:
+                defaultMessage = 'Media download failed part-way due to a network error';
+                break;
+            case e.target.error.MEDIA_ERR_DECODE:
+                defaultMessage =  'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
+                break;
+            case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
+                break;
+            default:
+                defaultMessage = 'Unknown error occurred.';
+                break;
+        }
+        const details = {
+            detail: {
+                data: { ...e, message: e.message || defaultMessage, error: e.target.error.code },
+                message: e.message || defaultMessage,
+                type: 'HTML5',
+            },
+        };
+        const errorEvent = addEvent('playererror', details);
+        this.element.dispatchEvent(errorEvent);
     }
 }
 
