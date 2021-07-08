@@ -235,5 +235,6 @@ declare class Ads {
      */
     private _prepareMedia;
     private _setMediaVolume;
+    private _handleClickInContainer;
 }
 export default Ads;

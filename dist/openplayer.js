@@ -1902,11 +1902,13 @@ var Player = function () {
         general_1.removeElement(this.loader);
       }
 
+      __classPrivateFieldGet(this, _element).removeEventListener('playererror', __classPrivateFieldGet(this, _options).onError);
+
       el.controls = true;
       el.setAttribute('id', __classPrivateFieldGet(this, _uid));
       el.removeAttribute('op-live__enabled');
       el.removeAttribute('op-dvr__enabled');
-      var parent = el.parentElement;
+      var parent = __classPrivateFieldGet(this, _options).mode === 'fit' ? el.closest('.op-player__fit--wrapper') : el.parentElement;
 
       if (parent && parent.parentNode) {
         parent.parentNode.replaceChild(el, parent);
@@ -10179,7 +10181,7 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _currentLevel, _levelList, _isStreaming;
+var _currentLevel, _levelList, _isStreaming, _retryCount, _started, _timer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -10213,90 +10215,23 @@ var HTML5Media = function (_native_1$default) {
 
     _isStreaming.set(_assertThisInitialized(_this), false);
 
-    var retryCount = 0;
-    var started = false;
-    var timer;
+    _retryCount.set(_assertThisInitialized(_this), 0);
 
-    function timeout() {
-      if (!started) {
-        started = true;
-        timer = setInterval(function () {
-          if (retryCount >= 30) {
-            clearInterval(timer);
-            var message = 'Media download failed part-way due to a network error';
-            var details = {
-              detail: {
-                data: {
-                  message: message,
-                  error: 2
-                },
-                message: message,
-                type: 'HTML5'
-              }
-            };
-            var errorEvent = events_1.addEvent('playererror', details);
-            element.dispatchEvent(errorEvent);
-            retryCount = 0;
-            started = false;
-          } else {
-            retryCount++;
-          }
-        }, 1000);
-      }
-    }
+    _started.set(_assertThisInitialized(_this), false);
 
-    element.addEventListener('playing', function () {
-      if (timer) {
-        clearInterval(timer);
-        retryCount = 0;
-        started = false;
-      }
-    });
-    element.addEventListener('stalled', timeout);
-    element.addEventListener('error', function (e) {
-      var defaultMessage;
-
-      switch (e.target.error.code) {
-        case e.target.error.MEDIA_ERR_ABORTED:
-          defaultMessage = 'Media playback aborted';
-          break;
-
-        case e.target.error.MEDIA_ERR_NETWORK:
-          defaultMessage = 'Media download failed part-way due to a network error';
-          break;
-
-        case e.target.error.MEDIA_ERR_DECODE:
-          defaultMessage = 'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
-          break;
-
-        case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
-          break;
-
-        default:
-          defaultMessage = 'Unknown error occurred.';
-          break;
-      }
-
-      var details = {
-        detail: {
-          data: Object.assign(Object.assign({}, e), {
-            message: e.message || defaultMessage,
-            error: e.target.error.code
-          }),
-          message: e.message || defaultMessage,
-          type: 'HTML5'
-        }
-      };
-      var errorEvent = events_1.addEvent('playererror', details);
-      element.dispatchEvent(errorEvent);
-    }, constants_1.EVENT_OPTIONS);
+    _timer.set(_assertThisInitialized(_this), void 0);
 
     if (!general_1.isAudio(element) && !general_1.isVideo(element)) {
       throw new TypeError('Native method only supports video/audio tags');
     }
 
     __classPrivateFieldSet(_assertThisInitialized(_this), _isStreaming, media_1.isHlsSource(mediaFile));
+
+    _this.element.addEventListener('playing', _this._clearTimeout.bind(_assertThisInitialized(_this)), constants_1.EVENT_OPTIONS);
+
+    _this.element.addEventListener('stalled', _this._setTimeout.bind(_assertThisInitialized(_this)), constants_1.EVENT_OPTIONS);
+
+    _this.element.addEventListener('error', _this._dispatchError.bind(_assertThisInitialized(_this)), constants_1.EVENT_OPTIONS);
 
     _this.element.addEventListener('loadeddata', _this._isDvrEnabled.bind(_assertThisInitialized(_this)), constants_1.EVENT_OPTIONS);
 
@@ -10318,6 +10253,9 @@ var HTML5Media = function (_native_1$default) {
   }, {
     key: "destroy",
     value: function destroy() {
+      this.element.removeEventListener('playing', this._clearTimeout.bind(this));
+      this.element.removeEventListener('stalled', this._setTimeout.bind(this));
+      this.element.removeEventListener('error', this._dispatchError.bind(this));
       this.element.removeEventListener('loadeddata', this._isDvrEnabled.bind(this));
       this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo.bind(this));
       return this;
@@ -10355,6 +10293,92 @@ var HTML5Media = function (_native_1$default) {
           }
         }, constants_1.EVENT_OPTIONS);
       }
+    }
+  }, {
+    key: "_setTimeout",
+    value: function _setTimeout() {
+      var _this3 = this;
+
+      if (!__classPrivateFieldGet(this, _started)) {
+        __classPrivateFieldSet(this, _started, true);
+
+        __classPrivateFieldSet(this, _timer, setInterval(function () {
+          if (__classPrivateFieldGet(_this3, _retryCount) >= 30) {
+            clearInterval(__classPrivateFieldGet(_this3, _timer));
+            var message = 'Media download failed part-way due to a network error';
+            var details = {
+              detail: {
+                data: {
+                  message: message,
+                  error: 2
+                },
+                message: message,
+                type: 'HTML5'
+              }
+            };
+            var errorEvent = events_1.addEvent('playererror', details);
+
+            _this3.element.dispatchEvent(errorEvent);
+
+            __classPrivateFieldSet(_this3, _retryCount, 0);
+
+            __classPrivateFieldSet(_this3, _started, false);
+          } else {
+            __classPrivateFieldSet(_this3, _retryCount, +__classPrivateFieldGet(_this3, _retryCount) + 1);
+          }
+        }, 1000));
+      }
+    }
+  }, {
+    key: "_clearTimeout",
+    value: function _clearTimeout() {
+      if (__classPrivateFieldGet(this, _timer)) {
+        clearInterval(__classPrivateFieldGet(this, _timer));
+
+        __classPrivateFieldSet(this, _retryCount, 0);
+
+        __classPrivateFieldSet(this, _started, false);
+      }
+    }
+  }, {
+    key: "_dispatchError",
+    value: function _dispatchError(e) {
+      var defaultMessage;
+
+      switch (e.target.error.code) {
+        case e.target.error.MEDIA_ERR_ABORTED:
+          defaultMessage = 'Media playback aborted';
+          break;
+
+        case e.target.error.MEDIA_ERR_NETWORK:
+          defaultMessage = 'Media download failed part-way due to a network error';
+          break;
+
+        case e.target.error.MEDIA_ERR_DECODE:
+          defaultMessage = 'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
+          break;
+
+        case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
+          break;
+
+        default:
+          defaultMessage = 'Unknown error occurred.';
+          break;
+      }
+
+      var details = {
+        detail: {
+          data: Object.assign(Object.assign({}, e), {
+            message: e.message || defaultMessage,
+            error: e.target.error.code
+          }),
+          message: e.message || defaultMessage,
+          type: 'HTML5'
+        }
+      };
+      var errorEvent = events_1.addEvent('playererror', details);
+      this.element.dispatchEvent(errorEvent);
     }
   }, {
     key: "levels",
@@ -10409,7 +10433,7 @@ var HTML5Media = function (_native_1$default) {
   return HTML5Media;
 }(native_1["default"]);
 
-_currentLevel = new WeakMap(), _levelList = new WeakMap(), _isStreaming = new WeakMap();
+_currentLevel = new WeakMap(), _levelList = new WeakMap(), _isStreaming = new WeakMap(), _retryCount = new WeakMap(), _started = new WeakMap(), _timer = new WeakMap();
 exports["default"] = HTML5Media;
 
 /***/ }),
@@ -10592,6 +10616,8 @@ var Ads = function () {
         __classPrivateFieldGet(this, _element).parentElement.insertBefore(__classPrivateFieldGet(this, _adsContainer), __classPrivateFieldGet(this, _element).nextSibling);
       }
 
+      __classPrivateFieldGet(this, _adsContainer).addEventListener('click', this._handleClickInContainer.bind(this));
+
       __classPrivateFieldSet(this, _mediaSources, __classPrivateFieldGet(this, _media).src);
 
       google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
@@ -10677,6 +10703,8 @@ var Ads = function () {
     value: function destroy() {
       var _this4 = this;
 
+      var _a;
+
       if (__classPrivateFieldGet(this, _events)) {
         __classPrivateFieldGet(this, _events).forEach(function (event) {
           __classPrivateFieldGet(_this4, _adsManager).removeEventListener(event, _this4._assign.bind(_this4));
@@ -10711,17 +10739,20 @@ var Ads = function () {
       }
 
       __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', function () {
-        _this4.resizeAds.bind(_this4);
+        _this4.resizeAds();
       });
+
+      __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
 
       __classPrivateFieldGet(this, _element).removeEventListener('ended', this._contentEndedListener.bind(this));
 
       if (typeof window !== 'undefined') {
         window.removeEventListener('resize', function () {
-          _this4.resizeAds.bind(_this4);
+          _this4.resizeAds();
         });
       }
 
+      (_a = __classPrivateFieldGet(this, _adsContainer)) === null || _a === void 0 ? void 0 : _a.removeEventListener('click', this._handleClickInContainer.bind(this));
       general_1.removeElement(__classPrivateFieldGet(this, _adsContainer));
     }
   }, {
@@ -10900,6 +10931,13 @@ var Ads = function () {
 
           break;
 
+        case google.ima.AdEvent.Type.CLICK:
+          var pauseEvent = events_1.addEvent('pause');
+
+          __classPrivateFieldGet(this, _element).dispatchEvent(pauseEvent);
+
+          break;
+
         default:
           break;
       }
@@ -10907,12 +10945,12 @@ var Ads = function () {
       if (event.type === google.ima.AdEvent.Type.LOG) {
         var adData = event.getAdData();
 
-        if (adData['adError']) {
-          var message = adData['adError'].getMessage();
+        if (adData.adError) {
+          var message = adData.adError.getMessage();
           console.warn("Ad warning: Non-fatal error occurred: ".concat(message));
           var details = {
             detail: {
-              data: adData['adError'],
+              data: adData.adError,
               message: message,
               type: 'Ads'
             }
@@ -11270,6 +11308,19 @@ var Ads = function () {
     value: function _setMediaVolume(volume) {
       __classPrivateFieldGet(this, _media).volume = volume;
       __classPrivateFieldGet(this, _media).muted = volume === 0;
+    }
+  }, {
+    key: "_handleClickInContainer",
+    value: function _handleClickInContainer() {
+      if (__classPrivateFieldGet(this, _media).paused) {
+        var e = events_1.addEvent('paused');
+
+        __classPrivateFieldGet(this, _element).dispatchEvent(e);
+      } else {
+        var _e = events_1.addEvent('play');
+
+        __classPrivateFieldGet(this, _element).dispatchEvent(_e);
+      }
     }
   }, {
     key: "playRequested",

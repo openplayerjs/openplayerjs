@@ -190,11 +190,12 @@ class Player {
             removeElement(this.playBtn);
             removeElement(this.loader);
         }
+        __classPrivateFieldGet(this, _Player_element, "f").removeEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError);
         el.controls = true;
         el.setAttribute('id', __classPrivateFieldGet(this, _Player_uid, "f"));
         el.removeAttribute('op-live__enabled');
         el.removeAttribute('op-dvr__enabled');
-        const parent = el.parentElement;
+        const parent = __classPrivateFieldGet(this, _Player_options, "f").mode === 'fit' ? el.closest('.op-player__fit--wrapper') : el.parentElement;
         if (parent && parent.parentNode) {
             parent.parentNode.replaceChild(el, parent);
         }

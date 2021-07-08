@@ -349,6 +349,7 @@ class Ads {
         if (this.#element.parentElement) {
             this.#element.parentElement.insertBefore(this.#adsContainer, this.#element.nextSibling);
         }
+        this.#adsContainer.addEventListener('click', this._handleClickInContainer.bind(this));
         this.#mediaSources = this.#media.src;
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
@@ -481,11 +482,14 @@ class Ads {
         if (IS_IOS || IS_ANDROID) {
             this.#element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
         }
-        this.#element.removeEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
+        this.#element.removeEventListener('loadedmetadata', () => { this.resizeAds(); });
+        this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
         this.#element.removeEventListener('ended', this._contentEndedListener.bind(this));
         if (typeof window !== 'undefined') {
-            window.removeEventListener('resize', () => { this.resizeAds.bind(this); });
+            window.removeEventListener('resize', () => { this.resizeAds(); });
         }
+
+        this.#adsContainer?.removeEventListener('click', this._handleClickInContainer.bind(this));
         removeElement(this.#adsContainer);
     }
 
@@ -758,6 +762,10 @@ class Ads {
                     }
                 }
                 break;
+            case google.ima.AdEvent.Type.CLICK:
+                const pauseEvent = addEvent('pause');
+                this.#element.dispatchEvent(pauseEvent);
+                break;
             default:
                 break;
         }
@@ -766,12 +774,12 @@ class Ads {
         // can listen to these events, except if the system detects a non-fatal error
         if (event.type === google.ima.AdEvent.Type.LOG) {
             const adData = event.getAdData();
-            if (adData['adError']) {
-                const message = adData['adError'].getMessage();
+            if (adData.adError) {
+                const message = adData.adError.getMessage();
                 console.warn(`Ad warning: Non-fatal error occurred: ${message}`);
                 const details = {
                     detail: {
-                        data: adData['adError'],
+                        data: adData.adError,
                         message,
                         type: 'Ads',
                     },
@@ -1167,6 +1175,16 @@ class Ads {
     private _setMediaVolume(volume: number) {
         this.#media.volume = volume;
         this.#media.muted = volume === 0;
+    }
+
+    private _handleClickInContainer() {
+        if (this.#media.paused) {
+            const e = addEvent('paused');
+            this.#element.dispatchEvent(e);
+        } else {
+            const e = addEvent('play');
+            this.#element.dispatchEvent(e);
+        }
     }
 }
 

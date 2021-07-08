@@ -90,6 +90,7 @@ class Ads {
         if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
             __classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
         }
+        __classPrivateFieldGet(this, _Ads_adsContainer, "f").addEventListener('click', this._handleClickInContainer.bind(this));
         __classPrivateFieldSet(this, _Ads_mediaSources, __classPrivateFieldGet(this, _Ads_media, "f").src, "f");
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
@@ -147,6 +148,7 @@ class Ads {
         }
     }
     destroy() {
+        var _a;
         if (__classPrivateFieldGet(this, _Ads_events, "f")) {
             __classPrivateFieldGet(this, _Ads_events, "f").forEach(event => {
                 __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(event, this._assign.bind(this));
@@ -171,11 +173,13 @@ class Ads {
         if (IS_IOS || IS_ANDROID) {
             __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
         }
-        __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', () => { this.resizeAds.bind(this); });
+        __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', () => { this.resizeAds(); });
+        __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
         __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('ended', this._contentEndedListener.bind(this));
         if (typeof window !== 'undefined') {
-            window.removeEventListener('resize', () => { this.resizeAds.bind(this); });
+            window.removeEventListener('resize', () => { this.resizeAds(); });
         }
+        (_a = __classPrivateFieldGet(this, _Ads_adsContainer, "f")) === null || _a === void 0 ? void 0 : _a.removeEventListener('click', this._handleClickInContainer.bind(this));
         removeElement(__classPrivateFieldGet(this, _Ads_adsContainer, "f"));
     }
     resizeAds(width, height) {
@@ -341,17 +345,21 @@ class Ads {
                     }
                 }
                 break;
+            case google.ima.AdEvent.Type.CLICK:
+                const pauseEvent = addEvent('pause');
+                __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(pauseEvent);
+                break;
             default:
                 break;
         }
         if (event.type === google.ima.AdEvent.Type.LOG) {
             const adData = event.getAdData();
-            if (adData['adError']) {
-                const message = adData['adError'].getMessage();
+            if (adData.adError) {
+                const message = adData.adError.getMessage();
                 console.warn(`Ad warning: Non-fatal error occurred: ${message}`);
                 const details = {
                     detail: {
-                        data: adData['adError'],
+                        data: adData.adError,
                         message,
                         type: 'Ads',
                     },
@@ -636,6 +644,16 @@ class Ads {
     _setMediaVolume(volume) {
         __classPrivateFieldGet(this, _Ads_media, "f").volume = volume;
         __classPrivateFieldGet(this, _Ads_media, "f").muted = volume === 0;
+    }
+    _handleClickInContainer() {
+        if (__classPrivateFieldGet(this, _Ads_media, "f").paused) {
+            const e = addEvent('paused');
+            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
+        }
+        else {
+            const e = addEvent('play');
+            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
+        }
     }
 }
 _Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
