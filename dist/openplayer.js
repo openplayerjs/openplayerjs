@@ -11316,6 +11316,8 @@ var Ads = function () {
         var e = events_1.addEvent('paused');
 
         __classPrivateFieldGet(this, _element).dispatchEvent(e);
+
+        this.pause();
       } else {
         var _e = events_1.addEvent('play');
 

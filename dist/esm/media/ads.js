@@ -649,6 +649,7 @@ class Ads {
         if (__classPrivateFieldGet(this, _Ads_media, "f").paused) {
             const e = addEvent('paused');
             __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
+            this.pause();
         }
         else {
             const e = addEvent('play');

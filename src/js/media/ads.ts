@@ -1181,9 +1181,7 @@ class Ads {
         if (this.#media.paused) {
             const e = addEvent('paused');
             this.#element.dispatchEvent(e);
-        } else {
-            const e = addEvent('play');
-            this.#element.dispatchEvent(e);
+            this.pause();
         }
     }
 }
