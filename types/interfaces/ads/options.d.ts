@@ -23,7 +23,7 @@ export default interface Options {
      */
     readonly numRedirects: number;
     /**
-     * Language of Ads, specified in standard langugae code (en, en_sa, jp, etc.)
+     * Language of Ads, specified in standard language code (en, en_sa, jp, etc.)
      */
     readonly language: string;
     /**
@@ -38,4 +38,5 @@ export default interface Options {
      * Ad or collection of Ads to be played.
      */
     readonly src: string | string[];
+    [key: string]: any;
 }

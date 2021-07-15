@@ -49,8 +49,8 @@ declare class Ads {
     /**
      * Change dimensions of Ad.
      *
-     * @param {?number} width       The new width of the Ad's container.
-     * @param {?number} height      The new height of the Ad's container.
+     * @param {?number} width
+     * @param {?number} height
      * @memberof Ads
      */
     resizeAds(width?: number, height?: number): void;
@@ -68,6 +68,7 @@ declare class Ads {
      * @memberof Ads
      */
     started(): boolean;
+    set src(source: string | string[]);
     /**
      * Update the `playTriggered` flag
      *

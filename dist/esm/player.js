@@ -321,6 +321,23 @@ class Player {
             }
         });
     }
+    loadAd(src) {
+        if (this.isAd()) {
+            this.activeElement().destroy();
+            this.activeElement().src = src;
+            this.activeElement().load(true);
+            if (!this.activeElement().paused) {
+                this.activeElement().play();
+            }
+        }
+        else {
+            const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
+            __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, false, false, adsOptions), "f");
+            if (!this.activeElement().paused) {
+                __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
+            }
+        }
+    }
     set src(media) {
         if (__classPrivateFieldGet(this, _Player_media, "f") instanceof Media) {
             __classPrivateFieldGet(this, _Player_media, "f").mediaFiles = [];

@@ -671,6 +671,23 @@ class Player {
         });
     }
 
+    public loadAd(src: string | string[]) {
+        if (this.isAd()) {
+            this.activeElement().destroy();
+            this.activeElement().src = src;
+            this.activeElement().load(true);
+            if (!this.activeElement().paused) {
+                this.activeElement().play();
+            }
+        } else {
+            const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
+            this.#adsInstance = new Ads(this, src, false, false, adsOptions);
+            if (!this.activeElement().paused) {
+                this.#adsInstance.play();
+            }
+        }
+    }
+
     /**
      * Set a Source object to the current media.
      *

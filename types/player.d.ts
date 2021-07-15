@@ -233,6 +233,7 @@ declare class Player {
      */
     _prepareMedia(): void;
     enableDefaultPlayer(): void;
+    loadAd(src: string | string[]): void;
     /**
      * Set a Source object to the current media.
      *

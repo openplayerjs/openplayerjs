@@ -26,6 +26,7 @@ Method | Description
 `getAd` | Retrieve an instance of the `Ads` object. More information at [Ad instance](api.md#ad-instance)
 `getMedia` | Retrieve an instance of the `Media` object. More information at [Media instance](api.md#media-instance)
 `activeElement` | Retrieve the current media object (could be `Ads` or any other media type).
+`loadAd` | Load/update current Ad by assigning a URL, an array of URLs, a valid XML string, or an array of valid XML strings.
 `getContainer` | Retrieve the parent element (with `op-player` class) of the native video/audio tag.
 `getControls` | Retrieve an instance of the controls object used in the player instance.
 `getElement` | Retrieve the original video/audio tag.

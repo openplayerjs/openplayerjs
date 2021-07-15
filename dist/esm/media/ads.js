@@ -9,7 +9,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
+var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, isXml, loadScript, removeElement } from '../utils/general';
@@ -33,6 +33,7 @@ class Ads {
         _Ads_promise.set(this, void 0);
         _Ads_adsLoader.set(this, void 0);
         _Ads_adsContainer.set(this, void 0);
+        _Ads_adsCustomClickContainer.set(this, void 0);
         _Ads_adDisplayContainer.set(this, void 0);
         _Ads_adsRequest.set(this, void 0);
         _Ads_autoStart.set(this, false);
@@ -47,6 +48,10 @@ class Ads {
         _Ads_mediaStarted.set(this, false);
         const defaultOpts = {
             autoPlayAdBreaks: true,
+            customClick: {
+                enabled: false,
+                label: 'Click here for more info',
+            },
             debug: false,
             enablePreloading: false,
             language: 'en',
@@ -62,6 +67,13 @@ class Ads {
         __classPrivateFieldSet(this, _Ads_autoStart, autoStart || false, "f");
         __classPrivateFieldSet(this, _Ads_autoStartMuted, autoStartMuted || false, "f");
         __classPrivateFieldSet(this, _Ads_adsOptions, Object.assign(Object.assign({}, defaultOpts), options), "f");
+        if (options) {
+            const objectElements = ['customClick'];
+            objectElements.forEach(item => {
+                __classPrivateFieldGet(this, _Ads_adsOptions, "f")[item] = options[item] && Object.keys(options[item]).length ? Object.assign(Object.assign({}, defaultOpts[item]), options[item]) :
+                    defaultOpts[item];
+            });
+        }
         __classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
         __classPrivateFieldSet(this, _Ads_originalVolume, __classPrivateFieldGet(this, _Ads_element, "f").volume, "f");
         __classPrivateFieldSet(this, _Ads_adsVolume, __classPrivateFieldGet(this, _Ads_originalVolume, "f"), "f");
@@ -91,13 +103,21 @@ class Ads {
             __classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
         }
         __classPrivateFieldGet(this, _Ads_adsContainer, "f").addEventListener('click', this._handleClickInContainer.bind(this));
+        if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.enabled) {
+            __classPrivateFieldSet(this, _Ads_adsCustomClickContainer, document.createElement('div'), "f");
+            __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").className = 'op-ads__click-container';
+            __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").innerHTML = `<div class="op-ads__click-label">${__classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.label}</div>`;
+            if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+                __classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(__classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
+            }
+        }
         __classPrivateFieldSet(this, _Ads_mediaSources, __classPrivateFieldGet(this, _Ads_media, "f").src, "f");
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
         google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
         google.ima.settings.setAutoPlayAdBreaks(__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks);
         google.ima.settings.setNumRedirects(__classPrivateFieldGet(this, _Ads_adsOptions, "f").numRedirects);
         google.ima.settings.setLocale(__classPrivateFieldGet(this, _Ads_adsOptions, "f").language);
-        __classPrivateFieldSet(this, _Ads_adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f")), "f");
+        __classPrivateFieldSet(this, _Ads_adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f"), __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f")), "f");
         __classPrivateFieldSet(this, _Ads_adsLoader, new google.ima.AdsLoader(__classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")), "f");
         __classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded.bind(this), EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error.bind(this), EVENT_OPTIONS);
@@ -170,6 +190,9 @@ class Ads {
         if (__classPrivateFieldGet(this, _Ads_adsManager, "f") && destroy) {
             __classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
         }
+        if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.enabled) {
+            removeElement(__classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f"));
+        }
         if (IS_IOS || IS_ANDROID) {
             __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
         }
@@ -203,6 +226,9 @@ class Ads {
     }
     started() {
         return __classPrivateFieldGet(this, _Ads_adsStarted, "f");
+    }
+    set src(source) {
+        __classPrivateFieldSet(this, _Ads_ads, source, "f");
     }
     set playRequested(value) {
         __classPrivateFieldSet(this, _Ads_playTriggered, value, "f");
@@ -421,6 +447,9 @@ class Ads {
         this._start(__classPrivateFieldGet(this, _Ads_adsManager, "f"));
     }
     _start(manager) {
+        if (__classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f") && manager.isCustomClickTrackingUsed()) {
+            __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").classList.add('op-ads__click-container--visible');
+        }
         manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested.bind(this), EVENT_OPTIONS);
         manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested.bind(this), EVENT_OPTIONS);
         __classPrivateFieldSet(this, _Ads_events, [
@@ -651,11 +680,7 @@ class Ads {
             __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
             this.pause();
         }
-        else {
-            const e = addEvent('play');
-            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
-        }
     }
 }
-_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
+_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
 export default Ads;
