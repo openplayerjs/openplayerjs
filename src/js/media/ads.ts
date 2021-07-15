@@ -165,6 +165,15 @@ class Ads {
     #adsContainer?: HTMLDivElement;
 
     /**
+     * Element in which Ads will render a custom click handler to track clicks.
+     * This overrides the default `Learn More` button from IMA SDK
+     *
+     * @type HTMLDivElement
+     * @memberof Ads
+     */
+    #adsCustomClickContainer?: HTMLDivElement;
+
+    /**
      * Container to display Ads.
      *
      * @see https://tinyurl.com/ya3zksso
@@ -284,8 +293,12 @@ class Ads {
      * @memberof Ads
      */
     constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options) {
-        const defaultOpts = {
+        const defaultOpts: Options = {
             autoPlayAdBreaks: true,
+            customClick: {
+                enabled: false,
+                label: 'Click here for more info',
+            },
             debug: false,
             enablePreloading: false,
             language: 'en',
@@ -301,6 +314,14 @@ class Ads {
         this.#autoStart = autoStart || false;
         this.#autoStartMuted = autoStartMuted || false;
         this.#adsOptions = { ...defaultOpts, ...options };
+        if (options) {
+            const objectElements = ['customClick'];
+            objectElements.forEach(item => {
+                this.#adsOptions[item] = options[item] && Object.keys(options[item]).length ?
+                    { ...defaultOpts[item], ...options[item] } :
+                    defaultOpts[item];
+            });
+        }
         this.#playTriggered = false;
         this.#originalVolume = this.#element.volume;
         this.#adsVolume = this.#originalVolume;
@@ -350,6 +371,16 @@ class Ads {
             this.#element.parentElement.insertBefore(this.#adsContainer, this.#element.nextSibling);
         }
         this.#adsContainer.addEventListener('click', this._handleClickInContainer.bind(this));
+
+        if (this.#adsOptions.customClick.enabled) {
+            this.#adsCustomClickContainer = document.createElement('div');
+            this.#adsCustomClickContainer.className = 'op-ads__click-container';
+            this.#adsCustomClickContainer.innerHTML = `<div class="op-ads__click-label">${this.#adsOptions.customClick.label}</div>`;
+            if (this.#element.parentElement) {
+                this.#element.parentElement.insertBefore(this.#adsCustomClickContainer, this.#element.nextSibling);
+            }
+        }
+
         this.#mediaSources = this.#media.src;
 
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
@@ -362,6 +393,7 @@ class Ads {
             new google.ima.AdDisplayContainer(
                 this.#adsContainer,
                 this.#element,
+                this.#adsCustomClickContainer,
             );
 
         this.#adsLoader = new google.ima.AdsLoader(this.#adDisplayContainer);
@@ -479,6 +511,10 @@ class Ads {
             this.#adsManager.destroy();
         }
 
+        if (this.#adsOptions.customClick.enabled) {
+            removeElement(this.#adsCustomClickContainer);
+        }
+
         if (IS_IOS || IS_ANDROID) {
             this.#element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
         }
@@ -496,8 +532,8 @@ class Ads {
     /**
      * Change dimensions of Ad.
      *
-     * @param {?number} width       The new width of the Ad's container.
-     * @param {?number} height      The new height of the Ad's container.
+     * @param {?number} width
+     * @param {?number} height
      * @memberof Ads
      */
     public resizeAds(width?: number, height?: number): void {
@@ -541,6 +577,10 @@ class Ads {
      */
     public started(): boolean {
         return this.#adsStarted;
+    }
+
+    set src(source: string | string[]) {
+        this.#ads = source;
     }
 
     /**
@@ -869,6 +909,10 @@ class Ads {
      * @memberof Ads
      */
     private _start(manager: any): void {
+
+        if (this.#adsCustomClickContainer && manager.isCustomClickTrackingUsed()) {
+            this.#adsCustomClickContainer.classList.add('op-ads__click-container--visible');
+        }
         // Add listeners to the required events.
         manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,

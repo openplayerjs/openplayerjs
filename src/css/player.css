@@ -798,6 +798,28 @@ video:-webkit-media-text-track-display {
     z-index: 2147483645;
 }
 
+.op-ads__click-container {
+    background-color: #807f80;
+    color: #fff;
+    cursor: default;
+    display: none;
+    padding: 5px;
+    pointer-events: auto;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    z-index: 100;
+}
+
+.op-ads__click-container--visible {
+    display: block;
+}
+
+.op-player[data-fullscreen='true'].op-ads--active .op-ads__click-container {
+    z-index: 2147483647;
+}
+
 /* === Focus =================== */
 .op-player:focus,
 .op-player__play:focus,

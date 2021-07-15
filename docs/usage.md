@@ -108,12 +108,18 @@ var player = new OpenPlayerJS('[player ID]', {
         enablePreloading,
         // Language for ads (for more details, check: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization)
         language,
-        // If set to `true`, play infintely an Ad
+        // If set to `true`, play infinitely an Ad
         loop,
         // Maximum number of redirects before the subsequent redirects will be denied (by default, `4`)
         numRedirects,
         // Custom path/URL to IMA SDK
         sdkPath,
+        // Options to allow IMA SDK to use a custom clickable element for mobile devices
+        // Otherwise, IMA SDK will show a `Learn more` layer
+        customClick: {
+            enable,
+            label,
+        },
     },
     dash: {
         // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,
