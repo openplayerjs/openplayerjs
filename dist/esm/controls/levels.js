@@ -55,7 +55,7 @@ class Levels {
         __classPrivateFieldGet(this, _Levels_button, "f").innerHTML = `<span>${defaultLabel}</span>`;
         const loadLevelsEvent = () => {
             if (!__classPrivateFieldGet(this, _Levels_levels, "f").length) {
-                this._gatherLevels.bind(this);
+                this._gatherLevels();
                 setTimeout(() => {
                     __classPrivateFieldGet(this, _Levels_player, "f").getMedia().level = initialLevel;
                     const e = addEvent('controlschanged');

@@ -114,6 +114,7 @@ class Player {
             }
             __classPrivateFieldSet(this, _Player_volume, __classPrivateFieldGet(this, _Player_element, "f").volume, "f");
         }
+        this._autoplay = this._autoplay.bind(this);
         return this;
     }
     static init() {
@@ -181,7 +182,7 @@ class Player {
             el.removeEventListener(event, __classPrivateFieldGet(this, _Player_events, "f")[event]);
         });
         if (__classPrivateFieldGet(this, _Player_autoplay, "f") && !__classPrivateFieldGet(this, _Player_processedAutoplay, "f") && isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
-            el.removeEventListener('canplay', this._autoplay.bind(this));
+            el.removeEventListener('canplay', this._autoplay);
         }
         if (__classPrivateFieldGet(this, _Player_controls, "f")) {
             __classPrivateFieldGet(this, _Player_controls, "f").destroy();
@@ -288,7 +289,7 @@ class Player {
         try {
             __classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
             if (__classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
-                __classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay.bind(this), EVENT_OPTIONS);
+                __classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
             }
             __classPrivateFieldSet(this, _Player_media, new Media(__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_options, "f"), __classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
             const preload = __classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
@@ -545,7 +546,7 @@ class Player {
     _autoplay() {
         if (!__classPrivateFieldGet(this, _Player_processedAutoplay, "f")) {
             __classPrivateFieldSet(this, _Player_processedAutoplay, true, "f");
-            __classPrivateFieldGet(this, _Player_element, "f").removeEventListener('canplay', this._autoplay.bind(this));
+            __classPrivateFieldGet(this, _Player_element, "f").removeEventListener('canplay', this._autoplay);
             isAutoplaySupported(__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_volume, "f"), autoplay => {
                 __classPrivateFieldSet(this, _Player_canAutoplay, autoplay, "f");
             }, muted => {

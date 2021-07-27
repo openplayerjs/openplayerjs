@@ -34,6 +34,7 @@ class Volume {
         __classPrivateFieldSet(this, _Volume_volume, __classPrivateFieldGet(this, _Volume_player, "f").getMedia().volume, "f");
         __classPrivateFieldSet(this, _Volume_position, position, "f");
         __classPrivateFieldSet(this, _Volume_layer, layer, "f");
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
     create() {
@@ -151,7 +152,7 @@ class Volume {
         Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").slider).forEach(event => {
             __classPrivateFieldGet(this, _Volume_slider, "f").addEventListener(event, __classPrivateFieldGet(this, _Volume_events, "f").slider[event], EVENT_OPTIONS);
         });
-        __classPrivateFieldGet(this, _Volume_player, "f").getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Volume_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
         if (!IS_ANDROID && !IS_IOS) {
             const controls = __classPrivateFieldGet(this, _Volume_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Volume_layer, "f"));
             controls.appendChild(__classPrivateFieldGet(this, _Volume_button, "f"));
@@ -166,7 +167,7 @@ class Volume {
         Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").slider).forEach(event => {
             __classPrivateFieldGet(this, _Volume_slider, "f").removeEventListener(event, __classPrivateFieldGet(this, _Volume_events, "f").slider[event]);
         });
-        __classPrivateFieldGet(this, _Volume_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        __classPrivateFieldGet(this, _Volume_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
         removeElement(__classPrivateFieldGet(this, _Volume_slider, "f"));
         removeElement(__classPrivateFieldGet(this, _Volume_display, "f"));
         removeElement(__classPrivateFieldGet(this, _Volume_container, "f"));

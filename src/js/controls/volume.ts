@@ -126,6 +126,7 @@ class Volume implements PlayerComponent {
         this.#volume = this.#player.getMedia().volume;
         this.#position = position;
         this.#layer = layer;
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
 
@@ -273,7 +274,7 @@ class Volume implements PlayerComponent {
             this.#slider.addEventListener(event, this.#events.slider[event], EVENT_OPTIONS);
         });
 
-        this.#player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        this.#player.getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
 
         if (!IS_ANDROID && !IS_IOS) {
             const controls = this.#player.getControls().getLayer(this.#layer);
@@ -297,7 +298,7 @@ class Volume implements PlayerComponent {
             this.#slider.removeEventListener(event, this.#events.slider[event]);
         });
 
-        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent);
 
         removeElement(this.#slider);
         removeElement(this.#display);

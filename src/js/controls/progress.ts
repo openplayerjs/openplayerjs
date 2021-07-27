@@ -140,6 +140,7 @@ class Progress implements PlayerComponent {
         this.#forcePause = false;
         this.#position = position;
         this.#layer = layer;
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
 
@@ -367,7 +368,7 @@ class Progress implements PlayerComponent {
             if ((e.which === 1 || e.which === 0) && this.#player.isMedia()) {
                 if (!el.paused) {
                     el.play().then(() => {
-                        el.pause.bind(this);
+                        el.pause();
                         this.#forcePause = true;
                     });
                 }
@@ -471,7 +472,7 @@ class Progress implements PlayerComponent {
         this.#progress.addEventListener('keydown', this.#player.getEvents().keydown, EVENT_OPTIONS);
         this.#progress.addEventListener('mousemove', this.#events.container.mousemove, EVENT_OPTIONS);
         document.addEventListener('mousemove', this.#events.global.mousemove, EVENT_OPTIONS);
-        this.#player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        this.#player.getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
         this.#player.getControls().getContainer().addEventListener('controlschanged', this.#events.controls.controlschanged, EVENT_OPTIONS);
         this.#player.getControls().getLayer(this.#layer).appendChild(this.#progress);
     }
@@ -495,7 +496,7 @@ class Progress implements PlayerComponent {
 
         document.removeEventListener('mousemove', this.#events.global.mousemove);
 
-        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent);
         this.#player.getControls().getContainer().removeEventListener('controlschanged', this.#events.controls.controlschanged);
 
         removeElement(this.#buffer);

@@ -87,6 +87,7 @@ class Play implements PlayerComponent {
         this.#labels = this.#player.getOptions().labels;
         this.#position = position;
         this.#layer = layer;
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
 
@@ -213,7 +214,7 @@ class Play implements PlayerComponent {
 
         this.#player.getControls().getContainer().addEventListener('controlschanged', this.#events.controls.controlschanged, EVENT_OPTIONS);
 
-        this.#player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        this.#player.getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
 
         this.#button.addEventListener('click', this.#events.media.click, EVENT_OPTIONS);
     }
@@ -230,7 +231,7 @@ class Play implements PlayerComponent {
 
         this.#player.getControls().getContainer().removeEventListener('controlschanged', this.#events.controls.controlschanged);
 
-        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent);
 
         this.#button.removeEventListener('click', this.#events.media.click);
         removeElement(this.#button);

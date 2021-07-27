@@ -321,6 +321,7 @@ class Player {
             }
             this.#volume = this.#element.volume;
         }
+        this._autoplay = this._autoplay.bind(this);
         return this;
     }
 
@@ -409,7 +410,7 @@ class Player {
         });
 
         if (this.#autoplay && !this.#processedAutoplay && isVideo(this.#element)) {
-            el.removeEventListener('canplay', this._autoplay.bind(this));
+            el.removeEventListener('canplay', this._autoplay);
         }
         if (this.#controls) {
             this.#controls.destroy();
@@ -634,7 +635,7 @@ class Player {
         try {
             this.#element.addEventListener('playererror', this.#options.onError, EVENT_OPTIONS);
             if (this.#autoplay && isVideo(this.#element)) {
-                this.#element.addEventListener('canplay', this._autoplay.bind(this), EVENT_OPTIONS);
+                this.#element.addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
             }
             this.#media = new Media(this.#element, this.#options, this.#autoplay, Player.customMedia);
             const preload = this.#element.getAttribute('preload');
@@ -983,7 +984,7 @@ class Player {
     private _autoplay() {
         if (!this.#processedAutoplay) {
             this.#processedAutoplay = true;
-            this.#element.removeEventListener('canplay', this._autoplay.bind(this));
+            this.#element.removeEventListener('canplay', this._autoplay);
 
             isAutoplaySupported(this.#element, this.#volume, autoplay => {
                 this.#canAutoplay = autoplay;

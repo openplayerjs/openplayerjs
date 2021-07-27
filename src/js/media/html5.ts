@@ -39,12 +39,18 @@ class HTML5Media extends Native  {
             throw new TypeError('Native method only supports video/audio tags');
         }
 
+        this._clearTimeout = this._clearTimeout.bind(this);
+        this._setTimeout = this._setTimeout.bind(this);
+        this._dispatchError = this._dispatchError.bind(this);
+        this._isDvrEnabled = this._isDvrEnabled.bind(this);
+        this._readMediadataInfo = this._readMediadataInfo.bind(this);
+
         this.#isStreaming = isHlsSource(mediaFile);
-        this.element.addEventListener('playing', this._clearTimeout.bind(this), EVENT_OPTIONS);
-        this.element.addEventListener('stalled', this._setTimeout.bind(this), EVENT_OPTIONS);
-        this.element.addEventListener('error', this._dispatchError.bind(this), EVENT_OPTIONS);
-        this.element.addEventListener('loadeddata', this._isDvrEnabled.bind(this), EVENT_OPTIONS);
-        this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo.bind(this), EVENT_OPTIONS);
+        this.element.addEventListener('playing', this._clearTimeout, EVENT_OPTIONS);
+        this.element.addEventListener('stalled', this._setTimeout, EVENT_OPTIONS);
+        this.element.addEventListener('error', this._dispatchError, EVENT_OPTIONS);
+        this.element.addEventListener('loadeddata', this._isDvrEnabled, EVENT_OPTIONS);
+        this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo, EVENT_OPTIONS);
         return this;
     }
 
@@ -73,11 +79,11 @@ class HTML5Media extends Native  {
      * @memberof HTML5Media
      */
     public destroy(): HTML5Media {
-        this.element.removeEventListener('playing', this._clearTimeout.bind(this));
-        this.element.removeEventListener('stalled', this._setTimeout.bind(this));
-        this.element.removeEventListener('error', this._dispatchError.bind(this));
-        this.element.removeEventListener('loadeddata', this._isDvrEnabled.bind(this));
-        this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo.bind(this));
+        this.element.removeEventListener('playing', this._clearTimeout);
+        this.element.removeEventListener('stalled', this._setTimeout);
+        this.element.removeEventListener('error', this._dispatchError);
+        this.element.removeEventListener('loadeddata', this._isDvrEnabled);
+        this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo);
         return this;
     }
 

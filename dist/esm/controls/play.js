@@ -29,6 +29,7 @@ class Play {
         __classPrivateFieldSet(this, _Play_labels, __classPrivateFieldGet(this, _Play_player, "f").getOptions().labels, "f");
         __classPrivateFieldSet(this, _Play_position, position, "f");
         __classPrivateFieldSet(this, _Play_layer, layer, "f");
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
     create() {
@@ -144,7 +145,7 @@ class Play {
             element.addEventListener(event, __classPrivateFieldGet(this, _Play_events, "f").media[event], EVENT_OPTIONS);
         });
         __classPrivateFieldGet(this, _Play_player, "f").getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged, EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").media.click, EVENT_OPTIONS);
     }
     destroy() {
@@ -152,7 +153,7 @@ class Play {
             __classPrivateFieldGet(this, _Play_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(this, _Play_events, "f").media[event]);
         });
         __classPrivateFieldGet(this, _Play_player, "f").getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged);
-        __classPrivateFieldGet(this, _Play_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        __classPrivateFieldGet(this, _Play_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
         __classPrivateFieldGet(this, _Play_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").media.click);
         removeElement(__classPrivateFieldGet(this, _Play_button, "f"));
     }

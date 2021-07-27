@@ -27,6 +27,7 @@ class DashMedia extends Native {
             new Promise(resolve => {
                 resolve({});
             });
+        this._assign = this._assign.bind(this);
         this.promise.then(() => {
             __classPrivateFieldSet(this, _DashMedia_player, dashjs.MediaPlayer().create(), "f");
             this.instance = __classPrivateFieldGet(this, _DashMedia_player, "f");
@@ -44,7 +45,7 @@ class DashMedia extends Native {
         if (!__classPrivateFieldGet(this, _DashMedia_events, "f")) {
             __classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
             Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(event => {
-                __classPrivateFieldGet(this, _DashMedia_player, "f").on(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign.bind(this));
+                __classPrivateFieldGet(this, _DashMedia_player, "f").on(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign);
             });
         }
     }
@@ -59,7 +60,7 @@ class DashMedia extends Native {
             __classPrivateFieldGet(this, _DashMedia_player, "f").attachSource(media.src);
             __classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
             Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(event => {
-                __classPrivateFieldGet(this, _DashMedia_player, "f").on(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign.bind(this));
+                __classPrivateFieldGet(this, _DashMedia_player, "f").on(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign);
             });
         }
     }
@@ -114,7 +115,7 @@ class DashMedia extends Native {
     _revoke() {
         if (__classPrivateFieldGet(this, _DashMedia_events, "f")) {
             Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(event => {
-                __classPrivateFieldGet(this, _DashMedia_player, "f").off(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign.bind(this));
+                __classPrivateFieldGet(this, _DashMedia_player, "f").off(__classPrivateFieldGet(this, _DashMedia_events, "f")[event], this._assign);
             });
             __classPrivateFieldSet(this, _DashMedia_events, [], "f");
         }

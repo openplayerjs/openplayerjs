@@ -37,6 +37,7 @@ class Progress {
         __classPrivateFieldSet(this, _Progress_forcePause, false, "f");
         __classPrivateFieldSet(this, _Progress_position, position, "f");
         __classPrivateFieldSet(this, _Progress_layer, layer, "f");
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
     create() {
@@ -233,7 +234,7 @@ class Progress {
             if ((e.which === 1 || e.which === 0) && __classPrivateFieldGet(this, _Progress_player, "f").isMedia()) {
                 if (!el.paused) {
                     el.play().then(() => {
-                        el.pause.bind(this);
+                        el.pause();
                         __classPrivateFieldSet(this, _Progress_forcePause, true, "f");
                     });
                 }
@@ -315,7 +316,7 @@ class Progress {
         __classPrivateFieldGet(this, _Progress_progress, "f").addEventListener('keydown', __classPrivateFieldGet(this, _Progress_player, "f").getEvents().keydown, EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Progress_progress, "f").addEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").container.mousemove, EVENT_OPTIONS);
         document.addEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").global.mousemove, EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _Progress_player, "f").getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Progress_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Progress_player, "f").getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged, EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Progress_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Progress_layer, "f")).appendChild(__classPrivateFieldGet(this, _Progress_progress, "f"));
     }
@@ -329,7 +330,7 @@ class Progress {
         __classPrivateFieldGet(this, _Progress_progress, "f").removeEventListener('keydown', __classPrivateFieldGet(this, _Progress_player, "f").getEvents().keydown);
         __classPrivateFieldGet(this, _Progress_progress, "f").removeEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").container.mousemove);
         document.removeEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").global.mousemove);
-        __classPrivateFieldGet(this, _Progress_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        __classPrivateFieldGet(this, _Progress_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
         __classPrivateFieldGet(this, _Progress_player, "f").getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged);
         removeElement(__classPrivateFieldGet(this, _Progress_buffer, "f"));
         removeElement(__classPrivateFieldGet(this, _Progress_played, "f"));

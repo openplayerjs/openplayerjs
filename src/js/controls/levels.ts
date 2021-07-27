@@ -150,7 +150,7 @@ class Levels implements PlayerComponent {
 
         const loadLevelsEvent = () => {
             if (!this.#levels.length) {
-                this._gatherLevels.bind(this);
+                this._gatherLevels();
                 setTimeout(() => {
                     this.#player.getMedia().level = initialLevel;
                     const e = addEvent('controlschanged');

@@ -75,13 +75,15 @@ class Settings {
         __classPrivateFieldGet(this, _Settings_events, "f").media.settingremoved = this.removeEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").media.play = this.hideEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").media.pause = this.hideEvent.bind(this);
+        this.clickEvent = this.clickEvent.bind(this);
+        this.hideEvent = this.hideEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").global.click = (e) => {
             if (e.target.closest(`#${__classPrivateFieldGet(this, _Settings_player, "f").id}`) && hasClass(e.target, 'op-speed__option')) {
                 __classPrivateFieldGet(this, _Settings_player, "f").getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
             }
         };
         __classPrivateFieldGet(this, _Settings_events, "f").global.resize = this.hideEvent.bind(this);
-        __classPrivateFieldGet(this, _Settings_button, "f").addEventListener('click', this.clickEvent.bind(this), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Settings_button, "f").addEventListener('click', this.clickEvent, EVENT_OPTIONS);
         Object.keys(__classPrivateFieldGet(this, _Settings_events, "f")).forEach(event => {
             __classPrivateFieldGet(this, _Settings_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Settings_events, "f").media[event], EVENT_OPTIONS);
         });
@@ -93,7 +95,7 @@ class Settings {
         __classPrivateFieldGet(this, _Settings_player, "f").getContainer().appendChild(__classPrivateFieldGet(this, _Settings_menu, "f"));
     }
     destroy() {
-        __classPrivateFieldGet(this, _Settings_button, "f").removeEventListener('click', this.clickEvent.bind(this));
+        __classPrivateFieldGet(this, _Settings_button, "f").removeEventListener('click', this.clickEvent);
         Object.keys(__classPrivateFieldGet(this, _Settings_events, "f")).forEach(event => {
             __classPrivateFieldGet(this, _Settings_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(this, _Settings_events, "f").media[event]);
         });

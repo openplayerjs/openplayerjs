@@ -78,6 +78,33 @@ class Settings implements PlayerComponent {
     #originalOutput: string = '';
 
     /**
+     * Default labels from player's config
+     *
+     * @private
+     * @type object
+     * @memberof Settings
+     */
+     #labels: any;
+
+     /**
+      * Position of the button to be indicated as part of its class name
+      *
+      * @private
+      * @type {string}
+      * @memberof Settings
+      */
+     #position: string;
+
+     /**
+      * Layer where the control item will be placed
+      *
+      * @private
+      * @type {string}
+      * @memberof Captions
+      */
+     #layer: string;
+
+    /**
      * Event that displays main menu when clicking in Settings button.
      *
      * @private
@@ -104,33 +131,6 @@ class Settings implements PlayerComponent {
      * @memberof Settings
      */
     private removeEvent: (e: CustomEvent) => void;
-
-    /**
-     * Default labels from player's config
-     *
-     * @private
-     * @type object
-     * @memberof Settings
-     */
-    #labels: any;
-
-    /**
-     * Position of the button to be indicated as part of its class name
-     *
-     * @private
-     * @type {string}
-     * @memberof Settings
-     */
-    #position: string;
-
-    /**
-     * Layer where the control item will be placed
-     *
-     * @private
-     * @type {string}
-     * @memberof Captions
-     */
-    #layer: string;
 
     /**
      * Create an instance of Settings.
@@ -202,6 +202,9 @@ class Settings implements PlayerComponent {
         this.#events.media.play = this.hideEvent.bind(this);
         this.#events.media.pause = this.hideEvent.bind(this);
 
+        this.clickEvent = this.clickEvent.bind(this);
+        this.hideEvent = this.hideEvent.bind(this);
+
         this.#events.global.click = (e: any) => {
             if (e.target.closest(`#${this.#player.id}`) && hasClass(e.target, 'op-speed__option')) {
                 this.#player.getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
@@ -209,7 +212,7 @@ class Settings implements PlayerComponent {
         };
         this.#events.global.resize = this.hideEvent.bind(this);
 
-        this.#button.addEventListener('click', this.clickEvent.bind(this), EVENT_OPTIONS);
+        this.#button.addEventListener('click', this.clickEvent, EVENT_OPTIONS);
         Object.keys(this.#events).forEach(event => {
             this.#player.getElement().addEventListener(event, this.#events.media[event], EVENT_OPTIONS);
         });
@@ -228,7 +231,7 @@ class Settings implements PlayerComponent {
      * @memberof Settings
      */
     public destroy(): void {
-        this.#button.removeEventListener('click', this.clickEvent.bind(this));
+        this.#button.removeEventListener('click', this.clickEvent);
         Object.keys(this.#events).forEach(event => {
             this.#player.getElement().removeEventListener(event, this.#events.media[event]);
         });

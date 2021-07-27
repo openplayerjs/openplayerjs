@@ -88,7 +88,8 @@ class HlsMedia extends Native {
                 resolve({});
             });
 
-        this.promise.then(this._create.bind(this));
+        this._create = this._create.bind(this);
+        this.promise.then(this._create);
         return this;
     }
 

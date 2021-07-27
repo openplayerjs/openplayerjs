@@ -132,6 +132,8 @@ class Fullscreen implements PlayerComponent {
             target.msFullscreenEnabled || target.webkitSupportsFullscreen ||
             target.webkitFullscreenEnabled || (document.createElement('video') as any).webkitRequestFullScreen);
 
+        this._keydownEvent = this._keydownEvent.bind(this);
+        this._fullscreenChange = this._fullscreenChange.bind(this);
         return this;
     }
 
@@ -157,6 +159,8 @@ class Fullscreen implements PlayerComponent {
             this.toggleFullscreen();
         };
 
+        this.#clickEvent = this.#clickEvent.bind(this);
+
         this.#fullscreenEvents = [
             'fullscreenchange',
             'mozfullscreenchange',
@@ -166,13 +170,13 @@ class Fullscreen implements PlayerComponent {
 
         this._setFullscreenData(false);
 
-        this.#player.getContainer().addEventListener('keydown', this._keydownEvent.bind(this), EVENT_OPTIONS);
+        this.#player.getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
 
         this.#fullscreenEvents.forEach(event => {
-            document.addEventListener(event, this._fullscreenChange.bind(this), EVENT_OPTIONS);
+            document.addEventListener(event, this._fullscreenChange, EVENT_OPTIONS);
         });
 
-        this.#button.addEventListener('click', this.#clickEvent.bind(this), EVENT_OPTIONS);
+        this.#button.addEventListener('click', this.#clickEvent, EVENT_OPTIONS);
 
         this.#player.getControls().getLayer(this.#layer).appendChild(this.#button);
 
@@ -197,10 +201,10 @@ class Fullscreen implements PlayerComponent {
      * @memberof Fullscreen
      */
     public destroy(): void {
-        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent.bind(this));
+        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent);
 
         this.#fullscreenEvents.forEach(event => {
-            document.removeEventListener(event, this._fullscreenChange.bind(this));
+            document.removeEventListener(event, this._fullscreenChange);
         });
         if (IS_IPHONE) {
             this.#player.getElement().removeEventListener('webkitbeginfullscreen', () => {
@@ -214,7 +218,7 @@ class Fullscreen implements PlayerComponent {
                 document.body.classList.remove('op-fullscreen__on');
             });
         }
-        this.#button.removeEventListener('click', this.#clickEvent.bind(this));
+        this.#button.removeEventListener('click', this.#clickEvent);
         removeElement(this.#button);
     }
 

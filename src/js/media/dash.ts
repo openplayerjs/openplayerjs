@@ -55,10 +55,12 @@ class DashMedia extends Native {
                 resolve({});
             });
 
+        this._assign = this._assign.bind(this);
         this.promise.then(() => {
             this.#player = dashjs.MediaPlayer().create();
             this.instance = this.#player;
         });
+
         return this;
     }
 
@@ -86,7 +88,7 @@ class DashMedia extends Native {
         if (!this.#events) {
             this.#events = dashjs.MediaPlayer.events;
             Object.keys(this.#events).forEach(event => {
-                this.#player.on(this.#events[event], this._assign.bind(this));
+                this.#player.on(this.#events[event], this._assign);
             });
         }
     }
@@ -114,7 +116,7 @@ class DashMedia extends Native {
 
             this.#events = dashjs.MediaPlayer.events;
             Object.keys(this.#events).forEach(event => {
-                this.#player.on(this.#events[event], this._assign.bind(this));
+                this.#player.on(this.#events[event], this._assign);
             });
         }
     }
@@ -185,7 +187,7 @@ class DashMedia extends Native {
     private _revoke(): void {
         if (this.#events) {
             Object.keys(this.#events).forEach(event => {
-                this.#player.off(this.#events[event], this._assign.bind(this));
+                this.#player.off(this.#events[event], this._assign);
             });
             this.#events = [];
         }

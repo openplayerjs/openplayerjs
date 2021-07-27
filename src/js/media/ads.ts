@@ -327,6 +327,18 @@ class Ads {
         this.#adsVolume = this.#originalVolume;
 
         const path = this.#adsOptions.debug ? this.#adsOptions.sdkPath.replace(/(\.js$)/, '_debug.js') : this.#adsOptions.sdkPath;
+
+        this._handleClickInContainer = this._handleClickInContainer.bind(this);
+        this._loaded = this._loaded.bind(this);
+        this._error = this._error.bind(this);
+        this._assign = this._assign.bind(this);
+        this._contentLoadedAction = this._contentLoadedAction.bind(this);
+        this._loadedMetadataHandler = this._loadedMetadataHandler.bind(this);
+        this._contentEndedListener = this._contentEndedListener.bind(this);
+        this.resizeAds = this.resizeAds.bind(this);
+        this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
+        this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
+
         this.#promise = (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
             loadScript(path) : new Promise(resolve => {
                 resolve({});
@@ -370,7 +382,7 @@ class Ads {
         if (this.#element.parentElement) {
             this.#element.parentElement.insertBefore(this.#adsContainer, this.#element.nextSibling);
         }
-        this.#adsContainer.addEventListener('click', this._handleClickInContainer.bind(this));
+        this.#adsContainer.addEventListener('click', this._handleClickInContainer);
 
         if (this.#adsOptions.customClick.enabled) {
             this.#adsCustomClickContainer = document.createElement('div');
@@ -399,25 +411,21 @@ class Ads {
         this.#adsLoader = new google.ima.AdsLoader(this.#adDisplayContainer);
         this.#adsLoader.addEventListener(
             google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-            this._loaded.bind(this),
+            this._loaded,
             EVENT_OPTIONS,
         );
 
         this.#adsLoader.addEventListener(
             google.ima.AdErrorEvent.Type.AD_ERROR,
-            this._error.bind(this),
+            this._error,
             EVENT_OPTIONS,
         );
 
         // Create responsive ad
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', () => {
-                this.resizeAds();
-            }, EVENT_OPTIONS);
+            window.addEventListener('resize', () => this.resizeAds(), EVENT_OPTIONS);
         }
-        this.#element.addEventListener('loadedmetadata', () => {
-            this.resizeAds();
-        }, EVENT_OPTIONS);
+        this.#element.addEventListener('loadedmetadata', () => this.resizeAds(), EVENT_OPTIONS);
 
         // Request Ads automatically if `autoplay` was set
         if (this.#autoStart === true || this.#autoStartMuted === true || force === true || this.#adsOptions.enablePreloading === true) {
@@ -481,7 +489,7 @@ class Ads {
     public destroy(): void {
         if (this.#events) {
             this.#events.forEach(event => {
-                this.#adsManager.removeEventListener(event, this._assign.bind(this));
+                this.#adsManager.removeEventListener(event, this._assign);
             });
         }
 
@@ -498,11 +506,11 @@ class Ads {
         if (this.#adsLoader) {
             this.#adsLoader.removeEventListener(
                 google.ima.AdErrorEvent.Type.AD_ERROR,
-                this._error.bind(this),
+                this._error,
             );
             this.#adsLoader.removeEventListener(
                 google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-                this._loaded.bind(this),
+                this._loaded,
             );
         }
 
@@ -516,16 +524,16 @@ class Ads {
         }
 
         if (IS_IOS || IS_ANDROID) {
-            this.#element.removeEventListener('loadedmetadata', this._contentLoadedAction.bind(this));
+            this.#element.removeEventListener('loadedmetadata', this._contentLoadedAction);
         }
-        this.#element.removeEventListener('loadedmetadata', () => { this.resizeAds(); });
-        this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
-        this.#element.removeEventListener('ended', this._contentEndedListener.bind(this));
+        this.#element.removeEventListener('loadedmetadata', () => this.resizeAds());
+        this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler);
+        this.#element.removeEventListener('ended', this._contentEndedListener);
         if (typeof window !== 'undefined') {
-            window.removeEventListener('resize', () => { this.resizeAds(); });
+            window.removeEventListener('resize', () => this.resizeAds());
         }
 
-        this.#adsContainer?.removeEventListener('click', this._handleClickInContainer.bind(this));
+        this.#adsContainer?.removeEventListener('click', this._handleClickInContainer);
         removeElement(this.#adsContainer);
     }
 
@@ -916,10 +924,10 @@ class Ads {
         // Add listeners to the required events.
         manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-            this._onContentPauseRequested.bind(this), EVENT_OPTIONS);
+            this._onContentPauseRequested, EVENT_OPTIONS);
         manager.addEventListener(
             google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
-            this._onContentResumeRequested.bind(this), EVENT_OPTIONS);
+            this._onContentResumeRequested, EVENT_OPTIONS);
 
         this.#events = [
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
@@ -963,7 +971,7 @@ class Ads {
             }
         });
         this.#events.forEach(event => {
-            manager.addEventListener(event, this._assign.bind(this), EVENT_OPTIONS);
+            manager.addEventListener(event, this._assign, EVENT_OPTIONS);
         });
 
         if (this.#autoStart === true || this.#playTriggered === true) {
@@ -1003,7 +1011,7 @@ class Ads {
         this.#adDisplayContainer.initialize();
         if (IS_IOS || IS_ANDROID) {
             this.#preloadContent = this._contentLoadedAction;
-            this.#element.addEventListener('loadedmetadata', this._contentLoadedAction.bind(this), EVENT_OPTIONS);
+            this.#element.addEventListener('loadedmetadata', this._contentLoadedAction, EVENT_OPTIONS);
             this.#element.load();
         } else {
             this._contentLoadedAction();
@@ -1028,7 +1036,7 @@ class Ads {
      * @memberof Ads
      */
     private _onContentPauseRequested(): void {
-        this.#element.removeEventListener('ended', this._contentEndedListener.bind(this));
+        this.#element.removeEventListener('ended', this._contentEndedListener);
         this.#lastTimePaused = this.#media.currentTime;
 
         if (this.#adsStarted) {
@@ -1062,8 +1070,8 @@ class Ads {
             this.#adsDone = false;
             this.load(true);
         } else {
-            this.#element.addEventListener('ended', this._contentEndedListener.bind(this), EVENT_OPTIONS);
-            this.#element.addEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this), EVENT_OPTIONS);
+            this.#element.addEventListener('ended', this._contentEndedListener, EVENT_OPTIONS);
+            this.#element.addEventListener('loadedmetadata', this._loadedMetadataHandler, EVENT_OPTIONS);
             if (IS_IOS || IS_ANDROID) {
                 this.#media.src = this.#mediaSources;
                 this.#media.load();
@@ -1110,7 +1118,7 @@ class Ads {
                 this._prepareMedia();
             }
         } else {
-            setTimeout(this._loadedMetadataHandler.bind(this), 100);
+            setTimeout(this._loadedMetadataHandler, 100);
         }
     }
 
@@ -1181,7 +1189,7 @@ class Ads {
      */
     private _contentLoadedAction() {
         if (this.#preloadContent) {
-            this.#element.removeEventListener('loadedmetadata', this.#preloadContent.bind(this));
+            this.#element.removeEventListener('loadedmetadata', this.#preloadContent);
             this.#preloadContent = null;
         }
         this._requestAds();
@@ -1212,7 +1220,7 @@ class Ads {
      */
     private _prepareMedia() {
         this.#media.currentTime = this.#lastTimePaused;
-        this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler.bind(this));
+        this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler);
         this._resumeMedia();
     }
 
