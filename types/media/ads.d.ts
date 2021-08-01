@@ -69,6 +69,7 @@ declare class Ads {
      */
     started(): boolean;
     set src(source: string | string[]);
+    set isDone(value: boolean);
     /**
      * Update the `playTriggered` flag
      *

@@ -236,6 +236,9 @@ class Ads {
     set src(source) {
         __classPrivateFieldSet(this, _Ads_ads, source, "f");
     }
+    set isDone(value) {
+        __classPrivateFieldSet(this, _Ads_adsDone, value, "f");
+    }
     set playRequested(value) {
         __classPrivateFieldSet(this, _Ads_playTriggered, value, "f");
     }

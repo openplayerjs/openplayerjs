@@ -591,6 +591,10 @@ class Ads {
         this.#ads = source;
     }
 
+    set isDone(value: boolean) {
+        this.#adsDone = value;
+    }
+
     /**
      * Update the `playTriggered` flag
      *

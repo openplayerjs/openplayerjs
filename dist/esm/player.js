@@ -326,17 +326,16 @@ class Player {
         if (this.isAd()) {
             this.activeElement().destroy();
             this.activeElement().src = src;
-            this.activeElement().load(true);
+            this.getAd().isDone = false;
             if (!this.activeElement().paused) {
-                this.activeElement().play();
+                this.getAd().playRequested = true;
             }
+            this.activeElement().load(true);
         }
         else {
             const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
-            __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, false, false, adsOptions), "f");
-            if (!this.activeElement().paused) {
-                __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
-            }
+            const autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _Player_canAutoplay, "f");
+            __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
         }
     }
     set src(media) {

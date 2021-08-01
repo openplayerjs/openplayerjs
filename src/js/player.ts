@@ -676,16 +676,15 @@ class Player {
         if (this.isAd()) {
             this.activeElement().destroy();
             this.activeElement().src = src;
-            this.activeElement().load(true);
+            this.getAd().isDone = false;
             if (!this.activeElement().paused) {
-                this.activeElement().play();
+                this.getAd().playRequested =  true;
             }
+            this.activeElement().load(true);
         } else {
             const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
-            this.#adsInstance = new Ads(this, src, false, false, adsOptions);
-            if (!this.activeElement().paused) {
-                this.#adsInstance.play();
-            }
+            const autoplay = !this.activeElement().paused || this.#canAutoplay;
+            this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions);
         }
     }
 

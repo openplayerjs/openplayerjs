@@ -2123,19 +2123,19 @@ var Player = function () {
       if (this.isAd()) {
         this.activeElement().destroy();
         this.activeElement().src = src;
-        this.activeElement().load(true);
+        this.getAd().isDone = false;
 
         if (!this.activeElement().paused) {
-          this.activeElement().play();
+          this.getAd().playRequested = true;
         }
+
+        this.activeElement().load(true);
       } else {
         var adsOptions = __classPrivateFieldGet(this, _options) && __classPrivateFieldGet(this, _options).ads ? __classPrivateFieldGet(this, _options).ads : undefined;
 
-        __classPrivateFieldSet(this, _adsInstance, new ads_1["default"](this, src, false, false, adsOptions));
+        var autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _canAutoplay);
 
-        if (!this.activeElement().paused) {
-          __classPrivateFieldGet(this, _adsInstance).play();
-        }
+        __classPrivateFieldSet(this, _adsInstance, new ads_1["default"](this, src, autoplay, __classPrivateFieldGet(this, _canAutoplayMuted), adsOptions));
       }
     }
   }, {
@@ -11418,6 +11418,11 @@ var Ads = function () {
     key: "src",
     set: function set(source) {
       __classPrivateFieldSet(this, _ads, source);
+    }
+  }, {
+    key: "isDone",
+    set: function set(value) {
+      __classPrivateFieldSet(this, _adsDone, value);
     }
   }, {
     key: "playRequested",
