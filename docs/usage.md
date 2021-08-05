@@ -117,7 +117,7 @@ var player = new OpenPlayerJS('[player ID]', {
         // Options to allow IMA SDK to use a custom clickable element for mobile devices
         // Otherwise, IMA SDK will show a `Learn more` layer
         customClick: {
-            enable,
+            enabled,
             label,
         },
     },
