@@ -336,6 +336,7 @@ class Ads {
         this._loadedMetadataHandler = this._loadedMetadataHandler.bind(this);
         this._contentEndedListener = this._contentEndedListener.bind(this);
         this.resizeAds = this.resizeAds.bind(this);
+        this._handleResizeAds = this._handleResizeAds.bind(this);
         this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
         this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
 
@@ -425,7 +426,7 @@ class Ads {
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', () => this.resizeAds(), EVENT_OPTIONS);
         }
-        this.#element.addEventListener('loadedmetadata', () => this.resizeAds(), EVENT_OPTIONS);
+        this.#element.addEventListener('loadedmetadata', this._handleResizeAds, EVENT_OPTIONS);
 
         // Request Ads automatically if `autoplay` was set
         if (this.#autoStart === true || this.#autoStartMuted === true || force === true || this.#adsOptions.enablePreloading === true) {
@@ -526,7 +527,7 @@ class Ads {
         if (IS_IOS || IS_ANDROID) {
             this.#element.removeEventListener('loadedmetadata', this._contentLoadedAction);
         }
-        this.#element.removeEventListener('loadedmetadata', () => this.resizeAds());
+        this.#element.removeEventListener('loadedmetadata', this._handleResizeAds);
         this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler);
         this.#element.removeEventListener('ended', this._contentEndedListener);
         if (typeof window !== 'undefined') {
@@ -1239,6 +1240,10 @@ class Ads {
             this.#element.dispatchEvent(e);
             this.pause();
         }
+    }
+
+    private _handleResizeAds() {
+        this.resizeAds();
     }
 }
 

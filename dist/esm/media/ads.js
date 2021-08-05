@@ -86,6 +86,7 @@ class Ads {
         this._loadedMetadataHandler = this._loadedMetadataHandler.bind(this);
         this._contentEndedListener = this._contentEndedListener.bind(this);
         this.resizeAds = this.resizeAds.bind(this);
+        this._handleResizeAds = this._handleResizeAds.bind(this);
         this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
         this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
         __classPrivateFieldSet(this, _Ads_promise, (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
@@ -134,7 +135,7 @@ class Ads {
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', () => this.resizeAds(), EVENT_OPTIONS);
         }
-        __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', () => this.resizeAds(), EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._handleResizeAds, EVENT_OPTIONS);
         if (__classPrivateFieldGet(this, _Ads_autoStart, "f") === true || __classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || force === true || __classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true) {
             if (!__classPrivateFieldGet(this, _Ads_adsDone, "f")) {
                 __classPrivateFieldSet(this, _Ads_adsDone, true, "f");
@@ -202,7 +203,7 @@ class Ads {
         if (IS_IOS || IS_ANDROID) {
             __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._contentLoadedAction);
         }
-        __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', () => this.resizeAds());
+        __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._handleResizeAds);
         __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._loadedMetadataHandler);
         __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('ended', this._contentEndedListener);
         if (typeof window !== 'undefined') {
@@ -689,6 +690,9 @@ class Ads {
             __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
             this.pause();
         }
+    }
+    _handleResizeAds() {
+        this.resizeAds();
     }
 }
 _Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();

@@ -10649,6 +10649,7 @@ var Ads = function () {
     this._loadedMetadataHandler = this._loadedMetadataHandler.bind(this);
     this._contentEndedListener = this._contentEndedListener.bind(this);
     this.resizeAds = this.resizeAds.bind(this);
+    this._handleResizeAds = this._handleResizeAds.bind(this);
     this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
     this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
 
@@ -10726,9 +10727,7 @@ var Ads = function () {
         }, constants_1.EVENT_OPTIONS);
       }
 
-      __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', function () {
-        return _this2.resizeAds();
-      }, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', this._handleResizeAds, constants_1.EVENT_OPTIONS);
 
       if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _autoStartMuted) === true || force === true || __classPrivateFieldGet(this, _adsOptions).enablePreloading === true) {
         if (!__classPrivateFieldGet(this, _adsDone)) {
@@ -10828,9 +10827,7 @@ var Ads = function () {
         __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._contentLoadedAction);
       }
 
-      __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', function () {
-        return _this4.resizeAds();
-      });
+      __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._handleResizeAds);
 
       __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._loadedMetadataHandler);
 
@@ -11413,6 +11410,11 @@ var Ads = function () {
 
         this.pause();
       }
+    }
+  }, {
+    key: "_handleResizeAds",
+    value: function _handleResizeAds() {
+      this.resizeAds();
     }
   }, {
     key: "src",
