@@ -383,7 +383,7 @@ var getOwnPropertyDescriptor = __webpack_require__(31).f;
 var createNonEnumerableProperty = __webpack_require__(15);
 var redefine = __webpack_require__(16);
 var setGlobal = __webpack_require__(38);
-var copyConstructorProperties = __webpack_require__(89);
+var copyConstructorProperties = __webpack_require__(90);
 var isForced = __webpack_require__(64);
 
 /*
@@ -884,7 +884,7 @@ module.exports = function (it) {
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var NATIVE_WEAK_MAP = __webpack_require__(88);
+var NATIVE_WEAK_MAP = __webpack_require__(89);
 var global = __webpack_require__(0);
 var isObject = __webpack_require__(8);
 var createNonEnumerableProperty = __webpack_require__(15);
@@ -1246,7 +1246,7 @@ module.exports = function (it) {
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toPrimitive = __webpack_require__(86);
+var toPrimitive = __webpack_require__(87);
 var isSymbol = __webpack_require__(35);
 
 // `ToPropertyKey` abstract operation
@@ -1401,7 +1401,7 @@ module.exports = [
 
 /* global ActiveXObject -- old IE, WSH */
 var anObject = __webpack_require__(7);
-var defineProperties = __webpack_require__(98);
+var defineProperties = __webpack_require__(99);
 var enumBugKeys = __webpack_require__(44);
 var hiddenKeys = __webpack_require__(42);
 var html = __webpack_require__(66);
@@ -1518,7 +1518,7 @@ module.exports = function (argument) {
 var has = __webpack_require__(9);
 var toObject = __webpack_require__(14);
 var sharedKey = __webpack_require__(41);
-var CORRECT_PROTOTYPE_GETTER = __webpack_require__(104);
+var CORRECT_PROTOTYPE_GETTER = __webpack_require__(105);
 
 var IE_PROTO = sharedKey('IE_PROTO');
 var ObjectPrototype = Object.prototype;
@@ -1558,7 +1558,7 @@ module.exports = function (it, TAG, STATIC) {
 
 /* eslint-disable no-proto -- safe */
 var anObject = __webpack_require__(7);
-var aPossiblePrototype = __webpack_require__(105);
+var aPossiblePrototype = __webpack_require__(106);
 
 // `Object.setPrototypeOf` method
 // https://tc39.es/ecma262/#sec-object.setprototypeof
@@ -1691,27 +1691,29 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _controls, _adsInstance, _uid, _element, _ads, _media, _events, _autoplay_1, _volume, _canAutoplay, _canAutoplayMuted, _processedAutoplay, _options, _customControlItems, _defaultOptions;
+var _controls, _adsInstance, _uid, _element, _ads, _media, _events, _autoplay_1, _volume, _canAutoplay, _canAutoplayMuted, _processedAutoplay, _options, _customControlItems, _fullscreen, _defaultOptions;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-__webpack_require__(83);
+__webpack_require__(84);
 
-__webpack_require__(100);
+__webpack_require__(101);
 
-__webpack_require__(110);
+__webpack_require__(111);
 
-__webpack_require__(114);
+__webpack_require__(115);
 
-__webpack_require__(117);
-
-__webpack_require__(135);
+__webpack_require__(118);
 
 __webpack_require__(136);
 
-var controls_1 = __importDefault(__webpack_require__(138));
+__webpack_require__(137);
+
+var controls_1 = __importDefault(__webpack_require__(139));
+
+var fullscreen_1 = __importDefault(__webpack_require__(83));
 
 var media_1 = __importDefault(__webpack_require__(147));
 
@@ -1758,6 +1760,8 @@ var Player = function () {
     _options.set(this, {});
 
     _customControlItems.set(this, []);
+
+    _fullscreen.set(this, void 0);
 
     _defaultOptions.set(this, {
       controls: {
@@ -1841,6 +1845,7 @@ var Player = function () {
     }
 
     this._autoplay = this._autoplay.bind(this);
+    this._enableKeyBindings = this._enableKeyBindings.bind(this);
     return this;
   }
 
@@ -1905,6 +1910,10 @@ var Player = function () {
         __classPrivateFieldGet(this, _adsInstance).destroy();
       }
 
+      if (__classPrivateFieldGet(this, _fullscreen)) {
+        __classPrivateFieldGet(this, _fullscreen).destroy();
+      }
+
       var el = __classPrivateFieldGet(this, _element);
 
       if (__classPrivateFieldGet(this, _media)) {
@@ -1914,6 +1923,7 @@ var Player = function () {
       Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
         el.removeEventListener(event, __classPrivateFieldGet(_this, _events)[event]);
       });
+      this.getContainer().removeEventListener('keydown', this._enableKeyBindings);
 
       if (__classPrivateFieldGet(this, _autoplay_1) && !__classPrivateFieldGet(this, _processedAutoplay) && general_1.isVideo(__classPrivateFieldGet(this, _element))) {
         el.removeEventListener('canplay', this._autoplay);
@@ -2172,6 +2182,16 @@ var Player = function () {
       }
 
       wrapper.appendChild(__classPrivateFieldGet(this, _element));
+      var messageContainer = document.createElement('div');
+      messageContainer.className = 'op-status';
+      messageContainer.innerHTML = '<span></span>';
+      messageContainer.tabIndex = -1;
+      messageContainer.setAttribute('aria-hidden', 'true');
+
+      if (general_1.isVideo(__classPrivateFieldGet(this, _element)) && __classPrivateFieldGet(this, _element).parentElement) {
+        __classPrivateFieldGet(this, _element).parentElement.insertBefore(messageContainer, __classPrivateFieldGet(this, _element));
+      }
+
       wrapper.addEventListener('keydown', function () {
         if (wrapper.classList.contains('op-player__keyboard--inactive')) {
           wrapper.classList.remove('op-player__keyboard--inactive');
@@ -2389,6 +2409,7 @@ var Player = function () {
       Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
         __classPrivateFieldGet(_this5, _element).addEventListener(event, __classPrivateFieldGet(_this5, _events)[event], constants_1.EVENT_OPTIONS);
       });
+      this.getContainer().addEventListener('keydown', this._enableKeyBindings, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "_autoplay",
@@ -2460,6 +2481,134 @@ var Player = function () {
       }
     }
   }, {
+    key: "_enableKeyBindings",
+    value: function _enableKeyBindings(e) {
+      var _a;
+
+      var key = e.which || e.keyCode || 0;
+      var el = this.activeElement();
+      var isAd = this.isAd();
+
+      switch (key) {
+        case 13:
+        case 32:
+        case 75:
+          if (el.paused) {
+            el.play();
+          } else {
+            el.pause();
+          }
+
+          e.preventDefault();
+          break;
+
+        case 35:
+          if (!isAd && el.duration !== Infinity) {
+            el.currentTime = el.duration;
+            e.preventDefault();
+          }
+
+          break;
+
+        case 36:
+          if (!isAd) {
+            el.currentTime = 0;
+            e.preventDefault();
+          }
+
+          break;
+
+        case 37:
+        case 39:
+        case 74:
+        case 76:
+          if (!isAd && el.duration !== Infinity) {
+            var newStep = 5;
+            var configStep = this.getOptions().step;
+
+            if (configStep) {
+              newStep = key === 74 || key === 76 ? configStep * 2 : configStep;
+            } else if (key === 74 || key === 76) {
+              newStep = 10;
+            }
+
+            var step = el.duration !== Infinity ? newStep : this.getOptions().progress.duration;
+            el.currentTime += key === 37 || key === 74 ? step * -1 : step;
+
+            if (el.currentTime < 0) {
+              el.currentTime = 0;
+            } else if (el.currentTime >= el.duration) {
+              el.currentTime = el.duration;
+            }
+
+            e.preventDefault();
+          }
+
+          break;
+
+        case 38:
+        case 40:
+          var newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
+          el.volume = newVol;
+          el.muted = !(newVol > 0);
+          e.preventDefault();
+          break;
+
+        case 70:
+          if (general_1.isVideo(__classPrivateFieldGet(this, _element)) && !e.ctrlKey) {
+            __classPrivateFieldSet(this, _fullscreen, new fullscreen_1["default"](this, '', ''));
+
+            if (typeof __classPrivateFieldGet(this, _fullscreen).fullScreenEnabled !== 'undefined') {
+              __classPrivateFieldGet(this, _fullscreen).toggleFullscreen();
+
+              e.preventDefault();
+            }
+          }
+
+          break;
+
+        case 77:
+          el.muted = !el.muted;
+
+          if (el.muted) {
+            el.volume = 0;
+          } else {
+            el.volume = __classPrivateFieldGet(this, _volume);
+          }
+
+          e.preventDefault();
+          break;
+
+        case 188:
+        case 190:
+          if (!isAd && e.shiftKey) {
+            var elem = el;
+            elem.playbackRate = key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
+            var target = this.getContainer().querySelector('.op-status>span');
+
+            if (target) {
+              target.textContent = "".concat(elem.playbackRate, "x");
+              (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'false');
+              setTimeout(function () {
+                var _a;
+
+                (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'true');
+              }, 500);
+            }
+
+            var ev = events_1.addEvent('controlschanged');
+            dispatchEvent(ev);
+            e.preventDefault();
+          } else if (!isAd && el.paused) {
+            el.currentTime += 1 / 25 * (key === 188 ? -1 : 1);
+            e.preventDefault();
+          }
+
+        default:
+          break;
+      }
+    }
+  }, {
     key: "src",
     set: function set(media) {
       if (__classPrivateFieldGet(this, _media) instanceof media_1["default"]) {
@@ -2501,7 +2650,7 @@ var Player = function () {
   return Player;
 }();
 
-_controls = new WeakMap(), _adsInstance = new WeakMap(), _uid = new WeakMap(), _element = new WeakMap(), _ads = new WeakMap(), _media = new WeakMap(), _events = new WeakMap(), _autoplay_1 = new WeakMap(), _volume = new WeakMap(), _canAutoplay = new WeakMap(), _canAutoplayMuted = new WeakMap(), _processedAutoplay = new WeakMap(), _options = new WeakMap(), _customControlItems = new WeakMap(), _defaultOptions = new WeakMap();
+_controls = new WeakMap(), _adsInstance = new WeakMap(), _uid = new WeakMap(), _element = new WeakMap(), _ads = new WeakMap(), _media = new WeakMap(), _events = new WeakMap(), _autoplay_1 = new WeakMap(), _volume = new WeakMap(), _canAutoplay = new WeakMap(), _canAutoplayMuted = new WeakMap(), _processedAutoplay = new WeakMap(), _options = new WeakMap(), _customControlItems = new WeakMap(), _fullscreen = new WeakMap(), _defaultOptions = new WeakMap();
 Player.instances = {};
 Player.customMedia = {
   media: {},
@@ -2646,7 +2795,7 @@ module.exports = !DESCRIPTORS && !fails(function () {
 
 var has = __webpack_require__(9);
 var toIndexedObject = __webpack_require__(23);
-var indexOf = __webpack_require__(92).indexOf;
+var indexOf = __webpack_require__(93).indexOf;
 var hiddenKeys = __webpack_require__(42);
 
 module.exports = function (object, names) {
@@ -2739,7 +2888,7 @@ module.exports = getBuiltIn('document', 'documentElement');
 
 "use strict";
 
-var charAt = __webpack_require__(102).charAt;
+var charAt = __webpack_require__(103).charAt;
 var toString = __webpack_require__(47);
 var InternalStateModule = __webpack_require__(25);
 var defineIterator = __webpack_require__(68);
@@ -2777,7 +2926,7 @@ defineIterator(String, 'String', function (iterated) {
 "use strict";
 
 var $ = __webpack_require__(4);
-var createIteratorConstructor = __webpack_require__(103);
+var createIteratorConstructor = __webpack_require__(104);
 var getPrototypeOf = __webpack_require__(48);
 var setPrototypeOf = __webpack_require__(50);
 var setToStringTag = __webpack_require__(49);
@@ -3365,29 +3514,351 @@ $({ target: 'Promise', stat: true }, {
 /* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(84);
+"use strict";
 
-module.exports = parent;
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
+  if (!privateMap.has(receiver)) {
+    throw new TypeError("attempted to set private field on non-instance");
+  }
+
+  privateMap.set(receiver, value);
+  return value;
+};
+
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
+  if (!privateMap.has(receiver)) {
+    throw new TypeError("attempted to get private field on non-instance");
+  }
+
+  return privateMap.get(receiver);
+};
+
+var _player, _isFullscreen, _button, _fullscreenEvents, _fullscreenWidth, _fullscreenHeight, _clickEvent, _labels, _position, _layer;
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var constants_1 = __webpack_require__(1);
+
+var general_1 = __webpack_require__(2);
+
+var Fullscreen = function () {
+  function Fullscreen(player, position, layer) {
+    var _this = this;
+
+    _classCallCheck(this, Fullscreen);
+
+    _player.set(this, void 0);
+
+    _isFullscreen.set(this, void 0);
+
+    _button.set(this, void 0);
+
+    _fullscreenEvents.set(this, []);
+
+    _fullscreenWidth.set(this, 0);
+
+    _fullscreenHeight.set(this, 0);
+
+    _clickEvent.set(this, void 0);
+
+    _labels.set(this, void 0);
+
+    _position.set(this, void 0);
+
+    _layer.set(this, void 0);
+
+    __classPrivateFieldSet(this, _player, player);
+
+    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+
+    __classPrivateFieldSet(this, _position, position);
+
+    __classPrivateFieldSet(this, _layer, layer);
+
+    __classPrivateFieldSet(this, _isFullscreen, document.body.classList.contains('op-fullscreen__on'));
+
+    var target = document;
+    this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
+    this._keydownEvent = this._keydownEvent.bind(this);
+    this._fullscreenChange = this._fullscreenChange.bind(this);
+
+    __classPrivateFieldSet(this, _fullscreenEvents, ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange']);
+
+    __classPrivateFieldGet(this, _fullscreenEvents).forEach(function (event) {
+      document.addEventListener(event, _this._fullscreenChange, constants_1.EVENT_OPTIONS);
+    });
+
+    this._setFullscreenData(false);
+
+    __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
+
+    if (constants_1.IS_IPHONE) {
+      __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitbeginfullscreen', function () {
+        __classPrivateFieldSet(_this, _isFullscreen, true);
+
+        _this._setFullscreenData(true);
+
+        document.body.classList.add('op-fullscreen__on');
+      }, constants_1.EVENT_OPTIONS);
+
+      __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitendfullscreen', function () {
+        __classPrivateFieldSet(_this, _isFullscreen, false);
+
+        _this._setFullscreenData(false);
+
+        document.body.classList.remove('op-fullscreen__on');
+      }, constants_1.EVENT_OPTIONS);
+    }
+
+    return this;
+  }
+
+  _createClass(Fullscreen, [{
+    key: "create",
+    value: function create() {
+      var _this2 = this;
+
+      __classPrivateFieldSet(this, _button, document.createElement('button'));
+
+      __classPrivateFieldGet(this, _button).type = 'button';
+      __classPrivateFieldGet(this, _button).className = "op-controls__fullscreen op-control__".concat(__classPrivateFieldGet(this, _position));
+      __classPrivateFieldGet(this, _button).tabIndex = 0;
+      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).fullscreen;
+
+      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+
+      __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
+
+      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).fullscreen);
+
+      __classPrivateFieldGet(this, _button).innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _labels).fullscreen, "</span>");
+
+      __classPrivateFieldSet(this, _clickEvent, function () {
+        __classPrivateFieldGet(_this2, _button).setAttribute('aria-pressed', 'true');
+
+        _this2.toggleFullscreen();
+      });
+
+      __classPrivateFieldSet(this, _clickEvent, __classPrivateFieldGet(this, _clickEvent).bind(this));
+
+      __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _clickEvent), constants_1.EVENT_OPTIONS);
+
+      __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      var _this3 = this;
+
+      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
+
+      __classPrivateFieldGet(this, _fullscreenEvents).forEach(function (event) {
+        document.removeEventListener(event, _this3._fullscreenChange);
+      });
+
+      if (constants_1.IS_IPHONE) {
+        __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitbeginfullscreen', function () {
+          __classPrivateFieldSet(_this3, _isFullscreen, true);
+
+          _this3._setFullscreenData(false);
+
+          document.body.classList.add('op-fullscreen__on');
+        });
+
+        __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitendfullscreen', function () {
+          __classPrivateFieldSet(_this3, _isFullscreen, false);
+
+          _this3._setFullscreenData(true);
+
+          document.body.classList.remove('op-fullscreen__on');
+        });
+      }
+
+      __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _clickEvent));
+
+      general_1.removeElement(__classPrivateFieldGet(this, _button));
+    }
+  }, {
+    key: "toggleFullscreen",
+    value: function toggleFullscreen() {
+      if (__classPrivateFieldGet(this, _isFullscreen)) {
+        var target = document;
+
+        if (target.exitFullscreen) {
+          target.exitFullscreen();
+        } else if (target.mozCancelFullScreen) {
+          target.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+          target.webkitCancelFullScreen();
+        } else if (target.msExitFullscreen) {
+          target.msExitFullscreen();
+        } else {
+          this._fullscreenChange();
+        }
+
+        document.body.classList.remove('op-fullscreen__on');
+      } else {
+        var video = __classPrivateFieldGet(this, _player).getElement();
+
+        __classPrivateFieldSet(this, _fullscreenWidth, window.screen.width);
+
+        __classPrivateFieldSet(this, _fullscreenHeight, window.screen.height);
+
+        if (video.requestFullscreen) {
+          video.parentElement.requestFullscreen();
+        } else if (video.mozRequestFullScreen) {
+          video.parentElement.mozRequestFullScreen();
+        } else if (video.webkitRequestFullScreen) {
+          video.parentElement.webkitRequestFullScreen();
+        } else if (video.msRequestFullscreen) {
+          video.parentElement.msRequestFullscreen();
+        } else if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen();
+        } else {
+          this._fullscreenChange();
+        }
+
+        document.body.classList.add('op-fullscreen__on');
+      }
+
+      if (typeof window !== 'undefined' && (constants_1.IS_ANDROID || constants_1.IS_IPHONE)) {
+        var screen = window.screen;
+
+        if (screen.orientation) {
+          if (!__classPrivateFieldGet(this, _isFullscreen)) {
+            screen.orientation.lock('landscape');
+          }
+        }
+      }
+    }
+  }, {
+    key: "_fullscreenChange",
+    value: function _fullscreenChange() {
+      var width = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenWidth);
+      var height = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenHeight);
+
+      this._setFullscreenData(!__classPrivateFieldGet(this, _isFullscreen));
+
+      if (__classPrivateFieldGet(this, _player).isAd()) {
+        __classPrivateFieldGet(this, _player).getAd().resizeAds(width, height);
+      }
+
+      __classPrivateFieldSet(this, _isFullscreen, !__classPrivateFieldGet(this, _isFullscreen));
+
+      if (__classPrivateFieldGet(this, _isFullscreen)) {
+        document.body.classList.add('op-fullscreen__on');
+      } else {
+        document.body.classList.remove('op-fullscreen__on');
+      }
+
+      this._resize(width, height);
+    }
+  }, {
+    key: "_setFullscreenData",
+    value: function _setFullscreenData(state) {
+      __classPrivateFieldGet(this, _player).getContainer().setAttribute('data-fullscreen', (!!state).toString());
+
+      if (__classPrivateFieldGet(this, _button)) {
+        if (state) {
+          __classPrivateFieldGet(this, _button).classList.add('op-controls__fullscreen--out');
+        } else {
+          __classPrivateFieldGet(this, _button).classList.remove('op-controls__fullscreen--out');
+        }
+      }
+    }
+  }, {
+    key: "_resize",
+    value: function _resize(width, height) {
+      var wrapper = __classPrivateFieldGet(this, _player).getContainer();
+
+      var video = __classPrivateFieldGet(this, _player).getElement();
+
+      var options = __classPrivateFieldGet(this, _player).getOptions();
+
+      var styles = '';
+
+      if (width) {
+        wrapper.style.width = '100%';
+        video.style.width = '100%';
+      } else if (options.width) {
+        var defaultWidth = typeof options.width === 'number' ? "".concat(options.width, "px") : options.width;
+        styles += "width: ".concat(defaultWidth, " !important;");
+        video.style.removeProperty('width');
+      } else {
+        video.style.removeProperty('width');
+        wrapper.style.removeProperty('width');
+      }
+
+      if (height) {
+        video.style.height = '100%';
+        wrapper.style.height = '100%';
+      } else if (options.height) {
+        var defaultHeight = typeof options.height === 'number' ? "".concat(options.height, "px") : options.height;
+        styles += "height: ".concat(defaultHeight, " !important;");
+        video.style.removeProperty('height');
+      } else {
+        video.style.removeProperty('height');
+        wrapper.style.removeProperty('height');
+      }
+
+      if (styles) {
+        wrapper.setAttribute('style', styles);
+      }
+    }
+  }, {
+    key: "_keydownEvent",
+    value: function _keydownEvent(e) {
+      var key = e.which || e.keyCode || 0;
+
+      if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
+        this.toggleFullscreen();
+        e.preventDefault();
+      }
+    }
+  }]);
+
+  return Fullscreen;
+}();
+
+_player = new WeakMap(), _isFullscreen = new WeakMap(), _button = new WeakMap(), _fullscreenEvents = new WeakMap(), _fullscreenWidth = new WeakMap(), _fullscreenHeight = new WeakMap(), _clickEvent = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+exports["default"] = Fullscreen;
 
 /***/ }),
 /* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(85);
-var entryUnbind = __webpack_require__(99);
+var parent = __webpack_require__(85);
 
-module.exports = entryUnbind('Array', 'find');
+module.exports = parent;
 
 
 /***/ }),
 /* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(86);
+var entryUnbind = __webpack_require__(100);
+
+module.exports = entryUnbind('Array', 'find');
+
+
+/***/ }),
+/* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 var $ = __webpack_require__(4);
-var $find = __webpack_require__(94).find;
+var $find = __webpack_require__(95).find;
 var addToUnscopables = __webpack_require__(65);
 
 var FIND = 'find';
@@ -3409,12 +3880,12 @@ addToUnscopables(FIND);
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
 var isSymbol = __webpack_require__(35);
-var ordinaryToPrimitive = __webpack_require__(87);
+var ordinaryToPrimitive = __webpack_require__(88);
 var wellKnownSymbol = __webpack_require__(3);
 
 var TO_PRIMITIVE = wellKnownSymbol('toPrimitive');
@@ -3437,7 +3908,7 @@ module.exports = function (input, pref) {
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
@@ -3454,7 +3925,7 @@ module.exports = function (input, pref) {
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -3466,11 +3937,11 @@ module.exports = typeof WeakMap === 'function' && /native code/.test(inspectSour
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(9);
-var ownKeys = __webpack_require__(90);
+var ownKeys = __webpack_require__(91);
 var getOwnPropertyDescriptorModule = __webpack_require__(31);
 var definePropertyModule = __webpack_require__(12);
 
@@ -3486,11 +3957,11 @@ module.exports = function (target, source) {
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getBuiltIn = __webpack_require__(10);
-var getOwnPropertyNamesModule = __webpack_require__(91);
+var getOwnPropertyNamesModule = __webpack_require__(92);
 var getOwnPropertySymbolsModule = __webpack_require__(63);
 var anObject = __webpack_require__(7);
 
@@ -3503,7 +3974,7 @@ module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var internalObjectKeys = __webpack_require__(62);
@@ -3520,12 +3991,12 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toIndexedObject = __webpack_require__(23);
 var toLength = __webpack_require__(26);
-var toAbsoluteIndex = __webpack_require__(93);
+var toAbsoluteIndex = __webpack_require__(94);
 
 // `Array.prototype.{ indexOf, includes }` methods implementation
 var createMethod = function (IS_INCLUDES) {
@@ -3558,7 +4029,7 @@ module.exports = {
 
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(43);
@@ -3576,14 +4047,14 @@ module.exports = function (index, length) {
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var bind = __webpack_require__(20);
 var IndexedObject = __webpack_require__(32);
 var toObject = __webpack_require__(14);
 var toLength = __webpack_require__(26);
-var arraySpeciesCreate = __webpack_require__(95);
+var arraySpeciesCreate = __webpack_require__(96);
 
 var push = [].push;
 
@@ -3654,10 +4125,10 @@ module.exports = {
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arraySpeciesConstructor = __webpack_require__(96);
+var arraySpeciesConstructor = __webpack_require__(97);
 
 // `ArraySpeciesCreate` abstract operation
 // https://tc39.es/ecma262/#sec-arrayspeciescreate
@@ -3667,11 +4138,11 @@ module.exports = function (originalArray, length) {
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
-var isArray = __webpack_require__(97);
+var isArray = __webpack_require__(98);
 var wellKnownSymbol = __webpack_require__(3);
 
 var SPECIES = wellKnownSymbol('species');
@@ -3693,7 +4164,7 @@ module.exports = function (originalArray) {
 
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var classof = __webpack_require__(24);
@@ -3707,7 +4178,7 @@ module.exports = Array.isArray || function isArray(arg) {
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var DESCRIPTORS = __webpack_require__(11);
@@ -3730,7 +4201,7 @@ module.exports = DESCRIPTORS ? Object.defineProperties : function defineProperti
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -3744,27 +4215,27 @@ module.exports = function (CONSTRUCTOR, METHOD, length) {
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(101);
+var parent = __webpack_require__(102);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(67);
-__webpack_require__(106);
+__webpack_require__(107);
 var path = __webpack_require__(27);
 
 module.exports = path.Array.from;
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(43);
@@ -3798,7 +4269,7 @@ module.exports = {
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3821,7 +4292,7 @@ module.exports = function (IteratorConstructor, NAME, next) {
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fails = __webpack_require__(5);
@@ -3835,7 +4306,7 @@ module.exports = !fails(function () {
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
@@ -3848,11 +4319,11 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(4);
-var from = __webpack_require__(107);
+var from = __webpack_require__(108);
 var checkCorrectnessOfIteration = __webpack_require__(74);
 
 var INCORRECT_ITERATION = !checkCorrectnessOfIteration(function (iterable) {
@@ -3868,17 +4339,17 @@ $({ target: 'Array', stat: true, forced: INCORRECT_ITERATION }, {
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var bind = __webpack_require__(20);
 var toObject = __webpack_require__(14);
-var callWithSafeIterationClosing = __webpack_require__(108);
+var callWithSafeIterationClosing = __webpack_require__(109);
 var isArrayIteratorMethod = __webpack_require__(71);
 var toLength = __webpack_require__(26);
-var createProperty = __webpack_require__(109);
+var createProperty = __webpack_require__(110);
 var getIteratorMethod = __webpack_require__(72);
 
 // `Array.from` method implementation
@@ -3916,7 +4387,7 @@ module.exports = function from(arrayLike /* , mapfn = undefined, thisArg = undef
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(7);
@@ -3934,7 +4405,7 @@ module.exports = function (iterator, fn, value, ENTRIES) {
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3951,30 +4422,30 @@ module.exports = function (object, key, value) {
 
 
 /***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(111);
-
-module.exports = parent;
-
-
-/***/ }),
 /* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(112);
-var path = __webpack_require__(27);
+var parent = __webpack_require__(112);
 
-module.exports = path.Object.assign;
+module.exports = parent;
 
 
 /***/ }),
 /* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(113);
+var path = __webpack_require__(27);
+
+module.exports = path.Object.assign;
+
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var $ = __webpack_require__(4);
-var assign = __webpack_require__(113);
+var assign = __webpack_require__(114);
 
 // `Object.assign` method
 // https://tc39.es/ecma262/#sec-object.assign
@@ -3985,7 +4456,7 @@ $({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4046,26 +4517,26 @@ module.exports = !$assign || fails(function () {
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(115);
+var parent = __webpack_require__(116);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(116);
+__webpack_require__(117);
 var path = __webpack_require__(27);
 
 module.exports = path.Object.keys;
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(4);
@@ -4085,30 +4556,30 @@ $({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(118);
-__webpack_require__(131);
-// TODO: Remove from `core-js@4`
+var parent = __webpack_require__(119);
 __webpack_require__(132);
+// TODO: Remove from `core-js@4`
 __webpack_require__(133);
 __webpack_require__(134);
+__webpack_require__(135);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(75);
-__webpack_require__(119);
 __webpack_require__(120);
-__webpack_require__(122);
+__webpack_require__(121);
+__webpack_require__(123);
 __webpack_require__(81);
 __webpack_require__(82);
-__webpack_require__(130);
+__webpack_require__(131);
 __webpack_require__(67);
 var path = __webpack_require__(27);
 
@@ -4116,7 +4587,7 @@ module.exports = path.Promise;
 
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4176,12 +4647,12 @@ addToUnscopables('entries');
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var TO_STRING_TAG_SUPPORT = __webpack_require__(51);
 var redefine = __webpack_require__(16);
-var toString = __webpack_require__(121);
+var toString = __webpack_require__(122);
 
 // `Object.prototype.toString` method
 // https://tc39.es/ecma262/#sec-object.prototype.tostring
@@ -4191,7 +4662,7 @@ if (!TO_STRING_TAG_SUPPORT) {
 
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4207,7 +4678,7 @@ module.exports = TO_STRING_TAG_SUPPORT ? {}.toString : function toString() {
 
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4218,27 +4689,27 @@ var global = __webpack_require__(0);
 var getBuiltIn = __webpack_require__(10);
 var NativePromise = __webpack_require__(76);
 var redefine = __webpack_require__(16);
-var redefineAll = __webpack_require__(123);
+var redefineAll = __webpack_require__(124);
 var setPrototypeOf = __webpack_require__(50);
 var setToStringTag = __webpack_require__(49);
-var setSpecies = __webpack_require__(124);
+var setSpecies = __webpack_require__(125);
 var isObject = __webpack_require__(8);
 var aFunction = __webpack_require__(17);
-var anInstance = __webpack_require__(125);
+var anInstance = __webpack_require__(126);
 var inspectSource = __webpack_require__(40);
 var iterate = __webpack_require__(28);
 var checkCorrectnessOfIteration = __webpack_require__(74);
 var speciesConstructor = __webpack_require__(77);
 var task = __webpack_require__(78).set;
-var microtask = __webpack_require__(126);
+var microtask = __webpack_require__(127);
 var promiseResolve = __webpack_require__(80);
-var hostReportErrors = __webpack_require__(128);
+var hostReportErrors = __webpack_require__(129);
 var newPromiseCapabilityModule = __webpack_require__(22);
 var perform = __webpack_require__(29);
 var InternalStateModule = __webpack_require__(25);
 var isForced = __webpack_require__(64);
 var wellKnownSymbol = __webpack_require__(3);
-var IS_BROWSER = __webpack_require__(129);
+var IS_BROWSER = __webpack_require__(130);
 var IS_NODE = __webpack_require__(52);
 var V8_VERSION = __webpack_require__(58);
 
@@ -4607,7 +5078,7 @@ $({ target: PROMISE, stat: true, forced: INCORRECT_ITERATION }, {
 
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var redefine = __webpack_require__(16);
@@ -4619,7 +5090,7 @@ module.exports = function (target, src, options) {
 
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4645,7 +5116,7 @@ module.exports = function (CONSTRUCTOR_NAME) {
 
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports) {
 
 module.exports = function (it, Constructor, name) {
@@ -4656,14 +5127,14 @@ module.exports = function (it, Constructor, name) {
 
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
 var getOwnPropertyDescriptor = __webpack_require__(31).f;
 var macrotask = __webpack_require__(78).set;
 var IS_IOS = __webpack_require__(79);
-var IS_WEBOS_WEBKIT = __webpack_require__(127);
+var IS_WEBOS_WEBKIT = __webpack_require__(128);
 var IS_NODE = __webpack_require__(52);
 
 var MutationObserver = global.MutationObserver || global.WebKitMutationObserver;
@@ -4744,7 +5215,7 @@ module.exports = queueMicrotask || function (fn) {
 
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var userAgent = __webpack_require__(36);
@@ -4753,7 +5224,7 @@ module.exports = /web0s(?!.*chrome)/i.test(userAgent);
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -4767,14 +5238,14 @@ module.exports = function (a, b) {
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports) {
 
 module.exports = typeof window == 'object';
 
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4820,7 +5291,7 @@ if (!IS_PURE && typeof NativePromise == 'function') {
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
@@ -4828,7 +5299,7 @@ __webpack_require__(75);
 
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
@@ -4836,7 +5307,7 @@ __webpack_require__(81);
 
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4858,7 +5329,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
@@ -4866,7 +5337,7 @@ __webpack_require__(82);
 
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports) {
 
 // Polyfill for creating CustomEvents on IE9/10/11
@@ -4925,7 +5396,7 @@ __webpack_require__(82);
 
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4941,14 +5412,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var element_closest_1 = __importDefault(__webpack_require__(137));
+var element_closest_1 = __importDefault(__webpack_require__(138));
 
 if (typeof window !== 'undefined') {
   element_closest_1["default"](window);
 }
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4992,7 +5463,7 @@ function polyfill(window) {
 
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5045,9 +5516,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var captions_1 = __importDefault(__webpack_require__(139));
+var captions_1 = __importDefault(__webpack_require__(140));
 
-var fullscreen_1 = __importDefault(__webpack_require__(140));
+var fullscreen_1 = __importDefault(__webpack_require__(83));
 
 var levels_1 = __importDefault(__webpack_require__(141));
 
@@ -5135,6 +5606,14 @@ var Controls = function () {
       var alwaysVisible = __classPrivateFieldGet(this, _player).getOptions().controls.alwaysVisible;
 
       if (!alwaysVisible && !constants_1.IS_ANDROID && !constants_1.IS_IOS) {
+        var showControls = function showControls() {
+          if (isMediaVideo) {
+            __classPrivateFieldGet(_this, _player).getContainer().classList.remove('op-controls--hidden');
+
+            _this._stopControlTimer();
+          }
+        };
+
         this.events.mouse.mouseenter = function () {
           if (isMediaVideo && !__classPrivateFieldGet(_this, _player).activeElement().paused) {
             _this._stopControlTimer();
@@ -5185,12 +5664,10 @@ var Controls = function () {
           }
         };
 
-        this.events.media.pause = function () {
-          __classPrivateFieldGet(_this, _player).getContainer().classList.remove('op-controls--hidden');
-
-          _this._stopControlTimer();
-        };
-
+        this.events.media.pause = showControls.bind(this);
+        this.events.media.waiting = showControls.bind(this);
+        this.events.media.stalled = showControls.bind(this);
+        this.events.media.playererror = showControls.bind(this);
         Object.keys(this.events.media).forEach(function (event) {
           __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
         });
@@ -5251,6 +5728,16 @@ var Controls = function () {
         __classPrivateFieldGet(this, _controls).className = 'op-controls';
 
         __classPrivateFieldGet(this, _player).getContainer().appendChild(__classPrivateFieldGet(this, _controls));
+
+        var messageContainer = document.createElement('div');
+        messageContainer.className = 'op-status';
+        messageContainer.innerHTML = '<span></span>';
+        messageContainer.tabIndex = -1;
+        messageContainer.setAttribute('aria-hidden', 'true');
+
+        if (general_1.isAudio(__classPrivateFieldGet(this, _player).getElement())) {
+          __classPrivateFieldGet(this, _controls).appendChild(messageContainer);
+        }
       }
     }
   }, {
@@ -5596,7 +6083,7 @@ _settings = new WeakMap(), _timer = new WeakMap(), _controls = new WeakMap(), _p
 exports["default"] = Controls;
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6250,323 +6737,6 @@ var Captions = function () {
 
 _player = new WeakMap(), _button = new WeakMap(), _captions = new WeakMap(), _menu = new WeakMap(), _events = new WeakMap(), _tracks = new WeakMap(), _trackList = new WeakMap(), _trackUrlList = new WeakMap(), _hasTracks = new WeakMap(), _current = new WeakMap(), _default = new WeakMap(), _detachMenu = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
 exports["default"] = Captions;
-
-/***/ }),
-/* 140 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
-};
-
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
-};
-
-var _player, _isFullscreen, _button, _fullscreenEvents, _fullscreenWidth, _fullscreenHeight, _clickEvent, _labels, _position, _layer;
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var constants_1 = __webpack_require__(1);
-
-var general_1 = __webpack_require__(2);
-
-var Fullscreen = function () {
-  function Fullscreen(player, position, layer) {
-    _classCallCheck(this, Fullscreen);
-
-    _player.set(this, void 0);
-
-    _isFullscreen.set(this, void 0);
-
-    _button.set(this, void 0);
-
-    _fullscreenEvents.set(this, []);
-
-    _fullscreenWidth.set(this, 0);
-
-    _fullscreenHeight.set(this, 0);
-
-    _clickEvent.set(this, void 0);
-
-    _labels.set(this, void 0);
-
-    _position.set(this, void 0);
-
-    _layer.set(this, void 0);
-
-    __classPrivateFieldSet(this, _player, player);
-
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
-
-    __classPrivateFieldSet(this, _position, position);
-
-    __classPrivateFieldSet(this, _layer, layer);
-
-    __classPrivateFieldSet(this, _isFullscreen, document.body.classList.contains('op-fullscreen__on'));
-
-    var target = document;
-    this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
-    this._keydownEvent = this._keydownEvent.bind(this);
-    this._fullscreenChange = this._fullscreenChange.bind(this);
-    return this;
-  }
-
-  _createClass(Fullscreen, [{
-    key: "create",
-    value: function create() {
-      var _this = this;
-
-      __classPrivateFieldSet(this, _button, document.createElement('button'));
-
-      __classPrivateFieldGet(this, _button).type = 'button';
-      __classPrivateFieldGet(this, _button).className = "op-controls__fullscreen op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _button).tabIndex = 0;
-      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).fullscreen;
-
-      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
-
-      __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
-
-      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).fullscreen);
-
-      __classPrivateFieldGet(this, _button).innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _labels).fullscreen, "</span>");
-
-      __classPrivateFieldSet(this, _clickEvent, function () {
-        __classPrivateFieldGet(_this, _button).setAttribute('aria-pressed', 'true');
-
-        _this.toggleFullscreen();
-      });
-
-      __classPrivateFieldSet(this, _clickEvent, __classPrivateFieldGet(this, _clickEvent).bind(this));
-
-      __classPrivateFieldSet(this, _fullscreenEvents, ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange']);
-
-      this._setFullscreenData(false);
-
-      __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
-
-      __classPrivateFieldGet(this, _fullscreenEvents).forEach(function (event) {
-        document.addEventListener(event, _this._fullscreenChange, constants_1.EVENT_OPTIONS);
-      });
-
-      __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _clickEvent), constants_1.EVENT_OPTIONS);
-
-      __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
-
-      if (constants_1.IS_IPHONE) {
-        __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitbeginfullscreen', function () {
-          __classPrivateFieldSet(_this, _isFullscreen, true);
-
-          _this._setFullscreenData(true);
-
-          document.body.classList.add('op-fullscreen__on');
-        }, constants_1.EVENT_OPTIONS);
-
-        __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitendfullscreen', function () {
-          __classPrivateFieldSet(_this, _isFullscreen, false);
-
-          _this._setFullscreenData(false);
-
-          document.body.classList.remove('op-fullscreen__on');
-        }, constants_1.EVENT_OPTIONS);
-      }
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      var _this2 = this;
-
-      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
-
-      __classPrivateFieldGet(this, _fullscreenEvents).forEach(function (event) {
-        document.removeEventListener(event, _this2._fullscreenChange);
-      });
-
-      if (constants_1.IS_IPHONE) {
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitbeginfullscreen', function () {
-          __classPrivateFieldSet(_this2, _isFullscreen, true);
-
-          _this2._setFullscreenData(false);
-
-          document.body.classList.add('op-fullscreen__on');
-        });
-
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitendfullscreen', function () {
-          __classPrivateFieldSet(_this2, _isFullscreen, false);
-
-          _this2._setFullscreenData(true);
-
-          document.body.classList.remove('op-fullscreen__on');
-        });
-      }
-
-      __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _clickEvent));
-
-      general_1.removeElement(__classPrivateFieldGet(this, _button));
-    }
-  }, {
-    key: "toggleFullscreen",
-    value: function toggleFullscreen() {
-      if (__classPrivateFieldGet(this, _isFullscreen)) {
-        var target = document;
-
-        if (target.exitFullscreen) {
-          target.exitFullscreen();
-        } else if (target.mozCancelFullScreen) {
-          target.mozCancelFullScreen();
-        } else if (document.webkitCancelFullScreen) {
-          target.webkitCancelFullScreen();
-        } else if (target.msExitFullscreen) {
-          target.msExitFullscreen();
-        } else {
-          this._fullscreenChange();
-        }
-
-        document.body.classList.remove('op-fullscreen__on');
-      } else {
-        var video = __classPrivateFieldGet(this, _player).getElement();
-
-        __classPrivateFieldSet(this, _fullscreenWidth, window.screen.width);
-
-        __classPrivateFieldSet(this, _fullscreenHeight, window.screen.height);
-
-        if (video.requestFullscreen) {
-          video.parentElement.requestFullscreen();
-        } else if (video.mozRequestFullScreen) {
-          video.parentElement.mozRequestFullScreen();
-        } else if (video.webkitRequestFullScreen) {
-          video.parentElement.webkitRequestFullScreen();
-        } else if (video.msRequestFullscreen) {
-          video.parentElement.msRequestFullscreen();
-        } else if (video.webkitEnterFullscreen) {
-          video.webkitEnterFullscreen();
-        } else {
-          this._fullscreenChange();
-        }
-
-        document.body.classList.add('op-fullscreen__on');
-      }
-
-      if (typeof window !== 'undefined' && (constants_1.IS_ANDROID || constants_1.IS_IPHONE)) {
-        var screen = window.screen;
-
-        if (screen.orientation) {
-          if (!__classPrivateFieldGet(this, _isFullscreen)) {
-            screen.orientation.lock('landscape');
-          }
-        }
-      }
-    }
-  }, {
-    key: "_fullscreenChange",
-    value: function _fullscreenChange() {
-      var width = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenWidth);
-      var height = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenHeight);
-
-      this._setFullscreenData(!__classPrivateFieldGet(this, _isFullscreen));
-
-      if (__classPrivateFieldGet(this, _player).isAd()) {
-        __classPrivateFieldGet(this, _player).getAd().resizeAds(width, height);
-      }
-
-      __classPrivateFieldSet(this, _isFullscreen, !__classPrivateFieldGet(this, _isFullscreen));
-
-      if (__classPrivateFieldGet(this, _isFullscreen)) {
-        document.body.classList.add('op-fullscreen__on');
-      } else {
-        document.body.classList.remove('op-fullscreen__on');
-      }
-
-      this._resize(width, height);
-    }
-  }, {
-    key: "_setFullscreenData",
-    value: function _setFullscreenData(state) {
-      __classPrivateFieldGet(this, _player).getContainer().setAttribute('data-fullscreen', (!!state).toString());
-
-      if (state) {
-        __classPrivateFieldGet(this, _button).classList.add('op-controls__fullscreen--out');
-      } else {
-        __classPrivateFieldGet(this, _button).classList.remove('op-controls__fullscreen--out');
-      }
-    }
-  }, {
-    key: "_resize",
-    value: function _resize(width, height) {
-      var wrapper = __classPrivateFieldGet(this, _player).getContainer();
-
-      var video = __classPrivateFieldGet(this, _player).getElement();
-
-      var options = __classPrivateFieldGet(this, _player).getOptions();
-
-      var styles = '';
-
-      if (width) {
-        wrapper.style.width = '100%';
-        video.style.width = '100%';
-      } else if (options.width) {
-        var defaultWidth = typeof options.width === 'number' ? "".concat(options.width, "px") : options.width;
-        styles += "width: ".concat(defaultWidth, " !important;");
-        video.style.removeProperty('width');
-      } else {
-        video.style.removeProperty('width');
-        wrapper.style.removeProperty('width');
-      }
-
-      if (height) {
-        video.style.height = '100%';
-        wrapper.style.height = '100%';
-      } else if (options.height) {
-        var defaultHeight = typeof options.height === 'number' ? "".concat(options.height, "px") : options.height;
-        styles += "height: ".concat(defaultHeight, " !important;");
-        video.style.removeProperty('height');
-      } else {
-        video.style.removeProperty('height');
-        wrapper.style.removeProperty('height');
-      }
-
-      if (styles) {
-        wrapper.setAttribute('style', styles);
-      }
-    }
-  }, {
-    key: "_keydownEvent",
-    value: function _keydownEvent(e) {
-      var key = e.which || e.keyCode || 0;
-
-      if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
-        this.toggleFullscreen();
-        e.preventDefault();
-      }
-    }
-  }]);
-
-  return Fullscreen;
-}();
-
-_player = new WeakMap(), _isFullscreen = new WeakMap(), _button = new WeakMap(), _fullscreenEvents = new WeakMap(), _fullscreenWidth = new WeakMap(), _fullscreenHeight = new WeakMap(), _clickEvent = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
-exports["default"] = Fullscreen;
 
 /***/ }),
 /* 141 */
@@ -7295,11 +7465,15 @@ var Play = function () {
   }, {
     key: "_keydownEvent",
     value: function _keydownEvent(e) {
+      var _a;
+
       var key = e.which || e.keyCode || 0;
 
       var el = __classPrivateFieldGet(this, _player).activeElement();
 
-      if (key === 13 || key === 32) {
+      var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('.op-controls__playpause');
+
+      if (playBtnFocused && (key === 13 || key === 32)) {
         if (el.paused) {
           el.play();
         } else {
@@ -7811,24 +7985,17 @@ var Progress = function () {
       var isAd = __classPrivateFieldGet(this, _player).isAd();
 
       var key = e.which || e.keyCode || 0;
-      var newStep = __classPrivateFieldGet(this, _player).getOptions().step ? __classPrivateFieldGet(this, _player).getOptions().step : el.duration * 0.05;
-      var step = el.duration !== Infinity ? newStep : __classPrivateFieldGet(this, _player).getOptions().progress.duration;
 
-      if (key === 35 && !isAd) {
-        el.currentTime = el.duration;
-        e.preventDefault();
-      } else if (key === 36 && !isAd) {
-        el.currentTime = 0;
-        e.preventDefault();
-      } else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
-        el.currentTime += key === 37 ? step * -1 : step;
+      if (!isAd && key >= 48 && key <= 57 && el.duration !== Infinity) {
+        var step = 0;
 
-        if (el.currentTime < 0) {
-          el.currentTime = 0;
-        } else if (el.currentTime >= el.duration) {
-          el.currentTime = el.duration;
+        for (var i = 48, limit = 57; i <= limit; i++) {
+          if (i < key) {
+            step++;
+          }
         }
 
+        el.currentTime = el.duration * (0.1 * step);
         e.preventDefault();
       }
     }
@@ -8041,9 +8208,17 @@ var Settings = function () {
   }, {
     key: "addSettings",
     value: function addSettings() {
+      var media = __classPrivateFieldGet(this, _player).getMedia();
+
+      var rate = 1;
+
+      if (__classPrivateFieldGet(this, _player) && media) {
+        rate = media.defaultPlaybackRate !== media.playbackRate ? media.playbackRate : media.defaultPlaybackRate;
+      }
+
       return {
         className: 'op-speed__option',
-        "default": __classPrivateFieldGet(this, _player) && __classPrivateFieldGet(this, _player).getMedia() ? __classPrivateFieldGet(this, _player).getMedia().defaultPlaybackRate.toString() : '1',
+        "default": rate.toString(),
         key: 'speed',
         name: __classPrivateFieldGet(this, _labels).speed,
         subitems: [{
@@ -8741,14 +8916,16 @@ var Volume = function () {
   }, {
     key: "_keydownEvent",
     value: function _keydownEvent(e) {
+      var _a;
+
       var key = e.which || e.keyCode || 0;
 
       var el = __classPrivateFieldGet(this, _player).activeElement();
 
-      if (key === 38 || key === 40) {
-        var newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
-        el.volume = newVol;
-        el.muted = !(newVol > 0);
+      var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('.op-controls__volume');
+
+      if (playBtnFocused && (key === 13 || key === 32)) {
+        el.muted = !el.muted;
         e.preventDefault();
       }
     }

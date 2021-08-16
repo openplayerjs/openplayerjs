@@ -134,6 +134,13 @@ class Controls implements PlayerComponent {
         const { alwaysVisible } = this.#player.getOptions().controls;
 
         if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
+            const showControls = () => {
+                if (isMediaVideo) {
+                    this.#player.getContainer().classList.remove('op-controls--hidden');
+                    this._stopControlTimer();
+                }
+            };
+
             this.events.mouse.mouseenter = () => {
                 if (isMediaVideo && !this.#player.activeElement().paused) {
                     this._stopControlTimer();
@@ -172,10 +179,11 @@ class Controls implements PlayerComponent {
                     this._startControlTimer(this.#player.getOptions().hidePlayBtnTimer);
                 }
             };
-            this.events.media.pause = () => {
-                this.#player.getContainer().classList.remove('op-controls--hidden');
-                this._stopControlTimer();
-            };
+            this.events.media.pause = showControls.bind(this);
+            this.events.media.waiting = showControls.bind(this);
+            this.events.media.stalled = showControls.bind(this);
+            this.events.media.playererror = showControls.bind(this);
+
             Object.keys(this.events.media).forEach(event => {
                 this.#player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
@@ -248,6 +256,16 @@ class Controls implements PlayerComponent {
             this.#controls = document.createElement('div');
             this.#controls.className = 'op-controls';
             this.#player.getContainer().appendChild(this.#controls);
+
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'op-status';
+            messageContainer.innerHTML = '<span></span>';
+            messageContainer.tabIndex = -1;
+            messageContainer.setAttribute('aria-hidden', 'true');
+
+            if (isAudio(this.#player.getElement())) {
+                this.#controls.appendChild(messageContainer);
+            }
         }
     }
 

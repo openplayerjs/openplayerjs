@@ -7,6 +7,7 @@ import 'custom-event-polyfill';
 import './utils/closest';
 
 import Controls from './controls';
+import Fullscreen from './controls/fullscreen';
 import Track from './interfaces/captions/track';
 import ControlItem from './interfaces/control-item';
 import CustomMedia from './interfaces/custom-media';
@@ -230,6 +231,8 @@ class Player {
      */
     #customControlItems: ControlItem[] = [];
 
+    #fullscreen: Fullscreen;
+
     /**
      * Default configuration for player.
      *
@@ -322,6 +325,7 @@ class Player {
             this.#volume = this.#element.volume;
         }
         this._autoplay = this._autoplay.bind(this);
+        this._enableKeyBindings = this._enableKeyBindings.bind(this);
         return this;
     }
 
@@ -400,6 +404,10 @@ class Player {
             this.#adsInstance.destroy();
         }
 
+        if (this.#fullscreen) {
+            this.#fullscreen.destroy();
+        }
+
         const el = (this.#element as HTMLMediaElement);
         if (this.#media) {
             this.#media.destroy();
@@ -408,6 +416,8 @@ class Player {
         Object.keys(this.#events).forEach(event => {
             el.removeEventListener(event, this.#events[event]);
         });
+
+        this.getContainer().removeEventListener('keydown', this._enableKeyBindings);
 
         if (this.#autoplay && !this.#processedAutoplay && isVideo(this.#element)) {
             el.removeEventListener('canplay', this._autoplay);
@@ -768,6 +778,16 @@ class Player {
         }
         wrapper.appendChild(this.#element);
 
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'op-status';
+        messageContainer.innerHTML = '<span></span>';
+        messageContainer.tabIndex = -1;
+        messageContainer.setAttribute('aria-hidden', 'true');
+
+        if (isVideo(this.#element) && this.#element.parentElement) {
+            this.#element.parentElement.insertBefore(messageContainer, this.#element);
+        }
+
         wrapper.addEventListener('keydown', () => {
             if (wrapper.classList.contains('op-player__keyboard--inactive')) {
                 wrapper.classList.remove('op-player__keyboard--inactive');
@@ -969,6 +989,8 @@ class Player {
         Object.keys(this.#events).forEach(event => {
             this.#element.addEventListener(event, this.#events[event], EVENT_OPTIONS);
         });
+
+        this.getContainer().addEventListener('keydown', this._enableKeyBindings, EVENT_OPTIONS);
     }
 
     /**
@@ -1049,6 +1071,116 @@ class Player {
                     { ...this.#defaultOptions[item], ...playerOptions[item] } :
                     this.#defaultOptions[item];
             });
+        }
+    }
+
+    private _enableKeyBindings(e: KeyboardEvent) {
+        const key = e.which || e.keyCode || 0;
+        const el = this.activeElement();
+        const isAd = this.isAd();
+        switch (key) {
+            // Toggle play/pause using letter K, Tab or Enter
+            case 13:
+            case 32:
+            case 75:
+                if (el.paused) {
+                    el.play();
+                } else {
+                    el.pause();
+                }
+                e.preventDefault();
+                break;
+            // End key ends video
+            case 35:
+                if (!isAd && el.duration !== Infinity) {
+                    el.currentTime = el.duration;
+                    e.preventDefault();
+                }
+                break;
+            // Home key resets progress
+            case 36:
+                if (!isAd) {
+                    el.currentTime = 0;
+                    e.preventDefault();
+                }
+                break;
+            // Use the left and right arrow keys to manipulate current media time.
+            // Letter J/L will set double of step forward/backward
+            case 37:
+            case 39:
+            case 74:
+            case 76:
+                if (!isAd && el.duration !== Infinity) {
+                    let newStep = 5;
+                    const configStep = this.getOptions().step;
+                    if (configStep) {
+                        newStep = (key === 74 || key === 76) ? configStep * 2 : configStep;
+                    } else if (key === 74 || key === 76) {
+                        newStep = 10;
+                    }
+                    const step = el.duration !== Infinity ? newStep : this.getOptions().progress.duration;
+                    el.currentTime += (key === 37 || key === 74) ? (step * -1) : step;
+                    if (el.currentTime < 0) {
+                        el.currentTime = 0;
+                    } else if (el.currentTime >= el.duration) {
+                        el.currentTime = el.duration;
+                    }
+                    e.preventDefault();
+                }
+                break;
+            // Use the up/down arrow keys to manipulate volume.
+            case 38:
+            case 40:
+                const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
+                el.volume = newVol;
+                el.muted = !(newVol > 0);
+                e.preventDefault();
+                break;
+            // Letter F sets fullscreen (only video)
+            case 70:
+                if (isVideo(this.#element) && !e.ctrlKey) {
+                    this.#fullscreen = new Fullscreen(this, '', '');
+                    if (typeof this.#fullscreen.fullScreenEnabled !== 'undefined') {
+                        this.#fullscreen.toggleFullscreen();
+                        e.preventDefault();
+                    }
+                }
+                break;
+            // Letter M toggles mute
+            case 77:
+                el.muted = !el.muted;
+                if (el.muted) {
+                    el.volume = 0;
+                } else {
+                    el.volume = this.#volume;
+                }
+                e.preventDefault();
+                break;
+            // < and > will decrease/increase the speed of playback by 0.25
+            // , and . will go to the prev/next frame of the media
+            case 188:
+            case 190:
+                if (!isAd && e.shiftKey) {
+                    const elem = el as Media;
+                    elem.playbackRate = key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
+                    // Show playbackRate and update controls to reflect change in settings
+                    const target = this.getContainer().querySelector('.op-status>span');
+                    if (target) {
+                        target.textContent = `${elem.playbackRate}x`;
+                        target.parentElement?.setAttribute('aria-hidden', 'false');
+                        setTimeout(() => {
+                            target.parentElement?.setAttribute('aria-hidden', 'true');
+                        }, 500);
+                    }
+                    const ev = addEvent('controlschanged');
+                    dispatchEvent(ev);
+                    e.preventDefault();
+                } else if (!isAd && el.paused) {
+                    el.currentTime += (1 / 25) * (key === 188 ? -1 : 1);
+                    e.preventDefault();
+                }
+            default:
+                break;
         }
     }
 }

@@ -344,24 +344,14 @@ class Progress {
         const el = __classPrivateFieldGet(this, _Progress_player, "f").activeElement();
         const isAd = __classPrivateFieldGet(this, _Progress_player, "f").isAd();
         const key = e.which || e.keyCode || 0;
-        const newStep = __classPrivateFieldGet(this, _Progress_player, "f").getOptions().step ? __classPrivateFieldGet(this, _Progress_player, "f").getOptions().step : el.duration * 0.05;
-        const step = el.duration !== Infinity ? newStep : __classPrivateFieldGet(this, _Progress_player, "f").getOptions().progress.duration;
-        if (key === 35 && !isAd) {
-            el.currentTime = el.duration;
-            e.preventDefault();
-        }
-        else if (key === 36 && !isAd) {
-            el.currentTime = 0;
-            e.preventDefault();
-        }
-        else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
-            el.currentTime += key === 37 ? (step * -1) : step;
-            if (el.currentTime < 0) {
-                el.currentTime = 0;
+        if (!isAd && key >= 48 && key <= 57 && el.duration !== Infinity) {
+            let step = 0;
+            for (let i = 48, limit = 57; i <= limit; i++) {
+                if (i < key) {
+                    step++;
+                }
             }
-            else if (el.currentTime >= el.duration) {
-                el.currentTime = el.duration;
-            }
+            el.currentTime = el.duration * (0.1 * step);
             e.preventDefault();
         }
     }

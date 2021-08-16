@@ -509,9 +509,8 @@ class Progress implements PlayerComponent {
     }
 
     /**
-     * Use the left and right arrow keys to manipulate current media time.
+     * Use the 0-9 keys to manipulate current media time to set media to the 0% to 90% of duration.
      *
-     * Also, the `Home` and `End` keys to restart or end media.
      * @private
      * @param {KeyboardEvent} e
      * @memberof Progress
@@ -520,23 +519,14 @@ class Progress implements PlayerComponent {
         const el = this.#player.activeElement();
         const isAd = this.#player.isAd();
         const key = e.which || e.keyCode || 0;
-        // By default, if no `step` set, it will skip 5% of the duration of the media
-        const newStep = this.#player.getOptions().step ? this.#player.getOptions().step : el.duration * 0.05;
-        const step = el.duration !== Infinity ? newStep : this.#player.getOptions().progress.duration;
-
-        if (key === 35 && !isAd) {
-            el.currentTime = el.duration;
-            e.preventDefault();
-        } else if (key === 36 && !isAd) {
-            el.currentTime = 0;
-            e.preventDefault();
-        } else if ((key === 37 || key === 39) && !isAd && el.duration !== Infinity) {
-            el.currentTime += key === 37 ? (step * -1) : step;
-            if (el.currentTime < 0) {
-                el.currentTime = 0;
-            } else if (el.currentTime >= el.duration) {
-                el.currentTime = el.duration;
+        if (!isAd && key >= 48 && key <= 57 && el.duration !== Infinity) {
+            let step = 0;
+            for (let i = 48, limit = 57; i <= limit; i++) {
+                if (i < key) {
+                    step++;
+                }
             }
+            el.currentTime = el.duration * (0.1 * step);
             e.preventDefault();
         }
     }

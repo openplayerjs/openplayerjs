@@ -173,12 +173,12 @@ class Volume {
         removeElement(__classPrivateFieldGet(this, _Volume_container, "f"));
     }
     _keydownEvent(e) {
+        var _a;
         const key = e.which || e.keyCode || 0;
         const el = __classPrivateFieldGet(this, _Volume_player, "f").activeElement();
-        if (key === 38 || key === 40) {
-            const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
-            el.volume = newVol;
-            el.muted = !(newVol > 0);
+        const playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('.op-controls__volume');
+        if (playBtnFocused && (key === 13 || key === 32)) {
+            el.muted = !el.muted;
             e.preventDefault();
         }
     }

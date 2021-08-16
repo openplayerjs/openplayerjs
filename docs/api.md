@@ -177,3 +177,26 @@ player.getElement().addEventListener('playererror', function(e) {
     console.log(e); // { type, message, data }
 });
 ```
+
+## Keyboard shortcuts
+
+For accessibility purposes, OpenPlayerJS uses the following keyboard shortcuts to control the player
+
+| Key | Controls |
+|-----|----------|
+| [Enter/Space] | If the focus is **at the player's main container**, `Play/Pause` media; otherwise, if it's **at the specific control**, it will toggle its state (`Mute/Unmute` media, for example) |
+| [End] | Seeks to the total duration of media (if media is not a live stream) |
+| [Home] | Seeks to the beginning of media |
+| [Left arrow] | Seeks backward **5 secs** (or the amount of seconds indicated by the `step` configuration) in player |
+| [Right arrow] | Seeks forward **5 secs** (or the amount of seconds indicated by the `step` configuration) in player |
+| [Up arrow] | Turn volume up |
+| [Down arrow] | Turn volume down |
+| K | Play/Pause media |
+| J | Seeks backward **10 secs** (or **double** of the amount of seconds indicated by the `step` configuration) in player |
+| L | Seeks forward **10 secs** (or **double** of the amount of seconds indicated by the `step` configuration) in player |
+| M | Mute/Unmute player |
+| 0 - 9 | While **focused on progress bar**, seeks to the 0% to 90% of the media |
+| , | While paused, goes back to the previous' media's frame |
+| . | While paused, skips to the next's media's frame |
+| < | Slows down the video playback rate by `0.25` |
+| > | Speed up the video playback rate by `0.25` |

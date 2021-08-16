@@ -111,9 +111,14 @@ class Settings {
         removeElement(__classPrivateFieldGet(this, _Settings_button, "f"));
     }
     addSettings() {
+        const media = __classPrivateFieldGet(this, _Settings_player, "f").getMedia();
+        let rate = 1;
+        if (__classPrivateFieldGet(this, _Settings_player, "f") && media) {
+            rate = media.defaultPlaybackRate !== media.playbackRate ? media.playbackRate : media.defaultPlaybackRate;
+        }
         return {
             className: 'op-speed__option',
-            default: __classPrivateFieldGet(this, _Settings_player, "f") && __classPrivateFieldGet(this, _Settings_player, "f").getMedia() ? __classPrivateFieldGet(this, _Settings_player, "f").getMedia().defaultPlaybackRate.toString() : '1',
+            default: rate.toString(),
             key: 'speed',
             name: __classPrivateFieldGet(this, _Settings_labels, "f").speed,
             subitems: [

@@ -34,9 +34,8 @@ declare class Progress implements PlayerComponent {
      */
     destroy(): void;
     /**
-     * Use the left and right arrow keys to manipulate current media time.
+     * Use the 0-9 keys to manipulate current media time to set media to the 0% to 90% of duration.
      *
-     * Also, the `Home` and `End` keys to restart or end media.
      * @private
      * @param {KeyboardEvent} e
      * @memberof Progress

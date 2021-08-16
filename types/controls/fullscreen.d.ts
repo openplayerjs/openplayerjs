@@ -49,7 +49,7 @@ declare class Fullscreen implements PlayerComponent {
      */
     toggleFullscreen(): void;
     /**
-     * Callback to toggle fullscreen for browsers thta do not support native Fullscreen API.
+     * Callback to toggle fullscreen for browsers that do not support native Fullscreen API.
      *
      * @private
      * @memberof Fullscreen

@@ -63,6 +63,12 @@ class Controls {
         __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
         const { alwaysVisible } = __classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls;
         if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
+            const showControls = () => {
+                if (isMediaVideo) {
+                    __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
+                    this._stopControlTimer();
+                }
+            };
             this.events.mouse.mouseenter = () => {
                 if (isMediaVideo && !__classPrivateFieldGet(this, _Controls_player, "f").activeElement().paused) {
                     this._stopControlTimer();
@@ -102,10 +108,10 @@ class Controls {
                     this._startControlTimer(__classPrivateFieldGet(this, _Controls_player, "f").getOptions().hidePlayBtnTimer);
                 }
             };
-            this.events.media.pause = () => {
-                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
-                this._stopControlTimer();
-            };
+            this.events.media.pause = showControls.bind(this);
+            this.events.media.waiting = showControls.bind(this);
+            this.events.media.stalled = showControls.bind(this);
+            this.events.media.playererror = showControls.bind(this);
             Object.keys(this.events.media).forEach(event => {
                 __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
@@ -150,6 +156,14 @@ class Controls {
             __classPrivateFieldSet(this, _Controls_controls, document.createElement('div'), "f");
             __classPrivateFieldGet(this, _Controls_controls, "f").className = 'op-controls';
             __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(__classPrivateFieldGet(this, _Controls_controls, "f"));
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'op-status';
+            messageContainer.innerHTML = '<span></span>';
+            messageContainer.tabIndex = -1;
+            messageContainer.setAttribute('aria-hidden', 'true');
+            if (isAudio(__classPrivateFieldGet(this, _Controls_player, "f").getElement())) {
+                __classPrivateFieldGet(this, _Controls_controls, "f").appendChild(messageContainer);
+            }
         }
     }
     _startControlTimer(time) {

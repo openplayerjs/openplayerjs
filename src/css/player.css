@@ -587,6 +587,31 @@
     pointer-events: none;
 }
 
+/* === Status ================== */
+.op-status {
+    color: #fff;
+    font-weight: 400;
+    left: 0;
+    padding: 20px 0;
+    position: absolute;
+    text-align: center;
+    top: 30px;
+    transform: translateY(-40px);
+    transition: all 0.3s ease;
+    width: 100%;
+    z-index: 4;
+}
+.op-status > span {
+    background: rgba(0, 0, 0, 0.7);
+    box-decoration-break: clone;
+    line-height: 150%;
+    padding: 3px 10px;
+}
+
+.op-player__audio .op-status {
+    top: 23px;
+}
+
 /* === Tooltip ================== */
 .op-controls__tooltip {
     background: #eee;

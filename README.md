@@ -61,6 +61,7 @@ If you want to unleash the power of OpenPlayerJS, learn more about OpenPlayerJS 
 * [API and events](./docs/api.md)
   * [API](./docs/api.md#api)
   * [Events](./docs/api.md#events)
+  * [Keyboard Shortcuts](./docs/api.md#keyboard-shortcuts)
 * [NEW! Player Customizations](./docs/customize.md)
   * [Modify Look](./docs/customize.md#modify-look)
   * [Add Control](./docs/customize.md#add-control)

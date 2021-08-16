@@ -134,6 +134,34 @@ class Fullscreen implements PlayerComponent {
 
         this._keydownEvent = this._keydownEvent.bind(this);
         this._fullscreenChange = this._fullscreenChange.bind(this);
+
+        this.#fullscreenEvents = [
+            'fullscreenchange',
+            'mozfullscreenchange',
+            'webkitfullscreenchange',
+            'msfullscreenchange',
+        ];
+
+        this.#fullscreenEvents.forEach(event => {
+            document.addEventListener(event, this._fullscreenChange, EVENT_OPTIONS);
+        });
+        this._setFullscreenData(false);
+
+        this.#player.getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
+
+        // Since iPhone still doesn't accept the regular Fullscreen API, use the following events
+        if (IS_IPHONE) {
+            this.#player.getElement().addEventListener('webkitbeginfullscreen', () => {
+                this.#isFullscreen = true;
+                this._setFullscreenData(true);
+                document.body.classList.add('op-fullscreen__on');
+            }, EVENT_OPTIONS);
+            this.#player.getElement().addEventListener('webkitendfullscreen', () => {
+                this.#isFullscreen = false;
+                this._setFullscreenData(false);
+                document.body.classList.remove('op-fullscreen__on');
+            }, EVENT_OPTIONS);
+        }
         return this;
     }
 
@@ -161,38 +189,9 @@ class Fullscreen implements PlayerComponent {
 
         this.#clickEvent = this.#clickEvent.bind(this);
 
-        this.#fullscreenEvents = [
-            'fullscreenchange',
-            'mozfullscreenchange',
-            'webkitfullscreenchange',
-            'msfullscreenchange',
-        ];
-
-        this._setFullscreenData(false);
-
-        this.#player.getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
-
-        this.#fullscreenEvents.forEach(event => {
-            document.addEventListener(event, this._fullscreenChange, EVENT_OPTIONS);
-        });
-
         this.#button.addEventListener('click', this.#clickEvent, EVENT_OPTIONS);
 
         this.#player.getControls().getLayer(this.#layer).appendChild(this.#button);
-
-        // Since iPhone still doesn't accept the regular Fullscreen API, use the following events
-        if (IS_IPHONE) {
-            this.#player.getElement().addEventListener('webkitbeginfullscreen', () => {
-                this.#isFullscreen = true;
-                this._setFullscreenData(true);
-                document.body.classList.add('op-fullscreen__on');
-            }, EVENT_OPTIONS);
-            this.#player.getElement().addEventListener('webkitendfullscreen', () => {
-                this.#isFullscreen = false;
-                this._setFullscreenData(false);
-                document.body.classList.remove('op-fullscreen__on');
-            }, EVENT_OPTIONS);
-        }
     }
 
     /**
@@ -278,7 +277,7 @@ class Fullscreen implements PlayerComponent {
     }
 
     /**
-     * Callback to toggle fullscreen for browsers thta do not support native Fullscreen API.
+     * Callback to toggle fullscreen for browsers that do not support native Fullscreen API.
      *
      * @private
      * @memberof Fullscreen
@@ -311,10 +310,12 @@ class Fullscreen implements PlayerComponent {
      */
     private _setFullscreenData(state: boolean): void {
         this.#player.getContainer().setAttribute('data-fullscreen', (!!state).toString());
-        if (state) {
-            this.#button.classList.add('op-controls__fullscreen--out');
-        } else {
-            this.#button.classList.remove('op-controls__fullscreen--out');
+        if (this.#button) {
+            if (state) {
+                this.#button.classList.add('op-controls__fullscreen--out');
+            } else {
+                this.#button.classList.remove('op-controls__fullscreen--out');
+            }
         }
     }
 

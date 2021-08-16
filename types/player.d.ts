@@ -321,5 +321,6 @@ declare class Player {
      * @memberof Player
      */
     private _mergeOptions;
+    private _enableKeyBindings;
 }
 export default Player;

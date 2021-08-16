@@ -158,9 +158,11 @@ class Play {
         removeElement(__classPrivateFieldGet(this, _Play_button, "f"));
     }
     _keydownEvent(e) {
+        var _a;
         const key = e.which || e.keyCode || 0;
         const el = __classPrivateFieldGet(this, _Play_player, "f").activeElement();
-        if (key === 13 || key === 32) {
+        const playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('.op-controls__playpause');
+        if (playBtnFocused && (key === 13 || key === 32)) {
             if (el.paused) {
                 el.play();
             }
