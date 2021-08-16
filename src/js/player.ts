@@ -20,7 +20,7 @@ import Ads from './media/ads';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo, removeElement } from './utils/general';
-import { isAutoplaySupported } from './utils/media';
+import { isAutoplaySupported, predictType } from './utils/media';
 
 /**
  * OpenPlayerJS.
@@ -703,10 +703,21 @@ class Player {
      *
      * @memberof Player
      */
-    set src(media: Source[]) {
+    set src(media) {
         if (this.#media instanceof Media) {
             this.#media.mediaFiles = [];
             this.#media.src = media;
+        } else if (typeof media === 'string') {
+            this.#element.src = media;
+        } else if (Array.isArray(media)) {
+            media.forEach(m => {
+                const source = document.createElement('source');
+                source.src = m.src;
+                source.type = m.type || predictType(m.src);
+                this.#element.appendChild(source);
+            });
+        } else if (typeof media === 'object') {
+            this.#element.src = (media as Source).src;
         }
     }
 
@@ -1078,15 +1089,26 @@ class Player {
         const key = e.which || e.keyCode || 0;
         const el = this.activeElement();
         const isAd = this.isAd();
+        const playerFocused = document?.activeElement?.classList.contains('op-player');
+
         switch (key) {
             // Toggle play/pause using letter K, Tab or Enter
             case 13:
             case 32:
             case 75:
-                if (el.paused) {
-                    el.play();
-                } else {
-                    el.pause();
+                // Avoid interference of Enter/Space keys when focused in the player container
+                if (playerFocused && (key === 13 || key === 32)) {
+                    if (el.paused) {
+                        el.play();
+                    } else {
+                        el.pause();
+                    }
+                } else if (key === 75) {
+                    if (el.paused) {
+                        el.play();
+                    } else {
+                        el.pause();
+                    }
                 }
                 e.preventDefault();
                 break;

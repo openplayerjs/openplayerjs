@@ -144,6 +144,7 @@ class Settings implements PlayerComponent {
         this.#labels = player.getOptions().labels;
         this.#position = position;
         this.#layer = layer;
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
 
@@ -202,6 +203,8 @@ class Settings implements PlayerComponent {
         this.#events.media.play = this.hideEvent.bind(this);
         this.#events.media.pause = this.hideEvent.bind(this);
 
+        this.#player.getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
+
         this.clickEvent = this.clickEvent.bind(this);
         this.hideEvent = this.hideEvent.bind(this);
 
@@ -243,6 +246,8 @@ class Settings implements PlayerComponent {
             document.removeEventListener('click', this.#events.global['settings.submenu']);
             this.#player.getElement().removeEventListener('controlshidden', this.hideEvent);
         }
+
+        this.#player.getContainer().removeEventListener('keydown', this._keydownEvent);
 
         removeElement(this.#menu);
         removeElement(this.#button);
@@ -301,7 +306,7 @@ class Settings implements PlayerComponent {
 
         const submenuMatch = submenu ? submenu.find(x => x.key === defaultValue) : null;
         if (submenuMatch) {
-            menuItem.innerHTML += `<div class="op-settings__menu-content">${submenuMatch.label}</div>`;
+            menuItem.innerHTML += `<div class="op-settings__menu-content" tabindex="0">${submenuMatch.label}</div>`;
         }
 
         const mainMenu = this.#menu.querySelector('.op-settings__menu');
@@ -314,13 +319,13 @@ class Settings implements PlayerComponent {
         if (submenu) {
             const subItems = `
                 <div class="op-settings__header">
-                    <button type="button" class="op-settings__back">${name}</button>
+                    <button type="button" class="op-settings__back" tabindex="0">${name}</button>
                 </div>
                 <div class="op-settings__menu" role="menu" id="menu-item-${key}">
                     ${submenu.map((item: SettingsSubItem) => `
-                    <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio"
+                    <div class="op-settings__submenu-item" role="menuitemradio"
                         aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
-                        <div class="op-settings__submenu-label ${className || ''}" data-value="${key}-${item.key}">${item.label}</div>
+                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${item.key}">${item.label}</div>
                     </div>`).join('')}
                 </div>`;
             this.#submenu[key] = subItems;
@@ -411,6 +416,32 @@ class Settings implements PlayerComponent {
             const menuItem = label ? label.closest('.op-settings__menu-item') : null;
             if (menuItem) {
                 removeElement(menuItem);
+            }
+        }
+    }
+
+    /**
+     * Use the `Enter` and space bar keys to show the Settings menu.
+     *
+     * @private
+     * @param {KeyboardEvent} e
+     * @memberof Volume
+     */
+     private _keydownEvent(e: KeyboardEvent) {
+        const key = e.which || e.keyCode || 0;
+        const isAd = this.#player.isAd();
+        const settingsBtnFocused = document?.activeElement?.classList.contains('op-controls__settings');
+
+        const menuFocused = document?.activeElement?.classList.contains('op-settings__menu-content') ||
+            document?.activeElement?.classList.contains('op-settings__back') ||
+            document?.activeElement?.classList.contains('op-settings__submenu-label');
+        if (!isAd) {
+            if (settingsBtnFocused && (key === 13 || key === 32)) {
+                this.clickEvent();
+                e.preventDefault();
+            } else if (menuFocused && (key === 13 || key === 32)) {
+                this.#events.global['settings.submenu'](e);
+                e.preventDefault();
             }
         }
     }

@@ -361,7 +361,7 @@ class Fullscreen implements PlayerComponent {
     }
 
     /**
-     * Use the `F` key to go fullscreen if the focus is on player.
+     * Use the `Enter` and space bar keys to go fullscreen if the focus is on player.
      *
      * @private
      * @param {KeyboardEvent} e
@@ -369,7 +369,8 @@ class Fullscreen implements PlayerComponent {
      */
     private _keydownEvent(e: KeyboardEvent) {
         const key = e.which || e.keyCode || 0;
-        if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
+        const fullscreenBtnFocused = document?.activeElement?.classList.contains('op-controls__fullscreen');
+        if (fullscreenBtnFocused && (key === 13 || key === 32)) {
             this.toggleFullscreen();
             e.preventDefault();
         }

@@ -90,5 +90,13 @@ declare class Settings implements PlayerComponent {
      * @memberof Settings
      */
     removeItem(id: string | number, type: string, minItems?: number): void;
+    /**
+     * Use the `Enter` and space bar keys to show the Settings menu.
+     *
+     * @private
+     * @param {KeyboardEvent} e
+     * @memberof Volume
+     */
+    private _keydownEvent;
 }
 export default Settings;

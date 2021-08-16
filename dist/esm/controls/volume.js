@@ -176,9 +176,10 @@ class Volume {
         var _a;
         const key = e.which || e.keyCode || 0;
         const el = __classPrivateFieldGet(this, _Volume_player, "f").activeElement();
-        const playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('.op-controls__volume');
+        const playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__mute');
         if (playBtnFocused && (key === 13 || key === 32)) {
             el.muted = !el.muted;
+            el.volume = el.muted ? 0 : __classPrivateFieldGet(this, _Volume_volume, "f");
             e.preventDefault();
         }
     }

@@ -74,7 +74,7 @@ declare class Fullscreen implements PlayerComponent {
      */
     private _resize;
     /**
-     * Use the `F` key to go fullscreen if the focus is on player.
+     * Use the `Enter` and space bar keys to go fullscreen if the focus is on player.
      *
      * @private
      * @param {KeyboardEvent} e

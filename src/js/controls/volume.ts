@@ -306,7 +306,7 @@ class Volume implements PlayerComponent {
     }
 
     /**
-     * Use the up and down arrow keys to manipulate volume.
+     * Use the `Enter` and space bar keys to manipulate volume.
      *
      * @private
      * @param {KeyboardEvent} e
@@ -315,9 +315,11 @@ class Volume implements PlayerComponent {
     private _keydownEvent(e: KeyboardEvent) {
         const key = e.which || e.keyCode || 0;
         const el = this.#player.activeElement();
-        const playBtnFocused = document?.activeElement?.classList.contains('.op-controls__volume');
+        const playBtnFocused = document?.activeElement?.classList.contains('op-controls__mute');
+
         if (playBtnFocused && (key === 13 || key === 32)) {
             el.muted = !el.muted;
+            el.volume = el.muted ? 0 : this.#volume;
             e.preventDefault();
         }
     }

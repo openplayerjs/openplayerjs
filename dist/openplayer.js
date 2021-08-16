@@ -1662,6 +1662,8 @@ exports.timeToSeconds = timeToSeconds;
 "use strict";
 
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -2483,20 +2485,29 @@ var Player = function () {
   }, {
     key: "_enableKeyBindings",
     value: function _enableKeyBindings(e) {
-      var _a;
+      var _a, _b;
 
       var key = e.which || e.keyCode || 0;
       var el = this.activeElement();
       var isAd = this.isAd();
+      var playerFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-player');
 
       switch (key) {
         case 13:
         case 32:
         case 75:
-          if (el.paused) {
-            el.play();
-          } else {
-            el.pause();
+          if (playerFocused && (key === 13 || key === 32)) {
+            if (el.paused) {
+              el.play();
+            } else {
+              el.pause();
+            }
+          } else if (key === 75) {
+            if (el.paused) {
+              el.play();
+            } else {
+              el.pause();
+            }
           }
 
           e.preventDefault();
@@ -2588,7 +2599,7 @@ var Player = function () {
 
             if (target) {
               target.textContent = "".concat(elem.playbackRate, "x");
-              (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'false');
+              (_b = target.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-hidden', 'false');
               setTimeout(function () {
                 var _a;
 
@@ -2611,9 +2622,23 @@ var Player = function () {
   }, {
     key: "src",
     set: function set(media) {
+      var _this8 = this;
+
       if (__classPrivateFieldGet(this, _media) instanceof media_1["default"]) {
         __classPrivateFieldGet(this, _media).mediaFiles = [];
         __classPrivateFieldGet(this, _media).src = media;
+      } else if (typeof media === 'string') {
+        __classPrivateFieldGet(this, _element).src = media;
+      } else if (Array.isArray(media)) {
+        media.forEach(function (m) {
+          var source = document.createElement('source');
+          source.src = m.src;
+          source.type = m.type || media_2.predictType(m.src);
+
+          __classPrivateFieldGet(_this8, _element).appendChild(source);
+        });
+      } else if (_typeof(media) === 'object') {
+        __classPrivateFieldGet(this, _element).src = media.src;
       }
     },
     get: function get() {
@@ -3817,9 +3842,12 @@ var Fullscreen = function () {
   }, {
     key: "_keydownEvent",
     value: function _keydownEvent(e) {
-      var key = e.which || e.keyCode || 0;
+      var _a;
 
-      if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
+      var key = e.which || e.keyCode || 0;
+      var fullscreenBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__fullscreen');
+
+      if (fullscreenBtnFocused && (key === 13 || key === 32)) {
         this.toggleFullscreen();
         e.preventDefault();
       }
@@ -7471,7 +7499,7 @@ var Play = function () {
 
       var el = __classPrivateFieldGet(this, _player).activeElement();
 
-      var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('.op-controls__playpause');
+      var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__playpause');
 
       if (playBtnFocused && (key === 13 || key === 32)) {
         if (el.paused) {
@@ -8082,6 +8110,7 @@ var Settings = function () {
 
     __classPrivateFieldSet(this, _layer, layer);
 
+    this._keydownEvent = this._keydownEvent.bind(this);
     return this;
   }
 
@@ -8154,6 +8183,9 @@ var Settings = function () {
       __classPrivateFieldGet(this, _events).media.settingremoved = this.removeEvent.bind(this);
       __classPrivateFieldGet(this, _events).media.play = this.hideEvent.bind(this);
       __classPrivateFieldGet(this, _events).media.pause = this.hideEvent.bind(this);
+
+      __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
+
       this.clickEvent = this.clickEvent.bind(this);
       this.hideEvent = this.hideEvent.bind(this);
 
@@ -8201,6 +8233,8 @@ var Settings = function () {
 
         __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlshidden', this.hideEvent);
       }
+
+      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
 
       general_1.removeElement(__classPrivateFieldGet(this, _menu));
       general_1.removeElement(__classPrivateFieldGet(this, _button));
@@ -8260,7 +8294,7 @@ var Settings = function () {
       }) : null;
 
       if (submenuMatch) {
-        menuItem.innerHTML += "<div class=\"op-settings__menu-content\">".concat(submenuMatch.label, "</div>");
+        menuItem.innerHTML += "<div class=\"op-settings__menu-content\" tabindex=\"0\">".concat(submenuMatch.label, "</div>");
       }
 
       var mainMenu = __classPrivateFieldGet(this, _menu).querySelector('.op-settings__menu');
@@ -8272,8 +8306,8 @@ var Settings = function () {
       __classPrivateFieldSet(this, _originalOutput, __classPrivateFieldGet(this, _menu).innerHTML);
 
       if (submenu) {
-        var subItems = "\n                <div class=\"op-settings__header\">\n                    <button type=\"button\" class=\"op-settings__back\">".concat(name, "</button>\n                </div>\n                <div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-").concat(key, "\">\n                    ").concat(submenu.map(function (item) {
-          return "\n                    <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(defaultValue === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"").concat(key, "-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
+        var subItems = "\n                <div class=\"op-settings__header\">\n                    <button type=\"button\" class=\"op-settings__back\" tabindex=\"0\">".concat(name, "</button>\n                </div>\n                <div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-").concat(key, "\">\n                    ").concat(submenu.map(function (item) {
+          return "\n                    <div class=\"op-settings__submenu-item\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(defaultValue === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" tabindex=\"0\" data-value=\"").concat(key, "-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
         }).join(''), "\n                </div>");
         __classPrivateFieldGet(this, _submenu)[key] = subItems;
       }
@@ -8378,6 +8412,29 @@ var Settings = function () {
 
         if (menuItem) {
           general_1.removeElement(menuItem);
+        }
+      }
+    }
+  }, {
+    key: "_keydownEvent",
+    value: function _keydownEvent(e) {
+      var _a, _b, _c, _d;
+
+      var key = e.which || e.keyCode || 0;
+
+      var isAd = __classPrivateFieldGet(this, _player).isAd();
+
+      var settingsBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__settings');
+      var menuFocused = ((_b = document === null || document === void 0 ? void 0 : document.activeElement) === null || _b === void 0 ? void 0 : _b.classList.contains('op-settings__menu-content')) || ((_c = document === null || document === void 0 ? void 0 : document.activeElement) === null || _c === void 0 ? void 0 : _c.classList.contains('op-settings__back')) || ((_d = document === null || document === void 0 ? void 0 : document.activeElement) === null || _d === void 0 ? void 0 : _d.classList.contains('op-settings__submenu-label'));
+
+      if (!isAd) {
+        if (settingsBtnFocused && (key === 13 || key === 32)) {
+          this.clickEvent();
+          e.preventDefault();
+        } else if (menuFocused && (key === 13 || key === 32)) {
+          __classPrivateFieldGet(this, _events).global['settings.submenu'](e);
+
+          e.preventDefault();
         }
       }
     }
@@ -8922,10 +8979,11 @@ var Volume = function () {
 
       var el = __classPrivateFieldGet(this, _player).activeElement();
 
-      var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('.op-controls__volume');
+      var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__mute');
 
       if (playBtnFocused && (key === 13 || key === 32)) {
         el.muted = !el.muted;
+        el.volume = el.muted ? 0 : __classPrivateFieldGet(this, _volume);
         e.preventDefault();
       }
     }

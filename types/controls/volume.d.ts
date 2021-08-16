@@ -33,7 +33,7 @@ declare class Volume implements PlayerComponent {
      */
     destroy(): void;
     /**
-     * Use the up and down arrow keys to manipulate volume.
+     * Use the `Enter` and space bar keys to manipulate volume.
      *
      * @private
      * @param {KeyboardEvent} e

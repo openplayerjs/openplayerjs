@@ -30,6 +30,7 @@ class Settings {
         __classPrivateFieldSet(this, _Settings_labels, player.getOptions().labels, "f");
         __classPrivateFieldSet(this, _Settings_position, position, "f");
         __classPrivateFieldSet(this, _Settings_layer, layer, "f");
+        this._keydownEvent = this._keydownEvent.bind(this);
         return this;
     }
     create() {
@@ -75,6 +76,7 @@ class Settings {
         __classPrivateFieldGet(this, _Settings_events, "f").media.settingremoved = this.removeEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").media.play = this.hideEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").media.pause = this.hideEvent.bind(this);
+        __classPrivateFieldGet(this, _Settings_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
         this.clickEvent = this.clickEvent.bind(this);
         this.hideEvent = this.hideEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").global.click = (e) => {
@@ -107,6 +109,7 @@ class Settings {
             document.removeEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu']);
             __classPrivateFieldGet(this, _Settings_player, "f").getElement().removeEventListener('controlshidden', this.hideEvent);
         }
+        __classPrivateFieldGet(this, _Settings_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
         removeElement(__classPrivateFieldGet(this, _Settings_menu, "f"));
         removeElement(__classPrivateFieldGet(this, _Settings_button, "f"));
     }
@@ -140,7 +143,7 @@ class Settings {
         menuItem.innerHTML = `<div class="op-settings__menu-label" data-value="${key}-${defaultValue}">${name}</div>`;
         const submenuMatch = submenu ? submenu.find(x => x.key === defaultValue) : null;
         if (submenuMatch) {
-            menuItem.innerHTML += `<div class="op-settings__menu-content">${submenuMatch.label}</div>`;
+            menuItem.innerHTML += `<div class="op-settings__menu-content" tabindex="0">${submenuMatch.label}</div>`;
         }
         const mainMenu = __classPrivateFieldGet(this, _Settings_menu, "f").querySelector('.op-settings__menu');
         if (mainMenu) {
@@ -150,13 +153,13 @@ class Settings {
         if (submenu) {
             const subItems = `
                 <div class="op-settings__header">
-                    <button type="button" class="op-settings__back">${name}</button>
+                    <button type="button" class="op-settings__back" tabindex="0">${name}</button>
                 </div>
                 <div class="op-settings__menu" role="menu" id="menu-item-${key}">
                     ${submenu.map((item) => `
-                    <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio"
+                    <div class="op-settings__submenu-item" role="menuitemradio"
                         aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
-                        <div class="op-settings__submenu-label ${className || ''}" data-value="${key}-${item.key}">${item.label}</div>
+                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${item.key}">${item.label}</div>
                     </div>`).join('')}
                 </div>`;
             __classPrivateFieldGet(this, _Settings_submenu, "f")[key] = subItems;
@@ -233,6 +236,25 @@ class Settings {
             const menuItem = label ? label.closest('.op-settings__menu-item') : null;
             if (menuItem) {
                 removeElement(menuItem);
+            }
+        }
+    }
+    _keydownEvent(e) {
+        var _a, _b, _c, _d;
+        const key = e.which || e.keyCode || 0;
+        const isAd = __classPrivateFieldGet(this, _Settings_player, "f").isAd();
+        const settingsBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__settings');
+        const menuFocused = ((_b = document === null || document === void 0 ? void 0 : document.activeElement) === null || _b === void 0 ? void 0 : _b.classList.contains('op-settings__menu-content')) ||
+            ((_c = document === null || document === void 0 ? void 0 : document.activeElement) === null || _c === void 0 ? void 0 : _c.classList.contains('op-settings__back')) ||
+            ((_d = document === null || document === void 0 ? void 0 : document.activeElement) === null || _d === void 0 ? void 0 : _d.classList.contains('op-settings__submenu-label'));
+        if (!isAd) {
+            if (settingsBtnFocused && (key === 13 || key === 32)) {
+                this.clickEvent();
+                e.preventDefault();
+            }
+            else if (menuFocused && (key === 13 || key === 32)) {
+                __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'](e);
+                e.preventDefault();
             }
         }
     }

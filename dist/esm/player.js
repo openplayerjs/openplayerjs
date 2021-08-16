@@ -24,7 +24,7 @@ import Ads from './media/ads';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo, removeElement } from './utils/general';
-import { isAutoplaySupported } from './utils/media';
+import { isAutoplaySupported, predictType } from './utils/media';
 class Player {
     constructor(element, options) {
         _Player_controls.set(this, void 0);
@@ -350,6 +350,20 @@ class Player {
             __classPrivateFieldGet(this, _Player_media, "f").mediaFiles = [];
             __classPrivateFieldGet(this, _Player_media, "f").src = media;
         }
+        else if (typeof media === 'string') {
+            __classPrivateFieldGet(this, _Player_element, "f").src = media;
+        }
+        else if (Array.isArray(media)) {
+            media.forEach(m => {
+                const source = document.createElement('source');
+                source.src = m.src;
+                source.type = m.type || predictType(m.src);
+                __classPrivateFieldGet(this, _Player_element, "f").appendChild(source);
+            });
+        }
+        else if (typeof media === 'object') {
+            __classPrivateFieldGet(this, _Player_element, "f").src = media.src;
+        }
     }
     get src() {
         return __classPrivateFieldGet(this, _Player_media, "f").src;
@@ -612,19 +626,30 @@ class Player {
         }
     }
     _enableKeyBindings(e) {
-        var _a;
+        var _a, _b;
         const key = e.which || e.keyCode || 0;
         const el = this.activeElement();
         const isAd = this.isAd();
+        const playerFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-player');
         switch (key) {
             case 13:
             case 32:
             case 75:
-                if (el.paused) {
-                    el.play();
+                if (playerFocused && (key === 13 || key === 32)) {
+                    if (el.paused) {
+                        el.play();
+                    }
+                    else {
+                        el.pause();
+                    }
                 }
-                else {
-                    el.pause();
+                else if (key === 75) {
+                    if (el.paused) {
+                        el.play();
+                    }
+                    else {
+                        el.pause();
+                    }
                 }
                 e.preventDefault();
                 break;
@@ -698,7 +723,7 @@ class Player {
                     const target = this.getContainer().querySelector('.op-status>span');
                     if (target) {
                         target.textContent = `${elem.playbackRate}x`;
-                        (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'false');
+                        (_b = target.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-hidden', 'false');
                         setTimeout(() => {
                             var _a;
                             (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'true');

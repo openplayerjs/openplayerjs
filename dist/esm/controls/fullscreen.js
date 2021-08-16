@@ -214,8 +214,10 @@ class Fullscreen {
         }
     }
     _keydownEvent(e) {
+        var _a;
         const key = e.which || e.keyCode || 0;
-        if (key === 70 && !e.ctrlKey && typeof this.fullScreenEnabled !== 'undefined') {
+        const fullscreenBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__fullscreen');
+        if (fullscreenBtnFocused && (key === 13 || key === 32)) {
             this.toggleFullscreen();
             e.preventDefault();
         }
