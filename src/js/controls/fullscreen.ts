@@ -283,8 +283,8 @@ class Fullscreen implements PlayerComponent {
      * @memberof Fullscreen
      */
     private _fullscreenChange(): void {
-        const width = this.#isFullscreen ? 0 : this.#fullscreenWidth;
-        const height = this.#isFullscreen ? 0 : this.#fullscreenHeight;
+        const width = this.#isFullscreen ? undefined : this.#fullscreenWidth;
+        const height = this.#isFullscreen ? undefined : this.#fullscreenHeight;
         this._setFullscreenData(!this.#isFullscreen);
 
         if (this.#player.isAd()) {
