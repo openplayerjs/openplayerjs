@@ -551,6 +551,22 @@ class Ads {
             const mode = target.getAttribute('data-fullscreen') === 'true' ?
                 google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
 
+            let formattedWidth = width;
+            const percentageWidth = (width as unknown) as string;
+            if (width && percentageWidth.indexOf('%') > -1) {
+                if (this.#element.parentElement) {
+                    formattedWidth = this.#element.parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
+                }
+            }
+
+            let formattedHeight = height;
+            const percentageHeight = (width as unknown) as string;
+            if (height && percentageHeight.indexOf('%') > -1) {
+                if (this.#element.parentElement) {
+                    formattedHeight = this.#element.parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
+                }
+            }
+
             let timeout;
 
             if (timeout && typeof window !== 'undefined') {
@@ -559,8 +575,8 @@ class Ads {
             if (typeof window !== 'undefined') {
                 timeout = window.requestAnimationFrame(() => {
                     this.#adsManager.resize(
-                        width || target.offsetWidth,
-                        height || target.offsetHeight,
+                        formattedWidth || target.offsetWidth,
+                        formattedHeight || target.offsetHeight,
                         mode,
                     );
                 });

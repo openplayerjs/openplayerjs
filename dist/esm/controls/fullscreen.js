@@ -152,8 +152,8 @@ class Fullscreen {
         }
     }
     _fullscreenChange() {
-        const width = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? 0 : __classPrivateFieldGet(this, _Fullscreen_fullscreenWidth, "f");
-        const height = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? 0 : __classPrivateFieldGet(this, _Fullscreen_fullscreenHeight, "f");
+        const width = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? undefined : __classPrivateFieldGet(this, _Fullscreen_fullscreenWidth, "f");
+        const height = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? undefined : __classPrivateFieldGet(this, _Fullscreen_fullscreenHeight, "f");
         this._setFullscreenData(!__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f"));
         if (__classPrivateFieldGet(this, _Fullscreen_player, "f").isAd()) {
             __classPrivateFieldGet(this, _Fullscreen_player, "f").getAd().resizeAds(width, height);

@@ -217,13 +217,27 @@ class Ads {
             const target = __classPrivateFieldGet(this, _Ads_element, "f");
             const mode = target.getAttribute('data-fullscreen') === 'true' ?
                 google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
+            let formattedWidth = width;
+            const percentageWidth = width;
+            if (width && percentageWidth.indexOf('%') > -1) {
+                if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+                    formattedWidth = __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
+                }
+            }
+            let formattedHeight = height;
+            const percentageHeight = width;
+            if (height && percentageHeight.indexOf('%') > -1) {
+                if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+                    formattedHeight = __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
+                }
+            }
             let timeout;
             if (timeout && typeof window !== 'undefined') {
                 window.cancelAnimationFrame(timeout);
             }
             if (typeof window !== 'undefined') {
                 timeout = window.requestAnimationFrame(() => {
-                    __classPrivateFieldGet(this, _Ads_adsManager, "f").resize(width || target.offsetWidth, height || target.offsetHeight, mode);
+                    __classPrivateFieldGet(this, _Ads_adsManager, "f").resize(formattedWidth || target.offsetWidth, formattedHeight || target.offsetHeight, mode);
                 });
             }
         }

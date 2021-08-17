@@ -3768,8 +3768,8 @@ var Fullscreen = function () {
   }, {
     key: "_fullscreenChange",
     value: function _fullscreenChange() {
-      var width = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenWidth);
-      var height = __classPrivateFieldGet(this, _isFullscreen) ? 0 : __classPrivateFieldGet(this, _fullscreenHeight);
+      var width = __classPrivateFieldGet(this, _isFullscreen) ? undefined : __classPrivateFieldGet(this, _fullscreenWidth);
+      var height = __classPrivateFieldGet(this, _isFullscreen) ? undefined : __classPrivateFieldGet(this, _fullscreenHeight);
 
       this._setFullscreenData(!__classPrivateFieldGet(this, _isFullscreen));
 
@@ -11086,6 +11086,24 @@ var Ads = function () {
         var target = __classPrivateFieldGet(this, _element);
 
         var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
+        var formattedWidth = width;
+        var percentageWidth = width;
+
+        if (width && percentageWidth.indexOf('%') > -1) {
+          if (__classPrivateFieldGet(this, _element).parentElement) {
+            formattedWidth = __classPrivateFieldGet(this, _element).parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
+          }
+        }
+
+        var formattedHeight = height;
+        var percentageHeight = width;
+
+        if (height && percentageHeight.indexOf('%') > -1) {
+          if (__classPrivateFieldGet(this, _element).parentElement) {
+            formattedHeight = __classPrivateFieldGet(this, _element).parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
+          }
+        }
+
         var timeout;
 
         if (timeout && typeof window !== 'undefined') {
@@ -11094,7 +11112,7 @@ var Ads = function () {
 
         if (typeof window !== 'undefined') {
           timeout = window.requestAnimationFrame(function () {
-            __classPrivateFieldGet(_this5, _adsManager).resize(width || target.offsetWidth, height || target.offsetHeight, mode);
+            __classPrivateFieldGet(_this5, _adsManager).resize(formattedWidth || target.offsetWidth, formattedHeight || target.offsetHeight, mode);
           });
         }
       }
