@@ -165,6 +165,27 @@ The `levels` option is not a default one since it requires specific configuratio
 
 To see a working example of it, using both scenarios, check [this sample](https://codepen.io/rafa8626/pen/ExxXvZx?editors=1000).
 
+### About the usage of third-party libraries
+
+OpenPlayerJS loads automatically the latest version of [hls.js](https://github.com/video-dev/hls.js), [dash.js](https://github.com/Dash-Industry-Forum/dash.js) and [flv.js](https://github.com/Bilibili/flv.js/) from [jsDelivr CDN service](https://www.jsdelivr.com/); however, if for any reason you need to use a local version (or using a different URL) of any of these third-party libraries for any reason, you can **load them before you load OpenPlayerJS**. For example:
+
+```html
+<script src="/path/to/hls.min.js"></script>
+<script src="/path/to/dash.min.js"></script>
+<script src="/path/to/flv.min.js"></script>
+<script src="/path/to/openplayer.min.js"></script>
+```
+
+Or if you are using them in a separate file:
+
+```javascript
+import Hls from 'hls.js';
+import dashjs from 'dashjs';
+import flvJs from 'flv.js';
+
+import OpenPlayerJS from 'openplayerjs';
+```
+
 ## React/Next.js
 
 Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can see in the example below.

@@ -57,6 +57,7 @@ If you want to unleash the power of OpenPlayerJS, learn more about OpenPlayerJS 
   * [HTML](./docs/usage.md#html)
   * [Javascript](./docs/usage.md#javascript)
     * [About the `levels` control](./docs/usage.md#about-the-levels-control)
+    * [About the usage of third-party libraries](./docs/usage.md#about-the-usage-of-third-party-libraries)
   * [React/Next.js](./docs/usage.md#reactnextjs)
 * [API and events](./docs/api.md)
   * [API](./docs/api.md#api)
