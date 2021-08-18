@@ -121,6 +121,7 @@ class Play implements PlayerComponent {
             }
 
             e.preventDefault();
+            e.stopPropagation();
         };
 
         const isAudioEl = isAudio(this.#player.getElement());
@@ -246,15 +247,9 @@ class Play implements PlayerComponent {
      */
     private _keydownEvent(e: KeyboardEvent) {
         const key = e.which || e.keyCode || 0;
-        const el = this.#player.activeElement();
         const playBtnFocused = document?.activeElement?.classList.contains('op-controls__playpause');
         if (playBtnFocused && (key === 13 || key === 32)) {
-            if (el.paused) {
-                el.play();
-            } else {
-                el.pause();
-            }
-            e.preventDefault();
+            this.#events.media.click(e);
         }
     }
 }

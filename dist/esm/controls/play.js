@@ -56,6 +56,7 @@ class Play {
                 el.pause();
             }
             e.preventDefault();
+            e.stopPropagation();
         };
         const isAudioEl = isAudio(__classPrivateFieldGet(this, _Play_player, "f").getElement());
         __classPrivateFieldGet(this, _Play_events, "f").media.play = () => {
@@ -160,16 +161,9 @@ class Play {
     _keydownEvent(e) {
         var _a;
         const key = e.which || e.keyCode || 0;
-        const el = __classPrivateFieldGet(this, _Play_player, "f").activeElement();
         const playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__playpause');
         if (playBtnFocused && (key === 13 || key === 32)) {
-            if (el.paused) {
-                el.play();
-            }
-            else {
-                el.pause();
-            }
-            e.preventDefault();
+            __classPrivateFieldGet(this, _Play_events, "f").media.click(e);
         }
     }
 }

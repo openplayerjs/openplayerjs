@@ -1111,12 +1111,14 @@ class Player {
                     }
                 }
                 e.preventDefault();
+                e.stopPropagation();
                 break;
             // End key ends video
             case 35:
                 if (!isAd && el.duration !== Infinity) {
                     el.currentTime = el.duration;
                     e.preventDefault();
+                    e.stopPropagation();
                 }
                 break;
             // Home key resets progress
@@ -1124,6 +1126,7 @@ class Player {
                 if (!isAd) {
                     el.currentTime = 0;
                     e.preventDefault();
+                    e.stopPropagation();
                 }
                 break;
             // Use the left and right arrow keys to manipulate current media time.
@@ -1148,6 +1151,7 @@ class Player {
                         el.currentTime = el.duration;
                     }
                     e.preventDefault();
+                    e.stopPropagation();
                 }
                 break;
             // Use the up/down arrow keys to manipulate volume.
@@ -1157,6 +1161,7 @@ class Player {
                 el.volume = newVol;
                 el.muted = !(newVol > 0);
                 e.preventDefault();
+                e.stopPropagation();
                 break;
             // Letter F sets fullscreen (only video)
             case 70:
@@ -1165,6 +1170,7 @@ class Player {
                     if (typeof this.#fullscreen.fullScreenEnabled !== 'undefined') {
                         this.#fullscreen.toggleFullscreen();
                         e.preventDefault();
+                        e.stopPropagation();
                     }
                 }
                 break;
@@ -1177,6 +1183,7 @@ class Player {
                     el.volume = this.#volume;
                 }
                 e.preventDefault();
+                e.stopPropagation();
                 break;
             // < and > will decrease/increase the speed of playback by 0.25
             // , and . will go to the prev/next frame of the media
@@ -1197,9 +1204,11 @@ class Player {
                     const ev = addEvent('controlschanged');
                     dispatchEvent(ev);
                     e.preventDefault();
+                    e.stopPropagation();
                 } else if (!isAd && el.paused) {
                     el.currentTime += (1 / 25) * (key === 188 ? -1 : 1);
                     e.preventDefault();
+                    e.stopPropagation();
                 }
             default:
                 break;

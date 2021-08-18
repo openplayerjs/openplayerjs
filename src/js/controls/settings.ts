@@ -220,6 +220,7 @@ class Settings implements PlayerComponent {
             this.#player.getElement().addEventListener(event, this.#events.media[event], EVENT_OPTIONS);
         });
         document.addEventListener('click', this.#events.global.click, EVENT_OPTIONS);
+        document.addEventListener('keydown', this.#events.global.click, EVENT_OPTIONS);
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', this.#events.global.resize, EVENT_OPTIONS);
         }
@@ -239,6 +240,7 @@ class Settings implements PlayerComponent {
             this.#player.getElement().removeEventListener(event, this.#events.media[event]);
         });
         document.removeEventListener('click', this.#events.global.click);
+        document.removeEventListener('keydown', this.#events.global.click);
         if (typeof window !== 'undefined') {
             window.removeEventListener('resize', this.#events.global.resize);
         }
@@ -439,9 +441,11 @@ class Settings implements PlayerComponent {
             if (settingsBtnFocused && (key === 13 || key === 32)) {
                 this.clickEvent();
                 e.preventDefault();
+                e.stopPropagation();
             } else if (menuFocused && (key === 13 || key === 32)) {
                 this.#events.global['settings.submenu'](e);
                 e.preventDefault();
+                e.stopPropagation();
             }
         }
     }

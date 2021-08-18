@@ -90,6 +90,7 @@ class Settings {
             __classPrivateFieldGet(this, _Settings_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Settings_events, "f").media[event], EVENT_OPTIONS);
         });
         document.addEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global.click, EVENT_OPTIONS);
+        document.addEventListener('keydown', __classPrivateFieldGet(this, _Settings_events, "f").global.click, EVENT_OPTIONS);
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', __classPrivateFieldGet(this, _Settings_events, "f").global.resize, EVENT_OPTIONS);
         }
@@ -102,6 +103,7 @@ class Settings {
             __classPrivateFieldGet(this, _Settings_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(this, _Settings_events, "f").media[event]);
         });
         document.removeEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global.click);
+        document.removeEventListener('keydown', __classPrivateFieldGet(this, _Settings_events, "f").global.click);
         if (typeof window !== 'undefined') {
             window.removeEventListener('resize', __classPrivateFieldGet(this, _Settings_events, "f").global.resize);
         }
@@ -251,10 +253,12 @@ class Settings {
             if (settingsBtnFocused && (key === 13 || key === 32)) {
                 this.clickEvent();
                 e.preventDefault();
+                e.stopPropagation();
             }
             else if (menuFocused && (key === 13 || key === 32)) {
                 __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'](e);
                 e.preventDefault();
+                e.stopPropagation();
             }
         }
     }

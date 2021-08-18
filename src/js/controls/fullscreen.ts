@@ -373,6 +373,7 @@ class Fullscreen implements PlayerComponent {
         if (fullscreenBtnFocused && (key === 13 || key === 32)) {
             this.toggleFullscreen();
             e.preventDefault();
+            e.stopPropagation();
         }
     }
 }

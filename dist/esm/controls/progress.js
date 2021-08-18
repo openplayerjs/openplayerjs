@@ -353,6 +353,7 @@ class Progress {
             }
             el.currentTime = el.duration * (0.1 * step);
             e.preventDefault();
+            e.stopPropagation();
         }
     }
 }

@@ -321,6 +321,7 @@ class Volume implements PlayerComponent {
             el.muted = !el.muted;
             el.volume = el.muted ? 0 : this.#volume;
             e.preventDefault();
+            e.stopPropagation();
         }
     }
 }

@@ -85,7 +85,7 @@ class Controls {
                 }
             };
             this.events.mouse.mousemove = () => {
-                if (isMediaVideo) {
+                if (isMediaVideo && !__classPrivateFieldGet(this, _Controls_player, "f").activeElement().paused) {
                     if (__classPrivateFieldGet(this, _Controls_player, "f").activeElement().currentTime) {
                         __classPrivateFieldGet(this, _Controls_player, "f").loader.setAttribute('aria-hidden', 'true');
                         __classPrivateFieldGet(this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(this, _Controls_player, "f").isMedia() ? 'false' : 'true');
@@ -108,6 +108,7 @@ class Controls {
                     this._startControlTimer(__classPrivateFieldGet(this, _Controls_player, "f").getOptions().hidePlayBtnTimer);
                 }
             };
+            this.events.media.loadedmetadata = showControls.bind(this);
             this.events.media.pause = showControls.bind(this);
             this.events.media.waiting = showControls.bind(this);
             this.events.media.stalled = showControls.bind(this);

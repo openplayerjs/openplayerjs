@@ -181,6 +181,7 @@ class Volume {
             el.muted = !el.muted;
             el.volume = el.muted ? 0 : __classPrivateFieldGet(this, _Volume_volume, "f");
             e.preventDefault();
+            e.stopPropagation();
         }
     }
 }

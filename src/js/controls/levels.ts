@@ -250,6 +250,7 @@ class Levels implements PlayerComponent {
                 });
                 this.#player.getElement().dispatchEvent(event);
                 e.preventDefault();
+                e.stopPropagation();
             }
         };
 

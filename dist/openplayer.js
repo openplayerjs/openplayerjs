@@ -2511,12 +2511,14 @@ var Player = function () {
           }
 
           e.preventDefault();
+          e.stopPropagation();
           break;
 
         case 35:
           if (!isAd && el.duration !== Infinity) {
             el.currentTime = el.duration;
             e.preventDefault();
+            e.stopPropagation();
           }
 
           break;
@@ -2525,6 +2527,7 @@ var Player = function () {
           if (!isAd) {
             el.currentTime = 0;
             e.preventDefault();
+            e.stopPropagation();
           }
 
           break;
@@ -2553,6 +2556,7 @@ var Player = function () {
             }
 
             e.preventDefault();
+            e.stopPropagation();
           }
 
           break;
@@ -2563,6 +2567,7 @@ var Player = function () {
           el.volume = newVol;
           el.muted = !(newVol > 0);
           e.preventDefault();
+          e.stopPropagation();
           break;
 
         case 70:
@@ -2573,6 +2578,7 @@ var Player = function () {
               __classPrivateFieldGet(this, _fullscreen).toggleFullscreen();
 
               e.preventDefault();
+              e.stopPropagation();
             }
           }
 
@@ -2588,6 +2594,7 @@ var Player = function () {
           }
 
           e.preventDefault();
+          e.stopPropagation();
           break;
 
         case 188:
@@ -2610,9 +2617,11 @@ var Player = function () {
             var ev = events_1.addEvent('controlschanged');
             dispatchEvent(ev);
             e.preventDefault();
+            e.stopPropagation();
           } else if (!isAd && el.paused) {
             el.currentTime += 1 / 25 * (key === 188 ? -1 : 1);
             e.preventDefault();
+            e.stopPropagation();
           }
 
         default:
@@ -3850,6 +3859,7 @@ var Fullscreen = function () {
       if (fullscreenBtnFocused && (key === 13 || key === 32)) {
         this.toggleFullscreen();
         e.preventDefault();
+        e.stopPropagation();
       }
     }
   }]);
@@ -5663,7 +5673,7 @@ var Controls = function () {
         };
 
         this.events.mouse.mousemove = function () {
-          if (isMediaVideo) {
+          if (isMediaVideo && !__classPrivateFieldGet(_this, _player).activeElement().paused) {
             if (__classPrivateFieldGet(_this, _player).activeElement().currentTime) {
               __classPrivateFieldGet(_this, _player).loader.setAttribute('aria-hidden', 'true');
 
@@ -5692,6 +5702,7 @@ var Controls = function () {
           }
         };
 
+        this.events.media.loadedmetadata = showControls.bind(this);
         this.events.media.pause = showControls.bind(this);
         this.events.media.waiting = showControls.bind(this);
         this.events.media.stalled = showControls.bind(this);
@@ -7011,6 +7022,7 @@ var Levels = function () {
           __classPrivateFieldGet(_this, _player).getElement().dispatchEvent(event);
 
           e.preventDefault();
+          e.stopPropagation();
         }
       };
 
@@ -7349,6 +7361,7 @@ var Play = function () {
         }
 
         e.preventDefault();
+        e.stopPropagation();
       };
 
       var isAudioEl = general_1.isAudio(__classPrivateFieldGet(this, _player).getElement());
@@ -7496,19 +7509,10 @@ var Play = function () {
       var _a;
 
       var key = e.which || e.keyCode || 0;
-
-      var el = __classPrivateFieldGet(this, _player).activeElement();
-
       var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__playpause');
 
       if (playBtnFocused && (key === 13 || key === 32)) {
-        if (el.paused) {
-          el.play();
-        } else {
-          el.pause();
-        }
-
-        e.preventDefault();
+        __classPrivateFieldGet(this, _events).media.click(e);
       }
     }
   }]);
@@ -8025,6 +8029,7 @@ var Progress = function () {
 
         el.currentTime = el.duration * (0.1 * step);
         e.preventDefault();
+        e.stopPropagation();
       }
     }
   }]);
@@ -8203,6 +8208,7 @@ var Settings = function () {
         __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, __classPrivateFieldGet(_this, _events).media[event], constants_1.EVENT_OPTIONS);
       });
       document.addEventListener('click', __classPrivateFieldGet(this, _events).global.click, constants_1.EVENT_OPTIONS);
+      document.addEventListener('keydown', __classPrivateFieldGet(this, _events).global.click, constants_1.EVENT_OPTIONS);
 
       if (typeof window !== 'undefined') {
         window.addEventListener('resize', __classPrivateFieldGet(this, _events).global.resize, constants_1.EVENT_OPTIONS);
@@ -8223,6 +8229,7 @@ var Settings = function () {
         __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _events).media[event]);
       });
       document.removeEventListener('click', __classPrivateFieldGet(this, _events).global.click);
+      document.removeEventListener('keydown', __classPrivateFieldGet(this, _events).global.click);
 
       if (typeof window !== 'undefined') {
         window.removeEventListener('resize', __classPrivateFieldGet(this, _events).global.resize);
@@ -8431,10 +8438,12 @@ var Settings = function () {
         if (settingsBtnFocused && (key === 13 || key === 32)) {
           this.clickEvent();
           e.preventDefault();
+          e.stopPropagation();
         } else if (menuFocused && (key === 13 || key === 32)) {
           __classPrivateFieldGet(this, _events).global['settings.submenu'](e);
 
           e.preventDefault();
+          e.stopPropagation();
         }
       }
     }
@@ -8985,6 +8994,7 @@ var Volume = function () {
         el.muted = !el.muted;
         el.volume = el.muted ? 0 : __classPrivateFieldGet(this, _volume);
         e.preventDefault();
+        e.stopPropagation();
       }
     }
   }]);

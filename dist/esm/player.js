@@ -652,17 +652,20 @@ class Player {
                     }
                 }
                 e.preventDefault();
+                e.stopPropagation();
                 break;
             case 35:
                 if (!isAd && el.duration !== Infinity) {
                     el.currentTime = el.duration;
                     e.preventDefault();
+                    e.stopPropagation();
                 }
                 break;
             case 36:
                 if (!isAd) {
                     el.currentTime = 0;
                     e.preventDefault();
+                    e.stopPropagation();
                 }
                 break;
             case 37:
@@ -687,6 +690,7 @@ class Player {
                         el.currentTime = el.duration;
                     }
                     e.preventDefault();
+                    e.stopPropagation();
                 }
                 break;
             case 38:
@@ -695,6 +699,7 @@ class Player {
                 el.volume = newVol;
                 el.muted = !(newVol > 0);
                 e.preventDefault();
+                e.stopPropagation();
                 break;
             case 70:
                 if (isVideo(__classPrivateFieldGet(this, _Player_element, "f")) && !e.ctrlKey) {
@@ -702,6 +707,7 @@ class Player {
                     if (typeof __classPrivateFieldGet(this, _Player_fullscreen, "f").fullScreenEnabled !== 'undefined') {
                         __classPrivateFieldGet(this, _Player_fullscreen, "f").toggleFullscreen();
                         e.preventDefault();
+                        e.stopPropagation();
                     }
                 }
                 break;
@@ -714,6 +720,7 @@ class Player {
                     el.volume = __classPrivateFieldGet(this, _Player_volume, "f");
                 }
                 e.preventDefault();
+                e.stopPropagation();
                 break;
             case 188:
             case 190:
@@ -732,10 +739,12 @@ class Player {
                     const ev = addEvent('controlschanged');
                     dispatchEvent(ev);
                     e.preventDefault();
+                    e.stopPropagation();
                 }
                 else if (!isAd && el.paused) {
                     el.currentTime += (1 / 25) * (key === 188 ? -1 : 1);
                     e.preventDefault();
+                    e.stopPropagation();
                 }
             default:
                 break;

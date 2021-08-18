@@ -152,6 +152,7 @@ class Levels {
                 });
                 __classPrivateFieldGet(this, _Levels_player, "f").getElement().dispatchEvent(event);
                 e.preventDefault();
+                e.stopPropagation();
             }
         };
         const connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;

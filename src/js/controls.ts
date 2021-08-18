@@ -156,7 +156,7 @@ class Controls implements PlayerComponent {
                 }
             };
             this.events.mouse.mousemove = () => {
-                if (isMediaVideo) {
+                if (isMediaVideo && !this.#player.activeElement().paused) {
                     if (this.#player.activeElement().currentTime) {
                         this.#player.loader.setAttribute('aria-hidden', 'true');
                         this.#player.playBtn.setAttribute('aria-hidden', this.#player.isMedia() ? 'false' : 'true');
@@ -179,6 +179,7 @@ class Controls implements PlayerComponent {
                     this._startControlTimer(this.#player.getOptions().hidePlayBtnTimer);
                 }
             };
+            this.events.media.loadedmetadata = showControls.bind(this);
             this.events.media.pause = showControls.bind(this);
             this.events.media.waiting = showControls.bind(this);
             this.events.media.stalled = showControls.bind(this);
