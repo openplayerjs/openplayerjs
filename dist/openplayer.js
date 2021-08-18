@@ -11097,7 +11097,7 @@ var Ads = function () {
 
         var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
         var formattedWidth = width;
-        var percentageWidth = width;
+        var percentageWidth = width ? width.toString() : '';
 
         if (width && percentageWidth.indexOf('%') > -1) {
           if (__classPrivateFieldGet(this, _element).parentElement) {
@@ -11106,7 +11106,7 @@ var Ads = function () {
         }
 
         var formattedHeight = height;
-        var percentageHeight = width;
+        var percentageHeight = height ? height.toString() : '';
 
         if (height && percentageHeight.indexOf('%') > -1) {
           if (__classPrivateFieldGet(this, _element).parentElement) {

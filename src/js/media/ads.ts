@@ -552,7 +552,7 @@ class Ads {
                 google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
 
             let formattedWidth = width;
-            const percentageWidth = (width as unknown) as string;
+            const percentageWidth = width ? width.toString() : '';
             if (width && percentageWidth.indexOf('%') > -1) {
                 if (this.#element.parentElement) {
                     formattedWidth = this.#element.parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
@@ -560,7 +560,7 @@ class Ads {
             }
 
             let formattedHeight = height;
-            const percentageHeight = (width as unknown) as string;
+            const percentageHeight = height ? height.toString() : '';
             if (height && percentageHeight.indexOf('%') > -1) {
                 if (this.#element.parentElement) {
                     formattedHeight = this.#element.parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);

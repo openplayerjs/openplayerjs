@@ -218,14 +218,14 @@ class Ads {
             const mode = target.getAttribute('data-fullscreen') === 'true' ?
                 google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
             let formattedWidth = width;
-            const percentageWidth = width;
+            const percentageWidth = width ? width.toString() : '';
             if (width && percentageWidth.indexOf('%') > -1) {
                 if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
                     formattedWidth = __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
                 }
             }
             let formattedHeight = height;
-            const percentageHeight = width;
+            const percentageHeight = height ? height.toString() : '';
             if (height && percentageHeight.indexOf('%') > -1) {
                 if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
                     formattedHeight = __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
