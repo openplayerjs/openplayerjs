@@ -20,7 +20,9 @@ export function loadScript(url) {
         };
         script.onerror = () => {
             removeElement(script);
-            reject();
+            reject({
+                src: url,
+            });
         };
         if (document.head) {
             document.head.appendChild(script);

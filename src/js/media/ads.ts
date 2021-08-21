@@ -347,6 +347,19 @@ class Ads {
 
         this.#promise.then(() => {
             this.load();
+        }).catch(error => {
+            const message = 'Ad script could not be loaded; please check if you have an AdBlock turned on, or if you provided a valid URL is correct';
+            console.error(`Ad error: ${message}`);
+
+            const details = {
+                detail: {
+                    data: error,
+                    message,
+                    type: 'Ads',
+                },
+            };
+            const errorEvent = addEvent('playererror', details);
+            this.#element.dispatchEvent(errorEvent);
         });
         return this;
     }

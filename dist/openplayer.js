@@ -202,7 +202,9 @@ function loadScript(url) {
 
     script.onerror = function () {
       removeElement(script);
-      reject();
+      reject({
+        src: url
+      });
     };
 
     if (document.head) {
@@ -10904,6 +10906,19 @@ var Ads = function () {
 
     __classPrivateFieldGet(this, _promise).then(function () {
       _this.load();
+    })["catch"](function (error) {
+      var message = 'Ad script could not be loaded; please check if you have an AdBlock turned on, or if you provided a valid URL is correct';
+      console.error("Ad error: ".concat(message));
+      var details = {
+        detail: {
+          data: error,
+          message: message,
+          type: 'Ads'
+        }
+      };
+      var errorEvent = events_1.addEvent('playererror', details);
+
+      __classPrivateFieldGet(_this, _element).dispatchEvent(errorEvent);
     });
 
     return this;
