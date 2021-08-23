@@ -10856,8 +10856,11 @@ var Ads = function () {
       language: 'en',
       loop: false,
       numRedirects: 4,
+      publisherId: null,
       sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-      src: []
+      sessionId: null,
+      src: [],
+      vpaidMode: 'enabled'
     };
 
     __classPrivateFieldSet(this, _player, player);
@@ -10967,11 +10970,27 @@ var Ads = function () {
 
       __classPrivateFieldSet(this, _mediaSources, __classPrivateFieldGet(this, _media).src);
 
-      google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+      var vpaidModeMap = {
+        disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
+        enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED,
+        insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE
+      };
+      google.ima.settings.setVpaidMode(vpaidModeMap[__classPrivateFieldGet(this, _adsOptions).vpaidMode]);
       google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
       google.ima.settings.setAutoPlayAdBreaks(__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks);
       google.ima.settings.setNumRedirects(__classPrivateFieldGet(this, _adsOptions).numRedirects);
       google.ima.settings.setLocale(__classPrivateFieldGet(this, _adsOptions).language);
+
+      if (__classPrivateFieldGet(this, _adsOptions).sessionId) {
+        google.ima.settings.setSessionId(__classPrivateFieldGet(this, _adsOptions).sessionId);
+      }
+
+      if (__classPrivateFieldGet(this, _adsOptions).publisherId) {
+        google.ima.settings.setPpid(__classPrivateFieldGet(this, _adsOptions).publisherId);
+      }
+
+      google.ima.settings.setPlayerType('openplayerjs');
+      google.ima.settings.setPlayerVersion('2.8.2');
 
       __classPrivateFieldSet(this, _adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _adsContainer), __classPrivateFieldGet(this, _element), __classPrivateFieldGet(this, _adsCustomClickContainer)));
 
@@ -11057,6 +11076,8 @@ var Ads = function () {
       }
 
       __classPrivateFieldSet(this, _events, []);
+
+      __classPrivateFieldGet(this, _adsManager).removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
       var controls = __classPrivateFieldGet(this, _player).getControls();
 
@@ -11418,6 +11439,8 @@ var Ads = function () {
       __classPrivateFieldGet(this, _events).forEach(function (event) {
         manager.addEventListener(event, _this7._assign, constants_1.EVENT_OPTIONS);
       });
+
+      manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, constants_1.EVENT_OPTIONS);
 
       if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _playTriggered) === true) {
         __classPrivateFieldSet(this, _playTriggered, false);

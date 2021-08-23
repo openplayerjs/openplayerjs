@@ -120,6 +120,11 @@ var player = new OpenPlayerJS('[player ID]', {
             enabled,
             label,
         },
+        // A temporary UUID used for frequency capping
+        sessionId,
+        // Enable/disable VPAID capabilities (default: 'enabled'). Possible values: 'enabled', 'disabled' and 'insecure'
+        vpaidMode,
+        publiserId,
     },
     dash: {
         // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,

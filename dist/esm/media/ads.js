@@ -57,8 +57,11 @@ class Ads {
             language: 'en',
             loop: false,
             numRedirects: 4,
+            publisherId: null,
             sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+            sessionId: null,
             src: [],
+            vpaidMode: 'enabled',
         };
         __classPrivateFieldSet(this, _Ads_player, player, "f");
         __classPrivateFieldSet(this, _Ads_ads, ads, "f");
@@ -135,11 +138,24 @@ class Ads {
             }
         }
         __classPrivateFieldSet(this, _Ads_mediaSources, __classPrivateFieldGet(this, _Ads_media, "f").src, "f");
-        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+        const vpaidModeMap = {
+            disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
+            enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED,
+            insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE,
+        };
+        google.ima.settings.setVpaidMode(vpaidModeMap[__classPrivateFieldGet(this, _Ads_adsOptions, "f").vpaidMode]);
         google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
         google.ima.settings.setAutoPlayAdBreaks(__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks);
         google.ima.settings.setNumRedirects(__classPrivateFieldGet(this, _Ads_adsOptions, "f").numRedirects);
         google.ima.settings.setLocale(__classPrivateFieldGet(this, _Ads_adsOptions, "f").language);
+        if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").sessionId) {
+            google.ima.settings.setSessionId(__classPrivateFieldGet(this, _Ads_adsOptions, "f").sessionId);
+        }
+        if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").publisherId) {
+            google.ima.settings.setPpid(__classPrivateFieldGet(this, _Ads_adsOptions, "f").publisherId);
+        }
+        google.ima.settings.setPlayerType('openplayerjs');
+        google.ima.settings.setPlayerVersion('2.8.2');
         __classPrivateFieldSet(this, _Ads_adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f"), __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f")), "f");
         __classPrivateFieldSet(this, _Ads_adsLoader, new google.ima.AdsLoader(__classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")), "f");
         __classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded, EVENT_OPTIONS);
@@ -194,6 +210,7 @@ class Ads {
             });
         }
         __classPrivateFieldSet(this, _Ads_events, [], "f");
+        __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
         const controls = __classPrivateFieldGet(this, _Ads_player, "f").getControls();
         const mouseEvents = controls ? controls.events.mouse : {};
         Object.keys(mouseEvents).forEach((event) => {
@@ -529,6 +546,7 @@ class Ads {
         __classPrivateFieldGet(this, _Ads_events, "f").forEach(event => {
             manager.addEventListener(event, this._assign, EVENT_OPTIONS);
         });
+        manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
         if (__classPrivateFieldGet(this, _Ads_autoStart, "f") === true || __classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
             __classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
             if (!__classPrivateFieldGet(this, _Ads_adsDone, "f")) {

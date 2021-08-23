@@ -304,8 +304,11 @@ class Ads {
             language: 'en',
             loop: false,
             numRedirects: 4,
+            publisherId: null,
             sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+            sessionId: null,
             src: [],
+            vpaidMode: 'enabled',
         };
         this.#player = player;
         this.#ads = ads;
@@ -408,12 +411,25 @@ class Ads {
         }
 
         this.#mediaSources = this.#media.src;
+        const vpaidModeMap: Record<string, unknown> = {
+            disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
+            enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED,
+            insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE,
+        };
 
-        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+        google.ima.settings.setVpaidMode(vpaidModeMap[this.#adsOptions.vpaidMode]);
         google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
         google.ima.settings.setAutoPlayAdBreaks(this.#adsOptions.autoPlayAdBreaks);
         google.ima.settings.setNumRedirects(this.#adsOptions.numRedirects);
         google.ima.settings.setLocale(this.#adsOptions.language);
+        if (this.#adsOptions.sessionId) {
+            google.ima.settings.setSessionId(this.#adsOptions.sessionId);
+        }
+        if (this.#adsOptions.publisherId) {
+            google.ima.settings.setPpid(this.#adsOptions.publisherId);
+        }
+        google.ima.settings.setPlayerType('openplayerjs');
+        google.ima.settings.setPlayerVersion('2.8.2');
 
         this.#adDisplayContainer =
             new google.ima.AdDisplayContainer(
@@ -506,8 +522,8 @@ class Ads {
                 this.#adsManager.removeEventListener(event, this._assign);
             });
         }
-
         this.#events = [];
+        this.#adsManager.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
         const controls = this.#player.getControls();
         const mouseEvents = controls ? controls.events.mouse : {};
@@ -1007,6 +1023,7 @@ class Ads {
         this.#events.forEach(event => {
             manager.addEventListener(event, this._assign, EVENT_OPTIONS);
         });
+        manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
 
         if (this.#autoStart === true || this.#playTriggered === true) {
             this.#playTriggered = false;
