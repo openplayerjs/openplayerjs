@@ -172,7 +172,7 @@ To see a working example of it, using both scenarios, check [this sample](https:
 
 ### About the usage of third-party libraries
 
-OpenPlayerJS loads automatically the latest version of [hls.js](https://github.com/video-dev/hls.js), [dash.js](https://github.com/Dash-Industry-Forum/dash.js) and [flv.js](https://github.com/Bilibili/flv.js/) from [jsDelivr CDN service](https://www.jsdelivr.com/); however, if for any reason you need to use a local version (or using a different URL) of any of these third-party libraries for any reason, you can **load them before you load OpenPlayerJS**. For example:
+OpenPlayerJS loads automatically the latest version of [hls.js](https://github.com/video-dev/hls.js), [dash.js](https://github.com/Dash-Industry-Forum/dash.js) and [flv.js](https://github.com/Bilibili/flv.js/) from [jsDelivr CDN service](https://www.jsdelivr.com/); however, if for any reason you need to use a local version (or using a different URL) of any of these third-party libraries, you can **load them before you load OpenPlayerJS**. For example:
 
 ```html
 <script src="/path/to/hls.min.js"></script>
