@@ -11069,15 +11069,17 @@ var Ads = function () {
 
       var _a;
 
-      if (__classPrivateFieldGet(this, _events)) {
-        __classPrivateFieldGet(this, _events).forEach(function (event) {
-          __classPrivateFieldGet(_this4, _adsManager).removeEventListener(event, _this4._assign);
-        });
+      if (__classPrivateFieldGet(this, _adsManager)) {
+        __classPrivateFieldGet(this, _adsManager).removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
+
+        if (__classPrivateFieldGet(this, _events)) {
+          __classPrivateFieldGet(this, _events).forEach(function (event) {
+            __classPrivateFieldGet(_this4, _adsManager).removeEventListener(event, _this4._assign);
+          });
+        }
       }
 
       __classPrivateFieldSet(this, _events, []);
-
-      __classPrivateFieldGet(this, _adsManager).removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
       var controls = __classPrivateFieldGet(this, _player).getControls();
 

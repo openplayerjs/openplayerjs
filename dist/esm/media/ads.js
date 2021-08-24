@@ -204,13 +204,15 @@ class Ads {
     }
     destroy() {
         var _a;
-        if (__classPrivateFieldGet(this, _Ads_events, "f")) {
-            __classPrivateFieldGet(this, _Ads_events, "f").forEach(event => {
-                __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(event, this._assign);
-            });
+        if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+            __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
+            if (__classPrivateFieldGet(this, _Ads_events, "f")) {
+                __classPrivateFieldGet(this, _Ads_events, "f").forEach(event => {
+                    __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(event, this._assign);
+                });
+            }
         }
         __classPrivateFieldSet(this, _Ads_events, [], "f");
-        __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
         const controls = __classPrivateFieldGet(this, _Ads_player, "f").getControls();
         const mouseEvents = controls ? controls.events.mouse : {};
         Object.keys(mouseEvents).forEach((event) => {

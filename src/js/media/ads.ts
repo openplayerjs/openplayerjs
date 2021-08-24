@@ -517,13 +517,17 @@ class Ads {
      * @memberof Ads
      */
     public destroy(): void {
-        if (this.#events) {
-            this.#events.forEach(event => {
-                this.#adsManager.removeEventListener(event, this._assign);
-            });
+        if (this.#adsManager) {
+            this.#adsManager.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
+
+            if (this.#events) {
+                this.#events.forEach(event => {
+                    this.#adsManager.removeEventListener(event, this._assign);
+                });
+            }
         }
+
         this.#events = [];
-        this.#adsManager.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
         const controls = this.#player.getControls();
         const mouseEvents = controls ? controls.events.mouse : {};
