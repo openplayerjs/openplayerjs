@@ -47,11 +47,11 @@
                 return 'application/x-mpegURL';
             } else if (/\.mpd/i.test(url)) {
                 return 'application/dash+xml';
-            } else if (\/.mp4/i.test(url)) {
+            } else if (/\.mp4/i.test(url)) {
                 return 'video/mp4';
-            } else if (\/.mp3/i.test(url)) {
+            } else if (/\.mp3/i.test(url)) {
                 return 'audio/mp3';
-            } else if \/.webm/i.test(url)) {
+            } else if (/\.webm/i.test(url)) {
                 return 'video/webm';
             }
 
