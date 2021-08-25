@@ -48,11 +48,13 @@
             } else if (/\.mpd/i.test(url)) {
                 return 'application/dash+xml';
             } else if (/\.mp4/i.test(url)) {
-                return 'video/mp4';
+                return type === 'audio' ? 'audio/mp4' : 'video/mp4';
             } else if (/\.mp3/i.test(url)) {
                 return 'audio/mp3';
             } else if (/\.webm/i.test(url)) {
                 return 'video/webm';
+            } else if (/\.ogg/i.test(url)) {
+                return type === 'audio' ? 'audio/ogg' : 'video/ogg';
             }
 
             // Let browser figure out if it can play it
