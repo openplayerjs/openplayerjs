@@ -52,9 +52,21 @@
             } else if (/\.mp3/i.test(url)) {
                 return 'audio/mp3';
             } else if (/\.webm/i.test(url)) {
-                return 'video/webm';
+                return type === 'audio' ? 'audio/webm' : 'video/webm';
             } else if (/\.ogg/i.test(url)) {
                 return type === 'audio' ? 'audio/ogg' : 'video/ogg';
+            } else if (/\.ogv/i.test(url)) {
+                return 'video/ogg';
+            } else if (/\.oga/i.test(url)) {
+                return 'audio/ogg';
+            } else if (/\.3gp/i.test(url)) {
+                return 'audio/3gpp';
+            } else if (/\.wav/i.test(url)) {
+                return 'audio/wav';
+            } else if (/\.aac/i.test(url)) {
+                return 'audio/aac';
+            } else if (/\.flac/i.test(url)) {
+                return 'audio/flac';
             }
 
             // Let browser figure out if it can play it
