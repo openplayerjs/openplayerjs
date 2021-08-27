@@ -113,6 +113,7 @@ class HTML5Media extends Native {
         if (!__classPrivateFieldGet(this, _HTML5Media_started, "f")) {
             __classPrivateFieldSet(this, _HTML5Media_started, true, "f");
             __classPrivateFieldSet(this, _HTML5Media_timer, setInterval(() => {
+                var _a;
                 if (__classPrivateFieldGet(this, _HTML5Media_retryCount, "f") >= 30) {
                     clearInterval(__classPrivateFieldGet(this, _HTML5Media_timer, "f"));
                     const message = 'Media download failed part-way due to a network error';
@@ -129,7 +130,7 @@ class HTML5Media extends Native {
                     __classPrivateFieldSet(this, _HTML5Media_started, false, "f");
                 }
                 else {
-                    __classPrivateFieldSet(this, _HTML5Media_retryCount, +__classPrivateFieldGet(this, _HTML5Media_retryCount, "f") + 1, "f");
+                    __classPrivateFieldSet(this, _HTML5Media_retryCount, (_a = __classPrivateFieldGet(this, _HTML5Media_retryCount, "f"), _a++, _a), "f");
                 }
             }, 1000), "f");
         }

@@ -455,6 +455,7 @@ class Ads {
         }
     }
     _error(event) {
+        var _a;
         const error = event.getError();
         const details = {
             detail: {
@@ -470,7 +471,7 @@ class Ads {
             406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005,
         ];
         if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f")) && __classPrivateFieldGet(this, _Ads_ads, "f").length > 1 && __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") < __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
-            __classPrivateFieldSet(this, _Ads_currentAdsIndex, +__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") + 1, "f");
+            __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
             __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
             __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
             __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
@@ -599,13 +600,14 @@ class Ads {
         __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
     }
     _onContentResumeRequested() {
+        var _a;
         if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").loop) {
             if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f"))) {
                 if (__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") === __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
                     __classPrivateFieldSet(this, _Ads_currentAdsIndex, 0, "f");
                 }
                 else {
-                    __classPrivateFieldSet(this, _Ads_currentAdsIndex, +__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") + 1, "f");
+                    __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
                 }
             }
             this.destroy();
@@ -633,8 +635,9 @@ class Ads {
         }
     }
     _loadedMetadataHandler() {
+        var _a;
         if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f"))) {
-            __classPrivateFieldSet(this, _Ads_currentAdsIndex, +__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") + 1, "f");
+            __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
             if (__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") <= __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
                 if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
                     __classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
