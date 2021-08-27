@@ -43,97 +43,40 @@ import OpenPlayerJS from 'openplayerjs';
 
 ## Javascript
 
-Sometimes you need more flexibility instantiating the player; for example, adding cache busting to the VAST/VPAID URL, having a list of Ads URLs, adding new controls, etc. So, for that case, remove the `op-player` class from the video/audio tag (leaving `op-player__media` to preserve styles), and, with Javascript, use the following setup:
+Sometimes you need more flexibility instantiating the player; for example, adding cache busting to the VAST/VPAID URL, having a list of Ads URLs, adding new controls, etc. So, for that case, remove the `op-player` class from the video/audio tag (leaving `op-player__media` to preserve styles), and, with Javascript, use the following options (the ones presented are the default values):
 
 ```javascript
 var player = new OpenPlayerJS('[player ID]', {
-    // The configuration related to the player's controls; by default, the available controls are: 'play', 
-    // 'time', 'volume', 'progress', 'captions', 'settings' and 'fullscreen'. There's an optional 
-    // 'levels' control to display different quality levels. More of this described below.
     controls: {
-        // By default, the player will display the controls for a number of seconds before they are hidden; 
-        // this option will allow the user to permanently show the controls if they need fully customize them. By default, `false`
-        alwaysVisible,
-        // Controls positioning in the player. Each one of the control items can be enclosed in a
-        // specific layer, and it will have in its class name the `op-control__[left|middle|right]`
-        // according to the controls' structure listed below. By default, the layers are 'left', 'middle'
-        // and 'right'. Also available: 'main', 'top-left', 'top-middle', 'top-right', 'bottom-left', 
-        // 'bottom-middle' and 'bottom-right'. 
-        // If you use the layer 'main', whatever control is in it will be appended to the media's main 
-        // container. This layer is ONLY available for video elements.
+        alwaysVisible: false,
         layers: {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
             right: ['captions', 'settings', 'fullscreen'],
         }
     },
-    // Allow items that have menu items inside `Settings` to be contained in their own separate menu; 
-    // generally speaking, the menu will float above the control item it belongs to (by default, false)
-    detachMenus,
-    // Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js)
-    forceNative,
-    // Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)
-    mode,
-    // Number of ms that takes the player to hide the Play button once it starts playing (video only)
-    // (by default, `350`)
-    hidePlayBtnTimer,
-    // Number of seconds to rewind/forward media
-    // (by default, player will rewind/forward 5% of the total duration of media)
-    step,
-    // Initial volume of media in decimal numbers (by default, `1`)
-    startVolume,
-    // Initial play time of media in seconds (by default, `0`)
-    startTime,
-    // Allow loader to be displayed when loading video (by default, `false`)
-    showLoaderOnInit,
-    // Callback to be executed once an error is found (default, `console.error`)
-    onError,
-    // If `levels` configuration is added, set programatically the default level as a numeric ID of the level (-1 for auto, default: `null`)
-    defaultLevel,
-    // Params passed: Custom event with `detail: { type: 'HTML5|Ads|M(PEG)-DASH|HLS', message, data },`
+    detachMenus: false,
+    forceNative: true,
+    mode: 'responsive',
+    hidePlayBtnTimer: 350,
+    step: 0,
+    startVolume: 1,
+    startTime: 0,
+    showLoaderOnInit: false,
+    onError: (e) => console.error(e),
+    defaultLevel: null,
     live: {
-        // Allow `Live Broadcast` label to be displayed in live streamings (by default, `true`)
-        showLabel,
-        // Allow to show progress bar in live streamings without showing constant updates (by default, `false`)
-        showProgress,
+        showLabel: true,
+        showProgress: false,
     }
-    ads: {
-        // The Ad(s) URLs to be processed
-        src,
-        // If set to `false`, allows the user to overwrite the default mechanism to skip Ads
-        autoPlayAdBreaks,
-        // If set to `true`, load `ima3_debug.js` file for debugging purposes
-        debug,
-        // If set to `true`, the Ads will preload so other actions can be executed with `adsloaded` event
-        enablePreloading,
-        // Language for ads (for more details, check: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization)
-        language,
-        // If set to `true`, play infinitely an Ad
-        loop,
-        // Maximum number of redirects before the subsequent redirects will be denied (by default, `4`)
-        numRedirects,
-        // Custom path/URL to IMA SDK
-        sdkPath,
-        // Options to allow IMA SDK to use a custom clickable element for mobile devices
-        // Otherwise, IMA SDK will show a `Learn more` layer
-        customClick: {
-            enabled,
-            label,
-        },
-        // A temporary UUID used for frequency capping
-        sessionId,
-        // Enable/disable VPAID capabilities (default: 'enabled'). Possible values: 'enabled', 'disabled' and 'insecure'
-        vpaidMode,
-        publiserId,
-    },
     dash: {
         // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,
         // HW_SECURE_DECODE, HW_SECURE_ALL
-        robustnessLevel,
+        robustnessLevel: null,
         // object containing property names corresponding to key system name strings (e.g. "org.w3.clearkey") and
         // associated values being instances of ProtectionData
         // (http://vm2.dashif.org/dash.js/docs/jsdocs/MediaPlayer.vo.protection.ProtectionData.html)
-        drm,
+        drm: null,
     },
     flv: {
         // all FLV options available at https://github.com/bilibili/flv.js/blob/master/docs/api.md#mediadatasource
@@ -141,26 +84,76 @@ var player = new OpenPlayerJS('[player ID]', {
     hls: {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
     },
-    // Configuration related to the progres bar
     progress: {
-        // The default duration in seconds to show while loading the media (default: 0).
-        // This is to improve some of the UX when the player hasn't detected the metadata
-        // of the media yet, but you don't want to show a 00:00 duration
-        duration
-        // Flag to show only current time, or show both time and duration (by default, `false`)
-        showCurrentTimeOnly
+        duration: 0,
+        showCurrentTimeOnly: false
     },
-    // Force the player to have a specific width/height (default for both: 0)
-    // They can accept a string with the number and unit (`100%`, `350px`)
-    // or just a number of pixels
-    width,
-    height,
-    // Flag to allow multiple instances of the player to play at the same time (by default, `true`)
-    pauseOthers,
+    width: 0,
+    height: 0,
+    pauseOthers: true,
+    // If you need Ads support use the following
+    ads: {
+        src,
+        autoPlayAdBreaks: false,
+        debug: false,
+        enablePreloading: false,
+        language: 'en,
+        loop: false,
+        numRedirects: 4,
+        sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+        customClick: {
+            enabled: false,
+            label: '',
+        },
+        sessionId: null,
+        vpaidMode" 'enabled',
+        publisherId: null,
+    }
 });
 // Don't forget to start the player
 player.init();
 ```
+
+### Configuration options
+
+| `Element` |Description |
+|---------|-------------|
+| `detachMenus` |Allow items that have menu items inside `Settings` to be contained in their own separate menu; generally speaking, the menu will float above the control item it belongs to (by default, false). |
+| `forceNative` |Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js) |
+| `mode` |Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image) |
+| `hidePlayBtnTimer` |Number of ms that takes the player to hide the Play button once it starts playing (video only). By default, `350`. |
+| `step` | Number of seconds to rewind/forward media. By default, player will rewind/forward 5% of the total duration of media. |
+| `startVolume` |Initial volume of media in decimal numbers. By default, `1`. |
+| `startTime` |Initial play time of media in seconds. By default, `0`. |
+| `showLoaderOnInit` |Allow loader to be displayed when loading video. By default, `false`. |
+| `onError` |Callback to be executed once an error is found. By default, `console.error`. |
+| `defaultLevel` |If `levels` configuration is added, set programmatically the default level as a numeric ID of the level (`-1` for auto, default: `null`). |
+| `width/height` |Force the player to have a specific width/height (default for both: 0). They can accept a string with the number and unit (`100%`, `350px`) or just a number of pixels. |
+| `pauseOthers` |Flag to allow multiple instances of the player to play at the same time. By default, `true`. |
+| `controls` |The configuration related to the player's controls; by default, the available controls are: 'play',  'time', 'volume', 'progress', 'captions', 'settings' and 'fullscreen'. There's an optional 'levels' control to display different quality levels. More of this described in the next section. |
+| `controls.alwaysVisible` | By default, the player will display the controls for a number of seconds before they are hidden; this option will allow the user to permanently show the controls if they need fully customize them. By default, `false`. |
+| `controls.layers` |/Controls positioning in the player. Each one of the control items can be enclosed in a specific layer, and it will have in its class name the `op-control__[left|middle|right]` according to the controls' structure listed below. By default, the layers are 'left', 'middle' and 'right'. Also available: 'main', 'top-left', 'top-middle', 'top-right', 'bottom-left', 'bottom-middle' and 'bottom-right'. If you use the layer 'main' (**ONLY available for video elements**), whatever control is in it will be appended to the media's main container. |
+| `live` |Configuration related to the live streams and what to show in the controls. |
+| `live.showLabel` |Allow `Live Broadcast` label to be displayed in live streamings. By default, `true`. |
+| `live.showProgress` |Allow to show progress bar in live streamings without showing constant updates. By default, `false`. |
+| `ads` |Configuration related to Ads. |
+| `ads.src` |The Ad URL(s) to be processed. It accepts also a valid XML string or a list of them. |
+| `ads.autoPlayAdBreaks` |If set to `false`, allows the user to overwrite the default mechanism to skip Ads. |
+| `ads.debug` |If set to `true`, load `ima3_debug.js` file for debugging purposes. |
+| `ads.enablePreloading` |If set to `true`, the Ads will preload so other actions can be executed with `adsloaded` event. |
+| `ads.language` |Language to localize ads (for more details, check: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization). |
+| `ads.loop` |If set to `true`, it will play infinitely an Ad. |
+| `ads.numRedirects` |Maximum number of redirects before the subsequent redirects will be denied. By default, `4`. |
+| `ads.sdkPath` |Custom path/URL to IMA SDK. By default, `https://imasdk.googleapis.com/js/sdkloader/ima3.js`. |
+| `ads.customClick` |Options to allow IMA SDK to use a custom clickable element for mobile devices; otherwise, IMA SDK will show a `Learn more` layer. |
+| `ads.customClick.enabled` |By default, `false`. |
+| `ads.label` |The message to display in the custom click element. |
+| `ads.sessionId` |A temporary UUID used for frequency capping. |
+| `ads.vpaidMode` |Enable/disable VPAID capabilities (default: 'enabled'). Possible values: 'enabled', 'disabled' and 'insecure'. |
+| `ads.publisherId` |The Publiser provider ID |
+| `progress` |Configuration related to the progress bar. |
+| `progress.duration` |The default duration in seconds to show while loading the media (default: `0`). This is to improve some of the UX when the player hasn't detected the metadata of the media yet, but you don't want to show a 00:00 duration. |
+| `progress.showCurrentTimeOnly` |Flag to show only current time, or show both time and duration. By default, `false`. |
 
 **NOTE**: In order to use this setup, the video/audio tag(s) **must** have a unique ID.
 
@@ -214,7 +207,7 @@ export default function Sample() {
     );
 ```
 
-Check the [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB) and [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln) samples for more information.
+Check the [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB) and [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln) samples for more information. **You can use all the configuration elements listed in the [Configuration options](#configuration-options) listed above**.
 
 ## Vue.js
 
@@ -241,4 +234,4 @@ const app = Vue.createApp({
 app.mount('#app');
 ```
 
-Check the [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo) sample for more information.
+Check the [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo) sample for more information. **You can use all the configuration elements listed in the [Configuration options](#configuration-options) listed above**.
