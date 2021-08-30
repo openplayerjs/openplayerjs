@@ -114,7 +114,7 @@ class Ads {
         return this;
     }
     load(force = false) {
-        if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
+        if (!google && !google.ima && !__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
             return;
         }
         const existingContainer = __classPrivateFieldGet(this, _Ads_player, "f").getContainer().querySelector('.op-ads');
@@ -429,6 +429,11 @@ class Ads {
             case google.ima.AdEvent.Type.CLICK:
                 const pauseEvent = addEvent('pause');
                 __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(pauseEvent);
+                break;
+            case google.ima.AdEvent.Type.AD_BREAK_READY:
+                if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+                    this.play();
+                }
                 break;
             default:
                 break;

@@ -10934,7 +10934,7 @@ var Ads = function () {
 
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks && !force) {
+      if (!google && !google.ima && !__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks && !force) {
         return;
       }
 
@@ -11323,6 +11323,13 @@ var Ads = function () {
           var pauseEvent = events_1.addEvent('pause');
 
           __classPrivateFieldGet(this, _element).dispatchEvent(pauseEvent);
+
+          break;
+
+        case google.ima.AdEvent.Type.AD_BREAK_READY:
+          if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks) {
+            this.play();
+          }
 
           break;
 

@@ -379,7 +379,7 @@ class Ads {
          * If we have set `autoPlayAdBreaks` to false and haven't set the
          * force flag, don't load ads yet
          */
-        if (!this.#adsOptions.autoPlayAdBreaks && !force) {
+        if (!google && !google.ima && !this.#adsOptions.autoPlayAdBreaks && !force) {
             return;
         }
 
@@ -867,6 +867,11 @@ class Ads {
             case google.ima.AdEvent.Type.CLICK:
                 const pauseEvent = addEvent('pause');
                 this.#element.dispatchEvent(pauseEvent);
+                break;
+            case google.ima.AdEvent.Type.AD_BREAK_READY:
+                if (!this.#adsOptions.autoPlayAdBreaks) {
+                    this.play();
+                }
                 break;
             default:
                 break;
