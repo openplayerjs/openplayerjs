@@ -23,14 +23,6 @@ export declare function isVideo(element: Element): boolean;
  */
 export declare function isAudio(element: Element): boolean;
 /**
- * Load an external script using Promises
- *
- * @export
- * @param {string} url
- * @returns {Promise}
- */
-export declare function loadScript(url: string): Promise<unknown>;
-/**
  * Remove a node using removeChild as a way to support IE11
  *
  * @export
@@ -38,6 +30,14 @@ export declare function loadScript(url: string): Promise<unknown>;
  * @returns {void}
  */
 export declare function removeElement(node?: Node): void;
+/**
+ * Load an external script using Promises
+ *
+ * @export
+ * @param {string} url
+ * @returns {Promise}
+ */
+export declare function loadScript(url: string): Promise<unknown>;
 /**
  * Perform an asynchronous (AJAX) request.
  *

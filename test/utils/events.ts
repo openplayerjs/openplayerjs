@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-
 import * as events from '../../src/js/utils/events';
 
 describe('utils/events', () => {

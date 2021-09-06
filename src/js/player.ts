@@ -4,8 +4,6 @@ import 'core-js/features/object/assign';
 import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
-import './utils/closest';
-
 import Controls from './controls';
 import Fullscreen from './controls/fullscreen';
 import Track from './interfaces/captions/track';
@@ -17,7 +15,10 @@ import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import Media from './media';
 import Ads from './media/ads';
-import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
+import './utils/closest';
+import {
+    EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE
+} from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo, removeElement } from './utils/general';
 import { isAutoplaySupported, predictType } from './utils/media';
@@ -59,7 +60,7 @@ class Player {
         Player.instances = {};
         const targets = document.querySelectorAll('video.op-player, audio.op-player');
         for (let i = 0, total = targets.length; i < total; i++) {
-            const target = (targets[i] as HTMLMediaElement);
+            const target = targets[i] as HTMLMediaElement;
             const settings = target.getAttribute('data-op-settings');
             const options = settings ? JSON.parse(settings) : {};
             const player = new Player(target, options);
@@ -130,7 +131,7 @@ class Player {
      * @type string
      * @memberof Player
      */
-    #uid: string = '';
+    #uid = '';
 
     /**
      * Native video/audio tag to create player instance.
@@ -173,7 +174,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    #autoplay: boolean = false;
+    #autoplay = false;
 
     /**
      * Storage for original volume level value, when testing browser's autoplay capabilities
@@ -192,7 +193,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    #canAutoplay: boolean = false;
+    #canAutoplay = false;
 
     /**
      * Flag that indicates if browser supports autoplay in mute mode.
@@ -202,7 +203,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    #canAutoplayMuted: boolean = false;
+    #canAutoplayMuted = false;
 
     /**
      * Flag that indicates if autoplay algorithm has been applied.
@@ -211,7 +212,7 @@ class Player {
      * @type boolean
      * @memberof Player
      */
-    #processedAutoplay: boolean = false;
+    #processedAutoplay = false;
 
     /**
      * Container for other player options.
@@ -286,7 +287,7 @@ class Player {
             showProgress: false,
         },
         mode: 'responsive', // or `fill` or `fit`
-        onError: () => { },
+        onError: (e: unknown) => console.error(e),
         pauseOthers: true,
         progress: {
             duration: 0,
@@ -354,10 +355,8 @@ class Player {
      * HLS and M(PEG)-DASH perform more operations during loading if browser does not support them natively.
      * @memberof Player
      */
-    public load(): Promise<void>|void {
-        if (this.isMedia()) {
-            return this.#media.load();
-        }
+    public load(): Promise<void> | void {
+        return this.isMedia() ? this.#media.load() : undefined;
     }
 
     /**
@@ -373,9 +372,8 @@ class Player {
         }
         if (this.#adsInstance) {
             return this.#adsInstance.play();
-        } else {
-           return this.#media.play();
         }
+        return this.#media.play();
     }
 
     /**
@@ -408,7 +406,7 @@ class Player {
             this.#fullscreen.destroy();
         }
 
-        const el = (this.#element as HTMLMediaElement);
+        const el = this.#element as HTMLMediaElement;
         if (this.#media) {
             this.#media.destroy();
         }
@@ -560,6 +558,7 @@ class Player {
     public getAd(): Ads {
         return this.#adsInstance;
     }
+
     /**
      * Append a new `<track>` tag to the video/audio tag and dispatch event
      * so it gets registered/loaded in the player, via `controlschanged` event.
@@ -578,7 +577,7 @@ class Player {
         const el = this.#element;
 
         // If captions have been added previously, just update URL and default status
-        let track = (el.querySelector(`track[srclang="${args.srclang}"][kind="${args.kind}"]`) as HTMLTrackElement);
+        let track = el.querySelector(`track[srclang="${args.srclang}"][kind="${args.kind}"]`) as HTMLTrackElement;
         if (track) {
             track.src = args.src;
             track.label = args.label;
@@ -663,7 +662,7 @@ class Player {
         }
     }
 
-    public enableDefaultPlayer() {
+    public enableDefaultPlayer(): void {
         let paused = true;
         let currentTime = 0;
 
@@ -682,13 +681,13 @@ class Player {
         });
     }
 
-    public loadAd(src: string | string[]) {
+    public loadAd(src: string | string[]): void {
         if (this.isAd()) {
             this.activeElement().destroy();
             this.activeElement().src = src;
             this.getAd().isDone = false;
             if (!this.activeElement().paused) {
-                this.getAd().playRequested =  true;
+                this.getAd().playRequested = true;
             }
             this.activeElement().load(true);
         } else {
@@ -1044,7 +1043,6 @@ class Player {
                         const event = addEvent('volumechange');
                         this.#element.dispatchEvent(event);
 
-                        // Remove element
                         removeElement(volumeEl);
                     }, EVENT_OPTIONS);
 
@@ -1059,7 +1057,7 @@ class Player {
                     const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
                     this.#adsInstance = new Ads(this, this.#ads, this.#canAutoplay, this.#canAutoplayMuted, adsOptions);
                 } else if (this.#canAutoplay || this.#canAutoplayMuted) {
-                    return this.play();
+                    this.play();
                 }
             });
         }
@@ -1078,9 +1076,9 @@ class Player {
         if (playerOptions) {
             const objectElements = ['labels', 'controls'];
             objectElements.forEach(item => {
-                this.#options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ?
-                    { ...this.#defaultOptions[item], ...playerOptions[item] } :
-                    this.#defaultOptions[item];
+                this.#options[item] = playerOptions[item] && Object.keys(playerOptions[item]).length
+                    ? { ...this.#defaultOptions[item], ...playerOptions[item] }
+                    : this.#defaultOptions[item];
             });
         }
     }
@@ -1139,12 +1137,12 @@ class Player {
                     let newStep = 5;
                     const configStep = this.getOptions().step;
                     if (configStep) {
-                        newStep = (key === 74 || key === 76) ? configStep * 2 : configStep;
+                        newStep = key === 74 || key === 76 ? configStep * 2 : configStep;
                     } else if (key === 74 || key === 76) {
                         newStep = 10;
                     }
                     const step = el.duration !== Infinity ? newStep : this.getOptions().progress.duration;
-                    el.currentTime += (key === 37 || key === 74) ? (step * -1) : step;
+                    el.currentTime += key === 37 || key === 74 ? step * -1 : step;
                     if (el.currentTime < 0) {
                         el.currentTime = 0;
                     } else if (el.currentTime >= el.duration) {
@@ -1196,9 +1194,13 @@ class Player {
                     const target = this.getContainer().querySelector('.op-status>span');
                     if (target) {
                         target.textContent = `${elem.playbackRate}x`;
-                        target.parentElement?.setAttribute('aria-hidden', 'false');
+                        if (target.parentElement) {
+                            target.parentElement.setAttribute('aria-hidden', 'false');
+                        }
                         setTimeout(() => {
-                            target.parentElement?.setAttribute('aria-hidden', 'true');
+                            if (target.parentElement) {
+                                target.parentElement.setAttribute('aria-hidden', 'true');
+                            }
                         }, 500);
                     }
                     const ev = addEvent('controlschanged');
@@ -1210,6 +1212,7 @@ class Player {
                     e.preventDefault();
                     e.stopPropagation();
                 }
+                break;
             default:
                 break;
         }

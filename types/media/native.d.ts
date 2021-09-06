@@ -1,3 +1,4 @@
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 /**
  * Native Media.
@@ -32,7 +33,7 @@ declare abstract class Native {
      * @type Promise<any>
      * @memberof Native
      */
-    promise: Promise<any>;
+    promise: Promise<unknown>;
     /**
      * Create an instance of Native.
      *
@@ -85,19 +86,19 @@ declare abstract class Native {
      * @abstract
      * @memberof Media
      */
-    abstract set level(value: number | string | object);
+    abstract set level(value: number | string | Record<string, unknown>);
     /**
      *
      * @abstract
      * @memberof Media
      */
-    abstract get level(): number | string | object;
+    abstract get level(): number | string;
     /**
      *
      * @abstract
      * @memberof Media
      */
-    abstract get levels(): object[];
+    abstract get levels(): Level[];
     /**
      *
      * @memberof Media

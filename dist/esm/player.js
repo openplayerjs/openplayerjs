@@ -16,11 +16,11 @@ import 'core-js/features/object/assign';
 import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
-import './utils/closest';
 import Controls from './controls';
 import Fullscreen from './controls/fullscreen';
 import Media from './media';
 import Ads from './media/ads';
+import './utils/closest';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo, removeElement } from './utils/general';
@@ -89,7 +89,7 @@ class Player {
                 showProgress: false,
             },
             mode: 'responsive',
-            onError: () => { },
+            onError: (e) => console.error(e),
             pauseOthers: true,
             progress: {
                 duration: 0,
@@ -148,9 +148,7 @@ class Player {
         }
     }
     load() {
-        if (this.isMedia()) {
-            return __classPrivateFieldGet(this, _Player_media, "f").load();
-        }
+        return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
     }
     play() {
         if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
@@ -160,9 +158,7 @@ class Player {
         if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
             return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
         }
-        else {
-            return __classPrivateFieldGet(this, _Player_media, "f").play();
-        }
+        return __classPrivateFieldGet(this, _Player_media, "f").play();
     }
     pause() {
         if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
@@ -610,7 +606,7 @@ class Player {
                     __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, __classPrivateFieldGet(this, _Player_ads, "f"), __classPrivateFieldGet(this, _Player_canAutoplay, "f"), __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
                 }
                 else if (__classPrivateFieldGet(this, _Player_canAutoplay, "f") || __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f")) {
-                    return this.play();
+                    this.play();
                 }
             });
         }
@@ -620,13 +616,13 @@ class Player {
         if (playerOptions) {
             const objectElements = ['labels', 'controls'];
             objectElements.forEach(item => {
-                __classPrivateFieldGet(this, _Player_options, "f")[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item]), playerOptions[item]) :
-                    __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item];
+                __classPrivateFieldGet(this, _Player_options, "f")[item] = playerOptions[item] && Object.keys(playerOptions[item]).length
+                    ? Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item]), playerOptions[item]) : __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item];
             });
         }
     }
     _enableKeyBindings(e) {
-        var _a, _b;
+        var _a;
         const key = e.which || e.keyCode || 0;
         const el = this.activeElement();
         const isAd = this.isAd();
@@ -676,13 +672,13 @@ class Player {
                     let newStep = 5;
                     const configStep = this.getOptions().step;
                     if (configStep) {
-                        newStep = (key === 74 || key === 76) ? configStep * 2 : configStep;
+                        newStep = key === 74 || key === 76 ? configStep * 2 : configStep;
                     }
                     else if (key === 74 || key === 76) {
                         newStep = 10;
                     }
                     const step = el.duration !== Infinity ? newStep : this.getOptions().progress.duration;
-                    el.currentTime += (key === 37 || key === 74) ? (step * -1) : step;
+                    el.currentTime += key === 37 || key === 74 ? step * -1 : step;
                     if (el.currentTime < 0) {
                         el.currentTime = 0;
                     }
@@ -730,10 +726,13 @@ class Player {
                     const target = this.getContainer().querySelector('.op-status>span');
                     if (target) {
                         target.textContent = `${elem.playbackRate}x`;
-                        (_b = target.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-hidden', 'false');
+                        if (target.parentElement) {
+                            target.parentElement.setAttribute('aria-hidden', 'false');
+                        }
                         setTimeout(() => {
-                            var _a;
-                            (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'true');
+                            if (target.parentElement) {
+                                target.parentElement.setAttribute('aria-hidden', 'true');
+                            }
                         }, 500);
                     }
                     const ev = addEvent('controlschanged');
@@ -746,6 +745,7 @@ class Player {
                     e.preventDefault();
                     e.stopPropagation();
                 }
+                break;
             default:
                 break;
         }

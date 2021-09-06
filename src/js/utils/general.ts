@@ -36,6 +36,22 @@ export function isAudio(element: Element) {
 }
 
 /**
+ * Remove a node using removeChild as a way to support IE11
+ *
+ * @export
+ * @param {Node} node
+ * @returns {void}
+ */
+export function removeElement(node?: Node) {
+    if (node) {
+        const parentNode = node.parentNode;
+        if (parentNode) {
+            parentNode.removeChild(node);
+        }
+    }
+}
+
+/**
  * Load an external script using Promises
  *
  * @export
@@ -53,6 +69,7 @@ export function loadScript(url: string) {
         };
         script.onerror = () => {
             removeElement(script);
+            // eslint-disable-next-line prefer-promise-reject-errors
             reject({
                 src: url,
             });
@@ -61,22 +78,6 @@ export function loadScript(url: string) {
             document.head.appendChild(script);
         }
     });
-}
-
-/**
- * Remove a node using removeChild as a way to support IE11
- *
- * @export
- * @param {Node} node
- * @returns {void}
- */
-export function removeElement(node?: Node) {
-    if (node) {
-        const parentNode = node.parentNode;
-        if (parentNode) {
-            parentNode.removeChild(node);
-        }
-    }
 }
 
 /**
@@ -89,8 +90,8 @@ export function removeElement(node?: Node) {
  * @param {function} error
  */
 export function request(url: string, dataType: string, success: (n: any) => any, error?: (n: any) => any) {
-    const xhr = (window as any).XMLHttpRequest ? new XMLHttpRequest() :
-        new ActiveXObject('Microsoft.XMLHTTP');
+    const xhr = (window as any).XMLHttpRequest ? new XMLHttpRequest()
+        : new ActiveXObject('Microsoft.XMLHTTP');
 
     let type;
     switch (dataType) {

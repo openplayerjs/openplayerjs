@@ -1,4 +1,5 @@
 import CustomMedia from './interfaces/custom-media';
+import Level from './interfaces/level';
 import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 import DashMedia from './media/dash';
@@ -74,7 +75,7 @@ class Media {
      * @type boolean
      * @memberof Media
      */
-    #mediaLoaded: boolean = false;
+    #mediaLoaded = false;
 
     /**
      * Collection of additional (non-native) media
@@ -106,7 +107,7 @@ class Media {
      * @returns {Media}
      * @memberof Media
      */
-    constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay: boolean = false, customMedia: CustomMedia) {
+    constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay = false, customMedia: CustomMedia) {
         this.#element = element;
         this.#options = options;
         this.#files = this._getMediaFiles();
@@ -254,9 +255,7 @@ class Media {
             this.#files.push(media);
         }
 
-        this.#files.some(file => {
-            return this.canPlayType(file.type);
-        });
+        this.#files.some(file => this.canPlayType(file.type));
 
         // Save copy of original file to restore it when player is destroyed
         if (this.#element.src) {
@@ -317,7 +316,7 @@ class Media {
      * @see [[Native.volume]]
      * @memberof Media
      */
-    set volume(value) {
+    set volume(value: number) {
         if (this.#media) {
             this.#media.volume = value;
         }
@@ -339,7 +338,7 @@ class Media {
      * @see [[Native.muted]]
      * @memberof Media
      */
-    set muted(value) {
+    set muted(value: boolean) {
         if (this.#media) {
             this.#media.muted = value;
         }
@@ -481,7 +480,7 @@ class Media {
      *
      * @memberof Media
      */
-    set level(value: number|string|object) {
+    set level(value: number|string|Level) {
         if (this.#media) {
             this.#media.level = value;
         }
@@ -492,7 +491,7 @@ class Media {
      * @memberof Media
      * @readonly
      */
-    get level(): number|string|object {
+    get level(): number|string|Level {
         return this.#media ? this.#media.level : -1;
     }
 
@@ -570,8 +569,8 @@ class Media {
      * @memberof Media
      */
     private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
-        const playHLSNatively = this.#element.canPlayType('application/vnd.apple.mpegurl') ||
-            this.#element.canPlayType('application/x-mpegURL');
+        const playHLSNatively = this.#element.canPlayType('application/vnd.apple.mpegurl')
+            || this.#element.canPlayType('application/x-mpegURL');
 
         this.#currentSrc = media;
 
@@ -595,19 +594,21 @@ class Media {
             if (customRef) {
                 customRef.create();
                 return customRef;
-            } else {
-                return new HTML5Media(this.#element, media);
             }
-        } else if (source.isHlsSource(media)) {
+            return new HTML5Media(this.#element, media);
+        }
+        if (source.isHlsSource(media)) {
             if (playHLSNatively && this.#options.forceNative && !activeLevels) {
                 return new HTML5Media(this.#element, media);
             }
             const hlsOptions = this.#options && this.#options.hls ? this.#options.hls : undefined;
             return new HlsMedia(this.#element, media, this.#autoplay, hlsOptions);
-        } else if (source.isDashSource(media)) {
+        }
+        if (source.isDashSource(media)) {
             const dashOptions = this.#options && this.#options.dash ? this.#options.dash : undefined;
             return new DashMedia(this.#element, media, dashOptions);
-        } else if (source.isFlvSource(media)) {
+        }
+        if (source.isFlvSource(media)) {
             const flvOptions = this.#options && this.#options.flv ? this.#options.flv : {
                 debug: false,
                 type: 'flv',

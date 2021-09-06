@@ -18,7 +18,7 @@ import Native from './native';
 class HTML5Media extends Native {
     constructor(element, mediaFile) {
         super(element, mediaFile);
-        _HTML5Media_currentLevel.set(this, null);
+        _HTML5Media_currentLevel.set(this, void 0);
         _HTML5Media_levelList.set(this, []);
         _HTML5Media_isStreaming.set(this, false);
         _HTML5Media_retryCount.set(this, 0);
@@ -61,7 +61,7 @@ class HTML5Media extends Native {
                 const level = {
                     height: 0,
                     id: `${i}`,
-                    label: levels[i].getAttribute('title'),
+                    label: levels[i].getAttribute('title') || '',
                 };
                 __classPrivateFieldGet(this, _HTML5Media_levelList, "f").push(level);
             }
@@ -69,7 +69,7 @@ class HTML5Media extends Native {
         return __classPrivateFieldGet(this, _HTML5Media_levelList, "f");
     }
     set level(level) {
-        const idx = __classPrivateFieldGet(this, _HTML5Media_levelList, "f").findIndex((item) => parseInt(item.id, 10) === level);
+        const idx = __classPrivateFieldGet(this, _HTML5Media_levelList, "f").findIndex(item => item.id === level);
         if (idx > -1) {
             __classPrivateFieldSet(this, _HTML5Media_currentLevel, this.levels[idx], "f");
             const levels = this.element.querySelectorAll('source[title]');
@@ -82,7 +82,8 @@ class HTML5Media extends Native {
         }
     }
     get level() {
-        return __classPrivateFieldGet(this, _HTML5Media_currentLevel, "f") ? __classPrivateFieldGet(this, _HTML5Media_currentLevel, "f").id : '-1';
+        var _a;
+        return ((_a = __classPrivateFieldGet(this, _HTML5Media_currentLevel, "f")) === null || _a === void 0 ? void 0 : _a.id) || '-1';
     }
     set src(media) {
         this.element.src = media.src;
@@ -96,10 +97,11 @@ class HTML5Media extends Native {
         }
     }
     _readMediadataInfo(e) {
+        var _a;
         const target = e;
-        if (target.track.kind === 'metadata') {
+        if (((_a = target === null || target === void 0 ? void 0 : target.track) === null || _a === void 0 ? void 0 : _a.kind) === 'metadata') {
             target.track.mode = 'hidden';
-            target.track.addEventListener('cuechange', (event) => {
+            target.track.addEventListener('cuechange', event => {
                 const track = event.target;
                 const cue = track.activeCues ? track.activeCues[0] : null;
                 if (cue) {
@@ -110,9 +112,9 @@ class HTML5Media extends Native {
         }
     }
     _setTimeout() {
-        if (!__classPrivateFieldGet(this, _HTML5Media_started, "f")) {
+        if (!__classPrivateFieldGet(this, _HTML5Media_started, "f") && window !== undefined) {
             __classPrivateFieldSet(this, _HTML5Media_started, true, "f");
-            __classPrivateFieldSet(this, _HTML5Media_timer, setInterval(() => {
+            __classPrivateFieldSet(this, _HTML5Media_timer, window.setInterval(() => {
                 var _a;
                 if (__classPrivateFieldGet(this, _HTML5Media_retryCount, "f") >= 30) {
                     clearInterval(__classPrivateFieldGet(this, _HTML5Media_timer, "f"));
@@ -144,18 +146,22 @@ class HTML5Media extends Native {
     }
     _dispatchError(e) {
         let defaultMessage;
-        switch (e.target.error.code) {
-            case e.target.error.MEDIA_ERR_ABORTED:
+        const target = e.target;
+        const error = target === null || target === void 0 ? void 0 : target.error;
+        switch (error === null || error === void 0 ? void 0 : error.code) {
+            case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_ABORTED:
                 defaultMessage = 'Media playback aborted';
                 break;
-            case e.target.error.MEDIA_ERR_NETWORK:
+            case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_NETWORK:
                 defaultMessage = 'Media download failed part-way due to a network error';
                 break;
-            case e.target.error.MEDIA_ERR_DECODE:
-                defaultMessage = 'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
+            case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_DECODE:
+                defaultMessage = `Media playback aborted due to a corruption problem or because the
+                    media used features your browser did not support.`;
                 break;
-            case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-                defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
+            case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                defaultMessage = `Media could not be loaded, either because the server or network failed
+                    or because the format is not supported.`;
                 break;
             default:
                 defaultMessage = 'Unknown error occurred.';
@@ -163,8 +169,8 @@ class HTML5Media extends Native {
         }
         const details = {
             detail: {
-                data: Object.assign(Object.assign({}, e), { message: e.message || defaultMessage, error: e.target.error.code }),
-                message: e.message || defaultMessage,
+                data: Object.assign(Object.assign({}, e), { message: defaultMessage, error: error === null || error === void 0 ? void 0 : error.code }),
+                message: defaultMessage,
                 type: 'HTML5',
             },
         };

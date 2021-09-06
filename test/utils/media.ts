@@ -1,6 +1,4 @@
 import { expect } from 'chai';
-import { JSDOM, ResourceLoader } from 'jsdom';
-
 import * as media from '../../src/js/utils/media';
 
 describe('utils/media', () => {
@@ -85,64 +83,21 @@ describe('utils/media', () => {
         expect(media.predictType('test.pdf')).to.equal('video/mp4');
         expect(media.predictType('test')).to.equal('video/mp4');
     });
-    it.skip('checks if browser can autoplay media without being muted', () => {
-        const doc = new JSDOM(`<!doctype html>
-            <html>
-                <body>
-                    <video src="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp4" controls></video>
-                </body>
-            </html>`, { resources: new ResourceLoader({
-                strictSSL: false,
-                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
-              }),
-        });
-        media.isAutoplaySupported(doc.window.document.querySelector('video') as HTMLMediaElement, 1, (autoplay) => {
+    it('checks if browser can autoplay media without being muted', async () => {
+        const video = window.document.querySelector('video');
+        video.muted = false;
+        await media.isAutoplaySupported(video, 1, autoplay => {
             expect(autoplay).to.equal(false);
-        }, (muted) => {
+        }, muted => {
             expect(muted).to.equal(false);
-        }, () => {
-            return true;
-        });
+        }, () => true);
+        video.muted = true;
     });
-    it.skip('checks if browser can autoplay media being muted', () => {
-        const doc = new JSDOM(`<!doctype html>
-            <html>
-                <body>
-                    <video src="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp4" controls muted autoplay></video>
-                </body>
-            </html>`, { resources: new ResourceLoader({
-                strictSSL: false,
-                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
-              }),
-        });
-        media.isAutoplaySupported(doc.window.document.querySelector('video') as HTMLMediaElement, 1, (autoplay) => {
+    it('checks if browser can autoplay media being muted', async () => {
+        await media.isAutoplaySupported(window.document.querySelector('video'), 1, autoplay => {
             expect(autoplay).to.equal(false);
-        }, (muted) => {
+        }, muted => {
             expect(muted).to.equal(true);
-        }, () => {
-            return true;
-        });
-    });
-    it.skip('checks if browser can autoplay in older browser (IE 11)', () => {
-        const doc = new JSDOM(`<!doctype html>
-            <html>
-                <body>
-                    <video src="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp4" controls muted autoplay></video>
-                </body>
-            </html>`, { resources: new ResourceLoader({
-                strictSSL: false,
-                userAgent: 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/8.0; .NET4.0C; .NET4.0E)',
-              }),
-        });
-        media.isAutoplaySupported(doc.window.document.querySelector('video') as HTMLMediaElement, 1, (autoplay) => {
-            expect(autoplay).to.equal(false);
-        }, (muted) => {
-            expect(muted).to.equal(false);
-        }, () => {
-            const video = doc.window.document.querySelector('video');
-            if (video) {
-                expect(video.paused).to.equal(true);
-            }
-        });
+        }, () => true);
     });
 });

@@ -118,6 +118,32 @@ module.exports =
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var global = __webpack_require__(0);
+var shared = __webpack_require__(59);
+var has = __webpack_require__(9);
+var uid = __webpack_require__(60);
+var NATIVE_SYMBOL = __webpack_require__(57);
+var USE_SYMBOL_AS_UID = __webpack_require__(56);
+
+var WellKnownSymbolsStore = shared('wks');
+var Symbol = global.Symbol;
+var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : Symbol && Symbol.withoutSetter || uid;
+
+module.exports = function (name) {
+  if (!has(WellKnownSymbolsStore, name) || !(NATIVE_SYMBOL || typeof WellKnownSymbolsStore[name] == 'string')) {
+    if (NATIVE_SYMBOL && has(Symbol, name)) {
+      WellKnownSymbolsStore[name] = Symbol[name];
+    } else {
+      WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
+    }
+  } return WellKnownSymbolsStore[name];
+};
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -140,7 +166,7 @@ exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROM
 exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
 exports.HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
 
-exports.SUPPORTS_HLS = function () {
+var SUPPORTS_HLS = function SUPPORTS_HLS() {
   if (typeof window === 'undefined') {
     return false;
   }
@@ -152,13 +178,14 @@ exports.SUPPORTS_HLS = function () {
   return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
 };
 
+exports.SUPPORTS_HLS = SUPPORTS_HLS;
 exports.DVR_THRESHOLD = 120;
 exports.EVENT_OPTIONS = exports.IS_IE ? false : {
   passive: false
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -167,7 +194,7 @@ exports.EVENT_OPTIONS = exports.IS_IE ? false : {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isXml = exports.offset = exports.hasClass = exports.request = exports.removeElement = exports.loadScript = exports.isAudio = exports.isVideo = exports.getAbsoluteUrl = void 0;
+exports.isXml = exports.offset = exports.hasClass = exports.request = exports.loadScript = exports.removeElement = exports.isAudio = exports.isVideo = exports.getAbsoluteUrl = void 0;
 
 function getAbsoluteUrl(url) {
   var a = document.createElement('a');
@@ -188,6 +215,18 @@ function isAudio(element) {
 }
 
 exports.isAudio = isAudio;
+
+function removeElement(node) {
+  if (node) {
+    var parentNode = node.parentNode;
+
+    if (parentNode) {
+      parentNode.removeChild(node);
+    }
+  }
+}
+
+exports.removeElement = removeElement;
 
 function loadScript(url) {
   return new Promise(function (resolve, reject) {
@@ -214,18 +253,6 @@ function loadScript(url) {
 }
 
 exports.loadScript = loadScript;
-
-function removeElement(node) {
-  if (node) {
-    var parentNode = node.parentNode;
-
-    if (parentNode) {
-      parentNode.removeChild(node);
-    }
-  }
-}
-
-exports.removeElement = removeElement;
 
 function request(url, dataType, success, error) {
   var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
@@ -351,41 +378,15 @@ function isXml(input) {
 exports.isXml = isXml;
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(0);
-var shared = __webpack_require__(59);
-var has = __webpack_require__(9);
-var uid = __webpack_require__(60);
-var NATIVE_SYMBOL = __webpack_require__(57);
-var USE_SYMBOL_AS_UID = __webpack_require__(56);
-
-var WellKnownSymbolsStore = shared('wks');
-var Symbol = global.Symbol;
-var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : Symbol && Symbol.withoutSetter || uid;
-
-module.exports = function (name) {
-  if (!has(WellKnownSymbolsStore, name) || !(NATIVE_SYMBOL || typeof WellKnownSymbolsStore[name] == 'string')) {
-    if (NATIVE_SYMBOL && has(Symbol, name)) {
-      WellKnownSymbolsStore[name] = Symbol[name];
-    } else {
-      WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
-    }
-  } return WellKnownSymbolsStore[name];
-};
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var getOwnPropertyDescriptor = __webpack_require__(31).f;
-var createNonEnumerableProperty = __webpack_require__(15);
+var getOwnPropertyDescriptor = __webpack_require__(32).f;
+var createNonEnumerableProperty = __webpack_require__(12);
 var redefine = __webpack_require__(16);
 var setGlobal = __webpack_require__(38);
-var copyConstructorProperties = __webpack_require__(90);
+var copyConstructorProperties = __webpack_require__(92);
 var isForced = __webpack_require__(64);
 
 /*
@@ -502,7 +503,7 @@ module.exports = function (it) {
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toObject = __webpack_require__(14);
+var toObject = __webpack_require__(15);
 
 var hasOwnProperty = {}.hasOwnProperty;
 
@@ -544,9 +545,25 @@ module.exports = !fails(function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var DESCRIPTORS = __webpack_require__(11);
+var definePropertyModule = __webpack_require__(13);
+var createPropertyDescriptor = __webpack_require__(18);
+
+module.exports = DESCRIPTORS ? function (object, key, value) {
+  return definePropertyModule.f(object, key, createPropertyDescriptor(1, value));
+} : function (object, key, value) {
+  object[key] = value;
+  return object;
+};
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var DESCRIPTORS = __webpack_require__(11);
 var IE8_DOM_DEFINE = __webpack_require__(61);
 var anObject = __webpack_require__(7);
-var toPropertyKey = __webpack_require__(34);
+var toPropertyKey = __webpack_require__(35);
 
 // eslint-disable-next-line es/no-object-defineproperty -- safe
 var $defineProperty = Object.defineProperty;
@@ -567,7 +584,7 @@ exports.f = DESCRIPTORS ? $defineProperty : function defineProperty(O, P, Attrib
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -689,10 +706,10 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
 exports.isAutoplaySupported = isAutoplaySupported;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var requireObjectCoercible = __webpack_require__(33);
+var requireObjectCoercible = __webpack_require__(34);
 
 // `ToObject` abstract operation
 // https://tc39.es/ecma262/#sec-toobject
@@ -702,31 +719,15 @@ module.exports = function (argument) {
 
 
 /***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(11);
-var definePropertyModule = __webpack_require__(12);
-var createPropertyDescriptor = __webpack_require__(18);
-
-module.exports = DESCRIPTORS ? function (object, key, value) {
-  return definePropertyModule.f(object, key, createPropertyDescriptor(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
-
-
-/***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var createNonEnumerableProperty = __webpack_require__(15);
+var createNonEnumerableProperty = __webpack_require__(12);
 var has = __webpack_require__(9);
 var setGlobal = __webpack_require__(38);
 var inspectSource = __webpack_require__(40);
-var InternalStateModule = __webpack_require__(25);
+var InternalStateModule = __webpack_require__(26);
 
 var getInternalState = InternalStateModule.get;
 var enforceInternalState = InternalStateModule.enforce;
@@ -863,8 +864,8 @@ module.exports.f = function (C) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // toObject with fallback for non-array-like ES3 strings
-var IndexedObject = __webpack_require__(32);
-var requireObjectCoercible = __webpack_require__(33);
+var IndexedObject = __webpack_require__(33);
+var requireObjectCoercible = __webpack_require__(34);
 
 module.exports = function (it) {
   return IndexedObject(requireObjectCoercible(it));
@@ -886,10 +887,19 @@ module.exports = function (it) {
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var NATIVE_WEAK_MAP = __webpack_require__(89);
+var getBuiltIn = __webpack_require__(10);
+
+module.exports = getBuiltIn('navigator', 'userAgent') || '';
+
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var NATIVE_WEAK_MAP = __webpack_require__(91);
 var global = __webpack_require__(0);
 var isObject = __webpack_require__(8);
-var createNonEnumerableProperty = __webpack_require__(15);
+var createNonEnumerableProperty = __webpack_require__(12);
 var objectHas = __webpack_require__(9);
 var shared = __webpack_require__(37);
 var sharedKey = __webpack_require__(41);
@@ -956,7 +966,7 @@ module.exports = {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(43);
@@ -971,7 +981,7 @@ module.exports = function (argument) {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -980,12 +990,12 @@ module.exports = global;
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(7);
 var isArrayIteratorMethod = __webpack_require__(71);
-var toLength = __webpack_require__(26);
+var toLength = __webpack_require__(27);
 var bind = __webpack_require__(20);
 var getIteratorMethod = __webpack_require__(72);
 var iteratorClose = __webpack_require__(70);
@@ -1044,7 +1054,7 @@ module.exports = function (iterable, unboundFunction, options) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = function (exec) {
@@ -1057,7 +1067,7 @@ module.exports = function (exec) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1069,24 +1079,20 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _customPlayer;
+var _Native_customPlayer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -1096,7 +1102,7 @@ var Native = function () {
   function Native(element, media) {
     _classCallCheck(this, Native);
 
-    _customPlayer.set(this, void 0);
+    _Native_customPlayer.set(this, void 0);
 
     this.element = element;
     this.media = media;
@@ -1106,6 +1112,14 @@ var Native = function () {
   }
 
   _createClass(Native, [{
+    key: "instance",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Native_customPlayer, "f");
+    },
+    set: function set(customPlayer) {
+      __classPrivateFieldSet(this, _Native_customPlayer, customPlayer, "f");
+    }
+  }, {
     key: "play",
     value: function play() {
       return this.element.play();
@@ -1116,52 +1130,44 @@ var Native = function () {
       this.element.pause();
     }
   }, {
-    key: "instance",
-    set: function set(customPlayer) {
-      __classPrivateFieldSet(this, _customPlayer, customPlayer);
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _customPlayer);
-    }
-  }, {
     key: "volume",
-    set: function set(value) {
-      this.element.volume = value;
-    },
     get: function get() {
       return this.element.volume;
+    },
+    set: function set(value) {
+      this.element.volume = value;
     }
   }, {
     key: "muted",
-    set: function set(value) {
-      this.element.muted = value;
-    },
     get: function get() {
       return this.element.muted;
+    },
+    set: function set(value) {
+      this.element.muted = value;
     }
   }, {
     key: "playbackRate",
-    set: function set(value) {
-      this.element.playbackRate = value;
-    },
     get: function get() {
       return this.element.playbackRate;
+    },
+    set: function set(value) {
+      this.element.playbackRate = value;
     }
   }, {
     key: "defaultPlaybackRate",
-    set: function set(value) {
-      this.element.defaultPlaybackRate = value;
-    },
     get: function get() {
       return this.element.defaultPlaybackRate;
+    },
+    set: function set(value) {
+      this.element.defaultPlaybackRate = value;
     }
   }, {
     key: "currentTime",
-    set: function set(value) {
-      this.element.currentTime = value;
-    },
     get: function get() {
       return this.element.currentTime;
+    },
+    set: function set(value) {
+      this.element.currentTime = value;
     }
   }, {
     key: "duration",
@@ -1183,18 +1189,18 @@ var Native = function () {
   return Native;
 }();
 
-_customPlayer = new WeakMap();
+_Native_customPlayer = new WeakMap();
 exports["default"] = Native;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var DESCRIPTORS = __webpack_require__(11);
 var propertyIsEnumerableModule = __webpack_require__(55);
 var createPropertyDescriptor = __webpack_require__(18);
 var toIndexedObject = __webpack_require__(23);
-var toPropertyKey = __webpack_require__(34);
+var toPropertyKey = __webpack_require__(35);
 var has = __webpack_require__(9);
 var IE8_DOM_DEFINE = __webpack_require__(61);
 
@@ -1214,7 +1220,7 @@ exports.f = DESCRIPTORS ? $getOwnPropertyDescriptor : function getOwnPropertyDes
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fails = __webpack_require__(5);
@@ -1233,7 +1239,7 @@ module.exports = fails(function () {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports) {
 
 // `RequireObjectCoercible` abstract operation
@@ -1245,11 +1251,11 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toPrimitive = __webpack_require__(87);
-var isSymbol = __webpack_require__(35);
+var toPrimitive = __webpack_require__(89);
+var isSymbol = __webpack_require__(36);
 
 // `ToPropertyKey` abstract operation
 // https://tc39.es/ecma262/#sec-topropertykey
@@ -1260,7 +1266,7 @@ module.exports = function (argument) {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getBuiltIn = __webpack_require__(10);
@@ -1272,15 +1278,6 @@ module.exports = USE_SYMBOL_AS_UID ? function (it) {
   var $Symbol = getBuiltIn('Symbol');
   return typeof $Symbol == 'function' && Object(it) instanceof $Symbol;
 };
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getBuiltIn = __webpack_require__(10);
-
-module.exports = getBuiltIn('navigator', 'userAgent') || '';
 
 
 /***/ }),
@@ -1403,7 +1400,7 @@ module.exports = [
 
 /* global ActiveXObject -- old IE, WSH */
 var anObject = __webpack_require__(7);
-var defineProperties = __webpack_require__(99);
+var defineProperties = __webpack_require__(101);
 var enumBugKeys = __webpack_require__(44);
 var hiddenKeys = __webpack_require__(42);
 var html = __webpack_require__(66);
@@ -1437,17 +1434,15 @@ var NullProtoObjectViaIFrame = function () {
   var iframe = documentCreateElement('iframe');
   var JS = 'java' + SCRIPT + ':';
   var iframeDocument;
-  if (iframe.style) {
-    iframe.style.display = 'none';
-    html.appendChild(iframe);
-    // https://github.com/zloirock/core-js/issues/475
-    iframe.src = String(JS);
-    iframeDocument = iframe.contentWindow.document;
-    iframeDocument.open();
-    iframeDocument.write(scriptTag('document.F=Object'));
-    iframeDocument.close();
-    return iframeDocument.F;
-  }
+  iframe.style.display = 'none';
+  html.appendChild(iframe);
+  // https://github.com/zloirock/core-js/issues/475
+  iframe.src = String(JS);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(scriptTag('document.F=Object'));
+  iframeDocument.close();
+  return iframeDocument.F;
 };
 
 // Check for document.domain and active x support
@@ -1460,10 +1455,11 @@ var NullProtoObject = function () {
   try {
     activeXDocument = new ActiveXObject('htmlfile');
   } catch (error) { /* ignore */ }
-  NullProtoObject = document.domain && activeXDocument ?
-    NullProtoObjectViaActiveX(activeXDocument) : // old IE
-    NullProtoObjectViaIFrame() ||
-    NullProtoObjectViaActiveX(activeXDocument); // WSH
+  NullProtoObject = typeof document != 'undefined'
+    ? document.domain && activeXDocument
+      ? NullProtoObjectViaActiveX(activeXDocument) // old IE
+      : NullProtoObjectViaIFrame()
+    : NullProtoObjectViaActiveX(activeXDocument); // WSH
   var length = enumBugKeys.length;
   while (length--) delete NullProtoObject[PROTOTYPE][enumBugKeys[length]];
   return NullProtoObject();
@@ -1505,7 +1501,7 @@ module.exports = Object.keys || function keys(O) {
 /* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isSymbol = __webpack_require__(35);
+var isSymbol = __webpack_require__(36);
 
 module.exports = function (argument) {
   if (isSymbol(argument)) throw TypeError('Cannot convert a Symbol value to a string');
@@ -1518,9 +1514,9 @@ module.exports = function (argument) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(9);
-var toObject = __webpack_require__(14);
+var toObject = __webpack_require__(15);
 var sharedKey = __webpack_require__(41);
-var CORRECT_PROTOTYPE_GETTER = __webpack_require__(105);
+var CORRECT_PROTOTYPE_GETTER = __webpack_require__(108);
 
 var IE_PROTO = sharedKey('IE_PROTO');
 var ObjectPrototype = Object.prototype;
@@ -1541,9 +1537,9 @@ module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O)
 /* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var defineProperty = __webpack_require__(12).f;
+var defineProperty = __webpack_require__(13).f;
 var has = __webpack_require__(9);
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 
@@ -1560,7 +1556,7 @@ module.exports = function (it, TAG, STATIC) {
 
 /* eslint-disable no-proto -- safe */
 var anObject = __webpack_require__(7);
-var aPossiblePrototype = __webpack_require__(106);
+var aPossiblePrototype = __webpack_require__(109);
 
 // `Object.setPrototypeOf` method
 // https://tc39.es/ecma262/#sec-object.setprototypeof
@@ -1590,7 +1586,7 @@ module.exports = Object.setPrototypeOf || ('__proto__' in {} ? function () {
 /* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 var test = {};
@@ -1672,21 +1668,17 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -1695,79 +1687,79 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _controls, _adsInstance, _uid, _element, _ads, _media, _events, _autoplay_1, _volume, _canAutoplay, _canAutoplayMuted, _processedAutoplay, _options, _customControlItems, _fullscreen, _defaultOptions;
+var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player_ads, _Player_media, _Player_events, _Player_autoplay, _Player_volume, _Player_canAutoplay, _Player_canAutoplayMuted, _Player_processedAutoplay, _Player_options, _Player_customControlItems, _Player_fullscreen, _Player_defaultOptions;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-__webpack_require__(84);
+__webpack_require__(85);
 
-__webpack_require__(101);
+__webpack_require__(103);
 
-__webpack_require__(111);
+__webpack_require__(114);
 
-__webpack_require__(115);
+__webpack_require__(119);
 
-__webpack_require__(118);
+__webpack_require__(123);
 
-__webpack_require__(136);
+__webpack_require__(144);
 
-__webpack_require__(137);
+var controls_1 = __importDefault(__webpack_require__(145));
 
-var controls_1 = __importDefault(__webpack_require__(139));
+var fullscreen_1 = __importDefault(__webpack_require__(84));
 
-var fullscreen_1 = __importDefault(__webpack_require__(83));
+var media_1 = __importDefault(__webpack_require__(153));
 
-var media_1 = __importDefault(__webpack_require__(147));
+var ads_1 = __importDefault(__webpack_require__(158));
 
-var ads_1 = __importDefault(__webpack_require__(152));
+__webpack_require__(159);
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
-var media_2 = __webpack_require__(13);
+var media_2 = __webpack_require__(14);
 
 var Player = function () {
   function Player(element, options) {
     _classCallCheck(this, Player);
 
-    _controls.set(this, void 0);
+    _Player_controls.set(this, void 0);
 
-    _adsInstance.set(this, void 0);
+    _Player_adsInstance.set(this, void 0);
 
     this.proxy = null;
 
-    _uid.set(this, '');
+    _Player_uid.set(this, '');
 
-    _element.set(this, void 0);
+    _Player_element.set(this, void 0);
 
-    _ads.set(this, void 0);
+    _Player_ads.set(this, void 0);
 
-    _media.set(this, void 0);
+    _Player_media.set(this, void 0);
 
-    _events.set(this, {});
+    _Player_events.set(this, {});
 
-    _autoplay_1.set(this, false);
+    _Player_autoplay.set(this, false);
 
-    _volume.set(this, void 0);
+    _Player_volume.set(this, void 0);
 
-    _canAutoplay.set(this, false);
+    _Player_canAutoplay.set(this, false);
 
-    _canAutoplayMuted.set(this, false);
+    _Player_canAutoplayMuted.set(this, false);
 
-    _processedAutoplay.set(this, false);
+    _Player_processedAutoplay.set(this, false);
 
-    _options.set(this, {});
+    _Player_options.set(this, {});
 
-    _customControlItems.set(this, []);
+    _Player_customControlItems.set(this, []);
 
-    _fullscreen.set(this, void 0);
+    _Player_fullscreen.set(this, void 0);
 
-    _defaultOptions.set(this, {
+    _Player_defaultOptions.set(this, {
       controls: {
         alwaysVisible: false,
         layers: {
@@ -1813,7 +1805,9 @@ var Player = function () {
         showProgress: false
       },
       mode: 'responsive',
-      onError: function onError() {},
+      onError: function onError(e) {
+        return console.error(e);
+      },
       pauseOthers: true,
       progress: {
         duration: 0,
@@ -1826,26 +1820,26 @@ var Player = function () {
       width: 0
     });
 
-    __classPrivateFieldSet(this, _element, element instanceof HTMLMediaElement ? element : document.getElementById(element));
+    __classPrivateFieldSet(this, _Player_element, element instanceof HTMLMediaElement ? element : document.getElementById(element), "f");
 
-    if (__classPrivateFieldGet(this, _element)) {
-      __classPrivateFieldSet(this, _autoplay_1, __classPrivateFieldGet(this, _element).autoplay || false);
+    if (__classPrivateFieldGet(this, _Player_element, "f")) {
+      __classPrivateFieldSet(this, _Player_autoplay, __classPrivateFieldGet(this, _Player_element, "f").autoplay || false, "f");
 
       if (typeof options !== 'string' && !Array.isArray(options)) {
         this._mergeOptions(options);
       }
 
-      __classPrivateFieldGet(this, _element).volume = __classPrivateFieldGet(this, _options).startVolume || 1;
+      __classPrivateFieldGet(this, _Player_element, "f").volume = __classPrivateFieldGet(this, _Player_options, "f").startVolume || 1;
 
-      if (__classPrivateFieldGet(this, _options).ads && __classPrivateFieldGet(this, _options).ads.src) {
-        __classPrivateFieldSet(this, _ads, __classPrivateFieldGet(this, _options).ads.src);
+      if (__classPrivateFieldGet(this, _Player_options, "f").ads && __classPrivateFieldGet(this, _Player_options, "f").ads.src) {
+        __classPrivateFieldSet(this, _Player_ads, __classPrivateFieldGet(this, _Player_options, "f").ads.src, "f");
       }
 
-      if (__classPrivateFieldGet(this, _options).startTime > 0) {
-        __classPrivateFieldGet(this, _element).currentTime = __classPrivateFieldGet(this, _options).startTime;
+      if (__classPrivateFieldGet(this, _Player_options, "f").startTime > 0) {
+        __classPrivateFieldGet(this, _Player_element, "f").currentTime = __classPrivateFieldGet(this, _Player_options, "f").startTime;
       }
 
-      __classPrivateFieldSet(this, _volume, __classPrivateFieldGet(this, _element).volume);
+      __classPrivateFieldSet(this, _Player_volume, __classPrivateFieldGet(this, _Player_element, "f").volume, "f");
     }
 
     this._autoplay = this._autoplay.bind(this);
@@ -1875,32 +1869,30 @@ var Player = function () {
   }, {
     key: "load",
     value: function load() {
-      if (this.isMedia()) {
-        return __classPrivateFieldGet(this, _media).load();
-      }
+      return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
     }
   }, {
     key: "play",
     value: function play() {
-      if (__classPrivateFieldGet(this, _media) && !__classPrivateFieldGet(this, _media).loaded) {
-        __classPrivateFieldGet(this, _media).load();
+      if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
+        __classPrivateFieldGet(this, _Player_media, "f").load();
 
-        __classPrivateFieldGet(this, _media).loaded = true;
+        __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
       }
 
-      if (__classPrivateFieldGet(this, _adsInstance)) {
-        return __classPrivateFieldGet(this, _adsInstance).play();
-      } else {
-        return __classPrivateFieldGet(this, _media).play();
+      if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+        return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
       }
+
+      return __classPrivateFieldGet(this, _Player_media, "f").play();
     }
   }, {
     key: "pause",
     value: function pause() {
-      if (__classPrivateFieldGet(this, _adsInstance)) {
-        __classPrivateFieldGet(this, _adsInstance).pause();
+      if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+        __classPrivateFieldGet(this, _Player_adsInstance, "f").pause();
       } else {
-        __classPrivateFieldGet(this, _media).pause();
+        __classPrivateFieldGet(this, _Player_media, "f").pause();
       }
     }
   }, {
@@ -1908,89 +1900,89 @@ var Player = function () {
     value: function destroy() {
       var _this = this;
 
-      if (__classPrivateFieldGet(this, _adsInstance)) {
-        __classPrivateFieldGet(this, _adsInstance).pause();
+      if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+        __classPrivateFieldGet(this, _Player_adsInstance, "f").pause();
 
-        __classPrivateFieldGet(this, _adsInstance).destroy();
+        __classPrivateFieldGet(this, _Player_adsInstance, "f").destroy();
       }
 
-      if (__classPrivateFieldGet(this, _fullscreen)) {
-        __classPrivateFieldGet(this, _fullscreen).destroy();
+      if (__classPrivateFieldGet(this, _Player_fullscreen, "f")) {
+        __classPrivateFieldGet(this, _Player_fullscreen, "f").destroy();
       }
 
-      var el = __classPrivateFieldGet(this, _element);
+      var el = __classPrivateFieldGet(this, _Player_element, "f");
 
-      if (__classPrivateFieldGet(this, _media)) {
-        __classPrivateFieldGet(this, _media).destroy();
+      if (__classPrivateFieldGet(this, _Player_media, "f")) {
+        __classPrivateFieldGet(this, _Player_media, "f").destroy();
       }
 
-      Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-        el.removeEventListener(event, __classPrivateFieldGet(_this, _events)[event]);
+      Object.keys(__classPrivateFieldGet(this, _Player_events, "f")).forEach(function (event) {
+        el.removeEventListener(event, __classPrivateFieldGet(_this, _Player_events, "f")[event]);
       });
       this.getContainer().removeEventListener('keydown', this._enableKeyBindings);
 
-      if (__classPrivateFieldGet(this, _autoplay_1) && !__classPrivateFieldGet(this, _processedAutoplay) && general_1.isVideo(__classPrivateFieldGet(this, _element))) {
+      if (__classPrivateFieldGet(this, _Player_autoplay, "f") && !__classPrivateFieldGet(this, _Player_processedAutoplay, "f") && (0, general_1.isVideo)(__classPrivateFieldGet(this, _Player_element, "f"))) {
         el.removeEventListener('canplay', this._autoplay);
       }
 
-      if (__classPrivateFieldGet(this, _controls)) {
-        __classPrivateFieldGet(this, _controls).destroy();
+      if (__classPrivateFieldGet(this, _Player_controls, "f")) {
+        __classPrivateFieldGet(this, _Player_controls, "f").destroy();
       }
 
-      if (general_1.isVideo(__classPrivateFieldGet(this, _element))) {
-        general_1.removeElement(this.playBtn);
-        general_1.removeElement(this.loader);
+      if ((0, general_1.isVideo)(__classPrivateFieldGet(this, _Player_element, "f"))) {
+        (0, general_1.removeElement)(this.playBtn);
+        (0, general_1.removeElement)(this.loader);
       }
 
-      __classPrivateFieldGet(this, _element).removeEventListener('playererror', __classPrivateFieldGet(this, _options).onError);
+      __classPrivateFieldGet(this, _Player_element, "f").removeEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError);
 
       el.controls = true;
-      el.setAttribute('id', __classPrivateFieldGet(this, _uid));
+      el.setAttribute('id', __classPrivateFieldGet(this, _Player_uid, "f"));
       el.removeAttribute('op-live__enabled');
       el.removeAttribute('op-dvr__enabled');
-      var parent = __classPrivateFieldGet(this, _options).mode === 'fit' ? el.closest('.op-player__fit--wrapper') : el.parentElement;
+      var parent = __classPrivateFieldGet(this, _Player_options, "f").mode === 'fit' ? el.closest('.op-player__fit--wrapper') : el.parentElement;
 
       if (parent && parent.parentNode) {
         parent.parentNode.replaceChild(el, parent);
       }
 
-      var e = events_1.addEvent('playerdestroyed');
+      var e = (0, events_1.addEvent)('playerdestroyed');
       el.dispatchEvent(e);
     }
   }, {
     key: "getContainer",
     value: function getContainer() {
-      return __classPrivateFieldGet(this, _element).parentElement || __classPrivateFieldGet(this, _element);
+      return __classPrivateFieldGet(this, _Player_element, "f").parentElement || __classPrivateFieldGet(this, _Player_element, "f");
     }
   }, {
     key: "getControls",
     value: function getControls() {
-      return __classPrivateFieldGet(this, _controls);
+      return __classPrivateFieldGet(this, _Player_controls, "f");
     }
   }, {
     key: "getCustomControls",
     value: function getCustomControls() {
-      return __classPrivateFieldGet(this, _customControlItems);
+      return __classPrivateFieldGet(this, _Player_customControlItems, "f");
     }
   }, {
     key: "getElement",
     value: function getElement() {
-      return __classPrivateFieldGet(this, _element);
+      return __classPrivateFieldGet(this, _Player_element, "f");
     }
   }, {
     key: "getEvents",
     value: function getEvents() {
-      return __classPrivateFieldGet(this, _events);
+      return __classPrivateFieldGet(this, _Player_events, "f");
     }
   }, {
     key: "getOptions",
     value: function getOptions() {
-      return __classPrivateFieldGet(this, _options);
+      return __classPrivateFieldGet(this, _Player_options, "f");
     }
   }, {
     key: "activeElement",
     value: function activeElement() {
-      return __classPrivateFieldGet(this, _adsInstance) && __classPrivateFieldGet(this, _adsInstance).started() ? __classPrivateFieldGet(this, _adsInstance) : __classPrivateFieldGet(this, _media);
+      return __classPrivateFieldGet(this, _Player_adsInstance, "f") && __classPrivateFieldGet(this, _Player_adsInstance, "f").started() ? __classPrivateFieldGet(this, _Player_adsInstance, "f") : __classPrivateFieldGet(this, _Player_media, "f");
     }
   }, {
     key: "isMedia",
@@ -2005,25 +1997,25 @@ var Player = function () {
   }, {
     key: "getMedia",
     value: function getMedia() {
-      return __classPrivateFieldGet(this, _media);
+      return __classPrivateFieldGet(this, _Player_media, "f");
     }
   }, {
     key: "getAd",
     value: function getAd() {
-      return __classPrivateFieldGet(this, _adsInstance);
+      return __classPrivateFieldGet(this, _Player_adsInstance, "f");
     }
   }, {
     key: "addCaptions",
     value: function addCaptions(args) {
       if (args["default"]) {
-        var tracks = __classPrivateFieldGet(this, _element).querySelectorAll('track');
+        var tracks = __classPrivateFieldGet(this, _Player_element, "f").querySelectorAll('track');
 
         for (var i = 0, total = tracks.length; i < total; i++) {
           tracks[i]["default"] = false;
         }
       }
 
-      var el = __classPrivateFieldGet(this, _element);
+      var el = __classPrivateFieldGet(this, _Player_element, "f");
 
       var track = el.querySelector("track[srclang=\"".concat(args.srclang, "\"][kind=\"").concat(args.kind, "\"]"));
 
@@ -2041,7 +2033,7 @@ var Player = function () {
         el.appendChild(track);
       }
 
-      var e = events_1.addEvent('controlschanged');
+      var e = (0, events_1.addEvent)('controlschanged');
       el.dispatchEvent(e);
     }
   }, {
@@ -2049,11 +2041,11 @@ var Player = function () {
     value: function addControl(args) {
       args.custom = true;
 
-      __classPrivateFieldGet(this, _customControlItems).push(args);
+      __classPrivateFieldGet(this, _Player_customControlItems, "f").push(args);
 
-      var e = events_1.addEvent('controlschanged');
+      var e = (0, events_1.addEvent)('controlschanged');
 
-      __classPrivateFieldGet(this, _element).dispatchEvent(e);
+      __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
     }
   }, {
     key: "removeControl",
@@ -2069,40 +2061,40 @@ var Player = function () {
         });
       });
 
-      __classPrivateFieldGet(this, _customControlItems).forEach(function (item, idx) {
+      __classPrivateFieldGet(this, _Player_customControlItems, "f").forEach(function (item, idx) {
         if (item.id === controlName) {
-          __classPrivateFieldGet(_this2, _customControlItems).splice(idx, 1);
+          __classPrivateFieldGet(_this2, _Player_customControlItems, "f").splice(idx, 1);
         }
       });
 
-      var e = events_1.addEvent('controlschanged');
+      var e = (0, events_1.addEvent)('controlschanged');
 
-      __classPrivateFieldGet(this, _element).dispatchEvent(e);
+      __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
     }
   }, {
     key: "_prepareMedia",
     value: function _prepareMedia() {
       try {
-        __classPrivateFieldGet(this, _element).addEventListener('playererror', __classPrivateFieldGet(this, _options).onError, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError, constants_1.EVENT_OPTIONS);
 
-        if (__classPrivateFieldGet(this, _autoplay_1) && general_1.isVideo(__classPrivateFieldGet(this, _element))) {
-          __classPrivateFieldGet(this, _element).addEventListener('canplay', this._autoplay, constants_1.EVENT_OPTIONS);
+        if (__classPrivateFieldGet(this, _Player_autoplay, "f") && (0, general_1.isVideo)(__classPrivateFieldGet(this, _Player_element, "f"))) {
+          __classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, constants_1.EVENT_OPTIONS);
         }
 
-        __classPrivateFieldSet(this, _media, new media_1["default"](__classPrivateFieldGet(this, _element), __classPrivateFieldGet(this, _options), __classPrivateFieldGet(this, _autoplay_1), Player.customMedia));
+        __classPrivateFieldSet(this, _Player_media, new media_1["default"](__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_options, "f"), __classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
 
-        var preload = __classPrivateFieldGet(this, _element).getAttribute('preload');
+        var preload = __classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
 
-        if (__classPrivateFieldGet(this, _ads) || !preload || preload !== 'none') {
-          __classPrivateFieldGet(this, _media).load();
+        if (__classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none') {
+          __classPrivateFieldGet(this, _Player_media, "f").load();
 
-          __classPrivateFieldGet(this, _media).loaded = true;
+          __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
         }
 
-        if (!__classPrivateFieldGet(this, _autoplay_1) && __classPrivateFieldGet(this, _ads)) {
-          var adsOptions = __classPrivateFieldGet(this, _options) && __classPrivateFieldGet(this, _options).ads ? __classPrivateFieldGet(this, _options).ads : undefined;
+        if (!__classPrivateFieldGet(this, _Player_autoplay, "f") && __classPrivateFieldGet(this, _Player_ads, "f")) {
+          var adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
 
-          __classPrivateFieldSet(this, _adsInstance, new ads_1["default"](this, __classPrivateFieldGet(this, _ads), false, false, adsOptions));
+          __classPrivateFieldSet(this, _Player_adsInstance, new ads_1["default"](this, __classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
         }
       } catch (e) {
         console.error(e);
@@ -2145,23 +2137,53 @@ var Player = function () {
 
         this.activeElement().load(true);
       } else {
-        var adsOptions = __classPrivateFieldGet(this, _options) && __classPrivateFieldGet(this, _options).ads ? __classPrivateFieldGet(this, _options).ads : undefined;
+        var adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
 
-        var autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _canAutoplay);
+        var autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _Player_canAutoplay, "f");
 
-        __classPrivateFieldSet(this, _adsInstance, new ads_1["default"](this, src, autoplay, __classPrivateFieldGet(this, _canAutoplayMuted), adsOptions));
+        __classPrivateFieldSet(this, _Player_adsInstance, new ads_1["default"](this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
       }
+    }
+  }, {
+    key: "src",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Player_media, "f").src;
+    },
+    set: function set(media) {
+      var _this4 = this;
+
+      if (__classPrivateFieldGet(this, _Player_media, "f") instanceof media_1["default"]) {
+        __classPrivateFieldGet(this, _Player_media, "f").mediaFiles = [];
+        __classPrivateFieldGet(this, _Player_media, "f").src = media;
+      } else if (typeof media === 'string') {
+        __classPrivateFieldGet(this, _Player_element, "f").src = media;
+      } else if (Array.isArray(media)) {
+        media.forEach(function (m) {
+          var source = document.createElement('source');
+          source.src = m.src;
+          source.type = m.type || (0, media_2.predictType)(m.src);
+
+          __classPrivateFieldGet(_this4, _Player_element, "f").appendChild(source);
+        });
+      } else if (_typeof(media) === 'object') {
+        __classPrivateFieldGet(this, _Player_element, "f").src = media.src;
+      }
+    }
+  }, {
+    key: "id",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Player_uid, "f");
     }
   }, {
     key: "_isValid",
     value: function _isValid() {
-      var el = __classPrivateFieldGet(this, _element);
+      var el = __classPrivateFieldGet(this, _Player_element, "f");
 
       if (el instanceof HTMLElement === false) {
         return false;
       }
 
-      if (!general_1.isAudio(el) && !general_1.isVideo(el)) {
+      if (!(0, general_1.isAudio)(el) && !(0, general_1.isVideo)(el)) {
         return false;
       }
 
@@ -2176,24 +2198,24 @@ var Player = function () {
     value: function _wrapInstance() {
       var wrapper = document.createElement('div');
       wrapper.className = 'op-player op-player__keyboard--inactive';
-      wrapper.className += general_1.isAudio(__classPrivateFieldGet(this, _element)) ? ' op-player__audio' : ' op-player__video';
+      wrapper.className += (0, general_1.isAudio)(__classPrivateFieldGet(this, _Player_element, "f")) ? ' op-player__audio' : ' op-player__video';
       wrapper.tabIndex = 0;
 
-      __classPrivateFieldGet(this, _element).classList.remove('op-player');
+      __classPrivateFieldGet(this, _Player_element, "f").classList.remove('op-player');
 
-      if (__classPrivateFieldGet(this, _element).parentElement) {
-        __classPrivateFieldGet(this, _element).parentElement.insertBefore(wrapper, __classPrivateFieldGet(this, _element));
+      if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
+        __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(wrapper, __classPrivateFieldGet(this, _Player_element, "f"));
       }
 
-      wrapper.appendChild(__classPrivateFieldGet(this, _element));
+      wrapper.appendChild(__classPrivateFieldGet(this, _Player_element, "f"));
       var messageContainer = document.createElement('div');
       messageContainer.className = 'op-status';
       messageContainer.innerHTML = '<span></span>';
       messageContainer.tabIndex = -1;
       messageContainer.setAttribute('aria-hidden', 'true');
 
-      if (general_1.isVideo(__classPrivateFieldGet(this, _element)) && __classPrivateFieldGet(this, _element).parentElement) {
-        __classPrivateFieldGet(this, _element).parentElement.insertBefore(messageContainer, __classPrivateFieldGet(this, _element));
+      if ((0, general_1.isVideo)(__classPrivateFieldGet(this, _Player_element, "f")) && __classPrivateFieldGet(this, _Player_element, "f").parentElement) {
+        __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(messageContainer, __classPrivateFieldGet(this, _Player_element, "f"));
       }
 
       wrapper.addEventListener('keydown', function () {
@@ -2207,9 +2229,9 @@ var Player = function () {
         }
       }, constants_1.EVENT_OPTIONS);
 
-      if (__classPrivateFieldGet(this, _options).mode === 'fill' && !general_1.isAudio(__classPrivateFieldGet(this, _element)) && !constants_1.IS_IPHONE) {
+      if (__classPrivateFieldGet(this, _Player_options, "f").mode === 'fill' && !(0, general_1.isAudio)(__classPrivateFieldGet(this, _Player_element, "f")) && !constants_1.IS_IPHONE) {
         this.getContainer().classList.add('op-player__full');
-      } else if (__classPrivateFieldGet(this, _options).mode === 'fit' && !general_1.isAudio(__classPrivateFieldGet(this, _element))) {
+      } else if (__classPrivateFieldGet(this, _Player_options, "f").mode === 'fit' && !(0, general_1.isAudio)(__classPrivateFieldGet(this, _Player_element, "f"))) {
         var container = this.getContainer();
 
         if (container.parentElement) {
@@ -2223,13 +2245,13 @@ var Player = function () {
       } else {
         var style = '';
 
-        if (__classPrivateFieldGet(this, _options).width) {
-          var width = typeof __classPrivateFieldGet(this, _options).width === 'number' ? "".concat(__classPrivateFieldGet(this, _options).width, "px") : __classPrivateFieldGet(this, _options).width;
+        if (__classPrivateFieldGet(this, _Player_options, "f").width) {
+          var width = typeof __classPrivateFieldGet(this, _Player_options, "f").width === 'number' ? "".concat(__classPrivateFieldGet(this, _Player_options, "f").width, "px") : __classPrivateFieldGet(this, _Player_options, "f").width;
           style += "width: ".concat(width, " !important;");
         }
 
-        if (__classPrivateFieldGet(this, _options).height) {
-          var height = typeof __classPrivateFieldGet(this, _options).height === 'number' ? "".concat(__classPrivateFieldGet(this, _options).height, "px") : __classPrivateFieldGet(this, _options).height;
+        if (__classPrivateFieldGet(this, _Player_options, "f").height) {
+          var height = typeof __classPrivateFieldGet(this, _Player_options, "f").height === 'number' ? "".concat(__classPrivateFieldGet(this, _Player_options, "f").height, "px") : __classPrivateFieldGet(this, _Player_options, "f").height;
           style += "height: ".concat(height, " !important;");
         }
 
@@ -2241,21 +2263,21 @@ var Player = function () {
   }, {
     key: "_createControls",
     value: function _createControls() {
-      if (constants_1.IS_IPHONE && general_1.isVideo(__classPrivateFieldGet(this, _element))) {
+      if (constants_1.IS_IPHONE && (0, general_1.isVideo)(__classPrivateFieldGet(this, _Player_element, "f"))) {
         this.getContainer().classList.add('op-player__ios--iphone');
       }
 
-      __classPrivateFieldSet(this, _controls, new controls_1["default"](this));
+      __classPrivateFieldSet(this, _Player_controls, new controls_1["default"](this), "f");
 
-      __classPrivateFieldGet(this, _controls).create();
+      __classPrivateFieldGet(this, _Player_controls, "f").create();
     }
   }, {
     key: "_createUID",
     value: function _createUID() {
-      if (__classPrivateFieldGet(this, _element).id) {
-        __classPrivateFieldSet(this, _uid, __classPrivateFieldGet(this, _element).id);
+      if (__classPrivateFieldGet(this, _Player_element, "f").id) {
+        __classPrivateFieldSet(this, _Player_uid, __classPrivateFieldGet(this, _Player_element, "f").id, "f");
 
-        __classPrivateFieldGet(this, _element).removeAttribute('id');
+        __classPrivateFieldGet(this, _Player_element, "f").removeAttribute('id');
       } else {
         var uid;
 
@@ -2263,27 +2285,27 @@ var Player = function () {
           uid = "op_".concat(Math.random().toString(36).substr(2, 9));
         } while (Player.instances[uid] !== undefined);
 
-        __classPrivateFieldSet(this, _uid, uid);
+        __classPrivateFieldSet(this, _Player_uid, uid, "f");
       }
 
-      if (__classPrivateFieldGet(this, _element).parentElement) {
-        __classPrivateFieldGet(this, _element).parentElement.id = __classPrivateFieldGet(this, _uid);
+      if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
+        __classPrivateFieldGet(this, _Player_element, "f").parentElement.id = __classPrivateFieldGet(this, _Player_uid, "f");
       }
     }
   }, {
     key: "_createPlayButton",
     value: function _createPlayButton() {
-      var _this4 = this;
+      var _this5 = this;
 
-      if (general_1.isAudio(__classPrivateFieldGet(this, _element))) {
+      if ((0, general_1.isAudio)(__classPrivateFieldGet(this, _Player_element, "f"))) {
         return;
       }
 
       this.playBtn = document.createElement('button');
       this.playBtn.className = 'op-player__play';
       this.playBtn.tabIndex = 0;
-      this.playBtn.title = __classPrivateFieldGet(this, _options).labels.play;
-      this.playBtn.innerHTML = "<span>".concat(__classPrivateFieldGet(this, _options).labels.play, "</span>");
+      this.playBtn.title = __classPrivateFieldGet(this, _Player_options, "f").labels.play;
+      this.playBtn.innerHTML = "<span>".concat(__classPrivateFieldGet(this, _Player_options, "f").labels.play, "</span>");
       this.playBtn.setAttribute('aria-pressed', 'false');
       this.playBtn.setAttribute('aria-hidden', 'false');
       this.loader = document.createElement('span');
@@ -2291,181 +2313,181 @@ var Player = function () {
       this.loader.tabIndex = -1;
       this.loader.setAttribute('aria-hidden', 'true');
 
-      if (__classPrivateFieldGet(this, _element).parentElement) {
-        __classPrivateFieldGet(this, _element).parentElement.insertBefore(this.loader, __classPrivateFieldGet(this, _element));
+      if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
+        __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(this.loader, __classPrivateFieldGet(this, _Player_element, "f"));
 
-        __classPrivateFieldGet(this, _element).parentElement.insertBefore(this.playBtn, __classPrivateFieldGet(this, _element));
+        __classPrivateFieldGet(this, _Player_element, "f").parentElement.insertBefore(this.playBtn, __classPrivateFieldGet(this, _Player_element, "f"));
       }
 
       this.playBtn.addEventListener('click', function () {
-        if (__classPrivateFieldGet(_this4, _adsInstance)) {
-          __classPrivateFieldGet(_this4, _adsInstance).playRequested = _this4.activeElement().paused;
+        if (__classPrivateFieldGet(_this5, _Player_adsInstance, "f")) {
+          __classPrivateFieldGet(_this5, _Player_adsInstance, "f").playRequested = _this5.activeElement().paused;
         }
 
-        if (_this4.activeElement().paused) {
-          _this4.activeElement().play();
+        if (_this5.activeElement().paused) {
+          _this5.activeElement().play();
         } else {
-          _this4.activeElement().pause();
+          _this5.activeElement().pause();
         }
       }, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "_setEvents",
     value: function _setEvents() {
-      var _this5 = this;
+      var _this6 = this;
 
-      if (general_1.isVideo(__classPrivateFieldGet(this, _element))) {
-        __classPrivateFieldGet(this, _events).loadedmetadata = function () {
-          var el = _this5.activeElement();
+      if ((0, general_1.isVideo)(__classPrivateFieldGet(this, _Player_element, "f"))) {
+        __classPrivateFieldGet(this, _Player_events, "f").loadedmetadata = function () {
+          var el = _this6.activeElement();
 
-          if (__classPrivateFieldGet(_this5, _options).showLoaderOnInit && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-            _this5.loader.setAttribute('aria-hidden', 'false');
+          if (__classPrivateFieldGet(_this6, _Player_options, "f").showLoaderOnInit && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
+            _this6.loader.setAttribute('aria-hidden', 'false');
 
-            _this5.playBtn.setAttribute('aria-hidden', 'true');
+            _this6.playBtn.setAttribute('aria-hidden', 'true');
           } else {
-            _this5.loader.setAttribute('aria-hidden', 'true');
+            _this6.loader.setAttribute('aria-hidden', 'true');
 
-            _this5.playBtn.setAttribute('aria-hidden', 'false');
+            _this6.playBtn.setAttribute('aria-hidden', 'false');
           }
 
           if (el.paused) {
-            _this5.playBtn.classList.remove('op-player__play--paused');
+            _this6.playBtn.classList.remove('op-player__play--paused');
 
-            _this5.playBtn.setAttribute('aria-pressed', 'false');
+            _this6.playBtn.setAttribute('aria-pressed', 'false');
           }
         };
 
-        __classPrivateFieldGet(this, _events).waiting = function () {
-          _this5.playBtn.setAttribute('aria-hidden', 'true');
+        __classPrivateFieldGet(this, _Player_events, "f").waiting = function () {
+          _this6.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this5.loader.setAttribute('aria-hidden', 'false');
+          _this6.loader.setAttribute('aria-hidden', 'false');
         };
 
-        __classPrivateFieldGet(this, _events).seeking = function () {
-          var el = _this5.activeElement();
+        __classPrivateFieldGet(this, _Player_events, "f").seeking = function () {
+          var el = _this6.activeElement();
 
-          _this5.playBtn.setAttribute('aria-hidden', 'true');
+          _this6.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this5.loader.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
+          _this6.loader.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
         };
 
-        __classPrivateFieldGet(this, _events).seeked = function () {
-          var el = _this5.activeElement();
+        __classPrivateFieldGet(this, _Player_events, "f").seeked = function () {
+          var el = _this6.activeElement();
 
           if (Math.round(el.currentTime) === 0) {
-            _this5.playBtn.setAttribute('aria-hidden', 'true');
+            _this6.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this5.loader.setAttribute('aria-hidden', 'false');
+            _this6.loader.setAttribute('aria-hidden', 'false');
           } else {
-            _this5.playBtn.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
+            _this6.playBtn.setAttribute('aria-hidden', el instanceof media_1["default"] ? 'false' : 'true');
 
-            _this5.loader.setAttribute('aria-hidden', 'true');
+            _this6.loader.setAttribute('aria-hidden', 'true');
           }
         };
 
-        __classPrivateFieldGet(this, _events).play = function () {
-          _this5.playBtn.classList.add('op-player__play--paused');
+        __classPrivateFieldGet(this, _Player_events, "f").play = function () {
+          _this6.playBtn.classList.add('op-player__play--paused');
 
-          _this5.playBtn.title = __classPrivateFieldGet(_this5, _options).labels.pause;
+          _this6.playBtn.title = __classPrivateFieldGet(_this6, _Player_options, "f").labels.pause;
 
-          _this5.loader.setAttribute('aria-hidden', 'true');
+          _this6.loader.setAttribute('aria-hidden', 'true');
 
-          if (__classPrivateFieldGet(_this5, _options).showLoaderOnInit) {
-            _this5.playBtn.setAttribute('aria-hidden', 'true');
+          if (__classPrivateFieldGet(_this6, _Player_options, "f").showLoaderOnInit) {
+            _this6.playBtn.setAttribute('aria-hidden', 'true');
           } else {
             setTimeout(function () {
-              _this5.playBtn.setAttribute('aria-hidden', 'true');
-            }, __classPrivateFieldGet(_this5, _options).hidePlayBtnTimer);
+              _this6.playBtn.setAttribute('aria-hidden', 'true');
+            }, __classPrivateFieldGet(_this6, _Player_options, "f").hidePlayBtnTimer);
           }
         };
 
-        __classPrivateFieldGet(this, _events).playing = function () {
-          _this5.loader.setAttribute('aria-hidden', 'true');
+        __classPrivateFieldGet(this, _Player_events, "f").playing = function () {
+          _this6.loader.setAttribute('aria-hidden', 'true');
 
-          _this5.playBtn.setAttribute('aria-hidden', 'true');
+          _this6.playBtn.setAttribute('aria-hidden', 'true');
         };
 
-        __classPrivateFieldGet(this, _events).pause = function () {
-          var el = _this5.activeElement();
+        __classPrivateFieldGet(this, _Player_events, "f").pause = function () {
+          var el = _this6.activeElement();
 
-          _this5.playBtn.classList.remove('op-player__play--paused');
+          _this6.playBtn.classList.remove('op-player__play--paused');
 
-          _this5.playBtn.title = __classPrivateFieldGet(_this5, _options).labels.play;
+          _this6.playBtn.title = __classPrivateFieldGet(_this6, _Player_options, "f").labels.play;
 
-          if (__classPrivateFieldGet(_this5, _options).showLoaderOnInit && Math.round(el.currentTime) === 0) {
-            _this5.playBtn.setAttribute('aria-hidden', 'true');
+          if (__classPrivateFieldGet(_this6, _Player_options, "f").showLoaderOnInit && Math.round(el.currentTime) === 0) {
+            _this6.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this5.loader.setAttribute('aria-hidden', 'false');
+            _this6.loader.setAttribute('aria-hidden', 'false');
           } else {
-            _this5.playBtn.setAttribute('aria-hidden', 'false');
+            _this6.playBtn.setAttribute('aria-hidden', 'false');
 
-            _this5.loader.setAttribute('aria-hidden', 'true');
+            _this6.loader.setAttribute('aria-hidden', 'true');
           }
         };
 
-        __classPrivateFieldGet(this, _events).ended = function () {
-          _this5.loader.setAttribute('aria-hidden', 'true');
+        __classPrivateFieldGet(this, _Player_events, "f").ended = function () {
+          _this6.loader.setAttribute('aria-hidden', 'true');
 
-          _this5.playBtn.setAttribute('aria-hidden', 'true');
+          _this6.playBtn.setAttribute('aria-hidden', 'true');
         };
       }
 
-      Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-        __classPrivateFieldGet(_this5, _element).addEventListener(event, __classPrivateFieldGet(_this5, _events)[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Player_events, "f")).forEach(function (event) {
+        __classPrivateFieldGet(_this6, _Player_element, "f").addEventListener(event, __classPrivateFieldGet(_this6, _Player_events, "f")[event], constants_1.EVENT_OPTIONS);
       });
       this.getContainer().addEventListener('keydown', this._enableKeyBindings, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "_autoplay",
     value: function _autoplay() {
-      var _this6 = this;
+      var _this7 = this;
 
-      if (!__classPrivateFieldGet(this, _processedAutoplay)) {
-        __classPrivateFieldSet(this, _processedAutoplay, true);
+      if (!__classPrivateFieldGet(this, _Player_processedAutoplay, "f")) {
+        __classPrivateFieldSet(this, _Player_processedAutoplay, true, "f");
 
-        __classPrivateFieldGet(this, _element).removeEventListener('canplay', this._autoplay);
+        __classPrivateFieldGet(this, _Player_element, "f").removeEventListener('canplay', this._autoplay);
 
-        media_2.isAutoplaySupported(__classPrivateFieldGet(this, _element), __classPrivateFieldGet(this, _volume), function (autoplay) {
-          __classPrivateFieldSet(_this6, _canAutoplay, autoplay);
+        (0, media_2.isAutoplaySupported)(__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_volume, "f"), function (autoplay) {
+          __classPrivateFieldSet(_this7, _Player_canAutoplay, autoplay, "f");
         }, function (muted) {
-          __classPrivateFieldSet(_this6, _canAutoplayMuted, muted);
+          __classPrivateFieldSet(_this7, _Player_canAutoplayMuted, muted, "f");
         }, function () {
-          if (__classPrivateFieldGet(_this6, _canAutoplayMuted)) {
-            _this6.activeElement().muted = true;
-            _this6.activeElement().volume = 0;
-            var e = events_1.addEvent('volumechange');
+          if (__classPrivateFieldGet(_this7, _Player_canAutoplayMuted, "f")) {
+            _this7.activeElement().muted = true;
+            _this7.activeElement().volume = 0;
+            var e = (0, events_1.addEvent)('volumechange');
 
-            __classPrivateFieldGet(_this6, _element).dispatchEvent(e);
+            __classPrivateFieldGet(_this7, _Player_element, "f").dispatchEvent(e);
 
             var volumeEl = document.createElement('div');
-            var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? __classPrivateFieldGet(_this6, _options).labels.tap : __classPrivateFieldGet(_this6, _options).labels.click;
+            var action = constants_1.IS_IOS || constants_1.IS_ANDROID ? __classPrivateFieldGet(_this7, _Player_options, "f").labels.tap : __classPrivateFieldGet(_this7, _Player_options, "f").labels.click;
             volumeEl.className = 'op-player__unmute';
             volumeEl.innerHTML = "<span>".concat(action, "</span>");
             volumeEl.tabIndex = 0;
             volumeEl.addEventListener('click', function () {
-              _this6.activeElement().muted = false;
-              _this6.activeElement().volume = __classPrivateFieldGet(_this6, _volume);
-              var event = events_1.addEvent('volumechange');
+              _this7.activeElement().muted = false;
+              _this7.activeElement().volume = __classPrivateFieldGet(_this7, _Player_volume, "f");
+              var event = (0, events_1.addEvent)('volumechange');
 
-              __classPrivateFieldGet(_this6, _element).dispatchEvent(event);
+              __classPrivateFieldGet(_this7, _Player_element, "f").dispatchEvent(event);
 
-              general_1.removeElement(volumeEl);
+              (0, general_1.removeElement)(volumeEl);
             }, constants_1.EVENT_OPTIONS);
 
-            var target = _this6.getContainer();
+            var target = _this7.getContainer();
 
             target.insertBefore(volumeEl, target.firstChild);
           } else {
-            _this6.activeElement().muted = __classPrivateFieldGet(_this6, _element).muted;
-            _this6.activeElement().volume = __classPrivateFieldGet(_this6, _volume);
+            _this7.activeElement().muted = __classPrivateFieldGet(_this7, _Player_element, "f").muted;
+            _this7.activeElement().volume = __classPrivateFieldGet(_this7, _Player_volume, "f");
           }
 
-          if (__classPrivateFieldGet(_this6, _ads)) {
-            var adsOptions = __classPrivateFieldGet(_this6, _options) && __classPrivateFieldGet(_this6, _options).ads ? __classPrivateFieldGet(_this6, _options).ads : undefined;
+          if (__classPrivateFieldGet(_this7, _Player_ads, "f")) {
+            var adsOptions = __classPrivateFieldGet(_this7, _Player_options, "f") && __classPrivateFieldGet(_this7, _Player_options, "f").ads ? __classPrivateFieldGet(_this7, _Player_options, "f").ads : undefined;
 
-            __classPrivateFieldSet(_this6, _adsInstance, new ads_1["default"](_this6, __classPrivateFieldGet(_this6, _ads), __classPrivateFieldGet(_this6, _canAutoplay), __classPrivateFieldGet(_this6, _canAutoplayMuted), adsOptions));
-          } else if (__classPrivateFieldGet(_this6, _canAutoplay) || __classPrivateFieldGet(_this6, _canAutoplayMuted)) {
-            return _this6.play();
+            __classPrivateFieldSet(_this7, _Player_adsInstance, new ads_1["default"](_this7, __classPrivateFieldGet(_this7, _Player_ads, "f"), __classPrivateFieldGet(_this7, _Player_canAutoplay, "f"), __classPrivateFieldGet(_this7, _Player_canAutoplayMuted, "f"), adsOptions), "f");
+          } else if (__classPrivateFieldGet(_this7, _Player_canAutoplay, "f") || __classPrivateFieldGet(_this7, _Player_canAutoplayMuted, "f")) {
+            _this7.play();
           }
         });
       }
@@ -2473,21 +2495,21 @@ var Player = function () {
   }, {
     key: "_mergeOptions",
     value: function _mergeOptions(playerOptions) {
-      var _this7 = this;
+      var _this8 = this;
 
-      __classPrivateFieldSet(this, _options, Object.assign(Object.assign({}, __classPrivateFieldGet(this, _defaultOptions)), playerOptions));
+      __classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")), playerOptions), "f");
 
       if (playerOptions) {
         var objectElements = ['labels', 'controls'];
         objectElements.forEach(function (item) {
-          __classPrivateFieldGet(_this7, _options)[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, __classPrivateFieldGet(_this7, _defaultOptions)[item]), playerOptions[item]) : __classPrivateFieldGet(_this7, _defaultOptions)[item];
+          __classPrivateFieldGet(_this8, _Player_options, "f")[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, __classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[item]), playerOptions[item]) : __classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[item];
         });
       }
     }
   }, {
     key: "_enableKeyBindings",
     value: function _enableKeyBindings(e) {
-      var _a, _b;
+      var _a;
 
       var key = e.which || e.keyCode || 0;
       var el = this.activeElement();
@@ -2573,11 +2595,11 @@ var Player = function () {
           break;
 
         case 70:
-          if (general_1.isVideo(__classPrivateFieldGet(this, _element)) && !e.ctrlKey) {
-            __classPrivateFieldSet(this, _fullscreen, new fullscreen_1["default"](this, '', ''));
+          if ((0, general_1.isVideo)(__classPrivateFieldGet(this, _Player_element, "f")) && !e.ctrlKey) {
+            __classPrivateFieldSet(this, _Player_fullscreen, new fullscreen_1["default"](this, '', ''), "f");
 
-            if (typeof __classPrivateFieldGet(this, _fullscreen).fullScreenEnabled !== 'undefined') {
-              __classPrivateFieldGet(this, _fullscreen).toggleFullscreen();
+            if (typeof __classPrivateFieldGet(this, _Player_fullscreen, "f").fullScreenEnabled !== 'undefined') {
+              __classPrivateFieldGet(this, _Player_fullscreen, "f").toggleFullscreen();
 
               e.preventDefault();
               e.stopPropagation();
@@ -2592,7 +2614,7 @@ var Player = function () {
           if (el.muted) {
             el.volume = 0;
           } else {
-            el.volume = __classPrivateFieldGet(this, _volume);
+            el.volume = __classPrivateFieldGet(this, _Player_volume, "f");
           }
 
           e.preventDefault();
@@ -2608,15 +2630,19 @@ var Player = function () {
 
             if (target) {
               target.textContent = "".concat(elem.playbackRate, "x");
-              (_b = target.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-hidden', 'false');
-              setTimeout(function () {
-                var _a;
 
-                (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'true');
+              if (target.parentElement) {
+                target.parentElement.setAttribute('aria-hidden', 'false');
+              }
+
+              setTimeout(function () {
+                if (target.parentElement) {
+                  target.parentElement.setAttribute('aria-hidden', 'true');
+                }
               }, 500);
             }
 
-            var ev = events_1.addEvent('controlschanged');
+            var ev = (0, events_1.addEvent)('controlschanged');
             dispatchEvent(ev);
             e.preventDefault();
             e.stopPropagation();
@@ -2626,39 +2652,11 @@ var Player = function () {
             e.stopPropagation();
           }
 
+          break;
+
         default:
           break;
       }
-    }
-  }, {
-    key: "src",
-    set: function set(media) {
-      var _this8 = this;
-
-      if (__classPrivateFieldGet(this, _media) instanceof media_1["default"]) {
-        __classPrivateFieldGet(this, _media).mediaFiles = [];
-        __classPrivateFieldGet(this, _media).src = media;
-      } else if (typeof media === 'string') {
-        __classPrivateFieldGet(this, _element).src = media;
-      } else if (Array.isArray(media)) {
-        media.forEach(function (m) {
-          var source = document.createElement('source');
-          source.src = m.src;
-          source.type = m.type || media_2.predictType(m.src);
-
-          __classPrivateFieldGet(_this8, _element).appendChild(source);
-        });
-      } else if (_typeof(media) === 'object') {
-        __classPrivateFieldGet(this, _element).src = media.src;
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _media).src;
-    }
-  }, {
-    key: "id",
-    get: function get() {
-      return __classPrivateFieldGet(this, _uid);
     }
   }], [{
     key: "init",
@@ -2686,7 +2684,7 @@ var Player = function () {
   return Player;
 }();
 
-_controls = new WeakMap(), _adsInstance = new WeakMap(), _uid = new WeakMap(), _element = new WeakMap(), _ads = new WeakMap(), _media = new WeakMap(), _events = new WeakMap(), _autoplay_1 = new WeakMap(), _volume = new WeakMap(), _canAutoplay = new WeakMap(), _canAutoplayMuted = new WeakMap(), _processedAutoplay = new WeakMap(), _options = new WeakMap(), _customControlItems = new WeakMap(), _fullscreen = new WeakMap(), _defaultOptions = new WeakMap();
+_Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customControlItems = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
 Player.instances = {};
 Player.customMedia = {
   media: {},
@@ -2758,7 +2756,7 @@ module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var userAgent = __webpack_require__(36);
+var userAgent = __webpack_require__(25);
 
 var process = global.process;
 var Deno = global.Deno;
@@ -2790,7 +2788,7 @@ var store = __webpack_require__(37);
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.16.0',
+  version: '3.16.3',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2021 Denis Pushkarev (zloirock.ru)'
 });
@@ -2831,7 +2829,7 @@ module.exports = !DESCRIPTORS && !fails(function () {
 
 var has = __webpack_require__(9);
 var toIndexedObject = __webpack_require__(23);
-var indexOf = __webpack_require__(93).indexOf;
+var indexOf = __webpack_require__(95).indexOf;
 var hiddenKeys = __webpack_require__(42);
 
 module.exports = function (object, names) {
@@ -2887,9 +2885,9 @@ module.exports = isForced;
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 var create = __webpack_require__(45);
-var definePropertyModule = __webpack_require__(12);
+var definePropertyModule = __webpack_require__(13);
 
 var UNSCOPABLES = wellKnownSymbol('unscopables');
 var ArrayPrototype = Array.prototype;
@@ -2924,9 +2922,9 @@ module.exports = getBuiltIn('document', 'documentElement');
 
 "use strict";
 
-var charAt = __webpack_require__(103).charAt;
+var charAt = __webpack_require__(106).charAt;
 var toString = __webpack_require__(47);
-var InternalStateModule = __webpack_require__(25);
+var InternalStateModule = __webpack_require__(26);
 var defineIterator = __webpack_require__(68);
 
 var STRING_ITERATOR = 'String Iterator';
@@ -2962,13 +2960,13 @@ defineIterator(String, 'String', function (iterated) {
 "use strict";
 
 var $ = __webpack_require__(4);
-var createIteratorConstructor = __webpack_require__(104);
+var createIteratorConstructor = __webpack_require__(107);
 var getPrototypeOf = __webpack_require__(48);
 var setPrototypeOf = __webpack_require__(50);
 var setToStringTag = __webpack_require__(49);
-var createNonEnumerableProperty = __webpack_require__(15);
+var createNonEnumerableProperty = __webpack_require__(12);
 var redefine = __webpack_require__(16);
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 var IS_PURE = __webpack_require__(19);
 var Iterators = __webpack_require__(21);
 var IteratorsCore = __webpack_require__(69);
@@ -3060,9 +3058,9 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 
 var fails = __webpack_require__(5);
 var getPrototypeOf = __webpack_require__(48);
-var createNonEnumerableProperty = __webpack_require__(15);
+var createNonEnumerableProperty = __webpack_require__(12);
 var has = __webpack_require__(9);
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 var IS_PURE = __webpack_require__(19);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -3123,7 +3121,7 @@ module.exports = function (iterator) {
 /* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 var Iterators = __webpack_require__(21);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -3141,7 +3139,7 @@ module.exports = function (it) {
 
 var classof = __webpack_require__(73);
 var Iterators = __webpack_require__(21);
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 
 var ITERATOR = wellKnownSymbol('iterator');
 
@@ -3158,7 +3156,7 @@ module.exports = function (it) {
 
 var TO_STRING_TAG_SUPPORT = __webpack_require__(51);
 var classofRaw = __webpack_require__(24);
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 // ES3 wrong here
@@ -3188,7 +3186,7 @@ module.exports = TO_STRING_TAG_SUPPORT ? classofRaw : function (it) {
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 
 var ITERATOR = wellKnownSymbol('iterator');
 var SAFE_CLOSING = false;
@@ -3238,9 +3236,9 @@ var $ = __webpack_require__(4);
 var getPrototypeOf = __webpack_require__(48);
 var setPrototypeOf = __webpack_require__(50);
 var create = __webpack_require__(45);
-var createNonEnumerableProperty = __webpack_require__(15);
+var createNonEnumerableProperty = __webpack_require__(12);
 var createPropertyDescriptor = __webpack_require__(18);
-var iterate = __webpack_require__(28);
+var iterate = __webpack_require__(29);
 var toString = __webpack_require__(47);
 
 var $AggregateError = function AggregateError(errors, message) {
@@ -3274,18 +3272,78 @@ $({ global: true }, {
 /* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(0);
+"use strict";
 
-module.exports = global.Promise;
+var toIndexedObject = __webpack_require__(23);
+var addToUnscopables = __webpack_require__(65);
+var Iterators = __webpack_require__(21);
+var InternalStateModule = __webpack_require__(26);
+var defineIterator = __webpack_require__(68);
+
+var ARRAY_ITERATOR = 'Array Iterator';
+var setInternalState = InternalStateModule.set;
+var getInternalState = InternalStateModule.getterFor(ARRAY_ITERATOR);
+
+// `Array.prototype.entries` method
+// https://tc39.es/ecma262/#sec-array.prototype.entries
+// `Array.prototype.keys` method
+// https://tc39.es/ecma262/#sec-array.prototype.keys
+// `Array.prototype.values` method
+// https://tc39.es/ecma262/#sec-array.prototype.values
+// `Array.prototype[@@iterator]` method
+// https://tc39.es/ecma262/#sec-array.prototype-@@iterator
+// `CreateArrayIterator` internal method
+// https://tc39.es/ecma262/#sec-createarrayiterator
+module.exports = defineIterator(Array, 'Array', function (iterated, kind) {
+  setInternalState(this, {
+    type: ARRAY_ITERATOR,
+    target: toIndexedObject(iterated), // target
+    index: 0,                          // next index
+    kind: kind                         // kind
+  });
+// `%ArrayIteratorPrototype%.next` method
+// https://tc39.es/ecma262/#sec-%arrayiteratorprototype%.next
+}, function () {
+  var state = getInternalState(this);
+  var target = state.target;
+  var kind = state.kind;
+  var index = state.index++;
+  if (!target || index >= target.length) {
+    state.target = undefined;
+    return { value: undefined, done: true };
+  }
+  if (kind == 'keys') return { value: index, done: false };
+  if (kind == 'values') return { value: target[index], done: false };
+  return { value: [index, target[index]], done: false };
+}, 'values');
+
+// argumentsList[@@iterator] is %ArrayProto_values%
+// https://tc39.es/ecma262/#sec-createunmappedargumentsobject
+// https://tc39.es/ecma262/#sec-createmappedargumentsobject
+Iterators.Arguments = Iterators.Array;
+
+// https://tc39.es/ecma262/#sec-array.prototype-@@unscopables
+addToUnscopables('keys');
+addToUnscopables('values');
+addToUnscopables('entries');
 
 
 /***/ }),
 /* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var global = __webpack_require__(0);
+
+module.exports = global.Promise;
+
+
+/***/ }),
+/* 78 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var anObject = __webpack_require__(7);
 var aFunction = __webpack_require__(17);
-var wellKnownSymbol = __webpack_require__(3);
+var wellKnownSymbol = __webpack_require__(1);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -3299,7 +3357,7 @@ module.exports = function (O, defaultConstructor) {
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -3307,7 +3365,7 @@ var fails = __webpack_require__(5);
 var bind = __webpack_require__(20);
 var html = __webpack_require__(66);
 var createElement = __webpack_require__(39);
-var IS_IOS = __webpack_require__(79);
+var IS_IOS = __webpack_require__(80);
 var IS_NODE = __webpack_require__(52);
 
 var set = global.setImmediate;
@@ -3417,16 +3475,16 @@ module.exports = {
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var userAgent = __webpack_require__(36);
+var userAgent = __webpack_require__(25);
 
-module.exports = /(?:iphone|ipod|ipad).*applewebkit/i.test(userAgent);
+module.exports = /(?:ipad|iphone|ipod).*applewebkit/i.test(userAgent);
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(7);
@@ -3444,7 +3502,7 @@ module.exports = function (C, x) {
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3452,8 +3510,8 @@ module.exports = function (C, x) {
 var $ = __webpack_require__(4);
 var aFunction = __webpack_require__(17);
 var newPromiseCapabilityModule = __webpack_require__(22);
-var perform = __webpack_require__(29);
-var iterate = __webpack_require__(28);
+var perform = __webpack_require__(30);
+var iterate = __webpack_require__(29);
 
 // `Promise.allSettled` method
 // https://tc39.es/ecma262/#sec-promise.allsettled
@@ -3494,7 +3552,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3503,8 +3561,8 @@ var $ = __webpack_require__(4);
 var aFunction = __webpack_require__(17);
 var getBuiltIn = __webpack_require__(10);
 var newPromiseCapabilityModule = __webpack_require__(22);
-var perform = __webpack_require__(29);
-var iterate = __webpack_require__(28);
+var perform = __webpack_require__(30);
+var iterate = __webpack_require__(29);
 
 var PROMISE_ANY_ERROR = 'No one promise resolved';
 
@@ -3547,7 +3605,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3559,32 +3617,28 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _player, _isFullscreen, _button, _fullscreenEvents, _fullscreenWidth, _fullscreenHeight, _clickEvent, _labels, _position, _layer;
+var _Fullscreen_player, _Fullscreen_isFullscreen, _Fullscreen_button, _Fullscreen_fullscreenEvents, _Fullscreen_fullscreenWidth, _Fullscreen_fullscreenHeight, _Fullscreen_clickEvent, _Fullscreen_labels, _Fullscreen_position, _Fullscreen_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var Fullscreen = function () {
   function Fullscreen(player, position, layer) {
@@ -3592,62 +3646,62 @@ var Fullscreen = function () {
 
     _classCallCheck(this, Fullscreen);
 
-    _player.set(this, void 0);
+    _Fullscreen_player.set(this, void 0);
 
-    _isFullscreen.set(this, void 0);
+    _Fullscreen_isFullscreen.set(this, void 0);
 
-    _button.set(this, void 0);
+    _Fullscreen_button.set(this, void 0);
 
-    _fullscreenEvents.set(this, []);
+    _Fullscreen_fullscreenEvents.set(this, []);
 
-    _fullscreenWidth.set(this, 0);
+    _Fullscreen_fullscreenWidth.set(this, 0);
 
-    _fullscreenHeight.set(this, 0);
+    _Fullscreen_fullscreenHeight.set(this, 0);
 
-    _clickEvent.set(this, void 0);
+    _Fullscreen_clickEvent.set(this, void 0);
 
-    _labels.set(this, void 0);
+    _Fullscreen_labels.set(this, void 0);
 
-    _position.set(this, void 0);
+    _Fullscreen_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Fullscreen_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Fullscreen_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+    __classPrivateFieldSet(this, _Fullscreen_labels, player.getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Fullscreen_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Fullscreen_layer, layer, "f");
 
-    __classPrivateFieldSet(this, _isFullscreen, document.body.classList.contains('op-fullscreen__on'));
+    __classPrivateFieldSet(this, _Fullscreen_isFullscreen, document.body.classList.contains('op-fullscreen__on'), "f");
 
     var target = document;
     this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
     this._keydownEvent = this._keydownEvent.bind(this);
     this._fullscreenChange = this._fullscreenChange.bind(this);
 
-    __classPrivateFieldSet(this, _fullscreenEvents, ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange']);
+    __classPrivateFieldSet(this, _Fullscreen_fullscreenEvents, ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'], "f");
 
-    __classPrivateFieldGet(this, _fullscreenEvents).forEach(function (event) {
+    __classPrivateFieldGet(this, _Fullscreen_fullscreenEvents, "f").forEach(function (event) {
       document.addEventListener(event, _this._fullscreenChange, constants_1.EVENT_OPTIONS);
     });
 
     this._setFullscreenData(false);
 
-    __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
+    __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
 
     if (constants_1.IS_IPHONE) {
-      __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitbeginfullscreen', function () {
-        __classPrivateFieldSet(_this, _isFullscreen, true);
+      __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitbeginfullscreen', function () {
+        __classPrivateFieldSet(_this, _Fullscreen_isFullscreen, true, "f");
 
         _this._setFullscreenData(true);
 
         document.body.classList.add('op-fullscreen__on');
       }, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getElement().addEventListener('webkitendfullscreen', function () {
-        __classPrivateFieldSet(_this, _isFullscreen, false);
+      __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitendfullscreen', function () {
+        __classPrivateFieldSet(_this, _Fullscreen_isFullscreen, false, "f");
 
         _this._setFullscreenData(false);
 
@@ -3663,55 +3717,55 @@ var Fullscreen = function () {
     value: function create() {
       var _this2 = this;
 
-      __classPrivateFieldSet(this, _button, document.createElement('button'));
+      __classPrivateFieldSet(this, _Fullscreen_button, document.createElement('button'), "f");
 
-      __classPrivateFieldGet(this, _button).type = 'button';
-      __classPrivateFieldGet(this, _button).className = "op-controls__fullscreen op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _button).tabIndex = 0;
-      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).fullscreen;
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").type = 'button';
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").className = "op-controls__fullscreen op-control__".concat(__classPrivateFieldGet(this, _Fullscreen_position, "f"));
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").tabIndex = 0;
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").title = __classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen;
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Fullscreen_player, "f").id);
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-pressed', 'false');
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).fullscreen);
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen);
 
-      __classPrivateFieldGet(this, _button).innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _labels).fullscreen, "</span>");
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen, "</span>");
 
-      __classPrivateFieldSet(this, _clickEvent, function () {
-        __classPrivateFieldGet(_this2, _button).setAttribute('aria-pressed', 'true');
+      __classPrivateFieldSet(this, _Fullscreen_clickEvent, function () {
+        __classPrivateFieldGet(_this2, _Fullscreen_button, "f").setAttribute('aria-pressed', 'true');
 
         _this2.toggleFullscreen();
-      });
+      }, "f");
 
-      __classPrivateFieldSet(this, _clickEvent, __classPrivateFieldGet(this, _clickEvent).bind(this));
+      __classPrivateFieldSet(this, _Fullscreen_clickEvent, __classPrivateFieldGet(this, _Fullscreen_clickEvent, "f").bind(this), "f");
 
-      __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _clickEvent), constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Fullscreen_clickEvent, "f"), constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
+      __classPrivateFieldGet(this, _Fullscreen_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Fullscreen_layer, "f")).appendChild(__classPrivateFieldGet(this, _Fullscreen_button, "f"));
     }
   }, {
     key: "destroy",
     value: function destroy() {
       var _this3 = this;
 
-      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
+      __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
 
-      __classPrivateFieldGet(this, _fullscreenEvents).forEach(function (event) {
+      __classPrivateFieldGet(this, _Fullscreen_fullscreenEvents, "f").forEach(function (event) {
         document.removeEventListener(event, _this3._fullscreenChange);
       });
 
       if (constants_1.IS_IPHONE) {
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitbeginfullscreen', function () {
-          __classPrivateFieldSet(_this3, _isFullscreen, true);
+        __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitbeginfullscreen', function () {
+          __classPrivateFieldSet(_this3, _Fullscreen_isFullscreen, true, "f");
 
           _this3._setFullscreenData(false);
 
           document.body.classList.add('op-fullscreen__on');
         });
 
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('webkitendfullscreen', function () {
-          __classPrivateFieldSet(_this3, _isFullscreen, false);
+        __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitendfullscreen', function () {
+          __classPrivateFieldSet(_this3, _Fullscreen_isFullscreen, false, "f");
 
           _this3._setFullscreenData(true);
 
@@ -3719,14 +3773,14 @@ var Fullscreen = function () {
         });
       }
 
-      __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _clickEvent));
+      __classPrivateFieldGet(this, _Fullscreen_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Fullscreen_clickEvent, "f"));
 
-      general_1.removeElement(__classPrivateFieldGet(this, _button));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Fullscreen_button, "f"));
     }
   }, {
     key: "toggleFullscreen",
     value: function toggleFullscreen() {
-      if (__classPrivateFieldGet(this, _isFullscreen)) {
+      if (__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
         var target = document;
 
         if (target.exitFullscreen) {
@@ -3743,11 +3797,11 @@ var Fullscreen = function () {
 
         document.body.classList.remove('op-fullscreen__on');
       } else {
-        var video = __classPrivateFieldGet(this, _player).getElement();
+        var video = __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement();
 
-        __classPrivateFieldSet(this, _fullscreenWidth, window.screen.width);
+        __classPrivateFieldSet(this, _Fullscreen_fullscreenWidth, window.screen.width, "f");
 
-        __classPrivateFieldSet(this, _fullscreenHeight, window.screen.height);
+        __classPrivateFieldSet(this, _Fullscreen_fullscreenHeight, window.screen.height, "f");
 
         if (video.requestFullscreen) {
           video.parentElement.requestFullscreen();
@@ -3770,7 +3824,7 @@ var Fullscreen = function () {
         var screen = window.screen;
 
         if (screen.orientation) {
-          if (!__classPrivateFieldGet(this, _isFullscreen)) {
+          if (!__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
             screen.orientation.lock('landscape');
           }
         }
@@ -3779,18 +3833,18 @@ var Fullscreen = function () {
   }, {
     key: "_fullscreenChange",
     value: function _fullscreenChange() {
-      var width = __classPrivateFieldGet(this, _isFullscreen) ? undefined : __classPrivateFieldGet(this, _fullscreenWidth);
-      var height = __classPrivateFieldGet(this, _isFullscreen) ? undefined : __classPrivateFieldGet(this, _fullscreenHeight);
+      var width = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? undefined : __classPrivateFieldGet(this, _Fullscreen_fullscreenWidth, "f");
+      var height = __classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f") ? undefined : __classPrivateFieldGet(this, _Fullscreen_fullscreenHeight, "f");
 
-      this._setFullscreenData(!__classPrivateFieldGet(this, _isFullscreen));
+      this._setFullscreenData(!__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f"));
 
-      if (__classPrivateFieldGet(this, _player).isAd()) {
-        __classPrivateFieldGet(this, _player).getAd().resizeAds(width, height);
+      if (__classPrivateFieldGet(this, _Fullscreen_player, "f").isAd()) {
+        __classPrivateFieldGet(this, _Fullscreen_player, "f").getAd().resizeAds(width, height);
       }
 
-      __classPrivateFieldSet(this, _isFullscreen, !__classPrivateFieldGet(this, _isFullscreen));
+      __classPrivateFieldSet(this, _Fullscreen_isFullscreen, !__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f"), "f");
 
-      if (__classPrivateFieldGet(this, _isFullscreen)) {
+      if (__classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
         document.body.classList.add('op-fullscreen__on');
       } else {
         document.body.classList.remove('op-fullscreen__on');
@@ -3801,24 +3855,24 @@ var Fullscreen = function () {
   }, {
     key: "_setFullscreenData",
     value: function _setFullscreenData(state) {
-      __classPrivateFieldGet(this, _player).getContainer().setAttribute('data-fullscreen', (!!state).toString());
+      __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().setAttribute('data-fullscreen', (!!state).toString());
 
-      if (__classPrivateFieldGet(this, _button)) {
+      if (__classPrivateFieldGet(this, _Fullscreen_button, "f")) {
         if (state) {
-          __classPrivateFieldGet(this, _button).classList.add('op-controls__fullscreen--out');
+          __classPrivateFieldGet(this, _Fullscreen_button, "f").classList.add('op-controls__fullscreen--out');
         } else {
-          __classPrivateFieldGet(this, _button).classList.remove('op-controls__fullscreen--out');
+          __classPrivateFieldGet(this, _Fullscreen_button, "f").classList.remove('op-controls__fullscreen--out');
         }
       }
     }
   }, {
     key: "_resize",
     value: function _resize(width, height) {
-      var wrapper = __classPrivateFieldGet(this, _player).getContainer();
+      var wrapper = __classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer();
 
-      var video = __classPrivateFieldGet(this, _player).getElement();
+      var video = __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement();
 
-      var options = __classPrivateFieldGet(this, _player).getOptions();
+      var options = __classPrivateFieldGet(this, _Fullscreen_player, "f").getOptions();
 
       var styles = '';
 
@@ -3869,36 +3923,45 @@ var Fullscreen = function () {
   return Fullscreen;
 }();
 
-_player = new WeakMap(), _isFullscreen = new WeakMap(), _button = new WeakMap(), _fullscreenEvents = new WeakMap(), _fullscreenWidth = new WeakMap(), _fullscreenHeight = new WeakMap(), _clickEvent = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _Fullscreen_button = new WeakMap(), _Fullscreen_fullscreenEvents = new WeakMap(), _Fullscreen_fullscreenWidth = new WeakMap(), _Fullscreen_fullscreenHeight = new WeakMap(), _Fullscreen_clickEvent = new WeakMap(), _Fullscreen_labels = new WeakMap(), _Fullscreen_position = new WeakMap(), _Fullscreen_layer = new WeakMap();
 exports["default"] = Fullscreen;
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(85);
-
-module.exports = parent;
-
 
 /***/ }),
 /* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(86);
-var entryUnbind = __webpack_require__(100);
+var parent = __webpack_require__(86);
 
-module.exports = entryUnbind('Array', 'find');
+module.exports = parent;
 
 
 /***/ }),
 /* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var parent = __webpack_require__(87);
+
+module.exports = parent;
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(88);
+var entryUnbind = __webpack_require__(102);
+
+module.exports = entryUnbind('Array', 'find');
+
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 var $ = __webpack_require__(4);
-var $find = __webpack_require__(95).find;
+var $find = __webpack_require__(97).find;
 var addToUnscopables = __webpack_require__(65);
 
 var FIND = 'find';
@@ -3920,13 +3983,13 @@ addToUnscopables(FIND);
 
 
 /***/ }),
-/* 87 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
-var isSymbol = __webpack_require__(35);
-var ordinaryToPrimitive = __webpack_require__(88);
-var wellKnownSymbol = __webpack_require__(3);
+var isSymbol = __webpack_require__(36);
+var ordinaryToPrimitive = __webpack_require__(90);
+var wellKnownSymbol = __webpack_require__(1);
 
 var TO_PRIMITIVE = wellKnownSymbol('toPrimitive');
 
@@ -3948,7 +4011,7 @@ module.exports = function (input, pref) {
 
 
 /***/ }),
-/* 88 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
@@ -3965,7 +4028,7 @@ module.exports = function (input, pref) {
 
 
 /***/ }),
-/* 89 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -3977,13 +4040,13 @@ module.exports = typeof WeakMap === 'function' && /native code/.test(inspectSour
 
 
 /***/ }),
-/* 90 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(9);
-var ownKeys = __webpack_require__(91);
-var getOwnPropertyDescriptorModule = __webpack_require__(31);
-var definePropertyModule = __webpack_require__(12);
+var ownKeys = __webpack_require__(93);
+var getOwnPropertyDescriptorModule = __webpack_require__(32);
+var definePropertyModule = __webpack_require__(13);
 
 module.exports = function (target, source) {
   var keys = ownKeys(source);
@@ -3997,11 +4060,11 @@ module.exports = function (target, source) {
 
 
 /***/ }),
-/* 91 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getBuiltIn = __webpack_require__(10);
-var getOwnPropertyNamesModule = __webpack_require__(92);
+var getOwnPropertyNamesModule = __webpack_require__(94);
 var getOwnPropertySymbolsModule = __webpack_require__(63);
 var anObject = __webpack_require__(7);
 
@@ -4014,7 +4077,7 @@ module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
 
 
 /***/ }),
-/* 92 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var internalObjectKeys = __webpack_require__(62);
@@ -4031,12 +4094,12 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 
 
 /***/ }),
-/* 93 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toIndexedObject = __webpack_require__(23);
-var toLength = __webpack_require__(26);
-var toAbsoluteIndex = __webpack_require__(94);
+var toLength = __webpack_require__(27);
+var toAbsoluteIndex = __webpack_require__(96);
 
 // `Array.prototype.{ indexOf, includes }` methods implementation
 var createMethod = function (IS_INCLUDES) {
@@ -4069,7 +4132,7 @@ module.exports = {
 
 
 /***/ }),
-/* 94 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(43);
@@ -4087,14 +4150,14 @@ module.exports = function (index, length) {
 
 
 /***/ }),
-/* 95 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var bind = __webpack_require__(20);
-var IndexedObject = __webpack_require__(32);
-var toObject = __webpack_require__(14);
-var toLength = __webpack_require__(26);
-var arraySpeciesCreate = __webpack_require__(96);
+var IndexedObject = __webpack_require__(33);
+var toObject = __webpack_require__(15);
+var toLength = __webpack_require__(27);
+var arraySpeciesCreate = __webpack_require__(98);
 
 var push = [].push;
 
@@ -4165,10 +4228,10 @@ module.exports = {
 
 
 /***/ }),
-/* 96 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var arraySpeciesConstructor = __webpack_require__(97);
+var arraySpeciesConstructor = __webpack_require__(99);
 
 // `ArraySpeciesCreate` abstract operation
 // https://tc39.es/ecma262/#sec-arrayspeciescreate
@@ -4178,12 +4241,12 @@ module.exports = function (originalArray, length) {
 
 
 /***/ }),
-/* 97 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
-var isArray = __webpack_require__(98);
-var wellKnownSymbol = __webpack_require__(3);
+var isArray = __webpack_require__(100);
+var wellKnownSymbol = __webpack_require__(1);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -4204,7 +4267,7 @@ module.exports = function (originalArray) {
 
 
 /***/ }),
-/* 98 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var classof = __webpack_require__(24);
@@ -4218,11 +4281,11 @@ module.exports = Array.isArray || function isArray(arg) {
 
 
 /***/ }),
-/* 99 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var DESCRIPTORS = __webpack_require__(11);
-var definePropertyModule = __webpack_require__(12);
+var definePropertyModule = __webpack_require__(13);
 var anObject = __webpack_require__(7);
 var objectKeys = __webpack_require__(46);
 
@@ -4241,7 +4304,7 @@ module.exports = DESCRIPTORS ? Object.defineProperties : function defineProperti
 
 
 /***/ }),
-/* 100 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -4255,32 +4318,41 @@ module.exports = function (CONSTRUCTOR, METHOD, length) {
 
 
 /***/ }),
-/* 101 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(102);
+var parent = __webpack_require__(104);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 102 */
+/* 104 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parent = __webpack_require__(105);
+
+module.exports = parent;
+
+
+/***/ }),
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(67);
-__webpack_require__(107);
-var path = __webpack_require__(27);
+__webpack_require__(110);
+var path = __webpack_require__(28);
 
 module.exports = path.Array.from;
 
 
 /***/ }),
-/* 103 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(43);
 var toString = __webpack_require__(47);
-var requireObjectCoercible = __webpack_require__(33);
+var requireObjectCoercible = __webpack_require__(34);
 
 // `String.prototype.codePointAt` methods implementation
 var createMethod = function (CONVERT_TO_STRING) {
@@ -4309,7 +4381,7 @@ module.exports = {
 
 
 /***/ }),
-/* 104 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4332,7 +4404,7 @@ module.exports = function (IteratorConstructor, NAME, next) {
 
 
 /***/ }),
-/* 105 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fails = __webpack_require__(5);
@@ -4346,7 +4418,7 @@ module.exports = !fails(function () {
 
 
 /***/ }),
-/* 106 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(8);
@@ -4359,11 +4431,11 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 107 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(4);
-var from = __webpack_require__(108);
+var from = __webpack_require__(111);
 var checkCorrectnessOfIteration = __webpack_require__(74);
 
 var INCORRECT_ITERATION = !checkCorrectnessOfIteration(function (iterable) {
@@ -4379,17 +4451,17 @@ $({ target: 'Array', stat: true, forced: INCORRECT_ITERATION }, {
 
 
 /***/ }),
-/* 108 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var bind = __webpack_require__(20);
-var toObject = __webpack_require__(14);
-var callWithSafeIterationClosing = __webpack_require__(109);
+var toObject = __webpack_require__(15);
+var callWithSafeIterationClosing = __webpack_require__(112);
 var isArrayIteratorMethod = __webpack_require__(71);
-var toLength = __webpack_require__(26);
-var createProperty = __webpack_require__(110);
+var toLength = __webpack_require__(27);
+var createProperty = __webpack_require__(113);
 var getIteratorMethod = __webpack_require__(72);
 
 // `Array.from` method implementation
@@ -4427,7 +4499,7 @@ module.exports = function from(arrayLike /* , mapfn = undefined, thisArg = undef
 
 
 /***/ }),
-/* 109 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(7);
@@ -4445,13 +4517,13 @@ module.exports = function (iterator, fn, value, ENTRIES) {
 
 
 /***/ }),
-/* 110 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var toPropertyKey = __webpack_require__(34);
-var definePropertyModule = __webpack_require__(12);
+var toPropertyKey = __webpack_require__(35);
+var definePropertyModule = __webpack_require__(13);
 var createPropertyDescriptor = __webpack_require__(18);
 
 module.exports = function (object, key, value) {
@@ -4462,30 +4534,39 @@ module.exports = function (object, key, value) {
 
 
 /***/ }),
-/* 111 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(112);
+var parent = __webpack_require__(115);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 112 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(113);
-var path = __webpack_require__(27);
+var parent = __webpack_require__(116);
+
+module.exports = parent;
+
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(117);
+var path = __webpack_require__(28);
 
 module.exports = path.Object.assign;
 
 
 /***/ }),
-/* 113 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(4);
-var assign = __webpack_require__(114);
+var assign = __webpack_require__(118);
 
 // `Object.assign` method
 // https://tc39.es/ecma262/#sec-object.assign
@@ -4496,7 +4577,7 @@ $({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
 
 
 /***/ }),
-/* 114 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4506,8 +4587,8 @@ var fails = __webpack_require__(5);
 var objectKeys = __webpack_require__(46);
 var getOwnPropertySymbolsModule = __webpack_require__(63);
 var propertyIsEnumerableModule = __webpack_require__(55);
-var toObject = __webpack_require__(14);
-var IndexedObject = __webpack_require__(32);
+var toObject = __webpack_require__(15);
+var IndexedObject = __webpack_require__(33);
 
 // eslint-disable-next-line es/no-object-assign -- safe
 var $assign = Object.assign;
@@ -4557,30 +4638,39 @@ module.exports = !$assign || fails(function () {
 
 
 /***/ }),
-/* 115 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(116);
+var parent = __webpack_require__(120);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 116 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(117);
-var path = __webpack_require__(27);
+var parent = __webpack_require__(121);
+
+module.exports = parent;
+
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(122);
+var path = __webpack_require__(28);
 
 module.exports = path.Object.keys;
 
 
 /***/ }),
-/* 117 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(4);
-var toObject = __webpack_require__(14);
+var toObject = __webpack_require__(15);
 var nativeKeys = __webpack_require__(46);
 var fails = __webpack_require__(5);
 
@@ -4596,103 +4686,53 @@ $({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
 
 
 /***/ }),
-/* 118 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var parent = __webpack_require__(119);
-__webpack_require__(132);
+var parent = __webpack_require__(124);
+__webpack_require__(140);
 // TODO: Remove from `core-js@4`
-__webpack_require__(133);
-__webpack_require__(134);
-__webpack_require__(135);
+__webpack_require__(141);
+__webpack_require__(142);
+__webpack_require__(143);
 
 module.exports = parent;
 
 
 /***/ }),
-/* 119 */
+/* 124 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var parent = __webpack_require__(125);
+__webpack_require__(138);
+
+module.exports = parent;
+
+
+/***/ }),
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(75);
-__webpack_require__(120);
-__webpack_require__(121);
-__webpack_require__(123);
-__webpack_require__(81);
+__webpack_require__(76);
+__webpack_require__(126);
+__webpack_require__(128);
 __webpack_require__(82);
-__webpack_require__(131);
+__webpack_require__(83);
+__webpack_require__(137);
 __webpack_require__(67);
-var path = __webpack_require__(27);
+var path = __webpack_require__(28);
 
 module.exports = path.Promise;
 
 
 /***/ }),
-/* 120 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var toIndexedObject = __webpack_require__(23);
-var addToUnscopables = __webpack_require__(65);
-var Iterators = __webpack_require__(21);
-var InternalStateModule = __webpack_require__(25);
-var defineIterator = __webpack_require__(68);
-
-var ARRAY_ITERATOR = 'Array Iterator';
-var setInternalState = InternalStateModule.set;
-var getInternalState = InternalStateModule.getterFor(ARRAY_ITERATOR);
-
-// `Array.prototype.entries` method
-// https://tc39.es/ecma262/#sec-array.prototype.entries
-// `Array.prototype.keys` method
-// https://tc39.es/ecma262/#sec-array.prototype.keys
-// `Array.prototype.values` method
-// https://tc39.es/ecma262/#sec-array.prototype.values
-// `Array.prototype[@@iterator]` method
-// https://tc39.es/ecma262/#sec-array.prototype-@@iterator
-// `CreateArrayIterator` internal method
-// https://tc39.es/ecma262/#sec-createarrayiterator
-module.exports = defineIterator(Array, 'Array', function (iterated, kind) {
-  setInternalState(this, {
-    type: ARRAY_ITERATOR,
-    target: toIndexedObject(iterated), // target
-    index: 0,                          // next index
-    kind: kind                         // kind
-  });
-// `%ArrayIteratorPrototype%.next` method
-// https://tc39.es/ecma262/#sec-%arrayiteratorprototype%.next
-}, function () {
-  var state = getInternalState(this);
-  var target = state.target;
-  var kind = state.kind;
-  var index = state.index++;
-  if (!target || index >= target.length) {
-    state.target = undefined;
-    return { value: undefined, done: true };
-  }
-  if (kind == 'keys') return { value: index, done: false };
-  if (kind == 'values') return { value: target[index], done: false };
-  return { value: [index, target[index]], done: false };
-}, 'values');
-
-// argumentsList[@@iterator] is %ArrayProto_values%
-// https://tc39.es/ecma262/#sec-createunmappedargumentsobject
-// https://tc39.es/ecma262/#sec-createmappedargumentsobject
-Iterators.Arguments = Iterators.Array;
-
-// https://tc39.es/ecma262/#sec-array.prototype-@@unscopables
-addToUnscopables('keys');
-addToUnscopables('values');
-addToUnscopables('entries');
-
-
-/***/ }),
-/* 121 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var TO_STRING_TAG_SUPPORT = __webpack_require__(51);
 var redefine = __webpack_require__(16);
-var toString = __webpack_require__(122);
+var toString = __webpack_require__(127);
 
 // `Object.prototype.toString` method
 // https://tc39.es/ecma262/#sec-object.prototype.tostring
@@ -4702,7 +4742,7 @@ if (!TO_STRING_TAG_SUPPORT) {
 
 
 /***/ }),
-/* 122 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4718,7 +4758,7 @@ module.exports = TO_STRING_TAG_SUPPORT ? {}.toString : function toString() {
 
 
 /***/ }),
-/* 123 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4727,29 +4767,29 @@ var $ = __webpack_require__(4);
 var IS_PURE = __webpack_require__(19);
 var global = __webpack_require__(0);
 var getBuiltIn = __webpack_require__(10);
-var NativePromise = __webpack_require__(76);
+var NativePromise = __webpack_require__(77);
 var redefine = __webpack_require__(16);
-var redefineAll = __webpack_require__(124);
+var redefineAll = __webpack_require__(129);
 var setPrototypeOf = __webpack_require__(50);
 var setToStringTag = __webpack_require__(49);
-var setSpecies = __webpack_require__(125);
+var setSpecies = __webpack_require__(130);
 var isObject = __webpack_require__(8);
 var aFunction = __webpack_require__(17);
-var anInstance = __webpack_require__(126);
+var anInstance = __webpack_require__(131);
 var inspectSource = __webpack_require__(40);
-var iterate = __webpack_require__(28);
+var iterate = __webpack_require__(29);
 var checkCorrectnessOfIteration = __webpack_require__(74);
-var speciesConstructor = __webpack_require__(77);
-var task = __webpack_require__(78).set;
-var microtask = __webpack_require__(127);
-var promiseResolve = __webpack_require__(80);
-var hostReportErrors = __webpack_require__(129);
+var speciesConstructor = __webpack_require__(78);
+var task = __webpack_require__(79).set;
+var microtask = __webpack_require__(132);
+var promiseResolve = __webpack_require__(81);
+var hostReportErrors = __webpack_require__(135);
 var newPromiseCapabilityModule = __webpack_require__(22);
-var perform = __webpack_require__(29);
-var InternalStateModule = __webpack_require__(25);
+var perform = __webpack_require__(30);
+var InternalStateModule = __webpack_require__(26);
 var isForced = __webpack_require__(64);
-var wellKnownSymbol = __webpack_require__(3);
-var IS_BROWSER = __webpack_require__(130);
+var wellKnownSymbol = __webpack_require__(1);
+var IS_BROWSER = __webpack_require__(136);
 var IS_NODE = __webpack_require__(52);
 var V8_VERSION = __webpack_require__(58);
 
@@ -5118,7 +5158,7 @@ $({ target: PROMISE, stat: true, forced: INCORRECT_ITERATION }, {
 
 
 /***/ }),
-/* 124 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var redefine = __webpack_require__(16);
@@ -5130,14 +5170,14 @@ module.exports = function (target, src, options) {
 
 
 /***/ }),
-/* 125 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var getBuiltIn = __webpack_require__(10);
-var definePropertyModule = __webpack_require__(12);
-var wellKnownSymbol = __webpack_require__(3);
+var definePropertyModule = __webpack_require__(13);
+var wellKnownSymbol = __webpack_require__(1);
 var DESCRIPTORS = __webpack_require__(11);
 
 var SPECIES = wellKnownSymbol('species');
@@ -5156,7 +5196,7 @@ module.exports = function (CONSTRUCTOR_NAME) {
 
 
 /***/ }),
-/* 126 */
+/* 131 */
 /***/ (function(module, exports) {
 
 module.exports = function (it, Constructor, name) {
@@ -5167,14 +5207,15 @@ module.exports = function (it, Constructor, name) {
 
 
 /***/ }),
-/* 127 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var getOwnPropertyDescriptor = __webpack_require__(31).f;
-var macrotask = __webpack_require__(78).set;
-var IS_IOS = __webpack_require__(79);
-var IS_WEBOS_WEBKIT = __webpack_require__(128);
+var getOwnPropertyDescriptor = __webpack_require__(32).f;
+var macrotask = __webpack_require__(79).set;
+var IS_IOS = __webpack_require__(80);
+var IS_IOS_PEBBLE = __webpack_require__(133);
+var IS_WEBOS_WEBKIT = __webpack_require__(134);
 var IS_NODE = __webpack_require__(52);
 
 var MutationObserver = global.MutationObserver || global.WebKitMutationObserver;
@@ -5216,7 +5257,7 @@ if (!queueMicrotask) {
       node.data = toggle = !toggle;
     };
   // environments with maybe non-completely correct, but existent Promise
-  } else if (Promise && Promise.resolve) {
+  } else if (!IS_IOS_PEBBLE && Promise && Promise.resolve) {
     // Promise.resolve without an argument throws an error in LG WebOS 2
     promise = Promise.resolve(undefined);
     // workaround of WebKit ~ iOS Safari 10.1 bug
@@ -5255,16 +5296,26 @@ module.exports = queueMicrotask || function (fn) {
 
 
 /***/ }),
-/* 128 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var userAgent = __webpack_require__(36);
+var userAgent = __webpack_require__(25);
+var global = __webpack_require__(0);
+
+module.exports = /ipad|iphone|ipod/i.test(userAgent) && global.Pebble !== undefined;
+
+
+/***/ }),
+/* 134 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var userAgent = __webpack_require__(25);
 
 module.exports = /web0s(?!.*chrome)/i.test(userAgent);
 
 
 /***/ }),
-/* 129 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -5278,25 +5329,25 @@ module.exports = function (a, b) {
 
 
 /***/ }),
-/* 130 */
+/* 136 */
 /***/ (function(module, exports) {
 
 module.exports = typeof window == 'object';
 
 
 /***/ }),
-/* 131 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $ = __webpack_require__(4);
 var IS_PURE = __webpack_require__(19);
-var NativePromise = __webpack_require__(76);
+var NativePromise = __webpack_require__(77);
 var fails = __webpack_require__(5);
 var getBuiltIn = __webpack_require__(10);
-var speciesConstructor = __webpack_require__(77);
-var promiseResolve = __webpack_require__(80);
+var speciesConstructor = __webpack_require__(78);
+var promiseResolve = __webpack_require__(81);
 var redefine = __webpack_require__(16);
 
 // Safari bug https://bugs.webkit.org/show_bug.cgi?id=200829
@@ -5331,7 +5382,87 @@ if (!IS_PURE && typeof NativePromise == 'function') {
 
 
 /***/ }),
-/* 132 */
+/* 138 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(0);
+var DOMIterables = __webpack_require__(139);
+var ArrayIteratorMethods = __webpack_require__(76);
+var createNonEnumerableProperty = __webpack_require__(12);
+var wellKnownSymbol = __webpack_require__(1);
+
+var ITERATOR = wellKnownSymbol('iterator');
+var TO_STRING_TAG = wellKnownSymbol('toStringTag');
+var ArrayValues = ArrayIteratorMethods.values;
+
+for (var COLLECTION_NAME in DOMIterables) {
+  var Collection = global[COLLECTION_NAME];
+  var CollectionPrototype = Collection && Collection.prototype;
+  if (CollectionPrototype) {
+    // some Chrome versions have non-configurable methods on DOMTokenList
+    if (CollectionPrototype[ITERATOR] !== ArrayValues) try {
+      createNonEnumerableProperty(CollectionPrototype, ITERATOR, ArrayValues);
+    } catch (error) {
+      CollectionPrototype[ITERATOR] = ArrayValues;
+    }
+    if (!CollectionPrototype[TO_STRING_TAG]) {
+      createNonEnumerableProperty(CollectionPrototype, TO_STRING_TAG, COLLECTION_NAME);
+    }
+    if (DOMIterables[COLLECTION_NAME]) for (var METHOD_NAME in ArrayIteratorMethods) {
+      // some Chrome versions have non-configurable methods on DOMTokenList
+      if (CollectionPrototype[METHOD_NAME] !== ArrayIteratorMethods[METHOD_NAME]) try {
+        createNonEnumerableProperty(CollectionPrototype, METHOD_NAME, ArrayIteratorMethods[METHOD_NAME]);
+      } catch (error) {
+        CollectionPrototype[METHOD_NAME] = ArrayIteratorMethods[METHOD_NAME];
+      }
+    }
+  }
+}
+
+
+/***/ }),
+/* 139 */
+/***/ (function(module, exports) {
+
+// iterable DOM collections
+// flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
+module.exports = {
+  CSSRuleList: 0,
+  CSSStyleDeclaration: 0,
+  CSSValueList: 0,
+  ClientRectList: 0,
+  DOMRectList: 0,
+  DOMStringList: 0,
+  DOMTokenList: 1,
+  DataTransferItemList: 0,
+  FileList: 0,
+  HTMLAllCollection: 0,
+  HTMLCollection: 0,
+  HTMLFormElement: 0,
+  HTMLSelectElement: 0,
+  MediaList: 0,
+  MimeTypeArray: 0,
+  NamedNodeMap: 0,
+  NodeList: 1,
+  PaintRequestList: 0,
+  Plugin: 0,
+  PluginArray: 0,
+  SVGLengthList: 0,
+  SVGNumberList: 0,
+  SVGPathSegList: 0,
+  SVGPointList: 0,
+  SVGStringList: 0,
+  SVGTransformList: 0,
+  SourceBufferList: 0,
+  StyleSheetList: 0,
+  TextTrackCueList: 0,
+  TextTrackList: 0,
+  TouchList: 0
+};
+
+
+/***/ }),
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
@@ -5339,22 +5470,22 @@ __webpack_require__(75);
 
 
 /***/ }),
-/* 133 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
-__webpack_require__(81);
+__webpack_require__(82);
 
 
 /***/ }),
-/* 134 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $ = __webpack_require__(4);
 var newPromiseCapabilityModule = __webpack_require__(22);
-var perform = __webpack_require__(29);
+var perform = __webpack_require__(30);
 
 // `Promise.try` method
 // https://github.com/tc39/proposal-promise-try
@@ -5369,15 +5500,15 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 135 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
-__webpack_require__(82);
+__webpack_require__(83);
 
 
 /***/ }),
-/* 136 */
+/* 144 */
 /***/ (function(module, exports) {
 
 // Polyfill for creating CustomEvents on IE9/10/11
@@ -5436,74 +5567,7 @@ __webpack_require__(82);
 
 
 /***/ }),
-/* 137 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var element_closest_1 = __importDefault(__webpack_require__(138));
-
-if (typeof window !== 'undefined') {
-  element_closest_1["default"](window);
-}
-
-/***/ }),
-/* 138 */
-/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-function polyfill(window) {
-  var ElementPrototype = window.Element.prototype;
-
-  if (typeof ElementPrototype.matches !== 'function') {
-    ElementPrototype.matches = ElementPrototype.msMatchesSelector || ElementPrototype.mozMatchesSelector || ElementPrototype.webkitMatchesSelector || function matches(selector) {
-      var element = this;
-      var elements = (element.document || element.ownerDocument).querySelectorAll(selector);
-      var index = 0;
-
-      while (elements[index] && elements[index] !== element) {
-        ++index;
-      }
-
-      return Boolean(elements[index]);
-    };
-  }
-
-  if (typeof ElementPrototype.closest !== 'function') {
-    ElementPrototype.closest = function closest(selector) {
-      var element = this;
-
-      while (element && element.nodeType === 1) {
-        if (element.matches(selector)) {
-          return element;
-        }
-
-        element = element.parentNode;
-      }
-
-      return null;
-    };
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (polyfill);
-//# sourceMappingURL=index.mjs.map
-
-
-/***/ }),
-/* 139 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5517,7 +5581,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -5527,21 +5591,17 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -5550,33 +5610,33 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _settings, _timer, _controls, _player, _items, _controlEls;
+var _Controls_settings, _Controls_timer, _Controls_controls, _Controls_player, _Controls_items, _Controls_controlEls;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var captions_1 = __importDefault(__webpack_require__(140));
+var captions_1 = __importDefault(__webpack_require__(146));
 
-var fullscreen_1 = __importDefault(__webpack_require__(83));
+var fullscreen_1 = __importDefault(__webpack_require__(84));
 
-var levels_1 = __importDefault(__webpack_require__(141));
+var levels_1 = __importDefault(__webpack_require__(147));
 
-var play_1 = __importDefault(__webpack_require__(142));
+var play_1 = __importDefault(__webpack_require__(148));
 
-var progress_1 = __importDefault(__webpack_require__(143));
+var progress_1 = __importDefault(__webpack_require__(149));
 
-var settings_1 = __importDefault(__webpack_require__(144));
+var settings_1 = __importDefault(__webpack_require__(150));
 
-var time_1 = __importDefault(__webpack_require__(145));
+var time_1 = __importDefault(__webpack_require__(151));
 
-var volume_1 = __importDefault(__webpack_require__(146));
+var volume_1 = __importDefault(__webpack_require__(152));
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var Controls = function () {
   function Controls(player) {
@@ -5587,17 +5647,17 @@ var Controls = function () {
       mouse: {}
     };
 
-    _settings.set(this, void 0);
+    _Controls_settings.set(this, void 0);
 
-    _timer.set(this, 0);
+    _Controls_timer.set(this, 0);
 
-    _controls.set(this, void 0);
+    _Controls_controls.set(this, void 0);
 
-    _player.set(this, void 0);
+    _Controls_player.set(this, void 0);
 
-    _items.set(this, void 0);
+    _Controls_items.set(this, void 0);
 
-    _controlEls.set(this, {
+    _Controls_controlEls.set(this, {
       Captions: captions_1["default"],
       Fullscreen: fullscreen_1["default"],
       Levels: levels_1["default"],
@@ -5608,7 +5668,7 @@ var Controls = function () {
       Volume: volume_1["default"]
     });
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Controls_player, player, "f");
 
     this._setElements();
 
@@ -5620,8 +5680,8 @@ var Controls = function () {
     value: function create() {
       var _this = this;
 
-      __classPrivateFieldGet(this, _player).getElement().controls = false;
-      var isMediaVideo = general_1.isVideo(__classPrivateFieldGet(this, _player).getElement());
+      __classPrivateFieldGet(this, _Controls_player, "f").getElement().controls = false;
+      var isMediaVideo = (0, general_1.isVideo)(__classPrivateFieldGet(this, _Controls_player, "f").getElement());
 
       this._createControlsLayer();
 
@@ -5636,71 +5696,71 @@ var Controls = function () {
       };
 
       this.events.ended = function () {
-        __classPrivateFieldGet(_this, _player).getContainer().classList.remove('op-controls--hidden');
+        __classPrivateFieldGet(_this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
       };
 
-      __classPrivateFieldGet(this, _player).getElement().addEventListener('controlschanged', this.events.controlschanged, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlschanged', this.events.controlschanged, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getElement().addEventListener('ended', this.events.ended, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('ended', this.events.ended, constants_1.EVENT_OPTIONS);
 
-      var alwaysVisible = __classPrivateFieldGet(this, _player).getOptions().controls.alwaysVisible;
+      var alwaysVisible = __classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls.alwaysVisible;
 
       if (!alwaysVisible && !constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         var showControls = function showControls() {
           if (isMediaVideo) {
-            __classPrivateFieldGet(_this, _player).getContainer().classList.remove('op-controls--hidden');
+            __classPrivateFieldGet(_this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
 
             _this._stopControlTimer();
           }
         };
 
         this.events.mouse.mouseenter = function () {
-          if (isMediaVideo && !__classPrivateFieldGet(_this, _player).activeElement().paused) {
+          if (isMediaVideo && !__classPrivateFieldGet(_this, _Controls_player, "f").activeElement().paused) {
             _this._stopControlTimer();
 
-            if (__classPrivateFieldGet(_this, _player).activeElement().currentTime) {
-              __classPrivateFieldGet(_this, _player).playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _player).isMedia() ? 'false' : 'true');
+            if (__classPrivateFieldGet(_this, _Controls_player, "f").activeElement().currentTime) {
+              __classPrivateFieldGet(_this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _Controls_player, "f").isMedia() ? 'false' : 'true');
 
-              __classPrivateFieldGet(_this, _player).loader.setAttribute('aria-hidden', 'true');
-            } else if (__classPrivateFieldGet(_this, _player).getOptions().showLoaderOnInit) {
-              __classPrivateFieldGet(_this, _player).playBtn.setAttribute('aria-hidden', 'true');
+              __classPrivateFieldGet(_this, _Controls_player, "f").loader.setAttribute('aria-hidden', 'true');
+            } else if (__classPrivateFieldGet(_this, _Controls_player, "f").getOptions().showLoaderOnInit) {
+              __classPrivateFieldGet(_this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', 'true');
 
-              __classPrivateFieldGet(_this, _player).loader.setAttribute('aria-hidden', 'false');
+              __classPrivateFieldGet(_this, _Controls_player, "f").loader.setAttribute('aria-hidden', 'false');
             }
 
-            __classPrivateFieldGet(_this, _player).getContainer().classList.remove('op-controls--hidden');
+            __classPrivateFieldGet(_this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
 
             _this._startControlTimer(2500);
           }
         };
 
         this.events.mouse.mousemove = function () {
-          if (isMediaVideo && !__classPrivateFieldGet(_this, _player).activeElement().paused) {
-            if (__classPrivateFieldGet(_this, _player).activeElement().currentTime) {
-              __classPrivateFieldGet(_this, _player).loader.setAttribute('aria-hidden', 'true');
+          if (isMediaVideo && !__classPrivateFieldGet(_this, _Controls_player, "f").activeElement().paused) {
+            if (__classPrivateFieldGet(_this, _Controls_player, "f").activeElement().currentTime) {
+              __classPrivateFieldGet(_this, _Controls_player, "f").loader.setAttribute('aria-hidden', 'true');
 
-              __classPrivateFieldGet(_this, _player).playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _player).isMedia() ? 'false' : 'true');
+              __classPrivateFieldGet(_this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _Controls_player, "f").isMedia() ? 'false' : 'true');
             } else {
-              __classPrivateFieldGet(_this, _player).playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _player).getOptions().showLoaderOnInit ? 'true' : 'false');
+              __classPrivateFieldGet(_this, _Controls_player, "f").playBtn.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _Controls_player, "f").getOptions().showLoaderOnInit ? 'true' : 'false');
 
-              __classPrivateFieldGet(_this, _player).loader.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _player).getOptions().showLoaderOnInit ? 'false' : 'true');
+              __classPrivateFieldGet(_this, _Controls_player, "f").loader.setAttribute('aria-hidden', __classPrivateFieldGet(_this, _Controls_player, "f").getOptions().showLoaderOnInit ? 'false' : 'true');
             }
 
-            __classPrivateFieldGet(_this, _player).getContainer().classList.remove('op-controls--hidden');
+            __classPrivateFieldGet(_this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
 
             _this._startControlTimer(2500);
           }
         };
 
         this.events.mouse.mouseleave = function () {
-          if (isMediaVideo && !__classPrivateFieldGet(_this, _player).activeElement().paused) {
+          if (isMediaVideo && !__classPrivateFieldGet(_this, _Controls_player, "f").activeElement().paused) {
             _this._startControlTimer(1000);
           }
         };
 
         this.events.media.play = function () {
           if (isMediaVideo) {
-            _this._startControlTimer(__classPrivateFieldGet(_this, _player).getOptions().hidePlayBtnTimer);
+            _this._startControlTimer(__classPrivateFieldGet(_this, _Controls_player, "f").getOptions().hidePlayBtnTimer);
           }
         };
 
@@ -5710,10 +5770,10 @@ var Controls = function () {
         this.events.media.stalled = showControls.bind(this);
         this.events.media.playererror = showControls.bind(this);
         Object.keys(this.events.media).forEach(function (event) {
-          __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
+          __classPrivateFieldGet(_this, _Controls_player, "f").getElement().addEventListener(event, _this.events.media[event], constants_1.EVENT_OPTIONS);
         });
         Object.keys(this.events.mouse).forEach(function (event) {
-          __classPrivateFieldGet(_this, _player).getContainer().addEventListener(event, _this.events.mouse[event], constants_1.EVENT_OPTIONS);
+          __classPrivateFieldGet(_this, _Controls_player, "f").getContainer().addEventListener(event, _this.events.mouse[event], constants_1.EVENT_OPTIONS);
         });
 
         this._startControlTimer(3000);
@@ -5726,21 +5786,21 @@ var Controls = function () {
 
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
         Object.keys(this.events.mouse).forEach(function (event) {
-          __classPrivateFieldGet(_this2, _player).getContainer().removeEventListener(event, _this2.events.mouse[event]);
+          __classPrivateFieldGet(_this2, _Controls_player, "f").getContainer().removeEventListener(event, _this2.events.mouse[event]);
         });
         Object.keys(this.events.media).forEach(function (event) {
-          __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, _this2.events.media[event]);
+          __classPrivateFieldGet(_this2, _Controls_player, "f").getElement().removeEventListener(event, _this2.events.media[event]);
         });
 
         this._stopControlTimer();
       }
 
-      __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlschanged', this.events.controlschanged);
+      __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('controlschanged', this.events.controlschanged);
 
-      __classPrivateFieldGet(this, _player).getElement().removeEventListener('ended', this.events.ended);
+      __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('ended', this.events.ended);
 
-      Object.keys(__classPrivateFieldGet(this, _items)).forEach(function (position) {
-        __classPrivateFieldGet(_this2, _items)[position].forEach(function (item) {
+      Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach(function (position) {
+        __classPrivateFieldGet(_this2, _Controls_items, "f")[position].forEach(function (item) {
           if (item.custom) {
             _this2._destroyCustomControl(item);
           } else if (typeof item.destroy === 'function') {
@@ -5748,27 +5808,27 @@ var Controls = function () {
           }
         });
       });
-      general_1.removeElement(__classPrivateFieldGet(this, _controls));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Controls_controls, "f"));
     }
   }, {
     key: "getContainer",
     value: function getContainer() {
-      return __classPrivateFieldGet(this, _controls);
+      return __classPrivateFieldGet(this, _Controls_controls, "f");
     }
   }, {
     key: "getLayer",
     value: function getLayer(layer) {
-      return __classPrivateFieldGet(this, _controls).querySelector(".op-controls-layer__".concat(layer)) || __classPrivateFieldGet(this, _controls);
+      return __classPrivateFieldGet(this, _Controls_controls, "f").querySelector(".op-controls-layer__".concat(layer)) || __classPrivateFieldGet(this, _Controls_controls, "f");
     }
   }, {
     key: "_createControlsLayer",
     value: function _createControlsLayer() {
-      if (!__classPrivateFieldGet(this, _controls) || !__classPrivateFieldGet(this, _player).getContainer().querySelector('.op-controls')) {
-        __classPrivateFieldSet(this, _controls, document.createElement('div'));
+      if (!__classPrivateFieldGet(this, _Controls_controls, "f") || !__classPrivateFieldGet(this, _Controls_player, "f").getContainer().querySelector('.op-controls')) {
+        __classPrivateFieldSet(this, _Controls_controls, document.createElement('div'), "f");
 
-        __classPrivateFieldGet(this, _controls).className = 'op-controls';
+        __classPrivateFieldGet(this, _Controls_controls, "f").className = 'op-controls';
 
-        __classPrivateFieldGet(this, _player).getContainer().appendChild(__classPrivateFieldGet(this, _controls));
+        __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(__classPrivateFieldGet(this, _Controls_controls, "f"));
 
         var messageContainer = document.createElement('div');
         messageContainer.className = 'op-status';
@@ -5776,8 +5836,8 @@ var Controls = function () {
         messageContainer.tabIndex = -1;
         messageContainer.setAttribute('aria-hidden', 'true');
 
-        if (general_1.isAudio(__classPrivateFieldGet(this, _player).getElement())) {
-          __classPrivateFieldGet(this, _controls).appendChild(messageContainer);
+        if ((0, general_1.isAudio)(__classPrivateFieldGet(this, _Controls_player, "f").getElement())) {
+          __classPrivateFieldGet(this, _Controls_controls, "f").appendChild(messageContainer);
         }
       }
     }
@@ -5786,33 +5846,33 @@ var Controls = function () {
     value: function _startControlTimer(time) {
       var _this3 = this;
 
-      var el = __classPrivateFieldGet(this, _player).activeElement();
+      var el = __classPrivateFieldGet(this, _Controls_player, "f").activeElement();
 
       this._stopControlTimer();
 
       if (typeof window !== 'undefined') {
-        __classPrivateFieldSet(this, _timer, window.setTimeout(function () {
-          if ((!el.paused || !el.ended) && general_1.isVideo(__classPrivateFieldGet(_this3, _player).getElement())) {
-            __classPrivateFieldGet(_this3, _player).getContainer().classList.add('op-controls--hidden');
+        __classPrivateFieldSet(this, _Controls_timer, window.setTimeout(function () {
+          if ((!el.paused || !el.ended) && (0, general_1.isVideo)(__classPrivateFieldGet(_this3, _Controls_player, "f").getElement())) {
+            __classPrivateFieldGet(_this3, _Controls_player, "f").getContainer().classList.add('op-controls--hidden');
 
-            __classPrivateFieldGet(_this3, _player).playBtn.setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this3, _Controls_player, "f").playBtn.setAttribute('aria-hidden', 'true');
 
             _this3._stopControlTimer();
 
-            var event = events_1.addEvent('controlshidden');
+            var event = (0, events_1.addEvent)('controlshidden');
 
-            __classPrivateFieldGet(_this3, _player).getElement().dispatchEvent(event);
+            __classPrivateFieldGet(_this3, _Controls_player, "f").getElement().dispatchEvent(event);
           }
-        }, time));
+        }, time), "f");
       }
     }
   }, {
     key: "_stopControlTimer",
     value: function _stopControlTimer() {
-      if (__classPrivateFieldGet(this, _timer) !== 0) {
-        clearTimeout(__classPrivateFieldGet(this, _timer));
+      if (__classPrivateFieldGet(this, _Controls_timer, "f") !== 0) {
+        clearTimeout(__classPrivateFieldGet(this, _Controls_timer, "f"));
 
-        __classPrivateFieldSet(this, _timer, 0);
+        __classPrivateFieldSet(this, _Controls_timer, 0, "f");
       }
     }
   }, {
@@ -5820,23 +5880,23 @@ var Controls = function () {
     value: function _setElements() {
       var _this4 = this;
 
-      var controls = __classPrivateFieldGet(this, _player).getOptions().controls.layers;
+      var controls = __classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls.layers;
 
-      __classPrivateFieldSet(this, _items, {
+      __classPrivateFieldSet(this, _Controls_items, {
         'bottom-left': [],
         'bottom-middle': [],
         'bottom-right': [],
-        'left': [],
-        'main': [],
-        'middle': [],
-        'right': [],
+        left: [],
+        main: [],
+        middle: [],
+        right: [],
         'top-left': [],
         'top-middle': [],
         'top-right': []
-      });
+      }, "f");
 
-      var isVideoEl = general_1.isVideo(__classPrivateFieldGet(this, _player).getElement());
-      var isAudioEl = general_1.isAudio(__classPrivateFieldGet(this, _player).getElement());
+      var isVideoEl = (0, general_1.isVideo)(__classPrivateFieldGet(this, _Controls_player, "f").getElement());
+      var isAudioEl = (0, general_1.isAudio)(__classPrivateFieldGet(this, _Controls_player, "f").getElement());
       var controlPositions = Object.keys(controls);
       var layersExist = controlPositions.find(function (item) {
         return /^(top|bottom)/.test(item);
@@ -5851,27 +5911,27 @@ var Controls = function () {
             pos = _position$split2[1];
 
         if (pos) {
-          if (!__classPrivateFieldGet(_this4, _controls).classList.contains('op-controls__stacked')) {
-            __classPrivateFieldGet(_this4, _controls).classList.add('op-controls__stacked');
+          if (!__classPrivateFieldGet(_this4, _Controls_controls, "f").classList.contains('op-controls__stacked')) {
+            __classPrivateFieldGet(_this4, _Controls_controls, "f").classList.add('op-controls__stacked');
           }
 
           var className = "op-controls-layer__".concat(layer);
 
-          if (!__classPrivateFieldGet(_this4, _controls).querySelector(".".concat(className))) {
+          if (!__classPrivateFieldGet(_this4, _Controls_controls, "f").querySelector(".".concat(className))) {
             var controlLayer = document.createElement('div');
             controlLayer.className = className;
 
-            __classPrivateFieldGet(_this4, _controls).appendChild(controlLayer);
+            __classPrivateFieldGet(_this4, _Controls_controls, "f").appendChild(controlLayer);
           }
         } else if (layersExist) {
           var _className = 'op-controls-layer__center';
 
-          if (!__classPrivateFieldGet(_this4, _controls).querySelector(".".concat(_className))) {
+          if (!__classPrivateFieldGet(_this4, _Controls_controls, "f").querySelector(".".concat(_className))) {
             var _controlLayer = document.createElement('div');
 
             _controlLayer.className = _className;
 
-            __classPrivateFieldGet(_this4, _controls).appendChild(_controlLayer);
+            __classPrivateFieldGet(_this4, _Controls_controls, "f").appendChild(_controlLayer);
           }
         }
 
@@ -5880,19 +5940,19 @@ var Controls = function () {
         }).forEach(function (el) {
           var currentLayer = layersExist && !pos ? 'center' : layer;
           var className = "".concat(el.charAt(0).toUpperCase()).concat(el.slice(1));
-          var item = new (__classPrivateFieldGet(_this4, _controlEls)[className])(__classPrivateFieldGet(_this4, _player), pos || layer, currentLayer);
+          var item = new (__classPrivateFieldGet(_this4, _Controls_controlEls, "f")[className])(__classPrivateFieldGet(_this4, _Controls_player, "f"), pos || layer, currentLayer);
 
           if (el === 'settings') {
-            __classPrivateFieldSet(_this4, _settings, item);
+            __classPrivateFieldSet(_this4, _Controls_settings, item, "f");
           }
 
           if (isVideoEl || el !== 'fullscreen' && isAudioEl) {
-            __classPrivateFieldGet(_this4, _items)[position].push(item);
+            __classPrivateFieldGet(_this4, _Controls_items, "f")[position].push(item);
           }
         });
       });
 
-      __classPrivateFieldGet(this, _player).getCustomControls().forEach(function (item) {
+      __classPrivateFieldGet(this, _Controls_player, "f").getCustomControls().forEach(function (item) {
         var _item$position$split = item.position.split('-'),
             _item$position$split2 = _slicedToArray(_item$position$split, 2),
             layer = _item$position$split2[0],
@@ -5903,9 +5963,9 @@ var Controls = function () {
         item.position = pos || layer;
 
         if (item.position === 'right') {
-          __classPrivateFieldGet(_this4, _items)[item.position].unshift(item);
+          __classPrivateFieldGet(_this4, _Controls_items, "f")[item.position].unshift(item);
         } else {
-          __classPrivateFieldGet(_this4, _items)[item.position].push(item);
+          __classPrivateFieldGet(_this4, _Controls_items, "f")[item.position].push(item);
         }
       });
     }
@@ -5914,8 +5974,8 @@ var Controls = function () {
     value: function _buildElements() {
       var _this5 = this;
 
-      Object.keys(__classPrivateFieldGet(this, _items)).forEach(function (position) {
-        __classPrivateFieldGet(_this5, _items)[position].forEach(function (item) {
+      Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach(function (position) {
+        __classPrivateFieldGet(_this5, _Controls_items, "f")[position].forEach(function (item) {
           if (item.custom) {
             _this5._createCustomControl(item);
           } else {
@@ -5923,22 +5983,22 @@ var Controls = function () {
           }
         });
       });
-      Object.keys(__classPrivateFieldGet(this, _items)).forEach(function (position) {
-        __classPrivateFieldGet(_this5, _items)[position].forEach(function (item) {
-          var allowDefault = !__classPrivateFieldGet(_this5, _player).getOptions().detachMenus || item instanceof settings_1["default"];
+      Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach(function (position) {
+        __classPrivateFieldGet(_this5, _Controls_items, "f")[position].forEach(function (item) {
+          var allowDefault = !__classPrivateFieldGet(_this5, _Controls_player, "f").getOptions().detachMenus || item instanceof settings_1["default"];
 
           if (allowDefault && !item.custom && typeof item.addSettings === 'function') {
             var menuItem = item.addSettings();
 
-            if (__classPrivateFieldGet(_this5, _settings) && Object.keys(menuItem).length) {
-              __classPrivateFieldGet(_this5, _settings).addItem(menuItem.name, menuItem.key, menuItem["default"], menuItem.subitems, menuItem.className);
+            if (__classPrivateFieldGet(_this5, _Controls_settings, "f") && Object.keys(menuItem).length) {
+              __classPrivateFieldGet(_this5, _Controls_settings, "f").addItem(menuItem.name, menuItem.key, menuItem["default"], menuItem.subitems, menuItem.className);
             }
           }
         });
       });
-      var e = events_1.addEvent('controlschanged');
+      var e = (0, events_1.addEvent)('controlschanged');
 
-      __classPrivateFieldGet(this, _controls).dispatchEvent(e);
+      __classPrivateFieldGet(this, _Controls_controls, "f").dispatchEvent(e);
     }
   }, {
     key: "_hideCustomMenu",
@@ -5958,7 +6018,7 @@ var Controls = function () {
   }, {
     key: "_toggleCustomMenu",
     value: function _toggleCustomMenu(event, menu, item) {
-      var menus = __classPrivateFieldGet(this, _player).getContainer().querySelectorAll('.op-settings');
+      var menus = __classPrivateFieldGet(this, _Controls_player, "f").getContainer().querySelectorAll('.op-settings');
 
       menus.forEach(function (m) {
         if (m.getAttribute('aria-hidden') === 'false' && m.id !== menu.id) {
@@ -6000,7 +6060,7 @@ var Controls = function () {
         });
         menu.innerHTML = "<div class=\"op-settings__menu\" role=\"menu\">".concat(items.join(''), "</div>");
 
-        __classPrivateFieldGet(this, _player).getContainer().appendChild(menu);
+        __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(menu);
 
         item.subitems.forEach(function (subitem) {
           var menuItem = menu.querySelector("#".concat(subitem.id));
@@ -6013,7 +6073,7 @@ var Controls = function () {
           return _this6._toggleCustomMenu(e, menu, item);
         }, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _player).getElement().addEventListener('controlshidden', function () {
+        __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlshidden', function () {
           return _this6._hideCustomMenu(menu);
         }, constants_1.EVENT_OPTIONS);
       } else if (item.click && typeof item.click === 'function') {
@@ -6042,14 +6102,14 @@ var Controls = function () {
 
       if (item.layer) {
         if (item.layer === 'main') {
-          __classPrivateFieldGet(this, _player).getContainer().appendChild(control);
+          __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(control);
         } else {
           this.getLayer(item.layer).appendChild(control);
         }
       }
 
       if (item.init && typeof item.init === 'function') {
-        item.init(__classPrivateFieldGet(this, _player));
+        item.init(__classPrivateFieldGet(this, _Controls_player, "f"));
       }
     }
   }, {
@@ -6062,7 +6122,7 @@ var Controls = function () {
 
       if (control) {
         if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
-          var menu = __classPrivateFieldGet(this, _player).getContainer().querySelector("#".concat(item.id, "-menu"));
+          var menu = __classPrivateFieldGet(this, _Controls_player, "f").getContainer().querySelector("#".concat(item.id, "-menu"));
 
           if (menu) {
             item.subitems.forEach(function (subitem) {
@@ -6076,11 +6136,11 @@ var Controls = function () {
               return _this7._toggleCustomMenu(e, menu, item);
             });
 
-            __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlshidden', function () {
+            __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('controlshidden', function () {
               return _this7._hideCustomMenu(menu);
             });
 
-            general_1.removeElement(menu);
+            (0, general_1.removeElement)(menu);
           }
         }
 
@@ -6108,10 +6168,10 @@ var Controls = function () {
           control.removeEventListener('focus', item.focus);
         }
 
-        general_1.removeElement(control);
+        (0, general_1.removeElement)(control);
 
         if (item.destroy && typeof item.destroy === 'function') {
-          item.destroy(__classPrivateFieldGet(this, _player));
+          item.destroy(__classPrivateFieldGet(this, _Controls_player, "f"));
         }
       }
     }
@@ -6120,11 +6180,11 @@ var Controls = function () {
   return Controls;
 }();
 
-_settings = new WeakMap(), _timer = new WeakMap(), _controls = new WeakMap(), _player = new WeakMap(), _items = new WeakMap(), _controlEls = new WeakMap();
+_Controls_settings = new WeakMap(), _Controls_timer = new WeakMap(), _Controls_controls = new WeakMap(), _Controls_player = new WeakMap(), _Controls_items = new WeakMap(), _Controls_controlEls = new WeakMap();
 exports["default"] = Controls;
 
 /***/ }),
-/* 140 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6138,34 +6198,30 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _player, _button, _captions, _menu, _events, _tracks, _trackList, _trackUrlList, _hasTracks, _current, _default, _detachMenu, _labels, _position, _layer;
+var _Captions_player, _Captions_button, _Captions_captions, _Captions_menu, _Captions_events, _Captions_tracks, _Captions_trackList, _Captions_trackUrlList, _Captions_hasTracks, _Captions_current, _Captions_default, _Captions_detachMenu, _Captions_labels, _Captions_position, _Captions_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var time_1 = __webpack_require__(53);
 
@@ -6173,58 +6229,58 @@ var Captions = function () {
   function Captions(player, position, layer) {
     _classCallCheck(this, Captions);
 
-    _player.set(this, void 0);
+    _Captions_player.set(this, void 0);
 
-    _button.set(this, void 0);
+    _Captions_button.set(this, void 0);
 
-    _captions.set(this, void 0);
+    _Captions_captions.set(this, void 0);
 
-    _menu.set(this, void 0);
+    _Captions_menu.set(this, void 0);
 
-    _events.set(this, {
+    _Captions_events.set(this, {
       button: {},
       global: {},
       media: {}
     });
 
-    _tracks.set(this, {});
+    _Captions_tracks.set(this, {});
 
-    _trackList.set(this, void 0);
+    _Captions_trackList.set(this, void 0);
 
-    _trackUrlList.set(this, {});
+    _Captions_trackUrlList.set(this, {});
 
-    _hasTracks.set(this, void 0);
+    _Captions_hasTracks.set(this, void 0);
 
-    _current.set(this, void 0);
+    _Captions_current.set(this, void 0);
 
-    _default.set(this, 'off');
+    _Captions_default.set(this, 'off');
 
-    _detachMenu.set(this, void 0);
+    _Captions_detachMenu.set(this, void 0);
 
-    _labels.set(this, void 0);
+    _Captions_labels.set(this, void 0);
 
-    _position.set(this, void 0);
+    _Captions_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Captions_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Captions_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+    __classPrivateFieldSet(this, _Captions_labels, player.getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _detachMenu, player.getOptions().detachMenus);
+    __classPrivateFieldSet(this, _Captions_detachMenu, player.getOptions().detachMenus, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Captions_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Captions_layer, layer, "f");
 
-    var trackList = __classPrivateFieldGet(this, _player).getElement().textTracks;
+    var trackList = __classPrivateFieldGet(this, _Captions_player, "f").getElement().textTracks;
 
     var tracks = [];
 
     for (var i = 0, total = trackList.length; i < total; i++) {
       var selector = ["track[kind=\"subtitles\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]"), "track[kind=\"captions\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]")];
 
-      var tag = __classPrivateFieldGet(this, _player).getElement().querySelector(selector.join(', '));
+      var tag = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelector(selector.join(', '));
 
       if (tag) {
         tracks.push(trackList[i]);
@@ -6237,9 +6293,9 @@ var Captions = function () {
       }
     }
 
-    __classPrivateFieldSet(this, _trackList, tracks);
+    __classPrivateFieldSet(this, _Captions_trackList, tracks, "f");
 
-    __classPrivateFieldSet(this, _hasTracks, !!__classPrivateFieldGet(this, _trackList).length);
+    __classPrivateFieldSet(this, _Captions_hasTracks, !!__classPrivateFieldGet(this, _Captions_trackList, "f").length, "f");
 
     return this;
   }
@@ -6249,72 +6305,72 @@ var Captions = function () {
     value: function create() {
       var _this = this;
 
-      if (!__classPrivateFieldGet(this, _hasTracks)) {
+      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
         return;
       }
 
-      __classPrivateFieldSet(this, _button, document.createElement('button'));
+      __classPrivateFieldSet(this, _Captions_button, document.createElement('button'), "f");
 
-      __classPrivateFieldGet(this, _button).className = "op-controls__captions op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _button).tabIndex = 0;
-      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).toggleCaptions;
+      __classPrivateFieldGet(this, _Captions_button, "f").className = "op-controls__captions op-control__".concat(__classPrivateFieldGet(this, _Captions_position, "f"));
+      __classPrivateFieldGet(this, _Captions_button, "f").tabIndex = 0;
+      __classPrivateFieldGet(this, _Captions_button, "f").title = __classPrivateFieldGet(this, _Captions_labels, "f").toggleCaptions;
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+      __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Captions_player, "f").id);
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
+      __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-pressed', 'false');
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).toggleCaptions);
+      __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Captions_labels, "f").toggleCaptions);
 
-      __classPrivateFieldGet(this, _button).setAttribute('data-active-captions', 'off');
+      __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
 
-      __classPrivateFieldGet(this, _button).innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _labels).toggleCaptions, "</span>");
+      __classPrivateFieldGet(this, _Captions_button, "f").innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _Captions_labels, "f").toggleCaptions, "</span>");
 
-      if (__classPrivateFieldGet(this, _detachMenu)) {
-        __classPrivateFieldGet(this, _button).classList.add('op-control--no-hover');
+      if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+        __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-control--no-hover');
 
-        __classPrivateFieldSet(this, _menu, document.createElement('div'));
+        __classPrivateFieldSet(this, _Captions_menu, document.createElement('div'), "f");
 
-        __classPrivateFieldGet(this, _menu).className = 'op-settings op-captions__menu';
+        __classPrivateFieldGet(this, _Captions_menu, "f").className = 'op-settings op-captions__menu';
 
-        __classPrivateFieldGet(this, _menu).setAttribute('aria-hidden', 'true');
+        __classPrivateFieldGet(this, _Captions_menu, "f").setAttribute('aria-hidden', 'true');
 
-        __classPrivateFieldGet(this, _menu).innerHTML = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\" aria-checked=\"".concat(__classPrivateFieldGet(this, _default) === 'off' ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label op-subtitles__option\" data-value=\"captions-off\">").concat(__classPrivateFieldGet(this, _labels).off, "</div>\n                </div>\n            </div>");
+        __classPrivateFieldGet(this, _Captions_menu, "f").innerHTML = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\" aria-checked=\"".concat(__classPrivateFieldGet(this, _Captions_default, "f") === 'off' ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label op-subtitles__option\" data-value=\"captions-off\">").concat(__classPrivateFieldGet(this, _Captions_labels, "f").off, "</div>\n                </div>\n            </div>");
       }
 
-      var _loop = function _loop(i, total, _tracks2) {
-        var element = _tracks2[i];
+      var _loop = function _loop(i, tracks, total) {
+        var element = tracks[i];
 
         if (element.kind === 'subtitles' || element.kind === 'captions') {
           if (element["default"]) {
-            __classPrivateFieldSet(_this, _default, element.srclang);
+            __classPrivateFieldSet(_this, _Captions_default, element.srclang, "f");
 
-            __classPrivateFieldGet(_this, _button).setAttribute('data-active-captions', element.srclang);
+            __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', element.srclang);
           }
 
-          var trackUrl = general_1.getAbsoluteUrl(element.src);
+          var trackUrl = (0, general_1.getAbsoluteUrl)(element.src);
 
-          var currTrack = __classPrivateFieldGet(_this, _trackList)[i];
+          var currTrack = __classPrivateFieldGet(_this, _Captions_trackList, "f")[i];
 
           if (currTrack && currTrack.language === element.srclang) {
             if (currTrack.cues && currTrack.cues.length > 0) {
-              __classPrivateFieldGet(_this, _tracks)[element.srclang] = _this._getNativeCues(__classPrivateFieldGet(_this, _trackList)[i]);
+              __classPrivateFieldGet(_this, _Captions_tracks, "f")[element.srclang] = _this._getNativeCues(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i]);
 
               _this._prepareTrack(i, element.srclang, trackUrl, element["default"] || false);
             } else {
-              general_1.request(trackUrl, 'text', function (d) {
-                __classPrivateFieldGet(_this, _tracks)[element.srclang] = _this._getCuesFromText(d);
+              (0, general_1.request)(trackUrl, 'text', function (d) {
+                __classPrivateFieldGet(_this, _Captions_tracks, "f")[element.srclang] = _this._getCuesFromText(d);
 
                 _this._prepareTrack(i, element.srclang, trackUrl, element["default"] || false);
 
-                if (__classPrivateFieldGet(_this, _menu) && !__classPrivateFieldGet(_this, _menu).querySelector(".op-subtitles__option[data-value=\"captions-".concat(__classPrivateFieldGet(_this, _trackList)[i].language, "\"]"))) {
+                if (__classPrivateFieldGet(_this, _Captions_menu, "f") && !__classPrivateFieldGet(_this, _Captions_menu, "f").querySelector(".op-subtitles__option[data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language, "\"]"))) {
                   var item = document.createElement('div');
                   item.className = 'op-settings__submenu-item';
                   item.tabIndex = 0;
                   item.setAttribute('role', 'menuitemradio');
-                  item.setAttribute('aria-checked', __classPrivateFieldGet(_this, _default) === __classPrivateFieldGet(_this, _trackList)[i].language ? 'true' : 'false');
-                  item.innerHTML = "<div class=\"op-settings__submenu-label op-subtitles__option\"\n                                        data-value=\"captions-".concat(__classPrivateFieldGet(_this, _trackList)[i].language, "\">\n                                        ").concat(__classPrivateFieldGet(_this, _labels).lang[__classPrivateFieldGet(_this, _trackList)[i].language] || __classPrivateFieldGet(_this, _trackList)[i].label, "\n                                    </div>");
+                  item.setAttribute('aria-checked', __classPrivateFieldGet(_this, _Captions_default, "f") === __classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language ? 'true' : 'false');
+                  item.innerHTML = "<div class=\"op-settings__submenu-label op-subtitles__option\"\n                                        data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language, "\">\n                                        ").concat(__classPrivateFieldGet(_this, _Captions_labels, "f").lang[__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language] || __classPrivateFieldGet(_this, _Captions_trackList, "f")[i].label, "\n                                    </div>");
 
-                  __classPrivateFieldGet(_this, _menu).appendChild(item);
+                  __classPrivateFieldGet(_this, _Captions_menu, "f").appendChild(item);
                 }
               });
             }
@@ -6322,29 +6378,29 @@ var Captions = function () {
         }
       };
 
-      for (var i = 0, _tracks2 = __classPrivateFieldGet(this, _player).getElement().querySelectorAll('track'), total = _tracks2.length; i < total; i++) {
-        _loop(i, total, _tracks2);
+      for (var i = 0, tracks = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
+        _loop(i, tracks, total);
       }
 
-      __classPrivateFieldSet(this, _captions, document.createElement('div'));
+      __classPrivateFieldSet(this, _Captions_captions, document.createElement('div'), "f");
 
-      __classPrivateFieldGet(this, _captions).className = 'op-captions';
-      __classPrivateFieldGet(this, _captions).innerHTML = '<span></span>';
+      __classPrivateFieldGet(this, _Captions_captions, "f").className = 'op-captions';
+      __classPrivateFieldGet(this, _Captions_captions, "f").innerHTML = '<span></span>';
 
-      var container = __classPrivateFieldGet(this, _captions).querySelector('span');
+      var container = __classPrivateFieldGet(this, _Captions_captions, "f").querySelector('span');
 
-      __classPrivateFieldGet(this, _events).media.timeupdate = function () {
-        if (__classPrivateFieldGet(_this, _player).isMedia()) {
-          if (__classPrivateFieldGet(_this, _current)) {
-            var currentCues = __classPrivateFieldGet(_this, _tracks)[__classPrivateFieldGet(_this, _current).language];
+      __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate = function () {
+        if (__classPrivateFieldGet(_this, _Captions_player, "f").isMedia()) {
+          if (__classPrivateFieldGet(_this, _Captions_current, "f")) {
+            var currentCues = __classPrivateFieldGet(_this, _Captions_tracks, "f")[__classPrivateFieldGet(_this, _Captions_current, "f").language];
 
             if (container && currentCues !== undefined) {
-              var index = _this._search(currentCues, __classPrivateFieldGet(_this, _player).getMedia().currentTime);
+              var index = _this._search(currentCues, __classPrivateFieldGet(_this, _Captions_player, "f").getMedia().currentTime);
 
               container.innerHTML = '';
 
-              if (index > -1 && general_1.hasClass(__classPrivateFieldGet(_this, _button), 'op-controls__captions--on')) {
-                __classPrivateFieldGet(_this, _captions).classList.add('op-captions--on');
+              if (index > -1 && (0, general_1.hasClass)(__classPrivateFieldGet(_this, _Captions_button, "f"), 'op-controls__captions--on')) {
+                __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
 
                 container.innerHTML = _this._sanitize(currentCues[index].text);
               } else {
@@ -6359,122 +6415,122 @@ var Captions = function () {
         }
       };
 
-      __classPrivateFieldGet(this, _events).button.click = function (e) {
+      __classPrivateFieldGet(this, _Captions_events, "f").button.click = function (e) {
         var button = e.target;
 
-        if (__classPrivateFieldGet(_this, _detachMenu)) {
-          var menus = __classPrivateFieldGet(_this, _player).getContainer().querySelectorAll('.op-settings');
+        if (__classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
+          var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
 
           for (var _i2 = 0, _total2 = menus.length; _i2 < _total2; ++_i2) {
-            if (menus[_i2] !== __classPrivateFieldGet(_this, _menu)) {
+            if (menus[_i2] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
               menus[_i2].setAttribute('aria-hidden', 'true');
             }
           }
 
-          if (__classPrivateFieldGet(_this, _menu).getAttribute('aria-hidden') === 'true') {
-            __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'false');
+          if (__classPrivateFieldGet(_this, _Captions_menu, "f").getAttribute('aria-hidden') === 'true') {
+            __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'false');
           } else {
-            __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'true');
           }
         } else {
           button.setAttribute('aria-pressed', 'true');
 
-          if (general_1.hasClass(button, 'op-controls__captions--on')) {
+          if ((0, general_1.hasClass)(button, 'op-controls__captions--on')) {
             _this._hide();
 
             button.classList.remove('op-controls__captions--on');
             button.setAttribute('data-active-captions', 'off');
           } else {
-            if (!__classPrivateFieldGet(_this, _current)) {
-              __classPrivateFieldSet(_this, _current, __classPrivateFieldGet(_this, _trackList)[0]);
+            if (!__classPrivateFieldGet(_this, _Captions_current, "f")) {
+              __classPrivateFieldSet(_this, _Captions_current, __classPrivateFieldGet(_this, _Captions_trackList, "f")[0], "f");
             }
 
             _this._show();
 
             button.classList.add('op-controls__captions--on');
-            button.setAttribute('data-active-captions', __classPrivateFieldGet(_this, _current).language);
+            button.setAttribute('data-active-captions', __classPrivateFieldGet(_this, _Captions_current, "f").language);
           }
         }
       };
 
-      __classPrivateFieldGet(this, _events).button.mouseover = function () {
-        if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && __classPrivateFieldGet(_this, _detachMenu)) {
-          var menus = __classPrivateFieldGet(_this, _player).getContainer().querySelectorAll('.op-settings');
+      __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover = function () {
+        if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && __classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
+          var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
 
           for (var _i3 = 0, _total3 = menus.length; _i3 < _total3; ++_i3) {
-            if (menus[_i3] !== __classPrivateFieldGet(_this, _menu)) {
+            if (menus[_i3] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
               menus[_i3].setAttribute('aria-hidden', 'true');
             }
           }
 
-          if (__classPrivateFieldGet(_this, _menu).getAttribute('aria-hidden') === 'true') {
-            __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'false');
+          if (__classPrivateFieldGet(_this, _Captions_menu, "f").getAttribute('aria-hidden') === 'true') {
+            __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'false');
           }
         }
       };
 
-      __classPrivateFieldGet(this, _events).button.mouseout = function () {
-        if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && __classPrivateFieldGet(_this, _detachMenu)) {
-          var menus = __classPrivateFieldGet(_this, _player).getContainer().querySelectorAll('.op-settings');
+      __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout = function () {
+        if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && __classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
+          var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
 
           for (var _i4 = 0, _total4 = menus.length; _i4 < _total4; ++_i4) {
             menus[_i4].setAttribute('aria-hidden', 'true');
           }
 
-          if (__classPrivateFieldGet(_this, _menu).getAttribute('aria-hidden') === 'false') {
-            __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'true');
+          if (__classPrivateFieldGet(_this, _Captions_menu, "f").getAttribute('aria-hidden') === 'false') {
+            __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'true');
           }
         }
       };
 
-      if (__classPrivateFieldGet(this, _hasTracks)) {
-        var target = __classPrivateFieldGet(this, _player).getContainer();
+      if (__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
+        var target = __classPrivateFieldGet(this, _Captions_player, "f").getContainer();
 
-        target.insertBefore(__classPrivateFieldGet(this, _captions), target.firstChild);
+        target.insertBefore(__classPrivateFieldGet(this, _Captions_captions, "f"), target.firstChild);
 
-        if (__classPrivateFieldGet(this, _detachMenu)) {
+        if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
           var itemContainer = document.createElement('div');
-          itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _position));
-          itemContainer.appendChild(__classPrivateFieldGet(this, _button));
-          itemContainer.appendChild(__classPrivateFieldGet(this, _menu));
+          itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _Captions_position, "f"));
+          itemContainer.appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
+          itemContainer.appendChild(__classPrivateFieldGet(this, _Captions_menu, "f"));
 
-          __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(itemContainer);
+          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_layer, "f")).appendChild(itemContainer);
         } else {
-          __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
+          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_layer, "f")).appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
         }
 
-        __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _events).button.click, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click, constants_1.EVENT_OPTIONS);
       }
 
-      if (__classPrivateFieldGet(this, _trackList).length <= 1 && !__classPrivateFieldGet(this, _detachMenu) || !__classPrivateFieldGet(this, _trackList).length && __classPrivateFieldGet(this, _detachMenu)) {
+      if (__classPrivateFieldGet(this, _Captions_trackList, "f").length <= 1 && !__classPrivateFieldGet(this, _Captions_detachMenu, "f") || !__classPrivateFieldGet(this, _Captions_trackList, "f").length && __classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
         return;
       }
 
-      __classPrivateFieldGet(this, _events).global.click = function (e) {
+      __classPrivateFieldGet(this, _Captions_events, "f").global.click = function (e) {
         var option = e.target;
 
-        if (option.closest("#".concat(__classPrivateFieldGet(_this, _player).id)) && general_1.hasClass(option, 'op-subtitles__option')) {
+        if (option.closest("#".concat(__classPrivateFieldGet(_this, _Captions_player, "f").id)) && (0, general_1.hasClass)(option, 'op-subtitles__option')) {
           var langEl = option.getAttribute('data-value');
           var language = langEl ? langEl.replace('captions-', '') : '';
-          var currentLang = Array.from(__classPrivateFieldGet(_this, _trackList)).filter(function (item) {
+          var currentLang = Array.from(__classPrivateFieldGet(_this, _Captions_trackList, "f")).filter(function (item) {
             return item.language === language;
           });
 
-          __classPrivateFieldSet(_this, _current, currentLang ? currentLang.pop() : undefined);
+          __classPrivateFieldSet(_this, _Captions_current, currentLang ? currentLang.pop() : undefined, "f");
 
-          if (__classPrivateFieldGet(_this, _detachMenu)) {
-            if (general_1.hasClass(__classPrivateFieldGet(_this, _button), 'op-controls__captions--on')) {
+          if (__classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
+            if ((0, general_1.hasClass)(__classPrivateFieldGet(_this, _Captions_button, "f"), 'op-controls__captions--on')) {
               _this._hide();
 
-              __classPrivateFieldGet(_this, _button).classList.remove('op-controls__captions--on');
+              __classPrivateFieldGet(_this, _Captions_button, "f").classList.remove('op-controls__captions--on');
 
-              __classPrivateFieldGet(_this, _button).setAttribute('data-active-captions', 'off');
+              __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
             } else {
               _this._show();
 
-              __classPrivateFieldGet(_this, _button).classList.add('op-controls__captions--on');
+              __classPrivateFieldGet(_this, _Captions_button, "f").classList.add('op-controls__captions--on');
 
-              __classPrivateFieldGet(_this, _button).setAttribute('data-active-captions', language);
+              __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', language);
             }
 
             if (option.parentElement && option.parentElement.parentElement) {
@@ -6489,65 +6545,65 @@ var Captions = function () {
               option.parentElement.setAttribute('aria-checked', 'true');
             }
 
-            __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'false');
+            __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'false');
           } else {
             _this._show();
 
-            __classPrivateFieldGet(_this, _button).setAttribute('data-active-captions', language);
+            __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', language);
           }
 
-          var event = events_1.addEvent('captionschanged');
+          var event = (0, events_1.addEvent)('captionschanged');
 
-          __classPrivateFieldGet(_this, _player).getElement().dispatchEvent(event);
+          __classPrivateFieldGet(_this, _Captions_player, "f").getElement().dispatchEvent(event);
         }
       };
 
-      if (__classPrivateFieldGet(this, _detachMenu)) {
-        __classPrivateFieldGet(this, _button).addEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover, constants_1.EVENT_OPTIONS);
+      if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+        __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _menu).addEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _menu).addEventListener('mouseout', __classPrivateFieldGet(this, _events).button.mouseout, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseout', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _player).getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _events).button.mouseout, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
       }
 
-      if (typeof __classPrivateFieldGet(this, _events).global.click !== 'undefined') {
-        document.addEventListener('click', __classPrivateFieldGet(this, _events).global.click, constants_1.EVENT_OPTIONS);
+      if (typeof __classPrivateFieldGet(this, _Captions_events, "f").global.click !== 'undefined') {
+        document.addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      if (typeof __classPrivateFieldGet(this, _events).global.click !== 'undefined') {
-        document.removeEventListener('click', __classPrivateFieldGet(this, _events).global.click);
+      if (typeof __classPrivateFieldGet(this, _Captions_events, "f").global.click !== 'undefined') {
+        document.removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click);
       }
 
-      if (__classPrivateFieldGet(this, _hasTracks)) {
-        __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _events).button.click);
+      if (__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
+        __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click);
 
-        if (__classPrivateFieldGet(this, _detachMenu)) {
-          __classPrivateFieldGet(this, _button).removeEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover);
+        if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+          __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
 
-          __classPrivateFieldGet(this, _menu).removeEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover);
+          __classPrivateFieldGet(this, _Captions_menu, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
 
-          __classPrivateFieldGet(this, _menu).removeEventListener('mouseout', __classPrivateFieldGet(this, _events).button.mouseout);
+          __classPrivateFieldGet(this, _Captions_menu, "f").removeEventListener('mouseout', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout);
 
-          __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlshidden', __classPrivateFieldGet(this, _events).button.mouseout);
+          __classPrivateFieldGet(this, _Captions_player, "f").getElement().removeEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout);
 
-          general_1.removeElement(__classPrivateFieldGet(this, _menu));
+          (0, general_1.removeElement)(__classPrivateFieldGet(this, _Captions_menu, "f"));
         }
 
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('timeupdate', __classPrivateFieldGet(this, _events).media.timeupdate);
+        __classPrivateFieldGet(this, _Captions_player, "f").getElement().removeEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate);
 
-        general_1.removeElement(__classPrivateFieldGet(this, _button));
-        general_1.removeElement(__classPrivateFieldGet(this, _captions));
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Captions_button, "f"));
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Captions_captions, "f"));
       }
     }
   }, {
     key: "addSettings",
     value: function addSettings() {
-      if (__classPrivateFieldGet(this, _detachMenu) || __classPrivateFieldGet(this, _trackList).length <= 1) {
+      if (__classPrivateFieldGet(this, _Captions_detachMenu, "f") || __classPrivateFieldGet(this, _Captions_trackList, "f").length <= 1) {
         return {};
       }
 
@@ -6555,9 +6611,9 @@ var Captions = function () {
 
       return subitems.length > 2 ? {
         className: 'op-subtitles__option',
-        "default": __classPrivateFieldGet(this, _default) || 'off',
+        "default": __classPrivateFieldGet(this, _Captions_default, "f") || 'off',
         key: 'captions',
-        name: __classPrivateFieldGet(this, _labels).captions,
+        name: __classPrivateFieldGet(this, _Captions_labels, "f").captions,
         subitems: subitems
       } : {};
     }
@@ -6606,9 +6662,9 @@ var Captions = function () {
           }
 
           cue = cue.trim().replace(urlRegexp, "<a href='$1' target='_blank'>$1</a>");
-          var initTime = time_1.timeToSeconds(timecode[1]);
+          var initTime = (0, time_1.timeToSeconds)(timecode[1]);
           entries.push({
-            endTime: time_1.timeToSeconds(timecode[3]),
+            endTime: (0, time_1.timeToSeconds)(timecode[3]),
             identifier: identifier || '',
             settings: isJson(timecode[5]) ? JSON.parse(timecode[5]) : {},
             startTime: initTime === 0 ? 0.200 : initTime,
@@ -6642,27 +6698,27 @@ var Captions = function () {
   }, {
     key: "_show",
     value: function _show() {
-      if (!__classPrivateFieldGet(this, _captions) || !__classPrivateFieldGet(this, _current) || __classPrivateFieldGet(this, _current).cues === undefined) {
+      if (!__classPrivateFieldGet(this, _Captions_captions, "f") || !__classPrivateFieldGet(this, _Captions_current, "f") || __classPrivateFieldGet(this, _Captions_current, "f").cues === undefined) {
         return;
       }
 
-      var container = __classPrivateFieldGet(this, _captions).querySelector('span');
+      var container = __classPrivateFieldGet(this, _Captions_captions, "f").querySelector('span');
 
       if (container) {
         container.innerHTML = '';
       }
 
-      __classPrivateFieldGet(this, _player).getElement().addEventListener('timeupdate', __classPrivateFieldGet(this, _events).media.timeupdate, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "_hide",
     value: function _hide() {
-      __classPrivateFieldGet(this, _captions).classList.remove('op-captions--on');
+      __classPrivateFieldGet(this, _Captions_captions, "f").classList.remove('op-captions--on');
 
-      if (!__classPrivateFieldGet(this, _current)) {
-        __classPrivateFieldGet(this, _button).classList.remove('op-controls__captions--on');
+      if (!__classPrivateFieldGet(this, _Captions_current, "f")) {
+        __classPrivateFieldGet(this, _Captions_button, "f").classList.remove('op-controls__captions--on');
 
-        __classPrivateFieldGet(this, _button).setAttribute('data-active-captions', 'off');
+        __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
       }
     }
   }, {
@@ -6696,7 +6752,7 @@ var Captions = function () {
       var i = scripts.length;
 
       while (i--) {
-        general_1.removeElement(scripts[i]);
+        (0, general_1.removeElement)(scripts[i]);
       }
 
       var allElements = div.getElementsByTagName('*');
@@ -6707,7 +6763,7 @@ var Captions = function () {
 
         for (var j = 0, total = attributes.length; j < total; j++) {
           if (/^(on|javascript:)/.test(attributes[j].name)) {
-            general_1.removeElement(allElements[index]);
+            (0, general_1.removeElement)(allElements[index]);
           } else if (attributes[j].name === 'style') {
             allElements[index].removeAttribute(attributes[j].name);
           }
@@ -6722,24 +6778,24 @@ var Captions = function () {
       var _this2 = this;
 
       var showTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-      __classPrivateFieldGet(this, _trackUrlList)[language] = trackUrl;
-      __classPrivateFieldGet(this, _trackList)[index].mode = 'disabled';
+      __classPrivateFieldGet(this, _Captions_trackUrlList, "f")[language] = trackUrl;
+      __classPrivateFieldGet(this, _Captions_trackList, "f")[index].mode = 'disabled';
 
       if (showTrack) {
-        __classPrivateFieldSet(this, _default, language);
+        __classPrivateFieldSet(this, _Captions_default, language, "f");
 
-        __classPrivateFieldGet(this, _button).classList.add('op-controls__captions--on');
+        __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-controls__captions--on');
 
-        __classPrivateFieldGet(this, _button).setAttribute('data-active-captions', language);
+        __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', language);
 
-        __classPrivateFieldSet(this, _current, Array.from(__classPrivateFieldGet(this, _trackList)).filter(function (item) {
-          return item.language === __classPrivateFieldGet(_this2, _default);
-        }).pop());
+        __classPrivateFieldSet(this, _Captions_current, Array.from(__classPrivateFieldGet(this, _Captions_trackList, "f")).filter(function (item) {
+          return item.language === __classPrivateFieldGet(_this2, _Captions_default, "f");
+        }).pop(), "f");
 
         this._show();
 
-        if (!__classPrivateFieldGet(this, _player).getContainer().classList.contains('op-captions--detected')) {
-          __classPrivateFieldGet(this, _player).getContainer().classList.add('op-captions--detected');
+        if (!__classPrivateFieldGet(this, _Captions_player, "f").getContainer().classList.contains('op-captions--detected')) {
+          __classPrivateFieldGet(this, _Captions_player, "f").getContainer().classList.add('op-captions--detected');
         }
       }
     }
@@ -6750,22 +6806,22 @@ var Captions = function () {
 
       var items = [{
         key: 'off',
-        label: __classPrivateFieldGet(this, _labels).off
+        label: __classPrivateFieldGet(this, _Captions_labels, "f").off
       }];
 
       var _loop2 = function _loop2(i, total) {
-        var track = __classPrivateFieldGet(_this3, _trackList)[i];
+        var track = __classPrivateFieldGet(_this3, _Captions_trackList, "f")[i];
 
         items = items.filter(function (el) {
           return el.key !== track.language;
         });
         items.push({
           key: track.language,
-          label: __classPrivateFieldGet(_this3, _labels).lang[track.language] || __classPrivateFieldGet(_this3, _trackList)[i].label
+          label: __classPrivateFieldGet(_this3, _Captions_labels, "f").lang[track.language] || __classPrivateFieldGet(_this3, _Captions_trackList, "f")[i].label
         });
       };
 
-      for (var i = 0, total = __classPrivateFieldGet(this, _trackList).length; i < total; i++) {
+      for (var i = 0, total = __classPrivateFieldGet(this, _Captions_trackList, "f").length; i < total; i++) {
         _loop2(i, total);
       }
 
@@ -6776,11 +6832,11 @@ var Captions = function () {
   return Captions;
 }();
 
-_player = new WeakMap(), _button = new WeakMap(), _captions = new WeakMap(), _menu = new WeakMap(), _events = new WeakMap(), _tracks = new WeakMap(), _trackList = new WeakMap(), _trackUrlList = new WeakMap(), _hasTracks = new WeakMap(), _current = new WeakMap(), _default = new WeakMap(), _detachMenu = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_tracks = new WeakMap(), _Captions_trackList = new WeakMap(), _Captions_trackUrlList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_current = new WeakMap(), _Captions_default = new WeakMap(), _Captions_detachMenu = new WeakMap(), _Captions_labels = new WeakMap(), _Captions_position = new WeakMap(), _Captions_layer = new WeakMap();
 exports["default"] = Captions;
 
 /***/ }),
-/* 141 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6792,74 +6848,70 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _player, _button, _menu, _events, _detachMenu, _labels, _levels, _default, _position, _layer;
+var _Levels_player, _Levels_button, _Levels_menu, _Levels_events, _Levels_detachMenu, _Levels_labels, _Levels_levels, _Levels_default, _Levels_position, _Levels_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
-var media_1 = __webpack_require__(13);
+var media_1 = __webpack_require__(14);
 
 var Levels = function () {
   function Levels(player, position, layer) {
     _classCallCheck(this, Levels);
 
-    _player.set(this, void 0);
+    _Levels_player.set(this, void 0);
 
-    _button.set(this, void 0);
+    _Levels_button.set(this, void 0);
 
-    _menu.set(this, void 0);
+    _Levels_menu.set(this, void 0);
 
-    _events.set(this, {
+    _Levels_events.set(this, {
       button: {},
       global: {},
       media: {}
     });
 
-    _detachMenu.set(this, void 0);
+    _Levels_detachMenu.set(this, void 0);
 
-    _labels.set(this, void 0);
+    _Levels_labels.set(this, void 0);
 
-    _levels.set(this, []);
+    _Levels_levels.set(this, []);
 
-    _default.set(this, '');
+    _Levels_default.set(this, '');
 
-    _position.set(this, void 0);
+    _Levels_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Levels_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Levels_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+    __classPrivateFieldSet(this, _Levels_labels, player.getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _detachMenu, player.getOptions().detachMenus);
+    __classPrivateFieldSet(this, _Levels_detachMenu, player.getOptions().detachMenus, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Levels_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Levels_layer, layer, "f");
 
     return this;
   }
@@ -6869,131 +6921,131 @@ var Levels = function () {
     value: function create() {
       var _this = this;
 
-      var initialLevel = __classPrivateFieldGet(this, _player).getOptions().defaultLevel !== null ? parseInt(__classPrivateFieldGet(this, _player).getOptions().defaultLevel, 10) : __classPrivateFieldGet(this, _player).getMedia().level;
+      var initialLevel = __classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel !== null ? parseInt(__classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel, 10) : __classPrivateFieldGet(this, _Levels_player, "f").getMedia().level;
 
-      __classPrivateFieldSet(this, _default, "".concat(initialLevel));
+      __classPrivateFieldSet(this, _Levels_default, "".concat(initialLevel), "f");
 
       var menuItems = this._formatMenuItems();
 
       var defaultLevel = menuItems.length ? menuItems.find(function (items) {
-        return items.key === __classPrivateFieldGet(_this, _default);
+        return items.key === __classPrivateFieldGet(_this, _Levels_default, "f");
       }) : null;
-      var defaultLabel = defaultLevel ? defaultLevel.label : __classPrivateFieldGet(this, _labels).auto;
+      var defaultLabel = defaultLevel ? defaultLevel.label : __classPrivateFieldGet(this, _Levels_labels, "f").auto;
       var levelSet = false;
 
-      __classPrivateFieldSet(this, _button, document.createElement('button'));
+      __classPrivateFieldSet(this, _Levels_button, document.createElement('button'), "f");
 
-      __classPrivateFieldGet(this, _button).className = "op-controls__levels op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _button).tabIndex = 0;
-      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).mediaLevels;
+      __classPrivateFieldGet(this, _Levels_button, "f").className = "op-controls__levels op-control__".concat(__classPrivateFieldGet(this, _Levels_position, "f"));
+      __classPrivateFieldGet(this, _Levels_button, "f").tabIndex = 0;
+      __classPrivateFieldGet(this, _Levels_button, "f").title = __classPrivateFieldGet(this, _Levels_labels, "f").mediaLevels;
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+      __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Levels_player, "f").id);
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).mediaLevels);
+      __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Levels_labels, "f").mediaLevels);
 
-      __classPrivateFieldGet(this, _button).setAttribute('data-active-level', __classPrivateFieldGet(this, _default));
+      __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('data-active-level', __classPrivateFieldGet(this, _Levels_default, "f"));
 
-      __classPrivateFieldGet(this, _button).innerHTML = "<span>".concat(defaultLabel, "</span>");
+      __classPrivateFieldGet(this, _Levels_button, "f").innerHTML = "<span>".concat(defaultLabel, "</span>");
 
       var loadLevelsEvent = function loadLevelsEvent() {
-        if (!__classPrivateFieldGet(_this, _levels).length) {
+        if (!__classPrivateFieldGet(_this, _Levels_levels, "f").length) {
           _this._gatherLevels();
 
           setTimeout(function () {
-            __classPrivateFieldGet(_this, _player).getMedia().level = initialLevel;
-            var e = events_1.addEvent('controlschanged');
+            __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().level = initialLevel;
+            var e = (0, events_1.addEvent)('controlschanged');
 
-            __classPrivateFieldGet(_this, _player).getElement().dispatchEvent(e);
+            __classPrivateFieldGet(_this, _Levels_player, "f").getElement().dispatchEvent(e);
           }, 0);
         } else if (!levelSet) {
-          __classPrivateFieldGet(_this, _player).getMedia().level = initialLevel;
+          __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().level = initialLevel;
           levelSet = true;
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.loadedmetadata = loadLevelsEvent.bind(this);
-      __classPrivateFieldGet(this, _events).media.manifestLoaded = loadLevelsEvent.bind(this);
-      __classPrivateFieldGet(this, _events).media.hlsManifestParsed = loadLevelsEvent.bind(this);
+      __classPrivateFieldGet(this, _Levels_events, "f").media.loadedmetadata = loadLevelsEvent.bind(this);
+      __classPrivateFieldGet(this, _Levels_events, "f").media.manifestLoaded = loadLevelsEvent.bind(this);
+      __classPrivateFieldGet(this, _Levels_events, "f").media.hlsManifestParsed = loadLevelsEvent.bind(this);
 
-      if (__classPrivateFieldGet(this, _detachMenu)) {
+      if (__classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
         this._buildMenu();
 
-        __classPrivateFieldGet(this, _events).button.click = function () {
-          if (__classPrivateFieldGet(_this, _detachMenu)) {
-            var menus = __classPrivateFieldGet(_this, _player).getContainer().querySelectorAll('.op-settings');
+        __classPrivateFieldGet(this, _Levels_events, "f").button.click = function () {
+          if (__classPrivateFieldGet(_this, _Levels_detachMenu, "f")) {
+            var menus = __classPrivateFieldGet(_this, _Levels_player, "f").getContainer().querySelectorAll('.op-settings');
 
             for (var i = 0, total = menus.length; i < total; ++i) {
-              if (menus[i] !== __classPrivateFieldGet(_this, _menu)) {
+              if (menus[i] !== __classPrivateFieldGet(_this, _Levels_menu, "f")) {
                 menus[i].setAttribute('aria-hidden', 'true');
               }
             }
 
-            if (__classPrivateFieldGet(_this, _menu).getAttribute('aria-hidden') === 'true') {
-              __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'false');
+            if (__classPrivateFieldGet(_this, _Levels_menu, "f").getAttribute('aria-hidden') === 'true') {
+              __classPrivateFieldGet(_this, _Levels_menu, "f").setAttribute('aria-hidden', 'false');
             } else {
-              __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'true');
+              __classPrivateFieldGet(_this, _Levels_menu, "f").setAttribute('aria-hidden', 'true');
             }
           }
         };
 
-        __classPrivateFieldGet(this, _events).button.mouseover = function () {
+        __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover = function () {
           if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-            var menus = __classPrivateFieldGet(_this, _player).getContainer().querySelectorAll('.op-settings');
+            var menus = __classPrivateFieldGet(_this, _Levels_player, "f").getContainer().querySelectorAll('.op-settings');
 
             for (var i = 0, total = menus.length; i < total; ++i) {
-              if (menus[i] !== __classPrivateFieldGet(_this, _menu)) {
+              if (menus[i] !== __classPrivateFieldGet(_this, _Levels_menu, "f")) {
                 menus[i].setAttribute('aria-hidden', 'true');
               }
             }
 
-            if (__classPrivateFieldGet(_this, _menu).getAttribute('aria-hidden') === 'true') {
-              __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'false');
+            if (__classPrivateFieldGet(_this, _Levels_menu, "f").getAttribute('aria-hidden') === 'true') {
+              __classPrivateFieldGet(_this, _Levels_menu, "f").setAttribute('aria-hidden', 'false');
             }
           }
         };
 
-        __classPrivateFieldGet(this, _events).button.mouseout = function () {
+        __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout = function () {
           if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-            var menus = __classPrivateFieldGet(_this, _player).getContainer().querySelectorAll('.op-settings');
+            var menus = __classPrivateFieldGet(_this, _Levels_player, "f").getContainer().querySelectorAll('.op-settings');
 
             for (var i = 0, total = menus.length; i < total; ++i) {
               menus[i].setAttribute('aria-hidden', 'true');
             }
 
-            if (__classPrivateFieldGet(_this, _menu).getAttribute('aria-hidden') === 'false') {
-              __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'true');
+            if (__classPrivateFieldGet(_this, _Levels_menu, "f").getAttribute('aria-hidden') === 'false') {
+              __classPrivateFieldGet(_this, _Levels_menu, "f").setAttribute('aria-hidden', 'true');
             }
           }
         };
 
-        __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _events).button.click, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Levels_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").button.click, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _button).addEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Levels_button, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _menu).addEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Levels_menu, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _menu).addEventListener('mouseout', __classPrivateFieldGet(this, _events).button.mouseout, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Levels_menu, "f").addEventListener('mouseout', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _player).getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _events).button.mouseout, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Levels_player, "f").getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
       }
 
-      __classPrivateFieldGet(this, _events).global.click = function (e) {
+      __classPrivateFieldGet(this, _Levels_events, "f").global.click = function (e) {
         var option = e.target;
 
-        var currentTime = __classPrivateFieldGet(_this, _player).getMedia().currentTime;
+        var currentTime = __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().currentTime;
 
-        var isPaused = __classPrivateFieldGet(_this, _player).getMedia().paused;
+        var isPaused = __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().paused;
 
-        if (option.closest("#".concat(__classPrivateFieldGet(_this, _player).id)) && general_1.hasClass(option, 'op-levels__option')) {
+        if (option.closest("#".concat(__classPrivateFieldGet(_this, _Levels_player, "f").id)) && (0, general_1.hasClass)(option, 'op-levels__option')) {
           var levelVal = option.getAttribute('data-value');
           var level = parseInt(levelVal ? levelVal.replace('levels-', '') : '-1', 10);
 
-          __classPrivateFieldSet(_this, _default, "".concat(level));
+          __classPrivateFieldSet(_this, _Levels_default, "".concat(level), "f");
 
-          if (__classPrivateFieldGet(_this, _detachMenu)) {
-            __classPrivateFieldGet(_this, _button).setAttribute('data-active-level', "".concat(level));
+          if (__classPrivateFieldGet(_this, _Levels_detachMenu, "f")) {
+            __classPrivateFieldGet(_this, _Levels_button, "f").setAttribute('data-active-level', "".concat(level));
 
-            __classPrivateFieldGet(_this, _button).innerHTML = "<span>".concat(option.innerText, "</span>");
+            __classPrivateFieldGet(_this, _Levels_button, "f").innerHTML = "<span>".concat(option.innerText, "</span>");
             var levels = option.parentElement && option.parentElement.parentElement ? option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item') : [];
 
             for (var i = 0, total = levels.length; i < total; ++i) {
@@ -7004,24 +7056,24 @@ var Levels = function () {
               option.parentElement.setAttribute('aria-checked', 'true');
             }
 
-            __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'false');
+            __classPrivateFieldGet(_this, _Levels_menu, "f").setAttribute('aria-hidden', 'false');
           }
 
-          __classPrivateFieldGet(_this, _player).getMedia().level = level;
-          __classPrivateFieldGet(_this, _player).getMedia().currentTime = currentTime;
+          __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().level = level;
+          __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().currentTime = currentTime;
 
           if (!isPaused) {
-            __classPrivateFieldGet(_this, _player).play();
+            __classPrivateFieldGet(_this, _Levels_player, "f").play();
           }
 
-          var event = events_1.addEvent('levelchanged', {
+          var event = (0, events_1.addEvent)('levelchanged', {
             detail: {
               label: option.innerText.trim(),
               level: level
             }
           });
 
-          __classPrivateFieldGet(_this, _player).getElement().dispatchEvent(event);
+          __classPrivateFieldGet(_this, _Levels_player, "f").getElement().dispatchEvent(event);
 
           e.preventDefault();
           e.stopPropagation();
@@ -7030,13 +7082,13 @@ var Levels = function () {
 
       var connection = constants_1.NAV.connection || constants_1.NAV.mozConnection || constants_1.NAV.webkitConnection;
 
-      __classPrivateFieldGet(this, _events).global.connection = function () {
-        var media = __classPrivateFieldGet(_this, _player).getMedia().current;
+      __classPrivateFieldGet(this, _Levels_events, "f").global.connection = function () {
+        var media = __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().current;
 
-        if (!media_1.isDashSource(media) && !media_1.isHlsSource(media)) {
+        if (!(0, media_1.isDashSource)(media) && !(0, media_1.isHlsSource)(media)) {
           var type = connection.effectiveType;
 
-          var levels = __classPrivateFieldGet(_this, _levels).map(function (item) {
+          var levels = __classPrivateFieldGet(_this, _Levels_levels, "f").map(function (item) {
             return Object.assign(Object.assign({}, item), {
               resolution: parseInt(item.label.replace('p', ''), 10)
             });
@@ -7057,24 +7109,24 @@ var Levels = function () {
           }
 
           if (level) {
-            __classPrivateFieldGet(_this, _player).pause();
+            __classPrivateFieldGet(_this, _Levels_player, "f").pause();
 
-            __classPrivateFieldGet(_this, _player).getMedia().level = level.id;
+            __classPrivateFieldGet(_this, _Levels_player, "f").getMedia().level = level.id;
 
-            __classPrivateFieldGet(_this, _player).play();
+            __classPrivateFieldGet(_this, _Levels_player, "f").play();
           }
 
           type = connection.effectiveType;
         }
       };
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, __classPrivateFieldGet(_this, _events).media[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Levels_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this, _Levels_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(_this, _Levels_events, "f").media[event], constants_1.EVENT_OPTIONS);
       });
-      document.addEventListener('click', __classPrivateFieldGet(this, _events).global.click, constants_1.EVENT_OPTIONS);
+      document.addEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").global.click, constants_1.EVENT_OPTIONS);
 
       if (connection) {
-        connection.addEventListener('change', __classPrivateFieldGet(this, _events).global.connection, constants_1.EVENT_OPTIONS);
+        connection.addEventListener('change', __classPrivateFieldGet(this, _Levels_events, "f").global.connection, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
@@ -7083,35 +7135,35 @@ var Levels = function () {
       var _this2 = this;
 
       var connection = constants_1.NAV.connection || constants_1.NAV.mozConnection || constants_1.NAV.webkitConnection;
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _events).media[event]);
+      Object.keys(__classPrivateFieldGet(this, _Levels_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Levels_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _Levels_events, "f").media[event]);
       });
-      document.removeEventListener('click', __classPrivateFieldGet(this, _events).global.click);
+      document.removeEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").global.click);
 
       if (connection) {
-        connection.removeEventListener('change', __classPrivateFieldGet(this, _events).global.connection);
+        connection.removeEventListener('change', __classPrivateFieldGet(this, _Levels_events, "f").global.connection);
       }
 
-      if (__classPrivateFieldGet(this, _detachMenu)) {
-        __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _events).button.click);
+      if (__classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
+        __classPrivateFieldGet(this, _Levels_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").button.click);
 
-        general_1.removeElement(__classPrivateFieldGet(this, _button));
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Levels_button, "f"));
 
-        __classPrivateFieldGet(this, _button).removeEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover);
+        __classPrivateFieldGet(this, _Levels_button, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover);
 
-        __classPrivateFieldGet(this, _menu).removeEventListener('mouseover', __classPrivateFieldGet(this, _events).button.mouseover);
+        __classPrivateFieldGet(this, _Levels_menu, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover);
 
-        __classPrivateFieldGet(this, _menu).removeEventListener('mouseout', __classPrivateFieldGet(this, _events).button.mouseout);
+        __classPrivateFieldGet(this, _Levels_menu, "f").removeEventListener('mouseout', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout);
 
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlshidden', __classPrivateFieldGet(this, _events).button.mouseout);
+        __classPrivateFieldGet(this, _Levels_player, "f").getElement().removeEventListener('controlshidden', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout);
 
-        general_1.removeElement(__classPrivateFieldGet(this, _menu));
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Levels_menu, "f"));
       }
     }
   }, {
     key: "addSettings",
     value: function addSettings() {
-      if (__classPrivateFieldGet(this, _detachMenu)) {
+      if (__classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
         return {};
       }
 
@@ -7119,9 +7171,9 @@ var Levels = function () {
 
       return subitems.length > 2 ? {
         className: 'op-levels__option',
-        "default": __classPrivateFieldGet(this, _default) || '-1',
+        "default": __classPrivateFieldGet(this, _Levels_default, "f") || '-1',
         key: 'levels',
-        name: __classPrivateFieldGet(this, _labels).levels,
+        name: __classPrivateFieldGet(this, _Levels_labels, "f").levels,
         subitems: subitems
       } : {};
     }
@@ -7133,7 +7185,7 @@ var Levels = function () {
       var total = levels.length;
       var items = total ? [{
         key: '-1',
-        label: __classPrivateFieldGet(this, _labels).auto
+        label: __classPrivateFieldGet(this, _Levels_labels, "f").auto
       }] : [];
 
       var _loop = function _loop(i) {
@@ -7189,51 +7241,51 @@ var Levels = function () {
         return '144p';
       }
 
-      return __classPrivateFieldGet(this, _labels).auto;
+      return __classPrivateFieldGet(this, _Levels_labels, "f").auto;
     }
   }, {
     key: "_gatherLevels",
     value: function _gatherLevels() {
       var _this3 = this;
 
-      if (!__classPrivateFieldGet(this, _levels).length) {
-        __classPrivateFieldGet(this, _player).getMedia().levels.forEach(function (level) {
-          __classPrivateFieldGet(_this3, _levels).push(Object.assign(Object.assign({}, level), {
+      if (!__classPrivateFieldGet(this, _Levels_levels, "f").length) {
+        __classPrivateFieldGet(this, _Levels_player, "f").getMedia().levels.forEach(function (level) {
+          __classPrivateFieldGet(_this3, _Levels_levels, "f").push(Object.assign(Object.assign({}, level), {
             label: level.label || _this3._getResolutionsLabel(level.height)
           }));
         });
       }
 
-      return __classPrivateFieldGet(this, _levels);
+      return __classPrivateFieldGet(this, _Levels_levels, "f");
     }
   }, {
     key: "_buildMenu",
     value: function _buildMenu() {
       var _this4 = this;
 
-      if (__classPrivateFieldGet(this, _detachMenu)) {
-        __classPrivateFieldGet(this, _button).classList.add('op-control--no-hover');
+      if (__classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
+        __classPrivateFieldGet(this, _Levels_button, "f").classList.add('op-control--no-hover');
 
-        __classPrivateFieldSet(this, _menu, document.createElement('div'));
+        __classPrivateFieldSet(this, _Levels_menu, document.createElement('div'), "f");
 
-        __classPrivateFieldGet(this, _menu).className = 'op-settings op-levels__menu';
+        __classPrivateFieldGet(this, _Levels_menu, "f").className = 'op-settings op-levels__menu';
 
-        __classPrivateFieldGet(this, _menu).setAttribute('aria-hidden', 'true');
+        __classPrivateFieldGet(this, _Levels_menu, "f").setAttribute('aria-hidden', 'true');
 
         var className = 'op-levels__option';
 
         var options = this._formatMenuItems();
 
         var menu = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-levels\">\n                ".concat(options.map(function (item) {
-          return "\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                    aria-checked=\"".concat(__classPrivateFieldGet(_this4, _default) === item.key ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"levels-").concat(item.key, "\">").concat(item.label, "</div>\n                </div>");
+          return "\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                    aria-checked=\"".concat(__classPrivateFieldGet(_this4, _Levels_default, "f") === item.key ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"levels-").concat(item.key, "\">").concat(item.label, "</div>\n                </div>");
         }).join(''), "\n            </div>");
-        __classPrivateFieldGet(this, _menu).innerHTML = menu;
+        __classPrivateFieldGet(this, _Levels_menu, "f").innerHTML = menu;
         var itemContainer = document.createElement('div');
-        itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _position));
-        itemContainer.appendChild(__classPrivateFieldGet(this, _button));
-        itemContainer.appendChild(__classPrivateFieldGet(this, _menu));
+        itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _Levels_position, "f"));
+        itemContainer.appendChild(__classPrivateFieldGet(this, _Levels_button, "f"));
+        itemContainer.appendChild(__classPrivateFieldGet(this, _Levels_menu, "f"));
 
-        __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(itemContainer);
+        __classPrivateFieldGet(this, _Levels_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Levels_layer, "f")).appendChild(itemContainer);
       }
     }
   }]);
@@ -7241,11 +7293,11 @@ var Levels = function () {
   return Levels;
 }();
 
-_player = new WeakMap(), _button = new WeakMap(), _menu = new WeakMap(), _events = new WeakMap(), _detachMenu = new WeakMap(), _labels = new WeakMap(), _levels = new WeakMap(), _default = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Levels_player = new WeakMap(), _Levels_button = new WeakMap(), _Levels_menu = new WeakMap(), _Levels_events = new WeakMap(), _Levels_detachMenu = new WeakMap(), _Levels_labels = new WeakMap(), _Levels_levels = new WeakMap(), _Levels_default = new WeakMap(), _Levels_position = new WeakMap(), _Levels_layer = new WeakMap();
 exports["default"] = Levels;
 
 /***/ }),
-/* 142 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7257,21 +7309,17 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -7280,7 +7328,7 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _player, _button, _events, _labels, _position, _layer;
+var _Play_player, _Play_button, _Play_events, _Play_labels, _Play_position, _Play_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -7288,38 +7336,38 @@ Object.defineProperty(exports, "__esModule", {
 
 var player_1 = __importDefault(__webpack_require__(54));
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var Play = function () {
   function Play(player, position, layer) {
     _classCallCheck(this, Play);
 
-    _player.set(this, void 0);
+    _Play_player.set(this, void 0);
 
-    _button.set(this, void 0);
+    _Play_button.set(this, void 0);
 
-    _events.set(this, {
+    _Play_events.set(this, {
       controls: {},
       media: {}
     });
 
-    _labels.set(this, void 0);
+    _Play_labels.set(this, void 0);
 
-    _position.set(this, void 0);
+    _Play_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Play_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Play_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, __classPrivateFieldGet(this, _player).getOptions().labels);
+    __classPrivateFieldSet(this, _Play_labels, __classPrivateFieldGet(this, _Play_player, "f").getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Play_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Play_layer, layer, "f");
 
     this._keydownEvent = this._keydownEvent.bind(this);
     return this;
@@ -7330,31 +7378,31 @@ var Play = function () {
     value: function create() {
       var _this = this;
 
-      __classPrivateFieldSet(this, _button, document.createElement('button'));
+      __classPrivateFieldSet(this, _Play_button, document.createElement('button'), "f");
 
-      __classPrivateFieldGet(this, _button).type = 'button';
-      __classPrivateFieldGet(this, _button).className = "op-controls__playpause op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _button).tabIndex = 0;
-      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).play;
+      __classPrivateFieldGet(this, _Play_button, "f").type = 'button';
+      __classPrivateFieldGet(this, _Play_button, "f").className = "op-controls__playpause op-control__".concat(__classPrivateFieldGet(this, _Play_position, "f"));
+      __classPrivateFieldGet(this, _Play_button, "f").tabIndex = 0;
+      __classPrivateFieldGet(this, _Play_button, "f").title = __classPrivateFieldGet(this, _Play_labels, "f").play;
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+      __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Play_player, "f").id);
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
+      __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-pressed', 'false');
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).play);
+      __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Play_labels, "f").play);
 
-      __classPrivateFieldGet(this, _button).innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _labels).play, "/").concat(__classPrivateFieldGet(this, _labels).pause, "</span>");
+      __classPrivateFieldGet(this, _Play_button, "f").innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _Play_labels, "f").play, "/").concat(__classPrivateFieldGet(this, _Play_labels, "f").pause, "</span>");
 
-      __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
+      __classPrivateFieldGet(this, _Play_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Play_layer, "f")).appendChild(__classPrivateFieldGet(this, _Play_button, "f"));
 
-      __classPrivateFieldGet(this, _events).media.click = function (e) {
-        __classPrivateFieldGet(_this, _button).setAttribute('aria-pressed', 'true');
+      __classPrivateFieldGet(this, _Play_events, "f").media.click = function (e) {
+        __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-pressed', 'true');
 
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Play_player, "f").activeElement();
 
         if (el.paused || el.ended) {
-          if (__classPrivateFieldGet(_this, _player).getAd()) {
-            __classPrivateFieldGet(_this, _player).getAd().playRequested = true;
+          if (__classPrivateFieldGet(_this, _Play_player, "f").getAd()) {
+            __classPrivateFieldGet(_this, _Play_player, "f").getAd().playRequested = true;
           }
 
           el.play();
@@ -7366,31 +7414,31 @@ var Play = function () {
         e.stopPropagation();
       };
 
-      var isAudioEl = general_1.isAudio(__classPrivateFieldGet(this, _player).getElement());
+      var isAudioEl = (0, general_1.isAudio)(__classPrivateFieldGet(this, _Play_player, "f").getElement());
 
-      __classPrivateFieldGet(this, _events).media.play = function () {
-        if (__classPrivateFieldGet(_this, _player).activeElement().ended) {
-          if (__classPrivateFieldGet(_this, _player).isMedia()) {
-            __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--replay');
+      __classPrivateFieldGet(this, _Play_events, "f").media.play = function () {
+        if (__classPrivateFieldGet(_this, _Play_player, "f").activeElement().ended) {
+          if (__classPrivateFieldGet(_this, _Play_player, "f").isMedia()) {
+            __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--replay');
           } else {
-            __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--pause');
+            __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
           }
 
-          __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).play;
+          __classPrivateFieldGet(_this, _Play_button, "f").title = __classPrivateFieldGet(_this, _Play_labels, "f").play;
 
-          __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).play);
+          __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Play_labels, "f").play);
         } else {
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--replay');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
-          __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--pause');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
 
-          __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).pause;
+          __classPrivateFieldGet(_this, _Play_button, "f").title = __classPrivateFieldGet(_this, _Play_labels, "f").pause;
 
-          __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).pause);
+          __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Play_labels, "f").pause);
 
-          if (__classPrivateFieldGet(_this, _player).getOptions().pauseOthers) {
+          if (__classPrivateFieldGet(_this, _Play_player, "f").getOptions().pauseOthers) {
             Object.keys(player_1["default"].instances).forEach(function (key) {
-              if (key !== __classPrivateFieldGet(_this, _player).id) {
+              if (key !== __classPrivateFieldGet(_this, _Play_player, "f").id) {
                 var target = player_1["default"].instances[key].activeElement();
                 target.pause();
               }
@@ -7399,111 +7447,111 @@ var Play = function () {
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.loadedmetadata = function () {
-        if (general_1.hasClass(__classPrivateFieldGet(_this, _button), 'op-controls__playpause--pause')) {
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--replay');
+      __classPrivateFieldGet(this, _Play_events, "f").media.loadedmetadata = function () {
+        if ((0, general_1.hasClass)(__classPrivateFieldGet(_this, _Play_button, "f"), 'op-controls__playpause--pause')) {
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--pause');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
 
-          __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).play;
+          __classPrivateFieldGet(_this, _Play_button, "f").title = __classPrivateFieldGet(_this, _Play_labels, "f").play;
 
-          __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).play);
+          __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Play_labels, "f").play);
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.playing = function () {
-        if (!general_1.hasClass(__classPrivateFieldGet(_this, _button), 'op-controls__playpause--pause')) {
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--replay');
+      __classPrivateFieldGet(this, _Play_events, "f").media.playing = function () {
+        if (!(0, general_1.hasClass)(__classPrivateFieldGet(_this, _Play_button, "f"), 'op-controls__playpause--pause')) {
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
-          __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--pause');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
 
-          __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).pause;
+          __classPrivateFieldGet(_this, _Play_button, "f").title = __classPrivateFieldGet(_this, _Play_labels, "f").pause;
 
-          __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).pause);
+          __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Play_labels, "f").pause);
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.pause = function () {
-        __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--pause');
+      __classPrivateFieldGet(this, _Play_events, "f").media.pause = function () {
+        __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
 
-        __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).play;
+        __classPrivateFieldGet(_this, _Play_button, "f").title = __classPrivateFieldGet(_this, _Play_labels, "f").play;
 
-        __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).play);
+        __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Play_labels, "f").play);
       };
 
-      __classPrivateFieldGet(this, _events).media.ended = function () {
-        if (__classPrivateFieldGet(_this, _player).activeElement().ended && __classPrivateFieldGet(_this, _player).isMedia()) {
-          __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--replay');
+      __classPrivateFieldGet(this, _Play_events, "f").media.ended = function () {
+        if (__classPrivateFieldGet(_this, _Play_player, "f").activeElement().ended && __classPrivateFieldGet(_this, _Play_player, "f").isMedia()) {
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--replay');
 
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--pause');
-        } else if (__classPrivateFieldGet(_this, _player).getElement().currentTime >= __classPrivateFieldGet(_this, _player).getElement().duration || __classPrivateFieldGet(_this, _player).getElement().currentTime <= 0) {
-          __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--replay');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
+        } else if (__classPrivateFieldGet(_this, _Play_player, "f").getElement().currentTime >= __classPrivateFieldGet(_this, _Play_player, "f").getElement().duration || __classPrivateFieldGet(_this, _Play_player, "f").getElement().currentTime <= 0) {
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--replay');
 
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--pause');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
         } else {
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--replay');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
-          __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--pause');
+          __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
         }
 
-        __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).play;
+        __classPrivateFieldGet(_this, _Play_button, "f").title = __classPrivateFieldGet(_this, _Play_labels, "f").play;
 
-        __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).play);
+        __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Play_labels, "f").play);
       };
 
-      __classPrivateFieldGet(this, _events).media.adsmediaended = function () {
-        __classPrivateFieldGet(_this, _button).classList.remove('op-controls__playpause--replay');
+      __classPrivateFieldGet(this, _Play_events, "f").media.adsmediaended = function () {
+        __classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
-        __classPrivateFieldGet(_this, _button).classList.add('op-controls__playpause--pause');
+        __classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
 
-        __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).pause;
+        __classPrivateFieldGet(_this, _Play_button, "f").title = __classPrivateFieldGet(_this, _Play_labels, "f").pause;
 
-        __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).pause);
+        __classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Play_labels, "f").pause);
       };
 
-      __classPrivateFieldGet(this, _events).media.playererror = function () {
+      __classPrivateFieldGet(this, _Play_events, "f").media.playererror = function () {
         if (isAudioEl) {
-          var el = __classPrivateFieldGet(_this, _player).activeElement();
+          var el = __classPrivateFieldGet(_this, _Play_player, "f").activeElement();
 
           el.pause();
         }
       };
 
-      var element = __classPrivateFieldGet(this, _player).getElement();
+      var element = __classPrivateFieldGet(this, _Play_player, "f").getElement();
 
-      __classPrivateFieldGet(this, _events).controls.controlschanged = function () {
-        if (!__classPrivateFieldGet(_this, _player).activeElement().paused) {
-          var event = events_1.addEvent('playing');
+      __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged = function () {
+        if (!__classPrivateFieldGet(_this, _Play_player, "f").activeElement().paused) {
+          var event = (0, events_1.addEvent)('playing');
           element.dispatchEvent(event);
         }
       };
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        element.addEventListener(event, __classPrivateFieldGet(_this, _events).media[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Play_events, "f").media).forEach(function (event) {
+        element.addEventListener(event, __classPrivateFieldGet(_this, _Play_events, "f").media[event], constants_1.EVENT_OPTIONS);
       });
 
-      __classPrivateFieldGet(this, _player).getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Play_player, "f").getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _events).media.click, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").media.click, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "destroy",
     value: function destroy() {
       var _this2 = this;
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _events).media[event]);
+      Object.keys(__classPrivateFieldGet(this, _Play_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Play_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _Play_events, "f").media[event]);
       });
 
-      __classPrivateFieldGet(this, _player).getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged);
+      __classPrivateFieldGet(this, _Play_player, "f").getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged);
 
-      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
+      __classPrivateFieldGet(this, _Play_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
 
-      __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _events).media.click);
+      __classPrivateFieldGet(this, _Play_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").media.click);
 
-      general_1.removeElement(__classPrivateFieldGet(this, _button));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Play_button, "f"));
     }
   }, {
     key: "_keydownEvent",
@@ -7514,7 +7562,7 @@ var Play = function () {
       var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__playpause');
 
       if (playBtnFocused && (key === 13 || key === 32)) {
-        __classPrivateFieldGet(this, _events).media.click(e);
+        __classPrivateFieldGet(this, _Play_events, "f").media.click(e);
       }
     }
   }]);
@@ -7522,11 +7570,11 @@ var Play = function () {
   return Play;
 }();
 
-_player = new WeakMap(), _button = new WeakMap(), _events = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_labels = new WeakMap(), _Play_position = new WeakMap(), _Play_layer = new WeakMap();
 exports["default"] = Play;
 
 /***/ }),
-/* 143 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7538,32 +7586,28 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _player, _progress, _slider, _buffer, _played, _tooltip, _events, _forcePause, _labels, _position, _layer;
+var _Progress_player, _Progress_progress, _Progress_slider, _Progress_buffer, _Progress_played, _Progress_tooltip, _Progress_events, _Progress_forcePause, _Progress_labels, _Progress_position, _Progress_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var time_1 = __webpack_require__(53);
 
@@ -7571,19 +7615,19 @@ var Progress = function () {
   function Progress(player, position, layer) {
     _classCallCheck(this, Progress);
 
-    _player.set(this, void 0);
+    _Progress_player.set(this, void 0);
 
-    _progress.set(this, void 0);
+    _Progress_progress.set(this, void 0);
 
-    _slider.set(this, void 0);
+    _Progress_slider.set(this, void 0);
 
-    _buffer.set(this, void 0);
+    _Progress_buffer.set(this, void 0);
 
-    _played.set(this, void 0);
+    _Progress_played.set(this, void 0);
 
-    _tooltip.set(this, void 0);
+    _Progress_tooltip.set(this, void 0);
 
-    _events.set(this, {
+    _Progress_events.set(this, {
       container: {},
       controls: {},
       global: {},
@@ -7591,23 +7635,23 @@ var Progress = function () {
       slider: {}
     });
 
-    _forcePause.set(this, void 0);
+    _Progress_forcePause.set(this, void 0);
 
-    _labels.set(this, void 0);
+    _Progress_labels.set(this, void 0);
 
-    _position.set(this, void 0);
+    _Progress_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Progress_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Progress_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+    __classPrivateFieldSet(this, _Progress_labels, player.getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _forcePause, false);
+    __classPrivateFieldSet(this, _Progress_forcePause, false, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Progress_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Progress_layer, layer, "f");
 
     this._keydownEvent = this._keydownEvent.bind(this);
     return this;
@@ -7618,279 +7662,279 @@ var Progress = function () {
     value: function create() {
       var _this = this;
 
-      __classPrivateFieldSet(this, _progress, document.createElement('div'));
+      __classPrivateFieldSet(this, _Progress_progress, document.createElement('div'), "f");
 
-      __classPrivateFieldGet(this, _progress).className = "op-controls__progress op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _progress).tabIndex = 0;
+      __classPrivateFieldGet(this, _Progress_progress, "f").className = "op-controls__progress op-control__".concat(__classPrivateFieldGet(this, _Progress_position, "f"));
+      __classPrivateFieldGet(this, _Progress_progress, "f").tabIndex = 0;
 
-      __classPrivateFieldGet(this, _progress).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).progressSlider);
+      __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Progress_labels, "f").progressSlider);
 
-      __classPrivateFieldGet(this, _progress).setAttribute('aria-valuemin', '0');
+      __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemin', '0');
 
-      __classPrivateFieldSet(this, _slider, document.createElement('input'));
+      __classPrivateFieldSet(this, _Progress_slider, document.createElement('input'), "f");
 
-      __classPrivateFieldGet(this, _slider).type = 'range';
-      __classPrivateFieldGet(this, _slider).className = 'op-controls__progress--seek';
-      __classPrivateFieldGet(this, _slider).tabIndex = -1;
+      __classPrivateFieldGet(this, _Progress_slider, "f").type = 'range';
+      __classPrivateFieldGet(this, _Progress_slider, "f").className = 'op-controls__progress--seek';
+      __classPrivateFieldGet(this, _Progress_slider, "f").tabIndex = -1;
 
-      __classPrivateFieldGet(this, _slider).setAttribute('min', '0');
+      __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('min', '0');
 
-      __classPrivateFieldGet(this, _slider).setAttribute('max', '0');
+      __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', '0');
 
-      __classPrivateFieldGet(this, _slider).setAttribute('step', '0.1');
+      __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('step', '0.1');
 
-      __classPrivateFieldGet(this, _slider).value = '0';
+      __classPrivateFieldGet(this, _Progress_slider, "f").value = '0';
 
-      __classPrivateFieldGet(this, _slider).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).progressRail);
+      __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Progress_labels, "f").progressRail);
 
-      __classPrivateFieldGet(this, _slider).setAttribute('role', 'slider');
+      __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('role', 'slider');
 
-      __classPrivateFieldSet(this, _buffer, document.createElement('progress'));
+      __classPrivateFieldSet(this, _Progress_buffer, document.createElement('progress'), "f");
 
-      __classPrivateFieldGet(this, _buffer).className = 'op-controls__progress--buffer';
+      __classPrivateFieldGet(this, _Progress_buffer, "f").className = 'op-controls__progress--buffer';
 
-      __classPrivateFieldGet(this, _buffer).setAttribute('max', '100');
+      __classPrivateFieldGet(this, _Progress_buffer, "f").setAttribute('max', '100');
 
-      __classPrivateFieldGet(this, _buffer).value = 0;
+      __classPrivateFieldGet(this, _Progress_buffer, "f").value = 0;
 
-      __classPrivateFieldSet(this, _played, document.createElement('progress'));
+      __classPrivateFieldSet(this, _Progress_played, document.createElement('progress'), "f");
 
-      __classPrivateFieldGet(this, _played).className = 'op-controls__progress--played';
+      __classPrivateFieldGet(this, _Progress_played, "f").className = 'op-controls__progress--played';
 
-      __classPrivateFieldGet(this, _played).setAttribute('max', '100');
+      __classPrivateFieldGet(this, _Progress_played, "f").setAttribute('max', '100');
 
-      __classPrivateFieldGet(this, _played).setAttribute('role', 'presentation');
+      __classPrivateFieldGet(this, _Progress_played, "f").setAttribute('role', 'presentation');
 
-      __classPrivateFieldGet(this, _played).value = 0;
+      __classPrivateFieldGet(this, _Progress_played, "f").value = 0;
 
-      __classPrivateFieldGet(this, _progress).appendChild(__classPrivateFieldGet(this, _slider));
+      __classPrivateFieldGet(this, _Progress_progress, "f").appendChild(__classPrivateFieldGet(this, _Progress_slider, "f"));
 
-      __classPrivateFieldGet(this, _progress).appendChild(__classPrivateFieldGet(this, _played));
+      __classPrivateFieldGet(this, _Progress_progress, "f").appendChild(__classPrivateFieldGet(this, _Progress_played, "f"));
 
-      __classPrivateFieldGet(this, _progress).appendChild(__classPrivateFieldGet(this, _buffer));
+      __classPrivateFieldGet(this, _Progress_progress, "f").appendChild(__classPrivateFieldGet(this, _Progress_buffer, "f"));
 
       if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-        __classPrivateFieldSet(this, _tooltip, document.createElement('span'));
+        __classPrivateFieldSet(this, _Progress_tooltip, document.createElement('span'), "f");
 
-        __classPrivateFieldGet(this, _tooltip).className = 'op-controls__tooltip';
-        __classPrivateFieldGet(this, _tooltip).tabIndex = -1;
-        __classPrivateFieldGet(this, _tooltip).innerHTML = '00:00';
+        __classPrivateFieldGet(this, _Progress_tooltip, "f").className = 'op-controls__tooltip';
+        __classPrivateFieldGet(this, _Progress_tooltip, "f").tabIndex = -1;
+        __classPrivateFieldGet(this, _Progress_tooltip, "f").innerHTML = '00:00';
 
-        __classPrivateFieldGet(this, _progress).appendChild(__classPrivateFieldGet(this, _tooltip));
+        __classPrivateFieldGet(this, _Progress_progress, "f").appendChild(__classPrivateFieldGet(this, _Progress_tooltip, "f"));
       }
 
       var setInitialProgress = function setInitialProgress() {
-        if (__classPrivateFieldGet(_this, _slider).classList.contains('error')) {
-          __classPrivateFieldGet(_this, _slider).classList.remove('error');
+        if (__classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('error')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('error');
         }
 
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled') && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled')) {
-          __classPrivateFieldGet(_this, _slider).setAttribute('max', "".concat(el.duration));
+        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') && !__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
 
-          var current = __classPrivateFieldGet(_this, _player).isMedia() ? el.currentTime : el.duration - el.currentTime;
-          __classPrivateFieldGet(_this, _slider).value = current.toString();
+          var current = __classPrivateFieldGet(_this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime;
+          __classPrivateFieldGet(_this, _Progress_slider, "f").value = current.toString();
 
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-valuemax', el.duration.toString());
-        } else if (__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled')) {
-          __classPrivateFieldGet(_this, _slider).setAttribute('max', '1');
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+        } else if (__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', '1');
 
-          __classPrivateFieldGet(_this, _slider).value = '1';
-          __classPrivateFieldGet(_this, _slider).style.backgroundSize = '100% 100%';
-          __classPrivateFieldGet(_this, _played).value = 1;
+          __classPrivateFieldGet(_this, _Progress_slider, "f").value = '1';
+          __classPrivateFieldGet(_this, _Progress_slider, "f").style.backgroundSize = '100% 100%';
+          __classPrivateFieldGet(_this, _Progress_played, "f").value = 1;
 
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-valuemax', '1');
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', '1');
 
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-hidden', 'false');
-        } else if (!__classPrivateFieldGet(_this, _player).getOptions().live.showProgress) {
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-hidden', 'true');
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
+        } else if (!__classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live.showProgress) {
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'true');
         }
       };
 
       var lastCurrentTime = 0;
-      var defaultDuration = __classPrivateFieldGet(this, _player).getOptions().progress.duration || 0;
-      var isAudioEl = general_1.isAudio(__classPrivateFieldGet(this, _player).getElement());
-      __classPrivateFieldGet(this, _events).media.loadedmetadata = setInitialProgress.bind(this);
-      __classPrivateFieldGet(this, _events).controls.controlschanged = setInitialProgress.bind(this);
+      var defaultDuration = __classPrivateFieldGet(this, _Progress_player, "f").getOptions().progress.duration || 0;
+      var isAudioEl = (0, general_1.isAudio)(__classPrivateFieldGet(this, _Progress_player, "f").getElement());
+      __classPrivateFieldGet(this, _Progress_events, "f").media.loadedmetadata = setInitialProgress.bind(this);
+      __classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged = setInitialProgress.bind(this);
 
-      __classPrivateFieldGet(this, _events).media.progress = function (e) {
+      __classPrivateFieldGet(this, _Progress_events, "f").media.progress = function (e) {
         var el = e.target;
 
-        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled')) {
+        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled')) {
           if (el.duration > 0) {
             for (var i = 0, total = el.buffered.length; i < total; i++) {
               if (el.buffered.start(el.buffered.length - 1 - i) < el.currentTime) {
-                __classPrivateFieldGet(_this, _buffer).value = el.buffered.end(el.buffered.length - 1 - i) / el.duration * 100;
+                __classPrivateFieldGet(_this, _Progress_buffer, "f").value = el.buffered.end(el.buffered.length - 1 - i) / el.duration * 100;
                 break;
               }
             }
           }
-        } else if (!__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled') && __classPrivateFieldGet(_this, _progress).getAttribute('aria-hidden') === 'false' && !__classPrivateFieldGet(_this, _player).getOptions().live.showProgress) {
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-hidden', 'true');
+        } else if (!__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && __classPrivateFieldGet(_this, _Progress_progress, "f").getAttribute('aria-hidden') === 'false' && !__classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live.showProgress) {
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'true');
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.waiting = function () {
-        if (isAudioEl && !__classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
-          __classPrivateFieldGet(_this, _slider).classList.add('loading');
+      __classPrivateFieldGet(this, _Progress_events, "f").media.waiting = function () {
+        if (isAudioEl && !__classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.add('loading');
         }
 
-        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('error')) {
-          __classPrivateFieldGet(_this, _slider).classList.remove('error');
-        }
-      };
-
-      __classPrivateFieldGet(this, _events).media.playererror = function () {
-        if (isAudioEl && !__classPrivateFieldGet(_this, _slider).classList.contains('error')) {
-          __classPrivateFieldGet(_this, _slider).classList.add('error');
-        }
-
-        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
-          __classPrivateFieldGet(_this, _slider).classList.remove('loading');
+        if (isAudioEl && __classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('error')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('error');
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.pause = function () {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+      __classPrivateFieldGet(this, _Progress_events, "f").media.playererror = function () {
+        if (isAudioEl && !__classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('error')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.add('error');
+        }
 
-        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled')) {
+        if (isAudioEl && __classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('loading');
+        }
+      };
+
+      __classPrivateFieldGet(this, _Progress_events, "f").media.pause = function () {
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
+
+        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled')) {
           var current = el.currentTime;
 
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-valuenow', current.toString());
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuenow', current.toString());
 
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-valuetext', time_1.formatTime(current));
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuetext', (0, time_1.formatTime)(current));
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.play = function () {
-        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
-          __classPrivateFieldGet(_this, _slider).classList.remove('loading');
+      __classPrivateFieldGet(this, _Progress_events, "f").media.play = function () {
+        if (isAudioEl && __classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('loading');
         }
 
-        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('error')) {
-          __classPrivateFieldGet(_this, _slider).classList.remove('error');
+        if (isAudioEl && __classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('error')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('error');
         }
 
-        if (__classPrivateFieldGet(_this, _player).activeElement().duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled')) {
-          __classPrivateFieldGet(_this, _progress).removeAttribute('aria-valuenow');
+        if (__classPrivateFieldGet(_this, _Progress_player, "f").activeElement().duration !== Infinity && !__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled')) {
+          __classPrivateFieldGet(_this, _Progress_progress, "f").removeAttribute('aria-valuenow');
 
-          __classPrivateFieldGet(_this, _progress).removeAttribute('aria-valuetext');
-        }
-      };
-
-      __classPrivateFieldGet(this, _events).media.playing = function () {
-        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('loading')) {
-          __classPrivateFieldGet(_this, _slider).classList.remove('loading');
-        }
-
-        if (isAudioEl && __classPrivateFieldGet(_this, _slider).classList.contains('error')) {
-          __classPrivateFieldGet(_this, _slider).classList.remove('error');
+          __classPrivateFieldGet(_this, _Progress_progress, "f").removeAttribute('aria-valuetext');
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.timeupdate = function () {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+      __classPrivateFieldGet(this, _Progress_events, "f").media.playing = function () {
+        if (isAudioEl && __classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('loading')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('loading');
+        }
 
-        if (el.duration !== Infinity && (!__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled') || __classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled'))) {
-          if (!__classPrivateFieldGet(_this, _slider).getAttribute('max') || __classPrivateFieldGet(_this, _slider).getAttribute('max') === '0' || parseFloat(__classPrivateFieldGet(_this, _slider).getAttribute('max') || '-1') !== el.duration) {
-            __classPrivateFieldGet(_this, _slider).setAttribute('max', "".concat(el.duration));
+        if (isAudioEl && __classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('error')) {
+          __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('error');
+        }
+      };
 
-            __classPrivateFieldGet(_this, _progress).setAttribute('aria-hidden', 'false');
+      __classPrivateFieldGet(this, _Progress_events, "f").media.timeupdate = function () {
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
+
+        if (el.duration !== Infinity && (!__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') || __classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled'))) {
+          if (!__classPrivateFieldGet(_this, _Progress_slider, "f").getAttribute('max') || __classPrivateFieldGet(_this, _Progress_slider, "f").getAttribute('max') === '0' || parseFloat(__classPrivateFieldGet(_this, _Progress_slider, "f").getAttribute('max') || '-1') !== el.duration) {
+            __classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
+
+            __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
           }
 
-          var current = __classPrivateFieldGet(_this, _player).isMedia() ? el.currentTime : el.duration - el.currentTime + 1 >= 100 ? 100 : el.duration - el.currentTime + 1;
-          var min = parseFloat(__classPrivateFieldGet(_this, _slider).min);
-          var max = parseFloat(__classPrivateFieldGet(_this, _slider).max);
-          __classPrivateFieldGet(_this, _slider).value = current.toString();
-          __classPrivateFieldGet(_this, _slider).style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
-          __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
+          var current = __classPrivateFieldGet(_this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime + 1 >= 100 ? 100 : el.duration - el.currentTime + 1;
+          var min = parseFloat(__classPrivateFieldGet(_this, _Progress_slider, "f").min);
+          var max = parseFloat(__classPrivateFieldGet(_this, _Progress_slider, "f").max);
+          __classPrivateFieldGet(_this, _Progress_slider, "f").value = current.toString();
+          __classPrivateFieldGet(_this, _Progress_slider, "f").style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
+          __classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
 
-          if (__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled') && Math.floor(__classPrivateFieldGet(_this, _played).value) >= 99) {
+          if (__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && Math.floor(__classPrivateFieldGet(_this, _Progress_played, "f").value) >= 99) {
             lastCurrentTime = el.currentTime;
 
-            __classPrivateFieldGet(_this, _progress).setAttribute('aria-hidden', 'false');
+            __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
           }
-        } else if (!__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled') && __classPrivateFieldGet(_this, _progress).getAttribute('aria-hidden') === 'false' && !__classPrivateFieldGet(_this, _player).getOptions().live.showProgress) {
-          __classPrivateFieldGet(_this, _progress).setAttribute('aria-hidden', 'true');
+        } else if (!__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && __classPrivateFieldGet(_this, _Progress_progress, "f").getAttribute('aria-hidden') === 'false' && !__classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live.showProgress) {
+          __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'true');
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.durationchange = function () {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+      __classPrivateFieldGet(this, _Progress_events, "f").media.durationchange = function () {
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-        var current = __classPrivateFieldGet(_this, _player).isMedia() ? el.currentTime : el.duration - el.currentTime;
+        var current = __classPrivateFieldGet(_this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime;
 
-        __classPrivateFieldGet(_this, _slider).setAttribute('max', "".concat(el.duration));
+        __classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
 
-        __classPrivateFieldGet(_this, _progress).setAttribute('aria-valuemax', el.duration.toString());
+        __classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
 
-        __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
+        __classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
       };
 
-      __classPrivateFieldGet(this, _events).media.ended = function () {
-        __classPrivateFieldGet(_this, _slider).style.backgroundSize = '0% 100%';
+      __classPrivateFieldGet(this, _Progress_events, "f").media.ended = function () {
+        __classPrivateFieldGet(_this, _Progress_slider, "f").style.backgroundSize = '0% 100%';
 
-        __classPrivateFieldGet(_this, _slider).setAttribute('max', '0');
+        __classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', '0');
 
-        __classPrivateFieldGet(_this, _buffer).value = 0;
-        __classPrivateFieldGet(_this, _played).value = 0;
+        __classPrivateFieldGet(_this, _Progress_buffer, "f").value = 0;
+        __classPrivateFieldGet(_this, _Progress_played, "f").value = 0;
       };
 
       var updateSlider = function updateSlider(e) {
-        if (general_1.hasClass(__classPrivateFieldGet(_this, _slider), 'op-progress--pressed')) {
+        if ((0, general_1.hasClass)(__classPrivateFieldGet(_this, _Progress_slider, "f"), 'op-progress--pressed')) {
           return;
         }
 
         var target = e.target;
 
-        __classPrivateFieldGet(_this, _slider).classList.add('.op-progress--pressed');
+        __classPrivateFieldGet(_this, _Progress_slider, "f").classList.add('.op-progress--pressed');
 
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
         var min = parseFloat(target.min);
         var max = parseFloat(target.max);
         var val = parseFloat(target.value);
-        __classPrivateFieldGet(_this, _slider).style.backgroundSize = "".concat((val - min) * 100 / (max - min), "% 100%");
-        __classPrivateFieldGet(_this, _played).value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : val / el.duration * 100;
+        __classPrivateFieldGet(_this, _Progress_slider, "f").style.backgroundSize = "".concat((val - min) * 100 / (max - min), "% 100%");
+        __classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : val / el.duration * 100;
 
-        if (__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled')) {
-          el.currentTime = Math.round(__classPrivateFieldGet(_this, _played).value) >= 99 ? lastCurrentTime : val;
+        if (__classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
+          el.currentTime = Math.round(__classPrivateFieldGet(_this, _Progress_played, "f").value) >= 99 ? lastCurrentTime : val;
         } else {
           el.currentTime = val;
         }
 
-        __classPrivateFieldGet(_this, _slider).classList.remove('.op-progress--pressed');
+        __classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('.op-progress--pressed');
       };
 
       var forcePause = function forcePause(e) {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-        if ((e.which === 1 || e.which === 0) && __classPrivateFieldGet(_this, _player).isMedia()) {
+        if ((e.which === 1 || e.which === 0) && __classPrivateFieldGet(_this, _Progress_player, "f").isMedia()) {
           if (!el.paused) {
             el.play().then(function () {
               el.pause();
 
-              __classPrivateFieldSet(_this, _forcePause, true);
+              __classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
             });
           }
         }
       };
 
       var releasePause = function releasePause() {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-        if (__classPrivateFieldGet(_this, _forcePause) === true && __classPrivateFieldGet(_this, _player).isMedia()) {
+        if (__classPrivateFieldGet(_this, _Progress_forcePause, "f") === true && __classPrivateFieldGet(_this, _Progress_player, "f").isMedia()) {
           if (el.paused) {
             el.play();
 
-            __classPrivateFieldSet(_this, _forcePause, false);
+            __classPrivateFieldSet(_this, _Progress_forcePause, false, "f");
           }
         }
       };
 
       var mobileForcePause = function mobileForcePause(e) {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
         if (el.duration === Infinity) {
           return true;
@@ -7898,125 +7942,125 @@ var Progress = function () {
 
         var changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
         var x = changedTouches ? changedTouches[0].pageX : e.pageX;
-        var pos = x - general_1.offset(__classPrivateFieldGet(_this, _progress)).left;
+        var pos = x - (0, general_1.offset)(__classPrivateFieldGet(_this, _Progress_progress, "f")).left;
 
-        var percentage = pos / __classPrivateFieldGet(_this, _progress).offsetWidth;
+        var percentage = pos / __classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
 
         var time = percentage * el.duration;
-        __classPrivateFieldGet(_this, _slider).value = time.toString();
+        __classPrivateFieldGet(_this, _Progress_slider, "f").value = time.toString();
         updateSlider(e);
         forcePause(e);
       };
 
-      __classPrivateFieldGet(this, _events).slider.input = updateSlider.bind(this);
-      __classPrivateFieldGet(this, _events).slider.change = updateSlider.bind(this);
-      __classPrivateFieldGet(this, _events).slider.mousedown = forcePause.bind(this);
-      __classPrivateFieldGet(this, _events).slider.mouseup = releasePause.bind(this);
-      __classPrivateFieldGet(this, _events).slider.touchstart = mobileForcePause.bind(this);
-      __classPrivateFieldGet(this, _events).slider.touchend = releasePause.bind(this);
+      __classPrivateFieldGet(this, _Progress_events, "f").slider.input = updateSlider.bind(this);
+      __classPrivateFieldGet(this, _Progress_events, "f").slider.change = updateSlider.bind(this);
+      __classPrivateFieldGet(this, _Progress_events, "f").slider.mousedown = forcePause.bind(this);
+      __classPrivateFieldGet(this, _Progress_events, "f").slider.mouseup = releasePause.bind(this);
+      __classPrivateFieldGet(this, _Progress_events, "f").slider.touchstart = mobileForcePause.bind(this);
+      __classPrivateFieldGet(this, _Progress_events, "f").slider.touchend = releasePause.bind(this);
 
       if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-        __classPrivateFieldGet(this, _events).container.mousemove = function (e) {
-          var el = __classPrivateFieldGet(_this, _player).activeElement();
+        __classPrivateFieldGet(this, _Progress_events, "f").container.mousemove = function (e) {
+          var el = __classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-          if (el.duration === Infinity || __classPrivateFieldGet(_this, _player).isAd()) {
+          if (el.duration === Infinity || __classPrivateFieldGet(_this, _Progress_player, "f").isAd()) {
             return true;
           }
 
           var x = e.originalEvent && e.originalEvent.changedTouches ? e.originalEvent.changedTouches[0].pageX : e.pageX;
-          var pos = x - general_1.offset(__classPrivateFieldGet(_this, _progress)).left;
-          var half = __classPrivateFieldGet(_this, _tooltip).offsetWidth / 2;
+          var pos = x - (0, general_1.offset)(__classPrivateFieldGet(_this, _Progress_progress, "f")).left;
+          var half = __classPrivateFieldGet(_this, _Progress_tooltip, "f").offsetWidth / 2;
 
-          var percentage = pos / __classPrivateFieldGet(_this, _progress).offsetWidth;
+          var percentage = pos / __classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
 
           var time = percentage * el.duration;
 
-          var mediaContainer = __classPrivateFieldGet(_this, _player).getContainer();
+          var mediaContainer = __classPrivateFieldGet(_this, _Progress_player, "f").getContainer();
 
-          var limit = mediaContainer.offsetWidth - __classPrivateFieldGet(_this, _tooltip).offsetWidth;
+          var limit = mediaContainer.offsetWidth - __classPrivateFieldGet(_this, _Progress_tooltip, "f").offsetWidth;
 
-          if (pos <= 0 || x - general_1.offset(mediaContainer).left <= half) {
+          if (pos <= 0 || x - (0, general_1.offset)(mediaContainer).left <= half) {
             pos = 0;
-          } else if (x - general_1.offset(mediaContainer).left >= limit) {
-            pos = limit - general_1.offset(__classPrivateFieldGet(_this, _slider)).left - 10;
+          } else if (x - (0, general_1.offset)(mediaContainer).left >= limit) {
+            pos = limit - (0, general_1.offset)(__classPrivateFieldGet(_this, _Progress_slider, "f")).left - 10;
           } else {
             pos -= half;
           }
 
           if (percentage >= 0 && percentage <= 1) {
-            __classPrivateFieldGet(_this, _tooltip).classList.add('op-controls__tooltip--visible');
+            __classPrivateFieldGet(_this, _Progress_tooltip, "f").classList.add('op-controls__tooltip--visible');
           } else {
-            __classPrivateFieldGet(_this, _tooltip).classList.remove('op-controls__tooltip--visible');
+            __classPrivateFieldGet(_this, _Progress_tooltip, "f").classList.remove('op-controls__tooltip--visible');
           }
 
-          __classPrivateFieldGet(_this, _tooltip).style.left = "".concat(pos, "px");
-          __classPrivateFieldGet(_this, _tooltip).innerHTML = isNaN(time) ? '00:00' : time_1.formatTime(time);
+          __classPrivateFieldGet(_this, _Progress_tooltip, "f").style.left = "".concat(pos, "px");
+          __classPrivateFieldGet(_this, _Progress_tooltip, "f").innerHTML = isNaN(time) ? '00:00' : (0, time_1.formatTime)(time);
         };
 
-        __classPrivateFieldGet(this, _events).global.mousemove = function (e) {
-          if (!e.target.closest('.op-controls__progress') || __classPrivateFieldGet(_this, _player).isAd()) {
-            __classPrivateFieldGet(_this, _tooltip).classList.remove('op-controls__tooltip--visible');
+        __classPrivateFieldGet(this, _Progress_events, "f").global.mousemove = function (e) {
+          if (!e.target.closest('.op-controls__progress') || __classPrivateFieldGet(_this, _Progress_player, "f").isAd()) {
+            __classPrivateFieldGet(_this, _Progress_tooltip, "f").classList.remove('op-controls__tooltip--visible');
           }
         };
       }
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, __classPrivateFieldGet(_this, _events).media[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Progress_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this, _Progress_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(_this, _Progress_events, "f").media[event], constants_1.EVENT_OPTIONS);
       });
-      Object.keys(__classPrivateFieldGet(this, _events).slider).forEach(function (event) {
-        __classPrivateFieldGet(_this, _slider).addEventListener(event, __classPrivateFieldGet(_this, _events).slider[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Progress_events, "f").slider).forEach(function (event) {
+        __classPrivateFieldGet(_this, _Progress_slider, "f").addEventListener(event, __classPrivateFieldGet(_this, _Progress_events, "f").slider[event], constants_1.EVENT_OPTIONS);
       });
 
-      __classPrivateFieldGet(this, _progress).addEventListener('keydown', __classPrivateFieldGet(this, _player).getEvents().keydown, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Progress_progress, "f").addEventListener('keydown', __classPrivateFieldGet(this, _Progress_player, "f").getEvents().keydown, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _progress).addEventListener('mousemove', __classPrivateFieldGet(this, _events).container.mousemove, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Progress_progress, "f").addEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").container.mousemove, constants_1.EVENT_OPTIONS);
 
-      document.addEventListener('mousemove', __classPrivateFieldGet(this, _events).global.mousemove, constants_1.EVENT_OPTIONS);
+      document.addEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").global.mousemove, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Progress_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Progress_player, "f").getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _progress));
+      __classPrivateFieldGet(this, _Progress_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Progress_layer, "f")).appendChild(__classPrivateFieldGet(this, _Progress_progress, "f"));
     }
   }, {
     key: "destroy",
     value: function destroy() {
       var _this2 = this;
 
-      Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _events)[event]);
+      Object.keys(__classPrivateFieldGet(this, _Progress_events, "f")).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Progress_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _Progress_events, "f")[event]);
       });
-      Object.keys(__classPrivateFieldGet(this, _events).slider).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _slider).removeEventListener(event, __classPrivateFieldGet(_this2, _events).slider[event]);
+      Object.keys(__classPrivateFieldGet(this, _Progress_events, "f").slider).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Progress_slider, "f").removeEventListener(event, __classPrivateFieldGet(_this2, _Progress_events, "f").slider[event]);
       });
 
-      __classPrivateFieldGet(this, _progress).removeEventListener('keydown', __classPrivateFieldGet(this, _player).getEvents().keydown);
+      __classPrivateFieldGet(this, _Progress_progress, "f").removeEventListener('keydown', __classPrivateFieldGet(this, _Progress_player, "f").getEvents().keydown);
 
-      __classPrivateFieldGet(this, _progress).removeEventListener('mousemove', __classPrivateFieldGet(this, _events).container.mousemove);
+      __classPrivateFieldGet(this, _Progress_progress, "f").removeEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").container.mousemove);
 
-      document.removeEventListener('mousemove', __classPrivateFieldGet(this, _events).global.mousemove);
+      document.removeEventListener('mousemove', __classPrivateFieldGet(this, _Progress_events, "f").global.mousemove);
 
-      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
+      __classPrivateFieldGet(this, _Progress_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
 
-      __classPrivateFieldGet(this, _player).getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged);
+      __classPrivateFieldGet(this, _Progress_player, "f").getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged);
 
-      general_1.removeElement(__classPrivateFieldGet(this, _buffer));
-      general_1.removeElement(__classPrivateFieldGet(this, _played));
-      general_1.removeElement(__classPrivateFieldGet(this, _slider));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Progress_buffer, "f"));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Progress_played, "f"));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Progress_slider, "f"));
 
       if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-        general_1.removeElement(__classPrivateFieldGet(this, _tooltip));
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Progress_tooltip, "f"));
       }
 
-      general_1.removeElement(__classPrivateFieldGet(this, _progress));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Progress_progress, "f"));
     }
   }, {
     key: "_keydownEvent",
     value: function _keydownEvent(e) {
-      var el = __classPrivateFieldGet(this, _player).activeElement();
+      var el = __classPrivateFieldGet(this, _Progress_player, "f").activeElement();
 
-      var isAd = __classPrivateFieldGet(this, _player).isAd();
+      var isAd = __classPrivateFieldGet(this, _Progress_player, "f").isAd();
 
       var key = e.which || e.keyCode || 0;
 
@@ -8039,11 +8083,11 @@ var Progress = function () {
   return Progress;
 }();
 
-_player = new WeakMap(), _progress = new WeakMap(), _slider = new WeakMap(), _buffer = new WeakMap(), _played = new WeakMap(), _tooltip = new WeakMap(), _events = new WeakMap(), _forcePause = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Progress_player = new WeakMap(), _Progress_progress = new WeakMap(), _Progress_slider = new WeakMap(), _Progress_buffer = new WeakMap(), _Progress_played = new WeakMap(), _Progress_tooltip = new WeakMap(), _Progress_events = new WeakMap(), _Progress_forcePause = new WeakMap(), _Progress_labels = new WeakMap(), _Progress_position = new WeakMap(), _Progress_layer = new WeakMap();
 exports["default"] = Progress;
 
 /***/ }),
-/* 144 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8057,65 +8101,61 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _player, _submenu, _button, _menu, _events, _originalOutput, _labels, _position, _layer;
+var _Settings_player, _Settings_submenu, _Settings_button, _Settings_menu, _Settings_events, _Settings_originalOutput, _Settings_labels, _Settings_position, _Settings_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var Settings = function () {
   function Settings(player, position, layer) {
     _classCallCheck(this, Settings);
 
-    _player.set(this, void 0);
+    _Settings_player.set(this, void 0);
 
-    _submenu.set(this, {});
+    _Settings_submenu.set(this, {});
 
-    _button.set(this, void 0);
+    _Settings_button.set(this, void 0);
 
-    _menu.set(this, void 0);
+    _Settings_menu.set(this, void 0);
 
-    _events.set(this, {
+    _Settings_events.set(this, {
       global: {},
       media: {}
     });
 
-    _originalOutput.set(this, '');
+    _Settings_originalOutput.set(this, '');
 
-    _labels.set(this, void 0);
+    _Settings_labels.set(this, void 0);
 
-    _position.set(this, void 0);
+    _Settings_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Settings_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Settings_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+    __classPrivateFieldSet(this, _Settings_labels, player.getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Settings_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Settings_layer, layer, "f");
 
     this._keydownEvent = this._keydownEvent.bind(this);
     return this;
@@ -8126,40 +8166,40 @@ var Settings = function () {
     value: function create() {
       var _this = this;
 
-      __classPrivateFieldSet(this, _button, document.createElement('button'));
+      __classPrivateFieldSet(this, _Settings_button, document.createElement('button'), "f");
 
-      __classPrivateFieldGet(this, _button).className = "op-controls__settings op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _button).tabIndex = 0;
-      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).settings;
+      __classPrivateFieldGet(this, _Settings_button, "f").className = "op-controls__settings op-control__".concat(__classPrivateFieldGet(this, _Settings_position, "f"));
+      __classPrivateFieldGet(this, _Settings_button, "f").tabIndex = 0;
+      __classPrivateFieldGet(this, _Settings_button, "f").title = __classPrivateFieldGet(this, _Settings_labels, "f").settings;
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+      __classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Settings_player, "f").id);
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
+      __classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-pressed', 'false');
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).settings);
+      __classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Settings_labels, "f").settings);
 
-      __classPrivateFieldGet(this, _button).innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _labels).settings, "</span>");
+      __classPrivateFieldGet(this, _Settings_button, "f").innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _Settings_labels, "f").settings, "</span>");
 
-      __classPrivateFieldSet(this, _menu, document.createElement('div'));
+      __classPrivateFieldSet(this, _Settings_menu, document.createElement('div'), "f");
 
-      __classPrivateFieldGet(this, _menu).className = 'op-settings';
+      __classPrivateFieldGet(this, _Settings_menu, "f").className = 'op-settings';
 
-      __classPrivateFieldGet(this, _menu).setAttribute('aria-hidden', 'true');
+      __classPrivateFieldGet(this, _Settings_menu, "f").setAttribute('aria-hidden', 'true');
 
-      __classPrivateFieldGet(this, _menu).innerHTML = '<div class="op-settings__menu" role="menu"></div>';
+      __classPrivateFieldGet(this, _Settings_menu, "f").innerHTML = '<div class="op-settings__menu" role="menu"></div>';
 
       this.clickEvent = function () {
-        __classPrivateFieldGet(_this, _button).setAttribute('aria-pressed', 'true');
+        __classPrivateFieldGet(_this, _Settings_button, "f").setAttribute('aria-pressed', 'true');
 
-        var menus = __classPrivateFieldGet(_this, _player).getContainer().querySelectorAll('.op-settings');
+        var menus = __classPrivateFieldGet(_this, _Settings_player, "f").getContainer().querySelectorAll('.op-settings');
 
         for (var i = 0, total = menus.length; i < total; ++i) {
-          if (menus[i] !== __classPrivateFieldGet(_this, _menu)) {
+          if (menus[i] !== __classPrivateFieldGet(_this, _Settings_menu, "f")) {
             menus[i].setAttribute('aria-hidden', 'true');
           }
         }
 
-        __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', __classPrivateFieldGet(_this, _menu).getAttribute('aria-hidden') === 'false' ? 'true' : 'false');
+        __classPrivateFieldGet(_this, _Settings_menu, "f").setAttribute('aria-hidden', __classPrivateFieldGet(_this, _Settings_menu, "f").getAttribute('aria-hidden') === 'false' ? 'true' : 'false');
       };
 
       this.hideEvent = function () {
@@ -8171,9 +8211,9 @@ var Settings = function () {
 
         if (typeof window !== 'undefined') {
           timeout = window.requestAnimationFrame(function () {
-            __classPrivateFieldGet(_this, _menu).innerHTML = __classPrivateFieldGet(_this, _originalOutput);
+            __classPrivateFieldGet(_this, _Settings_menu, "f").innerHTML = __classPrivateFieldGet(_this, _Settings_originalOutput, "f");
 
-            __classPrivateFieldGet(_this, _menu).setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this, _Settings_menu, "f").setAttribute('aria-hidden', 'true');
           });
         }
       };
@@ -8186,76 +8226,76 @@ var Settings = function () {
         _this.removeItem(id, type);
       };
 
-      __classPrivateFieldGet(this, _events).media.controlshidden = this.hideEvent.bind(this);
-      __classPrivateFieldGet(this, _events).media.settingremoved = this.removeEvent.bind(this);
-      __classPrivateFieldGet(this, _events).media.play = this.hideEvent.bind(this);
-      __classPrivateFieldGet(this, _events).media.pause = this.hideEvent.bind(this);
+      __classPrivateFieldGet(this, _Settings_events, "f").media.controlshidden = this.hideEvent.bind(this);
+      __classPrivateFieldGet(this, _Settings_events, "f").media.settingremoved = this.removeEvent.bind(this);
+      __classPrivateFieldGet(this, _Settings_events, "f").media.play = this.hideEvent.bind(this);
+      __classPrivateFieldGet(this, _Settings_events, "f").media.pause = this.hideEvent.bind(this);
 
-      __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Settings_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
 
       this.clickEvent = this.clickEvent.bind(this);
       this.hideEvent = this.hideEvent.bind(this);
 
-      __classPrivateFieldGet(this, _events).global.click = function (e) {
-        if (e.target.closest("#".concat(__classPrivateFieldGet(_this, _player).id)) && general_1.hasClass(e.target, 'op-speed__option')) {
-          __classPrivateFieldGet(_this, _player).getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
+      __classPrivateFieldGet(this, _Settings_events, "f").global.click = function (e) {
+        if (e.target.closest("#".concat(__classPrivateFieldGet(_this, _Settings_player, "f").id)) && (0, general_1.hasClass)(e.target, 'op-speed__option')) {
+          __classPrivateFieldGet(_this, _Settings_player, "f").getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
         }
       };
 
-      __classPrivateFieldGet(this, _events).global.resize = this.hideEvent.bind(this);
+      __classPrivateFieldGet(this, _Settings_events, "f").global.resize = this.hideEvent.bind(this);
 
-      __classPrivateFieldGet(this, _button).addEventListener('click', this.clickEvent, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Settings_button, "f").addEventListener('click', this.clickEvent, constants_1.EVENT_OPTIONS);
 
-      Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-        __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, __classPrivateFieldGet(_this, _events).media[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Settings_events, "f")).forEach(function (event) {
+        __classPrivateFieldGet(_this, _Settings_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(_this, _Settings_events, "f").media[event], constants_1.EVENT_OPTIONS);
       });
-      document.addEventListener('click', __classPrivateFieldGet(this, _events).global.click, constants_1.EVENT_OPTIONS);
-      document.addEventListener('keydown', __classPrivateFieldGet(this, _events).global.click, constants_1.EVENT_OPTIONS);
+      document.addEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global.click, constants_1.EVENT_OPTIONS);
+      document.addEventListener('keydown', __classPrivateFieldGet(this, _Settings_events, "f").global.click, constants_1.EVENT_OPTIONS);
 
       if (typeof window !== 'undefined') {
-        window.addEventListener('resize', __classPrivateFieldGet(this, _events).global.resize, constants_1.EVENT_OPTIONS);
+        window.addEventListener('resize', __classPrivateFieldGet(this, _Settings_events, "f").global.resize, constants_1.EVENT_OPTIONS);
       }
 
-      __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer)).appendChild(__classPrivateFieldGet(this, _button));
+      __classPrivateFieldGet(this, _Settings_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Settings_layer, "f")).appendChild(__classPrivateFieldGet(this, _Settings_button, "f"));
 
-      __classPrivateFieldGet(this, _player).getContainer().appendChild(__classPrivateFieldGet(this, _menu));
+      __classPrivateFieldGet(this, _Settings_player, "f").getContainer().appendChild(__classPrivateFieldGet(this, _Settings_menu, "f"));
     }
   }, {
     key: "destroy",
     value: function destroy() {
       var _this2 = this;
 
-      __classPrivateFieldGet(this, _button).removeEventListener('click', this.clickEvent);
+      __classPrivateFieldGet(this, _Settings_button, "f").removeEventListener('click', this.clickEvent);
 
-      Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _events).media[event]);
+      Object.keys(__classPrivateFieldGet(this, _Settings_events, "f")).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Settings_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _Settings_events, "f").media[event]);
       });
-      document.removeEventListener('click', __classPrivateFieldGet(this, _events).global.click);
-      document.removeEventListener('keydown', __classPrivateFieldGet(this, _events).global.click);
+      document.removeEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global.click);
+      document.removeEventListener('keydown', __classPrivateFieldGet(this, _Settings_events, "f").global.click);
 
       if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', __classPrivateFieldGet(this, _events).global.resize);
+        window.removeEventListener('resize', __classPrivateFieldGet(this, _Settings_events, "f").global.resize);
       }
 
-      if (__classPrivateFieldGet(this, _events).global['settings.submenu'] !== undefined) {
-        document.removeEventListener('click', __classPrivateFieldGet(this, _events).global['settings.submenu']);
+      if (__classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'] !== undefined) {
+        document.removeEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu']);
 
-        __classPrivateFieldGet(this, _player).getElement().removeEventListener('controlshidden', this.hideEvent);
+        __classPrivateFieldGet(this, _Settings_player, "f").getElement().removeEventListener('controlshidden', this.hideEvent);
       }
 
-      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
+      __classPrivateFieldGet(this, _Settings_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
 
-      general_1.removeElement(__classPrivateFieldGet(this, _menu));
-      general_1.removeElement(__classPrivateFieldGet(this, _button));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Settings_menu, "f"));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Settings_button, "f"));
     }
   }, {
     key: "addSettings",
     value: function addSettings() {
-      var media = __classPrivateFieldGet(this, _player).getMedia();
+      var media = __classPrivateFieldGet(this, _Settings_player, "f").getMedia();
 
       var rate = 1;
 
-      if (__classPrivateFieldGet(this, _player) && media) {
+      if (__classPrivateFieldGet(this, _Settings_player, "f") && media) {
         rate = media.defaultPlaybackRate !== media.playbackRate ? media.playbackRate : media.defaultPlaybackRate;
       }
 
@@ -8263,7 +8303,7 @@ var Settings = function () {
         className: 'op-speed__option',
         "default": rate.toString(),
         key: 'speed',
-        name: __classPrivateFieldGet(this, _labels).speed,
+        name: __classPrivateFieldGet(this, _Settings_labels, "f").speed,
         subitems: [{
           key: '0.25',
           label: '0.25'
@@ -8275,7 +8315,7 @@ var Settings = function () {
           label: '0.75'
         }, {
           key: '1',
-          label: __classPrivateFieldGet(this, _labels).speedNormal
+          label: __classPrivateFieldGet(this, _Settings_labels, "f").speedNormal
         }, {
           key: '1.25',
           label: '1.25'
@@ -8306,34 +8346,34 @@ var Settings = function () {
         menuItem.innerHTML += "<div class=\"op-settings__menu-content\" tabindex=\"0\">".concat(submenuMatch.label, "</div>");
       }
 
-      var mainMenu = __classPrivateFieldGet(this, _menu).querySelector('.op-settings__menu');
+      var mainMenu = __classPrivateFieldGet(this, _Settings_menu, "f").querySelector('.op-settings__menu');
 
       if (mainMenu) {
         mainMenu.appendChild(menuItem);
       }
 
-      __classPrivateFieldSet(this, _originalOutput, __classPrivateFieldGet(this, _menu).innerHTML);
+      __classPrivateFieldSet(this, _Settings_originalOutput, __classPrivateFieldGet(this, _Settings_menu, "f").innerHTML, "f");
 
       if (submenu) {
         var subItems = "\n                <div class=\"op-settings__header\">\n                    <button type=\"button\" class=\"op-settings__back\" tabindex=\"0\">".concat(name, "</button>\n                </div>\n                <div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-").concat(key, "\">\n                    ").concat(submenu.map(function (item) {
           return "\n                    <div class=\"op-settings__submenu-item\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(defaultValue === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" tabindex=\"0\" data-value=\"").concat(key, "-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
         }).join(''), "\n                </div>");
-        __classPrivateFieldGet(this, _submenu)[key] = subItems;
+        __classPrivateFieldGet(this, _Settings_submenu, "f")[key] = subItems;
       }
 
-      __classPrivateFieldGet(this, _events).global['settings.submenu'] = function (e) {
+      __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'] = function (e) {
         var target = e.target;
 
-        if (target.closest("#".concat(__classPrivateFieldGet(_this3, _player).id))) {
-          if (general_1.hasClass(target, 'op-settings__back')) {
-            __classPrivateFieldGet(_this3, _menu).classList.add('op-settings--sliding');
+        if (target.closest("#".concat(__classPrivateFieldGet(_this3, _Settings_player, "f").id))) {
+          if ((0, general_1.hasClass)(target, 'op-settings__back')) {
+            __classPrivateFieldGet(_this3, _Settings_menu, "f").classList.add('op-settings--sliding');
 
             setTimeout(function () {
-              __classPrivateFieldGet(_this3, _menu).innerHTML = __classPrivateFieldGet(_this3, _originalOutput);
+              __classPrivateFieldGet(_this3, _Settings_menu, "f").innerHTML = __classPrivateFieldGet(_this3, _Settings_originalOutput, "f");
 
-              __classPrivateFieldGet(_this3, _menu).classList.remove('op-settings--sliding');
+              __classPrivateFieldGet(_this3, _Settings_menu, "f").classList.remove('op-settings--sliding');
             }, 100);
-          } else if (general_1.hasClass(target, 'op-settings__menu-content')) {
+          } else if ((0, general_1.hasClass)(target, 'op-settings__menu-content')) {
             var labelEl = target.parentElement ? target.parentElement.querySelector('.op-settings__menu-label') : null;
             var label = labelEl ? labelEl.getAttribute('data-value') : null;
             var fragments = label ? label.split('-') : [];
@@ -8342,23 +8382,23 @@ var Settings = function () {
               fragments.pop();
               var current = fragments.join('-').replace(/^\-|\-$/, '');
 
-              if (_typeof(__classPrivateFieldGet(_this3, _submenu)[current]) !== undefined) {
-                __classPrivateFieldGet(_this3, _menu).classList.add('op-settings--sliding');
+              if (_typeof(__classPrivateFieldGet(_this3, _Settings_submenu, "f")[current]) !== undefined) {
+                __classPrivateFieldGet(_this3, _Settings_menu, "f").classList.add('op-settings--sliding');
 
                 setTimeout(function () {
-                  __classPrivateFieldGet(_this3, _menu).innerHTML = __classPrivateFieldGet(_this3, _submenu)[current];
+                  __classPrivateFieldGet(_this3, _Settings_menu, "f").innerHTML = __classPrivateFieldGet(_this3, _Settings_submenu, "f")[current];
 
-                  __classPrivateFieldGet(_this3, _menu).classList.remove('op-settings--sliding');
+                  __classPrivateFieldGet(_this3, _Settings_menu, "f").classList.remove('op-settings--sliding');
                 }, 100);
               }
             }
-          } else if (general_1.hasClass(target, 'op-settings__submenu-label')) {
+          } else if ((0, general_1.hasClass)(target, 'op-settings__submenu-label')) {
             var _current = target.getAttribute('data-value');
 
             var value = _current ? _current.replace("".concat(key, "-"), '') : '';
             var _label = target.innerText;
 
-            var menuTarget = __classPrivateFieldGet(_this3, _menu).querySelector("#menu-item-".concat(key, " .op-settings__submenu-item[aria-checked=true]"));
+            var menuTarget = __classPrivateFieldGet(_this3, _Settings_menu, "f").querySelector("#menu-item-".concat(key, " .op-settings__submenu-item[aria-checked=true]"));
 
             if (menuTarget) {
               menuTarget.setAttribute('aria-checked', 'false');
@@ -8367,14 +8407,14 @@ var Settings = function () {
                 target.parentElement.setAttribute('aria-checked', 'true');
               }
 
-              __classPrivateFieldGet(_this3, _submenu)[key] = __classPrivateFieldGet(_this3, _menu).innerHTML;
+              __classPrivateFieldGet(_this3, _Settings_submenu, "f")[key] = __classPrivateFieldGet(_this3, _Settings_menu, "f").innerHTML;
 
-              __classPrivateFieldGet(_this3, _menu).classList.add('op-settings--sliding');
+              __classPrivateFieldGet(_this3, _Settings_menu, "f").classList.add('op-settings--sliding');
 
               setTimeout(function () {
-                __classPrivateFieldGet(_this3, _menu).innerHTML = __classPrivateFieldGet(_this3, _originalOutput);
+                __classPrivateFieldGet(_this3, _Settings_menu, "f").innerHTML = __classPrivateFieldGet(_this3, _Settings_originalOutput, "f");
 
-                var prev = __classPrivateFieldGet(_this3, _menu).querySelector(".op-settings__menu-label[data-value=\"".concat(key, "-").concat(defaultValue, "\"]"));
+                var prev = __classPrivateFieldGet(_this3, _Settings_menu, "f").querySelector(".op-settings__menu-label[data-value=\"".concat(key, "-").concat(defaultValue, "\"]"));
 
                 if (prev) {
                   prev.setAttribute('data-value', "".concat(_current));
@@ -8386,9 +8426,9 @@ var Settings = function () {
 
                 defaultValue = value;
 
-                __classPrivateFieldSet(_this3, _originalOutput, __classPrivateFieldGet(_this3, _menu).innerHTML);
+                __classPrivateFieldSet(_this3, _Settings_originalOutput, __classPrivateFieldGet(_this3, _Settings_menu, "f").innerHTML, "f");
 
-                __classPrivateFieldGet(_this3, _menu).classList.remove('op-settings--sliding');
+                __classPrivateFieldGet(_this3, _Settings_menu, "f").classList.remove('op-settings--sliding');
               }, 100);
             }
           }
@@ -8397,30 +8437,30 @@ var Settings = function () {
         }
       };
 
-      document.addEventListener('click', __classPrivateFieldGet(this, _events).global['settings.submenu'], constants_1.EVENT_OPTIONS);
+      document.addEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'], constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _player).getElement().addEventListener('controlshidden', this.hideEvent, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Settings_player, "f").getElement().addEventListener('controlshidden', this.hideEvent, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "removeItem",
     value: function removeItem(id, type) {
       var minItems = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
 
-      var target = __classPrivateFieldGet(this, _player).getElement().querySelector(".op-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
+      var target = __classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelector(".op-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
 
       if (target) {
-        general_1.removeElement(target);
+        (0, general_1.removeElement)(target);
       }
 
-      if (__classPrivateFieldGet(this, _player).getElement().querySelectorAll(".op-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
-        delete __classPrivateFieldGet(this, _submenu)[type];
+      if (__classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelectorAll(".op-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
+        delete __classPrivateFieldGet(this, _Settings_submenu, "f")[type];
 
-        var label = __classPrivateFieldGet(this, _player).getElement().querySelector(".op-settings__menu-label[data-value^=".concat(type, "]"));
+        var label = __classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelector(".op-settings__menu-label[data-value^=".concat(type, "]"));
 
         var menuItem = label ? label.closest('.op-settings__menu-item') : null;
 
         if (menuItem) {
-          general_1.removeElement(menuItem);
+          (0, general_1.removeElement)(menuItem);
         }
       }
     }
@@ -8431,7 +8471,7 @@ var Settings = function () {
 
       var key = e.which || e.keyCode || 0;
 
-      var isAd = __classPrivateFieldGet(this, _player).isAd();
+      var isAd = __classPrivateFieldGet(this, _Settings_player, "f").isAd();
 
       var settingsBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__settings');
       var menuFocused = ((_b = document === null || document === void 0 ? void 0 : document.activeElement) === null || _b === void 0 ? void 0 : _b.classList.contains('op-settings__menu-content')) || ((_c = document === null || document === void 0 ? void 0 : document.activeElement) === null || _c === void 0 ? void 0 : _c.classList.contains('op-settings__back')) || ((_d = document === null || document === void 0 ? void 0 : document.activeElement) === null || _d === void 0 ? void 0 : _d.classList.contains('op-settings__submenu-label'));
@@ -8442,7 +8482,7 @@ var Settings = function () {
           e.preventDefault();
           e.stopPropagation();
         } else if (menuFocused && (key === 13 || key === 32)) {
-          __classPrivateFieldGet(this, _events).global['settings.submenu'](e);
+          __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'](e);
 
           e.preventDefault();
           e.stopPropagation();
@@ -8454,11 +8494,11 @@ var Settings = function () {
   return Settings;
 }();
 
-_player = new WeakMap(), _submenu = new WeakMap(), _button = new WeakMap(), _menu = new WeakMap(), _events = new WeakMap(), _originalOutput = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Settings_player = new WeakMap(), _Settings_submenu = new WeakMap(), _Settings_button = new WeakMap(), _Settings_menu = new WeakMap(), _Settings_events = new WeakMap(), _Settings_originalOutput = new WeakMap(), _Settings_labels = new WeakMap(), _Settings_position = new WeakMap(), _Settings_layer = new WeakMap();
 exports["default"] = Settings;
 
 /***/ }),
-/* 145 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8470,32 +8510,28 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _player, _current, _delimiter, _duration, _container, _events, _labels, _position, _layer;
+var _Time_player, _Time_current, _Time_delimiter, _Time_duration, _Time_container, _Time_events, _Time_labels, _Time_position, _Time_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var time_1 = __webpack_require__(53);
 
@@ -8503,34 +8539,34 @@ var Time = function () {
   function Time(player, position, layer) {
     _classCallCheck(this, Time);
 
-    _player.set(this, void 0);
+    _Time_player.set(this, void 0);
 
-    _current.set(this, void 0);
+    _Time_current.set(this, void 0);
 
-    _delimiter.set(this, void 0);
+    _Time_delimiter.set(this, void 0);
 
-    _duration.set(this, void 0);
+    _Time_duration.set(this, void 0);
 
-    _container.set(this, void 0);
+    _Time_container.set(this, void 0);
 
-    _events.set(this, {
+    _Time_events.set(this, {
       controls: {},
       media: {}
     });
 
-    _labels.set(this, void 0);
+    _Time_labels.set(this, void 0);
 
-    _position.set(this, void 0);
+    _Time_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Time_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Time_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+    __classPrivateFieldSet(this, _Time_labels, player.getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Time_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Time_layer, layer, "f");
 
     return this;
   }
@@ -8540,162 +8576,162 @@ var Time = function () {
     value: function create() {
       var _this = this;
 
-      __classPrivateFieldSet(this, _current, document.createElement('time'));
+      __classPrivateFieldSet(this, _Time_current, document.createElement('time'), "f");
 
-      __classPrivateFieldGet(this, _current).className = 'op-controls__current';
+      __classPrivateFieldGet(this, _Time_current, "f").className = 'op-controls__current';
 
-      __classPrivateFieldGet(this, _current).setAttribute('role', 'timer');
+      __classPrivateFieldGet(this, _Time_current, "f").setAttribute('role', 'timer');
 
-      __classPrivateFieldGet(this, _current).setAttribute('aria-live', 'off');
+      __classPrivateFieldGet(this, _Time_current, "f").setAttribute('aria-live', 'off');
 
-      __classPrivateFieldGet(this, _current).setAttribute('aria-hidden', 'false');
+      __classPrivateFieldGet(this, _Time_current, "f").setAttribute('aria-hidden', 'false');
 
-      __classPrivateFieldGet(this, _current).innerText = '0:00';
+      __classPrivateFieldGet(this, _Time_current, "f").innerText = '0:00';
 
-      var showOnlyCurrent = __classPrivateFieldGet(this, _player).getOptions().progress.showCurrentTimeOnly;
-
-      if (!showOnlyCurrent) {
-        __classPrivateFieldSet(this, _delimiter, document.createElement('span'));
-
-        __classPrivateFieldGet(this, _delimiter).className = 'op-controls__time-delimiter';
-
-        __classPrivateFieldGet(this, _delimiter).setAttribute('aria-hidden', 'false');
-
-        __classPrivateFieldGet(this, _delimiter).innerText = '/';
-
-        __classPrivateFieldSet(this, _duration, document.createElement('time'));
-
-        __classPrivateFieldGet(this, _duration).className = 'op-controls__duration';
-
-        __classPrivateFieldGet(this, _duration).setAttribute('aria-hidden', 'false');
-
-        __classPrivateFieldGet(this, _duration).innerText = time_1.formatTime(__classPrivateFieldGet(this, _player).getOptions().progress.duration);
-      }
-
-      var controls = __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer));
-
-      __classPrivateFieldSet(this, _container, document.createElement('span'));
-
-      __classPrivateFieldGet(this, _container).className = "op-controls-time op-control__".concat(__classPrivateFieldGet(this, _position));
-
-      __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _current));
+      var showOnlyCurrent = __classPrivateFieldGet(this, _Time_player, "f").getOptions().progress.showCurrentTimeOnly;
 
       if (!showOnlyCurrent) {
-        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _delimiter));
+        __classPrivateFieldSet(this, _Time_delimiter, document.createElement('span'), "f");
 
-        __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _duration));
+        __classPrivateFieldGet(this, _Time_delimiter, "f").className = 'op-controls__time-delimiter';
+
+        __classPrivateFieldGet(this, _Time_delimiter, "f").setAttribute('aria-hidden', 'false');
+
+        __classPrivateFieldGet(this, _Time_delimiter, "f").innerText = '/';
+
+        __classPrivateFieldSet(this, _Time_duration, document.createElement('time'), "f");
+
+        __classPrivateFieldGet(this, _Time_duration, "f").className = 'op-controls__duration';
+
+        __classPrivateFieldGet(this, _Time_duration, "f").setAttribute('aria-hidden', 'false');
+
+        __classPrivateFieldGet(this, _Time_duration, "f").innerText = (0, time_1.formatTime)(__classPrivateFieldGet(this, _Time_player, "f").getOptions().progress.duration);
       }
 
-      controls.appendChild(__classPrivateFieldGet(this, _container));
+      var controls = __classPrivateFieldGet(this, _Time_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Time_layer, "f"));
+
+      __classPrivateFieldSet(this, _Time_container, document.createElement('span'), "f");
+
+      __classPrivateFieldGet(this, _Time_container, "f").className = "op-controls-time op-control__".concat(__classPrivateFieldGet(this, _Time_position, "f"));
+
+      __classPrivateFieldGet(this, _Time_container, "f").appendChild(__classPrivateFieldGet(this, _Time_current, "f"));
+
+      if (!showOnlyCurrent) {
+        __classPrivateFieldGet(this, _Time_container, "f").appendChild(__classPrivateFieldGet(this, _Time_delimiter, "f"));
+
+        __classPrivateFieldGet(this, _Time_container, "f").appendChild(__classPrivateFieldGet(this, _Time_duration, "f"));
+      }
+
+      controls.appendChild(__classPrivateFieldGet(this, _Time_container, "f"));
 
       var setInitialTime = function setInitialTime() {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Time_player, "f").activeElement();
 
-        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled')) {
+        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-live__enabled')) {
           if (!showOnlyCurrent) {
-            var duration = !isNaN(el.duration) ? el.duration : __classPrivateFieldGet(_this, _player).getOptions().progress.duration;
-            __classPrivateFieldGet(_this, _duration).innerText = time_1.formatTime(duration);
+            var duration = !isNaN(el.duration) ? el.duration : __classPrivateFieldGet(_this, _Time_player, "f").getOptions().progress.duration;
+            __classPrivateFieldGet(_this, _Time_duration, "f").innerText = (0, time_1.formatTime)(duration);
           }
 
-          __classPrivateFieldGet(_this, _current).innerText = time_1.formatTime(el.currentTime);
+          __classPrivateFieldGet(_this, _Time_current, "f").innerText = (0, time_1.formatTime)(el.currentTime);
         } else {
           if (!showOnlyCurrent) {
-            __classPrivateFieldGet(_this, _duration).setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
           }
 
-          __classPrivateFieldGet(_this, _delimiter).setAttribute('aria-hidden', 'true');
+          __classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.loadedmetadata = setInitialTime.bind(this);
-      __classPrivateFieldGet(this, _events).controls.controlschanged = setInitialTime.bind(this);
+      __classPrivateFieldGet(this, _Time_events, "f").media.loadedmetadata = setInitialTime.bind(this);
+      __classPrivateFieldGet(this, _Time_events, "f").controls.controlschanged = setInitialTime.bind(this);
 
-      var showLiveLabel = __classPrivateFieldGet(this, _player).getOptions().live.showLabel;
+      var showLiveLabel = __classPrivateFieldGet(this, _Time_player, "f").getOptions().live.showLabel;
 
-      __classPrivateFieldGet(this, _events).media.timeupdate = function () {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+      __classPrivateFieldGet(this, _Time_events, "f").media.timeupdate = function () {
+        var el = __classPrivateFieldGet(_this, _Time_player, "f").activeElement();
 
-        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled') && !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled')) {
-          var duration = time_1.formatTime(el.duration);
+        if (el.duration !== Infinity && !__classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-live__enabled') && !__classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled')) {
+          var duration = (0, time_1.formatTime)(el.duration);
 
-          if (!showOnlyCurrent && !isNaN(el.duration) && duration !== __classPrivateFieldGet(_this, _duration).innerText) {
-            __classPrivateFieldGet(_this, _duration).innerText = duration;
+          if (!showOnlyCurrent && !isNaN(el.duration) && duration !== __classPrivateFieldGet(_this, _Time_duration, "f").innerText) {
+            __classPrivateFieldGet(_this, _Time_duration, "f").innerText = duration;
 
-            __classPrivateFieldGet(_this, _duration).setAttribute('aria-hidden', 'false');
+            __classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'false');
 
-            __classPrivateFieldGet(_this, _delimiter).setAttribute('aria-hidden', 'false');
-          } else if (showOnlyCurrent || duration !== __classPrivateFieldGet(_this, _duration).innerText) {
-            __classPrivateFieldGet(_this, _current).innerText = showLiveLabel ? __classPrivateFieldGet(_this, _labels).live : time_1.formatTime(el.currentTime);
+            __classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'false');
+          } else if (showOnlyCurrent || duration !== __classPrivateFieldGet(_this, _Time_duration, "f").innerText) {
+            __classPrivateFieldGet(_this, _Time_current, "f").innerText = showLiveLabel ? __classPrivateFieldGet(_this, _Time_labels, "f").live : (0, time_1.formatTime)(el.currentTime);
           }
 
-          __classPrivateFieldGet(_this, _current).innerText = time_1.formatTime(el.currentTime);
-        } else if (__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled')) {
+          __classPrivateFieldGet(_this, _Time_current, "f").innerText = (0, time_1.formatTime)(el.currentTime);
+        } else if (__classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled')) {
           if (!showOnlyCurrent) {
-            __classPrivateFieldGet(_this, _duration).setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
 
-            __classPrivateFieldGet(_this, _delimiter).setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
           }
 
-          __classPrivateFieldGet(_this, _current).innerText = time_1.formatTime(el.currentTime);
-        } else if (showOnlyCurrent || !__classPrivateFieldGet(_this, _player).getElement().getAttribute('op-dvr__enabled') && __classPrivateFieldGet(_this, _duration).getAttribute('aria-hidden') === 'false') {
+          __classPrivateFieldGet(_this, _Time_current, "f").innerText = (0, time_1.formatTime)(el.currentTime);
+        } else if (showOnlyCurrent || !__classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled') && __classPrivateFieldGet(_this, _Time_duration, "f").getAttribute('aria-hidden') === 'false') {
           if (!showOnlyCurrent) {
-            __classPrivateFieldGet(_this, _duration).setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
 
-            __classPrivateFieldGet(_this, _delimiter).setAttribute('aria-hidden', 'true');
+            __classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
           }
 
-          __classPrivateFieldGet(_this, _current).innerText = showLiveLabel ? __classPrivateFieldGet(_this, _labels).live : time_1.formatTime(el.currentTime);
+          __classPrivateFieldGet(_this, _Time_current, "f").innerText = showLiveLabel ? __classPrivateFieldGet(_this, _Time_labels, "f").live : (0, time_1.formatTime)(el.currentTime);
         } else {
-          __classPrivateFieldGet(_this, _current).innerText = showLiveLabel ? __classPrivateFieldGet(_this, _labels).live : time_1.formatTime(el.currentTime);
+          __classPrivateFieldGet(_this, _Time_current, "f").innerText = showLiveLabel ? __classPrivateFieldGet(_this, _Time_labels, "f").live : (0, time_1.formatTime)(el.currentTime);
         }
       };
 
-      __classPrivateFieldGet(this, _events).media.ended = function () {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+      __classPrivateFieldGet(this, _Time_events, "f").media.ended = function () {
+        var el = __classPrivateFieldGet(_this, _Time_player, "f").activeElement();
 
-        var duration = !isNaN(el.duration) ? el.duration : __classPrivateFieldGet(_this, _player).getOptions().progress.duration;
+        var duration = !isNaN(el.duration) ? el.duration : __classPrivateFieldGet(_this, _Time_player, "f").getOptions().progress.duration;
 
-        if (!showOnlyCurrent && __classPrivateFieldGet(_this, _player).isMedia()) {
-          __classPrivateFieldGet(_this, _duration).innerText = time_1.formatTime(duration);
+        if (!showOnlyCurrent && __classPrivateFieldGet(_this, _Time_player, "f").isMedia()) {
+          __classPrivateFieldGet(_this, _Time_duration, "f").innerText = (0, time_1.formatTime)(duration);
         }
       };
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, __classPrivateFieldGet(_this, _events).media[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Time_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this, _Time_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(_this, _Time_events, "f").media[event], constants_1.EVENT_OPTIONS);
       });
 
-      __classPrivateFieldGet(this, _player).getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Time_player, "f").getControls().getContainer().addEventListener('controlschanged', __classPrivateFieldGet(this, _Time_events, "f").controls.controlschanged, constants_1.EVENT_OPTIONS);
     }
   }, {
     key: "destroy",
     value: function destroy() {
       var _this2 = this;
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _events).media[event]);
+      Object.keys(__classPrivateFieldGet(this, _Time_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Time_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _Time_events, "f").media[event]);
       });
 
-      __classPrivateFieldGet(this, _player).getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _events).controls.controlschanged);
+      __classPrivateFieldGet(this, _Time_player, "f").getControls().getContainer().removeEventListener('controlschanged', __classPrivateFieldGet(this, _Time_events, "f").controls.controlschanged);
 
-      general_1.removeElement(__classPrivateFieldGet(this, _current));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Time_current, "f"));
 
-      if (!__classPrivateFieldGet(this, _player).getOptions().progress.showCurrentTimeOnly) {
-        general_1.removeElement(__classPrivateFieldGet(this, _delimiter));
-        general_1.removeElement(__classPrivateFieldGet(this, _duration));
+      if (!__classPrivateFieldGet(this, _Time_player, "f").getOptions().progress.showCurrentTimeOnly) {
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Time_delimiter, "f"));
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Time_duration, "f"));
       }
 
-      general_1.removeElement(__classPrivateFieldGet(this, _container));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Time_container, "f"));
     }
   }]);
 
   return Time;
 }();
 
-_player = new WeakMap(), _current = new WeakMap(), _delimiter = new WeakMap(), _duration = new WeakMap(), _container = new WeakMap(), _events = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Time_player = new WeakMap(), _Time_current = new WeakMap(), _Time_delimiter = new WeakMap(), _Time_duration = new WeakMap(), _Time_container = new WeakMap(), _Time_events = new WeakMap(), _Time_labels = new WeakMap(), _Time_position = new WeakMap(), _Time_layer = new WeakMap();
 exports["default"] = Time;
 
 /***/ }),
-/* 146 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8707,72 +8743,68 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _player, _button, _container, _display, _slider, _events, _volume, _labels, _position, _layer;
+var _Volume_player, _Volume_button, _Volume_container, _Volume_display, _Volume_slider, _Volume_events, _Volume_volume, _Volume_labels, _Volume_position, _Volume_layer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var Volume = function () {
   function Volume(player, position, layer) {
     _classCallCheck(this, Volume);
 
-    _player.set(this, void 0);
+    _Volume_player.set(this, void 0);
 
-    _button.set(this, void 0);
+    _Volume_button.set(this, void 0);
 
-    _container.set(this, void 0);
+    _Volume_container.set(this, void 0);
 
-    _display.set(this, void 0);
+    _Volume_display.set(this, void 0);
 
-    _slider.set(this, void 0);
+    _Volume_slider.set(this, void 0);
 
-    _events.set(this, {
+    _Volume_events.set(this, {
       button: {},
       media: {},
       slider: {}
     });
 
-    _volume.set(this, void 0);
+    _Volume_volume.set(this, void 0);
 
-    _labels.set(this, void 0);
+    _Volume_labels.set(this, void 0);
 
-    _position.set(this, void 0);
+    _Volume_position.set(this, void 0);
 
-    _layer.set(this, void 0);
+    _Volume_layer.set(this, void 0);
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Volume_player, player, "f");
 
-    __classPrivateFieldSet(this, _labels, player.getOptions().labels);
+    __classPrivateFieldSet(this, _Volume_labels, player.getOptions().labels, "f");
 
-    __classPrivateFieldSet(this, _volume, __classPrivateFieldGet(this, _player).getMedia().volume);
+    __classPrivateFieldSet(this, _Volume_volume, __classPrivateFieldGet(this, _Volume_player, "f").getMedia().volume, "f");
 
-    __classPrivateFieldSet(this, _position, position);
+    __classPrivateFieldSet(this, _Volume_position, position, "f");
 
-    __classPrivateFieldSet(this, _layer, layer);
+    __classPrivateFieldSet(this, _Volume_layer, layer, "f");
 
     this._keydownEvent = this._keydownEvent.bind(this);
     return this;
@@ -8783,182 +8815,182 @@ var Volume = function () {
     value: function create() {
       var _this = this;
 
-      __classPrivateFieldSet(this, _container, document.createElement('div'));
+      __classPrivateFieldSet(this, _Volume_container, document.createElement('div'), "f");
 
-      __classPrivateFieldGet(this, _container).className = "op-controls__volume op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _container).tabIndex = 0;
+      __classPrivateFieldGet(this, _Volume_container, "f").className = "op-controls__volume op-control__".concat(__classPrivateFieldGet(this, _Volume_position, "f"));
+      __classPrivateFieldGet(this, _Volume_container, "f").tabIndex = 0;
 
-      __classPrivateFieldGet(this, _container).setAttribute('aria-valuemin', '0');
+      __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuemin', '0');
 
-      __classPrivateFieldGet(this, _container).setAttribute('aria-valuemax', '100');
+      __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuemax', '100');
 
-      __classPrivateFieldGet(this, _container).setAttribute('aria-valuenow', "".concat(__classPrivateFieldGet(this, _volume)));
+      __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuenow', "".concat(__classPrivateFieldGet(this, _Volume_volume, "f")));
 
-      __classPrivateFieldGet(this, _container).setAttribute('aria-valuetext', "".concat(__classPrivateFieldGet(this, _labels).volume, ": ").concat(__classPrivateFieldGet(this, _volume)));
+      __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuetext', "".concat(__classPrivateFieldGet(this, _Volume_labels, "f").volume, ": ").concat(__classPrivateFieldGet(this, _Volume_volume, "f")));
 
-      __classPrivateFieldGet(this, _container).setAttribute('aria-orientation', 'vertical');
+      __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-orientation', 'vertical');
 
-      __classPrivateFieldGet(this, _container).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).volumeSlider);
+      __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Volume_labels, "f").volumeSlider);
 
-      __classPrivateFieldSet(this, _slider, document.createElement('input'));
+      __classPrivateFieldSet(this, _Volume_slider, document.createElement('input'), "f");
 
-      __classPrivateFieldGet(this, _slider).type = 'range';
-      __classPrivateFieldGet(this, _slider).className = 'op-controls__volume--input';
-      __classPrivateFieldGet(this, _slider).tabIndex = -1;
-      __classPrivateFieldGet(this, _slider).value = __classPrivateFieldGet(this, _player).getMedia().volume.toString();
+      __classPrivateFieldGet(this, _Volume_slider, "f").type = 'range';
+      __classPrivateFieldGet(this, _Volume_slider, "f").className = 'op-controls__volume--input';
+      __classPrivateFieldGet(this, _Volume_slider, "f").tabIndex = -1;
+      __classPrivateFieldGet(this, _Volume_slider, "f").value = __classPrivateFieldGet(this, _Volume_player, "f").getMedia().volume.toString();
 
-      __classPrivateFieldGet(this, _slider).setAttribute('min', '0');
+      __classPrivateFieldGet(this, _Volume_slider, "f").setAttribute('min', '0');
 
-      __classPrivateFieldGet(this, _slider).setAttribute('max', '1');
+      __classPrivateFieldGet(this, _Volume_slider, "f").setAttribute('max', '1');
 
-      __classPrivateFieldGet(this, _slider).setAttribute('step', '0.1');
+      __classPrivateFieldGet(this, _Volume_slider, "f").setAttribute('step', '0.1');
 
-      __classPrivateFieldGet(this, _slider).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).volumeControl);
+      __classPrivateFieldGet(this, _Volume_slider, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Volume_labels, "f").volumeControl);
 
-      __classPrivateFieldSet(this, _display, document.createElement('progress'));
+      __classPrivateFieldSet(this, _Volume_display, document.createElement('progress'), "f");
 
-      __classPrivateFieldGet(this, _display).className = 'op-controls__volume--display';
+      __classPrivateFieldGet(this, _Volume_display, "f").className = 'op-controls__volume--display';
 
-      __classPrivateFieldGet(this, _display).setAttribute('max', '10');
+      __classPrivateFieldGet(this, _Volume_display, "f").setAttribute('max', '10');
 
-      __classPrivateFieldGet(this, _display).setAttribute('role', 'presentation');
+      __classPrivateFieldGet(this, _Volume_display, "f").setAttribute('role', 'presentation');
 
-      __classPrivateFieldGet(this, _display).value = __classPrivateFieldGet(this, _player).getMedia().volume * 10;
+      __classPrivateFieldGet(this, _Volume_display, "f").value = __classPrivateFieldGet(this, _Volume_player, "f").getMedia().volume * 10;
 
-      __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _slider));
+      __classPrivateFieldGet(this, _Volume_container, "f").appendChild(__classPrivateFieldGet(this, _Volume_slider, "f"));
 
-      __classPrivateFieldGet(this, _container).appendChild(__classPrivateFieldGet(this, _display));
+      __classPrivateFieldGet(this, _Volume_container, "f").appendChild(__classPrivateFieldGet(this, _Volume_display, "f"));
 
-      __classPrivateFieldSet(this, _button, document.createElement('button'));
+      __classPrivateFieldSet(this, _Volume_button, document.createElement('button'), "f");
 
-      __classPrivateFieldGet(this, _button).type = 'button';
-      __classPrivateFieldGet(this, _button).className = "op-controls__mute op-control__".concat(__classPrivateFieldGet(this, _position));
-      __classPrivateFieldGet(this, _button).tabIndex = 0;
-      __classPrivateFieldGet(this, _button).title = __classPrivateFieldGet(this, _labels).mute;
+      __classPrivateFieldGet(this, _Volume_button, "f").type = 'button';
+      __classPrivateFieldGet(this, _Volume_button, "f").className = "op-controls__mute op-control__".concat(__classPrivateFieldGet(this, _Volume_position, "f"));
+      __classPrivateFieldGet(this, _Volume_button, "f").tabIndex = 0;
+      __classPrivateFieldGet(this, _Volume_button, "f").title = __classPrivateFieldGet(this, _Volume_labels, "f").mute;
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-controls', __classPrivateFieldGet(this, _player).id);
+      __classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Volume_player, "f").id);
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-pressed', 'false');
+      __classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-pressed', 'false');
 
-      __classPrivateFieldGet(this, _button).setAttribute('aria-label', __classPrivateFieldGet(this, _labels).mute);
+      __classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Volume_labels, "f").mute);
 
-      __classPrivateFieldGet(this, _button).innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _labels).mute, "</span>");
+      __classPrivateFieldGet(this, _Volume_button, "f").innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _Volume_labels, "f").mute, "</span>");
 
       var updateSlider = function updateSlider(element) {
         var mediaVolume = element.volume * 1;
         var vol = Math.floor(mediaVolume * 100);
-        __classPrivateFieldGet(_this, _slider).value = "".concat(element.volume);
-        __classPrivateFieldGet(_this, _display).value = mediaVolume * 10;
+        __classPrivateFieldGet(_this, _Volume_slider, "f").value = "".concat(element.volume);
+        __classPrivateFieldGet(_this, _Volume_display, "f").value = mediaVolume * 10;
 
-        __classPrivateFieldGet(_this, _container).setAttribute('aria-valuenow', "".concat(vol));
+        __classPrivateFieldGet(_this, _Volume_container, "f").setAttribute('aria-valuenow', "".concat(vol));
 
-        __classPrivateFieldGet(_this, _container).setAttribute('aria-valuetext', "".concat(__classPrivateFieldGet(_this, _labels).volume, ": ").concat(vol));
+        __classPrivateFieldGet(_this, _Volume_container, "f").setAttribute('aria-valuetext', "".concat(__classPrivateFieldGet(_this, _Volume_labels, "f").volume, ": ").concat(vol));
       };
 
       var updateButton = function updateButton(element) {
         var vol = element.volume;
 
         if (vol <= 0.5 && vol > 0) {
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__mute--muted');
+          __classPrivateFieldGet(_this, _Volume_button, "f").classList.remove('op-controls__mute--muted');
 
-          __classPrivateFieldGet(_this, _button).classList.add('op-controls__mute--half');
+          __classPrivateFieldGet(_this, _Volume_button, "f").classList.add('op-controls__mute--half');
         } else if (vol === 0) {
-          __classPrivateFieldGet(_this, _button).classList.add('op-controls__mute--muted');
+          __classPrivateFieldGet(_this, _Volume_button, "f").classList.add('op-controls__mute--muted');
 
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__mute--half');
+          __classPrivateFieldGet(_this, _Volume_button, "f").classList.remove('op-controls__mute--half');
         } else {
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__mute--muted');
+          __classPrivateFieldGet(_this, _Volume_button, "f").classList.remove('op-controls__mute--muted');
 
-          __classPrivateFieldGet(_this, _button).classList.remove('op-controls__mute--half');
+          __classPrivateFieldGet(_this, _Volume_button, "f").classList.remove('op-controls__mute--half');
         }
       };
 
       var updateVolume = function updateVolume(event) {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Volume_player, "f").activeElement();
 
         var value = parseFloat(event.target.value);
         el.volume = value;
         el.muted = el.volume === 0;
 
-        __classPrivateFieldSet(_this, _volume, value);
+        __classPrivateFieldSet(_this, _Volume_volume, value, "f");
 
-        var unmuteEl = __classPrivateFieldGet(_this, _player).getContainer().querySelector('.op-player__unmute');
+        var unmuteEl = __classPrivateFieldGet(_this, _Volume_player, "f").getContainer().querySelector('.op-player__unmute');
 
         if (!el.muted && unmuteEl) {
-          general_1.removeElement(unmuteEl);
+          (0, general_1.removeElement)(unmuteEl);
         }
 
-        var e = events_1.addEvent('volumechange');
+        var e = (0, events_1.addEvent)('volumechange');
 
-        __classPrivateFieldGet(_this, _player).getElement().dispatchEvent(e);
+        __classPrivateFieldGet(_this, _Volume_player, "f").getElement().dispatchEvent(e);
       };
 
-      __classPrivateFieldGet(this, _events).media.volumechange = function () {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+      __classPrivateFieldGet(this, _Volume_events, "f").media.volumechange = function () {
+        var el = __classPrivateFieldGet(_this, _Volume_player, "f").activeElement();
 
         updateSlider(el);
         updateButton(el);
       };
 
-      __classPrivateFieldGet(this, _events).media.timeupdate = function () {
-        if (general_1.isAudio(__classPrivateFieldGet(_this, _player).getElement()) && (__classPrivateFieldGet(_this, _player).activeElement().duration === Infinity || __classPrivateFieldGet(_this, _player).getElement().getAttribute('op-live__enabled'))) {}
+      __classPrivateFieldGet(this, _Volume_events, "f").media.timeupdate = function () {
+        if ((0, general_1.isAudio)(__classPrivateFieldGet(_this, _Volume_player, "f").getElement()) && (__classPrivateFieldGet(_this, _Volume_player, "f").activeElement().duration === Infinity || __classPrivateFieldGet(_this, _Volume_player, "f").getElement().getAttribute('op-live__enabled'))) {}
       };
 
-      __classPrivateFieldGet(this, _events).media.loadedmetadata = function () {
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+      __classPrivateFieldGet(this, _Volume_events, "f").media.loadedmetadata = function () {
+        var el = __classPrivateFieldGet(_this, _Volume_player, "f").activeElement();
 
         if (el.muted) {
           el.volume = 0;
         }
 
-        var e = events_1.addEvent('volumechange');
+        var e = (0, events_1.addEvent)('volumechange');
 
-        __classPrivateFieldGet(_this, _player).getElement().dispatchEvent(e);
+        __classPrivateFieldGet(_this, _Volume_player, "f").getElement().dispatchEvent(e);
       };
 
-      __classPrivateFieldGet(this, _events).slider.input = updateVolume.bind(this);
-      __classPrivateFieldGet(this, _events).slider.change = updateVolume.bind(this);
+      __classPrivateFieldGet(this, _Volume_events, "f").slider.input = updateVolume.bind(this);
+      __classPrivateFieldGet(this, _Volume_events, "f").slider.change = updateVolume.bind(this);
 
-      __classPrivateFieldGet(this, _events).button.click = function () {
-        __classPrivateFieldGet(_this, _button).setAttribute('aria-pressed', 'true');
+      __classPrivateFieldGet(this, _Volume_events, "f").button.click = function () {
+        __classPrivateFieldGet(_this, _Volume_button, "f").setAttribute('aria-pressed', 'true');
 
-        var el = __classPrivateFieldGet(_this, _player).activeElement();
+        var el = __classPrivateFieldGet(_this, _Volume_player, "f").activeElement();
 
         el.muted = !el.muted;
 
         if (el.muted) {
           el.volume = 0;
-          __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).unmute;
+          __classPrivateFieldGet(_this, _Volume_button, "f").title = __classPrivateFieldGet(_this, _Volume_labels, "f").unmute;
 
-          __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).unmute);
+          __classPrivateFieldGet(_this, _Volume_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Volume_labels, "f").unmute);
         } else {
-          el.volume = __classPrivateFieldGet(_this, _volume);
-          __classPrivateFieldGet(_this, _button).title = __classPrivateFieldGet(_this, _labels).mute;
+          el.volume = __classPrivateFieldGet(_this, _Volume_volume, "f");
+          __classPrivateFieldGet(_this, _Volume_button, "f").title = __classPrivateFieldGet(_this, _Volume_labels, "f").mute;
 
-          __classPrivateFieldGet(_this, _button).setAttribute('aria-label', __classPrivateFieldGet(_this, _labels).mute);
+          __classPrivateFieldGet(_this, _Volume_button, "f").setAttribute('aria-label', __classPrivateFieldGet(_this, _Volume_labels, "f").mute);
         }
 
-        var event = events_1.addEvent('volumechange');
+        var event = (0, events_1.addEvent)('volumechange');
 
-        __classPrivateFieldGet(_this, _player).getElement().dispatchEvent(event);
+        __classPrivateFieldGet(_this, _Volume_player, "f").getElement().dispatchEvent(event);
       };
 
-      __classPrivateFieldGet(this, _button).addEventListener('click', __classPrivateFieldGet(this, _events).button.click, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Volume_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Volume_events, "f").button.click, constants_1.EVENT_OPTIONS);
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this, _player).getElement().addEventListener(event, __classPrivateFieldGet(_this, _events).media[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this, _Volume_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(_this, _Volume_events, "f").media[event], constants_1.EVENT_OPTIONS);
       });
-      Object.keys(__classPrivateFieldGet(this, _events).slider).forEach(function (event) {
-        __classPrivateFieldGet(_this, _slider).addEventListener(event, __classPrivateFieldGet(_this, _events).slider[event], constants_1.EVENT_OPTIONS);
+      Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").slider).forEach(function (event) {
+        __classPrivateFieldGet(_this, _Volume_slider, "f").addEventListener(event, __classPrivateFieldGet(_this, _Volume_events, "f").slider[event], constants_1.EVENT_OPTIONS);
       });
 
-      __classPrivateFieldGet(this, _player).getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Volume_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, constants_1.EVENT_OPTIONS);
 
       if (!constants_1.IS_ANDROID && !constants_1.IS_IOS) {
-        var controls = __classPrivateFieldGet(this, _player).getControls().getLayer(__classPrivateFieldGet(this, _layer));
+        var controls = __classPrivateFieldGet(this, _Volume_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Volume_layer, "f"));
 
-        controls.appendChild(__classPrivateFieldGet(this, _button));
-        controls.appendChild(__classPrivateFieldGet(this, _container));
+        controls.appendChild(__classPrivateFieldGet(this, _Volume_button, "f"));
+        controls.appendChild(__classPrivateFieldGet(this, _Volume_container, "f"));
       }
     }
   }, {
@@ -8966,20 +8998,20 @@ var Volume = function () {
     value: function destroy() {
       var _this2 = this;
 
-      __classPrivateFieldGet(this, _button).removeEventListener('click', __classPrivateFieldGet(this, _events).button.click);
+      __classPrivateFieldGet(this, _Volume_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Volume_events, "f").button.click);
 
-      Object.keys(__classPrivateFieldGet(this, _events).media).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _player).getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _events).media[event]);
+      Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").media).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Volume_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(_this2, _Volume_events, "f").media[event]);
       });
-      Object.keys(__classPrivateFieldGet(this, _events).slider).forEach(function (event) {
-        __classPrivateFieldGet(_this2, _slider).removeEventListener(event, __classPrivateFieldGet(_this2, _events).slider[event]);
+      Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").slider).forEach(function (event) {
+        __classPrivateFieldGet(_this2, _Volume_slider, "f").removeEventListener(event, __classPrivateFieldGet(_this2, _Volume_events, "f").slider[event]);
       });
 
-      __classPrivateFieldGet(this, _player).getContainer().removeEventListener('keydown', this._keydownEvent);
+      __classPrivateFieldGet(this, _Volume_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
 
-      general_1.removeElement(__classPrivateFieldGet(this, _slider));
-      general_1.removeElement(__classPrivateFieldGet(this, _display));
-      general_1.removeElement(__classPrivateFieldGet(this, _container));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Volume_slider, "f"));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Volume_display, "f"));
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Volume_container, "f"));
     }
   }, {
     key: "_keydownEvent",
@@ -8988,13 +9020,13 @@ var Volume = function () {
 
       var key = e.which || e.keyCode || 0;
 
-      var el = __classPrivateFieldGet(this, _player).activeElement();
+      var el = __classPrivateFieldGet(this, _Volume_player, "f").activeElement();
 
       var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__mute');
 
       if (playBtnFocused && (key === 13 || key === 32)) {
         el.muted = !el.muted;
-        el.volume = el.muted ? 0 : __classPrivateFieldGet(this, _volume);
+        el.volume = el.muted ? 0 : __classPrivateFieldGet(this, _Volume_volume, "f");
         e.preventDefault();
         e.stopPropagation();
       }
@@ -9004,11 +9036,11 @@ var Volume = function () {
   return Volume;
 }();
 
-_player = new WeakMap(), _button = new WeakMap(), _container = new WeakMap(), _display = new WeakMap(), _slider = new WeakMap(), _events = new WeakMap(), _volume = new WeakMap(), _labels = new WeakMap(), _position = new WeakMap(), _layer = new WeakMap();
+_Volume_player = new WeakMap(), _Volume_button = new WeakMap(), _Volume_container = new WeakMap(), _Volume_display = new WeakMap(), _Volume_slider = new WeakMap(), _Volume_events = new WeakMap(), _Volume_volume = new WeakMap(), _Volume_labels = new WeakMap(), _Volume_position = new WeakMap(), _Volume_layer = new WeakMap();
 exports["default"] = Volume;
 
 /***/ }),
-/* 147 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9048,7 +9080,7 @@ var __importStar = this && this.__importStar || function (mod) {
   if (mod && mod.__esModule) return mod;
   var result = {};
   if (mod != null) for (var k in mod) {
-    if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
   }
 
   __setModuleDefault(result, mod);
@@ -9056,21 +9088,17 @@ var __importStar = this && this.__importStar || function (mod) {
   return result;
 };
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -9079,21 +9107,21 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _element, _media, _files, _promisePlay, _options, _autoplay, _mediaLoaded, _customMedia, _currentSrc;
+var _Media_element, _Media_media, _Media_files, _Media_promisePlay, _Media_options, _Media_autoplay, _Media_mediaLoaded, _Media_customMedia, _Media_currentSrc;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var dash_1 = __importDefault(__webpack_require__(148));
+var dash_1 = __importDefault(__webpack_require__(154));
 
-var flv_1 = __importDefault(__webpack_require__(149));
+var flv_1 = __importDefault(__webpack_require__(155));
 
-var hls_1 = __importDefault(__webpack_require__(150));
+var hls_1 = __importDefault(__webpack_require__(156));
 
-var html5_1 = __importDefault(__webpack_require__(151));
+var html5_1 = __importDefault(__webpack_require__(157));
 
-var source = __importStar(__webpack_require__(13));
+var source = __importStar(__webpack_require__(14));
 
 var Media = function () {
   function Media(element, options) {
@@ -9102,37 +9130,37 @@ var Media = function () {
 
     _classCallCheck(this, Media);
 
-    _element.set(this, void 0);
+    _Media_element.set(this, void 0);
 
-    _media.set(this, void 0);
+    _Media_media.set(this, void 0);
 
-    _files.set(this, void 0);
+    _Media_files.set(this, void 0);
 
-    _promisePlay.set(this, void 0);
+    _Media_promisePlay.set(this, void 0);
 
-    _options.set(this, void 0);
+    _Media_options.set(this, void 0);
 
-    _autoplay.set(this, void 0);
+    _Media_autoplay.set(this, void 0);
 
-    _mediaLoaded.set(this, false);
+    _Media_mediaLoaded.set(this, false);
 
-    _customMedia.set(this, {
+    _Media_customMedia.set(this, {
       media: {},
       optionsKey: {},
       rules: []
     });
 
-    _currentSrc.set(this, void 0);
+    _Media_currentSrc.set(this, void 0);
 
-    __classPrivateFieldSet(this, _element, element);
+    __classPrivateFieldSet(this, _Media_element, element, "f");
 
-    __classPrivateFieldSet(this, _options, options);
+    __classPrivateFieldSet(this, _Media_options, options, "f");
 
-    __classPrivateFieldSet(this, _files, this._getMediaFiles());
+    __classPrivateFieldSet(this, _Media_files, this._getMediaFiles(), "f");
 
-    __classPrivateFieldSet(this, _customMedia, customMedia);
+    __classPrivateFieldSet(this, _Media_customMedia, customMedia, "f");
 
-    __classPrivateFieldSet(this, _autoplay, autoplay);
+    __classPrivateFieldSet(this, _Media_autoplay, autoplay, "f");
 
     return this;
   }
@@ -9140,45 +9168,45 @@ var Media = function () {
   _createClass(Media, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
-      return __classPrivateFieldGet(this, _media).canPlayType(mimeType);
+      return __classPrivateFieldGet(this, _Media_media, "f").canPlayType(mimeType);
     }
   }, {
     key: "load",
     value: function load() {
       var _this = this;
 
-      if (!__classPrivateFieldGet(this, _files).length) {
+      if (!__classPrivateFieldGet(this, _Media_files, "f").length) {
         throw new TypeError('Media not set');
       }
 
-      if (__classPrivateFieldGet(this, _media) && typeof __classPrivateFieldGet(this, _media).destroy === 'function') {
-        var sameMedia = __classPrivateFieldGet(this, _files).length === 1 && __classPrivateFieldGet(this, _files)[0].src === __classPrivateFieldGet(this, _media).media.src;
+      if (__classPrivateFieldGet(this, _Media_media, "f") && typeof __classPrivateFieldGet(this, _Media_media, "f").destroy === 'function') {
+        var sameMedia = __classPrivateFieldGet(this, _Media_files, "f").length === 1 && __classPrivateFieldGet(this, _Media_files, "f")[0].src === __classPrivateFieldGet(this, _Media_media, "f").media.src;
 
         if (!sameMedia) {
-          __classPrivateFieldGet(this, _media).destroy();
+          __classPrivateFieldGet(this, _Media_media, "f").destroy();
         }
       }
 
-      __classPrivateFieldGet(this, _files).some(function (media) {
+      __classPrivateFieldGet(this, _Media_files, "f").some(function (media) {
         try {
-          __classPrivateFieldSet(_this, _media, _this._invoke(media));
+          __classPrivateFieldSet(_this, _Media_media, _this._invoke(media), "f");
         } catch (e) {
-          __classPrivateFieldSet(_this, _media, new html5_1["default"](__classPrivateFieldGet(_this, _element), media));
+          __classPrivateFieldSet(_this, _Media_media, new html5_1["default"](__classPrivateFieldGet(_this, _Media_element, "f"), media), "f");
         }
 
-        return __classPrivateFieldGet(_this, _media).canPlayType(media.type);
+        return __classPrivateFieldGet(_this, _Media_media, "f").canPlayType(media.type);
       });
 
       try {
-        if (__classPrivateFieldGet(this, _media) === null) {
+        if (__classPrivateFieldGet(this, _Media_media, "f") === null) {
           throw new TypeError('Media cannot be played with any valid media type');
         }
 
-        return __classPrivateFieldGet(this, _media).promise.then(function () {
-          __classPrivateFieldGet(_this, _media).load();
+        return __classPrivateFieldGet(this, _Media_media, "f").promise.then(function () {
+          __classPrivateFieldGet(_this, _Media_media, "f").load();
         });
       } catch (e) {
-        __classPrivateFieldGet(this, _media).destroy();
+        __classPrivateFieldGet(this, _Media_media, "f").destroy();
 
         throw e;
       }
@@ -9195,48 +9223,192 @@ var Media = function () {
         if (promiseLoad) {
           this.loaded = true;
           return promiseLoad.then(function () {
-            __classPrivateFieldGet(_this2, _media).play();
+            __classPrivateFieldGet(_this2, _Media_media, "f").play();
           });
         }
       }
 
-      __classPrivateFieldSet(this, _promisePlay, new Promise(function (resolve) {
+      __classPrivateFieldSet(this, _Media_promisePlay, new Promise(function (resolve) {
         resolve({});
-      }).then(__classPrivateFieldGet(this, _media).promise.then(__classPrivateFieldGet(this, _media).play())));
+      }).then(__classPrivateFieldGet(this, _Media_media, "f").promise.then(__classPrivateFieldGet(this, _Media_media, "f").play())), "f");
 
-      return __classPrivateFieldGet(this, _promisePlay);
+      return __classPrivateFieldGet(this, _Media_promisePlay, "f");
     }
   }, {
     key: "pause",
     value: function pause() {
       var _this3 = this;
 
-      if (__classPrivateFieldGet(this, _promisePlay) !== undefined) {
-        __classPrivateFieldGet(this, _promisePlay).then(function () {
-          __classPrivateFieldGet(_this3, _media).pause();
+      if (__classPrivateFieldGet(this, _Media_promisePlay, "f") !== undefined) {
+        __classPrivateFieldGet(this, _Media_promisePlay, "f").then(function () {
+          __classPrivateFieldGet(_this3, _Media_media, "f").pause();
         });
       } else {
-        __classPrivateFieldGet(this, _media).pause();
+        __classPrivateFieldGet(this, _Media_media, "f").pause();
       }
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      __classPrivateFieldGet(this, _media).destroy();
+      __classPrivateFieldGet(this, _Media_media, "f").destroy();
+    }
+  }, {
+    key: "src",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_files, "f");
+    },
+    set: function set(media) {
+      var _this4 = this;
+
+      if (typeof media === 'string') {
+        __classPrivateFieldGet(this, _Media_files, "f").push({
+          src: media,
+          type: source.predictType(media)
+        });
+      } else if (Array.isArray(media)) {
+        __classPrivateFieldSet(this, _Media_files, media, "f");
+      } else if (_typeof(media) === 'object') {
+        __classPrivateFieldGet(this, _Media_files, "f").push(media);
+      }
+
+      __classPrivateFieldGet(this, _Media_files, "f").some(function (file) {
+        return _this4.canPlayType(file.type);
+      });
+
+      if (__classPrivateFieldGet(this, _Media_element, "f").src) {
+        __classPrivateFieldGet(this, _Media_element, "f").setAttribute('data-op-file', __classPrivateFieldGet(this, _Media_files, "f")[0].src);
+      }
+
+      __classPrivateFieldGet(this, _Media_element, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0].src;
+      __classPrivateFieldGet(this, _Media_media, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0];
+
+      __classPrivateFieldSet(this, _Media_currentSrc, __classPrivateFieldGet(this, _Media_files, "f")[0], "f");
+    }
+  }, {
+    key: "current",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_currentSrc, "f");
+    }
+  }, {
+    key: "mediaFiles",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_files, "f");
+    },
+    set: function set(sources) {
+      __classPrivateFieldSet(this, _Media_files, sources, "f");
+    }
+  }, {
+    key: "volume",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").volume : __classPrivateFieldGet(this, _Media_element, "f").volume;
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Media_media, "f")) {
+        __classPrivateFieldGet(this, _Media_media, "f").volume = value;
+      }
+    }
+  }, {
+    key: "muted",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").muted : __classPrivateFieldGet(this, _Media_element, "f").muted;
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Media_media, "f")) {
+        __classPrivateFieldGet(this, _Media_media, "f").muted = value;
+      }
+    }
+  }, {
+    key: "playbackRate",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").playbackRate : __classPrivateFieldGet(this, _Media_element, "f").playbackRate;
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Media_media, "f")) {
+        __classPrivateFieldGet(this, _Media_media, "f").playbackRate = value;
+      }
+    }
+  }, {
+    key: "defaultPlaybackRate",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").defaultPlaybackRate : __classPrivateFieldGet(this, _Media_element, "f").defaultPlaybackRate;
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Media_media, "f")) {
+        __classPrivateFieldGet(this, _Media_media, "f").defaultPlaybackRate = value;
+      }
+    }
+  }, {
+    key: "currentTime",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").currentTime : __classPrivateFieldGet(this, _Media_element, "f").currentTime;
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Media_media, "f")) {
+        __classPrivateFieldGet(this, _Media_media, "f").currentTime = value;
+      }
+    }
+  }, {
+    key: "duration",
+    get: function get() {
+      var duration = __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").duration : __classPrivateFieldGet(this, _Media_element, "f").duration;
+
+      if (duration === Infinity && __classPrivateFieldGet(this, _Media_element, "f").seekable && __classPrivateFieldGet(this, _Media_element, "f").seekable.length) {
+        return __classPrivateFieldGet(this, _Media_element, "f").seekable.end(0);
+      }
+
+      return duration;
+    }
+  }, {
+    key: "paused",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").paused : __classPrivateFieldGet(this, _Media_element, "f").paused;
+    }
+  }, {
+    key: "ended",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").ended : __classPrivateFieldGet(this, _Media_element, "f").ended;
+    }
+  }, {
+    key: "loaded",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_mediaLoaded, "f");
+    },
+    set: function set(loaded) {
+      __classPrivateFieldSet(this, _Media_mediaLoaded, loaded, "f");
+    }
+  }, {
+    key: "level",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").level : -1;
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Media_media, "f")) {
+        __classPrivateFieldGet(this, _Media_media, "f").level = value;
+      }
+    }
+  }, {
+    key: "levels",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").levels : [];
+    }
+  }, {
+    key: "instance",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Media_media, "f") ? __classPrivateFieldGet(this, _Media_media, "f").instance : null;
     }
   }, {
     key: "_getMediaFiles",
     value: function _getMediaFiles() {
       var mediaFiles = [];
 
-      var sourceTags = __classPrivateFieldGet(this, _element).querySelectorAll('source');
+      var sourceTags = __classPrivateFieldGet(this, _Media_element, "f").querySelectorAll('source');
 
-      var nodeSource = __classPrivateFieldGet(this, _element).src;
+      var nodeSource = __classPrivateFieldGet(this, _Media_element, "f").src;
 
       if (nodeSource) {
         mediaFiles.push({
           src: nodeSource,
-          type: __classPrivateFieldGet(this, _element).getAttribute('type') || source.predictType(nodeSource)
+          type: __classPrivateFieldGet(this, _Media_element, "f").getAttribute('type') || source.predictType(nodeSource)
         });
       }
 
@@ -9249,7 +9421,7 @@ var Media = function () {
         });
 
         if (i === 0) {
-          __classPrivateFieldSet(this, _currentSrc, mediaFiles[0]);
+          __classPrivateFieldSet(this, _Media_currentSrc, mediaFiles[0], "f");
         }
       }
 
@@ -9265,214 +9437,76 @@ var Media = function () {
   }, {
     key: "_invoke",
     value: function _invoke(media) {
-      var _this4 = this;
+      var _this5 = this;
 
-      var playHLSNatively = __classPrivateFieldGet(this, _element).canPlayType('application/vnd.apple.mpegurl') || __classPrivateFieldGet(this, _element).canPlayType('application/x-mpegURL');
+      var playHLSNatively = __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/vnd.apple.mpegurl') || __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/x-mpegURL');
 
-      __classPrivateFieldSet(this, _currentSrc, media);
+      __classPrivateFieldSet(this, _Media_currentSrc, media, "f");
 
       var activeLevels = false;
-      Object.keys(__classPrivateFieldGet(this, _options).controls.layers).forEach(function (layer) {
-        if (__classPrivateFieldGet(_this4, _options).controls.layers[layer].indexOf('levels') > -1) {
+      Object.keys(__classPrivateFieldGet(this, _Media_options, "f").controls.layers).forEach(function (layer) {
+        if (__classPrivateFieldGet(_this5, _Media_options, "f").controls.layers[layer].indexOf('levels') > -1) {
           activeLevels = true;
         }
       });
 
-      if (Object.keys(__classPrivateFieldGet(this, _customMedia).media).length) {
+      if (Object.keys(__classPrivateFieldGet(this, _Media_customMedia, "f").media).length) {
         var customRef;
 
-        __classPrivateFieldGet(this, _customMedia).rules.forEach(function (rule) {
+        __classPrivateFieldGet(this, _Media_customMedia, "f").rules.forEach(function (rule) {
           var type = rule(media.src);
 
           if (type) {
-            var customMedia = __classPrivateFieldGet(_this4, _customMedia).media[type];
+            var customMedia = __classPrivateFieldGet(_this5, _Media_customMedia, "f").media[type];
 
-            var customOptions = __classPrivateFieldGet(_this4, _options)[__classPrivateFieldGet(_this4, _customMedia).optionsKey[type]] || undefined;
-            customRef = customMedia(__classPrivateFieldGet(_this4, _element), media, __classPrivateFieldGet(_this4, _autoplay), customOptions);
+            var customOptions = __classPrivateFieldGet(_this5, _Media_options, "f")[__classPrivateFieldGet(_this5, _Media_customMedia, "f").optionsKey[type]] || undefined;
+            customRef = customMedia(__classPrivateFieldGet(_this5, _Media_element, "f"), media, __classPrivateFieldGet(_this5, _Media_autoplay, "f"), customOptions);
           }
         });
 
         if (customRef) {
           customRef.create();
           return customRef;
-        } else {
-          return new html5_1["default"](__classPrivateFieldGet(this, _element), media);
-        }
-      } else if (source.isHlsSource(media)) {
-        if (playHLSNatively && __classPrivateFieldGet(this, _options).forceNative && !activeLevels) {
-          return new html5_1["default"](__classPrivateFieldGet(this, _element), media);
         }
 
-        var hlsOptions = __classPrivateFieldGet(this, _options) && __classPrivateFieldGet(this, _options).hls ? __classPrivateFieldGet(this, _options).hls : undefined;
-        return new hls_1["default"](__classPrivateFieldGet(this, _element), media, __classPrivateFieldGet(this, _autoplay), hlsOptions);
-      } else if (source.isDashSource(media)) {
-        var dashOptions = __classPrivateFieldGet(this, _options) && __classPrivateFieldGet(this, _options).dash ? __classPrivateFieldGet(this, _options).dash : undefined;
-        return new dash_1["default"](__classPrivateFieldGet(this, _element), media, dashOptions);
-      } else if (source.isFlvSource(media)) {
-        var flvOptions = __classPrivateFieldGet(this, _options) && __classPrivateFieldGet(this, _options).flv ? __classPrivateFieldGet(this, _options).flv : {
+        return new html5_1["default"](__classPrivateFieldGet(this, _Media_element, "f"), media);
+      }
+
+      if (source.isHlsSource(media)) {
+        if (playHLSNatively && __classPrivateFieldGet(this, _Media_options, "f").forceNative && !activeLevels) {
+          return new html5_1["default"](__classPrivateFieldGet(this, _Media_element, "f"), media);
+        }
+
+        var hlsOptions = __classPrivateFieldGet(this, _Media_options, "f") && __classPrivateFieldGet(this, _Media_options, "f").hls ? __classPrivateFieldGet(this, _Media_options, "f").hls : undefined;
+        return new hls_1["default"](__classPrivateFieldGet(this, _Media_element, "f"), media, __classPrivateFieldGet(this, _Media_autoplay, "f"), hlsOptions);
+      }
+
+      if (source.isDashSource(media)) {
+        var dashOptions = __classPrivateFieldGet(this, _Media_options, "f") && __classPrivateFieldGet(this, _Media_options, "f").dash ? __classPrivateFieldGet(this, _Media_options, "f").dash : undefined;
+        return new dash_1["default"](__classPrivateFieldGet(this, _Media_element, "f"), media, dashOptions);
+      }
+
+      if (source.isFlvSource(media)) {
+        var flvOptions = __classPrivateFieldGet(this, _Media_options, "f") && __classPrivateFieldGet(this, _Media_options, "f").flv ? __classPrivateFieldGet(this, _Media_options, "f").flv : {
           debug: false,
           type: 'flv',
           url: media.src
         };
-        return new flv_1["default"](__classPrivateFieldGet(this, _element), media, flvOptions);
+        return new flv_1["default"](__classPrivateFieldGet(this, _Media_element, "f"), media, flvOptions);
       }
 
-      return new html5_1["default"](__classPrivateFieldGet(this, _element), media);
-    }
-  }, {
-    key: "src",
-    set: function set(media) {
-      var _this5 = this;
-
-      if (typeof media === 'string') {
-        __classPrivateFieldGet(this, _files).push({
-          src: media,
-          type: source.predictType(media)
-        });
-      } else if (Array.isArray(media)) {
-        __classPrivateFieldSet(this, _files, media);
-      } else if (_typeof(media) === 'object') {
-        __classPrivateFieldGet(this, _files).push(media);
-      }
-
-      __classPrivateFieldGet(this, _files).some(function (file) {
-        return _this5.canPlayType(file.type);
-      });
-
-      if (__classPrivateFieldGet(this, _element).src) {
-        __classPrivateFieldGet(this, _element).setAttribute('data-op-file', __classPrivateFieldGet(this, _files)[0].src);
-      }
-
-      __classPrivateFieldGet(this, _element).src = __classPrivateFieldGet(this, _files)[0].src;
-      __classPrivateFieldGet(this, _media).src = __classPrivateFieldGet(this, _files)[0];
-
-      __classPrivateFieldSet(this, _currentSrc, __classPrivateFieldGet(this, _files)[0]);
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _files);
-    }
-  }, {
-    key: "current",
-    get: function get() {
-      return __classPrivateFieldGet(this, _currentSrc);
-    }
-  }, {
-    key: "mediaFiles",
-    set: function set(sources) {
-      __classPrivateFieldSet(this, _files, sources);
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _files);
-    }
-  }, {
-    key: "volume",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _media)) {
-        __classPrivateFieldGet(this, _media).volume = value;
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).volume : __classPrivateFieldGet(this, _element).volume;
-    }
-  }, {
-    key: "muted",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _media)) {
-        __classPrivateFieldGet(this, _media).muted = value;
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).muted : __classPrivateFieldGet(this, _element).muted;
-    }
-  }, {
-    key: "playbackRate",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _media)) {
-        __classPrivateFieldGet(this, _media).playbackRate = value;
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).playbackRate : __classPrivateFieldGet(this, _element).playbackRate;
-    }
-  }, {
-    key: "defaultPlaybackRate",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _media)) {
-        __classPrivateFieldGet(this, _media).defaultPlaybackRate = value;
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).defaultPlaybackRate : __classPrivateFieldGet(this, _element).defaultPlaybackRate;
-    }
-  }, {
-    key: "currentTime",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _media)) {
-        __classPrivateFieldGet(this, _media).currentTime = value;
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).currentTime : __classPrivateFieldGet(this, _element).currentTime;
-    }
-  }, {
-    key: "duration",
-    get: function get() {
-      var duration = __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).duration : __classPrivateFieldGet(this, _element).duration;
-
-      if (duration === Infinity && __classPrivateFieldGet(this, _element).seekable && __classPrivateFieldGet(this, _element).seekable.length) {
-        return __classPrivateFieldGet(this, _element).seekable.end(0);
-      }
-
-      return duration;
-    }
-  }, {
-    key: "paused",
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).paused : __classPrivateFieldGet(this, _element).paused;
-    }
-  }, {
-    key: "ended",
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).ended : __classPrivateFieldGet(this, _element).ended;
-    }
-  }, {
-    key: "loaded",
-    set: function set(loaded) {
-      __classPrivateFieldSet(this, _mediaLoaded, loaded);
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _mediaLoaded);
-    }
-  }, {
-    key: "level",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _media)) {
-        __classPrivateFieldGet(this, _media).level = value;
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).level : -1;
-    }
-  }, {
-    key: "levels",
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).levels : [];
-    }
-  }, {
-    key: "instance",
-    get: function get() {
-      return __classPrivateFieldGet(this, _media) ? __classPrivateFieldGet(this, _media).instance : null;
+      return new html5_1["default"](__classPrivateFieldGet(this, _Media_element, "f"), media);
     }
   }]);
 
   return Media;
 }();
 
-_element = new WeakMap(), _media = new WeakMap(), _files = new WeakMap(), _promisePlay = new WeakMap(), _options = new WeakMap(), _autoplay = new WeakMap(), _mediaLoaded = new WeakMap(), _customMedia = new WeakMap(), _currentSrc = new WeakMap();
+_Media_element = new WeakMap(), _Media_media = new WeakMap(), _Media_files = new WeakMap(), _Media_promisePlay = new WeakMap(), _Media_options = new WeakMap(), _Media_autoplay = new WeakMap(), _Media_mediaLoaded = new WeakMap(), _Media_customMedia = new WeakMap(), _Media_currentSrc = new WeakMap();
 exports["default"] = Media;
 
 /***/ }),
-/* 148 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9492,29 +9526,25 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -9523,21 +9553,21 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _player, _events, _options;
+var _DashMedia_player, _DashMedia_events, _DashMedia_options;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
-var media_1 = __webpack_require__(13);
+var media_1 = __webpack_require__(14);
 
-var native_1 = __importDefault(__webpack_require__(30));
+var native_1 = __importDefault(__webpack_require__(31));
 
 var DashMedia = function (_native_1$default) {
   _inherits(DashMedia, _native_1$default);
@@ -9551,23 +9581,23 @@ var DashMedia = function (_native_1$default) {
 
     _this = _super.call(this, element, mediaSource);
 
-    _player.set(_assertThisInitialized(_this), void 0);
+    _DashMedia_player.set(_assertThisInitialized(_this), void 0);
 
-    _events.set(_assertThisInitialized(_this), {});
+    _DashMedia_events.set(_assertThisInitialized(_this), {});
 
-    _options.set(_assertThisInitialized(_this), {});
+    _DashMedia_options.set(_assertThisInitialized(_this), {});
 
-    __classPrivateFieldSet(_assertThisInitialized(_this), _options, options);
+    __classPrivateFieldSet(_assertThisInitialized(_this), _DashMedia_options, options, "f");
 
-    _this.promise = typeof dashjs === 'undefined' ? general_1.loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') : new Promise(function (resolve) {
+    _this.promise = typeof dashjs === 'undefined' ? (0, general_1.loadScript)('https://cdn.dashjs.org/latest/dash.all.min.js') : new Promise(function (resolve) {
       resolve({});
     });
     _this._assign = _this._assign.bind(_assertThisInitialized(_this));
 
     _this.promise.then(function () {
-      __classPrivateFieldSet(_assertThisInitialized(_this), _player, dashjs.MediaPlayer().create());
+      __classPrivateFieldSet(_assertThisInitialized(_this), _DashMedia_player, dashjs.MediaPlayer().create(), "f");
 
-      _this.instance = __classPrivateFieldGet(_assertThisInitialized(_this), _player);
+      _this.instance = __classPrivateFieldGet(_assertThisInitialized(_this), _DashMedia_player, "f");
     });
 
     return _possibleConstructorReturn(_this, _assertThisInitialized(_this));
@@ -9585,16 +9615,16 @@ var DashMedia = function (_native_1$default) {
 
       this._preparePlayer();
 
-      __classPrivateFieldGet(this, _player).attachSource(this.media.src);
+      __classPrivateFieldGet(this, _DashMedia_player, "f").attachSource(this.media.src);
 
-      var e = events_1.addEvent('loadedmetadata');
+      var e = (0, events_1.addEvent)('loadedmetadata');
       this.element.dispatchEvent(e);
 
-      if (!__classPrivateFieldGet(this, _events)) {
-        __classPrivateFieldSet(this, _events, dashjs.MediaPlayer.events);
+      if (!__classPrivateFieldGet(this, _DashMedia_events, "f")) {
+        __classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
 
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this2, _player).on(__classPrivateFieldGet(_this2, _events)[event], _this2._assign);
+        Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this2, _DashMedia_player, "f").on(__classPrivateFieldGet(_this2, _DashMedia_events, "f")[event], _this2._assign);
         });
       }
     }
@@ -9604,92 +9634,23 @@ var DashMedia = function (_native_1$default) {
       this._revoke();
     }
   }, {
-    key: "_assign",
-    value: function _assign(event) {
-      if (event.type === 'error') {
-        var details = {
-          detail: {
-            message: event,
-            type: 'M(PEG)-DASH'
-          }
-        };
-        var errorEvent = events_1.addEvent('playererror', details);
-        this.element.dispatchEvent(errorEvent);
-      } else {
-        var e = events_1.addEvent(event.type, {
-          detail: event
-        });
-        this.element.dispatchEvent(e);
-      }
-    }
-  }, {
-    key: "_revoke",
-    value: function _revoke() {
-      var _this3 = this;
-
-      if (__classPrivateFieldGet(this, _events)) {
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this3, _player).off(__classPrivateFieldGet(_this3, _events)[event], _this3._assign);
-        });
-
-        __classPrivateFieldSet(this, _events, []);
-      }
-
-      __classPrivateFieldGet(this, _player).reset();
-    }
-  }, {
-    key: "_preparePlayer",
-    value: function _preparePlayer() {
-      if (typeof __classPrivateFieldGet(this, _player).getDebug().setLogToBrowserConsole === 'undefined') {
-        __classPrivateFieldGet(this, _player).updateSettings({
-          debug: {
-            logLevel: dashjs.Debug.LOG_LEVEL_NONE
-          },
-          streaming: {
-            fastSwitchEnabled: true,
-            scheduleWhilePaused: false
-          }
-        });
-      } else {
-        __classPrivateFieldGet(this, _player).getDebug().setLogToBrowserConsole(false);
-
-        __classPrivateFieldGet(this, _player).setScheduleWhilePaused(false);
-
-        __classPrivateFieldGet(this, _player).setFastSwitchEnabled(true);
-      }
-
-      __classPrivateFieldGet(this, _player).initialize();
-
-      __classPrivateFieldGet(this, _player).attachView(this.element);
-
-      __classPrivateFieldGet(this, _player).setAutoPlay(false);
-
-      if (__classPrivateFieldGet(this, _options) && _typeof(__classPrivateFieldGet(this, _options).drm) === 'object' && Object.keys(__classPrivateFieldGet(this, _options).drm).length) {
-        __classPrivateFieldGet(this, _player).setProtectionData(__classPrivateFieldGet(this, _options).drm);
-
-        if (__classPrivateFieldGet(this, _options).robustnessLevel && __classPrivateFieldGet(this, _options).robustnessLevel) {
-          __classPrivateFieldGet(this, _player).getProtectionController().setRobustnessLevel(__classPrivateFieldGet(this, _options).robustnessLevel);
-        }
-      }
-    }
-  }, {
     key: "src",
     set: function set(media) {
-      var _this4 = this;
+      var _this3 = this;
 
-      if (media_1.isDashSource(media)) {
+      if ((0, media_1.isDashSource)(media)) {
         this._revoke();
 
-        __classPrivateFieldSet(this, _player, dashjs.MediaPlayer().create());
+        __classPrivateFieldSet(this, _DashMedia_player, dashjs.MediaPlayer().create(), "f");
 
         this._preparePlayer();
 
-        __classPrivateFieldGet(this, _player).attachSource(media.src);
+        __classPrivateFieldGet(this, _DashMedia_player, "f").attachSource(media.src);
 
-        __classPrivateFieldSet(this, _events, dashjs.MediaPlayer.events);
+        __classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
 
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this4, _player).on(__classPrivateFieldGet(_this4, _events)[event], _this4._assign);
+        Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this3, _DashMedia_player, "f").on(__classPrivateFieldGet(_this3, _DashMedia_events, "f")[event], _this3._assign);
         });
       }
     }
@@ -9698,8 +9659,8 @@ var DashMedia = function (_native_1$default) {
     get: function get() {
       var levels = [];
 
-      if (__classPrivateFieldGet(this, _player)) {
-        var bitrates = __classPrivateFieldGet(this, _player).getBitrateInfoListFor('video');
+      if (__classPrivateFieldGet(this, _DashMedia_player, "f")) {
+        var bitrates = __classPrivateFieldGet(this, _DashMedia_player, "f").getBitrateInfoListFor('video');
 
         if (bitrates.length) {
           bitrates.forEach(function (item) {
@@ -9709,7 +9670,7 @@ var DashMedia = function (_native_1$default) {
                   name = _bitrates$item.name;
               var level = {
                 height: height,
-                id: item,
+                id: "".concat(item),
                 label: name || null
               };
               levels.push(level);
@@ -9722,28 +9683,97 @@ var DashMedia = function (_native_1$default) {
     }
   }, {
     key: "level",
+    get: function get() {
+      return __classPrivateFieldGet(this, _DashMedia_player, "f") ? __classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : -1;
+    },
     set: function set(level) {
       if (level === 0) {
-        __classPrivateFieldGet(this, _player).setAutoSwitchQuality(true);
+        __classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(true);
       } else {
-        __classPrivateFieldGet(this, _player).setAutoSwitchQuality(false);
+        __classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(false);
 
-        __classPrivateFieldGet(this, _player).setQualityFor('video', level);
+        __classPrivateFieldGet(this, _DashMedia_player, "f").setQualityFor('video', level);
       }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _player) ? __classPrivateFieldGet(this, _player).getQualityFor('video') : -1;
+    }
+  }, {
+    key: "_assign",
+    value: function _assign(event) {
+      if (event.type === 'error') {
+        var details = {
+          detail: {
+            message: event,
+            type: 'M(PEG)-DASH'
+          }
+        };
+        var errorEvent = (0, events_1.addEvent)('playererror', details);
+        this.element.dispatchEvent(errorEvent);
+      } else {
+        var e = (0, events_1.addEvent)(event.type, {
+          detail: event
+        });
+        this.element.dispatchEvent(e);
+      }
+    }
+  }, {
+    key: "_revoke",
+    value: function _revoke() {
+      var _this4 = this;
+
+      if (__classPrivateFieldGet(this, _DashMedia_events, "f")) {
+        Object.keys(__classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this4, _DashMedia_player, "f").off(__classPrivateFieldGet(_this4, _DashMedia_events, "f")[event], _this4._assign);
+        });
+
+        __classPrivateFieldSet(this, _DashMedia_events, [], "f");
+      }
+
+      __classPrivateFieldGet(this, _DashMedia_player, "f").reset();
+    }
+  }, {
+    key: "_preparePlayer",
+    value: function _preparePlayer() {
+      if (typeof __classPrivateFieldGet(this, _DashMedia_player, "f").getDebug().setLogToBrowserConsole === 'undefined') {
+        __classPrivateFieldGet(this, _DashMedia_player, "f").updateSettings({
+          debug: {
+            logLevel: dashjs.Debug.LOG_LEVEL_NONE
+          },
+          streaming: {
+            fastSwitchEnabled: true,
+            scheduleWhilePaused: false
+          }
+        });
+      } else {
+        __classPrivateFieldGet(this, _DashMedia_player, "f").getDebug().setLogToBrowserConsole(false);
+
+        __classPrivateFieldGet(this, _DashMedia_player, "f").setScheduleWhilePaused(false);
+
+        __classPrivateFieldGet(this, _DashMedia_player, "f").setFastSwitchEnabled(true);
+      }
+
+      __classPrivateFieldGet(this, _DashMedia_player, "f").initialize();
+
+      __classPrivateFieldGet(this, _DashMedia_player, "f").attachView(this.element);
+
+      __classPrivateFieldGet(this, _DashMedia_player, "f").setAutoPlay(false);
+
+      if (__classPrivateFieldGet(this, _DashMedia_options, "f") && _typeof(__classPrivateFieldGet(this, _DashMedia_options, "f").drm) === 'object' && Object.keys(__classPrivateFieldGet(this, _DashMedia_options, "f").drm).length) {
+        __classPrivateFieldGet(this, _DashMedia_player, "f").setProtectionData(__classPrivateFieldGet(this, _DashMedia_options, "f").drm);
+
+        if (__classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel && __classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel) {
+          __classPrivateFieldGet(this, _DashMedia_player, "f").getProtectionController().setRobustnessLevel(__classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel);
+        }
+      }
     }
   }]);
 
   return DashMedia;
 }(native_1["default"]);
 
-_player = new WeakMap(), _events = new WeakMap(), _options = new WeakMap();
+_DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia_options = new WeakMap();
 exports["default"] = DashMedia;
 
 /***/ }),
-/* 149 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9763,42 +9793,25 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
-};
-
-var __rest = this && this.__rest || function (s, e) {
-  var t = {};
-
-  for (var p in s) {
-    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  }
-
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -9807,21 +9820,21 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _player, _events, _options;
+var _FlvMedia_player, _FlvMedia_events, _FlvMedia_options;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
-var media_1 = __webpack_require__(13);
+var media_1 = __webpack_require__(14);
 
-var native_1 = __importDefault(__webpack_require__(30));
+var native_1 = __importDefault(__webpack_require__(31));
 
 var FlvMedia = function (_native_1$default) {
   _inherits(FlvMedia, _native_1$default);
@@ -9835,17 +9848,17 @@ var FlvMedia = function (_native_1$default) {
 
     _this = _super.call(this, element, mediaSource);
 
-    _player.set(_assertThisInitialized(_this), void 0);
+    _FlvMedia_player.set(_assertThisInitialized(_this), void 0);
 
-    _events.set(_assertThisInitialized(_this), {});
+    _FlvMedia_events.set(_assertThisInitialized(_this), {});
 
-    _options.set(_assertThisInitialized(_this), undefined);
+    _FlvMedia_options.set(_assertThisInitialized(_this), void 0);
 
-    __classPrivateFieldSet(_assertThisInitialized(_this), _options, options);
+    __classPrivateFieldSet(_assertThisInitialized(_this), _FlvMedia_options, options, "f");
 
     _this.element = element;
     _this.media = mediaSource;
-    _this.promise = typeof flvjs === 'undefined' ? general_1.loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js') : new Promise(function (resolve) {
+    _this.promise = typeof flvjs === 'undefined' ? (0, general_1.loadScript)('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js') : new Promise(function (resolve) {
       resolve({});
     });
     _this._create = _this._create.bind(_assertThisInitialized(_this));
@@ -9865,27 +9878,27 @@ var FlvMedia = function (_native_1$default) {
     value: function load() {
       var _this2 = this;
 
-      __classPrivateFieldGet(this, _player).unload();
+      __classPrivateFieldGet(this, _FlvMedia_player, "f").unload();
 
-      __classPrivateFieldGet(this, _player).detachMediaElement();
+      __classPrivateFieldGet(this, _FlvMedia_player, "f").detachMediaElement();
 
-      __classPrivateFieldGet(this, _player).attachMediaElement(this.element);
+      __classPrivateFieldGet(this, _FlvMedia_player, "f").attachMediaElement(this.element);
 
-      __classPrivateFieldGet(this, _player).load();
+      __classPrivateFieldGet(this, _FlvMedia_player, "f").load();
 
-      var e = events_1.addEvent('loadedmetadata');
+      var e = (0, events_1.addEvent)('loadedmetadata');
       this.element.dispatchEvent(e);
 
-      if (!__classPrivateFieldGet(this, _events)) {
-        __classPrivateFieldSet(this, _events, flvjs.Events);
+      if (!__classPrivateFieldGet(this, _FlvMedia_events, "f")) {
+        __classPrivateFieldSet(this, _FlvMedia_events, flvjs.Events, "f");
 
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this2, _player).on(__classPrivateFieldGet(_this2, _events)[event], function () {
+        Object.keys(__classPrivateFieldGet(this, _FlvMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this2, _FlvMedia_player, "f").on(__classPrivateFieldGet(_this2, _FlvMedia_events, "f")[event], function () {
             for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
               args[_key] = arguments[_key];
             }
 
-            return _this2._assign(__classPrivateFieldGet(_this2, _events)[event], args);
+            return _this2._assign(__classPrivateFieldGet(_this2, _FlvMedia_events, "f")[event], args);
           });
         });
       }
@@ -9896,72 +9909,9 @@ var FlvMedia = function (_native_1$default) {
       this._revoke();
     }
   }, {
-    key: "_create",
-    value: function _create() {
-      var _this3 = this;
-
-      var _a = __classPrivateFieldGet(this, _options),
-          configs = _a.configs,
-          rest = __rest(_a, ["configs"]);
-
-      flvjs.LoggingControl.enableDebug = rest && rest.debug ? rest.debug : false;
-      flvjs.LoggingControl.enableVerbose = rest && rest.debug ? rest.debug : false;
-      var options = Object.assign(Object.assign({}, rest), {
-        type: 'flv',
-        url: this.media.src
-      });
-
-      __classPrivateFieldSet(this, _player, flvjs.createPlayer(options, configs));
-
-      this.instance = __classPrivateFieldGet(this, _player);
-
-      if (!__classPrivateFieldGet(this, _events)) {
-        __classPrivateFieldSet(this, _events, flvjs.Events);
-
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this3, _player).on(__classPrivateFieldGet(_this3, _events)[event], function () {
-            for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-              args[_key2] = arguments[_key2];
-            }
-
-            return _this3._assign(__classPrivateFieldGet(_this3, _events)[event], args);
-          });
-        });
-      }
-    }
-  }, {
-    key: "_assign",
-    value: function _assign(event, data) {
-      if (event === 'error') {
-        var errorDetails = {
-          detail: {
-            data: data,
-            message: "".concat(data[0], ": ").concat(data[1], " ").concat(data[2].msg),
-            type: 'FLV'
-          }
-        };
-        var errorEvent = events_1.addEvent('playererror', errorDetails);
-        this.element.dispatchEvent(errorEvent);
-      } else {
-        var e = events_1.addEvent(event, {
-          detail: {
-            data: data
-          }
-        });
-        this.element.dispatchEvent(e);
-      }
-    }
-  }, {
-    key: "_revoke",
-    value: function _revoke() {
-      __classPrivateFieldGet(this, _player).destroy();
-
-      __classPrivateFieldSet(this, _player, null);
-    }
-  }, {
     key: "src",
     set: function set(media) {
-      if (media_1.isFlvSource(media)) {
+      if ((0, media_1.isFlvSource)(media)) {
         this._revoke();
 
         this._create();
@@ -9970,13 +9920,13 @@ var FlvMedia = function (_native_1$default) {
   }, {
     key: "levels",
     get: function get() {
-      var _this4 = this;
+      var _this3 = this;
 
       var levels = [];
 
-      if (__classPrivateFieldGet(this, _player) && __classPrivateFieldGet(this, _player).levels && __classPrivateFieldGet(this, _player).levels.length) {
-        Object.keys(__classPrivateFieldGet(this, _player).levels).forEach(function (item) {
-          var _classPrivateFieldGe = __classPrivateFieldGet(_this4, _player).levels[item],
+      if (__classPrivateFieldGet(this, _FlvMedia_player, "f") && __classPrivateFieldGet(this, _FlvMedia_player, "f").levels && __classPrivateFieldGet(this, _FlvMedia_player, "f").levels.length) {
+        Object.keys(__classPrivateFieldGet(this, _FlvMedia_player, "f").levels).forEach(function (item) {
+          var _classPrivateFieldGe = __classPrivateFieldGet(_this3, _FlvMedia_player, "f").levels[item],
               height = _classPrivateFieldGe.height,
               name = _classPrivateFieldGe.name;
 
@@ -9993,22 +9943,85 @@ var FlvMedia = function (_native_1$default) {
     }
   }, {
     key: "level",
-    set: function set(level) {
-      __classPrivateFieldGet(this, _player).currentLevel = level;
-    },
     get: function get() {
-      return __classPrivateFieldGet(this, _player) ? __classPrivateFieldGet(this, _player).currentLevel : -1;
+      return __classPrivateFieldGet(this, _FlvMedia_player, "f") ? __classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : -1;
+    },
+    set: function set(level) {
+      __classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel = level;
+    }
+  }, {
+    key: "_create",
+    value: function _create() {
+      var _this4 = this;
+
+      var _a, _b, _c, _d;
+
+      var configs = (_a = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _a === void 0 ? void 0 : _a.configs;
+      (_b = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _b === void 0 ? true : delete _b.configs;
+      flvjs.LoggingControl.enableDebug = ((_c = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _c === void 0 ? void 0 : _c.debug) || false;
+      flvjs.LoggingControl.enableVerbose = ((_d = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _d === void 0 ? void 0 : _d.debug) || false;
+      var options = Object.assign(Object.assign({}, __classPrivateFieldGet(this, _FlvMedia_options, "f") || {}), {
+        type: 'flv',
+        url: this.media.src
+      });
+
+      __classPrivateFieldSet(this, _FlvMedia_player, flvjs.createPlayer(options, configs), "f");
+
+      this.instance = __classPrivateFieldGet(this, _FlvMedia_player, "f");
+
+      if (!__classPrivateFieldGet(this, _FlvMedia_events, "f")) {
+        __classPrivateFieldSet(this, _FlvMedia_events, flvjs.Events, "f");
+
+        Object.keys(__classPrivateFieldGet(this, _FlvMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this4, _FlvMedia_player, "f").on(__classPrivateFieldGet(_this4, _FlvMedia_events, "f")[event], function () {
+            for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+              args[_key2] = arguments[_key2];
+            }
+
+            return _this4._assign(__classPrivateFieldGet(_this4, _FlvMedia_events, "f")[event], args);
+          });
+        });
+      }
+    }
+  }, {
+    key: "_assign",
+    value: function _assign(event, data) {
+      if (event === 'error') {
+        var errorDetails = {
+          detail: {
+            data: data,
+            message: "".concat(data[0], ": ").concat(data[1], " ").concat(data[2].msg),
+            type: 'FLV'
+          }
+        };
+        var errorEvent = (0, events_1.addEvent)('playererror', errorDetails);
+        this.element.dispatchEvent(errorEvent);
+      } else {
+        var e = (0, events_1.addEvent)(event, {
+          detail: {
+            data: data
+          }
+        });
+        this.element.dispatchEvent(e);
+      }
+    }
+  }, {
+    key: "_revoke",
+    value: function _revoke() {
+      __classPrivateFieldGet(this, _FlvMedia_player, "f").destroy();
+
+      __classPrivateFieldSet(this, _FlvMedia_player, null, "f");
     }
   }]);
 
   return FlvMedia;
 }(native_1["default"]);
 
-_player = new WeakMap(), _events = new WeakMap(), _options = new WeakMap();
+_FlvMedia_player = new WeakMap(), _FlvMedia_events = new WeakMap(), _FlvMedia_options = new WeakMap();
 exports["default"] = FlvMedia;
 
 /***/ }),
-/* 150 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10028,42 +10041,25 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
-};
-
-var __rest = this && this.__rest || function (s, e) {
-  var t = {};
-
-  for (var p in s) {
-    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  }
-
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -10072,21 +10068,21 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _player, _events, _recoverDecodingErrorDate, _recoverSwapAudioCodecDate, _options, _autoplay;
+var _HlsMedia_player, _HlsMedia_events, _HlsMedia_recoverDecodingErrorDate, _HlsMedia_recoverSwapAudioCodecDate, _HlsMedia_options, _HlsMedia_autoplay;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
-var media_1 = __webpack_require__(13);
+var media_1 = __webpack_require__(14);
 
-var native_1 = __importDefault(__webpack_require__(30));
+var native_1 = __importDefault(__webpack_require__(31));
 
 var HlsMedia = function (_native_1$default) {
   _inherits(HlsMedia, _native_1$default);
@@ -10103,26 +10099,26 @@ var HlsMedia = function (_native_1$default) {
 
     _this = _super.call(this, element, mediaSource);
 
-    _player.set(_assertThisInitialized(_this), void 0);
+    _HlsMedia_player.set(_assertThisInitialized(_this), void 0);
 
-    _events.set(_assertThisInitialized(_this), {});
+    _HlsMedia_events.set(_assertThisInitialized(_this), {});
 
-    _recoverDecodingErrorDate.set(_assertThisInitialized(_this), 0);
+    _HlsMedia_recoverDecodingErrorDate.set(_assertThisInitialized(_this), 0);
 
-    _recoverSwapAudioCodecDate.set(_assertThisInitialized(_this), 0);
+    _HlsMedia_recoverSwapAudioCodecDate.set(_assertThisInitialized(_this), 0);
 
-    _options.set(_assertThisInitialized(_this), undefined);
+    _HlsMedia_options.set(_assertThisInitialized(_this), void 0);
 
-    _autoplay.set(_assertThisInitialized(_this), void 0);
+    _HlsMedia_autoplay.set(_assertThisInitialized(_this), void 0);
 
-    __classPrivateFieldSet(_assertThisInitialized(_this), _options, options);
+    __classPrivateFieldSet(_assertThisInitialized(_this), _HlsMedia_options, options || {}, "f");
 
     _this.element = element;
     _this.media = mediaSource;
 
-    __classPrivateFieldSet(_assertThisInitialized(_this), _autoplay, autoplay);
+    __classPrivateFieldSet(_assertThisInitialized(_this), _HlsMedia_autoplay, autoplay, "f");
 
-    _this.promise = typeof Hls === 'undefined' ? general_1.loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') : new Promise(function (resolve) {
+    _this.promise = typeof Hls === 'undefined' ? (0, general_1.loadScript)('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') : new Promise(function (resolve) {
       resolve({});
     });
     _this._create = _this._create.bind(_assertThisInitialized(_this));
@@ -10135,32 +10131,32 @@ var HlsMedia = function (_native_1$default) {
   _createClass(HlsMedia, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
-      return constants_1.SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
+      return (0, constants_1.SUPPORTS_HLS)() && mimeType === 'application/x-mpegURL';
     }
   }, {
     key: "load",
     value: function load() {
       var _this2 = this;
 
-      __classPrivateFieldGet(this, _player).detachMedia();
+      __classPrivateFieldGet(this, _HlsMedia_player, "f").detachMedia();
 
-      __classPrivateFieldGet(this, _player).loadSource(this.media.src);
+      __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(this.media.src);
 
-      __classPrivateFieldGet(this, _player).attachMedia(this.element);
+      __classPrivateFieldGet(this, _HlsMedia_player, "f").attachMedia(this.element);
 
-      var e = events_1.addEvent('loadedmetadata');
+      var e = (0, events_1.addEvent)('loadedmetadata');
       this.element.dispatchEvent(e);
 
-      if (!__classPrivateFieldGet(this, _events)) {
-        __classPrivateFieldSet(this, _events, Hls.Events);
+      if (!__classPrivateFieldGet(this, _HlsMedia_events, "f")) {
+        __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
 
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this2, _player).on(__classPrivateFieldGet(_this2, _events)[event], function () {
+        Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this2, _HlsMedia_player, "f").on(__classPrivateFieldGet(_this2, _HlsMedia_events, "f")[event], function () {
             for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
               args[_key] = arguments[_key];
             }
 
-            return _this2._assign(__classPrivateFieldGet(_this2, _events)[event], args);
+            return _this2._assign(__classPrivateFieldGet(_this2, _HlsMedia_events, "f")[event], args);
           });
         });
       }
@@ -10171,213 +10167,28 @@ var HlsMedia = function (_native_1$default) {
       this._revoke();
     }
   }, {
-    key: "_create",
-    value: function _create() {
-      var _this3 = this;
-
-      var playerOptions = __classPrivateFieldGet(this, _options);
-
-      if (!playerOptions) {
-        playerOptions = {};
-      }
-
-      var autoplay = !!(this.element.preload === 'auto' || __classPrivateFieldGet(this, _autoplay));
-      playerOptions.autoStartLoad = autoplay;
-
-      __classPrivateFieldSet(this, _player, new Hls(playerOptions));
-
-      this.instance = __classPrivateFieldGet(this, _player);
-
-      __classPrivateFieldSet(this, _events, Hls.Events);
-
-      Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-        __classPrivateFieldGet(_this3, _player).on(__classPrivateFieldGet(_this3, _events)[event], function () {
-          for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-          }
-
-          return _this3._assign(__classPrivateFieldGet(_this3, _events)[event], args);
-        });
-      });
-
-      if (!autoplay) {
-        this.element.addEventListener('play', function () {
-          if (__classPrivateFieldGet(_this3, _player)) {
-            __classPrivateFieldGet(_this3, _player).startLoad();
-          }
-        }, constants_1.EVENT_OPTIONS);
-        this.element.addEventListener('pause', function () {
-          if (__classPrivateFieldGet(_this3, _player)) {
-            __classPrivateFieldGet(_this3, _player).stopLoad();
-          }
-        }, constants_1.EVENT_OPTIONS);
-      }
-    }
-  }, {
-    key: "_assign",
-    value: function _assign(event, data) {
-      if (event === 'hlsError') {
-        var errorDetails = {
-          detail: {
-            data: data,
-            message: data[1].details,
-            type: 'HLS'
-          }
-        };
-        var errorEvent = events_1.addEvent('playererror', errorDetails);
-        this.element.dispatchEvent(errorEvent);
-        data = data[1];
-
-        var _data = data,
-            type = _data.type,
-            fatal = _data.fatal,
-            details = __rest(data, ["type", "fatal"]);
-
-        if (fatal) {
-          switch (type) {
-            case 'mediaError':
-              var now = new Date().getTime();
-
-              if (!__classPrivateFieldGet(this, _recoverDecodingErrorDate) || now - __classPrivateFieldGet(this, _recoverDecodingErrorDate) > 3000) {
-                __classPrivateFieldSet(this, _recoverDecodingErrorDate, new Date().getTime());
-
-                __classPrivateFieldGet(this, _player).recoverMediaError();
-              } else if (!__classPrivateFieldGet(this, _recoverSwapAudioCodecDate) || now - __classPrivateFieldGet(this, _recoverSwapAudioCodecDate) > 3000) {
-                __classPrivateFieldSet(this, _recoverSwapAudioCodecDate, new Date().getTime());
-
-                console.warn('Attempting to swap Audio Codec and recover from media error');
-
-                __classPrivateFieldGet(this, _player).swapAudioCodec();
-
-                __classPrivateFieldGet(this, _player).recoverMediaError();
-              } else {
-                var msg = 'Cannot recover, last media error recovery failed';
-                console.error(msg);
-                var mediaEvent = events_1.addEvent(type, {
-                  detail: {
-                    data: details
-                  }
-                });
-                this.element.dispatchEvent(mediaEvent);
-              }
-
-              break;
-
-            case 'networkError':
-              var message = 'Network error';
-              console.error(message);
-              var networkEvent = events_1.addEvent(type, {
-                detail: {
-                  data: details
-                }
-              });
-              this.element.dispatchEvent(networkEvent);
-              break;
-
-            default:
-              __classPrivateFieldGet(this, _player).destroy();
-
-              var fatalEvent = events_1.addEvent(type, {
-                detail: {
-                  data: details
-                }
-              });
-              this.element.dispatchEvent(fatalEvent);
-              break;
-          }
-        } else {
-          var err = events_1.addEvent(type, {
-            detail: {
-              data: details
-            }
-          });
-          this.element.dispatchEvent(err);
-        }
-      } else {
-        if (event === 'hlsLevelLoaded' && data[1].details.live === true) {
-          this.element.setAttribute('op-live__enabled', 'true');
-          var timeEvent = events_1.addEvent('timeupdate');
-          this.element.dispatchEvent(timeEvent);
-        } else if (event === 'hlsLevelUpdated' && data[1].details.live === true && data[1].details.totalduration > constants_1.DVR_THRESHOLD) {
-          this.element.setAttribute('op-dvr__enabled', 'true');
-
-          var _timeEvent = events_1.addEvent('timeupdate');
-
-          this.element.dispatchEvent(_timeEvent);
-        } else if (event === 'hlsFragParsingMetadata') {
-          var metaEvent = events_1.addEvent('metadataready', {
-            detail: {
-              data: data[1]
-            }
-          });
-          this.element.dispatchEvent(metaEvent);
-        }
-
-        var e = events_1.addEvent(event, {
-          detail: {
-            data: data[1]
-          }
-        });
-        this.element.dispatchEvent(e);
-      }
-    }
-  }, {
-    key: "_revoke",
-    value: function _revoke() {
-      var _this4 = this;
-
-      __classPrivateFieldGet(this, _player).stopLoad();
-
-      if (__classPrivateFieldGet(this, _events)) {
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this4, _player).off(__classPrivateFieldGet(_this4, _events)[event], function () {
-            for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-              args[_key3] = arguments[_key3];
-            }
-
-            return _this4._assign(__classPrivateFieldGet(_this4, _events)[event], args);
-          });
-        });
-      }
-
-      this.element.removeEventListener('play', function () {
-        if (__classPrivateFieldGet(_this4, _player)) {
-          __classPrivateFieldGet(_this4, _player).startLoad();
-        }
-      });
-      this.element.removeEventListener('pause', function () {
-        if (__classPrivateFieldGet(_this4, _player)) {
-          __classPrivateFieldGet(_this4, _player).stopLoad();
-        }
-      });
-
-      __classPrivateFieldGet(this, _player).destroy();
-
-      __classPrivateFieldSet(this, _player, null);
-    }
-  }, {
     key: "src",
     set: function set(media) {
-      var _this5 = this;
+      var _this3 = this;
 
-      if (media_1.isHlsSource(media)) {
+      if ((0, media_1.isHlsSource)(media)) {
         this._revoke();
 
-        __classPrivateFieldSet(this, _player, new Hls(__classPrivateFieldGet(this, _options)));
+        __classPrivateFieldSet(this, _HlsMedia_player, new Hls(__classPrivateFieldGet(this, _HlsMedia_options, "f")), "f");
 
-        __classPrivateFieldGet(this, _player).loadSource(media.src);
+        __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(media.src);
 
-        __classPrivateFieldGet(this, _player).attachMedia(this.element);
+        __classPrivateFieldGet(this, _HlsMedia_player, "f").attachMedia(this.element);
 
-        __classPrivateFieldSet(this, _events, Hls.Events);
+        __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
 
-        Object.keys(__classPrivateFieldGet(this, _events)).forEach(function (event) {
-          __classPrivateFieldGet(_this5, _player).on(__classPrivateFieldGet(_this5, _events)[event], function () {
-            for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-              args[_key4] = arguments[_key4];
+        Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this3, _HlsMedia_player, "f").on(__classPrivateFieldGet(_this3, _HlsMedia_events, "f")[event], function () {
+            for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+              args[_key2] = arguments[_key2];
             }
 
-            return _this5._assign(__classPrivateFieldGet(_this5, _events)[event], args);
+            return _this3._assign(__classPrivateFieldGet(_this3, _HlsMedia_events, "f")[event], args);
           });
         });
       }
@@ -10385,13 +10196,13 @@ var HlsMedia = function (_native_1$default) {
   }, {
     key: "levels",
     get: function get() {
-      var _this6 = this;
+      var _this4 = this;
 
       var levels = [];
 
-      if (__classPrivateFieldGet(this, _player) && __classPrivateFieldGet(this, _player).levels && __classPrivateFieldGet(this, _player).levels.length) {
-        Object.keys(__classPrivateFieldGet(this, _player).levels).forEach(function (item) {
-          var _classPrivateFieldGe = __classPrivateFieldGet(_this6, _player).levels[item],
+      if (__classPrivateFieldGet(this, _HlsMedia_player, "f") && __classPrivateFieldGet(this, _HlsMedia_player, "f").levels && __classPrivateFieldGet(this, _HlsMedia_player, "f").levels.length) {
+        Object.keys(__classPrivateFieldGet(this, _HlsMedia_player, "f").levels).forEach(function (item) {
+          var _classPrivateFieldGe = __classPrivateFieldGet(_this4, _HlsMedia_player, "f").levels[item],
               height = _classPrivateFieldGe.height,
               name = _classPrivateFieldGe.name;
 
@@ -10408,22 +10219,200 @@ var HlsMedia = function (_native_1$default) {
     }
   }, {
     key: "level",
-    set: function set(level) {
-      __classPrivateFieldGet(this, _player).currentLevel = level;
-    },
     get: function get() {
-      return __classPrivateFieldGet(this, _player) ? __classPrivateFieldGet(this, _player).currentLevel : -1;
+      return __classPrivateFieldGet(this, _HlsMedia_player, "f") ? __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : -1;
+    },
+    set: function set(level) {
+      __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = level;
+    }
+  }, {
+    key: "_create",
+    value: function _create() {
+      var _this5 = this;
+
+      var autoplay = !!(this.element.preload === 'auto' || __classPrivateFieldGet(this, _HlsMedia_autoplay, "f"));
+      __classPrivateFieldGet(this, _HlsMedia_options, "f").autoStartLoad = autoplay;
+
+      __classPrivateFieldSet(this, _HlsMedia_player, new Hls(__classPrivateFieldGet(this, _HlsMedia_options, "f")), "f");
+
+      this.instance = __classPrivateFieldGet(this, _HlsMedia_player, "f");
+
+      __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
+
+      Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
+        __classPrivateFieldGet(_this5, _HlsMedia_player, "f").on(__classPrivateFieldGet(_this5, _HlsMedia_events, "f")[event], function () {
+          for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+            args[_key3] = arguments[_key3];
+          }
+
+          return _this5._assign(__classPrivateFieldGet(_this5, _HlsMedia_events, "f")[event], args);
+        });
+      });
+
+      if (!autoplay) {
+        this.element.addEventListener('play', function () {
+          if (__classPrivateFieldGet(_this5, _HlsMedia_player, "f")) {
+            __classPrivateFieldGet(_this5, _HlsMedia_player, "f").startLoad();
+          }
+        }, constants_1.EVENT_OPTIONS);
+        this.element.addEventListener('pause', function () {
+          if (__classPrivateFieldGet(_this5, _HlsMedia_player, "f")) {
+            __classPrivateFieldGet(_this5, _HlsMedia_player, "f").stopLoad();
+          }
+        }, constants_1.EVENT_OPTIONS);
+      }
+    }
+  }, {
+    key: "_assign",
+    value: function _assign(event, data) {
+      if (event === 'hlsError') {
+        var errorDetails = {
+          detail: {
+            data: data,
+            message: data[1].details,
+            type: 'HLS'
+          }
+        };
+        var errorEvent = (0, events_1.addEvent)('playererror', errorDetails);
+        this.element.dispatchEvent(errorEvent);
+        var type = data[1].type;
+        var fatal = data[1].fatal;
+        var details = data[1];
+
+        if (fatal) {
+          switch (type) {
+            case 'mediaError':
+              var now = new Date().getTime();
+
+              if (!__classPrivateFieldGet(this, _HlsMedia_recoverDecodingErrorDate, "f") || now - __classPrivateFieldGet(this, _HlsMedia_recoverDecodingErrorDate, "f") > 3000) {
+                __classPrivateFieldSet(this, _HlsMedia_recoverDecodingErrorDate, new Date().getTime(), "f");
+
+                __classPrivateFieldGet(this, _HlsMedia_player, "f").recoverMediaError();
+              } else if (!__classPrivateFieldGet(this, _HlsMedia_recoverSwapAudioCodecDate, "f") || now - __classPrivateFieldGet(this, _HlsMedia_recoverSwapAudioCodecDate, "f") > 3000) {
+                __classPrivateFieldSet(this, _HlsMedia_recoverSwapAudioCodecDate, new Date().getTime(), "f");
+
+                console.warn('Attempting to swap Audio Codec and recover from media error');
+
+                __classPrivateFieldGet(this, _HlsMedia_player, "f").swapAudioCodec();
+
+                __classPrivateFieldGet(this, _HlsMedia_player, "f").recoverMediaError();
+              } else {
+                var msg = 'Cannot recover, last media error recovery failed';
+                console.error(msg);
+                var mediaEvent = (0, events_1.addEvent)(type, {
+                  detail: {
+                    data: details
+                  }
+                });
+                this.element.dispatchEvent(mediaEvent);
+              }
+
+              break;
+
+            case 'networkError':
+              var message = 'Network error';
+              console.error(message);
+              var networkEvent = (0, events_1.addEvent)(type, {
+                detail: {
+                  data: details
+                }
+              });
+              this.element.dispatchEvent(networkEvent);
+              break;
+
+            default:
+              __classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
+
+              var fatalEvent = (0, events_1.addEvent)(type, {
+                detail: {
+                  data: details
+                }
+              });
+              this.element.dispatchEvent(fatalEvent);
+              break;
+          }
+        } else {
+          var err = (0, events_1.addEvent)(type, {
+            detail: {
+              data: details
+            }
+          });
+          this.element.dispatchEvent(err);
+        }
+      } else {
+        var _details = data[1];
+
+        if (event === 'hlsLevelLoaded' && _details.live === true) {
+          this.element.setAttribute('op-live__enabled', 'true');
+          var timeEvent = (0, events_1.addEvent)('timeupdate');
+          this.element.dispatchEvent(timeEvent);
+        } else if (event === 'hlsLevelUpdated' && _details.live === true && _details.totalduration > constants_1.DVR_THRESHOLD) {
+          this.element.setAttribute('op-dvr__enabled', 'true');
+
+          var _timeEvent = (0, events_1.addEvent)('timeupdate');
+
+          this.element.dispatchEvent(_timeEvent);
+        } else if (event === 'hlsFragParsingMetadata') {
+          var metaEvent = (0, events_1.addEvent)('metadataready', {
+            detail: {
+              data: data[1]
+            }
+          });
+          this.element.dispatchEvent(metaEvent);
+        }
+
+        var e = (0, events_1.addEvent)(event, {
+          detail: {
+            data: data[1]
+          }
+        });
+        this.element.dispatchEvent(e);
+      }
+    }
+  }, {
+    key: "_revoke",
+    value: function _revoke() {
+      var _this6 = this;
+
+      __classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
+
+      if (__classPrivateFieldGet(this, _HlsMedia_events, "f")) {
+        Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
+          __classPrivateFieldGet(_this6, _HlsMedia_player, "f").off(__classPrivateFieldGet(_this6, _HlsMedia_events, "f")[event], function () {
+            for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+              args[_key4] = arguments[_key4];
+            }
+
+            return _this6._assign(__classPrivateFieldGet(_this6, _HlsMedia_events, "f")[event], args);
+          });
+        });
+      }
+
+      this.element.removeEventListener('play', function () {
+        if (__classPrivateFieldGet(_this6, _HlsMedia_player, "f")) {
+          __classPrivateFieldGet(_this6, _HlsMedia_player, "f").startLoad();
+        }
+      });
+      this.element.removeEventListener('pause', function () {
+        if (__classPrivateFieldGet(_this6, _HlsMedia_player, "f")) {
+          __classPrivateFieldGet(_this6, _HlsMedia_player, "f").stopLoad();
+        }
+      });
+
+      __classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
+
+      __classPrivateFieldSet(this, _HlsMedia_player, null, "f");
     }
   }]);
 
   return HlsMedia;
 }(native_1["default"]);
 
-_player = new WeakMap(), _events = new WeakMap(), _recoverDecodingErrorDate = new WeakMap(), _recoverSwapAudioCodecDate = new WeakMap(), _options = new WeakMap(), _autoplay = new WeakMap();
+_HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_recoverDecodingErrorDate = new WeakMap(), _HlsMedia_recoverSwapAudioCodecDate = new WeakMap(), _HlsMedia_options = new WeakMap(), _HlsMedia_autoplay = new WeakMap();
 exports["default"] = HlsMedia;
 
 /***/ }),
-/* 151 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10443,29 +10432,25 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -10474,21 +10459,21 @@ var __importDefault = this && this.__importDefault || function (mod) {
   };
 };
 
-var _currentLevel, _levelList, _isStreaming, _retryCount, _started, _timer;
+var _HTML5Media_currentLevel, _HTML5Media_levelList, _HTML5Media_isStreaming, _HTML5Media_retryCount, _HTML5Media_started, _HTML5Media_timer;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
-var media_1 = __webpack_require__(13);
+var media_1 = __webpack_require__(14);
 
-var native_1 = __importDefault(__webpack_require__(30));
+var native_1 = __importDefault(__webpack_require__(31));
 
 var HTML5Media = function (_native_1$default) {
   _inherits(HTML5Media, _native_1$default);
@@ -10502,19 +10487,19 @@ var HTML5Media = function (_native_1$default) {
 
     _this = _super.call(this, element, mediaFile);
 
-    _currentLevel.set(_assertThisInitialized(_this), null);
+    _HTML5Media_currentLevel.set(_assertThisInitialized(_this), void 0);
 
-    _levelList.set(_assertThisInitialized(_this), []);
+    _HTML5Media_levelList.set(_assertThisInitialized(_this), []);
 
-    _isStreaming.set(_assertThisInitialized(_this), false);
+    _HTML5Media_isStreaming.set(_assertThisInitialized(_this), false);
 
-    _retryCount.set(_assertThisInitialized(_this), 0);
+    _HTML5Media_retryCount.set(_assertThisInitialized(_this), 0);
 
-    _started.set(_assertThisInitialized(_this), false);
+    _HTML5Media_started.set(_assertThisInitialized(_this), false);
 
-    _timer.set(_assertThisInitialized(_this), void 0);
+    _HTML5Media_timer.set(_assertThisInitialized(_this), void 0);
 
-    if (!general_1.isAudio(element) && !general_1.isVideo(element)) {
+    if (!(0, general_1.isAudio)(element) && !(0, general_1.isVideo)(element)) {
       throw new TypeError('Native method only supports video/audio tags');
     }
 
@@ -10524,7 +10509,7 @@ var HTML5Media = function (_native_1$default) {
     _this._isDvrEnabled = _this._isDvrEnabled.bind(_assertThisInitialized(_this));
     _this._readMediadataInfo = _this._readMediadataInfo.bind(_assertThisInitialized(_this));
 
-    __classPrivateFieldSet(_assertThisInitialized(_this), _isStreaming, media_1.isHlsSource(mediaFile));
+    __classPrivateFieldSet(_assertThisInitialized(_this), _HTML5Media_isStreaming, (0, media_1.isHlsSource)(mediaFile), "f");
 
     _this.element.addEventListener('playing', _this._clearTimeout, constants_1.EVENT_OPTIONS);
 
@@ -10560,13 +10545,63 @@ var HTML5Media = function (_native_1$default) {
       return this;
     }
   }, {
+    key: "levels",
+    get: function get() {
+      if (!__classPrivateFieldGet(this, _HTML5Media_levelList, "f").length) {
+        var levels = this.element.querySelectorAll('source[title]');
+
+        for (var i = 0, total = levels.length; i < total; ++i) {
+          var level = {
+            height: 0,
+            id: "".concat(i),
+            label: levels[i].getAttribute('title') || ''
+          };
+
+          __classPrivateFieldGet(this, _HTML5Media_levelList, "f").push(level);
+        }
+      }
+
+      return __classPrivateFieldGet(this, _HTML5Media_levelList, "f");
+    }
+  }, {
+    key: "level",
+    get: function get() {
+      var _a;
+
+      return ((_a = __classPrivateFieldGet(this, _HTML5Media_currentLevel, "f")) === null || _a === void 0 ? void 0 : _a.id) || '-1';
+    },
+    set: function set(level) {
+      var idx = __classPrivateFieldGet(this, _HTML5Media_levelList, "f").findIndex(function (item) {
+        return item.id === level;
+      });
+
+      if (idx > -1) {
+        __classPrivateFieldSet(this, _HTML5Media_currentLevel, this.levels[idx], "f");
+
+        var levels = this.element.querySelectorAll('source[title]');
+
+        for (var i = 0, total = levels.length; i < total; ++i) {
+          var source = levels[i].getAttribute('src');
+
+          if (source && parseInt(__classPrivateFieldGet(this, _HTML5Media_currentLevel, "f").id, 10) === i) {
+            this.element.src = source;
+          }
+        }
+      }
+    }
+  }, {
+    key: "src",
+    set: function set(media) {
+      this.element.src = media.src;
+    }
+  }, {
     key: "_isDvrEnabled",
     value: function _isDvrEnabled() {
       var time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
 
-      if (__classPrivateFieldGet(this, _isStreaming) && time > constants_1.DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
+      if (__classPrivateFieldGet(this, _HTML5Media_isStreaming, "f") && time > constants_1.DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
         this.element.setAttribute('op-dvr__enabled', 'true');
-        var timeEvent = events_1.addEvent('timeupdate');
+        var timeEvent = (0, events_1.addEvent)('timeupdate');
         this.element.dispatchEvent(timeEvent);
       }
     }
@@ -10575,16 +10610,18 @@ var HTML5Media = function (_native_1$default) {
     value: function _readMediadataInfo(e) {
       var _this2 = this;
 
+      var _a;
+
       var target = e;
 
-      if (target.track.kind === 'metadata') {
+      if (((_a = target === null || target === void 0 ? void 0 : target.track) === null || _a === void 0 ? void 0 : _a.kind) === 'metadata') {
         target.track.mode = 'hidden';
         target.track.addEventListener('cuechange', function (event) {
           var track = event.target;
           var cue = track.activeCues ? track.activeCues[0] : null;
 
           if (cue) {
-            var metaDataEvent = events_1.addEvent('metadataready', {
+            var metaDataEvent = (0, events_1.addEvent)('metadataready', {
               detail: cue
             });
 
@@ -10598,12 +10635,14 @@ var HTML5Media = function (_native_1$default) {
     value: function _setTimeout() {
       var _this3 = this;
 
-      if (!__classPrivateFieldGet(this, _started)) {
-        __classPrivateFieldSet(this, _started, true);
+      if (!__classPrivateFieldGet(this, _HTML5Media_started, "f") && window !== undefined) {
+        __classPrivateFieldSet(this, _HTML5Media_started, true, "f");
 
-        __classPrivateFieldSet(this, _timer, setInterval(function () {
-          if (__classPrivateFieldGet(_this3, _retryCount) >= 30) {
-            clearInterval(__classPrivateFieldGet(_this3, _timer));
+        __classPrivateFieldSet(this, _HTML5Media_timer, window.setInterval(function () {
+          var _a;
+
+          if (__classPrivateFieldGet(_this3, _HTML5Media_retryCount, "f") >= 30) {
+            clearInterval(__classPrivateFieldGet(_this3, _HTML5Media_timer, "f"));
             var message = 'Media download failed part-way due to a network error';
             var details = {
               detail: {
@@ -10615,50 +10654,52 @@ var HTML5Media = function (_native_1$default) {
                 type: 'HTML5'
               }
             };
-            var errorEvent = events_1.addEvent('playererror', details);
+            var errorEvent = (0, events_1.addEvent)('playererror', details);
 
             _this3.element.dispatchEvent(errorEvent);
 
-            __classPrivateFieldSet(_this3, _retryCount, 0);
+            __classPrivateFieldSet(_this3, _HTML5Media_retryCount, 0, "f");
 
-            __classPrivateFieldSet(_this3, _started, false);
+            __classPrivateFieldSet(_this3, _HTML5Media_started, false, "f");
           } else {
-            __classPrivateFieldSet(_this3, _retryCount, +__classPrivateFieldGet(_this3, _retryCount) + 1);
+            __classPrivateFieldSet(_this3, _HTML5Media_retryCount, (_a = __classPrivateFieldGet(_this3, _HTML5Media_retryCount, "f"), _a++, _a), "f");
           }
-        }, 1000));
+        }, 1000), "f");
       }
     }
   }, {
     key: "_clearTimeout",
     value: function _clearTimeout() {
-      if (__classPrivateFieldGet(this, _timer)) {
-        clearInterval(__classPrivateFieldGet(this, _timer));
+      if (__classPrivateFieldGet(this, _HTML5Media_timer, "f")) {
+        clearInterval(__classPrivateFieldGet(this, _HTML5Media_timer, "f"));
 
-        __classPrivateFieldSet(this, _retryCount, 0);
+        __classPrivateFieldSet(this, _HTML5Media_retryCount, 0, "f");
 
-        __classPrivateFieldSet(this, _started, false);
+        __classPrivateFieldSet(this, _HTML5Media_started, false, "f");
       }
     }
   }, {
     key: "_dispatchError",
     value: function _dispatchError(e) {
       var defaultMessage;
+      var target = e.target;
+      var error = target === null || target === void 0 ? void 0 : target.error;
 
-      switch (e.target.error.code) {
-        case e.target.error.MEDIA_ERR_ABORTED:
+      switch (error === null || error === void 0 ? void 0 : error.code) {
+        case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_ABORTED:
           defaultMessage = 'Media playback aborted';
           break;
 
-        case e.target.error.MEDIA_ERR_NETWORK:
+        case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_NETWORK:
           defaultMessage = 'Media download failed part-way due to a network error';
           break;
 
-        case e.target.error.MEDIA_ERR_DECODE:
-          defaultMessage = 'Media playback aborted due to a corruption problem or because the media used features your browser did not support.';
+        case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_DECODE:
+          defaultMessage = "Media playback aborted due to a corruption problem or because the\n                    media used features your browser did not support.";
           break;
 
-        case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          defaultMessage = 'Media could not be loaded, either because the server or network failed or because the format is not supported.';
+        case error === null || error === void 0 ? void 0 : error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          defaultMessage = "Media could not be loaded, either because the server or network failed\n                    or because the format is not supported.";
           break;
 
         default:
@@ -10669,74 +10710,26 @@ var HTML5Media = function (_native_1$default) {
       var details = {
         detail: {
           data: Object.assign(Object.assign({}, e), {
-            message: e.message || defaultMessage,
-            error: e.target.error.code
+            message: defaultMessage,
+            error: error === null || error === void 0 ? void 0 : error.code
           }),
-          message: e.message || defaultMessage,
+          message: defaultMessage,
           type: 'HTML5'
         }
       };
-      var errorEvent = events_1.addEvent('playererror', details);
+      var errorEvent = (0, events_1.addEvent)('playererror', details);
       this.element.dispatchEvent(errorEvent);
-    }
-  }, {
-    key: "levels",
-    get: function get() {
-      if (!__classPrivateFieldGet(this, _levelList).length) {
-        var levels = this.element.querySelectorAll('source[title]');
-
-        for (var i = 0, total = levels.length; i < total; ++i) {
-          var level = {
-            height: 0,
-            id: "".concat(i),
-            label: levels[i].getAttribute('title')
-          };
-
-          __classPrivateFieldGet(this, _levelList).push(level);
-        }
-      }
-
-      return __classPrivateFieldGet(this, _levelList);
-    }
-  }, {
-    key: "level",
-    set: function set(level) {
-      var idx = __classPrivateFieldGet(this, _levelList).findIndex(function (item) {
-        return parseInt(item.id, 10) === level;
-      });
-
-      if (idx > -1) {
-        __classPrivateFieldSet(this, _currentLevel, this.levels[idx]);
-
-        var levels = this.element.querySelectorAll('source[title]');
-
-        for (var i = 0, total = levels.length; i < total; ++i) {
-          var source = levels[i].getAttribute('src');
-
-          if (source && parseInt(__classPrivateFieldGet(this, _currentLevel).id, 10) === i) {
-            this.element.src = source;
-          }
-        }
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _currentLevel) ? __classPrivateFieldGet(this, _currentLevel).id : '-1';
-    }
-  }, {
-    key: "src",
-    set: function set(media) {
-      this.element.src = media.src;
     }
   }]);
 
   return HTML5Media;
 }(native_1["default"]);
 
-_currentLevel = new WeakMap(), _levelList = new WeakMap(), _isStreaming = new WeakMap(), _retryCount = new WeakMap(), _started = new WeakMap(), _timer = new WeakMap();
+_HTML5Media_currentLevel = new WeakMap(), _HTML5Media_levelList = new WeakMap(), _HTML5Media_isStreaming = new WeakMap(), _HTML5Media_retryCount = new WeakMap(), _HTML5Media_started = new WeakMap(), _HTML5Media_timer = new WeakMap();
 exports["default"] = HTML5Media;
 
 /***/ }),
-/* 152 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10748,34 +10741,30 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, privateMap, value) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to set private field on non-instance");
-  }
-
-  privateMap.set(receiver, value);
-  return value;
+var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
 };
 
-var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, privateMap) {
-  if (!privateMap.has(receiver)) {
-    throw new TypeError("attempted to get private field on non-instance");
-  }
-
-  return privateMap.get(receiver);
+var __classPrivateFieldGet = this && this.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _adsEnded, _adsDone, _adsActive, _adsStarted, _intervalTimer, _adsVolume, _adsMuted, _adsDuration, _adsCurrentTime, _adsManager, _player, _media, _element, _events, _ads, _promise, _adsLoader, _adsContainer, _adsCustomClickContainer, _adDisplayContainer, _adsRequest, _autoStart, _autoStartMuted, _playTriggered, _adsOptions, _currentAdsIndex, _originalVolume, _preloadContent, _lastTimePaused, _mediaSources, _mediaStarted;
+var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(2);
+var general_1 = __webpack_require__(3);
 
 var Ads = function () {
   function Ads(player, ads, autoStart, autoStartMuted, options) {
@@ -10783,67 +10772,67 @@ var Ads = function () {
 
     _classCallCheck(this, Ads);
 
-    _adsEnded.set(this, false);
+    _Ads_adsEnded.set(this, false);
 
-    _adsDone.set(this, false);
+    _Ads_adsDone.set(this, false);
 
-    _adsActive.set(this, false);
+    _Ads_adsActive.set(this, false);
 
-    _adsStarted.set(this, false);
+    _Ads_adsStarted.set(this, false);
 
-    _intervalTimer.set(this, 0);
+    _Ads_intervalTimer.set(this, 0);
 
-    _adsVolume.set(this, void 0);
+    _Ads_adsVolume.set(this, void 0);
 
-    _adsMuted.set(this, false);
+    _Ads_adsMuted.set(this, false);
 
-    _adsDuration.set(this, 0);
+    _Ads_adsDuration.set(this, 0);
 
-    _adsCurrentTime.set(this, 0);
+    _Ads_adsCurrentTime.set(this, 0);
 
-    _adsManager.set(this, null);
+    _Ads_adsManager.set(this, null);
 
-    _player.set(this, void 0);
+    _Ads_player.set(this, void 0);
 
-    _media.set(this, void 0);
+    _Ads_media.set(this, void 0);
 
-    _element.set(this, void 0);
+    _Ads_element.set(this, void 0);
 
-    _events.set(this, []);
+    _Ads_events.set(this, []);
 
-    _ads.set(this, void 0);
+    _Ads_ads.set(this, void 0);
 
-    _promise.set(this, void 0);
+    _Ads_promise.set(this, void 0);
 
-    _adsLoader.set(this, void 0);
+    _Ads_adsLoader.set(this, void 0);
 
-    _adsContainer.set(this, void 0);
+    _Ads_adsContainer.set(this, void 0);
 
-    _adsCustomClickContainer.set(this, void 0);
+    _Ads_adsCustomClickContainer.set(this, void 0);
 
-    _adDisplayContainer.set(this, void 0);
+    _Ads_adDisplayContainer.set(this, void 0);
 
-    _adsRequest.set(this, void 0);
+    _Ads_adsRequest.set(this, void 0);
 
-    _autoStart.set(this, false);
+    _Ads_autoStart.set(this, false);
 
-    _autoStartMuted.set(this, false);
+    _Ads_autoStartMuted.set(this, false);
 
-    _playTriggered.set(this, false);
+    _Ads_playTriggered.set(this, false);
 
-    _adsOptions.set(this, void 0);
+    _Ads_adsOptions.set(this, void 0);
 
-    _currentAdsIndex.set(this, 0);
+    _Ads_currentAdsIndex.set(this, 0);
 
-    _originalVolume.set(this, void 0);
+    _Ads_originalVolume.set(this, void 0);
 
-    _preloadContent.set(this, void 0);
+    _Ads_preloadContent.set(this, void 0);
 
-    _lastTimePaused.set(this, 0);
+    _Ads_lastTimePaused.set(this, 0);
 
-    _mediaSources.set(this, []);
+    _Ads_mediaSources.set(this, []);
 
-    _mediaStarted.set(this, false);
+    _Ads_mediaStarted.set(this, false);
 
     var defaultOpts = {
       autoPlayAdBreaks: true,
@@ -10863,34 +10852,34 @@ var Ads = function () {
       vpaidMode: 'enabled'
     };
 
-    __classPrivateFieldSet(this, _player, player);
+    __classPrivateFieldSet(this, _Ads_player, player, "f");
 
-    __classPrivateFieldSet(this, _ads, ads);
+    __classPrivateFieldSet(this, _Ads_ads, ads, "f");
 
-    __classPrivateFieldSet(this, _media, player.getMedia());
+    __classPrivateFieldSet(this, _Ads_media, player.getMedia(), "f");
 
-    __classPrivateFieldSet(this, _element, player.getElement());
+    __classPrivateFieldSet(this, _Ads_element, player.getElement(), "f");
 
-    __classPrivateFieldSet(this, _autoStart, autoStart || false);
+    __classPrivateFieldSet(this, _Ads_autoStart, autoStart || false, "f");
 
-    __classPrivateFieldSet(this, _autoStartMuted, autoStartMuted || false);
+    __classPrivateFieldSet(this, _Ads_autoStartMuted, autoStartMuted || false, "f");
 
-    __classPrivateFieldSet(this, _adsOptions, Object.assign(Object.assign({}, defaultOpts), options));
+    __classPrivateFieldSet(this, _Ads_adsOptions, Object.assign(Object.assign({}, defaultOpts), options), "f");
 
     if (options) {
       var objectElements = ['customClick'];
       objectElements.forEach(function (item) {
-        __classPrivateFieldGet(_this, _adsOptions)[item] = options[item] && Object.keys(options[item]).length ? Object.assign(Object.assign({}, defaultOpts[item]), options[item]) : defaultOpts[item];
+        __classPrivateFieldGet(_this, _Ads_adsOptions, "f")[item] = options[item] && Object.keys(options[item]).length ? Object.assign(Object.assign({}, defaultOpts[item]), options[item]) : defaultOpts[item];
       });
     }
 
-    __classPrivateFieldSet(this, _playTriggered, false);
+    __classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
 
-    __classPrivateFieldSet(this, _originalVolume, __classPrivateFieldGet(this, _element).volume);
+    __classPrivateFieldSet(this, _Ads_originalVolume, __classPrivateFieldGet(this, _Ads_element, "f").volume, "f");
 
-    __classPrivateFieldSet(this, _adsVolume, __classPrivateFieldGet(this, _originalVolume));
+    __classPrivateFieldSet(this, _Ads_adsVolume, __classPrivateFieldGet(this, _Ads_originalVolume, "f"), "f");
 
-    var path = __classPrivateFieldGet(this, _adsOptions).debug ? __classPrivateFieldGet(this, _adsOptions).sdkPath.replace(/(\.js$)/, '_debug.js') : __classPrivateFieldGet(this, _adsOptions).sdkPath;
+    var path = __classPrivateFieldGet(this, _Ads_adsOptions, "f").debug && __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath ? __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath.replace(/(\.js$)/, '_debug.js') : __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath;
     this._handleClickInContainer = this._handleClickInContainer.bind(this);
     this._loaded = this._loaded.bind(this);
     this._error = this._error.bind(this);
@@ -10903,14 +10892,14 @@ var Ads = function () {
     this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
     this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
 
-    __classPrivateFieldSet(this, _promise, typeof google === 'undefined' || typeof google.ima === 'undefined' ? general_1.loadScript(path) : new Promise(function (resolve) {
+    __classPrivateFieldSet(this, _Ads_promise, path && (typeof google === 'undefined' || typeof google.ima === 'undefined') ? (0, general_1.loadScript)(path) : new Promise(function (resolve) {
       resolve({});
-    }));
+    }), "f");
 
-    __classPrivateFieldGet(this, _promise).then(function () {
+    __classPrivateFieldGet(this, _Ads_promise, "f").then(function () {
       _this.load();
     })["catch"](function (error) {
-      var message = 'Ad script could not be loaded; please check if you have an AdBlock turned on, or if you provided a valid URL is correct';
+      var message = "Ad script could not be loaded; please check if you have an AdBlock\n                turned on, or if you provided a valid URL is correct";
       console.error("Ad error: ".concat(message));
       var details = {
         detail: {
@@ -10919,9 +10908,9 @@ var Ads = function () {
           type: 'Ads'
         }
       };
-      var errorEvent = events_1.addEvent('playererror', details);
+      var errorEvent = (0, events_1.addEvent)('playererror', details);
 
-      __classPrivateFieldGet(_this, _element).dispatchEvent(errorEvent);
+      __classPrivateFieldGet(_this, _Ads_element, "f").dispatchEvent(errorEvent);
     });
 
     return this;
@@ -10934,71 +10923,71 @@ var Ads = function () {
 
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks && !force) {
+      if (!google && !google.ima && !__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
         return;
       }
 
-      var existingContainer = __classPrivateFieldGet(this, _player).getContainer().querySelector('.op-ads');
+      var existingContainer = __classPrivateFieldGet(this, _Ads_player, "f").getContainer().querySelector('.op-ads');
 
       if (existingContainer && existingContainer.parentNode) {
         existingContainer.parentNode.removeChild(existingContainer);
       }
 
-      __classPrivateFieldSet(this, _adsStarted, true);
+      __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
 
-      __classPrivateFieldSet(this, _adsContainer, document.createElement('div'));
+      __classPrivateFieldSet(this, _Ads_adsContainer, document.createElement('div'), "f");
 
-      __classPrivateFieldGet(this, _adsContainer).className = 'op-ads';
-      __classPrivateFieldGet(this, _adsContainer).tabIndex = -1;
+      __classPrivateFieldGet(this, _Ads_adsContainer, "f").className = 'op-ads';
+      __classPrivateFieldGet(this, _Ads_adsContainer, "f").tabIndex = -1;
 
-      if (__classPrivateFieldGet(this, _element).parentElement) {
-        __classPrivateFieldGet(this, _element).parentElement.insertBefore(__classPrivateFieldGet(this, _adsContainer), __classPrivateFieldGet(this, _element).nextSibling);
+      if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+        __classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
       }
 
-      __classPrivateFieldGet(this, _adsContainer).addEventListener('click', this._handleClickInContainer);
+      __classPrivateFieldGet(this, _Ads_adsContainer, "f").addEventListener('click', this._handleClickInContainer);
 
-      if (__classPrivateFieldGet(this, _adsOptions).customClick.enabled) {
-        __classPrivateFieldSet(this, _adsCustomClickContainer, document.createElement('div'));
+      if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.enabled) {
+        __classPrivateFieldSet(this, _Ads_adsCustomClickContainer, document.createElement('div'), "f");
 
-        __classPrivateFieldGet(this, _adsCustomClickContainer).className = 'op-ads__click-container';
-        __classPrivateFieldGet(this, _adsCustomClickContainer).innerHTML = "<div class=\"op-ads__click-label\">".concat(__classPrivateFieldGet(this, _adsOptions).customClick.label, "</div>");
+        __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").className = 'op-ads__click-container';
+        __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").innerHTML = "<div class=\"op-ads__click-label\">".concat(__classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.label, "</div>");
 
-        if (__classPrivateFieldGet(this, _element).parentElement) {
-          __classPrivateFieldGet(this, _element).parentElement.insertBefore(__classPrivateFieldGet(this, _adsCustomClickContainer), __classPrivateFieldGet(this, _element).nextSibling);
+        if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+          __classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(__classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
         }
       }
 
-      __classPrivateFieldSet(this, _mediaSources, __classPrivateFieldGet(this, _media).src);
+      __classPrivateFieldSet(this, _Ads_mediaSources, __classPrivateFieldGet(this, _Ads_media, "f").src, "f");
 
       var vpaidModeMap = {
         disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
         enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED,
         insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE
       };
-      google.ima.settings.setVpaidMode(vpaidModeMap[__classPrivateFieldGet(this, _adsOptions).vpaidMode]);
+      google.ima.settings.setVpaidMode(vpaidModeMap[__classPrivateFieldGet(this, _Ads_adsOptions, "f").vpaidMode]);
       google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
-      google.ima.settings.setAutoPlayAdBreaks(__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks);
-      google.ima.settings.setNumRedirects(__classPrivateFieldGet(this, _adsOptions).numRedirects);
-      google.ima.settings.setLocale(__classPrivateFieldGet(this, _adsOptions).language);
+      google.ima.settings.setAutoPlayAdBreaks(__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks);
+      google.ima.settings.setNumRedirects(__classPrivateFieldGet(this, _Ads_adsOptions, "f").numRedirects);
+      google.ima.settings.setLocale(__classPrivateFieldGet(this, _Ads_adsOptions, "f").language);
 
-      if (__classPrivateFieldGet(this, _adsOptions).sessionId) {
-        google.ima.settings.setSessionId(__classPrivateFieldGet(this, _adsOptions).sessionId);
+      if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").sessionId) {
+        google.ima.settings.setSessionId(__classPrivateFieldGet(this, _Ads_adsOptions, "f").sessionId);
       }
 
-      if (__classPrivateFieldGet(this, _adsOptions).publisherId) {
-        google.ima.settings.setPpid(__classPrivateFieldGet(this, _adsOptions).publisherId);
+      if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").publisherId) {
+        google.ima.settings.setPpid(__classPrivateFieldGet(this, _Ads_adsOptions, "f").publisherId);
       }
 
       google.ima.settings.setPlayerType('openplayerjs');
       google.ima.settings.setPlayerVersion('2.8.2');
 
-      __classPrivateFieldSet(this, _adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _adsContainer), __classPrivateFieldGet(this, _element), __classPrivateFieldGet(this, _adsCustomClickContainer)));
+      __classPrivateFieldSet(this, _Ads_adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f"), __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f")), "f");
 
-      __classPrivateFieldSet(this, _adsLoader, new google.ima.AdsLoader(__classPrivateFieldGet(this, _adDisplayContainer)));
+      __classPrivateFieldSet(this, _Ads_adsLoader, new google.ima.AdsLoader(__classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")), "f");
 
-      __classPrivateFieldGet(this, _adsLoader).addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldGet(this, _adsLoader).addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, constants_1.EVENT_OPTIONS);
 
       if (typeof window !== 'undefined') {
         window.addEventListener('resize', function () {
@@ -11006,13 +10995,13 @@ var Ads = function () {
         }, constants_1.EVENT_OPTIONS);
       }
 
-      __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', this._handleResizeAds, constants_1.EVENT_OPTIONS);
+      __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._handleResizeAds, constants_1.EVENT_OPTIONS);
 
-      if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _autoStartMuted) === true || force === true || __classPrivateFieldGet(this, _adsOptions).enablePreloading === true) {
-        if (!__classPrivateFieldGet(this, _adsDone)) {
-          __classPrivateFieldSet(this, _adsDone, true);
+      if (__classPrivateFieldGet(this, _Ads_autoStart, "f") === true || __classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || force === true || __classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true) {
+        if (!__classPrivateFieldGet(this, _Ads_adsDone, "f")) {
+          __classPrivateFieldSet(this, _Ads_adsDone, true, "f");
 
-          __classPrivateFieldGet(this, _adDisplayContainer).initialize();
+          __classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
         }
 
         this._requestAds();
@@ -11024,24 +11013,24 @@ var Ads = function () {
       var _this3 = this;
 
       var play = function play() {
-        if (!__classPrivateFieldGet(_this3, _adsDone)) {
+        if (!__classPrivateFieldGet(_this3, _Ads_adsDone, "f")) {
           _this3._initNotDoneAds();
 
           return;
         }
 
-        if (__classPrivateFieldGet(_this3, _adsManager)) {
-          if (!__classPrivateFieldGet(_this3, _intervalTimer) && __classPrivateFieldGet(_this3, _adsActive) === false) {
-            __classPrivateFieldGet(_this3, _adsManager).start();
+        if (__classPrivateFieldGet(_this3, _Ads_adsManager, "f")) {
+          if (!__classPrivateFieldGet(_this3, _Ads_intervalTimer, "f") && __classPrivateFieldGet(_this3, _Ads_adsActive, "f") === false) {
+            __classPrivateFieldGet(_this3, _Ads_adsManager, "f").start();
           } else {
-            __classPrivateFieldGet(_this3, _adsManager).resume();
+            __classPrivateFieldGet(_this3, _Ads_adsManager, "f").resume();
           }
 
-          __classPrivateFieldSet(_this3, _adsActive, true);
+          __classPrivateFieldSet(_this3, _Ads_adsActive, true, "f");
 
-          var e = events_1.addEvent('play');
+          var e = (0, events_1.addEvent)('play');
 
-          __classPrivateFieldGet(_this3, _element).dispatchEvent(e);
+          __classPrivateFieldGet(_this3, _Ads_element, "f").dispatchEvent(e);
         }
       };
 
@@ -11052,14 +11041,14 @@ var Ads = function () {
   }, {
     key: "pause",
     value: function pause() {
-      if (__classPrivateFieldGet(this, _adsManager)) {
-        __classPrivateFieldSet(this, _adsActive, false);
+      if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+        __classPrivateFieldSet(this, _Ads_adsActive, false, "f");
 
-        __classPrivateFieldGet(this, _adsManager).pause();
+        __classPrivateFieldGet(this, _Ads_adsManager, "f").pause();
 
-        var e = events_1.addEvent('pause');
+        var e = (0, events_1.addEvent)('pause');
 
-        __classPrivateFieldGet(this, _element).dispatchEvent(e);
+        __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
       }
     }
   }, {
@@ -11067,54 +11056,52 @@ var Ads = function () {
     value: function destroy() {
       var _this4 = this;
 
-      var _a;
+      if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+        __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
-      if (__classPrivateFieldGet(this, _adsManager)) {
-        __classPrivateFieldGet(this, _adsManager).removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
-
-        if (__classPrivateFieldGet(this, _events)) {
-          __classPrivateFieldGet(this, _events).forEach(function (event) {
-            __classPrivateFieldGet(_this4, _adsManager).removeEventListener(event, _this4._assign);
+        if (__classPrivateFieldGet(this, _Ads_events, "f")) {
+          __classPrivateFieldGet(this, _Ads_events, "f").forEach(function (event) {
+            __classPrivateFieldGet(_this4, _Ads_adsManager, "f").removeEventListener(event, _this4._assign);
           });
         }
       }
 
-      __classPrivateFieldSet(this, _events, []);
+      __classPrivateFieldSet(this, _Ads_events, [], "f");
 
-      var controls = __classPrivateFieldGet(this, _player).getControls();
+      var controls = __classPrivateFieldGet(this, _Ads_player, "f").getControls();
 
       var mouseEvents = controls ? controls.events.mouse : {};
       Object.keys(mouseEvents).forEach(function (event) {
-        if (__classPrivateFieldGet(_this4, _adsContainer)) {
-          __classPrivateFieldGet(_this4, _adsContainer).removeEventListener(event, mouseEvents[event]);
+        if (__classPrivateFieldGet(_this4, _Ads_adsContainer, "f")) {
+          __classPrivateFieldGet(_this4, _Ads_adsContainer, "f").removeEventListener(event, mouseEvents[event]);
         }
       });
 
-      if (__classPrivateFieldGet(this, _adsLoader)) {
-        __classPrivateFieldGet(this, _adsLoader).removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
+      if (__classPrivateFieldGet(this, _Ads_adsLoader, "f")) {
+        __classPrivateFieldGet(this, _Ads_adsLoader, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
-        __classPrivateFieldGet(this, _adsLoader).removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded);
+        __classPrivateFieldGet(this, _Ads_adsLoader, "f").removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded);
       }
 
-      var destroy = !Array.isArray(__classPrivateFieldGet(this, _ads)) || __classPrivateFieldGet(this, _currentAdsIndex) > __classPrivateFieldGet(this, _ads).length;
+      var destroy = !Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f")) || __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") > __classPrivateFieldGet(this, _Ads_ads, "f").length;
 
-      if (__classPrivateFieldGet(this, _adsManager) && destroy) {
-        __classPrivateFieldGet(this, _adsManager).destroy();
+      if (__classPrivateFieldGet(this, _Ads_adsManager, "f") && destroy) {
+        __classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
       }
 
-      if (__classPrivateFieldGet(this, _adsOptions).customClick.enabled) {
-        general_1.removeElement(__classPrivateFieldGet(this, _adsCustomClickContainer));
+      if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.enabled) {
+        (0, general_1.removeElement)(__classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f"));
       }
 
       if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
-        __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._contentLoadedAction);
+        __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._contentLoadedAction);
       }
 
-      __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._handleResizeAds);
+      __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._handleResizeAds);
 
-      __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._loadedMetadataHandler);
+      __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._loadedMetadataHandler);
 
-      __classPrivateFieldGet(this, _element).removeEventListener('ended', this._contentEndedListener);
+      __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('ended', this._contentEndedListener);
 
       if (typeof window !== 'undefined') {
         window.removeEventListener('resize', function () {
@@ -11122,24 +11109,27 @@ var Ads = function () {
         });
       }
 
-      (_a = __classPrivateFieldGet(this, _adsContainer)) === null || _a === void 0 ? void 0 : _a.removeEventListener('click', this._handleClickInContainer);
-      general_1.removeElement(__classPrivateFieldGet(this, _adsContainer));
+      if (__classPrivateFieldGet(this, _Ads_adsContainer, "f")) {
+        __classPrivateFieldGet(this, _Ads_adsContainer, "f").removeEventListener('click', this._handleClickInContainer);
+      }
+
+      (0, general_1.removeElement)(__classPrivateFieldGet(this, _Ads_adsContainer, "f"));
     }
   }, {
     key: "resizeAds",
     value: function resizeAds(width, height) {
       var _this5 = this;
 
-      if (__classPrivateFieldGet(this, _adsManager)) {
-        var target = __classPrivateFieldGet(this, _element);
+      if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+        var target = __classPrivateFieldGet(this, _Ads_element, "f");
 
         var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
         var formattedWidth = width;
         var percentageWidth = width ? width.toString() : '';
 
         if (width && percentageWidth.indexOf('%') > -1) {
-          if (__classPrivateFieldGet(this, _element).parentElement) {
-            formattedWidth = __classPrivateFieldGet(this, _element).parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
+          if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+            formattedWidth = __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
           }
         }
 
@@ -11147,8 +11137,8 @@ var Ads = function () {
         var percentageHeight = height ? height.toString() : '';
 
         if (height && percentageHeight.indexOf('%') > -1) {
-          if (__classPrivateFieldGet(this, _element).parentElement) {
-            formattedHeight = __classPrivateFieldGet(this, _element).parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
+          if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+            formattedHeight = __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
           }
         }
 
@@ -11160,7 +11150,7 @@ var Ads = function () {
 
         if (typeof window !== 'undefined') {
           timeout = window.requestAnimationFrame(function () {
-            __classPrivateFieldGet(_this5, _adsManager).resize(formattedWidth || target.offsetWidth, formattedHeight || target.offsetHeight, mode);
+            __classPrivateFieldGet(_this5, _Ads_adsManager, "f").resize(formattedWidth || target.offsetWidth, formattedHeight || target.offsetHeight, mode);
           });
         }
       }
@@ -11168,12 +11158,88 @@ var Ads = function () {
   }, {
     key: "getAdsManager",
     value: function getAdsManager() {
-      return __classPrivateFieldGet(this, _adsManager);
+      return __classPrivateFieldGet(this, _Ads_adsManager, "f");
     }
   }, {
     key: "started",
     value: function started() {
-      return __classPrivateFieldGet(this, _adsStarted);
+      return __classPrivateFieldGet(this, _Ads_adsStarted, "f");
+    }
+  }, {
+    key: "src",
+    set: function set(source) {
+      __classPrivateFieldSet(this, _Ads_ads, source, "f");
+    }
+  }, {
+    key: "isDone",
+    set: function set(value) {
+      __classPrivateFieldSet(this, _Ads_adsDone, value, "f");
+    }
+  }, {
+    key: "playRequested",
+    set: function set(value) {
+      __classPrivateFieldSet(this, _Ads_playTriggered, value, "f");
+    }
+  }, {
+    key: "volume",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Ads_adsManager, "f") ? __classPrivateFieldGet(this, _Ads_adsManager, "f").getVolume() : __classPrivateFieldGet(this, _Ads_originalVolume, "f");
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+        __classPrivateFieldSet(this, _Ads_adsVolume, value, "f");
+
+        __classPrivateFieldGet(this, _Ads_adsManager, "f").setVolume(value);
+
+        this._setMediaVolume(value);
+
+        __classPrivateFieldSet(this, _Ads_adsMuted, value === 0, "f");
+      }
+    }
+  }, {
+    key: "muted",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Ads_adsMuted, "f");
+    },
+    set: function set(value) {
+      if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+        if (value) {
+          __classPrivateFieldGet(this, _Ads_adsManager, "f").setVolume(0);
+
+          __classPrivateFieldSet(this, _Ads_adsMuted, true, "f");
+
+          this._setMediaVolume(0);
+        } else {
+          __classPrivateFieldGet(this, _Ads_adsManager, "f").setVolume(__classPrivateFieldGet(this, _Ads_adsVolume, "f"));
+
+          __classPrivateFieldSet(this, _Ads_adsMuted, false, "f");
+
+          this._setMediaVolume(__classPrivateFieldGet(this, _Ads_adsVolume, "f"));
+        }
+      }
+    }
+  }, {
+    key: "currentTime",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Ads_adsCurrentTime, "f");
+    },
+    set: function set(value) {
+      __classPrivateFieldSet(this, _Ads_adsCurrentTime, value, "f");
+    }
+  }, {
+    key: "duration",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Ads_adsDuration, "f");
+    }
+  }, {
+    key: "paused",
+    get: function get() {
+      return !__classPrivateFieldGet(this, _Ads_adsActive, "f");
+    }
+  }, {
+    key: "ended",
+    get: function get() {
+      return __classPrivateFieldGet(this, _Ads_adsEnded, "f");
     }
   }, {
     key: "_assign",
@@ -11187,22 +11253,22 @@ var Ads = function () {
           if (!ad.isLinear()) {
             this._onContentResumeRequested();
           } else {
-            if (constants_1.IS_IPHONE && general_1.isVideo(__classPrivateFieldGet(this, _element))) {
-              __classPrivateFieldGet(this, _element).controls = false;
+            if (constants_1.IS_IPHONE && (0, general_1.isVideo)(__classPrivateFieldGet(this, _Ads_element, "f"))) {
+              __classPrivateFieldGet(this, _Ads_element, "f").controls = false;
             }
 
-            __classPrivateFieldSet(this, _adsDuration, ad.getDuration());
+            __classPrivateFieldSet(this, _Ads_adsDuration, ad.getDuration(), "f");
 
-            __classPrivateFieldSet(this, _adsCurrentTime, ad.getDuration());
+            __classPrivateFieldSet(this, _Ads_adsCurrentTime, ad.getDuration(), "f");
 
-            if (!__classPrivateFieldGet(this, _mediaStarted) && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
-              var waitingEvent = events_1.addEvent('waiting');
+            if (!__classPrivateFieldGet(this, _Ads_mediaStarted, "f") && !constants_1.IS_IOS && !constants_1.IS_ANDROID) {
+              var waitingEvent = (0, events_1.addEvent)('waiting');
 
-              __classPrivateFieldGet(this, _element).dispatchEvent(waitingEvent);
+              __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(waitingEvent);
 
-              var loadedEvent = events_1.addEvent('loadedmetadata');
+              var loadedEvent = (0, events_1.addEvent)('loadedmetadata');
 
-              __classPrivateFieldGet(this, _element).dispatchEvent(loadedEvent);
+              __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(loadedEvent);
 
               this.resizeAds();
             }
@@ -11212,19 +11278,19 @@ var Ads = function () {
 
         case google.ima.AdEvent.Type.STARTED:
           if (ad.isLinear()) {
-            if (__classPrivateFieldGet(this, _element).parentElement && !__classPrivateFieldGet(this, _element).parentElement.classList.contains('op-ads--active')) {
-              __classPrivateFieldGet(this, _element).parentElement.classList.add('op-ads--active');
+            if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement && !__classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.contains('op-ads--active')) {
+              __classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.add('op-ads--active');
             }
 
-            if (!__classPrivateFieldGet(this, _media).paused) {
-              __classPrivateFieldGet(this, _media).pause();
+            if (!__classPrivateFieldGet(this, _Ads_media, "f").paused) {
+              __classPrivateFieldGet(this, _Ads_media, "f").pause();
             }
 
-            __classPrivateFieldSet(this, _adsActive, true);
+            __classPrivateFieldSet(this, _Ads_adsActive, true, "f");
 
-            var playEvent = events_1.addEvent('play');
+            var playEvent = (0, events_1.addEvent)('play');
 
-            __classPrivateFieldGet(this, _element).dispatchEvent(playEvent);
+            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(playEvent);
 
             var resized;
 
@@ -11233,24 +11299,24 @@ var Ads = function () {
               resized = true;
             }
 
-            if (__classPrivateFieldGet(this, _media).ended) {
-              __classPrivateFieldSet(this, _adsEnded, false);
+            if (__classPrivateFieldGet(this, _Ads_media, "f").ended) {
+              __classPrivateFieldSet(this, _Ads_adsEnded, false, "f");
 
-              var endEvent = events_1.addEvent('adsmediaended');
+              var endEvent = (0, events_1.addEvent)('adsmediaended');
 
-              __classPrivateFieldGet(this, _element).dispatchEvent(endEvent);
+              __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(endEvent);
             }
 
             if (typeof window !== 'undefined') {
-              __classPrivateFieldSet(this, _intervalTimer, window.setInterval(function () {
-                if (__classPrivateFieldGet(_this6, _adsActive) === true) {
-                  __classPrivateFieldSet(_this6, _adsCurrentTime, Math.round(__classPrivateFieldGet(_this6, _adsManager).getRemainingTime()));
+              __classPrivateFieldSet(this, _Ads_intervalTimer, window.setInterval(function () {
+                if (__classPrivateFieldGet(_this6, _Ads_adsActive, "f") === true) {
+                  __classPrivateFieldSet(_this6, _Ads_adsCurrentTime, Math.round(__classPrivateFieldGet(_this6, _Ads_adsManager, "f").getRemainingTime()), "f");
 
-                  var timeEvent = events_1.addEvent('timeupdate');
+                  var timeEvent = (0, events_1.addEvent)('timeupdate');
 
-                  __classPrivateFieldGet(_this6, _element).dispatchEvent(timeEvent);
+                  __classPrivateFieldGet(_this6, _Ads_element, "f").dispatchEvent(timeEvent);
                 }
-              }, 350));
+              }, 350), "f");
             }
           }
 
@@ -11260,18 +11326,18 @@ var Ads = function () {
         case google.ima.AdEvent.Type.SKIPPED:
           if (ad.isLinear()) {
             if (event.type === google.ima.AdEvent.Type.SKIPPED) {
-              var skipEvent = events_1.addEvent('adsskipped');
+              var skipEvent = (0, events_1.addEvent)('adsskipped');
 
-              __classPrivateFieldGet(this, _element).dispatchEvent(skipEvent);
+              __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(skipEvent);
             }
 
-            if (__classPrivateFieldGet(this, _element).parentElement) {
-              __classPrivateFieldGet(this, _element).parentElement.classList.remove('op-ads--active');
+            if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+              __classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
             }
 
-            __classPrivateFieldSet(this, _adsActive, false);
+            __classPrivateFieldSet(this, _Ads_adsActive, false, "f");
 
-            clearInterval(__classPrivateFieldGet(this, _intervalTimer));
+            clearInterval(__classPrivateFieldGet(this, _Ads_intervalTimer, "f"));
           }
 
           break;
@@ -11279,50 +11345,59 @@ var Ads = function () {
         case google.ima.AdEvent.Type.VOLUME_CHANGED:
           this._setMediaVolume(this.volume);
 
+          break;
+
         case google.ima.AdEvent.Type.VOLUME_MUTED:
           if (ad.isLinear()) {
-            var volumeEvent = events_1.addEvent('volumechange');
+            var volumeEvent = (0, events_1.addEvent)('volumechange');
 
-            __classPrivateFieldGet(this, _element).dispatchEvent(volumeEvent);
+            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(volumeEvent);
           }
 
           break;
 
         case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
           if (ad.isLinear()) {
-            __classPrivateFieldSet(this, _adsActive, false);
+            __classPrivateFieldSet(this, _Ads_adsActive, false, "f");
 
-            __classPrivateFieldSet(this, _adsEnded, true);
+            __classPrivateFieldSet(this, _Ads_adsEnded, true, "f");
 
-            __classPrivateFieldSet(this, _intervalTimer, 0);
+            __classPrivateFieldSet(this, _Ads_intervalTimer, 0, "f");
 
-            __classPrivateFieldSet(this, _adsMuted, false);
+            __classPrivateFieldSet(this, _Ads_adsMuted, false, "f");
 
-            __classPrivateFieldSet(this, _adsStarted, false);
+            __classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
 
-            __classPrivateFieldSet(this, _adsDuration, 0);
+            __classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
 
-            __classPrivateFieldSet(this, _adsCurrentTime, 0);
+            __classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
 
-            if (__classPrivateFieldGet(this, _element).parentElement) {
-              __classPrivateFieldGet(this, _element).parentElement.classList.remove('op-ads--active');
+            if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+              __classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
             }
 
             this.destroy();
 
-            if (__classPrivateFieldGet(this, _element).currentTime >= __classPrivateFieldGet(this, _element).duration) {
-              var endedEvent = events_1.addEvent('ended');
+            if (__classPrivateFieldGet(this, _Ads_element, "f").currentTime >= __classPrivateFieldGet(this, _Ads_element, "f").duration) {
+              var endedEvent = (0, events_1.addEvent)('ended');
 
-              __classPrivateFieldGet(this, _element).dispatchEvent(endedEvent);
+              __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(endedEvent);
             }
           }
 
           break;
 
         case google.ima.AdEvent.Type.CLICK:
-          var pauseEvent = events_1.addEvent('pause');
+          var pauseEvent = (0, events_1.addEvent)('pause');
 
-          __classPrivateFieldGet(this, _element).dispatchEvent(pauseEvent);
+          __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(pauseEvent);
+
+          break;
+
+        case google.ima.AdEvent.Type.AD_BREAK_READY:
+          if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+            this.play();
+          }
 
           break;
 
@@ -11343,19 +11418,21 @@ var Ads = function () {
               type: 'Ads'
             }
           };
-          var errorEvent = events_1.addEvent('playererror', details);
+          var errorEvent = (0, events_1.addEvent)('playererror', details);
 
-          __classPrivateFieldGet(this, _element).dispatchEvent(errorEvent);
+          __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(errorEvent);
         }
       } else {
-        var e = events_1.addEvent("ads".concat(event.type));
+        var e = (0, events_1.addEvent)("ads".concat(event.type));
 
-        __classPrivateFieldGet(this, _element).dispatchEvent(e);
+        __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
       }
     }
   }, {
     key: "_error",
     value: function _error(event) {
+      var _a;
+
       var error = event.getError();
       var details = {
         detail: {
@@ -11364,28 +11441,28 @@ var Ads = function () {
           type: 'Ads'
         }
       };
-      var errorEvent = events_1.addEvent('playererror', details);
+      var errorEvent = (0, events_1.addEvent)('playererror', details);
 
-      __classPrivateFieldGet(this, _element).dispatchEvent(errorEvent);
+      __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(errorEvent);
 
       var fatalErrorCodes = [100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405, 406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005];
 
-      if (Array.isArray(__classPrivateFieldGet(this, _ads)) && __classPrivateFieldGet(this, _ads).length > 1 && __classPrivateFieldGet(this, _currentAdsIndex) < __classPrivateFieldGet(this, _ads).length - 1) {
-        __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
+      if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f")) && __classPrivateFieldGet(this, _Ads_ads, "f").length > 1 && __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") < __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
+        __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
 
-        __classPrivateFieldSet(this, _playTriggered, true);
+        __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
 
-        __classPrivateFieldSet(this, _adsStarted, true);
+        __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
 
-        __classPrivateFieldSet(this, _adsDone, false);
+        __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
 
         this.destroy();
         this.load(true);
         console.warn("Ad warning: ".concat(error.toString()));
       } else {
         if (fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
-          if (__classPrivateFieldGet(this, _adsManager)) {
-            __classPrivateFieldGet(this, _adsManager).destroy();
+          if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+            __classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
           }
 
           console.error("Ad error: ".concat(error.toString()));
@@ -11393,8 +11470,8 @@ var Ads = function () {
           console.warn("Ad warning: ".concat(error.toString()));
         }
 
-        if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _autoStartMuted) === true || __classPrivateFieldGet(this, _adsStarted) === true) {
-          __classPrivateFieldSet(this, _adsActive, false);
+        if (__classPrivateFieldGet(this, _Ads_autoStart, "f") === true || __classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || __classPrivateFieldGet(this, _Ads_adsStarted, "f") === true) {
+          __classPrivateFieldSet(this, _Ads_adsActive, false, "f");
 
           this._resumeMedia();
         }
@@ -11405,80 +11482,80 @@ var Ads = function () {
     value: function _loaded(adsManagerLoadedEvent) {
       var adsRenderingSettings = new google.ima.AdsRenderingSettings();
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-      adsRenderingSettings.enablePreloading = __classPrivateFieldGet(this, _adsOptions).enablePreloading;
+      adsRenderingSettings.enablePreloading = __classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading;
 
-      __classPrivateFieldSet(this, _adsManager, adsManagerLoadedEvent.getAdsManager(__classPrivateFieldGet(this, _element), adsRenderingSettings));
+      __classPrivateFieldSet(this, _Ads_adsManager, adsManagerLoadedEvent.getAdsManager(__classPrivateFieldGet(this, _Ads_element, "f"), adsRenderingSettings), "f");
 
-      this._start(__classPrivateFieldGet(this, _adsManager));
+      this._start(__classPrivateFieldGet(this, _Ads_adsManager, "f"));
     }
   }, {
     key: "_start",
     value: function _start(manager) {
       var _this7 = this;
 
-      if (__classPrivateFieldGet(this, _adsCustomClickContainer) && manager.isCustomClickTrackingUsed()) {
-        __classPrivateFieldGet(this, _adsCustomClickContainer).classList.add('op-ads__click-container--visible');
+      if (__classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f") && manager.isCustomClickTrackingUsed()) {
+        __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").classList.add('op-ads__click-container--visible');
       }
 
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested, constants_1.EVENT_OPTIONS);
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onContentResumeRequested, constants_1.EVENT_OPTIONS);
 
-      __classPrivateFieldSet(this, _events, [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.VIDEO_CLICKED, google.ima.AdEvent.Type.VIDEO_ICON_CLICKED, google.ima.AdEvent.Type.AD_PROGRESS, google.ima.AdEvent.Type.AD_BUFFERING, google.ima.AdEvent.Type.IMPRESSION, google.ima.AdEvent.Type.DURATION_CHANGE, google.ima.AdEvent.Type.USER_CLOSE, google.ima.AdEvent.Type.LINEAR_CHANGED, google.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED, google.ima.AdEvent.Type.AD_METADATA, google.ima.AdEvent.Type.INTERACTION, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.RESUMED, google.ima.AdEvent.Type.USER_CLOSE, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED, google.ima.AdEvent.Type.LOG]);
+      __classPrivateFieldSet(this, _Ads_events, [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.VIDEO_CLICKED, google.ima.AdEvent.Type.VIDEO_ICON_CLICKED, google.ima.AdEvent.Type.AD_PROGRESS, google.ima.AdEvent.Type.AD_BUFFERING, google.ima.AdEvent.Type.IMPRESSION, google.ima.AdEvent.Type.DURATION_CHANGE, google.ima.AdEvent.Type.USER_CLOSE, google.ima.AdEvent.Type.LINEAR_CHANGED, google.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED, google.ima.AdEvent.Type.AD_METADATA, google.ima.AdEvent.Type.INTERACTION, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.RESUMED, google.ima.AdEvent.Type.USER_CLOSE, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED, google.ima.AdEvent.Type.LOG], "f");
 
-      if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks) {
-        __classPrivateFieldGet(this, _events).push(google.ima.AdEvent.Type.AD_BREAK_READY);
+      if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+        __classPrivateFieldGet(this, _Ads_events, "f").push(google.ima.AdEvent.Type.AD_BREAK_READY);
       }
 
-      var controls = __classPrivateFieldGet(this, _player).getControls();
+      var controls = __classPrivateFieldGet(this, _Ads_player, "f").getControls();
 
       var mouseEvents = controls ? controls.events.mouse : {};
       Object.keys(mouseEvents).forEach(function (event) {
-        if (__classPrivateFieldGet(_this7, _adsContainer)) {
-          __classPrivateFieldGet(_this7, _adsContainer).addEventListener(event, mouseEvents[event], constants_1.EVENT_OPTIONS);
+        if (__classPrivateFieldGet(_this7, _Ads_adsContainer, "f")) {
+          __classPrivateFieldGet(_this7, _Ads_adsContainer, "f").addEventListener(event, mouseEvents[event], constants_1.EVENT_OPTIONS);
         }
       });
 
-      __classPrivateFieldGet(this, _events).forEach(function (event) {
+      __classPrivateFieldGet(this, _Ads_events, "f").forEach(function (event) {
         manager.addEventListener(event, _this7._assign, constants_1.EVENT_OPTIONS);
       });
 
       manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, constants_1.EVENT_OPTIONS);
 
-      if (__classPrivateFieldGet(this, _autoStart) === true || __classPrivateFieldGet(this, _playTriggered) === true) {
-        __classPrivateFieldSet(this, _playTriggered, false);
+      if (__classPrivateFieldGet(this, _Ads_autoStart, "f") === true || __classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
+        __classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
 
-        if (!__classPrivateFieldGet(this, _adsDone)) {
+        if (!__classPrivateFieldGet(this, _Ads_adsDone, "f")) {
           this._initNotDoneAds();
 
           return;
         }
 
-        manager.init(__classPrivateFieldGet(this, _element).offsetWidth, __classPrivateFieldGet(this, _element).offsetHeight, __classPrivateFieldGet(this, _element).parentElement && __classPrivateFieldGet(this, _element).parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
+        manager.init(__classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, __classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, __classPrivateFieldGet(this, _Ads_element, "f").parentElement && __classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
         manager.start();
-        var e = events_1.addEvent('play');
+        var e = (0, events_1.addEvent)('play');
 
-        __classPrivateFieldGet(this, _element).dispatchEvent(e);
+        __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
 
-        var event = events_1.addEvent('playing');
+        var event = (0, events_1.addEvent)('playing');
 
-        __classPrivateFieldGet(this, _element).dispatchEvent(event);
-      } else if (__classPrivateFieldGet(this, _adsOptions).enablePreloading === true) {
-        manager.init(__classPrivateFieldGet(this, _element).offsetWidth, __classPrivateFieldGet(this, _element).offsetHeight, __classPrivateFieldGet(this, _element).parentElement && __classPrivateFieldGet(this, _element).parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
+        __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
+      } else if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true) {
+        manager.init(__classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, __classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, __classPrivateFieldGet(this, _Ads_element, "f").parentElement && __classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
       }
     }
   }, {
     key: "_initNotDoneAds",
     value: function _initNotDoneAds() {
-      __classPrivateFieldSet(this, _adsDone, true);
+      __classPrivateFieldSet(this, _Ads_adsDone, true, "f");
 
-      __classPrivateFieldGet(this, _adDisplayContainer).initialize();
+      __classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
 
       if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
-        __classPrivateFieldSet(this, _preloadContent, this._contentLoadedAction);
+        __classPrivateFieldSet(this, _Ads_preloadContent, this._contentLoadedAction, "f");
 
-        __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', this._contentLoadedAction, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._contentLoadedAction, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _element).load();
+        __classPrivateFieldGet(this, _Ads_element, "f").load();
       } else {
         this._contentLoadedAction();
       }
@@ -11486,106 +11563,110 @@ var Ads = function () {
   }, {
     key: "_contentEndedListener",
     value: function _contentEndedListener() {
-      __classPrivateFieldSet(this, _adsEnded, true);
+      __classPrivateFieldSet(this, _Ads_adsEnded, true, "f");
 
-      __classPrivateFieldSet(this, _adsActive, false);
+      __classPrivateFieldSet(this, _Ads_adsActive, false, "f");
 
-      __classPrivateFieldSet(this, _adsStarted, false);
+      __classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
 
-      __classPrivateFieldGet(this, _adsLoader).contentComplete();
+      __classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
     }
   }, {
     key: "_onContentPauseRequested",
     value: function _onContentPauseRequested() {
-      __classPrivateFieldGet(this, _element).removeEventListener('ended', this._contentEndedListener);
+      __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('ended', this._contentEndedListener);
 
-      __classPrivateFieldSet(this, _lastTimePaused, __classPrivateFieldGet(this, _media).currentTime);
+      __classPrivateFieldSet(this, _Ads_lastTimePaused, __classPrivateFieldGet(this, _Ads_media, "f").currentTime, "f");
 
-      if (__classPrivateFieldGet(this, _adsStarted)) {
-        __classPrivateFieldGet(this, _media).pause();
+      if (__classPrivateFieldGet(this, _Ads_adsStarted, "f")) {
+        __classPrivateFieldGet(this, _Ads_media, "f").pause();
       } else {
-        __classPrivateFieldSet(this, _adsStarted, true);
+        __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
       }
 
-      var e = events_1.addEvent('play');
+      var e = (0, events_1.addEvent)('play');
 
-      __classPrivateFieldGet(this, _element).dispatchEvent(e);
+      __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
     }
   }, {
     key: "_onContentResumeRequested",
     value: function _onContentResumeRequested() {
-      if (__classPrivateFieldGet(this, _adsOptions).loop) {
-        if (Array.isArray(__classPrivateFieldGet(this, _ads))) {
-          if (__classPrivateFieldGet(this, _currentAdsIndex) === __classPrivateFieldGet(this, _ads).length - 1) {
-            __classPrivateFieldSet(this, _currentAdsIndex, 0);
+      var _a;
+
+      if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").loop) {
+        if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f"))) {
+          if (__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") === __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
+            __classPrivateFieldSet(this, _Ads_currentAdsIndex, 0, "f");
           } else {
-            __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
+            __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
           }
         }
 
         this.destroy();
 
-        __classPrivateFieldGet(this, _adsLoader).contentComplete();
+        __classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
 
-        __classPrivateFieldSet(this, _playTriggered, true);
+        __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
 
-        __classPrivateFieldSet(this, _adsStarted, true);
+        __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
 
-        __classPrivateFieldSet(this, _adsDone, false);
+        __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
 
         this.load(true);
       } else {
-        __classPrivateFieldGet(this, _element).addEventListener('ended', this._contentEndedListener, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('ended', this._contentEndedListener, constants_1.EVENT_OPTIONS);
 
-        __classPrivateFieldGet(this, _element).addEventListener('loadedmetadata', this._loadedMetadataHandler, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._loadedMetadataHandler, constants_1.EVENT_OPTIONS);
 
         if (constants_1.IS_IOS || constants_1.IS_ANDROID) {
-          __classPrivateFieldGet(this, _media).src = __classPrivateFieldGet(this, _mediaSources);
+          __classPrivateFieldGet(this, _Ads_media, "f").src = __classPrivateFieldGet(this, _Ads_mediaSources, "f");
 
-          __classPrivateFieldGet(this, _media).load();
+          __classPrivateFieldGet(this, _Ads_media, "f").load();
 
           this._prepareMedia();
 
-          if (__classPrivateFieldGet(this, _element).parentElement) {
-            __classPrivateFieldGet(this, _element).parentElement.classList.add('op-ads--active');
+          if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+            __classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.add('op-ads--active');
           }
         } else {
-          var event = events_1.addEvent('loadedmetadata');
+          var event = (0, events_1.addEvent)('loadedmetadata');
 
-          __classPrivateFieldGet(this, _element).dispatchEvent(event);
+          __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
         }
       }
     }
   }, {
     key: "_loadedMetadataHandler",
     value: function _loadedMetadataHandler() {
-      if (Array.isArray(__classPrivateFieldGet(this, _ads))) {
-        __classPrivateFieldSet(this, _currentAdsIndex, +__classPrivateFieldGet(this, _currentAdsIndex) + 1);
+      var _a;
 
-        if (__classPrivateFieldGet(this, _currentAdsIndex) <= __classPrivateFieldGet(this, _ads).length - 1) {
-          if (__classPrivateFieldGet(this, _adsManager)) {
-            __classPrivateFieldGet(this, _adsManager).destroy();
+      if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f"))) {
+        __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
+
+        if (__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") <= __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
+          if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+            __classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
           }
 
-          __classPrivateFieldGet(this, _adsLoader).contentComplete();
+          __classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
 
-          __classPrivateFieldSet(this, _playTriggered, true);
+          __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
 
-          __classPrivateFieldSet(this, _adsStarted, true);
+          __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
 
-          __classPrivateFieldSet(this, _adsDone, false);
+          __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
 
           this._requestAds();
         } else {
-          if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks) {
+          if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
             this._resetAdsAfterManualBreak();
           }
 
           this._prepareMedia();
         }
-      } else if (__classPrivateFieldGet(this, _element).seekable.length) {
-        if (__classPrivateFieldGet(this, _element).seekable.end(0) > __classPrivateFieldGet(this, _lastTimePaused)) {
-          if (!__classPrivateFieldGet(this, _adsOptions).autoPlayAdBreaks) {
+      } else if (__classPrivateFieldGet(this, _Ads_element, "f").seekable.length) {
+        if (__classPrivateFieldGet(this, _Ads_element, "f").seekable.end(0) > __classPrivateFieldGet(this, _Ads_lastTimePaused, "f")) {
+          if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
             this._resetAdsAfterManualBreak();
           }
 
@@ -11600,24 +11681,24 @@ var Ads = function () {
     value: function _resumeMedia() {
       var _this8 = this;
 
-      __classPrivateFieldSet(this, _intervalTimer, 0);
+      __classPrivateFieldSet(this, _Ads_intervalTimer, 0, "f");
 
-      __classPrivateFieldSet(this, _adsMuted, false);
+      __classPrivateFieldSet(this, _Ads_adsMuted, false, "f");
 
-      __classPrivateFieldSet(this, _adsStarted, false);
+      __classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
 
-      __classPrivateFieldSet(this, _adsDuration, 0);
+      __classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
 
-      __classPrivateFieldSet(this, _adsCurrentTime, 0);
+      __classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
 
-      if (__classPrivateFieldGet(this, _element).parentElement) {
-        __classPrivateFieldGet(this, _element).parentElement.classList.remove('op-ads--active');
+      if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+        __classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
       }
 
       var triggerEvent = function triggerEvent(eventName) {
-        var event = events_1.addEvent(eventName);
+        var event = (0, events_1.addEvent)(eventName);
 
-        __classPrivateFieldGet(_this8, _element).dispatchEvent(event);
+        __classPrivateFieldGet(_this8, _Ads_element, "f").dispatchEvent(event);
       };
 
       var waitPromise = function waitPromise(ms, isReject) {
@@ -11626,12 +11707,12 @@ var Ads = function () {
             return reject();
           }
 
-          setTimeout(resolve, ms);
+          return setTimeout(resolve, ms);
         });
       };
 
-      waitPromise(50, __classPrivateFieldGet(this, _media).ended).then(function () {
-        return __classPrivateFieldGet(_this8, _media).play().then(function () {
+      waitPromise(50, __classPrivateFieldGet(this, _Ads_media, "f").ended).then(function () {
+        return __classPrivateFieldGet(_this8, _Ads_media, "f").play().then(function () {
           return triggerEvent('play');
         });
       })["catch"](function () {
@@ -11641,36 +11722,36 @@ var Ads = function () {
   }, {
     key: "_requestAds",
     value: function _requestAds() {
-      __classPrivateFieldSet(this, _adsRequest, new google.ima.AdsRequest());
+      __classPrivateFieldSet(this, _Ads_adsRequest, new google.ima.AdsRequest(), "f");
 
-      var ads = Array.isArray(__classPrivateFieldGet(this, _ads)) ? __classPrivateFieldGet(this, _ads)[__classPrivateFieldGet(this, _currentAdsIndex)] : __classPrivateFieldGet(this, _ads);
+      var ads = Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f")) ? __classPrivateFieldGet(this, _Ads_ads, "f")[__classPrivateFieldGet(this, _Ads_currentAdsIndex, "f")] : __classPrivateFieldGet(this, _Ads_ads, "f");
 
-      if (general_1.isXml(ads)) {
-        __classPrivateFieldGet(this, _adsRequest).adsResponse = ads;
+      if ((0, general_1.isXml)(ads)) {
+        __classPrivateFieldGet(this, _Ads_adsRequest, "f").adsResponse = ads;
       } else {
-        __classPrivateFieldGet(this, _adsRequest).adTagUrl = ads;
+        __classPrivateFieldGet(this, _Ads_adsRequest, "f").adTagUrl = ads;
       }
 
-      var width = __classPrivateFieldGet(this, _element).parentElement ? __classPrivateFieldGet(this, _element).parentElement.offsetWidth : 0;
-      var height = __classPrivateFieldGet(this, _element).parentElement ? __classPrivateFieldGet(this, _element).parentElement.offsetHeight : 0;
-      __classPrivateFieldGet(this, _adsRequest).linearAdSlotWidth = width;
-      __classPrivateFieldGet(this, _adsRequest).linearAdSlotHeight = height;
-      __classPrivateFieldGet(this, _adsRequest).nonLinearAdSlotWidth = width;
-      __classPrivateFieldGet(this, _adsRequest).nonLinearAdSlotHeight = height / 3;
+      var width = __classPrivateFieldGet(this, _Ads_element, "f").parentElement ? __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetWidth : 0;
+      var height = __classPrivateFieldGet(this, _Ads_element, "f").parentElement ? __classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetHeight : 0;
+      __classPrivateFieldGet(this, _Ads_adsRequest, "f").linearAdSlotWidth = width;
+      __classPrivateFieldGet(this, _Ads_adsRequest, "f").linearAdSlotHeight = height;
+      __classPrivateFieldGet(this, _Ads_adsRequest, "f").nonLinearAdSlotWidth = width;
+      __classPrivateFieldGet(this, _Ads_adsRequest, "f").nonLinearAdSlotHeight = height / 3;
 
-      __classPrivateFieldGet(this, _adsRequest).setAdWillAutoPlay(__classPrivateFieldGet(this, _autoStart));
+      __classPrivateFieldGet(this, _Ads_adsRequest, "f").setAdWillAutoPlay(__classPrivateFieldGet(this, _Ads_autoStart, "f"));
 
-      __classPrivateFieldGet(this, _adsRequest).setAdWillPlayMuted(__classPrivateFieldGet(this, _autoStartMuted));
+      __classPrivateFieldGet(this, _Ads_adsRequest, "f").setAdWillPlayMuted(__classPrivateFieldGet(this, _Ads_autoStartMuted, "f"));
 
-      __classPrivateFieldGet(this, _adsLoader).requestAds(__classPrivateFieldGet(this, _adsRequest));
+      __classPrivateFieldGet(this, _Ads_adsLoader, "f").requestAds(__classPrivateFieldGet(this, _Ads_adsRequest, "f"));
     }
   }, {
     key: "_contentLoadedAction",
     value: function _contentLoadedAction() {
-      if (__classPrivateFieldGet(this, _preloadContent)) {
-        __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', __classPrivateFieldGet(this, _preloadContent));
+      if (__classPrivateFieldGet(this, _Ads_preloadContent, "f")) {
+        __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', __classPrivateFieldGet(this, _Ads_preloadContent, "f"));
 
-        __classPrivateFieldSet(this, _preloadContent, null);
+        __classPrivateFieldSet(this, _Ads_preloadContent, null, "f");
       }
 
       this._requestAds();
@@ -11678,38 +11759,38 @@ var Ads = function () {
   }, {
     key: "_resetAdsAfterManualBreak",
     value: function _resetAdsAfterManualBreak() {
-      if (__classPrivateFieldGet(this, _adsManager)) {
-        __classPrivateFieldGet(this, _adsManager).destroy();
+      if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+        __classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
       }
 
-      __classPrivateFieldGet(this, _adsLoader).contentComplete();
+      __classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
 
-      __classPrivateFieldSet(this, _adsDone, false);
+      __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
 
-      __classPrivateFieldSet(this, _playTriggered, true);
+      __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
     }
   }, {
     key: "_prepareMedia",
     value: function _prepareMedia() {
-      __classPrivateFieldGet(this, _media).currentTime = __classPrivateFieldGet(this, _lastTimePaused);
+      __classPrivateFieldGet(this, _Ads_media, "f").currentTime = __classPrivateFieldGet(this, _Ads_lastTimePaused, "f");
 
-      __classPrivateFieldGet(this, _element).removeEventListener('loadedmetadata', this._loadedMetadataHandler);
+      __classPrivateFieldGet(this, _Ads_element, "f").removeEventListener('loadedmetadata', this._loadedMetadataHandler);
 
       this._resumeMedia();
     }
   }, {
     key: "_setMediaVolume",
     value: function _setMediaVolume(volume) {
-      __classPrivateFieldGet(this, _media).volume = volume;
-      __classPrivateFieldGet(this, _media).muted = volume === 0;
+      __classPrivateFieldGet(this, _Ads_media, "f").volume = volume;
+      __classPrivateFieldGet(this, _Ads_media, "f").muted = volume === 0;
     }
   }, {
     key: "_handleClickInContainer",
     value: function _handleClickInContainer() {
-      if (__classPrivateFieldGet(this, _media).paused) {
-        var e = events_1.addEvent('paused');
+      if (__classPrivateFieldGet(this, _Ads_media, "f").paused) {
+        var e = (0, events_1.addEvent)('paused');
 
-        __classPrivateFieldGet(this, _element).dispatchEvent(e);
+        __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
 
         this.pause();
       }
@@ -11719,89 +11800,80 @@ var Ads = function () {
     value: function _handleResizeAds() {
       this.resizeAds();
     }
-  }, {
-    key: "src",
-    set: function set(source) {
-      __classPrivateFieldSet(this, _ads, source);
-    }
-  }, {
-    key: "isDone",
-    set: function set(value) {
-      __classPrivateFieldSet(this, _adsDone, value);
-    }
-  }, {
-    key: "playRequested",
-    set: function set(value) {
-      __classPrivateFieldSet(this, _playTriggered, value);
-    }
-  }, {
-    key: "volume",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _adsManager)) {
-        __classPrivateFieldSet(this, _adsVolume, value);
-
-        __classPrivateFieldGet(this, _adsManager).setVolume(value);
-
-        this._setMediaVolume(value);
-
-        __classPrivateFieldSet(this, _adsMuted, value === 0);
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _adsManager) ? __classPrivateFieldGet(this, _adsManager).getVolume() : __classPrivateFieldGet(this, _originalVolume);
-    }
-  }, {
-    key: "muted",
-    set: function set(value) {
-      if (__classPrivateFieldGet(this, _adsManager)) {
-        if (value) {
-          __classPrivateFieldGet(this, _adsManager).setVolume(0);
-
-          __classPrivateFieldSet(this, _adsMuted, true);
-
-          this._setMediaVolume(0);
-        } else {
-          __classPrivateFieldGet(this, _adsManager).setVolume(__classPrivateFieldGet(this, _adsVolume));
-
-          __classPrivateFieldSet(this, _adsMuted, false);
-
-          this._setMediaVolume(__classPrivateFieldGet(this, _adsVolume));
-        }
-      }
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _adsMuted);
-    }
-  }, {
-    key: "currentTime",
-    set: function set(value) {
-      __classPrivateFieldSet(this, _adsCurrentTime, value);
-    },
-    get: function get() {
-      return __classPrivateFieldGet(this, _adsCurrentTime);
-    }
-  }, {
-    key: "duration",
-    get: function get() {
-      return __classPrivateFieldGet(this, _adsDuration);
-    }
-  }, {
-    key: "paused",
-    get: function get() {
-      return !__classPrivateFieldGet(this, _adsActive);
-    }
-  }, {
-    key: "ended",
-    get: function get() {
-      return __classPrivateFieldGet(this, _adsEnded);
-    }
   }]);
 
   return Ads;
 }();
 
-_adsEnded = new WeakMap(), _adsDone = new WeakMap(), _adsActive = new WeakMap(), _adsStarted = new WeakMap(), _intervalTimer = new WeakMap(), _adsVolume = new WeakMap(), _adsMuted = new WeakMap(), _adsDuration = new WeakMap(), _adsCurrentTime = new WeakMap(), _adsManager = new WeakMap(), _player = new WeakMap(), _media = new WeakMap(), _element = new WeakMap(), _events = new WeakMap(), _ads = new WeakMap(), _promise = new WeakMap(), _adsLoader = new WeakMap(), _adsContainer = new WeakMap(), _adsCustomClickContainer = new WeakMap(), _adDisplayContainer = new WeakMap(), _adsRequest = new WeakMap(), _autoStart = new WeakMap(), _autoStartMuted = new WeakMap(), _playTriggered = new WeakMap(), _adsOptions = new WeakMap(), _currentAdsIndex = new WeakMap(), _originalVolume = new WeakMap(), _preloadContent = new WeakMap(), _lastTimePaused = new WeakMap(), _mediaSources = new WeakMap(), _mediaStarted = new WeakMap();
+_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
 exports["default"] = Ads;
+
+/***/ }),
+/* 159 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var element_closest_1 = __importDefault(__webpack_require__(160));
+
+if (typeof window !== 'undefined') {
+  (0, element_closest_1["default"])(window);
+}
+
+/***/ }),
+/* 160 */
+/***/ (function(__webpack_module__, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function polyfill(window) {
+  var ElementPrototype = window.Element.prototype;
+
+  if (typeof ElementPrototype.matches !== 'function') {
+    ElementPrototype.matches = ElementPrototype.msMatchesSelector || ElementPrototype.mozMatchesSelector || ElementPrototype.webkitMatchesSelector || function matches(selector) {
+      var element = this;
+      var elements = (element.document || element.ownerDocument).querySelectorAll(selector);
+      var index = 0;
+
+      while (elements[index] && elements[index] !== element) {
+        ++index;
+      }
+
+      return Boolean(elements[index]);
+    };
+  }
+
+  if (typeof ElementPrototype.closest !== 'function') {
+    ElementPrototype.closest = function closest(selector) {
+      var element = this;
+
+      while (element && element.nodeType === 1) {
+        if (element.matches(selector)) {
+          return element;
+        }
+
+        element = element.parentNode;
+      }
+
+      return null;
+    };
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (polyfill);
+//# sourceMappingURL=index.mjs.map
+
 
 /***/ })
 /******/ ])["default"];

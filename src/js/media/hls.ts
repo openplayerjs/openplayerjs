@@ -1,4 +1,5 @@
 import EventsList from '../interfaces/events-list';
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 import { DVR_THRESHOLD, EVENT_OPTIONS, SUPPORTS_HLS } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -39,7 +40,7 @@ class HlsMedia extends Native {
      * @type number
      * @memberof HlsMedia
      */
-    #recoverDecodingErrorDate: number = 0;
+    #recoverDecodingErrorDate = 0;
 
     /**
      * Time in milliseconds to attempt to swap audio codec after an error.
@@ -47,7 +48,7 @@ class HlsMedia extends Native {
      * @type number
      * @memberof HlsMedia
      */
-    #recoverSwapAudioCodecDate: number = 0;
+    #recoverSwapAudioCodecDate = 0;
 
     /**
      * Hls options to be passed to the Hls instance.
@@ -57,7 +58,7 @@ class HlsMedia extends Native {
      * @type object
      * @memberof HlsMedia
      */
-    #options: any = undefined;
+    #options?: unknown;
 
     /**
      * Flag to indicate if `autoplay` attribute was set
@@ -75,16 +76,16 @@ class HlsMedia extends Native {
      * @param {Source} mediaSource
      * @memberof HlsMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean = false, options?: object) {
+    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay = false, options?: unknown) {
         super(element, mediaSource);
-        this.#options = options;
+        this.#options = options || {};
         this.element = element;
         this.media = mediaSource;
         this.#autoplay = autoplay;
-        this.promise = (typeof Hls === 'undefined') ?
+        this.promise = (typeof Hls === 'undefined')
             // Ever-green script
-            loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') :
-            new Promise(resolve => {
+            ? loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js')
+            : new Promise(resolve => {
                 resolve({});
             });
 
@@ -99,7 +100,7 @@ class HlsMedia extends Native {
      * @inheritDoc
      * @memberof HlsMedia
      */
-    public canPlayType(mimeType: string) {
+    public canPlayType(mimeType: string): boolean {
         return SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
     }
 
@@ -119,7 +120,7 @@ class HlsMedia extends Native {
         if (!this.#events) {
             this.#events = Hls.Events;
             Object.keys(this.#events).forEach(event => {
-                this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
+                this.#player.on(this.#events[event], (...args: Array<Record<string, unknown>>) => this._assign(this.#events[event], args));
             });
         }
     }
@@ -147,13 +148,13 @@ class HlsMedia extends Native {
 
             this.#events = Hls.Events;
             Object.keys(this.#events).forEach(event => {
-                this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
+                this.#player.on(this.#events[event], (...args: Array<Record<string, unknown>>) => this._assign(this.#events[event], args));
             });
         }
     }
 
-    get levels() {
-        const levels: any = [];
+    get levels(): Level[] {
+        const levels: Level[] = [];
         if (this.#player && this.#player.levels && this.#player.levels.length) {
             Object.keys(this.#player.levels).forEach(item => {
                 const { height, name } = this.#player.levels[item];
@@ -172,31 +173,27 @@ class HlsMedia extends Native {
         this.#player.currentLevel = level;
     }
 
-    get level() {
+    get level(): number {
         return this.#player ? this.#player.currentLevel : -1;
     }
 
     /**
      * Setup Hls player with options.
      *
-     * Some of the options/events will be overriden to improve performance and user's experience.
+     * Some of the options/events will be overridden to improve performance and user's experience.
      *
      * @private
      * @memberof HlsMedia
      */
     private _create() {
-        let playerOptions = this.#options;
-        if (!playerOptions) {
-            playerOptions = {};
-        }
         const autoplay = !!(this.element.preload === 'auto' || this.#autoplay);
-        (playerOptions as any).autoStartLoad = autoplay;
+        (this.#options as Record<string, unknown>).autoStartLoad = autoplay;
 
-        this.#player = new Hls(playerOptions);
+        this.#player = new Hls(this.#options);
         this.instance = this.#player;
         this.#events = Hls.Events;
         Object.keys(this.#events).forEach(event => {
-            this.#player.on(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
+            this.#player.on(this.#events[event], (...args: Array<Record<string, unknown>>) => this._assign(this.#events[event], args));
         });
 
         if (!autoplay) {
@@ -227,7 +224,7 @@ class HlsMedia extends Native {
      * @param {any} data The data passed to the event, could be an object or an array
      * @memberof HlsMedia
      */
-    private _assign(event: string, data: any): void {
+    private _assign(event: string, data: Array<Record<string, unknown>>): void {
         if (event === 'hlsError') {
             const errorDetails = {
                 detail: {
@@ -238,10 +235,11 @@ class HlsMedia extends Native {
             };
             const errorEvent = addEvent('playererror', errorDetails);
             this.element.dispatchEvent(errorEvent);
-            data = data[1];
 
             // borrowed from https://video-dev.github.io/hls.js/demo
-            const { type, fatal, ...details } = data;
+            const type = data[1].type as string;
+            const fatal = data[1].fatal;
+            const details = data[1];
             if (fatal) {
                 switch (type) {
                     case 'mediaError':
@@ -278,11 +276,12 @@ class HlsMedia extends Native {
                 this.element.dispatchEvent(err);
             }
         } else {
-            if (event === 'hlsLevelLoaded' && data[1].details.live === true) {
+            const details: Record<string, unknown> = data[1] as Record<string, unknown>;
+            if (event === 'hlsLevelLoaded' && details.live === true) {
                 this.element.setAttribute('op-live__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
-            } else if (event === 'hlsLevelUpdated' && data[1].details.live === true && data[1].details.totalduration > DVR_THRESHOLD) {
+            } else if (event === 'hlsLevelUpdated' && details.live === true && (details.totalduration as number) > DVR_THRESHOLD) {
                 this.element.setAttribute('op-dvr__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
@@ -304,7 +303,7 @@ class HlsMedia extends Native {
         this.#player.stopLoad();
         if (this.#events) {
             Object.keys(this.#events).forEach(event => {
-                this.#player.off(this.#events[event], (...args: any[]) => this._assign(this.#events[event], args));
+                this.#player.off(this.#events[event], (...args: Array<Record<string, unknown>>) => this._assign(this.#events[event], args));
             });
         }
         this.element.removeEventListener('play', () => {

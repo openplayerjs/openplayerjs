@@ -73,14 +73,16 @@ class Ads {
         if (options) {
             const objectElements = ['customClick'];
             objectElements.forEach(item => {
-                __classPrivateFieldGet(this, _Ads_adsOptions, "f")[item] = options[item] && Object.keys(options[item]).length ? Object.assign(Object.assign({}, defaultOpts[item]), options[item]) :
-                    defaultOpts[item];
+                __classPrivateFieldGet(this, _Ads_adsOptions, "f")[item] = options[item] && Object.keys(options[item]).length
+                    ? Object.assign(Object.assign({}, defaultOpts[item]), options[item]) : defaultOpts[item];
             });
         }
         __classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
         __classPrivateFieldSet(this, _Ads_originalVolume, __classPrivateFieldGet(this, _Ads_element, "f").volume, "f");
         __classPrivateFieldSet(this, _Ads_adsVolume, __classPrivateFieldGet(this, _Ads_originalVolume, "f"), "f");
-        const path = __classPrivateFieldGet(this, _Ads_adsOptions, "f").debug ? __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath.replace(/(\.js$)/, '_debug.js') : __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath;
+        const path = __classPrivateFieldGet(this, _Ads_adsOptions, "f").debug && __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath
+            ? __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath.replace(/(\.js$)/, '_debug.js')
+            : __classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath;
         this._handleClickInContainer = this._handleClickInContainer.bind(this);
         this._loaded = this._loaded.bind(this);
         this._error = this._error.bind(this);
@@ -92,14 +94,16 @@ class Ads {
         this._handleResizeAds = this._handleResizeAds.bind(this);
         this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
         this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
-        __classPrivateFieldSet(this, _Ads_promise, (typeof google === 'undefined' || typeof google.ima === 'undefined') ?
-            loadScript(path) : new Promise(resolve => {
-            resolve({});
-        }), "f");
+        __classPrivateFieldSet(this, _Ads_promise, path && (typeof google === 'undefined' || typeof google.ima === 'undefined')
+            ? loadScript(path)
+            : new Promise(resolve => {
+                resolve({});
+            }), "f");
         __classPrivateFieldGet(this, _Ads_promise, "f").then(() => {
             this.load();
         }).catch(error => {
-            const message = 'Ad script could not be loaded; please check if you have an AdBlock turned on, or if you provided a valid URL is correct';
+            const message = `Ad script could not be loaded; please check if you have an AdBlock
+                turned on, or if you provided a valid URL is correct`;
             console.error(`Ad error: ${message}`);
             const details = {
                 detail: {
@@ -114,7 +118,7 @@ class Ads {
         return this;
     }
     load(force = false) {
-        if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
+        if (!google && !google.ima && !__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
             return;
         }
         const existingContainer = __classPrivateFieldGet(this, _Ads_player, "f").getContainer().querySelector('.op-ads');
@@ -203,7 +207,6 @@ class Ads {
         }
     }
     destroy() {
-        var _a;
         if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
             __classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
             if (__classPrivateFieldGet(this, _Ads_events, "f")) {
@@ -240,14 +243,15 @@ class Ads {
         if (typeof window !== 'undefined') {
             window.removeEventListener('resize', () => this.resizeAds());
         }
-        (_a = __classPrivateFieldGet(this, _Ads_adsContainer, "f")) === null || _a === void 0 ? void 0 : _a.removeEventListener('click', this._handleClickInContainer);
+        if (__classPrivateFieldGet(this, _Ads_adsContainer, "f")) {
+            __classPrivateFieldGet(this, _Ads_adsContainer, "f").removeEventListener('click', this._handleClickInContainer);
+        }
         removeElement(__classPrivateFieldGet(this, _Ads_adsContainer, "f"));
     }
     resizeAds(width, height) {
         if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
             const target = __classPrivateFieldGet(this, _Ads_element, "f");
-            const mode = target.getAttribute('data-fullscreen') === 'true' ?
-                google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
+            const mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
             let formattedWidth = width;
             const percentageWidth = width ? width.toString() : '';
             if (width && percentageWidth.indexOf('%') > -1) {
@@ -293,7 +297,7 @@ class Ads {
             __classPrivateFieldSet(this, _Ads_adsVolume, value, "f");
             __classPrivateFieldGet(this, _Ads_adsManager, "f").setVolume(value);
             this._setMediaVolume(value);
-            __classPrivateFieldSet(this, _Ads_adsMuted, (value === 0), "f");
+            __classPrivateFieldSet(this, _Ads_adsMuted, value === 0, "f");
         }
     }
     get volume() {
@@ -401,6 +405,7 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.VOLUME_CHANGED:
                 this._setMediaVolume(this.volume);
+                break;
             case google.ima.AdEvent.Type.VOLUME_MUTED:
                 if (ad.isLinear()) {
                     const volumeEvent = addEvent('volumechange');
@@ -429,6 +434,11 @@ class Ads {
             case google.ima.AdEvent.Type.CLICK:
                 const pauseEvent = addEvent('pause');
                 __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(pauseEvent);
+                break;
+            case google.ima.AdEvent.Type.AD_BREAK_READY:
+                if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+                    this.play();
+                }
                 break;
             default:
                 break;
@@ -467,8 +477,7 @@ class Ads {
         const errorEvent = addEvent('playererror', details);
         __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(errorEvent);
         const fatalErrorCodes = [
-            100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405,
-            406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005,
+            100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405, 406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005,
         ];
         if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f")) && __classPrivateFieldGet(this, _Ads_ads, "f").length > 1 && __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") < __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
             __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
@@ -556,8 +565,9 @@ class Ads {
                 this._initNotDoneAds();
                 return;
             }
-            manager.init(__classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, __classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, __classPrivateFieldGet(this, _Ads_element, "f").parentElement && __classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true' ?
-                google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
+            manager.init(__classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, __classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, __classPrivateFieldGet(this, _Ads_element, "f").parentElement && __classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true'
+                ? google.ima.ViewMode.FULLSCREEN
+                : google.ima.ViewMode.NORMAL);
             manager.start();
             const e = addEvent('play');
             __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
@@ -565,8 +575,9 @@ class Ads {
             __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
         }
         else if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true) {
-            manager.init(__classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, __classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, __classPrivateFieldGet(this, _Ads_element, "f").parentElement && __classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true' ?
-                google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
+            manager.init(__classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, __classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, __classPrivateFieldGet(this, _Ads_element, "f").parentElement && __classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true'
+                ? google.ima.ViewMode.FULLSCREEN
+                : google.ima.ViewMode.NORMAL);
         }
     }
     _initNotDoneAds() {
@@ -684,7 +695,7 @@ class Ads {
             if (isReject) {
                 return reject();
             }
-            setTimeout(resolve, ms);
+            return setTimeout(resolve, ms);
         });
         waitPromise(50, __classPrivateFieldGet(this, _Ads_media, "f").ended)
             .then(() => __classPrivateFieldGet(this, _Ads_media, "f").play().then(() => triggerEvent('play')))

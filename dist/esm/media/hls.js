@@ -9,17 +9,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var _HlsMedia_player, _HlsMedia_events, _HlsMedia_recoverDecodingErrorDate, _HlsMedia_recoverSwapAudioCodecDate, _HlsMedia_options, _HlsMedia_autoplay;
 import { DVR_THRESHOLD, EVENT_OPTIONS, SUPPORTS_HLS } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -33,15 +22,15 @@ class HlsMedia extends Native {
         _HlsMedia_events.set(this, {});
         _HlsMedia_recoverDecodingErrorDate.set(this, 0);
         _HlsMedia_recoverSwapAudioCodecDate.set(this, 0);
-        _HlsMedia_options.set(this, undefined);
+        _HlsMedia_options.set(this, void 0);
         _HlsMedia_autoplay.set(this, void 0);
-        __classPrivateFieldSet(this, _HlsMedia_options, options, "f");
+        __classPrivateFieldSet(this, _HlsMedia_options, options || {}, "f");
         this.element = element;
         this.media = mediaSource;
         __classPrivateFieldSet(this, _HlsMedia_autoplay, autoplay, "f");
-        this.promise = (typeof Hls === 'undefined') ?
-            loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') :
-            new Promise(resolve => {
+        this.promise = (typeof Hls === 'undefined')
+            ? loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js')
+            : new Promise(resolve => {
                 resolve({});
             });
         this._create = this._create.bind(this);
@@ -101,13 +90,9 @@ class HlsMedia extends Native {
         return __classPrivateFieldGet(this, _HlsMedia_player, "f") ? __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : -1;
     }
     _create() {
-        let playerOptions = __classPrivateFieldGet(this, _HlsMedia_options, "f");
-        if (!playerOptions) {
-            playerOptions = {};
-        }
         const autoplay = !!(this.element.preload === 'auto' || __classPrivateFieldGet(this, _HlsMedia_autoplay, "f"));
-        playerOptions.autoStartLoad = autoplay;
-        __classPrivateFieldSet(this, _HlsMedia_player, new Hls(playerOptions), "f");
+        __classPrivateFieldGet(this, _HlsMedia_options, "f").autoStartLoad = autoplay;
+        __classPrivateFieldSet(this, _HlsMedia_player, new Hls(__classPrivateFieldGet(this, _HlsMedia_options, "f")), "f");
         this.instance = __classPrivateFieldGet(this, _HlsMedia_player, "f");
         __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
         Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(event => {
@@ -137,8 +122,9 @@ class HlsMedia extends Native {
             };
             const errorEvent = addEvent('playererror', errorDetails);
             this.element.dispatchEvent(errorEvent);
-            data = data[1];
-            const { type, fatal } = data, details = __rest(data, ["type", "fatal"]);
+            const type = data[1].type;
+            const fatal = data[1].fatal;
+            const details = data[1];
             if (fatal) {
                 switch (type) {
                     case 'mediaError':
@@ -179,12 +165,13 @@ class HlsMedia extends Native {
             }
         }
         else {
-            if (event === 'hlsLevelLoaded' && data[1].details.live === true) {
+            const details = data[1];
+            if (event === 'hlsLevelLoaded' && details.live === true) {
                 this.element.setAttribute('op-live__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
             }
-            else if (event === 'hlsLevelUpdated' && data[1].details.live === true && data[1].details.totalduration > DVR_THRESHOLD) {
+            else if (event === 'hlsLevelUpdated' && details.live === true && details.totalduration > DVR_THRESHOLD) {
                 this.element.setAttribute('op-dvr__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);

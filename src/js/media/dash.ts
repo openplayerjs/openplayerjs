@@ -1,5 +1,6 @@
 import DashOptions from '../interfaces/dash-options';
 import EventsList from '../interfaces/events-list';
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 import { HAS_MSE } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -48,10 +49,10 @@ class DashMedia extends Native {
         super(element, mediaSource);
         this.#options = options;
 
-        this.promise = (typeof dashjs === 'undefined') ?
+        this.promise = (typeof dashjs === 'undefined')
             // Ever-green script
-            loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
-            new Promise(resolve => {
+            ? loadScript('https://cdn.dashjs.org/latest/dash.all.min.js')
+            : new Promise(resolve => {
                 resolve({});
             });
 
@@ -69,7 +70,7 @@ class DashMedia extends Native {
      * @inheritDoc
      * @memberof DashMedia
      */
-    public canPlayType(mimeType: string) {
+    public canPlayType(mimeType: string): boolean {
         return HAS_MSE && mimeType === 'application/dash+xml';
     }
 
@@ -78,7 +79,7 @@ class DashMedia extends Native {
      * @inheritDoc
      * @memberof DashMedia
      */
-    public load() {
+    public load(): void {
         this._preparePlayer();
         this.#player.attachSource(this.media.src);
 
@@ -98,7 +99,7 @@ class DashMedia extends Native {
      * @inheritDoc
      * @memberof DashMedia
      */
-    public destroy() {
+    public destroy(): void {
         this._revoke();
     }
 
@@ -121,8 +122,8 @@ class DashMedia extends Native {
         }
     }
 
-    get levels() {
-        const levels: any = [];
+    get levels(): Level[] {
+        const levels: Level[] = [];
         if (this.#player) {
             const bitrates = this.#player.getBitrateInfoListFor('video');
             if (bitrates.length) {
@@ -131,7 +132,7 @@ class DashMedia extends Native {
                         const { height, name } = bitrates[item];
                         const level = {
                             height,
-                            id: item,
+                            id: `${item}`,
                             label: name || null,
                         };
                         levels.push(level);
@@ -151,7 +152,7 @@ class DashMedia extends Native {
         }
     }
 
-    get level() {
+    get level(): number {
         return this.#player ? this.#player.getQualityFor('video') : -1;
     }
 

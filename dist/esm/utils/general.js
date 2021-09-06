@@ -9,6 +9,14 @@ export function isVideo(element) {
 export function isAudio(element) {
     return element.tagName.toLowerCase() === 'audio';
 }
+export function removeElement(node) {
+    if (node) {
+        const parentNode = node.parentNode;
+        if (parentNode) {
+            parentNode.removeChild(node);
+        }
+    }
+}
 export function loadScript(url) {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -29,17 +37,9 @@ export function loadScript(url) {
         }
     });
 }
-export function removeElement(node) {
-    if (node) {
-        const parentNode = node.parentNode;
-        if (parentNode) {
-            parentNode.removeChild(node);
-        }
-    }
-}
 export function request(url, dataType, success, error) {
-    const xhr = window.XMLHttpRequest ? new XMLHttpRequest() :
-        new ActiveXObject('Microsoft.XMLHTTP');
+    const xhr = window.XMLHttpRequest ? new XMLHttpRequest()
+        : new ActiveXObject('Microsoft.XMLHTTP');
     let type;
     switch (dataType) {
         case 'text':

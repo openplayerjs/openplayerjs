@@ -52,7 +52,7 @@ class Controls implements PlayerComponent {
      * @type number
      * @memberof Controls
      */
-    #timer: number = 0;
+    #timer = 0;
 
     /**
      * Main container of control elements.
@@ -161,8 +161,14 @@ class Controls implements PlayerComponent {
                         this.#player.loader.setAttribute('aria-hidden', 'true');
                         this.#player.playBtn.setAttribute('aria-hidden', this.#player.isMedia() ? 'false' : 'true');
                     } else {
-                        this.#player.playBtn.setAttribute('aria-hidden', this.#player.getOptions().showLoaderOnInit ? 'true' : 'false');
-                        this.#player.loader.setAttribute('aria-hidden', this.#player.getOptions().showLoaderOnInit ? 'false' : 'true');
+                        this.#player.playBtn.setAttribute(
+                            'aria-hidden',
+                            this.#player.getOptions().showLoaderOnInit ? 'true' : 'false'
+                        );
+                        this.#player.loader.setAttribute(
+                            'aria-hidden',
+                            this.#player.getOptions().showLoaderOnInit ? 'false' : 'true'
+                        );
                     }
 
                     this.#player.getContainer().classList.remove('op-controls--hidden');
@@ -320,10 +326,10 @@ class Controls implements PlayerComponent {
             'bottom-left': [],
             'bottom-middle': [],
             'bottom-right': [],
-            'left': [],
-            'main': [],
-            'middle': [],
-            'right': [],
+            left: [],
+            main: [],
+            middle: [],
+            right: [],
             'top-left': [],
             'top-middle': [],
             'top-right': [],
@@ -367,7 +373,7 @@ class Controls implements PlayerComponent {
                     const className = `${el.charAt(0).toUpperCase()}${el.slice(1)}`;
                     const item = new this.#controlEls[className](this.#player, pos || layer, currentLayer);
                     if (el === 'settings') {
-                        this.#settings = (item as Settings);
+                        this.#settings = item as Settings;
                     }
                     if (isVideoEl || (el !== 'fullscreen' && isAudioEl)) {
                         this.#items[position].push(item);
@@ -424,7 +430,7 @@ class Controls implements PlayerComponent {
                             menuItem.key,
                             menuItem.default,
                             menuItem.subitems,
-                            menuItem.className,
+                            menuItem.className
                         );
                     }
                 }
@@ -512,7 +518,7 @@ class Controls implements PlayerComponent {
 
             // Ensure to toggle menu, hide other settings menus and dispatch a general custom
             // click event (if created)
-            control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
+            control.addEventListener('click', e => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
 
             this.#player.getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         } else if (item.click && typeof item.click === 'function') {
@@ -562,7 +568,7 @@ class Controls implements PlayerComponent {
         const control = this.getContainer().querySelector(`.op-controls__${key}`);
         if (control) {
             if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
-                const menu = (this.#player.getContainer().querySelector(`#${item.id}-menu`) as HTMLDivElement);
+                const menu = this.#player.getContainer().querySelector(`#${item.id}-menu`) as HTMLDivElement;
                 if (menu) {
                     item.subitems.forEach(subitem => {
                         const menuItem = menu.querySelector(`#${subitem.id}`);
@@ -571,7 +577,7 @@ class Controls implements PlayerComponent {
                         }
                     });
 
-                    control.removeEventListener('click', (e) => this._toggleCustomMenu(e, menu, item));
+                    control.removeEventListener('click', e => this._toggleCustomMenu(e, menu, item));
 
                     this.#player.getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
                     removeElement(menu);

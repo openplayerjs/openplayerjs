@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-
 import * as time from '../../src/js/utils/time';
 
 describe('utils/time', () => {

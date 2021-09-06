@@ -1,3 +1,4 @@
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 
 /**
@@ -34,7 +35,7 @@ abstract class Native {
      * @type Promise<any>
      * @memberof Native
      */
-    public promise: Promise<any>;
+    public promise: Promise<unknown>;
 
     /**
      * The instance of a custom player.
@@ -110,21 +111,21 @@ abstract class Native {
      * @abstract
      * @memberof Media
      */
-    public abstract set level(value: number|string|object);
+    public abstract set level(value: number|string|Record<string, unknown>);
 
     /**
      *
      * @abstract
      * @memberof Media
      */
-    public abstract get level(): number|string|object;
+    public abstract get level(): number|string;
 
     /**
      *
      * @abstract
      * @memberof Media
      */
-    public abstract get levels(): object[];
+    public abstract get levels(): Level[];
 
     /**
      *

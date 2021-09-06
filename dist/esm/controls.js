@@ -194,10 +194,10 @@ class Controls {
             'bottom-left': [],
             'bottom-middle': [],
             'bottom-right': [],
-            'left': [],
-            'main': [],
-            'middle': [],
-            'right': [],
+            left: [],
+            main: [],
+            middle: [],
+            right: [],
             'top-left': [],
             'top-middle': [],
             'top-right': [],
@@ -333,7 +333,7 @@ class Controls {
                     menuItem.addEventListener('click', subitem.click, EVENT_OPTIONS);
                 }
             });
-            control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
+            control.addEventListener('click', e => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
             __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         }
         else if (item.click && typeof item.click === 'function') {
@@ -379,7 +379,7 @@ class Controls {
                             menuItem.removeEventListener('click', subitem.click);
                         }
                     });
-                    control.removeEventListener('click', (e) => this._toggleCustomMenu(e, menu, item));
+                    control.removeEventListener('click', e => this._toggleCustomMenu(e, menu, item));
                     __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
                     removeElement(menu);
                 }

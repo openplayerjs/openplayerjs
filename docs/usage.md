@@ -141,7 +141,7 @@ player.init();
 | `ads.autoPlayAdBreaks` |If set to `false`, allows the user to overwrite the default mechanism to skip Ads. |
 | `ads.debug` |If set to `true`, load `ima3_debug.js` file for debugging purposes. |
 | `ads.enablePreloading` |If set to `true`, the Ads will preload so other actions can be executed with `adsloaded` event. |
-| `ads.language` |Language to localize ads (for more details, check: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization). |
+| `ads.language` |Language to localize ads (for more details, check: <https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization>). |
 | `ads.loop` |If set to `true`, it will play infinitely an Ad. |
 | `ads.numRedirects` |Maximum number of redirects before the subsequent redirects will be denied. By default, `4`. |
 | `ads.sdkPath` |Custom path/URL to IMA SDK. By default, `https://imasdk.googleapis.com/js/sdkloader/ima3.js`. |
@@ -150,7 +150,7 @@ player.init();
 | `ads.label` |The message to display in the custom click element. |
 | `ads.sessionId` |A temporary UUID used for frequency capping. |
 | `ads.vpaidMode` |Enable/disable VPAID capabilities (default: 'enabled'). Possible values: 'enabled', 'disabled' and 'insecure'. |
-| `ads.publisherId` |The Publiser provider ID |
+| `ads.publisherId` | The Publisher provider ID |
 | `progress` |Configuration related to the progress bar. |
 | `progress.duration` |The default duration in seconds to show while loading the media (default: `0`). This is to improve some of the UX when the player hasn't detected the metadata of the media yet, but you don't want to show a 00:00 duration. |
 | `progress.showCurrentTimeOnly` |Flag to show only current time, or show both time and duration. By default, `false`. |
