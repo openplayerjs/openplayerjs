@@ -45,7 +45,7 @@
     "create-d-types": "npx typescript -p tsconfig-types.json",
     "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; npx typescript -p tsconfig-esm.json",
     "release": "npm run build && release-it",
-    "test": "CHROME_BIN=/usr/bin/google-chrome karma start --single-run --browsers ChromeHeadless karma.conf.js && npx tsd",
+    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js && npx tsd",
     "coverage": "nyc npm run test"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
