@@ -118,76 +118,6 @@ module.exports =
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(0);
-var shared = __webpack_require__(59);
-var has = __webpack_require__(9);
-var uid = __webpack_require__(60);
-var NATIVE_SYMBOL = __webpack_require__(57);
-var USE_SYMBOL_AS_UID = __webpack_require__(56);
-
-var WellKnownSymbolsStore = shared('wks');
-var Symbol = global.Symbol;
-var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : Symbol && Symbol.withoutSetter || uid;
-
-module.exports = function (name) {
-  if (!has(WellKnownSymbolsStore, name) || !(NATIVE_SYMBOL || typeof WellKnownSymbolsStore[name] == 'string')) {
-    if (NATIVE_SYMBOL && has(Symbol, name)) {
-      WellKnownSymbolsStore[name] = Symbol[name];
-    } else {
-      WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
-    }
-  } return WellKnownSymbolsStore[name];
-};
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.EVENT_OPTIONS = exports.DVR_THRESHOLD = exports.SUPPORTS_HLS = exports.HAS_MSE = exports.IS_STOCK_ANDROID = exports.IS_SAFARI = exports.IS_FIREFOX = exports.IS_CHROME = exports.IS_EDGE = exports.IS_IE = exports.IS_ANDROID = exports.IS_IOS = exports.IS_IPOD = exports.IS_IPHONE = exports.IS_IPAD = exports.UA = exports.NAV = void 0;
-exports.NAV = typeof window !== 'undefined' ? window.navigator : null;
-exports.UA = exports.NAV ? exports.NAV.userAgent.toLowerCase() : null;
-exports.IS_IPAD = exports.UA ? /ipad/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_IPHONE = exports.UA ? /iphone/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_IPOD = exports.UA ? /ipod/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_IOS = exports.UA ? /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream : false;
-exports.IS_ANDROID = exports.UA ? /android/i.test(exports.UA) : false;
-exports.IS_IE = exports.UA ? /(trident|microsoft)/i.test(exports.NAV.appName) : false;
-exports.IS_EDGE = exports.NAV ? 'msLaunchUri' in exports.NAV && !('documentMode' in document) : false;
-exports.IS_CHROME = exports.UA ? /chrome/i.test(exports.UA) : false;
-exports.IS_FIREFOX = exports.UA ? /firefox/i.test(exports.UA) : false;
-exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROME : false;
-exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
-exports.HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
-
-var SUPPORTS_HLS = function SUPPORTS_HLS() {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  var mediaSource = window.MediaSource || window.WebKitMediaSource;
-  var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
-  var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
-  var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
-  return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
-};
-
-exports.SUPPORTS_HLS = SUPPORTS_HLS;
-exports.DVR_THRESHOLD = 120;
-exports.EVENT_OPTIONS = exports.IS_IE ? false : {
-  passive: false
-};
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
@@ -376,6 +306,76 @@ function isXml(input) {
 }
 
 exports.isXml = isXml;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var global = __webpack_require__(0);
+var shared = __webpack_require__(59);
+var has = __webpack_require__(9);
+var uid = __webpack_require__(60);
+var NATIVE_SYMBOL = __webpack_require__(57);
+var USE_SYMBOL_AS_UID = __webpack_require__(56);
+
+var WellKnownSymbolsStore = shared('wks');
+var Symbol = global.Symbol;
+var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : Symbol && Symbol.withoutSetter || uid;
+
+module.exports = function (name) {
+  if (!has(WellKnownSymbolsStore, name) || !(NATIVE_SYMBOL || typeof WellKnownSymbolsStore[name] == 'string')) {
+    if (NATIVE_SYMBOL && has(Symbol, name)) {
+      WellKnownSymbolsStore[name] = Symbol[name];
+    } else {
+      WellKnownSymbolsStore[name] = createWellKnownSymbol('Symbol.' + name);
+    }
+  } return WellKnownSymbolsStore[name];
+};
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.EVENT_OPTIONS = exports.DVR_THRESHOLD = exports.SUPPORTS_HLS = exports.HAS_MSE = exports.IS_STOCK_ANDROID = exports.IS_SAFARI = exports.IS_FIREFOX = exports.IS_CHROME = exports.IS_EDGE = exports.IS_IE = exports.IS_ANDROID = exports.IS_IOS = exports.IS_IPOD = exports.IS_IPHONE = exports.IS_IPAD = exports.UA = exports.NAV = void 0;
+exports.NAV = typeof window !== 'undefined' ? window.navigator : null;
+exports.UA = exports.NAV ? exports.NAV.userAgent.toLowerCase() : null;
+exports.IS_IPAD = exports.UA ? /ipad/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPHONE = exports.UA ? /iphone/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IPOD = exports.UA ? /ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_IOS = exports.UA ? /ipad|iphone|ipod/i.test(exports.UA) && !window.MSStream : false;
+exports.IS_ANDROID = exports.UA ? /android/i.test(exports.UA) : false;
+exports.IS_IE = exports.UA ? /(trident|microsoft)/i.test(exports.NAV.appName) : false;
+exports.IS_EDGE = exports.NAV ? 'msLaunchUri' in exports.NAV && !('documentMode' in document) : false;
+exports.IS_CHROME = exports.UA ? /chrome/i.test(exports.UA) : false;
+exports.IS_FIREFOX = exports.UA ? /firefox/i.test(exports.UA) : false;
+exports.IS_SAFARI = exports.UA ? /safari/i.test(exports.UA) && !exports.IS_CHROME : false;
+exports.IS_STOCK_ANDROID = exports.UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(exports.UA) : false;
+exports.HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
+
+var SUPPORTS_HLS = function SUPPORTS_HLS() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  var mediaSource = window.MediaSource || window.WebKitMediaSource;
+  var sourceBuffer = window.SourceBuffer || window.WebKitSourceBuffer;
+  var isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function' && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
+  var sourceBufferValidAPI = !sourceBuffer || sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function' && typeof sourceBuffer.prototype.remove === 'function';
+  return !!isTypeSupported && !!sourceBufferValidAPI && !exports.IS_SAFARI;
+};
+
+exports.SUPPORTS_HLS = SUPPORTS_HLS;
+exports.DVR_THRESHOLD = 120;
+exports.EVENT_OPTIONS = exports.IS_IE ? false : {
+  passive: false
+};
 
 /***/ }),
 /* 4 */
@@ -595,6 +595,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.isAutoplaySupported = exports.predictType = exports.isFlvSource = exports.isDashSource = exports.isM3USource = exports.isHlsSource = exports.getExtension = void 0;
 
+var general_1 = __webpack_require__(1);
+
 function getExtension(url) {
   var baseUrl = url.split('?')[0];
   var baseFrags = baseUrl ? baseUrl.split('\\') : null;
@@ -630,42 +632,54 @@ function isFlvSource(media) {
 
 exports.isFlvSource = isFlvSource;
 
-function predictType(url) {
+function predictType(url, element) {
   var extension = getExtension(url);
-  var type;
 
   if (!extension) {
-    return 'video/mp4';
+    return (0, general_1.isAudio)(element) ? 'audio/mp3' : 'video/mp4';
   }
 
   switch (extension) {
     case 'm3u8':
     case 'm3u':
-      type = 'application/x-mpegURL';
-      break;
+      return 'application/x-mpegURL';
 
     case 'mpd':
-      type = 'application/dash+xml';
-      break;
+      return 'application/dash+xml';
+
+    case 'mp4':
+      return (0, general_1.isAudio)(element) ? 'audio/mp4' : 'video/mp4';
 
     case 'mp3':
-      type = 'audio/mp3';
-      break;
+      return 'audio/mp3';
 
     case 'webm':
-      type = 'video/webm';
-      break;
+      return (0, general_1.isAudio)(element) ? 'audio/webm' : 'video/webm';
 
     case 'ogg':
-      type = 'video/ogg';
-      break;
+      return (0, general_1.isAudio)(element) ? 'audio/ogg' : 'video/ogg';
+
+    case 'ogv':
+      return 'video/ogg';
+
+    case 'oga':
+      return 'audio/ogg';
+
+    case '3gp':
+      return 'audio/3gpp';
+
+    case 'wav':
+      return 'audio/wav';
+
+    case 'aac':
+      return 'audio/aac';
+
+    case 'flac':
+      return 'audio/flac';
 
     default:
-      type = 'video/mp4';
-      break;
+      return (0, general_1.isAudio)(element) ? 'audio/mp3' : 'video/mp4';
   }
-
-  return type;
 }
 
 exports.predictType = predictType;
@@ -1539,7 +1553,7 @@ module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O)
 
 var defineProperty = __webpack_require__(13).f;
 var has = __webpack_require__(9);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 
@@ -1586,7 +1600,7 @@ module.exports = Object.setPrototypeOf || ('__proto__' in {} ? function () {
 /* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 var test = {};
@@ -1715,11 +1729,11 @@ var ads_1 = __importDefault(__webpack_require__(158));
 
 __webpack_require__(159);
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var media_2 = __webpack_require__(14);
 
@@ -2161,7 +2175,7 @@ var Player = function () {
         media.forEach(function (m) {
           var source = document.createElement('source');
           source.src = m.src;
-          source.type = m.type || (0, media_2.predictType)(m.src);
+          source.type = m.type || (0, media_2.predictType)(m.src, __classPrivateFieldGet(_this4, _Player_element, "f"));
 
           __classPrivateFieldGet(_this4, _Player_element, "f").appendChild(source);
         });
@@ -2885,7 +2899,7 @@ module.exports = isForced;
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var create = __webpack_require__(45);
 var definePropertyModule = __webpack_require__(13);
 
@@ -2966,7 +2980,7 @@ var setPrototypeOf = __webpack_require__(50);
 var setToStringTag = __webpack_require__(49);
 var createNonEnumerableProperty = __webpack_require__(12);
 var redefine = __webpack_require__(16);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var IS_PURE = __webpack_require__(19);
 var Iterators = __webpack_require__(21);
 var IteratorsCore = __webpack_require__(69);
@@ -3060,7 +3074,7 @@ var fails = __webpack_require__(5);
 var getPrototypeOf = __webpack_require__(48);
 var createNonEnumerableProperty = __webpack_require__(12);
 var has = __webpack_require__(9);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var IS_PURE = __webpack_require__(19);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -3121,7 +3135,7 @@ module.exports = function (iterator) {
 /* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var Iterators = __webpack_require__(21);
 
 var ITERATOR = wellKnownSymbol('iterator');
@@ -3139,7 +3153,7 @@ module.exports = function (it) {
 
 var classof = __webpack_require__(73);
 var Iterators = __webpack_require__(21);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var ITERATOR = wellKnownSymbol('iterator');
 
@@ -3156,7 +3170,7 @@ module.exports = function (it) {
 
 var TO_STRING_TAG_SUPPORT = __webpack_require__(51);
 var classofRaw = __webpack_require__(24);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
 // ES3 wrong here
@@ -3186,7 +3200,7 @@ module.exports = TO_STRING_TAG_SUPPORT ? classofRaw : function (it) {
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var ITERATOR = wellKnownSymbol('iterator');
 var SAFE_CLOSING = false;
@@ -3343,7 +3357,7 @@ module.exports = global.Promise;
 
 var anObject = __webpack_require__(7);
 var aFunction = __webpack_require__(17);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -3636,9 +3650,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var Fullscreen = function () {
   function Fullscreen(player, position, layer) {
@@ -3989,7 +4003,7 @@ addToUnscopables(FIND);
 var isObject = __webpack_require__(8);
 var isSymbol = __webpack_require__(36);
 var ordinaryToPrimitive = __webpack_require__(90);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var TO_PRIMITIVE = wellKnownSymbol('toPrimitive');
 
@@ -4246,7 +4260,7 @@ module.exports = function (originalArray, length) {
 
 var isObject = __webpack_require__(8);
 var isArray = __webpack_require__(100);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var SPECIES = wellKnownSymbol('species');
 
@@ -4788,7 +4802,7 @@ var newPromiseCapabilityModule = __webpack_require__(22);
 var perform = __webpack_require__(30);
 var InternalStateModule = __webpack_require__(26);
 var isForced = __webpack_require__(64);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var IS_BROWSER = __webpack_require__(136);
 var IS_NODE = __webpack_require__(52);
 var V8_VERSION = __webpack_require__(58);
@@ -5177,7 +5191,7 @@ module.exports = function (target, src, options) {
 
 var getBuiltIn = __webpack_require__(10);
 var definePropertyModule = __webpack_require__(13);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 var DESCRIPTORS = __webpack_require__(11);
 
 var SPECIES = wellKnownSymbol('species');
@@ -5389,7 +5403,7 @@ var global = __webpack_require__(0);
 var DOMIterables = __webpack_require__(139);
 var ArrayIteratorMethods = __webpack_require__(76);
 var createNonEnumerableProperty = __webpack_require__(12);
-var wellKnownSymbol = __webpack_require__(1);
+var wellKnownSymbol = __webpack_require__(2);
 
 var ITERATOR = wellKnownSymbol('iterator');
 var TO_STRING_TAG = wellKnownSymbol('toStringTag');
@@ -5632,11 +5646,11 @@ var time_1 = __importDefault(__webpack_require__(151));
 
 var volume_1 = __importDefault(__webpack_require__(152));
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var Controls = function () {
   function Controls(player) {
@@ -6217,11 +6231,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var time_1 = __webpack_require__(53);
 
@@ -6867,11 +6881,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(14);
 
@@ -7336,11 +7350,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var player_1 = __importDefault(__webpack_require__(54));
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var Play = function () {
   function Play(player, position, layer) {
@@ -7605,9 +7619,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var time_1 = __webpack_require__(53);
 
@@ -7912,11 +7926,9 @@ var Progress = function () {
 
         if ((e.which === 1 || e.which === 0) && __classPrivateFieldGet(_this, _Progress_player, "f").isMedia()) {
           if (!el.paused) {
-            el.play().then(function () {
-              el.pause();
+            el.pause();
 
-              __classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
-            });
+            __classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
           }
         }
       };
@@ -8120,9 +8132,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var Settings = function () {
   function Settings(player, position, layer) {
@@ -8529,9 +8541,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var time_1 = __webpack_require__(53);
 
@@ -8762,11 +8774,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var Volume = function () {
   function Volume(player, position, layer) {
@@ -9088,6 +9100,38 @@ var __importStar = this && this.__importStar || function (mod) {
   return result;
 };
 
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+
 var __classPrivateFieldSet = this && this.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
   if (kind === "m") throw new TypeError("Private method is not writable");
   if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -9173,79 +9217,142 @@ var Media = function () {
   }, {
     key: "load",
     value: function load() {
-      var _this = this;
+      return __awaiter(this, void 0, void 0, regeneratorRuntime.mark(function _callee() {
+        var _this = this;
 
-      if (!__classPrivateFieldGet(this, _Media_files, "f").length) {
-        throw new TypeError('Media not set');
-      }
+        var sameMedia;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (__classPrivateFieldGet(this, _Media_files, "f").length) {
+                  _context.next = 2;
+                  break;
+                }
 
-      if (__classPrivateFieldGet(this, _Media_media, "f") && typeof __classPrivateFieldGet(this, _Media_media, "f").destroy === 'function') {
-        var sameMedia = __classPrivateFieldGet(this, _Media_files, "f").length === 1 && __classPrivateFieldGet(this, _Media_files, "f")[0].src === __classPrivateFieldGet(this, _Media_media, "f").media.src;
+                throw new TypeError('Media not set');
 
-        if (!sameMedia) {
-          __classPrivateFieldGet(this, _Media_media, "f").destroy();
-        }
-      }
+              case 2:
+                if (__classPrivateFieldGet(this, _Media_media, "f") && typeof __classPrivateFieldGet(this, _Media_media, "f").destroy === 'function') {
+                  sameMedia = __classPrivateFieldGet(this, _Media_files, "f").length === 1 && __classPrivateFieldGet(this, _Media_files, "f")[0].src === __classPrivateFieldGet(this, _Media_media, "f").media.src;
 
-      __classPrivateFieldGet(this, _Media_files, "f").some(function (media) {
-        try {
-          __classPrivateFieldSet(_this, _Media_media, _this._invoke(media), "f");
-        } catch (e) {
-          __classPrivateFieldSet(_this, _Media_media, new html5_1["default"](__classPrivateFieldGet(_this, _Media_element, "f"), media), "f");
-        }
+                  if (!sameMedia) {
+                    __classPrivateFieldGet(this, _Media_media, "f").destroy();
+                  }
+                }
 
-        return __classPrivateFieldGet(_this, _Media_media, "f").canPlayType(media.type);
-      });
+                __classPrivateFieldGet(this, _Media_files, "f").some(function (media) {
+                  try {
+                    __classPrivateFieldSet(_this, _Media_media, _this._invoke(media), "f");
+                  } catch (e) {
+                    __classPrivateFieldSet(_this, _Media_media, new html5_1["default"](__classPrivateFieldGet(_this, _Media_element, "f"), media), "f");
+                  }
 
-      try {
-        if (__classPrivateFieldGet(this, _Media_media, "f") === null) {
-          throw new TypeError('Media cannot be played with any valid media type');
-        }
+                  return __classPrivateFieldGet(_this, _Media_media, "f").canPlayType(media.type);
+                });
 
-        return __classPrivateFieldGet(this, _Media_media, "f").promise.then(function () {
-          __classPrivateFieldGet(_this, _Media_media, "f").load();
-        });
-      } catch (e) {
-        __classPrivateFieldGet(this, _Media_media, "f").destroy();
+                _context.prev = 4;
 
-        throw e;
-      }
+                if (!(__classPrivateFieldGet(this, _Media_media, "f") === null)) {
+                  _context.next = 7;
+                  break;
+                }
+
+                throw new TypeError('Media cannot be played with any valid media type');
+
+              case 7:
+                _context.next = 9;
+                return __classPrivateFieldGet(this, _Media_media, "f").promise;
+
+              case 9:
+                return _context.abrupt("return", __classPrivateFieldGet(this, _Media_media, "f").load());
+
+              case 12:
+                _context.prev = 12;
+                _context.t0 = _context["catch"](4);
+
+                __classPrivateFieldGet(this, _Media_media, "f").destroy();
+
+                throw _context.t0;
+
+              case 16:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this, [[4, 12]]);
+      }));
     }
   }, {
     key: "play",
     value: function play() {
-      var _this2 = this;
+      return __awaiter(this, void 0, void 0, regeneratorRuntime.mark(function _callee2() {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                if (this.loaded) {
+                  _context2.next = 6;
+                  break;
+                }
 
-      if (!this.loaded) {
-        this.loaded = true;
-        var promiseLoad = this.load();
+                this.loaded = true;
+                _context2.next = 4;
+                return this.load();
 
-        if (promiseLoad) {
-          this.loaded = true;
-          return promiseLoad.then(function () {
-            __classPrivateFieldGet(_this2, _Media_media, "f").play();
-          });
-        }
-      }
+              case 4:
+                _context2.next = 8;
+                break;
 
-      __classPrivateFieldSet(this, _Media_promisePlay, new Promise(function (resolve) {
-        resolve({});
-      }).then(__classPrivateFieldGet(this, _Media_media, "f").promise.then(__classPrivateFieldGet(this, _Media_media, "f").play())), "f");
+              case 6:
+                _context2.next = 8;
+                return __classPrivateFieldGet(this, _Media_media, "f").promise;
 
-      return __classPrivateFieldGet(this, _Media_promisePlay, "f");
+              case 8:
+                __classPrivateFieldSet(this, _Media_promisePlay, __classPrivateFieldGet(this, _Media_media, "f").play(), "f");
+
+                return _context2.abrupt("return", __classPrivateFieldGet(this, _Media_promisePlay, "f"));
+
+              case 10:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
     }
   }, {
     key: "pause",
     value: function pause() {
-      var _this3 = this;
+      return __awaiter(this, void 0, void 0, regeneratorRuntime.mark(function _callee3() {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                if (!(__classPrivateFieldGet(this, _Media_promisePlay, "f") !== undefined)) {
+                  _context3.next = 6;
+                  break;
+                }
 
-      if (__classPrivateFieldGet(this, _Media_promisePlay, "f") !== undefined) {
-        __classPrivateFieldGet(this, _Media_promisePlay, "f").then(function () {
-          __classPrivateFieldGet(_this3, _Media_media, "f").pause();
-        });
-      } else {
-        __classPrivateFieldGet(this, _Media_media, "f").pause();
-      }
+                _context3.next = 3;
+                return __classPrivateFieldGet(this, _Media_promisePlay, "f");
+
+              case 3:
+                __classPrivateFieldGet(this, _Media_media, "f").pause();
+
+                _context3.next = 7;
+                break;
+
+              case 6:
+                __classPrivateFieldGet(this, _Media_media, "f").pause();
+
+              case 7:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
     }
   }, {
     key: "destroy",
@@ -9258,12 +9365,12 @@ var Media = function () {
       return __classPrivateFieldGet(this, _Media_files, "f");
     },
     set: function set(media) {
-      var _this4 = this;
+      var _this2 = this;
 
       if (typeof media === 'string') {
         __classPrivateFieldGet(this, _Media_files, "f").push({
           src: media,
-          type: source.predictType(media)
+          type: source.predictType(media, __classPrivateFieldGet(this, _Media_element, "f"))
         });
       } else if (Array.isArray(media)) {
         __classPrivateFieldSet(this, _Media_files, media, "f");
@@ -9272,7 +9379,7 @@ var Media = function () {
       }
 
       __classPrivateFieldGet(this, _Media_files, "f").some(function (file) {
-        return _this4.canPlayType(file.type);
+        return _this2.canPlayType(file.type);
       });
 
       if (__classPrivateFieldGet(this, _Media_element, "f").src) {
@@ -9408,7 +9515,7 @@ var Media = function () {
       if (nodeSource) {
         mediaFiles.push({
           src: nodeSource,
-          type: __classPrivateFieldGet(this, _Media_element, "f").getAttribute('type') || source.predictType(nodeSource)
+          type: __classPrivateFieldGet(this, _Media_element, "f").getAttribute('type') || source.predictType(nodeSource, __classPrivateFieldGet(this, _Media_element, "f"))
         });
       }
 
@@ -9417,7 +9524,7 @@ var Media = function () {
         var src = item.src;
         mediaFiles.push({
           src: src,
-          type: item.getAttribute('type') || source.predictType(src)
+          type: item.getAttribute('type') || source.predictType(src, __classPrivateFieldGet(this, _Media_element, "f"))
         });
 
         if (i === 0) {
@@ -9428,7 +9535,7 @@ var Media = function () {
       if (!mediaFiles.length) {
         mediaFiles.push({
           src: '',
-          type: source.predictType('')
+          type: source.predictType('', __classPrivateFieldGet(this, _Media_element, "f"))
         });
       }
 
@@ -9437,7 +9544,7 @@ var Media = function () {
   }, {
     key: "_invoke",
     value: function _invoke(media) {
-      var _this5 = this;
+      var _this3 = this;
 
       var playHLSNatively = __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/vnd.apple.mpegurl') || __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/x-mpegURL');
 
@@ -9445,7 +9552,7 @@ var Media = function () {
 
       var activeLevels = false;
       Object.keys(__classPrivateFieldGet(this, _Media_options, "f").controls.layers).forEach(function (layer) {
-        if (__classPrivateFieldGet(_this5, _Media_options, "f").controls.layers[layer].indexOf('levels') > -1) {
+        if (__classPrivateFieldGet(_this3, _Media_options, "f").controls.layers[layer].indexOf('levels') > -1) {
           activeLevels = true;
         }
       });
@@ -9457,10 +9564,10 @@ var Media = function () {
           var type = rule(media.src);
 
           if (type) {
-            var customMedia = __classPrivateFieldGet(_this5, _Media_customMedia, "f").media[type];
+            var customMedia = __classPrivateFieldGet(_this3, _Media_customMedia, "f").media[type];
 
-            var customOptions = __classPrivateFieldGet(_this5, _Media_options, "f")[__classPrivateFieldGet(_this5, _Media_customMedia, "f").optionsKey[type]] || undefined;
-            customRef = customMedia(__classPrivateFieldGet(_this5, _Media_element, "f"), media, __classPrivateFieldGet(_this5, _Media_autoplay, "f"), customOptions);
+            var customOptions = __classPrivateFieldGet(_this3, _Media_options, "f")[__classPrivateFieldGet(_this3, _Media_customMedia, "f").optionsKey[type]] || undefined;
+            customRef = customMedia(__classPrivateFieldGet(_this3, _Media_element, "f"), media, __classPrivateFieldGet(_this3, _Media_autoplay, "f"), customOptions);
           }
         });
 
@@ -9559,11 +9666,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(14);
 
@@ -9826,11 +9933,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(14);
 
@@ -10074,11 +10181,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(14);
 
@@ -10122,6 +10229,9 @@ var HlsMedia = function (_native_1$default) {
       resolve({});
     });
     _this._create = _this._create.bind(_assertThisInitialized(_this));
+    _this._revoke = _this._revoke.bind(_assertThisInitialized(_this));
+    _this._play = _this._play.bind(_assertThisInitialized(_this));
+    _this._pause = _this._pause.bind(_assertThisInitialized(_this));
 
     _this.promise.then(_this._create);
 
@@ -10250,16 +10360,8 @@ var HlsMedia = function (_native_1$default) {
       });
 
       if (!autoplay) {
-        this.element.addEventListener('play', function () {
-          if (__classPrivateFieldGet(_this5, _HlsMedia_player, "f")) {
-            __classPrivateFieldGet(_this5, _HlsMedia_player, "f").startLoad();
-          }
-        }, constants_1.EVENT_OPTIONS);
-        this.element.addEventListener('pause', function () {
-          if (__classPrivateFieldGet(_this5, _HlsMedia_player, "f")) {
-            __classPrivateFieldGet(_this5, _HlsMedia_player, "f").stopLoad();
-          }
-        }, constants_1.EVENT_OPTIONS);
+        this.element.addEventListener('play', this._play, constants_1.EVENT_OPTIONS);
+        this.element.addEventListener('pause', this._pause, constants_1.EVENT_OPTIONS);
       }
     }
   }, {
@@ -10374,7 +10476,9 @@ var HlsMedia = function (_native_1$default) {
     value: function _revoke() {
       var _this6 = this;
 
-      __classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
+      if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
+        __classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
+      }
 
       if (__classPrivateFieldGet(this, _HlsMedia_events, "f")) {
         Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
@@ -10388,20 +10492,28 @@ var HlsMedia = function (_native_1$default) {
         });
       }
 
-      this.element.removeEventListener('play', function () {
-        if (__classPrivateFieldGet(_this6, _HlsMedia_player, "f")) {
-          __classPrivateFieldGet(_this6, _HlsMedia_player, "f").startLoad();
-        }
-      });
-      this.element.removeEventListener('pause', function () {
-        if (__classPrivateFieldGet(_this6, _HlsMedia_player, "f")) {
-          __classPrivateFieldGet(_this6, _HlsMedia_player, "f").stopLoad();
-        }
-      });
+      this.element.removeEventListener('play', this._play);
+      this.element.removeEventListener('pause', this._pause);
 
-      __classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
+      if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
+        __classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
 
-      __classPrivateFieldSet(this, _HlsMedia_player, null, "f");
+        __classPrivateFieldSet(this, _HlsMedia_player, null, "f");
+      }
+    }
+  }, {
+    key: "_play",
+    value: function _play() {
+      if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
+        __classPrivateFieldGet(this, _HlsMedia_player, "f").startLoad();
+      }
+    }
+  }, {
+    key: "_pause",
+    value: function _pause() {
+      if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
+        __classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
+      }
     }
   }]);
 
@@ -10465,11 +10577,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var media_1 = __webpack_require__(14);
 
@@ -10760,11 +10872,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var constants_1 = __webpack_require__(2);
+var constants_1 = __webpack_require__(3);
 
 var events_1 = __webpack_require__(6);
 
-var general_1 = __webpack_require__(3);
+var general_1 = __webpack_require__(1);
 
 var Ads = function () {
   function Ads(player, ads, autoStart, autoStartMuted, options) {
@@ -10900,7 +11012,7 @@ var Ads = function () {
       _this.load();
     })["catch"](function (error) {
       var message = "Ad script could not be loaded; please check if you have an AdBlock\n                turned on, or if you provided a valid URL is correct";
-      console.error("Ad error: ".concat(message));
+      console.error("Ad error: ".concat(message, ". URL: ").concat(error.src));
       var details = {
         detail: {
           data: error,

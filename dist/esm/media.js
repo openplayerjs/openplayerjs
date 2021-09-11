@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -41,62 +50,61 @@ class Media {
         return __classPrivateFieldGet(this, _Media_media, "f").canPlayType(mimeType);
     }
     load() {
-        if (!__classPrivateFieldGet(this, _Media_files, "f").length) {
-            throw new TypeError('Media not set');
-        }
-        if (__classPrivateFieldGet(this, _Media_media, "f") && typeof __classPrivateFieldGet(this, _Media_media, "f").destroy === 'function') {
-            const sameMedia = __classPrivateFieldGet(this, _Media_files, "f").length === 1 && __classPrivateFieldGet(this, _Media_files, "f")[0].src === __classPrivateFieldGet(this, _Media_media, "f").media.src;
-            if (!sameMedia) {
-                __classPrivateFieldGet(this, _Media_media, "f").destroy();
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!__classPrivateFieldGet(this, _Media_files, "f").length) {
+                throw new TypeError('Media not set');
             }
-        }
-        __classPrivateFieldGet(this, _Media_files, "f").some(media => {
+            if (__classPrivateFieldGet(this, _Media_media, "f") && typeof __classPrivateFieldGet(this, _Media_media, "f").destroy === 'function') {
+                const sameMedia = __classPrivateFieldGet(this, _Media_files, "f").length === 1 && __classPrivateFieldGet(this, _Media_files, "f")[0].src === __classPrivateFieldGet(this, _Media_media, "f").media.src;
+                if (!sameMedia) {
+                    __classPrivateFieldGet(this, _Media_media, "f").destroy();
+                }
+            }
+            __classPrivateFieldGet(this, _Media_files, "f").some(media => {
+                try {
+                    __classPrivateFieldSet(this, _Media_media, this._invoke(media), "f");
+                }
+                catch (e) {
+                    __classPrivateFieldSet(this, _Media_media, new HTML5Media(__classPrivateFieldGet(this, _Media_element, "f"), media), "f");
+                }
+                return __classPrivateFieldGet(this, _Media_media, "f").canPlayType(media.type);
+            });
             try {
-                __classPrivateFieldSet(this, _Media_media, this._invoke(media), "f");
+                if (__classPrivateFieldGet(this, _Media_media, "f") === null) {
+                    throw new TypeError('Media cannot be played with any valid media type');
+                }
+                yield __classPrivateFieldGet(this, _Media_media, "f").promise;
+                return __classPrivateFieldGet(this, _Media_media, "f").load();
             }
             catch (e) {
-                __classPrivateFieldSet(this, _Media_media, new HTML5Media(__classPrivateFieldGet(this, _Media_element, "f"), media), "f");
+                __classPrivateFieldGet(this, _Media_media, "f").destroy();
+                throw e;
             }
-            return __classPrivateFieldGet(this, _Media_media, "f").canPlayType(media.type);
         });
-        try {
-            if (__classPrivateFieldGet(this, _Media_media, "f") === null) {
-                throw new TypeError('Media cannot be played with any valid media type');
-            }
-            return __classPrivateFieldGet(this, _Media_media, "f").promise.then(() => {
-                __classPrivateFieldGet(this, _Media_media, "f").load();
-            });
-        }
-        catch (e) {
-            __classPrivateFieldGet(this, _Media_media, "f").destroy();
-            throw e;
-        }
     }
     play() {
-        if (!this.loaded) {
-            this.loaded = true;
-            const promiseLoad = this.load();
-            if (promiseLoad) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.loaded) {
                 this.loaded = true;
-                return promiseLoad.then(() => {
-                    __classPrivateFieldGet(this, _Media_media, "f").play();
-                });
+                yield this.load();
             }
-        }
-        __classPrivateFieldSet(this, _Media_promisePlay, new Promise(resolve => {
-            resolve({});
-        }).then(__classPrivateFieldGet(this, _Media_media, "f").promise.then(__classPrivateFieldGet(this, _Media_media, "f").play())), "f");
-        return __classPrivateFieldGet(this, _Media_promisePlay, "f");
+            else {
+                yield __classPrivateFieldGet(this, _Media_media, "f").promise;
+            }
+            __classPrivateFieldSet(this, _Media_promisePlay, __classPrivateFieldGet(this, _Media_media, "f").play(), "f");
+            return __classPrivateFieldGet(this, _Media_promisePlay, "f");
+        });
     }
     pause() {
-        if (__classPrivateFieldGet(this, _Media_promisePlay, "f") !== undefined) {
-            __classPrivateFieldGet(this, _Media_promisePlay, "f").then(() => {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (__classPrivateFieldGet(this, _Media_promisePlay, "f") !== undefined) {
+                yield __classPrivateFieldGet(this, _Media_promisePlay, "f");
                 __classPrivateFieldGet(this, _Media_media, "f").pause();
-            });
-        }
-        else {
-            __classPrivateFieldGet(this, _Media_media, "f").pause();
-        }
+            }
+            else {
+                __classPrivateFieldGet(this, _Media_media, "f").pause();
+            }
+        });
     }
     destroy() {
         __classPrivateFieldGet(this, _Media_media, "f").destroy();
@@ -105,7 +113,7 @@ class Media {
         if (typeof media === 'string') {
             __classPrivateFieldGet(this, _Media_files, "f").push({
                 src: media,
-                type: source.predictType(media),
+                type: source.predictType(media, __classPrivateFieldGet(this, _Media_element, "f")),
             });
         }
         else if (Array.isArray(media)) {
@@ -214,7 +222,7 @@ class Media {
         if (nodeSource) {
             mediaFiles.push({
                 src: nodeSource,
-                type: __classPrivateFieldGet(this, _Media_element, "f").getAttribute('type') || source.predictType(nodeSource),
+                type: __classPrivateFieldGet(this, _Media_element, "f").getAttribute('type') || source.predictType(nodeSource, __classPrivateFieldGet(this, _Media_element, "f")),
             });
         }
         for (let i = 0, total = sourceTags.length; i < total; i++) {
@@ -222,7 +230,7 @@ class Media {
             const src = item.src;
             mediaFiles.push({
                 src,
-                type: item.getAttribute('type') || source.predictType(src),
+                type: item.getAttribute('type') || source.predictType(src, __classPrivateFieldGet(this, _Media_element, "f")),
             });
             if (i === 0) {
                 __classPrivateFieldSet(this, _Media_currentSrc, mediaFiles[0], "f");
@@ -231,7 +239,7 @@ class Media {
         if (!mediaFiles.length) {
             mediaFiles.push({
                 src: '',
-                type: source.predictType(''),
+                type: source.predictType('', __classPrivateFieldGet(this, _Media_element, "f")),
             });
         }
         return mediaFiles;

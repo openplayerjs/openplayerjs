@@ -1,4 +1,5 @@
 import Source from '../interfaces/source';
+import { isAudio } from './general';
 
 /**
  * Get media file extension from a URL.
@@ -61,45 +62,51 @@ export function isFlvSource(media: Source): boolean {
 }
 
 /**
- * Get a base MIME type using a URL anc hecking its file extension;
+ * Get a base MIME type using a URL and checking its file extension;
  * it will default to `video/mp4` if nothing found
  *
  * @export
  * @param {string} url  The target URL to check media extension from.
  * @returns {string}
  */
-export function predictType(url: string): string {
+export function predictType(url: string, element: HTMLMediaElement): string {
     const extension = getExtension(url);
-    let type;
 
     // If no extension found, check if media is a vendor iframe
     if (!extension) {
-        return 'video/mp4';
+        return isAudio(element) ? 'audio/mp3' : 'video/mp4';
     }
 
     // Check native media types
     switch (extension) {
         case 'm3u8':
         case 'm3u':
-            type = 'application/x-mpegURL';
-            break;
+            return 'application/x-mpegURL';
         case 'mpd':
-            type = 'application/dash+xml';
-            break;
+            return 'application/dash+xml';
+        case 'mp4':
+            return isAudio(element) ? 'audio/mp4' : 'video/mp4';
         case 'mp3':
-            type = 'audio/mp3';
-            break;
+            return 'audio/mp3';
         case 'webm':
-            type = 'video/webm';
-            break;
+            return isAudio(element) ? 'audio/webm' : 'video/webm';
         case 'ogg':
-            type = 'video/ogg';
-            break;
+            return isAudio(element) ? 'audio/ogg' : 'video/ogg';
+        case 'ogv':
+            return 'video/ogg';
+        case 'oga':
+            return 'audio/ogg';
+        case '3gp':
+            return 'audio/3gpp';
+        case 'wav':
+            return 'audio/wav';
+        case 'aac':
+            return 'audio/aac';
+        case 'flac':
+            return 'audio/flac';
         default:
-            type = 'video/mp4';
-            break;
+            return isAudio(element) ? 'audio/mp3' : 'video/mp4';
     }
-    return type;
 }
 
 /**
@@ -114,12 +121,16 @@ export function predictType(url: string): string {
  * @param {function} muted  Callback to determine if browser requires media to be muted.
  * @param {function} callback  Custom callback after prior checks have been run.
  */
-export function isAutoplaySupported(media: HTMLMediaElement, defaultVol: number, autoplay: (n: any) => any,
-                                    muted: (n: any) => any, callback: () => any): void {
+export function isAutoplaySupported(
+    media: HTMLMediaElement,
+    defaultVol: number,
+    autoplay: (n: any) => any,
+    muted: (n: any) => any, callback: () => any
+): void {
     const playPromise = media.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
-            // Umuted autoplay works.
+            // Unmuted autoplay works.
             media.pause();
             autoplay(true);
             muted(false);
@@ -144,7 +155,7 @@ export function isAutoplaySupported(media: HTMLMediaElement, defaultVol: number,
             });
         });
     } else {
-        autoplay(!media.paused || 'Promise' in window && playPromise as Promise<any> instanceof Promise);
+        autoplay(!media.paused || ('Promise' in window && playPromise as Promise<any> instanceof Promise));
         media.pause();
         muted(false);
         callback();

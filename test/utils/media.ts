@@ -72,16 +72,29 @@ describe('utils/media', () => {
         })).to.equal(false);
     });
     it('predicts the extension of a media source based on the URL provided', () => {
-        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp4')).to.equal('video/mp4');
-        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.webm')).to.equal('video/webm');
-        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogg')).to.equal('video/ogg');
-        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8')).to.equal('application/x-mpegURL');
-        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u')).to.equal('application/x-mpegURL');
-        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mpd')).to.equal('application/dash+xml');
-        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp3')).to.equal('audio/mp3');
-        expect(media.predictType('https://www.w3schools.com/xml/note.xml')).to.equal('video/mp4');
-        expect(media.predictType('test.pdf')).to.equal('video/mp4');
-        expect(media.predictType('test')).to.equal('video/mp4');
+        const video = document.getElementById('video') as HTMLMediaElement;
+        const audio = document.getElementById('audio') as HTMLMediaElement;
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp4', video)).to.equal('video/mp4');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.webm', video)).to.equal('video/webm');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.webm', audio)).to.equal('audio/webm');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogg', video)).to.equal('video/ogg');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogg', audio)).to.equal('audio/ogg');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8', video))
+            .to.equal('application/x-mpegURL');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u', video))
+            .to.equal('application/x-mpegURL');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mpd', video))
+            .to.equal('application/dash+xml');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp3', video)).to.equal('audio/mp3');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogv', video)).to.equal('video/ogg');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.oga', video)).to.equal('audio/ogg');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.3gp', video)).to.equal('audio/3gpp');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.wav', video)).to.equal('audio/wav');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.aac', video)).to.equal('audio/aac');
+        expect(media.predictType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.flac', video)).to.equal('audio/flac');
+        expect(media.predictType('https://www.w3schools.com/xml/note.xml', video)).to.equal('video/mp4');
+        expect(media.predictType('test.pdf', video)).to.equal('video/mp4');
+        expect(media.predictType('test', video)).to.equal('video/mp4');
     });
     it('checks if browser can autoplay media without being muted', async () => {
         const video = window.document.querySelector('video');

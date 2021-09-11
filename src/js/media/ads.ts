@@ -360,7 +360,7 @@ class Ads {
         }).catch(error => {
             const message = `Ad script could not be loaded; please check if you have an AdBlock
                 turned on, or if you provided a valid URL is correct`;
-            console.error(`Ad error: ${message}`);
+            console.error(`Ad error: ${message}. URL: ${error.src}`);
 
             const details = {
                 detail: {
@@ -1050,13 +1050,16 @@ class Ads {
      */
     private _initNotDoneAds(): void {
         this.#adsDone = true;
-        this.#adDisplayContainer.initialize();
-        if (IS_IOS || IS_ANDROID) {
-            this.#preloadContent = this._contentLoadedAction;
-            this.#element.addEventListener('loadedmetadata', this._contentLoadedAction, EVENT_OPTIONS);
-            this.#element.load();
-        } else {
-            this._contentLoadedAction();
+        if (this.#adDisplayContainer) {
+            this.#adDisplayContainer.initialize();
+
+            if (IS_IOS || IS_ANDROID) {
+                this.#preloadContent = this._contentLoadedAction;
+                this.#element.addEventListener('loadedmetadata', this._contentLoadedAction, EVENT_OPTIONS);
+                this.#element.load();
+            } else {
+                this._contentLoadedAction();
+            }
         }
     }
 

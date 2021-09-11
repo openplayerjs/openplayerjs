@@ -70,10 +70,12 @@ declare class HlsMedia extends Native {
      */
     private _assign;
     /**
-     * Remove all hls.js events and destroy hlsjs player instance.
+     * Remove all hls.js events and destroy hls.js player instance.
      *
      * @memberof HlsMedia
      */
     private _revoke;
+    private _play;
+    private _pause;
 }
 export default HlsMedia;

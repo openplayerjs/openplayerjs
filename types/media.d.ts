@@ -41,7 +41,7 @@ declare class Media {
      *
      * @see [[Native.load]]
      */
-    load(): Promise<void> | void;
+    load(): Promise<void>;
     /**
      * Wrapper for `play` method.
      *
@@ -61,7 +61,7 @@ declare class Media {
      * @see [[Native.pause]]
      * @memberof Media
      */
-    pause(): void;
+    pause(): Promise<void>;
     /**
      * Invoke `destroy` method of current media type.
      *

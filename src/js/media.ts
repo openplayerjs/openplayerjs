@@ -138,7 +138,7 @@ class Media {
      *
      * @see [[Native.load]]
      */
-    public load(): Promise<void>|void {
+    public async load(): Promise<void> {
         if (!this.#files.length) {
             throw new TypeError('Media not set');
         }
@@ -167,9 +167,8 @@ class Media {
                 throw new TypeError('Media cannot be played with any valid media type');
             }
 
-            return this.#media.promise.then(() => {
-                this.#media.load();
-            });
+            await this.#media.promise;
+            return this.#media.load();
         } catch (e) {
             // destroy media
             this.#media.destroy();
@@ -186,23 +185,15 @@ class Media {
      * @returns {Promise<void>}
      * @memberof Media
      */
-    public play(): Promise<void> {
+    public async play(): Promise<void> {
         if (!this.loaded) {
             this.loaded = true;
-            const promiseLoad = this.load();
-            if (promiseLoad) {
-                this.loaded = true;
-                return promiseLoad.then(() => {
-                    this.#media.play();
-                });
-            }
+            await this.load();
+        } else {
+            await this.#media.promise;
         }
 
-        // Wait until any other Promise is resolved to execute the Play action
-        this.#promisePlay = new Promise(resolve => {
-            resolve({});
-        }).then(this.#media.promise.then(this.#media.play()));
-
+        this.#promisePlay = this.#media.play();
         return this.#promisePlay;
     }
 
@@ -215,11 +206,10 @@ class Media {
      * @see [[Native.pause]]
      * @memberof Media
      */
-    public pause(): void {
+    public async pause(): Promise<void> {
         if (this.#promisePlay !== undefined) {
-            this.#promisePlay.then(() => {
-                this.#media.pause();
-            });
+            await this.#promisePlay;
+            this.#media.pause();
         } else {
             this.#media.pause();
         }
@@ -247,7 +237,7 @@ class Media {
         if (typeof media === 'string') {
             this.#files.push({
                 src: media,
-                type: source.predictType(media),
+                type: source.predictType(media, this.#element),
             });
         } else if (Array.isArray(media)) {
             this.#files = media;
@@ -531,7 +521,7 @@ class Media {
         if (nodeSource) {
             mediaFiles.push({
                 src: nodeSource,
-                type: this.#element.getAttribute('type') || source.predictType(nodeSource),
+                type: this.#element.getAttribute('type') || source.predictType(nodeSource, this.#element),
             });
         }
 
@@ -541,7 +531,7 @@ class Media {
             const src = item.src;
             mediaFiles.push({
                 src,
-                type: item.getAttribute('type') || source.predictType(src),
+                type: item.getAttribute('type') || source.predictType(src, this.#element),
             });
 
             // If tag has the attribute `preload` set as `none`, the current media will
@@ -554,7 +544,7 @@ class Media {
         if (!mediaFiles.length) {
             mediaFiles.push({
                 src: '',
-                type: source.predictType(''),
+                type: source.predictType('', this.#element),
             });
         }
 

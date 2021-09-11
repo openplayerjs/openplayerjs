@@ -1,3 +1,4 @@
+import { isAudio } from './general';
 export function getExtension(url) {
     const baseUrl = url.split('?')[0];
     const baseFrags = baseUrl ? baseUrl.split('\\') : null;
@@ -18,34 +19,40 @@ export function isDashSource(media) {
 export function isFlvSource(media) {
     return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].indexOf(media.type) > -1;
 }
-export function predictType(url) {
+export function predictType(url, element) {
     const extension = getExtension(url);
-    let type;
     if (!extension) {
-        return 'video/mp4';
+        return isAudio(element) ? 'audio/mp3' : 'video/mp4';
     }
     switch (extension) {
         case 'm3u8':
         case 'm3u':
-            type = 'application/x-mpegURL';
-            break;
+            return 'application/x-mpegURL';
         case 'mpd':
-            type = 'application/dash+xml';
-            break;
+            return 'application/dash+xml';
+        case 'mp4':
+            return isAudio(element) ? 'audio/mp4' : 'video/mp4';
         case 'mp3':
-            type = 'audio/mp3';
-            break;
+            return 'audio/mp3';
         case 'webm':
-            type = 'video/webm';
-            break;
+            return isAudio(element) ? 'audio/webm' : 'video/webm';
         case 'ogg':
-            type = 'video/ogg';
-            break;
+            return isAudio(element) ? 'audio/ogg' : 'video/ogg';
+        case 'ogv':
+            return 'video/ogg';
+        case 'oga':
+            return 'audio/ogg';
+        case '3gp':
+            return 'audio/3gpp';
+        case 'wav':
+            return 'audio/wav';
+        case 'aac':
+            return 'audio/aac';
+        case 'flac':
+            return 'audio/flac';
         default:
-            type = 'video/mp4';
-            break;
+            return isAudio(element) ? 'audio/mp3' : 'video/mp4';
     }
-    return type;
 }
 export function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
     const playPromise = media.play();
@@ -73,7 +80,7 @@ export function isAutoplaySupported(media, defaultVol, autoplay, muted, callback
         });
     }
     else {
-        autoplay(!media.paused || 'Promise' in window && playPromise instanceof Promise);
+        autoplay(!media.paused || ('Promise' in window && playPromise instanceof Promise));
         media.pause();
         muted(false);
         callback();

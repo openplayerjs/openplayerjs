@@ -104,7 +104,7 @@ class Ads {
         }).catch(error => {
             const message = `Ad script could not be loaded; please check if you have an AdBlock
                 turned on, or if you provided a valid URL is correct`;
-            console.error(`Ad error: ${message}`);
+            console.error(`Ad error: ${message}. URL: ${error.src}`);
             const details = {
                 detail: {
                     data: error,

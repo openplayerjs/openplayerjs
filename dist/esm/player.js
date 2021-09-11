@@ -353,7 +353,7 @@ class Player {
             media.forEach(m => {
                 const source = document.createElement('source');
                 source.src = m.src;
-                source.type = m.type || predictType(m.src);
+                source.type = m.type || predictType(m.src, __classPrivateFieldGet(this, _Player_element, "f"));
                 __classPrivateFieldGet(this, _Player_element, "f").appendChild(source);
             });
         }

@@ -90,6 +90,9 @@ class HlsMedia extends Native {
             });
 
         this._create = this._create.bind(this);
+        this._revoke = this._revoke.bind(this);
+        this._play = this._play.bind(this);
+        this._pause = this._pause.bind(this);
         this.promise.then(this._create);
         return this;
     }
@@ -197,17 +200,8 @@ class HlsMedia extends Native {
         });
 
         if (!autoplay) {
-            this.element.addEventListener('play', () => {
-                if (this.#player) {
-                    this.#player.startLoad();
-                }
-            }, EVENT_OPTIONS);
-
-            this.element.addEventListener('pause', () => {
-                if (this.#player) {
-                    this.#player.stopLoad();
-                }
-            }, EVENT_OPTIONS);
+            this.element.addEventListener('play', this._play, EVENT_OPTIONS);
+            this.element.addEventListener('pause', this._pause, EVENT_OPTIONS);
         }
     }
 
@@ -295,30 +289,37 @@ class HlsMedia extends Native {
     }
 
     /**
-     * Remove all hls.js events and destroy hlsjs player instance.
+     * Remove all hls.js events and destroy hls.js player instance.
      *
      * @memberof HlsMedia
      */
     private _revoke(): void {
-        this.#player.stopLoad();
+        if (this.#player) {
+            this.#player.stopLoad();
+        }
         if (this.#events) {
             Object.keys(this.#events).forEach(event => {
                 this.#player.off(this.#events[event], (...args: Array<Record<string, unknown>>) => this._assign(this.#events[event], args));
             });
         }
-        this.element.removeEventListener('play', () => {
-            if (this.#player) {
-                this.#player.startLoad();
-            }
-        });
+        this.element.removeEventListener('play', this._play);
+        this.element.removeEventListener('pause', this._pause);
+        if (this.#player) {
+            this.#player.destroy();
+            this.#player = null;
+        }
+    }
 
-        this.element.removeEventListener('pause', () => {
-            if (this.#player) {
-                this.#player.stopLoad();
-            }
-        });
-        this.#player.destroy();
-        this.#player = null;
+    private _play(): void {
+        if (this.#player) {
+            this.#player.startLoad();
+        }
+    }
+
+    private _pause(): void {
+        if (this.#player) {
+            this.#player.stopLoad();
+        }
     }
 }
 

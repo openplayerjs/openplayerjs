@@ -40,14 +40,14 @@ export declare function isDashSource(media: Source): boolean;
  */
 export declare function isFlvSource(media: Source): boolean;
 /**
- * Get a base MIME type using a URL anc hecking its file extension;
+ * Get a base MIME type using a URL and checking its file extension;
  * it will default to `video/mp4` if nothing found
  *
  * @export
  * @param {string} url  The target URL to check media extension from.
  * @returns {string}
  */
-export declare function predictType(url: string): string;
+export declare function predictType(url: string, element: HTMLMediaElement): string;
 /**
  * Test if browser supports autoplay.
  *
