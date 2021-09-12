@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -151,14 +160,17 @@ class Player {
         return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
     }
     play() {
-        if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
-            __classPrivateFieldGet(this, _Player_media, "f").load();
-            __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
-        }
-        if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-            return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
-        }
-        return __classPrivateFieldGet(this, _Player_media, "f").play();
+        return __awaiter(this, void 0, void 0, function* () {
+            if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
+                yield __classPrivateFieldGet(this, _Player_media, "f").load();
+                __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
+                return __classPrivateFieldGet(this, _Player_media, "f").play();
+            }
+            if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+                return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
+            }
+            return __classPrivateFieldGet(this, _Player_media, "f").play();
+        });
     }
     pause() {
         if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {

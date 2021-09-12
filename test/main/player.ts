@@ -2,7 +2,7 @@ import OpenPlayerJS from '../../src/js/player';
 
 describe('player', () => {
     const defaultVideo = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
-    const defaultAudio = 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp3';
+    // const defaultAudio = 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp3';
     let videoPlayer;
 
     afterEach(() => {
@@ -129,27 +129,25 @@ describe('player', () => {
         document.getElementById('video').removeAttribute('preload');
     });
 
-    it('returns a Promise when attempting to play media', () => {
+    it('handles load/play policies correctly', async () => {
         videoPlayer = new OpenPlayerJS('video');
         videoPlayer.init();
         const promise = videoPlayer.play();
         expect(promise).not.to.be(null);
+        videoPlayer.pause();
         videoPlayer.destroy();
 
         const source = document.getElementById('video').querySelector('source');
 
+        // This element will need HLS.js library so ensure play/pause mechanism works
         source.setAttribute('src', 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8');
         videoPlayer = new OpenPlayerJS('video');
         videoPlayer.init();
-        try {
-            videoPlayer.play();
-            videoPlayer.pause();
-            videoPlayer.destroy();
-        } catch (err) {
-            console.log(err);
-            expect(err).not.to.be(null);
-        }
+        videoPlayer.play();
+        videoPlayer.pause();
+        videoPlayer.destroy();
 
+        // This one must fail and we should catch the exception since media is not loadable
         source.setAttribute('src', 'https://non-existing.test/test.mp4');
 
         videoPlayer = new OpenPlayerJS('video');
@@ -158,5 +156,15 @@ describe('player', () => {
             expect(err instanceof DOMException).to.be(true);
         });
         source.setAttribute('src', defaultVideo);
+
+        videoPlayer = new OpenPlayerJS('video');
+        videoPlayer.init();
+        videoPlayer.src = 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8';
+        await videoPlayer.load();
+        videoPlayer.play()
+            .then(() => {
+                expect(videoPlayer.getElement().duration).not.to.be(0);
+            })
+            .catch(err => console.error(err));
     });
 });

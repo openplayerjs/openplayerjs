@@ -365,10 +365,11 @@ class Player {
      * If Ads are detected, different methods than the native ones are triggered with this operation.
      * @memberof Player
      */
-    public play(): Promise<void> {
+    public async play(): Promise<void> {
         if (this.#media && !this.#media.loaded) {
-            this.#media.load();
+            await this.#media.load();
             this.#media.loaded = true;
+            return this.#media.play();
         }
         if (this.#adsInstance) {
             return this.#adsInstance.play();

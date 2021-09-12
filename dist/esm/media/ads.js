@@ -582,14 +582,16 @@ class Ads {
     }
     _initNotDoneAds() {
         __classPrivateFieldSet(this, _Ads_adsDone, true, "f");
-        __classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
-        if (IS_IOS || IS_ANDROID) {
-            __classPrivateFieldSet(this, _Ads_preloadContent, this._contentLoadedAction, "f");
-            __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._contentLoadedAction, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Ads_element, "f").load();
-        }
-        else {
-            this._contentLoadedAction();
+        if (__classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")) {
+            __classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
+            if (IS_IOS || IS_ANDROID) {
+                __classPrivateFieldSet(this, _Ads_preloadContent, this._contentLoadedAction, "f");
+                __classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._contentLoadedAction, EVENT_OPTIONS);
+                __classPrivateFieldGet(this, _Ads_element, "f").load();
+            }
+            else {
+                this._contentLoadedAction();
+            }
         }
     }
     _contentEndedListener() {

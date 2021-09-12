@@ -44,9 +44,11 @@ class HlsMedia extends Native {
         return SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
     }
     load() {
-        __classPrivateFieldGet(this, _HlsMedia_player, "f").detachMedia();
-        __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(this.media.src);
-        __classPrivateFieldGet(this, _HlsMedia_player, "f").attachMedia(this.element);
+        if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
+            __classPrivateFieldGet(this, _HlsMedia_player, "f").detachMedia();
+            __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(this.media.src);
+            __classPrivateFieldGet(this, _HlsMedia_player, "f").attachMedia(this.element);
+        }
         const e = addEvent('loadedmetadata');
         this.element.dispatchEvent(e);
         if (!__classPrivateFieldGet(this, _HlsMedia_events, "f")) {
