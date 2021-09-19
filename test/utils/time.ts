@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import * as time from '../../src/js/utils/time';
 
 describe('utils/time', () => {
+    afterEach(done => {
+        setTimeout(done, 500);
+    });
     it('returns a number of seconds in STMPE format', () => {
         let formatted = time.formatTime(0);
         expect(formatted).to.equal('00:00');

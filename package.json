@@ -45,7 +45,8 @@
     "create-d-types": "npx typescript -p tsconfig-types.json",
     "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; npx typescript -p tsconfig-esm.json",
     "release": "npm run build && release-it",
-    "test": "karma start --single-run --browsers ChromeHeadless karma.conf.js && npx tsd",
+    "test": "karma start --single-run --browsers --log-level info ChromeHeadless karma.conf.js && npx tsd",
+    "test:dev": "karma start --watch --browsers Chrome karma.conf.js",
     "coverage": "nyc npm run test"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
@@ -108,6 +109,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
+    "@sinonjs/fake-timers": "^7.1.2",
     "auto-changelog": "^1.16.4",
     "core-js": "^3.17.3",
     "custom-event-polyfill": "^1.0.7",

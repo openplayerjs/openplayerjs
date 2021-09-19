@@ -4,14 +4,12 @@ module.exports = config => {
         browserNoActivityTimeout: 20000,
         frameworks: ['mocha', 'chai', 'karma-typescript'],
         files: [
+            'src/css/*',
             { pattern: 'node_modules/expect.js/index.js' },
             'src/js/**/*.ts',
             { pattern: 'test/player.html', type: 'dom', watched: false },
             'test/**/*.ts',
         ],
-        proxies: {
-            'dist/': 'base/dist/'
-        },
         preprocessors: {
             'src/js/**/*.ts': 'karma-typescript',
             'test/**/*.ts': 'karma-typescript',
@@ -25,14 +23,10 @@ module.exports = config => {
             },
             exclude: ['node_modules']
         },
-        customHeaders: [
-            {match: '.*', name: 'Cross-Origin-Opener-Policy', value: 'same-origin'},
-            {match: '.*', name: 'Cross-Origin-Embedder-Policy', value: 'require-corp'},
-        ],
         reporters: ['mocha', 'karma-typescript'],
         port: 9876,
-        logLevel: config.LOG_INFO,
-        autoWatch: false,
+        runnerPort: 9100,
+        captureTimeout: 60000,
         concurrency: Infinity,
     });
 };

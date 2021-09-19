@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import * as events from '../../src/js/utils/events';
 
 describe('utils/events', () => {
+    afterEach(done => {
+        setTimeout(done, 500);
+    });
     it('must return a custom event to be dispatched', () => {
         let event = events.addEvent('custom');
         let custom = new CustomEvent('custom');

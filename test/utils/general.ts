@@ -2,6 +2,9 @@ import { expect } from 'chai';
 import * as general from '../../src/js/utils/general';
 
 describe('utils/general', () => {
+    afterEach(done => {
+        setTimeout(done, 500);
+    });
     it('must return the absolute URL of a relative one', () => {
         expect(general.getAbsoluteUrl('example.pdf')).to.equal(`${window.location.origin}/example.pdf`);
     });
@@ -20,16 +23,24 @@ describe('utils/general', () => {
         expect(general.isAudio(audio)).to.equal(true);
     });
     it('should load a script and destroy the script tag on the header', async () => {
-        await general.loadScript('https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js');
-        expect((window as any).OpenPlayerJS).to.not.equal(null);
+        try {
+            await general.loadScript('https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js');
+            expect((window as any).OpenPlayerJS).to.not.equal(null);
+        } catch (err) {
+            console.log(err);
+            expect(err.src).to.be(null);
+        }
 
-        // const response = await general.loadScript('https://cdn.jsdelivr.net/npm/openplayerjs@0.0.0/dist/openplayer.min.js');
-        // expect(response).to.equal({ src: 'https://cdn.jsdelivr.net/npm/openplayerjs@0.0.0/dist/openplayer.min.js' });
+        try {
+            await general.loadScript('https://cdn.jsdelivr.net/npm/openplayerjs@0.0.0/dist/openplayer.min.js');
+        } catch (err) {
+            expect(err.src).to.equal('https://cdn.jsdelivr.net/npm/openplayerjs@0.0.0/dist/openplayer.min.js');
+        }
     });
     it('removes a DOM element', () => {
         const paragraph = document.createElement('p');
         paragraph.textContent = 'test';
-        document.getElementById('container').appendChild(paragraph);
+        document.body.appendChild(paragraph);
         general.removeElement(document.querySelector('p'));
         expect(window.document.querySelector('p')).to.equal(null);
     });
@@ -37,7 +48,7 @@ describe('utils/general', () => {
         const paragraph = document.createElement('p');
         paragraph.textContent = 'test';
         paragraph.className = 'test';
-        document.getElementById('container').appendChild(paragraph);
+        document.body.appendChild(paragraph);
         let hasClass = general.hasClass(document.querySelector('p'), 'test');
         expect(hasClass).to.equal(true);
 

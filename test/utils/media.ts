@@ -2,11 +2,16 @@ import { expect } from 'chai';
 import * as media from '../../src/js/utils/media';
 
 describe('utils/media', () => {
+    afterEach(done => {
+        setTimeout(done, 500);
+    });
+
     it('determines the extension of a source', () => {
         expect(media.getExtension('https://www.w3schools.com/xml/note.xml')).to.equal('xml');
         expect(media.getExtension('test.pdf')).to.equal('pdf');
         expect(media.getExtension('test')).to.equal('');
     });
+
     it('determines if media source is an HLS resource', () => {
         expect(media.isHlsSource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
@@ -25,6 +30,7 @@ describe('utils/media', () => {
             type: 'audio/mp3',
         })).to.equal(false);
     });
+
     it('determines if media source is an HLS playlist resource', () => {
         expect(media.isM3USource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u',
@@ -35,6 +41,7 @@ describe('utils/media', () => {
             type: 'audio/mp3',
         })).to.equal(false);
     });
+
     it('determines if media source is an MPEG-DASH resource', () => {
         expect(media.isDashSource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mpd',
@@ -49,6 +56,7 @@ describe('utils/media', () => {
             type: 'audio/mp3',
         })).to.equal(false);
     });
+
     it('determines if media source is an FLV resource', () => {
         expect(media.isFlvSource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.flv',
@@ -71,6 +79,7 @@ describe('utils/media', () => {
             type: 'audio/mp3',
         })).to.equal(false);
     });
+
     it('predicts the extension of a media source based on the URL provided', () => {
         const video = document.getElementById('video') as HTMLMediaElement;
         const audio = document.getElementById('audio') as HTMLMediaElement;
@@ -96,8 +105,9 @@ describe('utils/media', () => {
         expect(media.predictType('test.pdf', video)).to.equal('video/mp4');
         expect(media.predictType('test', video)).to.equal('video/mp4');
     });
+
     it('checks if browser can autoplay media without being muted', async () => {
-        const video = window.document.querySelector('video');
+        const video = document.getElementById('video') as HTMLMediaElement;
         video.muted = false;
         await media.isAutoplaySupported(video, 1, autoplay => {
             expect(autoplay).to.equal(false);
@@ -106,6 +116,7 @@ describe('utils/media', () => {
         }, () => true);
         video.muted = true;
     });
+
     it('checks if browser can autoplay media being muted', async () => {
         await media.isAutoplaySupported(window.document.querySelector('video'), 1, autoplay => {
             expect(autoplay).to.equal(false);
