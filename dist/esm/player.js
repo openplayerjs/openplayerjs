@@ -16,11 +16,11 @@ import 'core-js/features/object/assign';
 import 'core-js/features/object/keys';
 import 'core-js/features/promise';
 import 'custom-event-polyfill';
-import './utils/closest';
 import Controls from './controls';
 import Fullscreen from './controls/fullscreen';
 import Media from './media';
 import Ads from './media/ads';
+import './utils/closest';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent } from './utils/events';
 import { isAudio, isVideo, removeElement } from './utils/general';
@@ -203,10 +203,11 @@ class Player {
         el.setAttribute('id', __classPrivateFieldGet(this, _Player_uid, "f"));
         el.removeAttribute('op-live__enabled');
         el.removeAttribute('op-dvr__enabled');
-        const parent = __classPrivateFieldGet(this, _Player_options, "f").mode === 'fit' ? el.closest('.op-player__fit--wrapper') : el.parentElement;
+        const parent = __classPrivateFieldGet(this, _Player_options, "f").mode === 'fit' && !isAudio(el) ? el.closest('.op-player__fit--wrapper') : el.parentElement;
         if (parent && parent.parentNode) {
             parent.parentNode.replaceChild(el, parent);
         }
+        delete Player.instances[__classPrivateFieldGet(this, _Player_uid, "f")];
         const e = addEvent('playerdestroyed');
         el.dispatchEvent(e);
     }
