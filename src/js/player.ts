@@ -436,10 +436,12 @@ class Player {
         el.setAttribute('id', this.#uid);
         el.removeAttribute('op-live__enabled');
         el.removeAttribute('op-dvr__enabled');
-        const parent = this.#options.mode === 'fit' ? el.closest('.op-player__fit--wrapper') : el.parentElement;
+        const parent = this.#options.mode === 'fit' && !isAudio(el) ? el.closest('.op-player__fit--wrapper') : el.parentElement;
         if (parent && parent.parentNode) {
             parent.parentNode.replaceChild(el, parent);
         }
+
+        delete Player.instances[this.#uid];
 
         const e = addEvent('playerdestroyed');
         el.dispatchEvent(e);

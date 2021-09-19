@@ -11867,12 +11867,13 @@ var player_Player = function () {
       el.setAttribute('id', player_classPrivateFieldGet(this, _Player_uid, "f"));
       el.removeAttribute('op-live__enabled');
       el.removeAttribute('op-dvr__enabled');
-      var parent = player_classPrivateFieldGet(this, _Player_options, "f").mode === 'fit' ? el.closest('.op-player__fit--wrapper') : el.parentElement;
+      var parent = player_classPrivateFieldGet(this, _Player_options, "f").mode === 'fit' && !isAudio(el) ? el.closest('.op-player__fit--wrapper') : el.parentElement;
 
       if (parent && parent.parentNode) {
         parent.parentNode.replaceChild(el, parent);
       }
 
+      delete Player.instances[player_classPrivateFieldGet(this, _Player_uid, "f")];
       var e = addEvent('playerdestroyed');
       el.dispatchEvent(e);
     }

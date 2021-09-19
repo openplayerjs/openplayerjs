@@ -45,7 +45,7 @@
     "create-d-types": "npx typescript -p tsconfig-types.json",
     "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; npx typescript -p tsconfig-esm.json",
     "release": "npm run build && release-it",
-    "test": "karma start --single-run --browsers --log-level info ChromeHeadless karma.conf.js && npx tsd",
+    "test": "karma start --single-run --browsers ChromeHeadless --log-level info karma.conf.js && npx tsd",
     "test:dev": "karma start --watch --browsers Chrome karma.conf.js",
     "coverage": "nyc npm run test"
   },
