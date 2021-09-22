@@ -245,16 +245,21 @@ class Media {
             this.#files.push(media);
         }
 
-        this.#files.some(file => this.canPlayType(file.type));
+        // Remove files without source
+        this.#files = this.#files.filter(file => file.src);
 
-        // Save copy of original file to restore it when player is destroyed
-        if (this.#element.src) {
-            this.#element.setAttribute('data-op-file', this.#files[0].src);
+        if (this.#files.length > 0) {
+            // Save copy of original file to restore it when player is destroyed
+            if (this.#element.src) {
+                this.#element.setAttribute('data-op-file', this.#files[0].src);
+            }
+
+            this.#element.src = this.#files[0].src;
+            this.#media.src = this.#files[0];
+            this.#currentSrc = this.#files[0];
+        } else {
+            this.#element.src = '';
         }
-
-        this.#element.src = this.#files[0].src;
-        this.#media.src = this.#files[0];
-        this.#currentSrc = this.#files[0];
     }
 
     /**

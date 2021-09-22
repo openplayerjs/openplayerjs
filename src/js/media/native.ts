@@ -5,7 +5,7 @@ import Source from '../interfaces/source';
  * Native Media.
  *
  * @description Class that mimics the HTML5 MediaElement's standard methods.
- * All the methods are availabe for the different types of media; the exceptions
+ * All the methods are available for the different types of media; the exceptions
  * are the getter/setter of a source, load it and determine if media can be played,
  * since each one of the media types handle those in a different way.
  *

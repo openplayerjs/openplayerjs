@@ -337,10 +337,10 @@ class Player {
      * in an iPhone, because iOS will only use QuickTime as a default constrain.
      * @memberof Player
      */
-    public init(): void {
+    public async init(): Promise<void> {
         if (this._isValid()) {
             this._wrapInstance();
-            this._prepareMedia();
+            await this._prepareMedia();
             this._createPlayButton();
             this._createUID();
             this._createControls();
@@ -369,7 +369,6 @@ class Player {
         if (this.#media && !this.#media.loaded) {
             await this.#media.load();
             this.#media.loaded = true;
-            return this.#media.play();
         }
         if (this.#adsInstance) {
             return this.#adsInstance.play();
@@ -643,7 +642,7 @@ class Player {
      *
      * @memberof Player
      */
-    public _prepareMedia(): void {
+    public async _prepareMedia(): Promise<void> {
         try {
             this.#element.addEventListener('playererror', this.#options.onError, EVENT_OPTIONS);
             if (this.#autoplay && isVideo(this.#element)) {
@@ -652,7 +651,7 @@ class Player {
             this.#media = new Media(this.#element, this.#options, this.#autoplay, Player.customMedia);
             const preload = this.#element.getAttribute('preload');
             if (this.#ads || !preload || preload !== 'none') {
-                this.#media.load();
+                await this.#media.load();
                 this.#media.loaded = true;
             }
 

@@ -8,7 +8,9 @@ module.exports = config => {
             { pattern: 'node_modules/expect.js/index.js' },
             'src/js/**/*.ts',
             { pattern: 'test/player.html', type: 'dom', watched: false },
-            'test/**/*.ts',
+            'test/utils/*.ts',
+            'test/controls/*.ts',
+            'test/player.ts',
         ],
         preprocessors: {
             'src/js/**/*.ts': 'karma-typescript',
@@ -28,5 +30,10 @@ module.exports = config => {
         runnerPort: 9100,
         captureTimeout: 60000,
         concurrency: Infinity,
+        client: {
+            mocha: {
+                asyncOnly: true,
+            }
+        }
     });
 };

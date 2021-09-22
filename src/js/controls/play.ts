@@ -177,8 +177,8 @@ class Play implements PlayerComponent {
             if (this.#player.activeElement().ended && this.#player.isMedia()) {
                 this.#button.classList.add('op-controls__playpause--replay');
                 this.#button.classList.remove('op-controls__playpause--pause');
-            } else if (this.#player.getElement().currentTime >= this.#player.getElement().duration ||
-                this.#player.getElement().currentTime <= 0) {
+            } else if (this.#player.getElement().currentTime >= this.#player.getElement().duration
+                || this.#player.getElement().currentTime <= 0) {
                 this.#button.classList.add('op-controls__playpause--replay');
                 this.#button.classList.remove('op-controls__playpause--pause');
             } else {
