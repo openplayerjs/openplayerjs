@@ -111,8 +111,8 @@ class Play {
                 __classPrivateFieldGet(this, _Play_button, "f").classList.add('op-controls__playpause--replay');
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
             }
-            else if (__classPrivateFieldGet(this, _Play_player, "f").getElement().currentTime >= __classPrivateFieldGet(this, _Play_player, "f").getElement().duration ||
-                __classPrivateFieldGet(this, _Play_player, "f").getElement().currentTime <= 0) {
+            else if (__classPrivateFieldGet(this, _Play_player, "f").getElement().currentTime >= __classPrivateFieldGet(this, _Play_player, "f").getElement().duration
+                || __classPrivateFieldGet(this, _Play_player, "f").getElement().currentTime <= 0) {
                 __classPrivateFieldGet(this, _Play_button, "f").classList.add('op-controls__playpause--replay');
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
             }

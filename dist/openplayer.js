@@ -195,7 +195,14 @@ module.exports = function (name) {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _typeof = __webpack_require__(10)["default"];
+module.exports = __webpack_require__(87);
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _typeof = __webpack_require__(11)["default"];
 
 var assertThisInitialized = __webpack_require__(0);
 
@@ -213,7 +220,7 @@ module.exports = _possibleConstructorReturn;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 function _getPrototypeOf(o) {
@@ -228,7 +235,7 @@ module.exports = _getPrototypeOf;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(3);
@@ -288,7 +295,7 @@ module.exports = function (options, source) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = function (exec) {
@@ -301,7 +308,7 @@ module.exports = function (exec) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(12);
@@ -314,7 +321,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 function _typeof(obj) {
@@ -339,13 +346,6 @@ function _typeof(obj) {
 
 module.exports = _typeof;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(87);
-
 
 /***/ }),
 /* 12 */
@@ -412,7 +412,7 @@ module.exports["default"] = module.exports, module.exports.__esModule = true;
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 
 // Detect IE8's incomplete defineProperty implementation
 module.exports = !fails(function () {
@@ -443,7 +443,7 @@ module.exports = DESCRIPTORS ? function (object, key, value) {
 
 var DESCRIPTORS = __webpack_require__(16);
 var IE8_DOM_DEFINE = __webpack_require__(64);
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var toPropertyKey = __webpack_require__(40);
 
 // eslint-disable-next-line es/no-object-defineproperty -- safe
@@ -760,7 +760,7 @@ module.exports = function (argument) {
 /***/ (function(module, exports, __webpack_require__) {
 
 /* global ActiveXObject -- old IE, WSH */
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var defineProperties = __webpack_require__(104);
 var enumBugKeys = __webpack_require__(48);
 var hiddenKeys = __webpack_require__(46);
@@ -856,7 +856,7 @@ module.exports = global;
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var isArrayIteratorMethod = __webpack_require__(74);
 var toLength = __webpack_require__(32);
 var bind = __webpack_require__(24);
@@ -960,7 +960,7 @@ exports.f = DESCRIPTORS ? $getOwnPropertyDescriptor : function getOwnPropertyDes
 /* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 var classof = __webpack_require__(28);
 
 var split = ''.split;
@@ -1188,7 +1188,7 @@ module.exports = function (it, TAG, STATIC) {
 /***/ (function(module, exports, __webpack_require__) {
 
 /* eslint-disable no-proto -- safe */
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var aPossiblePrototype = __webpack_require__(112);
 
 // `Object.setPrototypeOf` method
@@ -1314,7 +1314,7 @@ module.exports = NATIVE_SYMBOL
 
 /* eslint-disable es/no-symbol -- required for testing */
 var V8_VERSION = __webpack_require__(61);
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 
 // eslint-disable-next-line es/no-object-getownpropertysymbols -- required for testing
 module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
@@ -1387,7 +1387,7 @@ module.exports = function (key) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var DESCRIPTORS = __webpack_require__(16);
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 var createElement = __webpack_require__(30);
 
 // Thank's IE8 for his funny defineProperty
@@ -1434,7 +1434,7 @@ exports.f = Object.getOwnPropertySymbols;
 /* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 
 var replacement = /#|\.prototype\./;
 
@@ -1535,7 +1535,7 @@ defineIterator(String, 'String', function (iterated) {
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var createIteratorConstructor = __webpack_require__(110);
 var getPrototypeOf = __webpack_require__(51);
 var setPrototypeOf = __webpack_require__(53);
@@ -1632,7 +1632,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 
 "use strict";
 
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 var create = __webpack_require__(33);
 var getPrototypeOf = __webpack_require__(51);
 var createNonEnumerableProperty = __webpack_require__(17);
@@ -1684,7 +1684,7 @@ module.exports = {
 /* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 
 module.exports = function (iterator, kind, value) {
   var innerResult, innerError;
@@ -1727,7 +1727,7 @@ module.exports = function (it) {
 /* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var getIteratorMethod = __webpack_require__(54);
 
 module.exports = function (it, usingIterator) {
@@ -1820,7 +1820,7 @@ module.exports = function (exec, SKIP_CLOSING) {
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var getPrototypeOf = __webpack_require__(51);
 var setPrototypeOf = __webpack_require__(53);
 var create = __webpack_require__(33);
@@ -1929,7 +1929,7 @@ module.exports = global.Promise;
 /* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var aFunction = __webpack_require__(21);
 var wellKnownSymbol = __webpack_require__(4);
 
@@ -1949,7 +1949,7 @@ module.exports = function (O, defaultConstructor) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(3);
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 var bind = __webpack_require__(24);
 var html = __webpack_require__(69);
 var createElement = __webpack_require__(30);
@@ -2075,7 +2075,7 @@ module.exports = /(?:ipad|iphone|ipod).*applewebkit/i.test(userAgent);
 /* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var isObject = __webpack_require__(12);
 var newPromiseCapability = __webpack_require__(26);
 
@@ -2095,7 +2095,7 @@ module.exports = function (C, x) {
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var aFunction = __webpack_require__(21);
 var newPromiseCapabilityModule = __webpack_require__(26);
 var perform = __webpack_require__(36);
@@ -2145,7 +2145,7 @@ $({ target: 'Promise', stat: true }, {
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var aFunction = __webpack_require__(21);
 var getBuiltIn = __webpack_require__(13);
 var newPromiseCapabilityModule = __webpack_require__(26);
@@ -2986,7 +2986,7 @@ module.exports = entryUnbind('Array', 'find');
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var $find = __webpack_require__(100).find;
 var addToUnscopables = __webpack_require__(68);
 
@@ -3092,7 +3092,7 @@ module.exports = function (target, source) {
 var getBuiltIn = __webpack_require__(13);
 var getOwnPropertyNamesModule = __webpack_require__(97);
 var getOwnPropertySymbolsModule = __webpack_require__(66);
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 
 // all object keys, includes non-enumerable and symbols
 module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
@@ -3312,7 +3312,7 @@ module.exports = Array.isArray || function isArray(arg) {
 
 var DESCRIPTORS = __webpack_require__(16);
 var definePropertyModule = __webpack_require__(18);
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var objectKeys = __webpack_require__(49);
 
 // `Object.defineProperties` method
@@ -3433,7 +3433,7 @@ module.exports = function (IteratorConstructor, NAME, next) {
 /* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 
 module.exports = !fails(function () {
   function F() { /* empty */ }
@@ -3460,7 +3460,7 @@ module.exports = function (it) {
 /* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var from = __webpack_require__(114);
 var checkCorrectnessOfIteration = __webpack_require__(77);
 
@@ -3529,7 +3529,7 @@ module.exports = function from(arrayLike /* , mapfn = undefined, thisArg = undef
 /* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(9);
+var anObject = __webpack_require__(10);
 var iteratorClose = __webpack_require__(73);
 
 // call something on iterator step with safe closing on error
@@ -3591,7 +3591,7 @@ module.exports = path.Object.assign;
 /* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var assign = __webpack_require__(121);
 
 // `Object.assign` method
@@ -3609,7 +3609,7 @@ $({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
 "use strict";
 
 var DESCRIPTORS = __webpack_require__(16);
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 var objectKeys = __webpack_require__(49);
 var getOwnPropertySymbolsModule = __webpack_require__(66);
 var propertyIsEnumerableModule = __webpack_require__(58);
@@ -3695,10 +3695,10 @@ module.exports = path.Object.keys;
 /* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var toObject = __webpack_require__(19);
 var nativeKeys = __webpack_require__(49);
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 
 var FAILS_ON_PRIMITIVES = fails(function () { nativeKeys(1); });
 
@@ -3789,7 +3789,7 @@ module.exports = TO_STRING_TAG_SUPPORT ? {}.toString : function toString() {
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var IS_PURE = __webpack_require__(23);
 var global = __webpack_require__(3);
 var getBuiltIn = __webpack_require__(13);
@@ -4367,10 +4367,10 @@ module.exports = typeof window == 'object';
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var IS_PURE = __webpack_require__(23);
 var NativePromise = __webpack_require__(80);
-var fails = __webpack_require__(8);
+var fails = __webpack_require__(9);
 var getBuiltIn = __webpack_require__(13);
 var speciesConstructor = __webpack_require__(81);
 var promiseResolve = __webpack_require__(84);
@@ -4527,7 +4527,7 @@ __webpack_require__(85);
 
 "use strict";
 
-var $ = __webpack_require__(7);
+var $ = __webpack_require__(8);
 var newPromiseCapabilityModule = __webpack_require__(26);
 var perform = __webpack_require__(36);
 
@@ -4730,7 +4730,7 @@ module.exports["default"] = module.exports, module.exports.__esModule = true;
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
-var helpers_typeof = __webpack_require__(10);
+var helpers_typeof = __webpack_require__(11);
 var typeof_default = /*#__PURE__*/__webpack_require__.n(helpers_typeof);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/classCallCheck.js
@@ -4742,7 +4742,7 @@ var createClass = __webpack_require__(2);
 var createClass_default = /*#__PURE__*/__webpack_require__.n(createClass);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/regenerator/index.js
-var regenerator = __webpack_require__(11);
+var regenerator = __webpack_require__(5);
 var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
 
 // EXTERNAL MODULE: ./node_modules/core-js/features/array/find.js
@@ -8236,7 +8236,7 @@ var controls_Controls = function () {
 
       var alwaysVisible = controls_classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls.alwaysVisible;
 
-      if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
+      if (!alwaysVisible) {
         var showControls = function showControls() {
           if (isMediaVideo) {
             controls_classPrivateFieldGet(_this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
@@ -8303,9 +8303,14 @@ var controls_Controls = function () {
         Object.keys(this.events.media).forEach(function (event) {
           controls_classPrivateFieldGet(_this, _Controls_player, "f").getElement().addEventListener(event, _this.events.media[event], EVENT_OPTIONS);
         });
-        Object.keys(this.events.mouse).forEach(function (event) {
-          controls_classPrivateFieldGet(_this, _Controls_player, "f").getContainer().addEventListener(event, _this.events.mouse[event], EVENT_OPTIONS);
-        });
+
+        if (IS_ANDROID || IS_IOS) {
+          controls_classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener('click', this.events.mouse.mouseenter, EVENT_OPTIONS);
+        } else {
+          Object.keys(this.events.mouse).forEach(function (event) {
+            controls_classPrivateFieldGet(_this, _Controls_player, "f").getContainer().addEventListener(event, _this.events.mouse[event], EVENT_OPTIONS);
+          });
+        }
 
         this._startControlTimer(3000);
       }
@@ -8722,11 +8727,11 @@ var inherits = __webpack_require__(15);
 var inherits_default = /*#__PURE__*/__webpack_require__.n(inherits);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js
-var possibleConstructorReturn = __webpack_require__(5);
+var possibleConstructorReturn = __webpack_require__(6);
 var possibleConstructorReturn_default = /*#__PURE__*/__webpack_require__.n(possibleConstructorReturn);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/getPrototypeOf.js
-var getPrototypeOf = __webpack_require__(6);
+var getPrototypeOf = __webpack_require__(7);
 var getPrototypeOf_default = /*#__PURE__*/__webpack_require__.n(getPrototypeOf);
 
 // CONCATENATED MODULE: ./src/js/media/native.ts
@@ -10201,8 +10206,6 @@ var media_Media = function () {
       return media_classPrivateFieldGet(this, _Media_files, "f");
     },
     set: function set(media) {
-      var _this2 = this;
-
       if (typeof media === 'string') {
         media_classPrivateFieldGet(this, _Media_files, "f").push({
           src: media,
@@ -10214,18 +10217,22 @@ var media_Media = function () {
         media_classPrivateFieldGet(this, _Media_files, "f").push(media);
       }
 
-      media_classPrivateFieldGet(this, _Media_files, "f").some(function (file) {
-        return _this2.canPlayType(file.type);
-      });
+      media_classPrivateFieldSet(this, _Media_files, media_classPrivateFieldGet(this, _Media_files, "f").filter(function (file) {
+        return file.src;
+      }), "f");
 
-      if (media_classPrivateFieldGet(this, _Media_element, "f").src) {
-        media_classPrivateFieldGet(this, _Media_element, "f").setAttribute('data-op-file', media_classPrivateFieldGet(this, _Media_files, "f")[0].src);
+      if (media_classPrivateFieldGet(this, _Media_files, "f").length > 0) {
+        if (media_classPrivateFieldGet(this, _Media_element, "f").src) {
+          media_classPrivateFieldGet(this, _Media_element, "f").setAttribute('data-op-file', media_classPrivateFieldGet(this, _Media_files, "f")[0].src);
+        }
+
+        media_classPrivateFieldGet(this, _Media_element, "f").src = media_classPrivateFieldGet(this, _Media_files, "f")[0].src;
+        media_classPrivateFieldGet(this, _Media_media, "f").src = media_classPrivateFieldGet(this, _Media_files, "f")[0];
+
+        media_classPrivateFieldSet(this, _Media_currentSrc, media_classPrivateFieldGet(this, _Media_files, "f")[0], "f");
+      } else {
+        media_classPrivateFieldGet(this, _Media_element, "f").src = '';
       }
-
-      media_classPrivateFieldGet(this, _Media_element, "f").src = media_classPrivateFieldGet(this, _Media_files, "f")[0].src;
-      media_classPrivateFieldGet(this, _Media_media, "f").src = media_classPrivateFieldGet(this, _Media_files, "f")[0];
-
-      media_classPrivateFieldSet(this, _Media_currentSrc, media_classPrivateFieldGet(this, _Media_files, "f")[0], "f");
     }
   }, {
     key: "current",
@@ -10380,7 +10387,7 @@ var media_Media = function () {
   }, {
     key: "_invoke",
     value: function _invoke(media) {
-      var _this3 = this;
+      var _this2 = this;
 
       var playHLSNatively = media_classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/vnd.apple.mpegurl') || media_classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/x-mpegURL');
 
@@ -10388,7 +10395,7 @@ var media_Media = function () {
 
       var activeLevels = false;
       Object.keys(media_classPrivateFieldGet(this, _Media_options, "f").controls.layers).forEach(function (layer) {
-        if (media_classPrivateFieldGet(_this3, _Media_options, "f").controls.layers[layer].indexOf('levels') > -1) {
+        if (media_classPrivateFieldGet(_this2, _Media_options, "f").controls.layers[layer].indexOf('levels') > -1) {
           activeLevels = true;
         }
       });
@@ -10400,10 +10407,10 @@ var media_Media = function () {
           var type = rule(media.src);
 
           if (type) {
-            var customMedia = media_classPrivateFieldGet(_this3, _Media_customMedia, "f").media[type];
+            var customMedia = media_classPrivateFieldGet(_this2, _Media_customMedia, "f").media[type];
 
-            var customOptions = media_classPrivateFieldGet(_this3, _Media_options, "f")[media_classPrivateFieldGet(_this3, _Media_customMedia, "f").optionsKey[type]] || undefined;
-            customRef = customMedia(media_classPrivateFieldGet(_this3, _Media_element, "f"), media, media_classPrivateFieldGet(_this3, _Media_autoplay, "f"), customOptions);
+            var customOptions = media_classPrivateFieldGet(_this2, _Media_options, "f")[media_classPrivateFieldGet(_this2, _Media_customMedia, "f").optionsKey[type]] || undefined;
+            customRef = customMedia(media_classPrivateFieldGet(_this2, _Media_element, "f"), media, media_classPrivateFieldGet(_this2, _Media_autoplay, "f"), customOptions);
           }
         });
 
@@ -11753,21 +11760,39 @@ var player_Player = function () {
   createClass_default()(Player, [{
     key: "init",
     value: function init() {
-      if (this._isValid()) {
-        this._wrapInstance();
+      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee() {
+        return regenerator_default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!this._isValid()) {
+                  _context.next = 9;
+                  break;
+                }
 
-        this._prepareMedia();
+                this._wrapInstance();
 
-        this._createPlayButton();
+                _context.next = 4;
+                return this._prepareMedia();
 
-        this._createUID();
+              case 4:
+                this._createPlayButton();
 
-        this._createControls();
+                this._createUID();
 
-        this._setEvents();
+                this._createControls();
 
-        Player.instances[this.id] = this;
-      }
+                this._setEvents();
+
+                Player.instances[this.id] = this;
+
+              case 9:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
     }
   }, {
     key: "load",
@@ -11777,40 +11802,39 @@ var player_Player = function () {
   }, {
     key: "play",
     value: function play() {
-      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee() {
-        return regenerator_default.a.wrap(function _callee$(_context) {
+      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee2() {
+        return regenerator_default.a.wrap(function _callee2$(_context2) {
           while (1) {
-            switch (_context.prev = _context.next) {
+            switch (_context2.prev = _context2.next) {
               case 0:
                 if (!(player_classPrivateFieldGet(this, _Player_media, "f") && !player_classPrivateFieldGet(this, _Player_media, "f").loaded)) {
-                  _context.next = 5;
+                  _context2.next = 4;
                   break;
                 }
 
-                _context.next = 3;
+                _context2.next = 3;
                 return player_classPrivateFieldGet(this, _Player_media, "f").load();
 
               case 3:
                 player_classPrivateFieldGet(this, _Player_media, "f").loaded = true;
-                return _context.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
 
-              case 5:
+              case 4:
                 if (!player_classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-                  _context.next = 7;
+                  _context2.next = 6;
                   break;
                 }
 
-                return _context.abrupt("return", player_classPrivateFieldGet(this, _Player_adsInstance, "f").play());
+                return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_adsInstance, "f").play());
+
+              case 6:
+                return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
 
               case 7:
-                return _context.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
-
-              case 8:
               case "end":
-                return _context.stop();
+                return _context2.stop();
             }
           }
-        }, _callee, this);
+        }, _callee2, this);
       }));
     }
   }, {
@@ -12002,31 +12026,57 @@ var player_Player = function () {
   }, {
     key: "_prepareMedia",
     value: function _prepareMedia() {
-      try {
-        player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', player_classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
+      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee3() {
+        var preload, adsOptions;
+        return regenerator_default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.prev = 0;
 
-        if (player_classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(player_classPrivateFieldGet(this, _Player_element, "f"))) {
-          player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
-        }
+                player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', player_classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
 
-        player_classPrivateFieldSet(this, _Player_media, new js_media(player_classPrivateFieldGet(this, _Player_element, "f"), player_classPrivateFieldGet(this, _Player_options, "f"), player_classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
+                if (player_classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(player_classPrivateFieldGet(this, _Player_element, "f"))) {
+                  player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
+                }
 
-        var preload = player_classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
+                player_classPrivateFieldSet(this, _Player_media, new js_media(player_classPrivateFieldGet(this, _Player_element, "f"), player_classPrivateFieldGet(this, _Player_options, "f"), player_classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
 
-        if (player_classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none') {
-          player_classPrivateFieldGet(this, _Player_media, "f").load();
+                preload = player_classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
 
-          player_classPrivateFieldGet(this, _Player_media, "f").loaded = true;
-        }
+                if (!(player_classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none')) {
+                  _context3.next = 9;
+                  break;
+                }
 
-        if (!player_classPrivateFieldGet(this, _Player_autoplay, "f") && player_classPrivateFieldGet(this, _Player_ads, "f")) {
-          var adsOptions = player_classPrivateFieldGet(this, _Player_options, "f") && player_classPrivateFieldGet(this, _Player_options, "f").ads ? player_classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
+                _context3.next = 8;
+                return player_classPrivateFieldGet(this, _Player_media, "f").load();
 
-          player_classPrivateFieldSet(this, _Player_adsInstance, new media_ads(this, player_classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
-        }
-      } catch (e) {
-        console.error(e);
-      }
+              case 8:
+                player_classPrivateFieldGet(this, _Player_media, "f").loaded = true;
+
+              case 9:
+                if (!player_classPrivateFieldGet(this, _Player_autoplay, "f") && player_classPrivateFieldGet(this, _Player_ads, "f")) {
+                  adsOptions = player_classPrivateFieldGet(this, _Player_options, "f") && player_classPrivateFieldGet(this, _Player_options, "f").ads ? player_classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
+
+                  player_classPrivateFieldSet(this, _Player_adsInstance, new media_ads(this, player_classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
+                }
+
+                _context3.next = 15;
+                break;
+
+              case 12:
+                _context3.prev = 12;
+                _context3.t0 = _context3["catch"](0);
+                console.error(_context3.t0);
+
+              case 15:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[0, 12]]);
+      }));
     }
   }, {
     key: "enableDefaultPlayer",

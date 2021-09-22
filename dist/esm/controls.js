@@ -62,7 +62,7 @@ class Controls {
         __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlschanged', this.events.controlschanged, EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
         const { alwaysVisible } = __classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls;
-        if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
+        if (!alwaysVisible) {
             const showControls = () => {
                 if (isMediaVideo) {
                     __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
@@ -116,9 +116,14 @@ class Controls {
             Object.keys(this.events.media).forEach(event => {
                 __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
-            Object.keys(this.events.mouse).forEach(event => {
-                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
-            });
+            if (IS_ANDROID || IS_IOS) {
+                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener('click', this.events.mouse.mouseenter, EVENT_OPTIONS);
+            }
+            else {
+                Object.keys(this.events.mouse).forEach(event => {
+                    __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
+                });
+            }
             this._startControlTimer(3000);
         }
     }

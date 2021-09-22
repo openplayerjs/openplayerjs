@@ -133,7 +133,7 @@ class Controls implements PlayerComponent {
 
         const { alwaysVisible } = this.#player.getOptions().controls;
 
-        if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
+        if (!alwaysVisible) {
             const showControls = () => {
                 if (isMediaVideo) {
                     this.#player.getContainer().classList.remove('op-controls--hidden');
@@ -195,9 +195,13 @@ class Controls implements PlayerComponent {
                 this.#player.getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
 
-            Object.keys(this.events.mouse).forEach(event => {
-                this.#player.getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
-            });
+            if (IS_ANDROID || IS_IOS) {
+                this.#player.getContainer().addEventListener('click', this.events.mouse.mouseenter, EVENT_OPTIONS);
+            } else {
+                Object.keys(this.events.mouse).forEach(event => {
+                    this.#player.getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
+                });
+            }
 
             // Initial countdown to hide controls
             this._startControlTimer(3000);

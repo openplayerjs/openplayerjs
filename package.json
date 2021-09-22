@@ -41,7 +41,7 @@
     "ima-sdk"
   ],
   "scripts": {
-    "build": "npm test && [ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-esm && npm run create-d-types",
+    "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-esm && npm run create-d-types",
     "create-d-types": "npx typescript -p tsconfig-types.json",
     "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; npx typescript -p tsconfig-esm.json",
     "release": "npm run build && release-it",

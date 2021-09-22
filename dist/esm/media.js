@@ -122,13 +122,18 @@ class Media {
         else if (typeof media === 'object') {
             __classPrivateFieldGet(this, _Media_files, "f").push(media);
         }
-        __classPrivateFieldGet(this, _Media_files, "f").some(file => this.canPlayType(file.type));
-        if (__classPrivateFieldGet(this, _Media_element, "f").src) {
-            __classPrivateFieldGet(this, _Media_element, "f").setAttribute('data-op-file', __classPrivateFieldGet(this, _Media_files, "f")[0].src);
+        __classPrivateFieldSet(this, _Media_files, __classPrivateFieldGet(this, _Media_files, "f").filter(file => file.src), "f");
+        if (__classPrivateFieldGet(this, _Media_files, "f").length > 0) {
+            if (__classPrivateFieldGet(this, _Media_element, "f").src) {
+                __classPrivateFieldGet(this, _Media_element, "f").setAttribute('data-op-file', __classPrivateFieldGet(this, _Media_files, "f")[0].src);
+            }
+            __classPrivateFieldGet(this, _Media_element, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0].src;
+            __classPrivateFieldGet(this, _Media_media, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0];
+            __classPrivateFieldSet(this, _Media_currentSrc, __classPrivateFieldGet(this, _Media_files, "f")[0], "f");
         }
-        __classPrivateFieldGet(this, _Media_element, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0].src;
-        __classPrivateFieldGet(this, _Media_media, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0];
-        __classPrivateFieldSet(this, _Media_currentSrc, __classPrivateFieldGet(this, _Media_files, "f")[0], "f");
+        else {
+            __classPrivateFieldGet(this, _Media_element, "f").src = '';
+        }
     }
     get src() {
         return __classPrivateFieldGet(this, _Media_files, "f");

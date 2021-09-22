@@ -146,15 +146,17 @@ class Player {
         Player.customMedia.rules.push(valid);
     }
     init() {
-        if (this._isValid()) {
-            this._wrapInstance();
-            this._prepareMedia();
-            this._createPlayButton();
-            this._createUID();
-            this._createControls();
-            this._setEvents();
-            Player.instances[this.id] = this;
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._isValid()) {
+                this._wrapInstance();
+                yield this._prepareMedia();
+                this._createPlayButton();
+                this._createUID();
+                this._createControls();
+                this._setEvents();
+                Player.instances[this.id] = this;
+            }
+        });
     }
     load() {
         return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
@@ -164,7 +166,6 @@ class Player {
             if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
                 yield __classPrivateFieldGet(this, _Player_media, "f").load();
                 __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
-                return __classPrivateFieldGet(this, _Player_media, "f").play();
             }
             if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
                 return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
@@ -302,25 +303,27 @@ class Player {
         __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
     }
     _prepareMedia() {
-        try {
-            __classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
-            if (__classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
-                __classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                __classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
+                if (__classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
+                    __classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
+                }
+                __classPrivateFieldSet(this, _Player_media, new Media(__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_options, "f"), __classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
+                const preload = __classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
+                if (__classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none') {
+                    yield __classPrivateFieldGet(this, _Player_media, "f").load();
+                    __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
+                }
+                if (!__classPrivateFieldGet(this, _Player_autoplay, "f") && __classPrivateFieldGet(this, _Player_ads, "f")) {
+                    const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
+                    __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, __classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
+                }
             }
-            __classPrivateFieldSet(this, _Player_media, new Media(__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_options, "f"), __classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
-            const preload = __classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
-            if (__classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none') {
-                __classPrivateFieldGet(this, _Player_media, "f").load();
-                __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
+            catch (e) {
+                console.error(e);
             }
-            if (!__classPrivateFieldGet(this, _Player_autoplay, "f") && __classPrivateFieldGet(this, _Player_ads, "f")) {
-                const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
-                __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, __classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
-            }
-        }
-        catch (e) {
-            console.error(e);
-        }
+        });
     }
     enableDefaultPlayer() {
         let paused = true;
