@@ -112,26 +112,34 @@ describe('utils/media', () => {
         done();
     });
 
-    it.skip('checks if browser can autoplay media without being muted', async () => {
+    it.skip('checks if browser can autoplay media without being muted', () => {
         const video = document.getElementById('video') as HTMLMediaElement;
         video.muted = false;
-        await media.isAutoplaySupported(video, 1, autoplay => {
-            console.log('1 auto', autoplay);
-            expect(autoplay).to.equal(false);
-        }, muted => {
-            console.log('1 muted', muted);
-            expect(muted).to.equal(false);
-        }, () => true);
-        video.muted = true;
+        return new Promise<void>((resolve, reject) => {
+            media.isAutoplaySupported(video, 1, () => {
+                // expect(autoplay).to.equal(false);
+            }, muted => {
+                expect(muted).to.equal(false);
+                video.pause();
+                video.currentTime = 0;
+                resolve();
+            }, () => reject());
+            video.muted = true;
+        });
     });
 
     it.skip('checks if browser can autoplay media being muted', async () => {
-        await media.isAutoplaySupported(window.document.querySelector('video'), 1, autoplay => {
-            console.log('2 auto', autoplay);
-            expect(autoplay).to.equal(false);
-        }, muted => {
-            console.log('2 muted', muted);
-            expect(muted).to.equal(true);
-        }, () => true);
+        const audio = document.getElementById('audio') as HTMLMediaElement;
+
+        return new Promise<void>((resolve, reject) => {
+            media.isAutoplaySupported(audio, 1, () => {
+                // expect(autoplay).to.equal(false);
+            }, muted => {
+                expect(muted).to.equal(true);
+                audio.pause();
+                audio.currentTime = 0;
+                resolve();
+            }, () => reject());
+        });
     });
 });

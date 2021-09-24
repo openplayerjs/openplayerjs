@@ -96,6 +96,11 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 22. [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
 23. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
 
+## Projects using OpenPlayerJS
+| |   | |
+|--|--|--|
+| [<img src="https://nid2mglxfrhccbckwojq5x4oqq7rncu5aqprbl6lpbbmai7mj3qyq.arweave.net/agemGXcsTiEESrOTDt-OhD8Wip0EHxCvy3hCxH2J3DE" width="120" style="max-width: 100%;"/>](https://glass.xyz/)| | |
+
 ## Built With
 
 - [Typescript](https://www.typescriptlang.org/docs/home.html) - The Javascript for Pros.

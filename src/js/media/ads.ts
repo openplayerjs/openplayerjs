@@ -1183,21 +1183,18 @@ class Ads {
             this.#element.parentElement.classList.remove('op-ads--active');
         }
 
-        const triggerEvent = (eventName: string): void => {
-            const event = addEvent(eventName);
-            this.#element.dispatchEvent(event);
-        };
-
-        const waitPromise = (ms: number, isReject: boolean) => new Promise((resolve, reject) => {
-            if (isReject) {
-                return reject();
-            }
-            return setTimeout(resolve, ms);
-        });
-
-        waitPromise(50, this.#media.ended)
-            .then(() => this.#media.play().then(() => triggerEvent('play')))
-            .catch(() => triggerEvent('ended'));
+        if (this.#media.ended) {
+            const e = addEvent('ended');
+            this.#element.dispatchEvent(e);
+        } else {
+            try {
+                this.#media.play();
+                setTimeout(() => {
+                    const e = addEvent('play');
+                    this.#element.dispatchEvent(e);
+                }, 50);
+            } catch (err) {}
+        }
     }
 
     /**
