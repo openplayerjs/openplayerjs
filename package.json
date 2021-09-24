@@ -41,7 +41,7 @@
     "ima-sdk"
   ],
   "scripts": {
-    "build": "[ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-esm && npm run create-d-types",
+    "build": "npm test && [ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-esm && npm run create-d-types",
     "create-d-types": "npx typescript -p tsconfig-types.json",
     "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; npx typescript -p tsconfig-esm.json",
     "release": "npm run build && release-it",
@@ -82,7 +82,7 @@
     "karma": "^6.3.4",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
-    "karma-coverage-istanbul-reporter": "^3.0.3",
+    "karma-coverage": "^2.0.3",
     "karma-mocha": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
     "karma-typescript": "^5.5.2",

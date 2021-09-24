@@ -11408,29 +11408,21 @@ var ads_Ads = function () {
         ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
       }
 
-      var triggerEvent = function triggerEvent(eventName) {
-        var event = addEvent(eventName);
+      if (ads_classPrivateFieldGet(this, _Ads_media, "f").ended) {
+        var e = addEvent('ended');
 
-        ads_classPrivateFieldGet(_this8, _Ads_element, "f").dispatchEvent(event);
-      };
+        ads_classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
+      } else {
+        try {
+          ads_classPrivateFieldGet(this, _Ads_media, "f").play();
 
-      var waitPromise = function waitPromise(ms, isReject) {
-        return new Promise(function (resolve, reject) {
-          if (isReject) {
-            return reject();
-          }
+          setTimeout(function () {
+            var e = addEvent('play');
 
-          return setTimeout(resolve, ms);
-        });
-      };
-
-      waitPromise(50, ads_classPrivateFieldGet(this, _Ads_media, "f").ended).then(function () {
-        return ads_classPrivateFieldGet(_this8, _Ads_media, "f").play().then(function () {
-          return triggerEvent('play');
-        });
-      })["catch"](function () {
-        return triggerEvent('ended');
-      });
+            ads_classPrivateFieldGet(_this8, _Ads_element, "f").dispatchEvent(e);
+          }, 50);
+        } catch (err) {}
+      }
     }
   }, {
     key: "_requestAds",

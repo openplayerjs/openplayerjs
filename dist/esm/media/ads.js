@@ -689,19 +689,20 @@ class Ads {
         if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
             __classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
         }
-        const triggerEvent = (eventName) => {
-            const event = addEvent(eventName);
-            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
-        };
-        const waitPromise = (ms, isReject) => new Promise((resolve, reject) => {
-            if (isReject) {
-                return reject();
+        if (__classPrivateFieldGet(this, _Ads_media, "f").ended) {
+            const e = addEvent('ended');
+            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
+        }
+        else {
+            try {
+                __classPrivateFieldGet(this, _Ads_media, "f").play();
+                setTimeout(() => {
+                    const e = addEvent('play');
+                    __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
+                }, 50);
             }
-            return setTimeout(resolve, ms);
-        });
-        waitPromise(50, __classPrivateFieldGet(this, _Ads_media, "f").ended)
-            .then(() => __classPrivateFieldGet(this, _Ads_media, "f").play().then(() => triggerEvent('play')))
-            .catch(() => triggerEvent('ended'));
+            catch (err) { }
+        }
     }
     _requestAds() {
         __classPrivateFieldSet(this, _Ads_adsRequest, new google.ima.AdsRequest(), "f");

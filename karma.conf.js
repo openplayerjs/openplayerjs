@@ -1,7 +1,7 @@
 module.exports = config => {
     config.set({
         basePath: './',
-        browserNoActivityTimeout: 200000,
+        browserNoActivityTimeout: 60000,
         frameworks: ['mocha', 'chai', 'karma-typescript'],
         files: [
             {
@@ -15,24 +15,35 @@ module.exports = config => {
             'test/controls/*.ts',
             'test/player.ts',
         ],
-        proxies: {
-            '/src/': '/base/src/',
-            '/test/': '/base/test/',
-        },
         preprocessors: {
-            'src/js/**/*.ts': 'karma-typescript',
+            'src/js/**/*.ts': ['karma-typescript', 'coverage'],
             'test/**/*.ts': 'karma-typescript',
         },
         karmaTypescriptConfig: {
+            bundlerOptions: {
+                sourceMap: true,
+            },
             compilerOptions: {
                 target: 'es6',
-                types: ['node', 'mocha', 'chai', 'expect.js'],
                 esModuleInterop: true,
-                noResolve: false
             },
-            exclude: ['node_modules']
+            coverageOptions: {
+                instrumentation: true,
+                exclude: /test\/.*?\.ts$/,
+                threshold: {
+                    emitWarning: true,
+                    global: {
+                        lines: 40,
+                    },
+                },
+            },
+            exclude: ['node_modules'],
+            reports: {
+                text: '.',
+                lcov: 'coverage'
+            }
         },
-        reporters: ['mocha', 'karma-typescript', 'coverage-istanbul'],
+        reporters: ['mocha', 'karma-typescript', 'coverage'],
         port: 9876,
         runnerPort: 9100,
         captureTimeout: 60000,
@@ -42,34 +53,5 @@ module.exports = config => {
                 asyncOnly: true,
             }
         },
-        coverageIstanbulReporter: {
-            reports: ['text', 'lcov'],
-            combineBrowserReports: true,
-            fixWebpackSourcePaths: true,
-            skipFilesWithNoCoverage: true,
-            verbose: true,
-            // thresholds: {
-            //     emitWarning: false, // set to `true` to not fail the test command when thresholds are not met
-            //     // thresholds for all files
-            //     global: {
-            //         statements: 100,
-            //         lines: 100,
-            //         branches: 100,
-            //         functions: 100
-            //     },
-            //     // thresholds per file
-            //     each: {
-            //         statements: 100,
-            //         lines: 100,
-            //         branches: 100,
-            //         functions: 100,
-            //         overrides: {
-            //             'baz/component/**/*.js': {
-            //                 statements: 98
-            //             }
-            //         }
-            //     }
-            // },
-        }
     });
 };
