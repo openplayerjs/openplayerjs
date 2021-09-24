@@ -2,17 +2,12 @@ import { expect } from 'chai';
 import * as media from '../../src/js/utils/media';
 
 describe('utils/media', () => {
-    afterEach(done => {
-        setTimeout(done, 500);
-    });
-
     it('determines the extension of a source', done => {
         expect(media.getExtension('https://www.w3schools.com/xml/note.xml')).to.equal('xml');
         expect(media.getExtension('test.pdf')).to.equal('pdf');
         expect(media.getExtension('test')).to.equal('');
         done();
     });
-
     it('determines if media source is an HLS resource', done => {
         expect(media.isHlsSource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
@@ -32,7 +27,6 @@ describe('utils/media', () => {
         })).to.equal(false);
         done();
     });
-
     it('determines if media source is an HLS playlist resource', done => {
         expect(media.isM3USource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u',
@@ -44,7 +38,6 @@ describe('utils/media', () => {
         })).to.equal(false);
         done();
     });
-
     it('determines if media source is an MPEG-DASH resource', done => {
         expect(media.isDashSource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mpd',
@@ -60,7 +53,6 @@ describe('utils/media', () => {
         })).to.equal(false);
         done();
     });
-
     it('determines if media source is an FLV resource', done => {
         expect(media.isFlvSource({
             src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.flv',
@@ -84,7 +76,6 @@ describe('utils/media', () => {
         })).to.equal(false);
         done();
     });
-
     it('predicts the extension of a media source based on the URL provided', done => {
         const video = document.getElementById('video') as HTMLMediaElement;
         const audio = document.getElementById('audio') as HTMLMediaElement;
@@ -111,7 +102,6 @@ describe('utils/media', () => {
         expect(media.predictType('test', video)).to.equal('video/mp4');
         done();
     });
-
     it.skip('checks if browser can autoplay media without being muted', () => {
         const video = document.getElementById('video') as HTMLMediaElement;
         video.muted = false;
@@ -127,7 +117,6 @@ describe('utils/media', () => {
             video.muted = true;
         });
     });
-
     it.skip('checks if browser can autoplay media being muted', async () => {
         const audio = document.getElementById('audio') as HTMLMediaElement;
 

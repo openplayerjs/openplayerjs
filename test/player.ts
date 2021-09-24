@@ -2,28 +2,25 @@ import timers from '@sinonjs/fake-timers';
 import OpenPlayerJS from '../src/js/player';
 
 describe('player', function () {
-    this.timeout(60000);
+    this.timeout(6000);
 
-    const assertAfter = async (assertCondition, time = 1000) => {
-        const setTimeoutPromise = timeout => new Promise(resolve => setTimeout(resolve, timeout));
-        await setTimeoutPromise(time);
-        return assertCondition;
-    };
+    // const assertAfter = async (assertCondition, time = 1000) => {
+    //     const setTimeoutPromise = timeout => new Promise(resolve => setTimeout(resolve, timeout));
+    //     await setTimeoutPromise(time);
+    //     return assertCondition;
+    // };
 
     const defaultVideo = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
     //     // const defaultAudio = 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp3';
     let videoPlayer;
     let audioPlayer;
     let clock;
-    let timePromise = null;
 
     beforeEach(() => {
         clock = timers.install();
     });
-
     afterEach(() => {
         clock.uninstall();
-        timePromise = null;
 
         if (OpenPlayerJS.instances.video) {
             OpenPlayerJS.instances.video.destroy();
@@ -35,10 +32,9 @@ describe('player', function () {
         videoPlayer = null;
         audioPlayer = null;
     });
-
-    it.skip('creates an instance of player by initializing it via configuration', done => {
+    it('creates an instance of a video player by initializing it via configuration', async () => {
         videoPlayer = new OpenPlayerJS('video');
-        videoPlayer.init();
+        await videoPlayer.init();
 
         expect(videoPlayer instanceof OpenPlayerJS).to.equal(true);
         expect(document.getElementById('video').nodeName).to.equal('DIV');
@@ -54,13 +50,15 @@ describe('player', function () {
         expect(videoPlayer.getControls().getContainer().querySelector('.op-controls__mute')).to.not.equal(null);
         expect(videoPlayer.getControls().getContainer().querySelector('.op-controls__settings')).to.not.equal(null);
         expect(videoPlayer.getContainer().querySelector('.op-player__play')).to.not.equal(null);
-
+        expect(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
+    });
+    it('creates an instance of an audio player by initializing it via configuration', async () => {
         audioPlayer = new OpenPlayerJS('audio');
-        audioPlayer.init();
+        await audioPlayer.init();
 
         expect(audioPlayer.id).to.equal('audio');
         expect(document.querySelector('audio#audio')).to.be(null);
-        expect(OpenPlayerJS.instances.video).to.not.equal(undefined);
+        expect(OpenPlayerJS.instances.audio).to.not.equal(undefined);
         expect(audioPlayer.getContainer().classList.contains('op-player__audio')).to.be(true);
         expect(audioPlayer.getContainer().style.width).to.equal('');
         expect(audioPlayer.getContainer().style.height).to.equal('');
@@ -70,9 +68,8 @@ describe('player', function () {
         expect(audioPlayer.getControls().getContainer().querySelector('.op-controls__mute')).to.not.equal(null);
         expect(audioPlayer.getControls().getContainer().querySelector('.op-controls__settings')).to.not.equal(null);
         expect(audioPlayer.getContainer().querySelector('.op-player__play')).to.equal(null);
-        done();
+        expect(audioPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
     });
-
     it('detects if user is using a mouse (by default) or keyboard', async () => {
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
@@ -84,7 +81,6 @@ describe('player', function () {
         videoPlayer.getContainer().dispatchEvent(event);
         expect(videoPlayer.getContainer().classList.contains('op-player__keyboard--inactive')).to.equal(false);
     });
-
     it('detects the type of media to be played (i.e., video)', async () => {
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
@@ -94,7 +90,6 @@ describe('player', function () {
         audioPlayer.init();
         expect(audioPlayer.getContainer().classList.contains('op-player__audio')).to.equal(true);
     });
-
     it('displays a different UI when changing the mode to `fill` or `fit` (ONLY for video)', async () => {
         videoPlayer = new OpenPlayerJS('video', { mode: 'fill' });
         await videoPlayer.init();
@@ -116,7 +111,6 @@ describe('player', function () {
         expect(audioPlayer.getContainer().classList.contains('op-player__fit')).to.equal(false);
         expect(audioPlayer.getContainer().parentElement.classList.contains('op-player__fit--wrapper')).to.equal(false);
     });
-
     it('uses the width and/or height (in px or %) indicated in the configuration', async () => {
         videoPlayer = new OpenPlayerJS('video', { width: 100 });
         await videoPlayer.init();
@@ -135,31 +129,28 @@ describe('player', function () {
         expect(videoPlayer.getContainer().style.width).to.equal('100%');
         expect(videoPlayer.getContainer().style.height).to.equal('50%');
     });
-
-    it.skip('displays the duration of media when player is loaded, or when it plays and `preload` attribute is `none`', async done => {
-        videoPlayer = new OpenPlayerJS('video');
-        await videoPlayer.init();
-        videoPlayer.play();
-
-        timePromise = assertAfter(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText, 500);
-        clock.tick(500);
-        expect(await timePromise).to.not.equal('00:00');
-        videoPlayer.destroy();
-
+    it('displays the duration of media when player plays media, and `preload` attribute is set to `none`', async () => {
         document.getElementById('video').setAttribute('preload', 'none');
+
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
-        expect(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
-        videoPlayer.play();
+        return new Promise<void>((resolve, reject) => {
+            const checkDuration = () => {
+                expect(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
+                videoPlayer.getElement().removeEventListener('play', checkDuration);
+                document.getElementById('video').removeAttribute('preload');
+                resolve();
+            };
+            videoPlayer.getElement().addEventListener('play', checkDuration);
 
-        timePromise = assertAfter(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText, 500);
-        clock.tick(500);
-        expect(await timePromise).to.not.equal('00:00');
-        document.getElementById('video').removeAttribute('preload');
-        done();
+            try {
+                videoPlayer.play();
+            } catch (err) {
+                reject();
+            }
+        });
     });
-
-    it.skip('allows user to add/remove control elements via configuration', done => {
+    it('allows user to add/remove control elements via configuration', async () => {
         const controls = {
             layers: {
                 left: ['play', 'volume'],
@@ -168,18 +159,11 @@ describe('player', function () {
             },
         };
 
-        videoPlayer = new OpenPlayerJS('video', { controls });
-        videoPlayer.init();
-        expect(videoPlayer.getContainer().querySelector('.op-controls__duration')).to.be(null);
-        expect(videoPlayer.getContainer().querySelector('.op-controls__playpause')).to.not.be(null);
-
         audioPlayer = new OpenPlayerJS('audio', { controls });
-        audioPlayer.init();
+        await audioPlayer.init();
         expect(audioPlayer.getContainer().querySelector('.op-controls__duration')).to.be(null);
         expect(audioPlayer.getContainer().querySelector('.op-controls__playpause')).to.not.be(null);
-        done();
     });
-
     it.skip('handles attempts to play an invalid source', async () => {
         videoPlayer = new OpenPlayerJS('video');
         videoPlayer.src = 'https://non-existing.test/test.mp4';
@@ -195,12 +179,11 @@ describe('player', function () {
             }
         });
     });
-
     it.skip('allows to set a source or more after it has been initialized (updating sources)', async () => {
         videoPlayer = new OpenPlayerJS('video');
-        videoPlayer.init();
+        await videoPlayer.init();
         videoPlayer.src = 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8';
-        await videoPlayer.load();
+        videoPlayer.load();
 
         expect(videoPlayer.getMedia().src).to.eql([{
             src: 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8',
@@ -225,7 +208,6 @@ describe('player', function () {
             }
         });
     });
-
     it.skip('allows to set a source when no sources are detected in media (dynamically adding sources)', async () => {
         const id = 'video';
         const source = document.getElementById(id).querySelector('source');

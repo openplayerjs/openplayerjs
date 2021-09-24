@@ -5,6 +5,7 @@
 [![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Support%20OpenPlayerJS%20by%20giving%20the%20project%20a%20start%20at%20&url=https://www.openplayerjs.com&hashtags=openplayerjs,mediaplayer,vpaid,opensourcerocks,streaming)
+[![Size](https://img.shields.io/bundlephobia/minzip/openplayerjs/latest?style=flat-square)](https://nodei.co/npm/openplayerjs)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
 [![OpenPlayerJS](https://circleci.com/gh/openplayerjs/openplayerjs.svg?style=svg)](https://app.circleci.com/pipelines/github/openplayerjs/openplayerjs)
 
@@ -96,10 +97,10 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 22. [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
 23. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
 
-## Projects using OpenPlayerJS
+<!-- ## Projects using OpenPlayerJS
 | |   | |
 |--|--|--|
-| [<img src="https://nid2mglxfrhccbckwojq5x4oqq7rncu5aqprbl6lpbbmai7mj3qyq.arweave.net/agemGXcsTiEESrOTDt-OhD8Wip0EHxCvy3hCxH2J3DE" width="120" style="max-width: 100%;"/>](https://glass.xyz/)| | |
+| [<img src="https://nid2mglxfrhccbckwojq5x4oqq7rncu5aqprbl6lpbbmai7mj3qyq.arweave.net/agemGXcsTiEESrOTDt-OhD8Wip0EHxCvy3hCxH2J3DE" width="120" style="max-width: 100%;"/>](https://glass.xyz/)| | | -->
 
 ## Built With
 

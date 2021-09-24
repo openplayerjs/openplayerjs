@@ -32,7 +32,7 @@ module.exports = config => {
             },
             exclude: ['node_modules']
         },
-        reporters: ['mocha', 'karma-typescript'],
+        reporters: ['mocha', 'karma-typescript', 'coverage-istanbul'],
         port: 9876,
         runnerPort: 9100,
         captureTimeout: 60000,
@@ -41,6 +41,35 @@ module.exports = config => {
             mocha: {
                 asyncOnly: true,
             }
+        },
+        coverageIstanbulReporter: {
+            reports: ['text', 'lcov'],
+            combineBrowserReports: true,
+            fixWebpackSourcePaths: true,
+            skipFilesWithNoCoverage: true,
+            verbose: true,
+            // thresholds: {
+            //     emitWarning: false, // set to `true` to not fail the test command when thresholds are not met
+            //     // thresholds for all files
+            //     global: {
+            //         statements: 100,
+            //         lines: 100,
+            //         branches: 100,
+            //         functions: 100
+            //     },
+            //     // thresholds per file
+            //     each: {
+            //         statements: 100,
+            //         lines: 100,
+            //         branches: 100,
+            //         functions: 100,
+            //         overrides: {
+            //             'baz/component/**/*.js': {
+            //                 statements: 98
+            //             }
+            //         }
+            //     }
+            // },
         }
     });
 };

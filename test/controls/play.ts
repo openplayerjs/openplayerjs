@@ -7,6 +7,9 @@ describe('controls > play', () => {
         if (OpenPlayerJS.instances.video) {
             OpenPlayerJS.instances.video.destroy();
         }
+        if (OpenPlayerJS.instances.audio) {
+            OpenPlayerJS.instances.audio.destroy();
+        }
 
         player = null;
     });
