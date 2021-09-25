@@ -17,7 +17,6 @@ jobs:
                   name: Run OpenPlayerJS tests on headless Chrome
                   command: npm test
             - coveralls/upload
-                verbose: true
 
 workflows:
     end-to-end-tests:
