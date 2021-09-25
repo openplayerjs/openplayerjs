@@ -1,9 +1,9 @@
-# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
 version: 2.1
 
 orbs:
     node: circleci/node@4.3.0
     browser-tools: circleci/browser-tools@1.1.3
+    coveralls: coveralls/coveralls@1.0.6
 
 jobs:
     chrome:
@@ -16,6 +16,7 @@ jobs:
             - run:
                   name: Run OpenPlayerJS tests on headless Chrome
                   command: npm run test
+            - coveralls/upload
 
 workflows:
     end-to-end-tests:
