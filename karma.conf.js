@@ -40,7 +40,11 @@ module.exports = config => {
             exclude: ['node_modules'],
             reports: {
                 text: '.',
-                lcov: 'coverage'
+                lcov: {
+                    directory: 'coverage',
+                    filename: 'lcov.info',
+                    subdirectory: '.'
+                }
             }
         },
         coverageReporter: {
