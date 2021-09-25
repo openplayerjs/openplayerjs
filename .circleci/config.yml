@@ -7,8 +7,6 @@ orbs:
 
 jobs:
     chrome:
-        context:
-            - openplayerjs
         docker:
             - image: cimg/node:12.22-browsers
         steps:
@@ -17,7 +15,7 @@ jobs:
             - node/install-packages
             - run:
                   name: Run OpenPlayerJS tests on headless Chrome
-                  command: npm run test
+                  command: npm test
             - coveralls/upload
 
 workflows:
