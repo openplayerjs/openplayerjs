@@ -99,7 +99,7 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 
 <!-- ## Projects using OpenPlayerJS
 | |   | |
-|--|--|--|
+|--|--|--| 
 | [<img src="https://nid2mglxfrhccbckwojq5x4oqq7rncu5aqprbl6lpbbmai7mj3qyq.arweave.net/agemGXcsTiEESrOTDt-OhD8Wip0EHxCvy3hCxH2J3DE" width="120" style="max-width: 100%;"/>](https://glass.xyz/)| | | -->
 
 ## Built With
