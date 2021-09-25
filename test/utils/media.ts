@@ -102,33 +102,33 @@ describe('utils/media', () => {
         expect(media.predictType('test', video)).to.equal('video/mp4');
         done();
     });
-    it.skip('checks if browser can autoplay media without being muted', () => {
-        const video = document.getElementById('video') as HTMLMediaElement;
-        video.muted = false;
-        return new Promise<void>((resolve, reject) => {
-            media.isAutoplaySupported(video, 1, () => {
-                // expect(autoplay).to.equal(false);
-            }, muted => {
-                expect(muted).to.equal(false);
-                video.pause();
-                video.currentTime = 0;
-                resolve();
-            }, () => reject());
-            video.muted = true;
-        });
-    });
-    it.skip('checks if browser can autoplay media being muted', async () => {
-        const audio = document.getElementById('audio') as HTMLMediaElement;
+    // it('checks if browser can autoplay media without being muted', () => {
+    //     const video = document.getElementById('video') as HTMLMediaElement;
+    //     video.muted = false;
+    //     return new Promise<void>((resolve, reject) => {
+    //         media.isAutoplaySupported(video, 1, () => {
+    //             // expect(autoplay).to.equal(false);
+    //         }, muted => {
+    //             expect(muted).to.equal(false);
+    //             video.pause();
+    //             video.currentTime = 0;
+    //             resolve();
+    //         }, () => reject());
+    //         video.muted = true;
+    //     });
+    // });
+    // it('checks if browser can autoplay media being muted', async () => {
+    //     const audio = document.getElementById('audio') as HTMLMediaElement;
 
-        return new Promise<void>((resolve, reject) => {
-            media.isAutoplaySupported(audio, 1, () => {
-                // expect(autoplay).to.equal(false);
-            }, muted => {
-                expect(muted).to.equal(true);
-                audio.pause();
-                audio.currentTime = 0;
-                resolve();
-            }, () => reject());
-        });
-    });
+    //     return new Promise<void>((resolve, reject) => {
+    //         media.isAutoplaySupported(audio, 1, () => {
+    //             // expect(autoplay).to.equal(false);
+    //         }, muted => {
+    //             expect(muted).to.equal(true);
+    //             audio.pause();
+    //             audio.currentTime = 0;
+    //             resolve();
+    //         }, () => reject());
+    //     });
+    // });
 });

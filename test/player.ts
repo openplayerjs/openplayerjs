@@ -164,82 +164,82 @@ describe('player', function () {
         expect(audioPlayer.getContainer().querySelector('.op-controls__duration')).to.be(null);
         expect(audioPlayer.getContainer().querySelector('.op-controls__playpause')).to.not.be(null);
     });
-    it.skip('handles attempts to play an invalid source', async () => {
-        videoPlayer = new OpenPlayerJS('video');
-        videoPlayer.src = 'https://non-existing.test/test.mp4';
-        await videoPlayer.init();
+    // it('handles attempts to play an invalid source', async () => {
+    //     videoPlayer = new OpenPlayerJS('video');
+    //     videoPlayer.src = 'https://non-existing.test/test.mp4';
+    //     await videoPlayer.init();
 
-        return new Promise<void>(resolve => {
-            try {
-                videoPlayer.play();
-            } catch (err) {
-                expect(err instanceof DOMException).to.equal(true);
-                videoPlayer.src = defaultVideo;
-                resolve();
-            }
-        });
-    });
-    it.skip('allows to set a source or more after it has been initialized (updating sources)', async () => {
-        videoPlayer = new OpenPlayerJS('video');
-        await videoPlayer.init();
-        videoPlayer.src = 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8';
-        videoPlayer.load();
+    //     return new Promise<void>(resolve => {
+    //         try {
+    //             videoPlayer.play();
+    //         } catch (err) {
+    //             expect(err instanceof DOMException).to.equal(true);
+    //             videoPlayer.src = defaultVideo;
+    //             resolve();
+    //         }
+    //     });
+    // });
+    // it('allows to set a source or more after it has been initialized (updating sources)', async () => {
+    //     videoPlayer = new OpenPlayerJS('video');
+    //     await videoPlayer.init();
+    //     videoPlayer.src = 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8';
+    //     videoPlayer.load();
 
-        expect(videoPlayer.getMedia().src).to.eql([{
-            src: 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8',
-            type: 'application/x-mpegURL',
-        }]);
+    //     expect(videoPlayer.getMedia().src).to.eql([{
+    //         src: 'https://player.webvideocore.net/CL1olYogIrDWvwqiIKK7eLBkzvO18gwo9ERMzsyXzwt_t-ya8ygf2kQBZww38JJT/8i4vvznv8408.m3u8',
+    //         type: 'application/x-mpegURL',
+    //     }]);
 
-        return new Promise<void>((resolve, reject) => {
-            let assessed = false;
-            videoPlayer.getElement().addEventListener('timeupdate', e => {
-                if (!assessed && e.target.currentTime > 0) {
-                    expect(e.target.currentTime).to.not.equal(0);
-                    assessed = true;
-                    videoPlayer.src = defaultVideo;
-                    resolve();
-                }
-            });
+    //     return new Promise<void>((resolve, reject) => {
+    //         let assessed = false;
+    //         videoPlayer.getElement().addEventListener('timeupdate', e => {
+    //             if (!assessed && e.target.currentTime > 0) {
+    //                 expect(e.target.currentTime).to.not.equal(0);
+    //                 assessed = true;
+    //                 videoPlayer.src = defaultVideo;
+    //                 resolve();
+    //             }
+    //         });
 
-            try {
-                videoPlayer.play();
-            } catch (err) {
-                reject();
-            }
-        });
-    });
-    it.skip('allows to set a source when no sources are detected in media (dynamically adding sources)', async () => {
-        const id = 'video';
-        const source = document.getElementById(id).querySelector('source');
-        const media = (document.getElementById(id) as HTMLMediaElement);
-        media.setAttribute('preload', 'none');
-        media.querySelector('source').remove();
+    //         try {
+    //             videoPlayer.play();
+    //         } catch (err) {
+    //             reject();
+    //         }
+    //     });
+    // });
+    // it('allows to set a source when no sources are detected in media (dynamically adding sources)', async () => {
+    //     const id = 'video';
+    //     const source = document.getElementById(id).querySelector('source');
+    //     const media = (document.getElementById(id) as HTMLMediaElement);
+    //     media.setAttribute('preload', 'none');
+    //     media.querySelector('source').remove();
 
-        audioPlayer = new OpenPlayerJS(id);
-        audioPlayer.src = 'https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3';
-        await audioPlayer.init();
-        await audioPlayer.load();
+    //     audioPlayer = new OpenPlayerJS(id);
+    //     audioPlayer.src = 'https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3';
+    //     await audioPlayer.init();
+    //     await audioPlayer.load();
 
-        return new Promise<void>((resolve, reject) => {
-            let assessed = false;
-            audioPlayer.getElement().addEventListener('timeupdate', e => {
-                if (!assessed && e.target.currentTime > 0) {
-                    expect(e.target.currentTime).to.not.equal(0);
-                    media.appendChild(source);
-                    assessed = true;
-                    resolve();
-                }
-            });
+    //     return new Promise<void>((resolve, reject) => {
+    //         let assessed = false;
+    //         audioPlayer.getElement().addEventListener('timeupdate', e => {
+    //             if (!assessed && e.target.currentTime > 0) {
+    //                 expect(e.target.currentTime).to.not.equal(0);
+    //                 media.appendChild(source);
+    //                 assessed = true;
+    //                 resolve();
+    //             }
+    //         });
 
-            try {
-                audioPlayer.play();
-            } catch (err) {
-                reject();
-            }
-        });
-    });
+    //         try {
+    //             audioPlayer.play();
+    //         } catch (err) {
+    //             reject();
+    //         }
+    //     });
+    // });
 
-    //     it.skip('should allow listening to custom events and add custom config (i.e., HLS library)', () => {
+    //     it('should allow listening to custom events and add custom config (i.e., HLS library)', () => {
     //         const media = document.getElementById('video') as HTMLMediaElement;
     //         const source = media.querySelector('source');
     //         media.querySelector('source').remove();
