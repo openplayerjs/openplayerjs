@@ -43,6 +43,10 @@ module.exports = config => {
                 lcov: 'coverage'
             }
         },
+        coverageReporter: {
+            dir: 'coverage',
+            subdir: '.'
+        },
         reporters: ['mocha', 'karma-typescript', 'coverage'],
         port: 9876,
         runnerPort: 9100,
