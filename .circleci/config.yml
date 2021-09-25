@@ -7,6 +7,8 @@ orbs:
 
 jobs:
     chrome:
+        context:
+            - openplayerjs
         docker:
             - image: cimg/node:12.22-browsers
         steps:
