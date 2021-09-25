@@ -6,3 +6,4 @@ coverage/
 .history/
 .DS_Store
 .nyc_output
+.coveralls.yml
