@@ -33,7 +33,7 @@ module.exports = config => {
                 threshold: {
                     emitWarning: true,
                     global: {
-                        lines: 40,
+                        lines: 37,
                     },
                 },
             },

@@ -87,7 +87,7 @@ describe('player', function () {
         expect(videoPlayer.getContainer().classList.contains('op-player__video')).to.equal(true);
 
         audioPlayer = new OpenPlayerJS('audio');
-        audioPlayer.init();
+        await audioPlayer.init();
         expect(audioPlayer.getContainer().classList.contains('op-player__audio')).to.equal(true);
     });
     it('displays a different UI when changing the mode to `fill` or `fit` (ONLY for video)', async () => {
