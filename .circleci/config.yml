@@ -16,6 +16,8 @@ jobs:
             - run:
                   name: Run OpenPlayerJS tests on headless Chrome
                   command: npm test
+            - store_artifacts:
+                  path: coverage
             - coveralls/upload
 
 workflows:
