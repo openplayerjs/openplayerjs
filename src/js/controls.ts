@@ -204,7 +204,9 @@ class Controls implements PlayerComponent {
             }
 
             // Initial countdown to hide controls
-            this._startControlTimer(3000);
+            if (isMediaVideo && !this.#player.activeElement().paused) {
+                this._startControlTimer(3000);
+            }
         }
     }
 

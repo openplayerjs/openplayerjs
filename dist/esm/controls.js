@@ -124,7 +124,9 @@ class Controls {
                     __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
                 });
             }
-            this._startControlTimer(3000);
+            if (isMediaVideo && !__classPrivateFieldGet(this, _Controls_player, "f").activeElement().paused) {
+                this._startControlTimer(3000);
+            }
         }
     }
     destroy() {
