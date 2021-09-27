@@ -91,4 +91,51 @@ describe('controls > play', () => {
             }
         });
     });
+    it('plays/pauses the media when clicking on the play button', async () => {
+        player = new OpenPlayerJS('video');
+        await player.init();
+
+        return new Promise<void>(resolve => {
+            const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            let e = new CustomEvent('click');
+
+            play.dispatchEvent(e);
+            expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
+
+            e = new CustomEvent('click');
+            play.dispatchEvent(e);
+            expect(play.classList.contains('op-controls__playpause--pause')).to.be(false);
+
+            resolve();
+        });
+    });
+
+    it('plays/pauses the media when using the Enter/tab space keys and play button is focused', async () => {
+        player = new OpenPlayerJS('video');
+        await player.init();
+
+        return new Promise<void>(resolve => {
+            const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            let e = new KeyboardEvent('keydown', {
+                bubbles: true, cancelable: true, key: 'Enter',
+            });
+            play.focus();
+
+            play.dispatchEvent(e);
+            expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
+
+            // volume.focus();
+            // e = new KeyboardEvent('keydown', {
+            //     bubbles: true, cancelable: true, key: 'Enter',
+            // });
+            // volume.dispatchEvent(e);
+            // expect(volume.classList.contains('op-controls__mute--muted')).to.be(true);
+
+            e = new KeyboardEvent('keydown', {
+                bubbles: true, cancelable: true, key: 'Enter',
+            });
+            play.dispatchEvent(e);
+            resolve();
+        });
+    });
 });

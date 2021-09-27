@@ -232,8 +232,8 @@ class Volume implements PlayerComponent {
             updateButton(el);
         };
         this.#events.media.timeupdate = () => {
-            if (isAudio(this.#player.getElement()) && (this.#player.activeElement().duration === Infinity ||
-                this.#player.getElement().getAttribute('op-live__enabled'))) {
+            if (isAudio(this.#player.getElement()) && (this.#player.activeElement().duration === Infinity
+            || this.#player.getElement().getAttribute('op-live__enabled'))) {
             }
         };
         this.#events.media.loadedmetadata = () => {

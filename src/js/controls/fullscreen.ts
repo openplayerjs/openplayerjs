@@ -65,7 +65,7 @@ class Fullscreen implements PlayerComponent {
      * @type number
      * @memberof Fullscreen
      */
-    #fullscreenWidth: number = 0;
+    #fullscreenWidth = 0;
 
     /**
      * Storage for user's full screen height.
@@ -74,7 +74,7 @@ class Fullscreen implements PlayerComponent {
      * @type number
      * @memberof Fullscreen
      */
-    #fullscreenHeight: number = 0;
+    #fullscreenHeight = 0;
 
     /**
      * Callback when user clicks Fullscreen button.
@@ -128,9 +128,9 @@ class Fullscreen implements PlayerComponent {
         const target = (document as any);
 
         // Check if fullscreen is supported
-        this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled ||
-            target.msFullscreenEnabled || target.webkitSupportsFullscreen ||
-            target.webkitFullscreenEnabled || (document.createElement('video') as any).webkitRequestFullScreen);
+        this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled
+            || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled
+            || (document.createElement('video') as any).webkitRequestFullScreen);
 
         this._keydownEvent = this._keydownEvent.bind(this);
         this._fullscreenChange = this._fullscreenChange.bind(this);
