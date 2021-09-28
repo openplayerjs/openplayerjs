@@ -75,7 +75,7 @@ class Settings implements PlayerComponent {
      * @type string
      * @memberof Settings
      */
-    #originalOutput: string = '';
+    #originalOutput = '';
 
     /**
      * Default labels from player's config
@@ -325,9 +325,10 @@ class Settings implements PlayerComponent {
                 </div>
                 <div class="op-settings__menu" role="menu" id="menu-item-${key}">
                     ${submenu.map((item: SettingsSubItem) => `
-                    <div class="op-settings__submenu-item" role="menuitemradio"
-                        aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
-                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${item.key}">${item.label}</div>
+                    <div class="op-settings__submenu-item" role="menuitemradio" aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
+                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${item.key}">
+                            ${item.label}
+                        </div>
                     </div>`).join('')}
                 </div>`;
             this.#submenu[key] = subItems;
@@ -349,6 +350,7 @@ class Settings implements PlayerComponent {
                     if (fragments.length > 0) {
                         fragments.pop();
 
+                        // eslint-disable-next-line no-useless-escape
                         const current = fragments.join('-').replace(/^\-|\-$/, '');
                         if (typeof this.#submenu[current] !== undefined) {
                             this.#menu.classList.add('op-settings--sliding');
@@ -406,7 +408,7 @@ class Settings implements PlayerComponent {
      * @param {number} [minItems=2]
      * @memberof Settings
      */
-    public removeItem(id: string|number, type: string, minItems: number = 2) {
+    public removeItem(id: string|number, type: string, minItems = 2) {
         const target = this.#player.getElement().querySelector(`.op-settings__submenu-label[data-value=${type}-${id}]`);
         if (target) {
             removeElement(target);
@@ -429,14 +431,14 @@ class Settings implements PlayerComponent {
      * @param {KeyboardEvent} e
      * @memberof Volume
      */
-     private _keydownEvent(e: KeyboardEvent) {
+    private _keydownEvent(e: KeyboardEvent) {
         const key = e.which || e.keyCode || 0;
         const isAd = this.#player.isAd();
         const settingsBtnFocused = document?.activeElement?.classList.contains('op-controls__settings');
 
-        const menuFocused = document?.activeElement?.classList.contains('op-settings__menu-content') ||
-            document?.activeElement?.classList.contains('op-settings__back') ||
-            document?.activeElement?.classList.contains('op-settings__submenu-label');
+        const menuFocused = document?.activeElement?.classList.contains('op-settings__menu-content')
+            || document?.activeElement?.classList.contains('op-settings__back')
+            || document?.activeElement?.classList.contains('op-settings__submenu-label');
         if (!isAd) {
             if (settingsBtnFocused && (key === 13 || key === 32)) {
                 this.clickEvent();

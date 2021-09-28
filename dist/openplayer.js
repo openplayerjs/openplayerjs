@@ -5315,7 +5315,9 @@ var captions_Captions = function () {
 
                 _this._prepareTrack(i, element.srclang, trackUrl, element["default"] || false);
 
-                if (__classPrivateFieldGet(_this, _Captions_menu, "f") && !__classPrivateFieldGet(_this, _Captions_menu, "f").querySelector(".op-subtitles__option[data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language, "\"]"))) {
+                var selector = ".op-subtitles__option[data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language, "\"]");
+
+                if (__classPrivateFieldGet(_this, _Captions_menu, "f") && !__classPrivateFieldGet(_this, _Captions_menu, "f").querySelector(selector)) {
                   var item = document.createElement('div');
                   item.className = 'op-settings__submenu-item';
                   item.tabIndex = 0;
@@ -5575,7 +5577,7 @@ var captions_Captions = function () {
     value: function _getCuesFromText(webvttText) {
       var lines = webvttText.split(/\r?\n/);
       var entries = [];
-      var urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+      var urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
       var timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
       timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*?)$';
       var regexp = new RegExp(timePattern);
@@ -5687,7 +5689,9 @@ var captions_Captions = function () {
 
         if (currentTime >= start && currentTime < stop) {
           return mid;
-        } else if (start < currentTime) {
+        }
+
+        if (start < currentTime) {
           low = mid + 1;
         } else if (start > currentTime) {
           high = mid - 1;
@@ -6569,21 +6573,37 @@ var levels_Levels = function () {
     value: function _getResolutionsLabel(height) {
       if (height >= 4320) {
         return '8K';
-      } else if (height >= 2160) {
+      }
+
+      if (height >= 2160) {
         return '4K';
-      } else if (height >= 1440) {
+      }
+
+      if (height >= 1440) {
         return '1440p';
-      } else if (height >= 1080) {
+      }
+
+      if (height >= 1080) {
         return '1080p';
-      } else if (height >= 720) {
+      }
+
+      if (height >= 720) {
         return '720p';
-      } else if (height >= 480) {
+      }
+
+      if (height >= 480) {
         return '480p';
-      } else if (height >= 360) {
+      }
+
+      if (height >= 360) {
         return '360p';
-      } else if (height >= 240) {
+      }
+
+      if (height >= 240) {
         return '240p';
-      } else if (height >= 144) {
+      }
+
+      if (height >= 144) {
         return '144p';
       }
 
@@ -6729,8 +6749,12 @@ var play_Play = function () {
           }
 
           el.play();
+
+          play_classPrivateFieldGet(_this, _Play_events, "f").media.play();
         } else {
           el.pause();
+
+          play_classPrivateFieldGet(_this, _Play_events, "f").media.pause();
         }
 
         e.preventDefault();
@@ -7150,7 +7174,8 @@ var progress_Progress = function () {
             progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
           }
 
-          var current = progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime + 1 >= 100 ? 100 : el.duration - el.currentTime + 1;
+          var duration = el.duration - el.currentTime + 1 >= 100 ? 100 : el.duration - el.currentTime + 1;
+          var current = progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia() ? el.currentTime : duration;
           var min = parseFloat(progress_classPrivateFieldGet(_this, _Progress_slider, "f").min);
           var max = parseFloat(progress_classPrivateFieldGet(_this, _Progress_slider, "f").max);
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = current.toString();
@@ -7241,20 +7266,18 @@ var progress_Progress = function () {
       var mobileForcePause = function mobileForcePause(e) {
         var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-        if (el.duration === Infinity) {
-          return true;
+        if (el.duration !== Infinity) {
+          var changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
+          var x = changedTouches ? changedTouches[0].pageX : e.pageX;
+          var pos = x - offset(progress_classPrivateFieldGet(_this, _Progress_progress, "f")).left;
+
+          var percentage = pos / progress_classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
+
+          var time = percentage * el.duration;
+          progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = time.toString();
+          updateSlider(e);
+          forcePause(e);
         }
-
-        var changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
-        var x = changedTouches ? changedTouches[0].pageX : e.pageX;
-        var pos = x - offset(progress_classPrivateFieldGet(_this, _Progress_progress, "f")).left;
-
-        var percentage = pos / progress_classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
-
-        var time = percentage * el.duration;
-        progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = time.toString();
-        updateSlider(e);
-        forcePause(e);
       };
 
       progress_classPrivateFieldGet(this, _Progress_events, "f").slider.input = updateSlider.bind(this);
@@ -7268,38 +7291,36 @@ var progress_Progress = function () {
         progress_classPrivateFieldGet(this, _Progress_events, "f").container.mousemove = function (e) {
           var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-          if (el.duration === Infinity || progress_classPrivateFieldGet(_this, _Progress_player, "f").isAd()) {
-            return true;
+          if (el.duration !== Infinity && !progress_classPrivateFieldGet(_this, _Progress_player, "f").isAd()) {
+            var x = e.originalEvent && e.originalEvent.changedTouches ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+            var pos = x - offset(progress_classPrivateFieldGet(_this, _Progress_progress, "f")).left;
+            var half = progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").offsetWidth / 2;
+
+            var percentage = pos / progress_classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
+
+            var time = percentage * el.duration;
+
+            var mediaContainer = progress_classPrivateFieldGet(_this, _Progress_player, "f").getContainer();
+
+            var limit = mediaContainer.offsetWidth - progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").offsetWidth;
+
+            if (pos <= 0 || x - offset(mediaContainer).left <= half) {
+              pos = 0;
+            } else if (x - offset(mediaContainer).left >= limit) {
+              pos = limit - offset(progress_classPrivateFieldGet(_this, _Progress_slider, "f")).left - 10;
+            } else {
+              pos -= half;
+            }
+
+            if (percentage >= 0 && percentage <= 1) {
+              progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").classList.add('op-controls__tooltip--visible');
+            } else {
+              progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").classList.remove('op-controls__tooltip--visible');
+            }
+
+            progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").style.left = "".concat(pos, "px");
+            progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").innerHTML = isNaN(time) ? '00:00' : formatTime(time);
           }
-
-          var x = e.originalEvent && e.originalEvent.changedTouches ? e.originalEvent.changedTouches[0].pageX : e.pageX;
-          var pos = x - offset(progress_classPrivateFieldGet(_this, _Progress_progress, "f")).left;
-          var half = progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").offsetWidth / 2;
-
-          var percentage = pos / progress_classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
-
-          var time = percentage * el.duration;
-
-          var mediaContainer = progress_classPrivateFieldGet(_this, _Progress_player, "f").getContainer();
-
-          var limit = mediaContainer.offsetWidth - progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").offsetWidth;
-
-          if (pos <= 0 || x - offset(mediaContainer).left <= half) {
-            pos = 0;
-          } else if (x - offset(mediaContainer).left >= limit) {
-            pos = limit - offset(progress_classPrivateFieldGet(_this, _Progress_slider, "f")).left - 10;
-          } else {
-            pos -= half;
-          }
-
-          if (percentage >= 0 && percentage <= 1) {
-            progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").classList.add('op-controls__tooltip--visible');
-          } else {
-            progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").classList.remove('op-controls__tooltip--visible');
-          }
-
-          progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").style.left = "".concat(pos, "px");
-          progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").innerHTML = isNaN(time) ? '00:00' : formatTime(time);
         };
 
         progress_classPrivateFieldGet(this, _Progress_events, "f").global.mousemove = function (e) {
@@ -7645,7 +7666,7 @@ var settings_Settings = function () {
 
       if (submenu) {
         var subItems = "\n                <div class=\"op-settings__header\">\n                    <button type=\"button\" class=\"op-settings__back\" tabindex=\"0\">".concat(name, "</button>\n                </div>\n                <div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-").concat(key, "\">\n                    ").concat(submenu.map(function (item) {
-          return "\n                    <div class=\"op-settings__submenu-item\" role=\"menuitemradio\"\n                        aria-checked=\"".concat(defaultValue === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" tabindex=\"0\" data-value=\"").concat(key, "-").concat(item.key, "\">").concat(item.label, "</div>\n                    </div>");
+          return "\n                    <div class=\"op-settings__submenu-item\" role=\"menuitemradio\" aria-checked=\"".concat(defaultValue === item.key ? 'true' : 'false', "\">\n                        <div class=\"op-settings__submenu-label ").concat(className || '', "\" tabindex=\"0\" data-value=\"").concat(key, "-").concat(item.key, "\">\n                            ").concat(item.label, "\n                        </div>\n                    </div>");
         }).join(''), "\n                </div>");
         settings_classPrivateFieldGet(this, _Settings_submenu, "f")[key] = subItems;
       }
@@ -7907,10 +7928,8 @@ var time_Time = function () {
           }
 
           time_classPrivateFieldGet(_this, _Time_current, "f").innerText = formatTime(el.currentTime);
-        } else {
-          if (!showOnlyCurrent) {
-            time_classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
-          }
+        } else if (!showOnlyCurrent) {
+          time_classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
 
           time_classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
         }
@@ -8284,6 +8303,9 @@ var volume_Volume = function () {
       if (playBtnFocused && (key === 13 || key === 32)) {
         el.muted = !el.muted;
         el.volume = el.muted ? 0 : volume_classPrivateFieldGet(this, _Volume_volume, "f");
+
+        volume_classPrivateFieldGet(this, _Volume_events, "f").button.click();
+
         e.preventDefault();
         e.stopPropagation();
       }

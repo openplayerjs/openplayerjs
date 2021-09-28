@@ -30,9 +30,9 @@ class Fullscreen {
         __classPrivateFieldSet(this, _Fullscreen_layer, layer, "f");
         __classPrivateFieldSet(this, _Fullscreen_isFullscreen, document.body.classList.contains('op-fullscreen__on'), "f");
         const target = document;
-        this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled ||
-            target.msFullscreenEnabled || target.webkitSupportsFullscreen ||
-            target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
+        this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled
+            || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled
+            || document.createElement('video').webkitRequestFullScreen);
         this._keydownEvent = this._keydownEvent.bind(this);
         this._fullscreenChange = this._fullscreenChange.bind(this);
         __classPrivateFieldSet(this, _Fullscreen_fullscreenEvents, [

@@ -1,6 +1,6 @@
 import OpenPlayerJS from '../../src/js/player';
 
-describe('controls > fullscreen', () => {
+describe('controls/fullscreen', () => {
     let player = null;
 
     afterEach(() => {

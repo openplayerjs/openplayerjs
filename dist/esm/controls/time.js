@@ -69,10 +69,8 @@ class Time {
                 }
                 __classPrivateFieldGet(this, _Time_current, "f").innerText = formatTime(el.currentTime);
             }
-            else {
-                if (!showOnlyCurrent) {
-                    __classPrivateFieldGet(this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
-                }
+            else if (!showOnlyCurrent) {
+                __classPrivateFieldGet(this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
                 __classPrivateFieldGet(this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
             }
         };
@@ -81,8 +79,8 @@ class Time {
         const { showLabel: showLiveLabel } = __classPrivateFieldGet(this, _Time_player, "f").getOptions().live;
         __classPrivateFieldGet(this, _Time_events, "f").media.timeupdate = () => {
             const el = __classPrivateFieldGet(this, _Time_player, "f").activeElement();
-            if (el.duration !== Infinity && !__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-live__enabled') &&
-                !__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled')) {
+            if (el.duration !== Infinity && !__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-live__enabled')
+                && !__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled')) {
                 const duration = formatTime(el.duration);
                 if (!showOnlyCurrent && !isNaN(el.duration) && duration !== __classPrivateFieldGet(this, _Time_duration, "f").innerText) {
                     __classPrivateFieldGet(this, _Time_duration, "f").innerText = duration;
@@ -101,8 +99,8 @@ class Time {
                 }
                 __classPrivateFieldGet(this, _Time_current, "f").innerText = formatTime(el.currentTime);
             }
-            else if (showOnlyCurrent || (!__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled') &&
-                __classPrivateFieldGet(this, _Time_duration, "f").getAttribute('aria-hidden') === 'false')) {
+            else if (showOnlyCurrent || (!__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled')
+                && __classPrivateFieldGet(this, _Time_duration, "f").getAttribute('aria-hidden') === 'false')) {
                 if (!showOnlyCurrent) {
                     __classPrivateFieldGet(this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
                     __classPrivateFieldGet(this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');

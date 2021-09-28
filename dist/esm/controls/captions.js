@@ -103,7 +103,8 @@ class Captions {
                         request(trackUrl, 'text', d => {
                             __classPrivateFieldGet(this, _Captions_tracks, "f")[element.srclang] = this._getCuesFromText(d);
                             this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
-                            if (__classPrivateFieldGet(this, _Captions_menu, "f") && !__classPrivateFieldGet(this, _Captions_menu, "f").querySelector(`.op-subtitles__option[data-value="captions-${__classPrivateFieldGet(this, _Captions_trackList, "f")[i].language}"]`)) {
+                            const selector = `.op-subtitles__option[data-value="captions-${__classPrivateFieldGet(this, _Captions_trackList, "f")[i].language}"]`;
+                            if (__classPrivateFieldGet(this, _Captions_menu, "f") && !__classPrivateFieldGet(this, _Captions_menu, "f").querySelector(selector)) {
                                 const item = document.createElement('div');
                                 item.className = 'op-settings__submenu-item';
                                 item.tabIndex = 0;
@@ -304,7 +305,7 @@ class Captions {
     _getCuesFromText(webvttText) {
         const lines = webvttText.split(/\r?\n/);
         const entries = [];
-        const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+        const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
         let timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
         timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*?)$';
         const regexp = new RegExp(timePattern);
@@ -392,7 +393,7 @@ class Captions {
             if (currentTime >= start && currentTime < stop) {
                 return mid;
             }
-            else if (start < currentTime) {
+            if (start < currentTime) {
                 low = mid + 1;
             }
             else if (start > currentTime) {

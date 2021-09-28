@@ -7,7 +7,9 @@ import SettingsItem from '../interfaces/settings/item';
 import Player from '../player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
 import { addEvent } from '../utils/events';
-import { getAbsoluteUrl, hasClass, removeElement, request } from '../utils/general';
+import {
+    getAbsoluteUrl, hasClass, removeElement, request
+} from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
 /**
@@ -127,7 +129,7 @@ class Captions implements PlayerComponent {
      * @type string
      * @memberof Captions
      */
-    #default: string = 'off';
+    #default = 'off';
 
     /**
      * Determine if a submenu must be created with the CC button, instead of using the Settings menu.
@@ -258,7 +260,8 @@ class Captions implements PlayerComponent {
                             this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
 
                             // Build only items that are successful
-                            if (this.#menu && !this.#menu.querySelector(`.op-subtitles__option[data-value="captions-${this.#trackList[i].language}"]`)) {
+                            const selector = `.op-subtitles__option[data-value="captions-${this.#trackList[i].language}"]`;
+                            if (this.#menu && !this.#menu.querySelector(selector)) {
                                 const item = document.createElement('div');
                                 item.className = 'op-settings__submenu-item';
                                 item.tabIndex = 0;
@@ -460,7 +463,7 @@ class Captions implements PlayerComponent {
      * @returns {SettingsItem|object}
      * @memberof Captions
      */
-    public addSettings(): SettingsItem | object {
+    public addSettings(): SettingsItem | unknown {
         if (this.#detachMenu || this.#trackList.length <= 1) {
             return {};
         }
@@ -474,6 +477,7 @@ class Captions implements PlayerComponent {
             subitems,
         } : {};
     }
+
     /**
      * Parse WebVTT text from external domain to emulate native cues
      *
@@ -485,7 +489,7 @@ class Captions implements PlayerComponent {
     private _getCuesFromText(webvttText: string): Cue[] {
         const lines = webvttText.split(/\r?\n/);
         const entries: Cue[] = [];
-        const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
+        const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
         let timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
         timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*?)$';
         const regexp = new RegExp(timePattern);
@@ -617,7 +621,8 @@ class Captions implements PlayerComponent {
 
             if (currentTime >= start && currentTime < stop) {
                 return mid;
-            } else if (start < currentTime) {
+            }
+            if (start < currentTime) {
                 low = mid + 1;
             } else if (start > currentTime) {
                 high = mid - 1;
@@ -678,7 +683,7 @@ class Captions implements PlayerComponent {
      * @param {boolean} [showTrack=false]
      * @memberof Captions
      */
-    private _prepareTrack(index: number, language: string, trackUrl: string, showTrack: boolean = false) {
+    private _prepareTrack(index: number, language: string, trackUrl: string, showTrack = false) {
         this.#trackUrlList[language] = trackUrl;
         this.#trackList[index].mode = 'disabled';
         if (showTrack) {

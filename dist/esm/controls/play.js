@@ -51,9 +51,11 @@ class Play {
                     __classPrivateFieldGet(this, _Play_player, "f").getAd().playRequested = true;
                 }
                 el.play();
+                __classPrivateFieldGet(this, _Play_events, "f").media.play();
             }
             else {
                 el.pause();
+                __classPrivateFieldGet(this, _Play_events, "f").media.pause();
             }
             e.preventDefault();
             e.stopPropagation();

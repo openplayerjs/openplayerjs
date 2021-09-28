@@ -116,8 +116,10 @@ class Play implements PlayerComponent {
                     this.#player.getAd().playRequested = true;
                 }
                 el.play();
+                this.#events.media.play();
             } else {
                 el.pause();
+                this.#events.media.pause();
             }
 
             e.preventDefault();

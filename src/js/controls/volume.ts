@@ -320,6 +320,7 @@ class Volume implements PlayerComponent {
         if (playBtnFocused && (key === 13 || key === 32)) {
             el.muted = !el.muted;
             el.volume = el.muted ? 0 : this.#volume;
+            this.#events.button.click();
             e.preventDefault();
             e.stopPropagation();
         }

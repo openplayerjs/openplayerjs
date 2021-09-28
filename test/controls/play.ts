@@ -1,9 +1,11 @@
 import OpenPlayerJS from '../../src/js/player';
 
-describe('controls > play', () => {
+describe('controls/play', () => {
     let player = null;
 
     afterEach(() => {
+        player.pause();
+
         if (OpenPlayerJS.instances.video) {
             OpenPlayerJS.instances.video.destroy();
         }
@@ -97,15 +99,10 @@ describe('controls > play', () => {
 
         return new Promise<void>(resolve => {
             const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
-            let e = new CustomEvent('click');
-
+            const e = new CustomEvent('click');
             play.dispatchEvent(e);
+
             expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
-
-            e = new CustomEvent('click');
-            play.dispatchEvent(e);
-            expect(play.classList.contains('op-controls__playpause--pause')).to.be(false);
-
             resolve();
         });
     });
@@ -117,25 +114,22 @@ describe('controls > play', () => {
         return new Promise<void>(resolve => {
             const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
             let e = new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, key: 'Enter',
+                bubbles: true, cancelable: true, key: 'Enter', keyCode: 13,
             });
             play.focus();
-
             play.dispatchEvent(e);
-            expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
 
-            // volume.focus();
-            // e = new KeyboardEvent('keydown', {
-            //     bubbles: true, cancelable: true, key: 'Enter',
-            // });
-            // volume.dispatchEvent(e);
-            // expect(volume.classList.contains('op-controls__mute--muted')).to.be(true);
+            setTimeout(() => {
+                expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
 
-            e = new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, key: 'Enter',
-            });
-            play.dispatchEvent(e);
-            resolve();
+                e = new KeyboardEvent('keydown', {
+                    bubbles: true, cancelable: true, key: ' ', keyCode: 32,
+                });
+
+                play.dispatchEvent(e);
+                expect(play.classList.contains('op-controls__playpause--pause')).to.be(false);
+                resolve();
+            }, 500);
         });
     });
 });

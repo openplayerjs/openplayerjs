@@ -12,6 +12,7 @@ module.exports = config => {
             { pattern: 'test/player.html', type: 'dom', watched: false },
             'src/js/**/*.ts',
             'test/utils/*.ts',
+            'test/controls/volume.ts',
             'test/controls/*.ts',
             'test/player.ts',
         ],

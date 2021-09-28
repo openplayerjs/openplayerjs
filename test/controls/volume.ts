@@ -1,10 +1,11 @@
 import OpenPlayerJS from '../../src/js/player';
 
-describe('controls > volume', () => {
+describe('controls/volume', () => {
     let player = null;
 
     afterEach(() => {
         player.activeElement().muted = true;
+        player.activeElement().volume = 0;
         player.destroy();
         player = null;
     });
@@ -83,31 +84,51 @@ describe('controls > volume', () => {
         });
     });
 
-    it('mutes the media when using the Enter/tab space keys and volume button is focused', async () => {
+    it.skip('mutes the media when using the Enter/tab space keys and volume button is focused', async () => {
         player = new OpenPlayerJS('video');
         await player.init();
 
         return new Promise<void>(resolve => {
             const volume = player.getControls().getContainer().querySelector('.op-controls__mute') as HTMLButtonElement;
             let e = new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, key: 'Enter',
+                bubbles: true, cancelable: true, keyCode: 32,
             });
             volume.focus();
-
             volume.dispatchEvent(e);
-            expect(volume.classList.contains('op-controls__mute--muted')).to.be(false);
 
-            // volume.focus();
-            // e = new KeyboardEvent('keydown', {
-            //     bubbles: true, cancelable: true, key: 'Enter',
-            // });
-            // volume.dispatchEvent(e);
-            // expect(volume.classList.contains('op-controls__mute--muted')).to.be(true);
+            setTimeout(() => {
+                expect(volume.getAttribute('aria-pressed')).to.equal('true');
+                expect(volume.classList.contains('op-controls__mute--muted')).to.be(true);
 
-            e = new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, key: 'Enter',
-            });
-            volume.dispatchEvent(e);
+                volume.focus();
+                e = new KeyboardEvent('keydown', {
+                    bubbles: true, cancelable: true, keyCode: 32,
+                });
+                volume.dispatchEvent(e);
+                expect(volume.classList.contains('op-controls__mute--muted')).to.be(false);
+                resolve();
+            }, 500);
+        });
+    });
+
+    it.skip('updates the mute button icon depending on the volume value', async () => {
+        player = new OpenPlayerJS('video');
+        await player.init();
+        return new Promise<void>(resolve => {
+            const volume = player.getControls().getContainer().querySelector('.op-controls__mute') as HTMLButtonElement;
+            expect(volume.classList.contains('op-controls__mute--half')).to.equal(false);
+            expect(volume.classList.contains('op-controls__mute--muted')).to.equal(false);
+
+            player.activeElement().muted = false;
+            expect(player.activeElement().volume).to.equal(1);
+
+            player.activeElement().volume = 0.4;
+            expect(volume.classList.contains('op-controls__mute--half')).to.equal(true);
+            expect(volume.classList.contains('op-controls__mute--muted')).to.equal(true);
+
+            player.activeElement().volume = 0;
+            expect(volume.classList.contains('op-controls__mute--half')).to.equal(false);
+            expect(volume.classList.contains('op-controls__mute--muted')).to.equal(true);
             resolve();
         });
     });

@@ -166,10 +166,8 @@ class Time implements PlayerComponent {
                     this.#duration.innerText = formatTime(duration);
                 }
                 this.#current.innerText = formatTime(el.currentTime);
-            } else {
-                if (!showOnlyCurrent) {
-                    this.#duration.setAttribute('aria-hidden', 'true');
-                }
+            } else if (!showOnlyCurrent) {
+                this.#duration.setAttribute('aria-hidden', 'true');
                 this.#delimiter.setAttribute('aria-hidden', 'true');
             }
         };
@@ -181,8 +179,8 @@ class Time implements PlayerComponent {
 
         this.#events.media.timeupdate = () => {
             const el = this.#player.activeElement();
-            if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled') &&
-                !this.#player.getElement().getAttribute('op-dvr__enabled')) {
+            if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled')
+                && !this.#player.getElement().getAttribute('op-dvr__enabled')) {
                 const duration = formatTime(el.duration);
                 if (!showOnlyCurrent && !isNaN(el.duration) && duration !== this.#duration.innerText) {
                     this.#duration.innerText = duration;
@@ -198,8 +196,8 @@ class Time implements PlayerComponent {
                     this.#delimiter.setAttribute('aria-hidden', 'true');
                 }
                 this.#current.innerText = formatTime(el.currentTime);
-            } else if (showOnlyCurrent || (!this.#player.getElement().getAttribute('op-dvr__enabled') &&
-                this.#duration.getAttribute('aria-hidden') === 'false')) {
+            } else if (showOnlyCurrent || (!this.#player.getElement().getAttribute('op-dvr__enabled')
+                && this.#duration.getAttribute('aria-hidden') === 'false')) {
                 if (!showOnlyCurrent) {
                     this.#duration.setAttribute('aria-hidden', 'true');
                     this.#delimiter.setAttribute('aria-hidden', 'true');
