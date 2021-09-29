@@ -9,17 +9,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var _FlvMedia_player, _FlvMedia_events, _FlvMedia_options;
 import { HAS_MSE } from '../utils/constants';
 import { addEvent } from '../utils/events';
@@ -31,13 +20,13 @@ class FlvMedia extends Native {
         super(element, mediaSource);
         _FlvMedia_player.set(this, void 0);
         _FlvMedia_events.set(this, {});
-        _FlvMedia_options.set(this, undefined);
+        _FlvMedia_options.set(this, void 0);
         __classPrivateFieldSet(this, _FlvMedia_options, options, "f");
         this.element = element;
         this.media = mediaSource;
-        this.promise = (typeof flvjs === 'undefined') ?
-            loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js') :
-            new Promise(resolve => {
+        this.promise = (typeof flvjs === 'undefined')
+            ? loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js')
+            : new Promise(resolve => {
                 resolve({});
             });
         this._create = this._create.bind(this);
@@ -92,10 +81,12 @@ class FlvMedia extends Native {
         return __classPrivateFieldGet(this, _FlvMedia_player, "f") ? __classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : -1;
     }
     _create() {
-        const _a = __classPrivateFieldGet(this, _FlvMedia_options, "f"), { configs } = _a, rest = __rest(_a, ["configs"]);
-        flvjs.LoggingControl.enableDebug = rest && rest.debug ? rest.debug : false;
-        flvjs.LoggingControl.enableVerbose = rest && rest.debug ? rest.debug : false;
-        const options = Object.assign(Object.assign({}, rest), { type: 'flv', url: this.media.src });
+        var _a, _b, _c, _d;
+        const configs = (_a = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _a === void 0 ? void 0 : _a.configs;
+        (_b = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _b === void 0 ? true : delete _b.configs;
+        flvjs.LoggingControl.enableDebug = ((_c = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _c === void 0 ? void 0 : _c.debug) || false;
+        flvjs.LoggingControl.enableVerbose = ((_d = __classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _d === void 0 ? void 0 : _d.debug) || false;
+        const options = Object.assign(Object.assign({}, __classPrivateFieldGet(this, _FlvMedia_options, "f") || {}), { type: 'flv', url: this.media.src });
         __classPrivateFieldSet(this, _FlvMedia_player, flvjs.createPlayer(options, configs), "f");
         this.instance = __classPrivateFieldGet(this, _FlvMedia_player, "f");
         if (!__classPrivateFieldGet(this, _FlvMedia_events, "f")) {

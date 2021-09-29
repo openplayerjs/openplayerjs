@@ -1,3 +1,4 @@
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 import Native from './native';
 /**
@@ -16,7 +17,7 @@ declare class HlsMedia extends Native {
      * @param {Source} mediaSource
      * @memberof HlsMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay?: boolean, options?: object);
+    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay?: boolean, options?: unknown);
     /**
      * Provide support via hls.js if browser does not have native support for HLS
      *
@@ -42,13 +43,13 @@ declare class HlsMedia extends Native {
      * @memberof HlsMedia
      */
     set src(media: Source);
-    get levels(): any;
+    get levels(): Level[];
     set level(level: number);
     get level(): number;
     /**
      * Setup Hls player with options.
      *
-     * Some of the options/events will be overriden to improve performance and user's experience.
+     * Some of the options/events will be overridden to improve performance and user's experience.
      *
      * @private
      * @memberof HlsMedia
@@ -69,10 +70,12 @@ declare class HlsMedia extends Native {
      */
     private _assign;
     /**
-     * Remove all hls.js events and destroy hlsjs player instance.
+     * Remove all hls.js events and destroy hls.js player instance.
      *
      * @memberof HlsMedia
      */
     private _revoke;
+    private _play;
+    private _pause;
 }
 export default HlsMedia;

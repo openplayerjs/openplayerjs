@@ -232,8 +232,8 @@ class Volume implements PlayerComponent {
             updateButton(el);
         };
         this.#events.media.timeupdate = () => {
-            if (isAudio(this.#player.getElement()) && (this.#player.activeElement().duration === Infinity ||
-                this.#player.getElement().getAttribute('op-live__enabled'))) {
+            if (isAudio(this.#player.getElement()) && (this.#player.activeElement().duration === Infinity
+            || this.#player.getElement().getAttribute('op-live__enabled'))) {
             }
         };
         this.#events.media.loadedmetadata = () => {
@@ -320,6 +320,7 @@ class Volume implements PlayerComponent {
         if (playBtnFocused && (key === 13 || key === 32)) {
             el.muted = !el.muted;
             el.volume = el.muted ? 0 : this.#volume;
+            this.#events.button.click();
             e.preventDefault();
             e.stopPropagation();
         }

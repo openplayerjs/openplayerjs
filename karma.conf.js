@@ -1,39 +1,66 @@
 module.exports = config => {
     config.set({
-        basePath: '',
-        browserNoActivityTimeout: 20000,
-        frameworks: ['mocha', 'chai'],
+        basePath: './',
+        browserNoActivityTimeout: 60000,
+        frameworks: ['mocha', 'chai', 'karma-typescript'],
         files: [
-            './dist/openplayer.js',
-            './test/*.js',
+            {
+                pattern: 'src/css/**/*.svg', watched: false, included: false, served: true
+            },
+            'src/css/*.css',
+            { pattern: 'node_modules/expect.js/index.js' },
+            { pattern: 'test/player.html', type: 'dom', watched: false },
+            'src/js/**/*.ts',
+            'test/utils/*.ts',
+            'test/controls/volume.ts',
+            'test/controls/*.ts',
+            'test/player.ts',
         ],
-        customContextFile: 'test/context.html',
-        // reporters: ['mocha', 'coverage'],
-        reporters: ['mocha'],
-        port: 9876,
-        colors: true,
-        logLevel: config.LOG_INFO,
-        proxies: {
-            '/dist/': '/base/dist/',
-            '/test/': '/base/test/',
+        preprocessors: {
+            'src/js/**/*.ts': ['karma-typescript', 'coverage'],
+            'test/**/*.ts': 'karma-typescript',
         },
-        // preprocessors: {
-        //     'dist/om_player.js': 'coverage',
-        // },
-        autoWatch: false,
-        // coverageReporter: {
-        //     dir: 'coverage',
-        //     reporters: [
-        //         {
-        //             type: 'html',
-        //             subdir: 'report-html'
-        //         },
-        //         {
-        //             type: 'lcov',
-        //             subdir: 'report-lcov'
-        //         }
-        //     ]
-        // },
-        concurrency: Infinity
+        karmaTypescriptConfig: {
+            bundlerOptions: {
+                sourceMap: true,
+            },
+            compilerOptions: {
+                target: 'es6',
+                esModuleInterop: true,
+            },
+            coverageOptions: {
+                instrumentation: true,
+                exclude: /test\/.*?\.ts$/,
+                threshold: {
+                    emitWarning: true,
+                    global: {
+                        lines: 37,
+                    },
+                },
+            },
+            exclude: ['node_modules'],
+            reports: {
+                text: '.',
+                lcov: {
+                    directory: 'coverage',
+                    filename: 'lcov.info',
+                    subdirectory: '.'
+                }
+            }
+        },
+        coverageReporter: {
+            dir: 'coverage',
+            subdir: '.'
+        },
+        reporters: ['mocha', 'karma-typescript', 'coverage'],
+        port: 9876,
+        runnerPort: 9100,
+        captureTimeout: 60000,
+        concurrency: Infinity,
+        client: {
+            mocha: {
+                asyncOnly: true,
+            }
+        },
     });
 };

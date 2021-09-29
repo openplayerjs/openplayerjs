@@ -1,10 +1,11 @@
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 
 /**
  * Native Media.
  *
  * @description Class that mimics the HTML5 MediaElement's standard methods.
- * All the methods are availabe for the different types of media; the exceptions
+ * All the methods are available for the different types of media; the exceptions
  * are the getter/setter of a source, load it and determine if media can be played,
  * since each one of the media types handle those in a different way.
  *
@@ -34,7 +35,7 @@ abstract class Native {
      * @type Promise<any>
      * @memberof Native
      */
-    public promise: Promise<any>;
+    public promise: Promise<unknown>;
 
     /**
      * The instance of a custom player.
@@ -110,21 +111,21 @@ abstract class Native {
      * @abstract
      * @memberof Media
      */
-    public abstract set level(value: number|string|object);
+    public abstract set level(value: number|string|Record<string, unknown>);
 
     /**
      *
      * @abstract
      * @memberof Media
      */
-    public abstract get level(): number|string|object;
+    public abstract get level(): number|string;
 
     /**
      *
      * @abstract
      * @memberof Media
      */
-    public abstract get levels(): object[];
+    public abstract get levels(): Level[];
 
     /**
      *

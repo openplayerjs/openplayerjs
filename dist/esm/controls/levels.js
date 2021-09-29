@@ -38,8 +38,8 @@ class Levels {
         return this;
     }
     create() {
-        const initialLevel = __classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel !== null ?
-            parseInt(__classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel, 10) : __classPrivateFieldGet(this, _Levels_player, "f").getMedia().level;
+        const initialLevel = __classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel !== null
+            ? parseInt(__classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel, 10) : __classPrivateFieldGet(this, _Levels_player, "f").getMedia().level;
         __classPrivateFieldSet(this, _Levels_default, `${initialLevel}`, "f");
         const menuItems = this._formatMenuItems();
         const defaultLevel = menuItems.length ? menuItems.find((items) => items.key === __classPrivateFieldGet(this, _Levels_default, "f")) : null;
@@ -129,8 +129,8 @@ class Levels {
                 if (__classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
                     __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('data-active-level', `${level}`);
                     __classPrivateFieldGet(this, _Levels_button, "f").innerHTML = `<span>${option.innerText}</span>`;
-                    const levels = option.parentElement && option.parentElement.parentElement ?
-                        option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item') : [];
+                    const levels = option.parentElement && option.parentElement.parentElement
+                        ? option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item') : [];
                     for (let i = 0, total = levels.length; i < total; ++i) {
                         levels[i].setAttribute('aria-checked', 'false');
                     }
@@ -231,35 +231,35 @@ class Levels {
                 return acc.concat([current]);
             }
             return acc;
-        }, []).sort((a, b) => parseInt(a.label, 10) > parseInt(b.label, 10) ? 1 : -1);
+        }, []).sort((a, b) => (parseInt(a.label, 10) > parseInt(b.label, 10) ? 1 : -1));
         return items;
     }
     _getResolutionsLabel(height) {
         if (height >= 4320) {
             return '8K';
         }
-        else if (height >= 2160) {
+        if (height >= 2160) {
             return '4K';
         }
-        else if (height >= 1440) {
+        if (height >= 1440) {
             return '1440p';
         }
-        else if (height >= 1080) {
+        if (height >= 1080) {
             return '1080p';
         }
-        else if (height >= 720) {
+        if (height >= 720) {
             return '720p';
         }
-        else if (height >= 480) {
+        if (height >= 480) {
             return '480p';
         }
-        else if (height >= 360) {
+        if (height >= 360) {
             return '360p';
         }
-        else if (height >= 240) {
+        if (height >= 240) {
             return '240p';
         }
-        else if (height >= 144) {
+        if (height >= 144) {
             return '144p';
         }
         return __classPrivateFieldGet(this, _Levels_labels, "f").auto;

@@ -4,7 +4,9 @@ import Level from '../interfaces/level';
 import SettingsItem from '../interfaces/settings/item';
 import SettingsSubItem from '../interfaces/settings/subitem';
 import Player from '../player';
-import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, NAV } from '../utils/constants';
+import {
+    EVENT_OPTIONS, IS_ANDROID, IS_IOS, NAV
+} from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { hasClass, removeElement } from '../utils/general';
 import { isDashSource, isHlsSource } from '../utils/media';
@@ -88,7 +90,7 @@ class Levels implements PlayerComponent {
      * @type string
      * @memberof Levels
      */
-    #default: string = '';
+    #default = '';
 
     /**
      * Position of the button to be indicated as part of its class name
@@ -131,8 +133,8 @@ class Levels implements PlayerComponent {
      * @memberof Levels
      */
     public create(): void {
-        const initialLevel = this.#player.getOptions().defaultLevel !== null ?
-            parseInt(this.#player.getOptions().defaultLevel, 10) : this.#player.getMedia().level;
+        const initialLevel = this.#player.getOptions().defaultLevel !== null
+            ? parseInt(this.#player.getOptions().defaultLevel, 10) : this.#player.getMedia().level;
         this.#default = `${initialLevel}`;
         const menuItems = this._formatMenuItems();
         const defaultLevel = menuItems.length ? menuItems.find((items: any) => items.key === this.#default) : null;
@@ -189,8 +191,8 @@ class Levels implements PlayerComponent {
                     for (let i = 0, total = menus.length; i < total; ++i) {
                         if (menus[i] !== this.#menu) {
                             menus[i].setAttribute('aria-hidden', 'true');
+                        }
                     }
-                }
                     if (this.#menu.getAttribute('aria-hidden') === 'true') {
                         this.#menu.setAttribute('aria-hidden', 'false');
                     }
@@ -226,8 +228,8 @@ class Levels implements PlayerComponent {
                 if (this.#detachMenu) {
                     this.#button.setAttribute('data-active-level', `${level}`);
                     this.#button.innerHTML = `<span>${option.innerText}</span>`;
-                    const levels = option.parentElement && option.parentElement.parentElement ?
-                        option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item') : [];
+                    const levels = option.parentElement && option.parentElement.parentElement
+                        ? option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item') : [];
                     for (let i = 0, total = levels.length; i < total; ++i) {
                         levels[i].setAttribute('aria-checked', 'false');
                     }
@@ -320,7 +322,7 @@ class Levels implements PlayerComponent {
      * @returns {SettingsItem|object}
      * @memberof Captions
      */
-    public addSettings(): SettingsItem | object {
+    public addSettings(): SettingsItem | unknown {
         if (this.#detachMenu) {
             return {};
         }
@@ -352,7 +354,7 @@ class Levels implements PlayerComponent {
                 return acc.concat([current]);
             }
             return acc;
-        }, []).sort((a, b) => parseInt(a.label, 10) > parseInt(b.label, 10) ? 1 : -1);
+        }, []).sort((a, b) => (parseInt(a.label, 10) > parseInt(b.label, 10) ? 1 : -1));
 
         return items;
     }
@@ -368,21 +370,29 @@ class Levels implements PlayerComponent {
     private _getResolutionsLabel(height: number): string {
         if (height >= 4320) {
             return '8K';
-        } else if (height >= 2160) {
+        }
+        if (height >= 2160) {
             return '4K';
-        } else if (height >= 1440) {
+        }
+        if (height >= 1440) {
             return '1440p';
-        } else if (height >= 1080) {
+        }
+        if (height >= 1080) {
             return '1080p';
-        } else if (height >= 720) {
+        }
+        if (height >= 720) {
             return '720p';
-        } else if (height >= 480) {
+        }
+        if (height >= 480) {
             return '480p';
-        } else if (height >= 360) {
+        }
+        if (height >= 360) {
             return '360p';
-        } else if (height >= 240) {
+        }
+        if (height >= 240) {
             return '240p';
-        } else if (height >= 144) {
+        }
+        if (height >= 144) {
             return '144p';
         }
         return this.#labels.auto;

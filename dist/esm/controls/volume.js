@@ -114,8 +114,8 @@ class Volume {
             updateButton(el);
         };
         __classPrivateFieldGet(this, _Volume_events, "f").media.timeupdate = () => {
-            if (isAudio(__classPrivateFieldGet(this, _Volume_player, "f").getElement()) && (__classPrivateFieldGet(this, _Volume_player, "f").activeElement().duration === Infinity ||
-                __classPrivateFieldGet(this, _Volume_player, "f").getElement().getAttribute('op-live__enabled'))) {
+            if (isAudio(__classPrivateFieldGet(this, _Volume_player, "f").getElement()) && (__classPrivateFieldGet(this, _Volume_player, "f").activeElement().duration === Infinity
+                || __classPrivateFieldGet(this, _Volume_player, "f").getElement().getAttribute('op-live__enabled'))) {
             }
         };
         __classPrivateFieldGet(this, _Volume_events, "f").media.loadedmetadata = () => {
@@ -180,6 +180,7 @@ class Volume {
         if (playBtnFocused && (key === 13 || key === 32)) {
             el.muted = !el.muted;
             el.volume = el.muted ? 0 : __classPrivateFieldGet(this, _Volume_volume, "f");
+            __classPrivateFieldGet(this, _Volume_events, "f").button.click();
             e.preventDefault();
             e.stopPropagation();
         }

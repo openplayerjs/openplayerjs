@@ -1,10 +1,20 @@
 {
   "comments": false,
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime"
+    ]
+  ],
   "presets": [
     [
       "@babel/preset-env",
       {
-        "targets": ">0.5%",
+        "targets": [
+          "> 0.5%",
+          "last 3 versions",
+          "not dead",
+          "ie > 10"
+        ],
         "useBuiltIns": "usage"
       }
     ]

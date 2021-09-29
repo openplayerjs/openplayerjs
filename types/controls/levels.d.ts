@@ -33,7 +33,7 @@ declare class Levels implements PlayerComponent {
      * @returns {SettingsItem|object}
      * @memberof Captions
      */
-    addSettings(): SettingsItem | object;
+    addSettings(): SettingsItem | unknown;
     private _formatMenuItems;
     /**
      * Get the standard label of level depending of media's height.

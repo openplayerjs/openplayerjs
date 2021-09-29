@@ -124,14 +124,12 @@ export const SUPPORTS_HLS = () => {
     }
     const mediaSource = (window as any).MediaSource || (window as any).WebKitMediaSource;
     const sourceBuffer = (window as any).SourceBuffer || (window as any).WebKitSourceBuffer;
-    const isTypeSupported = mediaSource &&
-        typeof mediaSource.isTypeSupported === 'function' &&
-        mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
+    const isTypeSupported = mediaSource && typeof mediaSource.isTypeSupported === 'function'
+        && mediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
 
-    const sourceBufferValidAPI = !sourceBuffer ||
-        (sourceBuffer.prototype &&
-        typeof sourceBuffer.prototype.appendBuffer === 'function' &&
-        typeof sourceBuffer.prototype.remove === 'function');
+    const sourceBufferValidAPI = !sourceBuffer
+        || (sourceBuffer.prototype && typeof sourceBuffer.prototype.appendBuffer === 'function'
+        && typeof sourceBuffer.prototype.remove === 'function');
 
     // Safari is still an exception since it has built-in HLS support; currently HLS.js
     // is still in beta to support Safari

@@ -1,4 +1,5 @@
 import CustomMedia from './interfaces/custom-media';
+import Level from './interfaces/level';
 import PlayerOptions from './interfaces/player-options';
 import Source from './interfaces/source';
 /**
@@ -40,7 +41,7 @@ declare class Media {
      *
      * @see [[Native.load]]
      */
-    load(): Promise<void> | void;
+    load(): Promise<void>;
     /**
      * Wrapper for `play` method.
      *
@@ -60,7 +61,7 @@ declare class Media {
      * @see [[Native.pause]]
      * @memberof Media
      */
-    pause(): void;
+    pause(): Promise<void>;
     /**
      * Invoke `destroy` method of current media type.
      *
@@ -218,13 +219,13 @@ declare class Media {
      *
      * @memberof Media
      */
-    set level(value: number | string | object);
+    set level(value: number | string | Level);
     /**
      *
      * @memberof Media
      * @readonly
      */
-    get level(): number | string | object;
+    get level(): number | string | Level;
     /**
      *
      * @memberof Media

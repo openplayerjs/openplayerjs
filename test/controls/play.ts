@@ -1,0 +1,135 @@
+import OpenPlayerJS from '../../src/js/player';
+
+describe('controls/play', () => {
+    let player = null;
+
+    afterEach(() => {
+        player.pause();
+
+        if (OpenPlayerJS.instances.video) {
+            OpenPlayerJS.instances.video.destroy();
+        }
+        if (OpenPlayerJS.instances.audio) {
+            OpenPlayerJS.instances.audio.destroy();
+        }
+
+        player = null;
+    });
+
+    it('displays a Play button in the control bar to the left by default', async () => {
+        player = new OpenPlayerJS('video');
+        await player.init();
+
+        const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+        expect(play).to.not.be(null);
+        expect(play.tabIndex).to.equal(0);
+        expect(play.title).to.equal('Play');
+        expect(play.getAttribute('aria-controls')).to.equal('video');
+        expect(play.getAttribute('aria-pressed')).to.equal('false');
+        expect(play.getAttribute('aria-label')).to.equal('Play');
+    });
+
+    it('displays a Play button in the control bar in a different layer if indicated by options', async () => {
+        player = new OpenPlayerJS('audio', {
+            controls: {
+                layers: {
+                    'top-right': ['play'],
+                },
+            },
+        });
+        await player.init();
+
+        expect(player.getControls().getContainer().querySelector('.op-control__right')).to.not.be(null);
+        expect(player.getControls().getContainer().querySelector('.op-controls-layer__top')).to.not.be(null);
+    });
+
+    it('shows a Pause icon and changes its ARIA attributes while playing media, and a Replay icon when ended', async function () {
+        this.timeout(60000);
+
+        player = new OpenPlayerJS('video', {
+            startTime: 731,
+            startVolume: 0,
+        });
+        await player.init();
+        return new Promise((resolve, reject) => {
+            const events = {
+                ended: () => {
+                    const play = player.getControls().getContainer()
+                        .querySelector('.op-controls__playpause--replay') as HTMLButtonElement;
+                    expect(play).to.not.be(null);
+                    expect(play.getAttribute('aria-label')).to.equal('Play');
+                    expect(player.getElement().paused).to.equal(true);
+
+                    Object.keys(events).forEach(event => {
+                        player.getElement().removeEventListener(event, events[event]);
+                    });
+                    resolve();
+                },
+                play: () => {
+                    const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+                    expect(play).to.not.be(null);
+                    expect(play.classList.contains('op-controls__playpause--replay')).to.be(false);
+                    expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
+                    expect(play.getAttribute('aria-label')).to.equal('Pause');
+                    expect(player.getElement().paused).to.equal(false);
+                },
+                playing: () => {
+                    const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+                    expect(play).to.not.be(null);
+                    expect(play.classList.contains('op-controls__playpause--replay')).to.be(false);
+                    expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
+                    expect(play.getAttribute('aria-label')).to.equal('Pause');
+                    expect(player.getElement().paused).to.equal(false);
+                },
+            };
+
+            Object.keys(events).forEach(event => {
+                player.getElement().addEventListener(event, events[event]);
+            });
+            try {
+                player.play();
+            } catch (err) {
+                reject();
+            }
+        });
+    });
+    it('plays/pauses the media when clicking on the play button', async () => {
+        player = new OpenPlayerJS('video');
+        await player.init();
+
+        return new Promise<void>(resolve => {
+            const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            const e = new CustomEvent('click');
+            play.dispatchEvent(e);
+
+            expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
+            resolve();
+        });
+    });
+
+    it('plays/pauses the media when using the Enter/tab space keys and play button is focused', async () => {
+        player = new OpenPlayerJS('video');
+        await player.init();
+
+        return new Promise<void>(resolve => {
+            const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            let e = new KeyboardEvent('keydown', {
+                bubbles: true, cancelable: true, key: 'Enter', keyCode: 13,
+            });
+            play.focus();
+            play.dispatchEvent(e);
+
+            setTimeout(() => {
+                expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
+
+                e = new KeyboardEvent('keydown', {
+                    bubbles: true, cancelable: true, key: ' ', keyCode: 32,
+                });
+
+                play.dispatchEvent(e);
+                expect(play.classList.contains('op-controls__playpause--pause')).to.be(false);
+                resolve();
+            }, 500);
+        });
+    });
+});

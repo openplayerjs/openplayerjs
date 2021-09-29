@@ -1,4 +1,5 @@
 import DashOptions from '../interfaces/dash-options';
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 import Native from './native';
 /**
@@ -43,7 +44,7 @@ declare class DashMedia extends Native {
      * @memberof DashMedia
      */
     set src(media: Source);
-    get levels(): any;
+    get levels(): Level[];
     set level(level: number);
     get level(): number;
     /**

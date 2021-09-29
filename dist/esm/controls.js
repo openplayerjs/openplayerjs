@@ -62,7 +62,7 @@ class Controls {
         __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlschanged', this.events.controlschanged, EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
         const { alwaysVisible } = __classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls;
-        if (!alwaysVisible && !IS_ANDROID && !IS_IOS) {
+        if (!alwaysVisible) {
             const showControls = () => {
                 if (isMediaVideo) {
                     __classPrivateFieldGet(this, _Controls_player, "f").getContainer().classList.remove('op-controls--hidden');
@@ -116,10 +116,17 @@ class Controls {
             Object.keys(this.events.media).forEach(event => {
                 __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener(event, this.events.media[event], EVENT_OPTIONS);
             });
-            Object.keys(this.events.mouse).forEach(event => {
-                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
-            });
-            this._startControlTimer(3000);
+            if (IS_ANDROID || IS_IOS) {
+                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener('click', this.events.mouse.mouseenter, EVENT_OPTIONS);
+            }
+            else {
+                Object.keys(this.events.mouse).forEach(event => {
+                    __classPrivateFieldGet(this, _Controls_player, "f").getContainer().addEventListener(event, this.events.mouse[event], EVENT_OPTIONS);
+                });
+            }
+            if (isMediaVideo && !__classPrivateFieldGet(this, _Controls_player, "f").activeElement().paused) {
+                this._startControlTimer(3000);
+            }
         }
     }
     destroy() {
@@ -194,10 +201,10 @@ class Controls {
             'bottom-left': [],
             'bottom-middle': [],
             'bottom-right': [],
-            'left': [],
-            'main': [],
-            'middle': [],
-            'right': [],
+            left: [],
+            main: [],
+            middle: [],
+            right: [],
             'top-left': [],
             'top-middle': [],
             'top-right': [],
@@ -333,7 +340,7 @@ class Controls {
                     menuItem.addEventListener('click', subitem.click, EVENT_OPTIONS);
                 }
             });
-            control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
+            control.addEventListener('click', e => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
             __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         }
         else if (item.click && typeof item.click === 'function') {
@@ -379,7 +386,7 @@ class Controls {
                             menuItem.removeEventListener('click', subitem.click);
                         }
                     });
-                    control.removeEventListener('click', (e) => this._toggleCustomMenu(e, menu, item));
+                    control.removeEventListener('click', e => this._toggleCustomMenu(e, menu, item));
                     __classPrivateFieldGet(this, _Controls_player, "f").getElement().removeEventListener('controlshidden', () => this._hideCustomMenu(menu));
                     removeElement(menu);
                 }

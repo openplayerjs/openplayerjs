@@ -93,7 +93,7 @@ declare class Player {
      * in an iPhone, because iOS will only use QuickTime as a default constrain.
      * @memberof Player
      */
-    init(): void;
+    init(): Promise<void>;
     /**
      * Load media.
      *
@@ -231,7 +231,7 @@ declare class Player {
      *
      * @memberof Player
      */
-    _prepareMedia(): void;
+    _prepareMedia(): Promise<void>;
     enableDefaultPlayer(): void;
     loadAd(src: string | string[]): void;
     /**

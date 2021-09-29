@@ -1,3 +1,4 @@
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 import Native from './native';
 /**
@@ -36,9 +37,9 @@ declare class HTML5Media extends Native {
      * @memberof HTML5Media
      */
     destroy(): HTML5Media;
-    get levels(): object[];
-    set level(level: any);
-    get level(): any;
+    get levels(): Level[];
+    set level(level: string);
+    get level(): string;
     /**
      *
      * @inheritDoc

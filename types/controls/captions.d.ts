@@ -41,7 +41,7 @@ declare class Captions implements PlayerComponent {
      * @returns {SettingsItem|object}
      * @memberof Captions
      */
-    addSettings(): SettingsItem | object;
+    addSettings(): SettingsItem | unknown;
     /**
      * Parse WebVTT text from external domain to emulate native cues
      *

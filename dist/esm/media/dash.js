@@ -22,9 +22,9 @@ class DashMedia extends Native {
         _DashMedia_events.set(this, {});
         _DashMedia_options.set(this, {});
         __classPrivateFieldSet(this, _DashMedia_options, options, "f");
-        this.promise = (typeof dashjs === 'undefined') ?
-            loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') :
-            new Promise(resolve => {
+        this.promise = (typeof dashjs === 'undefined')
+            ? loadScript('https://cdn.dashjs.org/latest/dash.all.min.js')
+            : new Promise(resolve => {
                 resolve({});
             });
         this._assign = this._assign.bind(this);
@@ -74,7 +74,7 @@ class DashMedia extends Native {
                         const { height, name } = bitrates[item];
                         const level = {
                             height,
-                            id: item,
+                            id: `${item}`,
                             label: name || null,
                         };
                         levels.push(level);

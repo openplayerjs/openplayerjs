@@ -159,9 +159,10 @@ class Settings {
                 </div>
                 <div class="op-settings__menu" role="menu" id="menu-item-${key}">
                     ${submenu.map((item) => `
-                    <div class="op-settings__submenu-item" role="menuitemradio"
-                        aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
-                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${item.key}">${item.label}</div>
+                    <div class="op-settings__submenu-item" role="menuitemradio" aria-checked="${defaultValue === item.key ? 'true' : 'false'}">
+                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${item.key}">
+                            ${item.label}
+                        </div>
                     </div>`).join('')}
                 </div>`;
             __classPrivateFieldGet(this, _Settings_submenu, "f")[key] = subItems;
@@ -246,9 +247,9 @@ class Settings {
         const key = e.which || e.keyCode || 0;
         const isAd = __classPrivateFieldGet(this, _Settings_player, "f").isAd();
         const settingsBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__settings');
-        const menuFocused = ((_b = document === null || document === void 0 ? void 0 : document.activeElement) === null || _b === void 0 ? void 0 : _b.classList.contains('op-settings__menu-content')) ||
-            ((_c = document === null || document === void 0 ? void 0 : document.activeElement) === null || _c === void 0 ? void 0 : _c.classList.contains('op-settings__back')) ||
-            ((_d = document === null || document === void 0 ? void 0 : document.activeElement) === null || _d === void 0 ? void 0 : _d.classList.contains('op-settings__submenu-label'));
+        const menuFocused = ((_b = document === null || document === void 0 ? void 0 : document.activeElement) === null || _b === void 0 ? void 0 : _b.classList.contains('op-settings__menu-content'))
+            || ((_c = document === null || document === void 0 ? void 0 : document.activeElement) === null || _c === void 0 ? void 0 : _c.classList.contains('op-settings__back'))
+            || ((_d = document === null || document === void 0 ? void 0 : document.activeElement) === null || _d === void 0 ? void 0 : _d.classList.contains('op-settings__submenu-label'));
         if (!isAd) {
             if (settingsBtnFocused && (key === 13 || key === 32)) {
                 this.clickEvent();

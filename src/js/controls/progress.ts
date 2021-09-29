@@ -2,7 +2,9 @@ import PlayerComponent from '../interfaces/component';
 import EventsList from '../interfaces/events-list';
 import Player from '../player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { hasClass, isAudio, offset, removeElement } from '../utils/general';
+import {
+    hasClass, isAudio, offset, removeElement
+} from '../utils/general';
 import { formatTime } from '../utils/time';
 
 /**
@@ -195,8 +197,8 @@ class Progress implements PlayerComponent {
                 this.#slider.classList.remove('error');
             }
             const el = this.#player.activeElement();
-            if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled') &&
-                !this.#player.getElement().getAttribute('op-dvr__enabled')) {
+            if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled')
+                && !this.#player.getElement().getAttribute('op-dvr__enabled')) {
                 this.#slider.setAttribute('max', `${el.duration}`);
                 const current = this.#player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
                 this.#slider.value = current.toString();
@@ -231,8 +233,8 @@ class Progress implements PlayerComponent {
                         }
                     }
                 }
-            } else if (!this.#player.getElement().getAttribute('op-dvr__enabled') &&
-                this.#progress.getAttribute('aria-hidden') === 'false' && !this.#player.getOptions().live.showProgress) {
+            } else if (!this.#player.getElement().getAttribute('op-dvr__enabled')
+                && this.#progress.getAttribute('aria-hidden') === 'false' && !this.#player.getOptions().live.showProgress) {
                 this.#progress.setAttribute('aria-hidden', 'true');
             }
         };
@@ -282,34 +284,32 @@ class Progress implements PlayerComponent {
         };
         this.#events.media.timeupdate = () => {
             const el = this.#player.activeElement();
-            if (el.duration !== Infinity &&
-                (!this.#player.getElement().getAttribute('op-live__enabled') ||
-                this.#player.getElement().getAttribute('op-dvr__enabled'))) {
-                if (!this.#slider.getAttribute('max') || this.#slider.getAttribute('max') === '0' ||
-                    parseFloat(this.#slider.getAttribute('max') || '-1') !== el.duration) {
+            if (el.duration !== Infinity
+                && (!this.#player.getElement().getAttribute('op-live__enabled')
+                || this.#player.getElement().getAttribute('op-dvr__enabled'))) {
+                if (!this.#slider.getAttribute('max') || this.#slider.getAttribute('max') === '0'
+                    || parseFloat(this.#slider.getAttribute('max') || '-1') !== el.duration) {
                     this.#slider.setAttribute('max', `${el.duration}`);
                     this.#progress.setAttribute('aria-hidden', 'false');
                 }
 
-                // Adjust current time between Media and Ads; with the latter,
-                // it is convenient to add an extra second to ensure it will
-                // reach the end of the rail
-                const current = this.#player.isMedia() ? el.currentTime :
-                    ((el.duration - el.currentTime) + 1 >= 100 ? 100 :
-                        (el.duration - el.currentTime) + 1);
+                // Adjust current time between Media and Ads; with the latter, it is convenient to add an extra
+                // second to ensure it will reach the end of the rail
+                const duration = ((el.duration - el.currentTime) + 1 >= 100 ? 100 : (el.duration - el.currentTime) + 1);
+                const current = this.#player.isMedia() ? el.currentTime : duration;
                 const min = parseFloat(this.#slider.min);
                 const max = parseFloat(this.#slider.max);
                 this.#slider.value = current.toString();
-                this.#slider.style.backgroundSize = `${(current - min) * 100 / (max - min)}% 100%`;
-                this.#played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                    defaultDuration : ((current / el.duration) * 100);
+                this.#slider.style.backgroundSize = `${((current - min) * 100) / (max - min)}% 100%`;
+                this.#played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration)
+                    ? defaultDuration : ((current / el.duration) * 100);
 
                 if (this.#player.getElement().getAttribute('op-dvr__enabled') && Math.floor(this.#played.value) >= 99) {
                     lastCurrentTime = el.currentTime;
                     this.#progress.setAttribute('aria-hidden', 'false');
                 }
-            } else if (!this.#player.getElement().getAttribute('op-dvr__enabled') &&
-                this.#progress.getAttribute('aria-hidden') === 'false' && !this.#player.getOptions().live.showProgress) {
+            } else if (!this.#player.getElement().getAttribute('op-dvr__enabled')
+                && this.#progress.getAttribute('aria-hidden') === 'false' && !this.#player.getOptions().live.showProgress) {
                 this.#progress.setAttribute('aria-hidden', 'true');
             }
         };
@@ -319,8 +319,8 @@ class Progress implements PlayerComponent {
             const current = this.#player.isMedia() ? el.currentTime : (el.duration - el.currentTime);
             this.#slider.setAttribute('max', `${el.duration}`);
             this.#progress.setAttribute('aria-valuemax', el.duration.toString());
-            this.#played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                defaultDuration : ((current / el.duration) * 100);
+            this.#played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration)
+                ? defaultDuration : ((current / el.duration) * 100);
         };
 
         this.#events.media.ended = () => {
@@ -345,9 +345,9 @@ class Progress implements PlayerComponent {
             const min = parseFloat(target.min);
             const max = parseFloat(target.max);
             const val = parseFloat(target.value);
-            this.#slider.style.backgroundSize = `${(val - min) * 100 / (max - min)}% 100%`;
-            this.#played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ?
-                defaultDuration : ((val / el.duration) * 100);
+            this.#slider.style.backgroundSize = `${((val - min) * 100) / (max - min)}% 100%`;
+            this.#played.value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration)
+                ? defaultDuration : ((val / el.duration) * 100);
 
             if (this.#player.getElement().getAttribute('op-dvr__enabled')) {
                 el.currentTime = (Math.round(this.#played.value) >= 99) ? lastCurrentTime : val;
@@ -367,10 +367,8 @@ class Progress implements PlayerComponent {
             // If current progress is not related to an Ad, manipulate current time
             if ((e.which === 1 || e.which === 0) && this.#player.isMedia()) {
                 if (!el.paused) {
-                    el.play().then(() => {
-                        el.pause();
-                        this.#forcePause = true;
-                    });
+                    el.pause();
+                    this.#forcePause = true;
                 }
             }
         };
@@ -397,20 +395,18 @@ class Progress implements PlayerComponent {
          */
         const mobileForcePause = (e: any) => {
             const el = this.#player.activeElement();
-            if (el.duration === Infinity) {
-                return true;
+            if (el.duration !== Infinity) {
+                // Android devices (and maybe others) don't consider `originalEvent`. Check for the
+                // existence of them; otherwise, use the event's `changedTouches` element.
+                const changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
+                const x = changedTouches ? changedTouches[0].pageX : e.pageX;
+                const pos = x - offset(this.#progress).left;
+                const percentage = (pos / this.#progress.offsetWidth);
+                const time = percentage * el.duration;
+                this.#slider.value = time.toString();
+                updateSlider(e);
+                forcePause(e);
             }
-
-            // Android devices (and maybe others) don't consider `originalEvent`. Check for the
-            // existence of them; otherwise, use the event's `changedTouches` element.
-            const changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
-            const x = changedTouches ? changedTouches[0].pageX : e.pageX;
-            const pos = x - offset(this.#progress).left;
-            const percentage = (pos / this.#progress.offsetWidth);
-            const time = percentage * el.duration;
-            this.#slider.value = time.toString();
-            updateSlider(e);
-            forcePause(e);
         };
 
         this.#events.slider.input = updateSlider.bind(this);
@@ -423,36 +419,34 @@ class Progress implements PlayerComponent {
         if (!IS_IOS && !IS_ANDROID) {
             this.#events.container.mousemove = (e: any) => {
                 const el = this.#player.activeElement();
-                if (el.duration === Infinity || this.#player.isAd()) {
-                    return true;
+                if (el.duration !== Infinity && !this.#player.isAd()) {
+                    const x = (e.originalEvent && e.originalEvent.changedTouches)
+                        ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+
+                    let pos = x - offset(this.#progress).left;
+                    const half = this.#tooltip.offsetWidth / 2;
+                    const percentage = (pos / this.#progress.offsetWidth);
+                    const time = percentage * el.duration;
+                    const mediaContainer = this.#player.getContainer();
+                    const limit = mediaContainer.offsetWidth - this.#tooltip.offsetWidth;
+
+                    if (pos <= 0 || x - offset(mediaContainer).left <= half) {
+                        pos = 0;
+                    } else if (x - offset(mediaContainer).left >= limit) {
+                        pos = limit - offset(this.#slider).left - 10;
+                    } else {
+                        pos -= half;
+                    }
+
+                    if (percentage >= 0 && percentage <= 1) {
+                        this.#tooltip.classList.add('op-controls__tooltip--visible');
+                    } else {
+                        this.#tooltip.classList.remove('op-controls__tooltip--visible');
+                    }
+
+                    this.#tooltip.style.left = `${pos}px`;
+                    this.#tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
                 }
-
-                const x = (e.originalEvent && e.originalEvent.changedTouches) ?
-                    e.originalEvent.changedTouches[0].pageX : e.pageX;
-
-                let pos = x - offset(this.#progress).left;
-                const half = this.#tooltip.offsetWidth / 2;
-                const percentage = (pos / this.#progress.offsetWidth);
-                const time = percentage * el.duration;
-                const mediaContainer = this.#player.getContainer();
-                const limit = mediaContainer.offsetWidth - this.#tooltip.offsetWidth;
-
-                if (pos <= 0 || x - offset(mediaContainer).left <= half) {
-                    pos = 0;
-                } else if (x - offset(mediaContainer).left >= limit) {
-                    pos = limit - offset(this.#slider).left - 10;
-                } else {
-                    pos -= half;
-                }
-
-                if (percentage >= 0 && percentage <= 1) {
-                    this.#tooltip.classList.add('op-controls__tooltip--visible');
-                } else {
-                    this.#tooltip.classList.remove('op-controls__tooltip--visible');
-                }
-
-                this.#tooltip.style.left = `${pos}px`;
-                this.#tooltip.innerHTML = isNaN(time) ? '00:00' : formatTime(time);
             };
             this.#events.global.mousemove = (e: MouseEvent) => {
                 if (!(e.target as HTMLElement).closest('.op-controls__progress') || this.#player.isAd()) {

@@ -10,7 +10,6 @@
       "declaration": false,
       "allowJs": true,
       "target": "es6",
-      "module": "commonjs",
       "noImplicitAny": true,
       "noUnusedLocals": true,
       "noUnusedParameters": true,
@@ -25,6 +24,9 @@
       "esModuleInterop": true,
       "strictPropertyInitialization": false
   },
+  "include": [
+      "./src/**/*"
+  ],
   "exclude": [
       "node_modules",
       "ts-dist",

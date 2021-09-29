@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -89,7 +98,7 @@ class Player {
                 showProgress: false,
             },
             mode: 'responsive',
-            onError: () => { },
+            onError: (e) => console.error(e),
             pauseOthers: true,
             progress: {
                 duration: 0,
@@ -137,32 +146,32 @@ class Player {
         Player.customMedia.rules.push(valid);
     }
     init() {
-        if (this._isValid()) {
-            this._wrapInstance();
-            this._prepareMedia();
-            this._createPlayButton();
-            this._createUID();
-            this._createControls();
-            this._setEvents();
-            Player.instances[this.id] = this;
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this._isValid()) {
+                this._wrapInstance();
+                yield this._prepareMedia();
+                this._createPlayButton();
+                this._createUID();
+                this._createControls();
+                this._setEvents();
+                Player.instances[this.id] = this;
+            }
+        });
     }
     load() {
-        if (this.isMedia()) {
-            return __classPrivateFieldGet(this, _Player_media, "f").load();
-        }
+        return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
     }
     play() {
-        if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
-            __classPrivateFieldGet(this, _Player_media, "f").load();
-            __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
-        }
-        if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-            return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
-        }
-        else {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
+                yield __classPrivateFieldGet(this, _Player_media, "f").load();
+                __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
+            }
+            if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+                return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
+            }
             return __classPrivateFieldGet(this, _Player_media, "f").play();
-        }
+        });
     }
     pause() {
         if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
@@ -294,25 +303,27 @@ class Player {
         __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
     }
     _prepareMedia() {
-        try {
-            __classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
-            if (__classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
-                __classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                __classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
+                if (__classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
+                    __classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
+                }
+                __classPrivateFieldSet(this, _Player_media, new Media(__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_options, "f"), __classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
+                const preload = __classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
+                if (__classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none') {
+                    yield __classPrivateFieldGet(this, _Player_media, "f").load();
+                    __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
+                }
+                if (!__classPrivateFieldGet(this, _Player_autoplay, "f") && __classPrivateFieldGet(this, _Player_ads, "f")) {
+                    const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
+                    __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, __classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
+                }
             }
-            __classPrivateFieldSet(this, _Player_media, new Media(__classPrivateFieldGet(this, _Player_element, "f"), __classPrivateFieldGet(this, _Player_options, "f"), __classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
-            const preload = __classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
-            if (__classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none') {
-                __classPrivateFieldGet(this, _Player_media, "f").load();
-                __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
+            catch (e) {
+                console.error(e);
             }
-            if (!__classPrivateFieldGet(this, _Player_autoplay, "f") && __classPrivateFieldGet(this, _Player_ads, "f")) {
-                const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
-                __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, __classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
-            }
-        }
-        catch (e) {
-            console.error(e);
-        }
+        });
     }
     enableDefaultPlayer() {
         let paused = true;
@@ -358,7 +369,7 @@ class Player {
             media.forEach(m => {
                 const source = document.createElement('source');
                 source.src = m.src;
-                source.type = m.type || predictType(m.src);
+                source.type = m.type || predictType(m.src, __classPrivateFieldGet(this, _Player_element, "f"));
                 __classPrivateFieldGet(this, _Player_element, "f").appendChild(source);
             });
         }
@@ -611,7 +622,7 @@ class Player {
                     __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, __classPrivateFieldGet(this, _Player_ads, "f"), __classPrivateFieldGet(this, _Player_canAutoplay, "f"), __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
                 }
                 else if (__classPrivateFieldGet(this, _Player_canAutoplay, "f") || __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f")) {
-                    return this.play();
+                    this.play();
                 }
             });
         }
@@ -621,13 +632,13 @@ class Player {
         if (playerOptions) {
             const objectElements = ['labels', 'controls'];
             objectElements.forEach(item => {
-                __classPrivateFieldGet(this, _Player_options, "f")[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item]), playerOptions[item]) :
-                    __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item];
+                __classPrivateFieldGet(this, _Player_options, "f")[item] = playerOptions[item] && Object.keys(playerOptions[item]).length
+                    ? Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item]), playerOptions[item]) : __classPrivateFieldGet(this, _Player_defaultOptions, "f")[item];
             });
         }
     }
     _enableKeyBindings(e) {
-        var _a, _b;
+        var _a;
         const key = e.which || e.keyCode || 0;
         const el = this.activeElement();
         const isAd = this.isAd();
@@ -677,13 +688,13 @@ class Player {
                     let newStep = 5;
                     const configStep = this.getOptions().step;
                     if (configStep) {
-                        newStep = (key === 74 || key === 76) ? configStep * 2 : configStep;
+                        newStep = key === 74 || key === 76 ? configStep * 2 : configStep;
                     }
                     else if (key === 74 || key === 76) {
                         newStep = 10;
                     }
                     const step = el.duration !== Infinity ? newStep : this.getOptions().progress.duration;
-                    el.currentTime += (key === 37 || key === 74) ? (step * -1) : step;
+                    el.currentTime += key === 37 || key === 74 ? step * -1 : step;
                     if (el.currentTime < 0) {
                         el.currentTime = 0;
                     }
@@ -731,10 +742,13 @@ class Player {
                     const target = this.getContainer().querySelector('.op-status>span');
                     if (target) {
                         target.textContent = `${elem.playbackRate}x`;
-                        (_b = target.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-hidden', 'false');
+                        if (target.parentElement) {
+                            target.parentElement.setAttribute('aria-hidden', 'false');
+                        }
                         setTimeout(() => {
-                            var _a;
-                            (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'true');
+                            if (target.parentElement) {
+                                target.parentElement.setAttribute('aria-hidden', 'true');
+                            }
                         }, 500);
                     }
                     const ev = addEvent('controlschanged');
@@ -747,6 +761,7 @@ class Player {
                     e.preventDefault();
                     e.stopPropagation();
                 }
+                break;
             default:
                 break;
         }

@@ -1,3 +1,4 @@
+import Level from '../interfaces/level';
 import Source from '../interfaces/source';
 import Native from './native';
 /**
@@ -16,7 +17,7 @@ declare class FlvMedia extends Native {
      * @param {Source} mediaSource
      * @memberof FlvMedia
      */
-    constructor(element: HTMLMediaElement, mediaSource: Source, options?: object);
+    constructor(element: HTMLMediaElement, mediaSource: Source, options?: Record<string, unknown>);
     /**
      * Provide support via flv.js for modern browsers only
      *
@@ -42,13 +43,13 @@ declare class FlvMedia extends Native {
      * @memberof FlvMedia
      */
     set src(media: Source);
-    get levels(): any;
+    get levels(): Level[];
     set level(level: number);
     get level(): number;
     /**
      * Setup Flv player with options and config.
      *
-     * Some of the options/events will be overriden to improve performance and user's experience.
+     * Some of the options/events will be overridden to improve performance and user's experience.
      *
      * @private
      * @memberof FlvMedia
