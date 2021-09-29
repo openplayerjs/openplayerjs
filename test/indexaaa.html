@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>OpenPlayer Tests</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" media="all" href="../dist/openplayer.css" />
+        <link rel="stylesheet" media="all" href="../node_modules/mocha/mocha.css" />
+        <style>
+            body {
+                max-width: 700px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <section>
+                <h1>OpenPlayer.js</h1>
+                <div class="players">
+                    <video id="player1" class="op-player__media" controls playsinline>
+                        <source src="https://videos.clippa.tv/vods/549a6974-c34d-4f3d-bdc5-3f12ae3e0317/manifest.m3u8" />
+                    </video>
+                </div>
+            </section>
+        </div>
+        <script src="../dist/openplayer.js"></script>
+        <script>
+            const player = new OpenPlayerJS('player1', {
+                layers: {
+                    left: ['play', 'time', 'volume'],
+                    middle: ['progress'],
+                    right: ['captions', 'settings', 'fullscreen'],
+                },
+                hidePlayBtnTimer: 100,
+                showLoaderOnInit: !1,
+            });
+            player.init();
+            player.getElement().addEventListener('hlsManifestParsed', function (t, s) {
+                // player.loadAd('https://serve.adspruce.com/vpaid-21481-2.xml');
+                try {
+                    player
+                        .loadAd(
+                            'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator='
+                        )
+                        .then(() => {
+                            console.log('fuck');
+                            setTimeout(() => {
+                                player.play();
+                            }, 1500);
+                        });
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+        </script>
+    </body>
+</html>
