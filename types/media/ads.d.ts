@@ -9,6 +9,8 @@ import Player from '../player';
  */
 declare class Ads {
     #private;
+    loadPromise: unknown;
+    loadedAd: boolean;
     /**
      * Create an instance of Ads.
      *

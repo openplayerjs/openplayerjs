@@ -139,6 +139,12 @@ class Media {
      * @see [[Native.load]]
      */
     public async load(): Promise<void> {
+        if (this.#mediaLoaded) {
+            return;
+        }
+
+        this.#mediaLoaded = true;
+
         if (!this.#files.length) {
             throw new TypeError('Media not set');
         }
@@ -168,7 +174,7 @@ class Media {
             }
 
             await this.#media.promise;
-            return this.#media.load();
+            this.#media.load();
         } catch (e) {
             // destroy media
             this.#media.destroy();
@@ -186,13 +192,13 @@ class Media {
      * @memberof Media
      */
     public async play(): Promise<void> {
-        if (!this.loaded) {
-            this.loaded = true;
+        if (!this.#mediaLoaded) {
+            this.#mediaLoaded = true;
             await this.load();
+            this.#mediaLoaded = false;
         } else {
             await this.#media.promise;
         }
-
         this.#promisePlay = this.#media.play();
         return this.#promisePlay;
     }
@@ -209,10 +215,8 @@ class Media {
     public async pause(): Promise<void> {
         if (this.#promisePlay !== undefined) {
             await this.#promisePlay;
-            this.#media.pause();
-        } else {
-            this.#media.pause();
         }
+        this.#media.pause();
     }
 
     /**
@@ -255,8 +259,10 @@ class Media {
             }
 
             this.#element.src = this.#files[0].src;
-            this.#media.src = this.#files[0];
             this.#currentSrc = this.#files[0];
+            if (this.#media) {
+                this.#media.src = this.#files[0];
+            }
         } else {
             this.#element.src = '';
         }

@@ -285,6 +285,10 @@ class Ads {
      */
     #mediaStarted = false;
 
+    loadPromise: unknown;
+
+    loadedAd = false;
+
     /**
      * Create an instance of Ads.
      *
@@ -338,6 +342,7 @@ class Ads {
             : this.#adsOptions.sdkPath;
 
         this._handleClickInContainer = this._handleClickInContainer.bind(this);
+        this.load = this.load.bind(this);
         this._loaded = this._loaded.bind(this);
         this._error = this._error.bind(this);
         this._assign = this._assign.bind(this);
@@ -355,12 +360,10 @@ class Ads {
                 resolve({});
             });
 
-        this.#promise.then(() => {
-            this.load();
-        }).catch(error => {
-            const message = `Ad script could not be loaded; please check if you have an AdBlock
-                turned on, or if you provided a valid URL is correct`;
-            console.error(`Ad error: ${message}. URL: ${error.src}`);
+        this.#promise.then(this.load).catch(error => {
+            let message = 'Ad script could not be loaded; please check if you have an AdBlock';
+            message += 'turned on, or if you provided a valid URL is correct';
+            console.error(`Ad error: ${message}.`);
 
             const details = {
                 detail: {
@@ -382,6 +385,10 @@ class Ads {
      * @memberof Ads
      */
     public load(force = false): void {
+        if (this.loadedAd) {
+            return;
+        }
+
         /**
          * If we have set `autoPlayAdBreaks` to false and haven't set the
          * force flag, don't load ads yet
@@ -389,6 +396,8 @@ class Ads {
         if (!google && !google.ima && !this.#adsOptions.autoPlayAdBreaks && !force) {
             return;
         }
+
+        this.loadedAd = true;
 
         /**
          * Check for an existing ad container div and destroy it to avoid
@@ -436,7 +445,7 @@ class Ads {
             google.ima.settings.setPpid(this.#adsOptions.publisherId);
         }
         google.ima.settings.setPlayerType('openplayerjs');
-        google.ima.settings.setPlayerVersion('2.8.2');
+        google.ima.settings.setPlayerVersion('2.9.1');
 
         this.#adDisplayContainer = new google.ima.AdDisplayContainer(this.#adsContainer, this.#element, this.#adsCustomClickContainer);
 
@@ -447,12 +456,18 @@ class Ads {
 
         // Create responsive ad
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', () => this.resizeAds(), EVENT_OPTIONS);
+            window.addEventListener('resize', this._handleResizeAds, EVENT_OPTIONS);
         }
         this.#element.addEventListener('loadedmetadata', this._handleResizeAds, EVENT_OPTIONS);
 
         // Request Ads automatically if `autoplay` was set
-        if (this.#autoStart === true || this.#autoStartMuted === true || force === true || this.#adsOptions.enablePreloading === true) {
+        if (
+            this.#autoStart === true
+            || this.#autoStartMuted === true
+            || force === true
+            || this.#adsOptions.enablePreloading === true
+            || this.#playTriggered === true
+        ) {
             if (!this.#adsDone) {
                 this.#adsDone = true;
                 this.#adDisplayContainer.initialize();
@@ -466,14 +481,15 @@ class Ads {
      *
      * @memberof Ads
      */
-    public play(): Promise<void> {
-        const play = (): void => {
-            if (!this.#adsDone) {
-                this._initNotDoneAds();
-                return;
-            }
+    public async play(): Promise<void> {
+        if (!this.#adsDone) {
+            this.#playTriggered = true;
+            await this.loadPromise;
+            return;
+        }
 
-            if (this.#adsManager) {
+        if (this.#adsManager) {
+            try {
                 // No timer interval and no adsActive mean it's a potential initial ad play
                 if (!this.#intervalTimer && this.#adsActive === false) {
                     this.#adsManager.start();
@@ -483,12 +499,10 @@ class Ads {
                 this.#adsActive = true;
                 const e = addEvent('play');
                 this.#element.dispatchEvent(e);
+            } catch (err) {
+                this._resumeMedia();
             }
-        };
-
-        return new Promise(resolve => {
-            resolve({});
-        }).then(play);
+        }
     }
 
     /**
@@ -552,7 +566,7 @@ class Ads {
         this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler);
         this.#element.removeEventListener('ended', this._contentEndedListener);
         if (typeof window !== 'undefined') {
-            window.removeEventListener('resize', () => this.resizeAds());
+            window.removeEventListener('resize', this._handleResizeAds);
         }
 
         if (this.#adsContainer) {
@@ -918,6 +932,7 @@ class Ads {
             this.#adsStarted = true;
             this.#adsDone = false;
             this.destroy();
+            this.loadedAd = false;
             this.load(true);
             console.warn(`Ad warning: ${error.toString()}`);
         } else {
@@ -952,6 +967,7 @@ class Ads {
         // Get the ads manager.
         this.#adsManager = adsManagerLoadedEvent.getAdsManager(this.#element, adsRenderingSettings);
         this._start(this.#adsManager);
+        this.loadPromise = new Promise(resolve => resolve);
     }
 
     /**
@@ -1060,6 +1076,9 @@ class Ads {
             } else {
                 this._contentLoadedAction();
             }
+        } else {
+            this.load();
+            this.loadedAd = false;
         }
     }
 
@@ -1113,6 +1132,7 @@ class Ads {
             this.#playTriggered = true;
             this.#adsStarted = true;
             this.#adsDone = false;
+            this.loadedAd = false;
             this.load(true);
         } else {
             this.#element.addEventListener('ended', this._contentEndedListener, EVENT_OPTIONS);

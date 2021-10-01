@@ -5,7 +5,7 @@
 [![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Support%20OpenPlayerJS%20by%20giving%20the%20project%20a%20start%20at%20&url=https://www.openplayerjs.com&hashtags=openplayerjs,mediaplayer,vpaid,opensourcerocks,streaming)
-[![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs)
+[![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg?branch=master)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
 [![CircleCI](https://circleci.com/gh/openplayerjs/openplayerjs/tree/unit-tests.svg?style=svg)](https://circleci.com/gh/openplayerjs/openplayerjs/tree/unit-tests)
 

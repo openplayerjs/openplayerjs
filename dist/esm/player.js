@@ -159,6 +159,7 @@ class Player {
         });
     }
     load() {
+        __classPrivateFieldGet(this, _Player_media, "f").loaded = false;
         return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
     }
     play() {
@@ -168,6 +169,7 @@ class Player {
                 __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
             }
             if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+                yield __classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
                 return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
             }
             return __classPrivateFieldGet(this, _Player_media, "f").play();
@@ -342,20 +344,28 @@ class Player {
         });
     }
     loadAd(src) {
-        if (this.isAd()) {
-            this.activeElement().destroy();
-            this.activeElement().src = src;
-            this.getAd().isDone = false;
-            if (!this.activeElement().paused) {
-                this.getAd().playRequested = true;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (this.isAd()) {
+                    this.activeElement().destroy();
+                    this.activeElement().src = src;
+                    this.getAd().isDone = false;
+                    if (!this.activeElement().paused) {
+                        this.getAd().playRequested = true;
+                    }
+                    this.activeElement().load(true);
+                }
+                else {
+                    const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
+                    const autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _Player_canAutoplay, "f");
+                    __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
+                }
+                yield __classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
             }
-            this.activeElement().load(true);
-        }
-        else {
-            const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
-            const autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _Player_canAutoplay, "f");
-            __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
-        }
+            catch (err) {
+                console.error(err);
+            }
+        });
     }
     set src(media) {
         if (__classPrivateFieldGet(this, _Player_media, "f") instanceof Media) {

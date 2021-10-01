@@ -42,10 +42,10 @@
   ],
   "scripts": {
     "build": "npm test && [ -d ./dist ] && rm -R ./dist; webpack --mode=production && npm run create-esm && npm run create-d-types",
-    "create-d-types": "npx typescript -p tsconfig-types.json",
-    "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; npx typescript -p tsconfig-esm.json",
+    "create-d-types": "tsc -p tsconfig-types.json",
+    "create-esm": "[ -d ./dist/esm ] && rm -R ./dist/esm; tsc -p tsconfig-esm.json",
     "release": "npm run build && release-it",
-    "test": "karma start --single-run --browsers ChromeHeadless --log-level info karma.conf.js && npx tsd",
+    "test": "karma start --single-run --browsers ChromeHeadless --log-level info karma.conf.js && tsd",
     "test:dev": "karma start --watch --browsers Chrome karma.conf.js"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",

@@ -356,6 +356,7 @@ class Player {
      * @memberof Player
      */
     public load(): Promise<void> | void {
+        this.#media.loaded = false;
         return this.isMedia() ? this.#media.load() : undefined;
     }
 
@@ -371,6 +372,7 @@ class Player {
             this.#media.loaded = true;
         }
         if (this.#adsInstance) {
+            await this.#adsInstance.loadPromise;
             return this.#adsInstance.play();
         }
         return this.#media.play();
@@ -683,19 +685,24 @@ class Player {
         });
     }
 
-    public loadAd(src: string | string[]): void {
-        if (this.isAd()) {
-            this.activeElement().destroy();
-            this.activeElement().src = src;
-            this.getAd().isDone = false;
-            if (!this.activeElement().paused) {
-                this.getAd().playRequested = true;
+    public async loadAd(src: string | string[]): Promise<void> {
+        try {
+            if (this.isAd()) {
+                this.activeElement().destroy();
+                this.activeElement().src = src;
+                this.getAd().isDone = false;
+                if (!this.activeElement().paused) {
+                    this.getAd().playRequested = true;
+                }
+                this.activeElement().load(true);
+            } else {
+                const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
+                const autoplay = !this.activeElement().paused || this.#canAutoplay;
+                this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions);
             }
-            this.activeElement().load(true);
-        } else {
-            const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
-            const autoplay = !this.activeElement().paused || this.#canAutoplay;
-            this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions);
+            await this.#adsInstance.loadPromise;
+        } catch (err) {
+            console.error(err);
         }
     }
 

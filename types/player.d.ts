@@ -233,7 +233,7 @@ declare class Player {
      */
     _prepareMedia(): Promise<void>;
     enableDefaultPlayer(): void;
-    loadAd(src: string | string[]): void;
+    loadAd(src: string | string[]): Promise<void>;
     /**
      * Set a Source object to the current media.
      *

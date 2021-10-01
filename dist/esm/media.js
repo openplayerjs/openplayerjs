@@ -51,6 +51,10 @@ class Media {
     }
     load() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (__classPrivateFieldGet(this, _Media_mediaLoaded, "f")) {
+                return;
+            }
+            __classPrivateFieldSet(this, _Media_mediaLoaded, true, "f");
             if (!__classPrivateFieldGet(this, _Media_files, "f").length) {
                 throw new TypeError('Media not set');
             }
@@ -74,7 +78,7 @@ class Media {
                     throw new TypeError('Media cannot be played with any valid media type');
                 }
                 yield __classPrivateFieldGet(this, _Media_media, "f").promise;
-                return __classPrivateFieldGet(this, _Media_media, "f").load();
+                __classPrivateFieldGet(this, _Media_media, "f").load();
             }
             catch (e) {
                 __classPrivateFieldGet(this, _Media_media, "f").destroy();
@@ -84,9 +88,10 @@ class Media {
     }
     play() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.loaded) {
-                this.loaded = true;
+            if (!__classPrivateFieldGet(this, _Media_mediaLoaded, "f")) {
+                __classPrivateFieldSet(this, _Media_mediaLoaded, true, "f");
                 yield this.load();
+                __classPrivateFieldSet(this, _Media_mediaLoaded, false, "f");
             }
             else {
                 yield __classPrivateFieldGet(this, _Media_media, "f").promise;
@@ -99,11 +104,8 @@ class Media {
         return __awaiter(this, void 0, void 0, function* () {
             if (__classPrivateFieldGet(this, _Media_promisePlay, "f") !== undefined) {
                 yield __classPrivateFieldGet(this, _Media_promisePlay, "f");
-                __classPrivateFieldGet(this, _Media_media, "f").pause();
             }
-            else {
-                __classPrivateFieldGet(this, _Media_media, "f").pause();
-            }
+            __classPrivateFieldGet(this, _Media_media, "f").pause();
         });
     }
     destroy() {
@@ -128,8 +130,10 @@ class Media {
                 __classPrivateFieldGet(this, _Media_element, "f").setAttribute('data-op-file', __classPrivateFieldGet(this, _Media_files, "f")[0].src);
             }
             __classPrivateFieldGet(this, _Media_element, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0].src;
-            __classPrivateFieldGet(this, _Media_media, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0];
             __classPrivateFieldSet(this, _Media_currentSrc, __classPrivateFieldGet(this, _Media_files, "f")[0], "f");
+            if (__classPrivateFieldGet(this, _Media_media, "f")) {
+                __classPrivateFieldGet(this, _Media_media, "f").src = __classPrivateFieldGet(this, _Media_files, "f")[0];
+            }
         }
         else {
             __classPrivateFieldGet(this, _Media_element, "f").src = '';

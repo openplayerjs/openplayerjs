@@ -32,6 +32,7 @@ describe('player', function () {
         videoPlayer = null;
         audioPlayer = null;
     });
+
     it('creates an instance of a video player by initializing it via configuration', async () => {
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
@@ -52,6 +53,7 @@ describe('player', function () {
         expect(videoPlayer.getContainer().querySelector('.op-player__play')).to.not.equal(null);
         expect(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
     });
+
     it('creates an instance of an audio player by initializing it via configuration', async () => {
         audioPlayer = new OpenPlayerJS('audio');
         await audioPlayer.init();
@@ -70,6 +72,7 @@ describe('player', function () {
         expect(audioPlayer.getContainer().querySelector('.op-player__play')).to.equal(null);
         expect(audioPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
     });
+
     it('detects if user is using a mouse (by default) or keyboard', async () => {
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
@@ -81,6 +84,7 @@ describe('player', function () {
         videoPlayer.getContainer().dispatchEvent(event);
         expect(videoPlayer.getContainer().classList.contains('op-player__keyboard--inactive')).to.equal(false);
     });
+
     it('detects the type of media to be played (i.e., video)', async () => {
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
@@ -90,6 +94,7 @@ describe('player', function () {
         await audioPlayer.init();
         expect(audioPlayer.getContainer().classList.contains('op-player__audio')).to.equal(true);
     });
+
     it('displays a different UI when changing the mode to `fill` or `fit` (ONLY for video)', async () => {
         videoPlayer = new OpenPlayerJS('video', { mode: 'fill' });
         await videoPlayer.init();
@@ -111,6 +116,7 @@ describe('player', function () {
         expect(audioPlayer.getContainer().classList.contains('op-player__fit')).to.equal(false);
         expect(audioPlayer.getContainer().parentElement.classList.contains('op-player__fit--wrapper')).to.equal(false);
     });
+
     it('uses the width and/or height (in px or %) indicated in the configuration', async () => {
         videoPlayer = new OpenPlayerJS('video', { width: 100 });
         await videoPlayer.init();
@@ -129,6 +135,7 @@ describe('player', function () {
         expect(videoPlayer.getContainer().style.width).to.equal('100%');
         expect(videoPlayer.getContainer().style.height).to.equal('50%');
     });
+
     it('displays the duration of media when player plays media, and `preload` attribute is set to `none`', async () => {
         document.getElementById('video').setAttribute('preload', 'none');
 
@@ -150,6 +157,7 @@ describe('player', function () {
             }
         });
     });
+
     it('allows user to add/remove control elements via configuration', async () => {
         const controls = {
             layers: {
@@ -164,21 +172,22 @@ describe('player', function () {
         expect(audioPlayer.getContainer().querySelector('.op-controls__duration')).to.be(null);
         expect(audioPlayer.getContainer().querySelector('.op-controls__playpause')).to.not.be(null);
     });
-    // it('handles attempts to play an invalid source', async () => {
-    //     videoPlayer = new OpenPlayerJS('video');
-    //     videoPlayer.src = 'https://non-existing.test/test.mp4';
-    //     await videoPlayer.init();
 
-    //     return new Promise<void>(resolve => {
-    //         try {
-    //             videoPlayer.play();
-    //         } catch (err) {
-    //             expect(err instanceof DOMException).to.equal(true);
-    //             videoPlayer.src = defaultVideo;
-    //             resolve();
-    //         }
-    //     });
-    // });
+    it('handles attempts to play an invalid source', async () => {
+        videoPlayer = new OpenPlayerJS('video');
+        videoPlayer.src = 'https://non-existing.test/test.mp4';
+        await videoPlayer.init();
+
+        return new Promise<void>(resolve => {
+            try {
+                videoPlayer.play();
+            } catch (err) {
+                expect(err instanceof DOMException).to.equal(true);
+                videoPlayer.src = defaultVideo;
+                resolve();
+            }
+        });
+    });
     // it('allows to set a source or more after it has been initialized (updating sources)', async () => {
     //     videoPlayer = new OpenPlayerJS('video');
     //     await videoPlayer.init();
