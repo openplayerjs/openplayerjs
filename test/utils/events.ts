@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as events from '../../src/js/utils/events';
+import '../helper';
 
 describe('utils/events', () => {
     it('must return a custom event to be dispatched', done => {

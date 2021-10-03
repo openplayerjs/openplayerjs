@@ -1,13 +1,14 @@
 import OpenPlayerJS from '../../src/js/player';
 import { formatTime } from '../../src/js/utils/time';
+import '../helper';
 
 describe('controls/time', () => {
     let player = null;
 
-    afterEach(() => {
-        player.activeElement().muted = true;
+    afterEach(done => {
         player.destroy();
         player = null;
+        done();
     });
 
     it('displays the current time and duration in the control bar to the left by default', async () => {
@@ -85,29 +86,5 @@ describe('controls/time', () => {
         const duration = player.getControls().getContainer().querySelector('.op-controls__duration') as HTMLInputElement;
         expect(duration).to.not.be(null);
         expect(duration.textContent).to.equal(formatTime(50));
-    });
-
-    it('hides the duration and delimiter when dealing with live media', async () => {
-        const media = document.getElementById('video') as HTMLMediaElement;
-        media.setAttribute('op-live__enabled', 'true');
-
-        player = new OpenPlayerJS('video', {
-            progress: {
-                duration: Infinity,
-            },
-        });
-        await player.init();
-
-        const current = player.getControls().getContainer().querySelector('.op-controls__current') as HTMLInputElement;
-        expect(current).to.not.be(null);
-
-        const delimiter = player.getControls().getContainer().querySelector('.op-controls__time-delimiter') as HTMLElement;
-        expect(delimiter).to.not.be(null);
-        expect(delimiter.getAttribute('aria-hidden')).to.equal('true');
-
-        const duration = player.getControls().getContainer().querySelector('.op-controls__duration') as HTMLInputElement;
-        expect(duration).to.not.be(null);
-        expect(duration.getAttribute('aria-hidden')).to.equal('true');
-        media.removeAttribute('op-live__enabled');
     });
 });

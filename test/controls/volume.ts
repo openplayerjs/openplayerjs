@@ -1,13 +1,15 @@
 import OpenPlayerJS from '../../src/js/player';
+import '../helper';
 
 describe('controls/volume', () => {
     let player = null;
 
-    afterEach(() => {
+    afterEach(done => {
         player.activeElement().muted = true;
         player.activeElement().volume = 0;
         player.destroy();
         player = null;
+        done();
     });
 
     it('displays a Volume button and slider in the control bar to the left by default', async () => {

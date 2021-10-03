@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as time from '../../src/js/utils/time';
+import '../helper';
 
 describe('utils/time', () => {
     it('returns a number of seconds in STMPE format', done => {

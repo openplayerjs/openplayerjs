@@ -7,14 +7,11 @@ module.exports = config => {
             {
                 pattern: 'src/css/**/*.svg', watched: false, included: false, served: true
             },
-            'src/css/*.css',
             { pattern: 'node_modules/expect.js/index.js' },
             { pattern: 'test/player.html', type: 'dom', watched: false },
+            'src/css/*.css',
             'src/js/**/*.ts',
-            'test/utils/*.ts',
-            'test/controls/volume.ts',
-            'test/controls/*.ts',
-            'test/player.ts',
+            'test/**/*.ts',
         ],
         preprocessors: {
             'src/js/**/*.ts': ['karma-typescript', 'coverage'],
@@ -60,6 +57,8 @@ module.exports = config => {
         client: {
             mocha: {
                 asyncOnly: true,
+                forbidOnly: true,
+                bail: true
             }
         },
     });

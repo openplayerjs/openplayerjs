@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as media from '../../src/js/utils/media';
+import '../helper';
 
 describe('utils/media', () => {
     it('determines the extension of a source', done => {

@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as general from '../../src/js/utils/general';
+import '../helper';
 
 describe('utils/general', () => {
     it('must return the absolute URL of a relative one', done => {

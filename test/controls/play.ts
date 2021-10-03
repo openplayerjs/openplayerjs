@@ -1,9 +1,10 @@
 import OpenPlayerJS from '../../src/js/player';
+import '../helper';
 
 describe('controls/play', () => {
     let player = null;
 
-    afterEach(() => {
+    afterEach(done => {
         player.pause();
 
         if (OpenPlayerJS.instances.video) {
@@ -14,6 +15,7 @@ describe('controls/play', () => {
         }
 
         player = null;
+        done();
     });
 
     it('displays a Play button in the control bar to the left by default', async () => {
@@ -51,7 +53,7 @@ describe('controls/play', () => {
             startVolume: 0,
         });
         await player.init();
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const events = {
                 ended: () => {
                     const play = player.getControls().getContainer()
@@ -63,6 +65,7 @@ describe('controls/play', () => {
                     Object.keys(events).forEach(event => {
                         player.getElement().removeEventListener(event, events[event]);
                     });
+                    player.getElement().currentTime = 0;
                     resolve();
                 },
                 play: () => {
@@ -89,7 +92,7 @@ describe('controls/play', () => {
             try {
                 player.play();
             } catch (err) {
-                reject();
+                throw new Error('error');
             }
         });
     });

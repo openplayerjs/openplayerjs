@@ -1,9 +1,10 @@
 import OpenPlayerJS from '../../src/js/player';
+import '../helper';
 
 describe('controls/fullscreen', () => {
     let player = null;
 
-    afterEach(() => {
+    afterEach(done => {
         if (OpenPlayerJS.instances.video) {
             OpenPlayerJS.instances.video.destroy();
         }
@@ -12,6 +13,7 @@ describe('controls/fullscreen', () => {
         }
 
         player = null;
+        done();
     });
 
     it('displays a Fullscreen button in the control bar to the right by default', async () => {
