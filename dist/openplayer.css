@@ -290,7 +290,7 @@
     -webkit-user-select: none;
         -ms-user-select: none;
             user-select: none;
-    will-change: width,height;
+    will-change: width, height;
     z-index: 4;
 }
 .op-player__audio .op-settings {
@@ -460,7 +460,16 @@
 }
 .op-controls .op-controls__progress--seek.loading {
     animation: progress 2s linear infinite;
-    background: linear-gradient(-45deg, rgba(255, 255, 255, .3) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .3) 50%, rgba(255, 255, 255, .3) 75%, transparent 75%, transparent);
+    background: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .3) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, .3) 50%,
+        rgba(255, 255, 255, .3) 75%,
+        transparent 75%,
+        transparent
+    );
     background-repeat: repeat-x;
     background-size: 25px 25px;
 }
@@ -569,7 +578,7 @@
     pointer-events: none;
 }
 .op-ads--active .op-controls .op-controls__progress--played {
-    color:#fecb2f;
+    color: #fecb2f;
 }
 .op-ads--active .op-controls .op-controls__progress--buffer {
     color: transparent;
@@ -643,7 +652,7 @@
 }
 .op-controls__tooltip:before,
 .op-controls__tooltip:after {
-    content:'';
+    content: '';
     height: 0;
     left: 0;
     margin: 0 auto;
@@ -766,7 +775,7 @@
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-top: 10px solid rgba(28, 28, 28, .9);
-    content:'';
+    content: '';
     height: 0;
     left: 0;
     margin: 0 auto;
@@ -778,7 +787,7 @@
 
 /* WebVTT cues */
 ::cue {
-    color:#ccc;
+    color: #ccc;
 }
 video:-webkit-media-text-track-display {
     top: -15%;
@@ -797,7 +806,7 @@ video:-webkit-media-text-track-display {
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-top: 10px solid rgba(28, 28, 28, .9);
-    content:'';
+    content: '';
     height: 0;
     left: 0;
     margin: 0 auto;
@@ -856,6 +865,10 @@ video:-webkit-media-text-track-display {
 
 .op-player[data-fullscreen='true'].op-ads--active .op-ads__click-container {
     z-index: 2147483647;
+}
+
+.op-player__audio .op-ads {
+    display: none;
 }
 
 /* === Focus =================== */

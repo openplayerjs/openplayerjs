@@ -10820,6 +10820,8 @@ var ads_Ads = function () {
 
     ads_classPrivateFieldSet(this, _Ads_autoStart, autoStart || false, "f");
 
+    ads_classPrivateFieldSet(this, _Ads_adsMuted, player.getElement().muted, "f");
+
     ads_classPrivateFieldSet(this, _Ads_autoStartMuted, autoStartMuted || false, "f");
 
     ads_classPrivateFieldSet(this, _Ads_adsOptions, Object.assign(Object.assign({}, defaultOpts), options), "f");

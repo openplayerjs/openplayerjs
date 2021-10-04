@@ -78,6 +78,7 @@ class Ads {
         __classPrivateFieldSet(this, _Ads_media, player.getMedia(), "f");
         __classPrivateFieldSet(this, _Ads_element, player.getElement(), "f");
         __classPrivateFieldSet(this, _Ads_autoStart, autoStart || false, "f");
+        __classPrivateFieldSet(this, _Ads_adsMuted, player.getElement().muted, "f");
         __classPrivateFieldSet(this, _Ads_autoStartMuted, autoStartMuted || false, "f");
         __classPrivateFieldSet(this, _Ads_adsOptions, Object.assign(Object.assign({}, defaultOpts), options), "f");
         if (options) {

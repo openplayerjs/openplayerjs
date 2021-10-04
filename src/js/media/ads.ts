@@ -323,6 +323,7 @@ class Ads {
         this.#media = player.getMedia();
         this.#element = player.getElement();
         this.#autoStart = autoStart || false;
+        this.#adsMuted = player.getElement().muted;
         this.#autoStartMuted = autoStartMuted || false;
         this.#adsOptions = { ...defaultOpts, ...options };
         if (options) {

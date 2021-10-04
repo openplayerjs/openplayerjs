@@ -89,29 +89,38 @@ If you want to unleash the power of OpenPlayerJS, learn more about OpenPlayerJS 
 
 If you need a reference on how to use OpenPlayerJS in some of the most common scenarios, check the following links:
 
-1. [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
-2. [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
-3. [Using `fill` mode](https://codepen.io/rafa8626/pen/xxZXQoO)
-4. [Using `fit` mode](https://codepen.io/rafa8626/pen/abmboKV)
-5. [Using Ads (linear and non-linear samples)](https://codepen.io/rafa8626/pen/vVYKav)
-6. [🆕 - Updating Ads and clickable Ad element](https://codepen.io/rafa8626/pen/OJmEzXw)
-7. [Removing controls and using `preload="none"`](https://codepen.io/rafa8626/pen/OJyMwxX)
-8. [Add source after initialization (useful for AJAX)](https://codepen.io/rafa8626/pen/YzzgJrK)
-9. [Fully customized audio player](https://codepen.io/rafa8626/pen/ExPLVRE)
-10. [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
-11. [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
-12. [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
-13. [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
-14. [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
-15. [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
-16. [Seamless transitions using custom control](https://codepen.io/rafa8626/pen/oNXmEza)
-17. [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB)
-18. [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
-19. [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo)
-20. [Using `Levels` and setting width/height](https://codepen.io/rafa8626/pen/ExxXvZx)
-21. [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
-22. [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
-23. [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
+### Beginners
+
+- [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
+- [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
+- [Using `fill` mode](https://codepen.io/rafa8626/pen/xxZXQoO)
+- [Using `fit` mode](https://codepen.io/rafa8626/pen/abmboKV)
+- [Using Ads (linear and non-linear samples)](https://codepen.io/rafa8626/pen/vVYKav)
+- [Removing controls and using `preload="none"`](https://codepen.io/rafa8626/pen/OJyMwxX)
+- [Using `Levels` and setting width/height](https://codepen.io/rafa8626/pen/ExxXvZx)
+- [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
+- [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB)
+- [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
+- [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo)
+- [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg)
+- [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo)
+
+### Intermediate
+
+- [Add source after initialization](https://codepen.io/rafa8626/pen/YzzgJrK)
+- [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
+- [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
+- [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
+
+### Advanced
+
+- [🆕 - Updating source and Ads for dynamic content loading](https://codepen.io/rafa8626/pen/gORJWVz)
+- [🆕 - Updating Ads and clickable Ad element](https://codepen.io/rafa8626/pen/OJmEzXw)
+- [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
+- [Fully customized audio player](https://codepen.io/rafa8626/pen/ExPLVRE)
+- [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
+- [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW)
+- [Seamless transitions between media using custom control](https://codepen.io/rafa8626/pen/oNXmEza)
 
 ## Built With
 
