@@ -51,6 +51,7 @@ module.exports = config => {
         },
         reporters: ['mocha', 'karma-typescript', 'coverage'],
         port: 9876,
+        crossOriginAttribute: false,
         runnerPort: 9100,
         captureTimeout: 60000,
         concurrency: Infinity,

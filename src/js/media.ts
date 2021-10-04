@@ -177,7 +177,9 @@ class Media {
             this.#media.load();
         } catch (e) {
             // destroy media
-            this.#media.destroy();
+            if (this.#media) {
+                this.#media.destroy();
+            }
             throw e;
         }
     }
@@ -227,7 +229,9 @@ class Media {
      * @memberof Media
      */
     public destroy(): void {
-        this.#media.destroy();
+        if (this.#media) {
+            this.#media.destroy();
+        }
     }
 
     /**

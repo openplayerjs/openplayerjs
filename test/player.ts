@@ -172,6 +172,36 @@ describe('player', () => {
         expect(audioPlayer.getContainer().querySelector('.op-controls__playpause')).to.not.be(null);
     });
 
+    it('allows the user to add captions dynamically', async () => {
+        const media = (document.getElementById('video') as HTMLMediaElement);
+        media.setAttribute('crossorigin', 'anonymous');
+
+        videoPlayer = new OpenPlayerJS('video');
+        await videoPlayer.init();
+        expect(videoPlayer.getContainer().querySelector('.op-controls__captions')).to.be(null);
+
+        videoPlayer.addCaptions({
+            kind: 'subtitle',
+            label: 'Test',
+            src: 'http://www.mediaelementjs.com/dist/mediaelement.vtt',
+            srclang: 'en-UK',
+        });
+
+        return new Promise<void>(resolve => {
+            videoPlayer.getElement().addEventListener('controlschanged', () => {
+                expect(videoPlayer.getContainer().querySelector('.op-controls__captions')).to.not.be(null);
+                media.removeAttribute('crossorigin');
+                resolve();
+            });
+            try {
+                const e = new CustomEvent('controlschanged');
+                videoPlayer.getElement().dispatchEvent(e);
+            } catch (err) {
+                throw new Error('error');
+            }
+        });
+    });
+
     it.skip('handles attempts to play an invalid source', async () => {
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();

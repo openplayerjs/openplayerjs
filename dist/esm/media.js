@@ -81,7 +81,9 @@ class Media {
                 __classPrivateFieldGet(this, _Media_media, "f").load();
             }
             catch (e) {
-                __classPrivateFieldGet(this, _Media_media, "f").destroy();
+                if (__classPrivateFieldGet(this, _Media_media, "f")) {
+                    __classPrivateFieldGet(this, _Media_media, "f").destroy();
+                }
                 throw e;
             }
         });
@@ -109,7 +111,9 @@ class Media {
         });
     }
     destroy() {
-        __classPrivateFieldGet(this, _Media_media, "f").destroy();
+        if (__classPrivateFieldGet(this, _Media_media, "f")) {
+            __classPrivateFieldGet(this, _Media_media, "f").destroy();
+        }
     }
     set src(media) {
         if (typeof media === 'string') {
