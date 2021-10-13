@@ -22,7 +22,7 @@ declare class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options);
+    constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options, afterInit?: boolean);
     /**
      * Create the Ads container and loader to process the Ads URL provided.
      *

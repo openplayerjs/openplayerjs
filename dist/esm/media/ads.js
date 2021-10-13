@@ -18,12 +18,12 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
+var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted, _Ads_afterInit;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, isXml, loadScript, removeElement } from '../utils/general';
 class Ads {
-    constructor(player, ads, autoStart, autoStartMuted, options) {
+    constructor(player, ads, autoStart, autoStartMuted, options, afterInit) {
         _Ads_adsEnded.set(this, false);
         _Ads_adsDone.set(this, false);
         _Ads_adsActive.set(this, false);
@@ -56,6 +56,7 @@ class Ads {
         _Ads_mediaSources.set(this, []);
         _Ads_mediaStarted.set(this, false);
         this.loadedAd = false;
+        _Ads_afterInit.set(this, false);
         const defaultOpts = {
             autoPlayAdBreaks: true,
             customClick: {
@@ -75,6 +76,7 @@ class Ads {
         };
         __classPrivateFieldSet(this, _Ads_player, player, "f");
         __classPrivateFieldSet(this, _Ads_ads, ads, "f");
+        __classPrivateFieldSet(this, _Ads_afterInit, afterInit || false, "f");
         __classPrivateFieldSet(this, _Ads_media, player.getMedia(), "f");
         __classPrivateFieldSet(this, _Ads_element, player.getElement(), "f");
         __classPrivateFieldSet(this, _Ads_autoStart, autoStart || false, "f");
@@ -131,7 +133,7 @@ class Ads {
         if (this.loadedAd) {
             return;
         }
-        if (!google && !google.ima && !__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
+        if (typeof google === 'undefined' || !google.ima || (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force)) {
             return;
         }
         this.loadedAd = true;
@@ -198,6 +200,9 @@ class Ads {
         return __awaiter(this, void 0, void 0, function* () {
             if (!__classPrivateFieldGet(this, _Ads_adsDone, "f")) {
                 __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
+                if (!__classPrivateFieldGet(this, _Ads_afterInit, "f")) {
+                    this._initNotDoneAds();
+                }
                 yield this.loadPromise;
                 return;
             }
@@ -786,5 +791,5 @@ class Ads {
         this.resizeAds();
     }
 }
-_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
+_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap(), _Ads_afterInit = new WeakMap();
 export default Ads;

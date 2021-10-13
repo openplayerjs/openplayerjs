@@ -698,7 +698,7 @@ class Player {
             } else {
                 const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
                 const autoplay = !this.activeElement().paused || this.#canAutoplay;
-                this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions);
+                this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions, true);
             }
             await this.#adsInstance.loadPromise;
         } catch (err) {

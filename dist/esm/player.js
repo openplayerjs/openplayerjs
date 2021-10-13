@@ -358,7 +358,7 @@ class Player {
                 else {
                     const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
                     const autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _Player_canAutoplay, "f");
-                    __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
+                    __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions, true), "f");
                 }
                 yield __classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
             }
