@@ -216,6 +216,29 @@ describe('player', () => {
         }
     });
 
+    it('allows to play Ads setting them up from the configuration', async () => {
+        videoPlayer = new OpenPlayerJS('video', {
+            ads: {
+                src: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=',
+            },
+        });
+        await videoPlayer.init();
+
+        return new Promise<void>(resolve => {
+            const checkForAds = () => {
+                setTimeout(() => {
+                    expect(videoPlayer.getElement().closest('.op-ads--active')).to.not.be(null);
+                    videoPlayer.getElement().removeEventListener('playing', checkForAds);
+                    resolve();
+                }, 1000);
+            };
+            videoPlayer.getElement().addEventListener('playing', checkForAds);
+            const play = videoPlayer.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            const e = new CustomEvent('click');
+            play.dispatchEvent(e);
+        });
+    });
+
     it('allows to set dynamically any sources (media and Ads) when no sources are detected in media (#283)', async () => {
         const id = 'video';
         const source = document.getElementById(id).querySelector('source');

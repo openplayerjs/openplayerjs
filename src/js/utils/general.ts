@@ -59,13 +59,13 @@ export function removeElement(node?: Node) {
  * @returns {Promise}
  */
 export function loadScript(url: string) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         const script = document.createElement('script');
         script.src = url;
         script.async = true;
         script.onload = () => {
             removeElement(script);
-            resolve({});
+            resolve();
         };
         script.onerror = () => {
             removeElement(script);

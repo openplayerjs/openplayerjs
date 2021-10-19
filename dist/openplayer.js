@@ -5032,7 +5032,7 @@ function loadScript(url) {
 
     script.onload = function () {
       removeElement(script);
-      resolve({});
+      resolve();
     };
 
     script.onerror = function () {
@@ -5166,11 +5166,19 @@ function formatTime(seconds, frameRate) {
   var h = Math.floor(m / 60);
 
   var wrap = function wrap(value) {
-    return value < 10 ? "0".concat(value) : value;
+    if (value < 10) {
+      if (value <= 0) {
+        return '00';
+      }
+
+      return "0".concat(value);
+    }
+
+    return value;
   };
 
-  m = m % 60;
-  s = s % 60;
+  m %= 60;
+  s %= 60;
   return "".concat(h > 0 ? "".concat(wrap(h), ":") : '').concat(wrap(m), ":").concat(wrap(s)).concat(f ? ":".concat(wrap(f)) : '');
 }
 function timeToSeconds(timecode) {

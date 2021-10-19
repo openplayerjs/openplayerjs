@@ -37,7 +37,7 @@ export declare function removeElement(node?: Node): void;
  * @param {string} url
  * @returns {Promise}
  */
-export declare function loadScript(url: string): Promise<unknown>;
+export declare function loadScript(url: string): Promise<void>;
 /**
  * Perform an asynchronous (AJAX) request.
  *

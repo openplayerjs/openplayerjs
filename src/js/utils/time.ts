@@ -2,7 +2,7 @@
  * Generate a human-readable time based on media current time.
  *
  * @export
- * @param {number} seconds  The time to be converted to a human-readbable format (STMPE).
+ * @param {number} seconds  The time to be converted to a human-readable format (STMPE).
  * @param {?number} frameRate  The numbers of frames per second.
  * @returns {string}
  */
@@ -11,9 +11,17 @@ export function formatTime(seconds: number, frameRate?: number) {
     let s = Math.floor(seconds);
     let m = Math.floor(s / 60);
     const h = Math.floor(m / 60);
-    const wrap = (value: number) => value < 10 ? `0${value}` : value;
-    m = m % 60;
-    s = s % 60;
+    const wrap = (value: number) => {
+        if (value < 10) {
+            if (value <= 0) {
+                return '00';
+            }
+            return `0${value}`;
+        }
+        return value;
+    };
+    m %= 60;
+    s %= 60;
     return `${h > 0 ? `${wrap(h)}:` : ''}${wrap(m)}:${wrap(s)}${(f ? `:${wrap(f)}` : '')}`;
 }
 /**

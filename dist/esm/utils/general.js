@@ -24,7 +24,7 @@ export function loadScript(url) {
         script.async = true;
         script.onload = () => {
             removeElement(script);
-            resolve({});
+            resolve();
         };
         script.onerror = () => {
             removeElement(script);

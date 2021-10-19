@@ -2,7 +2,7 @@
  * Generate a human-readable time based on media current time.
  *
  * @export
- * @param {number} seconds  The time to be converted to a human-readbable format (STMPE).
+ * @param {number} seconds  The time to be converted to a human-readable format (STMPE).
  * @param {?number} frameRate  The numbers of frames per second.
  * @returns {string}
  */
