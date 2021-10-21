@@ -169,7 +169,7 @@ module.exports =
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(92);
+module.exports = __webpack_require__(93);
 
 
 /***/ }),
@@ -267,8 +267,8 @@ var getOwnPropertyDescriptor = __webpack_require__(40).f;
 var createNonEnumerableProperty = __webpack_require__(19);
 var redefine = __webpack_require__(21);
 var setGlobal = __webpack_require__(46);
-var copyConstructorProperties = __webpack_require__(100);
-var isForced = __webpack_require__(73);
+var copyConstructorProperties = __webpack_require__(71);
+var isForced = __webpack_require__(74);
 
 /*
   options.target      - name of the target object
@@ -716,7 +716,7 @@ module.exports = store.inspectSource;
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var NATIVE_WEAK_MAP = __webpack_require__(99);
+var NATIVE_WEAK_MAP = __webpack_require__(100);
 var global = __webpack_require__(3);
 var isObject = __webpack_require__(13);
 var createNonEnumerableProperty = __webpack_require__(19);
@@ -840,7 +840,7 @@ var anObject = __webpack_require__(11);
 var defineProperties = __webpack_require__(110);
 var enumBugKeys = __webpack_require__(50);
 var hiddenKeys = __webpack_require__(48);
-var html = __webpack_require__(75);
+var html = __webpack_require__(76);
 var documentCreateElement = __webpack_require__(31);
 var sharedKey = __webpack_require__(47);
 
@@ -933,12 +933,12 @@ module.exports = global;
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(11);
-var isArrayIteratorMethod = __webpack_require__(80);
+var isArrayIteratorMethod = __webpack_require__(81);
 var lengthOfArrayLike = __webpack_require__(34);
 var bind = __webpack_require__(25);
-var getIterator = __webpack_require__(81);
+var getIterator = __webpack_require__(82);
 var getIteratorMethod = __webpack_require__(58);
-var iteratorClose = __webpack_require__(79);
+var iteratorClose = __webpack_require__(80);
 
 var Result = function (stopped, result) {
   this.stopped = stopped;
@@ -1067,7 +1067,7 @@ module.exports = function (it) {
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toPrimitive = __webpack_require__(97);
+var toPrimitive = __webpack_require__(98);
 var isSymbol = __webpack_require__(62);
 
 // `ToPropertyKey` abstract operation
@@ -1239,7 +1239,7 @@ module.exports = String(test) === '[object z]';
 /* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var internalObjectKeys = __webpack_require__(71);
+var internalObjectKeys = __webpack_require__(72);
 var enumBugKeys = __webpack_require__(50);
 
 // `Object.keys` method
@@ -1502,7 +1502,7 @@ var store = __webpack_require__(45);
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.18.2',
+  version: '3.18.3',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2021 Denis Pushkarev (zloirock.ru)'
 });
@@ -1565,6 +1565,26 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 var hasOwn = __webpack_require__(15);
+var ownKeys = __webpack_require__(101);
+var getOwnPropertyDescriptorModule = __webpack_require__(40);
+var definePropertyModule = __webpack_require__(20);
+
+module.exports = function (target, source) {
+  var keys = ownKeys(source);
+  var defineProperty = definePropertyModule.f;
+  var getOwnPropertyDescriptor = getOwnPropertyDescriptorModule.f;
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    if (!hasOwn(target, key)) defineProperty(target, key, getOwnPropertyDescriptor(source, key));
+  }
+};
+
+
+/***/ }),
+/* 72 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var hasOwn = __webpack_require__(15);
 var toIndexedObject = __webpack_require__(28);
 var indexOf = __webpack_require__(103).indexOf;
 var hiddenKeys = __webpack_require__(48);
@@ -1584,7 +1604,7 @@ module.exports = function (object, names) {
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports) {
 
 // eslint-disable-next-line es/no-object-getownpropertysymbols -- safe
@@ -1592,7 +1612,7 @@ exports.f = Object.getOwnPropertySymbols;
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fails = __webpack_require__(7);
@@ -1620,7 +1640,7 @@ module.exports = isForced;
 
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var wellKnownSymbol = __webpack_require__(6);
@@ -1646,7 +1666,7 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getBuiltIn = __webpack_require__(14);
@@ -1655,7 +1675,7 @@ module.exports = getBuiltIn('document', 'documentElement');
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1663,7 +1683,7 @@ module.exports = getBuiltIn('document', 'documentElement');
 var charAt = __webpack_require__(115).charAt;
 var toString = __webpack_require__(54);
 var InternalStateModule = __webpack_require__(33);
-var defineIterator = __webpack_require__(77);
+var defineIterator = __webpack_require__(78);
 
 var STRING_ITERATOR = 'String Iterator';
 var setInternalState = InternalStateModule.set;
@@ -1692,7 +1712,7 @@ defineIterator(String, 'String', function (iterated) {
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1709,7 +1729,7 @@ var createNonEnumerableProperty = __webpack_require__(19);
 var redefine = __webpack_require__(21);
 var wellKnownSymbol = __webpack_require__(6);
 var Iterators = __webpack_require__(26);
-var IteratorsCore = __webpack_require__(78);
+var IteratorsCore = __webpack_require__(79);
 
 var PROPER_FUNCTION_NAME = FunctionName.PROPER;
 var CONFIGURABLE_FUNCTION_NAME = FunctionName.CONFIGURABLE;
@@ -1797,7 +1817,7 @@ module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, I
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1852,7 +1872,7 @@ module.exports = {
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(11);
@@ -1880,7 +1900,7 @@ module.exports = function (iterator, kind, value) {
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var wellKnownSymbol = __webpack_require__(6);
@@ -1896,7 +1916,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var aCallable = __webpack_require__(18);
@@ -1911,7 +1931,7 @@ module.exports = function (argument, usingIterator) {
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var wellKnownSymbol = __webpack_require__(6);
@@ -1955,7 +1975,7 @@ module.exports = function (exec, SKIP_CLOSING) {
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1963,6 +1983,7 @@ module.exports = function (exec, SKIP_CLOSING) {
 var $ = __webpack_require__(10);
 var getPrototypeOf = __webpack_require__(55);
 var setPrototypeOf = __webpack_require__(57);
+var copyConstructorProperties = __webpack_require__(71);
 var create = __webpack_require__(36);
 var createNonEnumerableProperty = __webpack_require__(19);
 var createPropertyDescriptor = __webpack_require__(23);
@@ -1986,10 +2007,13 @@ var $AggregateError = function AggregateError(errors, message /* , options */) {
   return that;
 };
 
+if (setPrototypeOf) setPrototypeOf($AggregateError, Error);
+else copyConstructorProperties($AggregateError, Error);
+
 $AggregateError.prototype = create(Error.prototype, {
-  constructor: createPropertyDescriptor(5, $AggregateError),
-  message: createPropertyDescriptor(5, ''),
-  name: createPropertyDescriptor(5, 'AggregateError')
+  constructor: createPropertyDescriptor(1, $AggregateError),
+  message: createPropertyDescriptor(1, ''),
+  name: createPropertyDescriptor(1, 'AggregateError')
 });
 
 // `AggregateError` constructor
@@ -2000,16 +2024,16 @@ $({ global: true }, {
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var toIndexedObject = __webpack_require__(28);
-var addToUnscopables = __webpack_require__(74);
+var addToUnscopables = __webpack_require__(75);
 var Iterators = __webpack_require__(26);
 var InternalStateModule = __webpack_require__(33);
-var defineIterator = __webpack_require__(77);
+var defineIterator = __webpack_require__(78);
 
 var ARRAY_ITERATOR = 'Array Iterator';
 var setInternalState = InternalStateModule.set;
@@ -2060,7 +2084,7 @@ addToUnscopables('entries');
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(3);
@@ -2069,7 +2093,7 @@ module.exports = global.Promise;
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(11);
@@ -2088,16 +2112,16 @@ module.exports = function (O, defaultConstructor) {
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(3);
 var isCallable = __webpack_require__(5);
 var fails = __webpack_require__(7);
 var bind = __webpack_require__(25);
-var html = __webpack_require__(75);
+var html = __webpack_require__(76);
 var createElement = __webpack_require__(31);
-var IS_IOS = __webpack_require__(88);
+var IS_IOS = __webpack_require__(89);
 var IS_NODE = __webpack_require__(59);
 
 var set = global.setImmediate;
@@ -2207,7 +2231,7 @@ module.exports = {
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var userAgent = __webpack_require__(30);
@@ -2216,7 +2240,7 @@ module.exports = /(?:ipad|iphone|ipod).*applewebkit/i.test(userAgent);
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(11);
@@ -2234,7 +2258,7 @@ module.exports = function (C, x) {
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2284,7 +2308,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2337,7 +2361,7 @@ $({ target: 'Promise', stat: true }, {
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -3097,15 +3121,6 @@ try {
 
 
 /***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(94);
-
-module.exports = parent;
-
-
-/***/ }),
 /* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3118,21 +3133,30 @@ module.exports = parent;
 /* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(96);
-var entryUnbind = __webpack_require__(111);
+var parent = __webpack_require__(96);
 
-module.exports = entryUnbind('Array', 'find');
+module.exports = parent;
 
 
 /***/ }),
 /* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(97);
+var entryUnbind = __webpack_require__(111);
+
+module.exports = entryUnbind('Array', 'find');
+
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 var $ = __webpack_require__(10);
 var $find = __webpack_require__(106).find;
-var addToUnscopables = __webpack_require__(74);
+var addToUnscopables = __webpack_require__(75);
 
 var FIND = 'find';
 var SKIPS_HOLES = true;
@@ -3153,13 +3177,13 @@ addToUnscopables(FIND);
 
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(13);
 var isSymbol = __webpack_require__(62);
 var getMethod = __webpack_require__(44);
-var ordinaryToPrimitive = __webpack_require__(98);
+var ordinaryToPrimitive = __webpack_require__(99);
 var wellKnownSymbol = __webpack_require__(6);
 
 var TO_PRIMITIVE = wellKnownSymbol('toPrimitive');
@@ -3182,7 +3206,7 @@ module.exports = function (input, pref) {
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isCallable = __webpack_require__(5);
@@ -3200,7 +3224,7 @@ module.exports = function (input, pref) {
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(3);
@@ -3213,32 +3237,12 @@ module.exports = isCallable(WeakMap) && /native code/.test(inspectSource(WeakMap
 
 
 /***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var hasOwn = __webpack_require__(15);
-var ownKeys = __webpack_require__(101);
-var getOwnPropertyDescriptorModule = __webpack_require__(40);
-var definePropertyModule = __webpack_require__(20);
-
-module.exports = function (target, source) {
-  var keys = ownKeys(source);
-  var defineProperty = definePropertyModule.f;
-  var getOwnPropertyDescriptor = getOwnPropertyDescriptorModule.f;
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    if (!hasOwn(target, key)) defineProperty(target, key, getOwnPropertyDescriptor(source, key));
-  }
-};
-
-
-/***/ }),
 /* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getBuiltIn = __webpack_require__(14);
 var getOwnPropertyNamesModule = __webpack_require__(102);
-var getOwnPropertySymbolsModule = __webpack_require__(72);
+var getOwnPropertySymbolsModule = __webpack_require__(73);
 var anObject = __webpack_require__(11);
 
 // all object keys, includes non-enumerable and symbols
@@ -3253,7 +3257,7 @@ module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
 /* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var internalObjectKeys = __webpack_require__(71);
+var internalObjectKeys = __webpack_require__(72);
 var enumBugKeys = __webpack_require__(50);
 
 var hiddenKeys = enumBugKeys.concat('length', 'prototype');
@@ -3528,7 +3532,7 @@ module.exports = parent;
 /* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(76);
+__webpack_require__(77);
 __webpack_require__(119);
 var path = __webpack_require__(37);
 
@@ -3574,7 +3578,7 @@ module.exports = {
 
 "use strict";
 
-var IteratorPrototype = __webpack_require__(78).IteratorPrototype;
+var IteratorPrototype = __webpack_require__(79).IteratorPrototype;
 var create = __webpack_require__(36);
 var createPropertyDescriptor = __webpack_require__(23);
 var setToStringTag = __webpack_require__(56);
@@ -3623,7 +3627,7 @@ module.exports = function (argument) {
 
 var $ = __webpack_require__(10);
 var from = __webpack_require__(120);
-var checkCorrectnessOfIteration = __webpack_require__(82);
+var checkCorrectnessOfIteration = __webpack_require__(83);
 
 var INCORRECT_ITERATION = !checkCorrectnessOfIteration(function (iterable) {
   // eslint-disable-next-line es/no-array-from -- required for testing
@@ -3646,11 +3650,11 @@ $({ target: 'Array', stat: true, forced: INCORRECT_ITERATION }, {
 var bind = __webpack_require__(25);
 var toObject = __webpack_require__(22);
 var callWithSafeIterationClosing = __webpack_require__(121);
-var isArrayIteratorMethod = __webpack_require__(80);
+var isArrayIteratorMethod = __webpack_require__(81);
 var isConstructor = __webpack_require__(51);
 var lengthOfArrayLike = __webpack_require__(34);
 var createProperty = __webpack_require__(122);
-var getIterator = __webpack_require__(81);
+var getIterator = __webpack_require__(82);
 var getIteratorMethod = __webpack_require__(58);
 
 // `Array.from` method implementation
@@ -3692,7 +3696,7 @@ module.exports = function from(arrayLike /* , mapfn = undefined, thisArg = undef
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(11);
-var iteratorClose = __webpack_require__(79);
+var iteratorClose = __webpack_require__(80);
 
 // call something on iterator step with safe closing on error
 module.exports = function (iterator, fn, value, ENTRIES) {
@@ -3773,7 +3777,7 @@ $({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
 var DESCRIPTORS = __webpack_require__(16);
 var fails = __webpack_require__(7);
 var objectKeys = __webpack_require__(53);
-var getOwnPropertySymbolsModule = __webpack_require__(72);
+var getOwnPropertySymbolsModule = __webpack_require__(73);
 var propertyIsEnumerableModule = __webpack_require__(61);
 var toObject = __webpack_require__(22);
 var IndexedObject = __webpack_require__(41);
@@ -3901,14 +3905,14 @@ module.exports = parent;
 /* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(83);
 __webpack_require__(84);
+__webpack_require__(85);
 __webpack_require__(136);
 __webpack_require__(138);
-__webpack_require__(90);
 __webpack_require__(91);
+__webpack_require__(92);
 __webpack_require__(148);
-__webpack_require__(76);
+__webpack_require__(77);
 var path = __webpack_require__(37);
 
 module.exports = path.Promise;
@@ -3925,7 +3929,7 @@ var createNonEnumerableProperty = __webpack_require__(19);
 // https://tc39.es/proposal-error-cause/#sec-errorobjects-install-error-cause
 module.exports = function (O, options) {
   if (isObject(options) && 'cause' in options) {
-    createNonEnumerableProperty(O, 'cause', O.cause);
+    createNonEnumerableProperty(O, 'cause', options.cause);
   }
 };
 
@@ -3971,7 +3975,7 @@ var $ = __webpack_require__(10);
 var IS_PURE = __webpack_require__(24);
 var global = __webpack_require__(3);
 var getBuiltIn = __webpack_require__(14);
-var NativePromise = __webpack_require__(85);
+var NativePromise = __webpack_require__(86);
 var redefine = __webpack_require__(21);
 var redefineAll = __webpack_require__(139);
 var setPrototypeOf = __webpack_require__(57);
@@ -3983,16 +3987,16 @@ var isObject = __webpack_require__(13);
 var anInstance = __webpack_require__(141);
 var inspectSource = __webpack_require__(32);
 var iterate = __webpack_require__(38);
-var checkCorrectnessOfIteration = __webpack_require__(82);
-var speciesConstructor = __webpack_require__(86);
-var task = __webpack_require__(87).set;
+var checkCorrectnessOfIteration = __webpack_require__(83);
+var speciesConstructor = __webpack_require__(87);
+var task = __webpack_require__(88).set;
 var microtask = __webpack_require__(143);
-var promiseResolve = __webpack_require__(89);
+var promiseResolve = __webpack_require__(90);
 var hostReportErrors = __webpack_require__(146);
 var newPromiseCapabilityModule = __webpack_require__(27);
 var perform = __webpack_require__(39);
 var InternalStateModule = __webpack_require__(33);
-var isForced = __webpack_require__(73);
+var isForced = __webpack_require__(74);
 var wellKnownSymbol = __webpack_require__(6);
 var IS_BROWSER = __webpack_require__(147);
 var IS_NODE = __webpack_require__(59);
@@ -4430,8 +4434,8 @@ module.exports = function (argument) {
 
 var global = __webpack_require__(3);
 var getOwnPropertyDescriptor = __webpack_require__(40).f;
-var macrotask = __webpack_require__(87).set;
-var IS_IOS = __webpack_require__(88);
+var macrotask = __webpack_require__(88).set;
+var IS_IOS = __webpack_require__(89);
 var IS_IOS_PEBBLE = __webpack_require__(144);
 var IS_WEBOS_WEBKIT = __webpack_require__(145);
 var IS_NODE = __webpack_require__(59);
@@ -4561,12 +4565,12 @@ module.exports = typeof window == 'object';
 
 var $ = __webpack_require__(10);
 var IS_PURE = __webpack_require__(24);
-var NativePromise = __webpack_require__(85);
+var NativePromise = __webpack_require__(86);
 var fails = __webpack_require__(7);
 var getBuiltIn = __webpack_require__(14);
 var isCallable = __webpack_require__(5);
-var speciesConstructor = __webpack_require__(86);
-var promiseResolve = __webpack_require__(89);
+var speciesConstructor = __webpack_require__(87);
+var promiseResolve = __webpack_require__(90);
 var redefine = __webpack_require__(21);
 
 // Safari bug https://bugs.webkit.org/show_bug.cgi?id=200829
@@ -4607,7 +4611,7 @@ if (!IS_PURE && isCallable(NativePromise)) {
 var global = __webpack_require__(3);
 var DOMIterables = __webpack_require__(150);
 var DOMTokenListPrototype = __webpack_require__(151);
-var ArrayIteratorMethods = __webpack_require__(84);
+var ArrayIteratorMethods = __webpack_require__(85);
 var createNonEnumerableProperty = __webpack_require__(19);
 var wellKnownSymbol = __webpack_require__(6);
 
@@ -4703,7 +4707,7 @@ module.exports = DOMTokenListPrototype === Object.prototype ? undefined : DOMTok
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
-__webpack_require__(83);
+__webpack_require__(84);
 
 
 /***/ }),
@@ -4711,7 +4715,7 @@ __webpack_require__(83);
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
-__webpack_require__(90);
+__webpack_require__(91);
 
 
 /***/ }),
@@ -4741,7 +4745,7 @@ $({ target: 'Promise', stat: true }, {
 /***/ (function(module, exports, __webpack_require__) {
 
 // TODO: Remove from `core-js@4`
-__webpack_require__(91);
+__webpack_require__(92);
 
 
 /***/ }),
@@ -4939,7 +4943,7 @@ var regenerator = __webpack_require__(4);
 var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
 
 // EXTERNAL MODULE: ./node_modules/core-js/features/array/find.js
-var find = __webpack_require__(93);
+var find = __webpack_require__(94);
 
 // EXTERNAL MODULE: ./node_modules/core-js/features/array/from.js
 var from = __webpack_require__(112);
@@ -10746,14 +10750,14 @@ var ads_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet || 
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted, _Ads_afterInit;
+var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
 
 
 
 
 
 var ads_Ads = function () {
-  function Ads(player, ads, autoStart, autoStartMuted, options, afterInit) {
+  function Ads(player, ads, autoStart, autoStartMuted, options) {
     var _this = this;
 
     classCallCheck_default()(this, Ads);
@@ -10821,9 +10825,6 @@ var ads_Ads = function () {
     _Ads_mediaStarted.set(this, false);
 
     this.loadedAd = false;
-
-    _Ads_afterInit.set(this, false);
-
     var defaultOpts = {
       autoPlayAdBreaks: true,
       customClick: {
@@ -10845,8 +10846,6 @@ var ads_Ads = function () {
     ads_classPrivateFieldSet(this, _Ads_player, player, "f");
 
     ads_classPrivateFieldSet(this, _Ads_ads, ads, "f");
-
-    ads_classPrivateFieldSet(this, _Ads_afterInit, afterInit || false, "f");
 
     ads_classPrivateFieldSet(this, _Ads_media, player.getMedia(), "f");
 
@@ -10891,8 +10890,10 @@ var ads_Ads = function () {
       resolve({});
     }), "f");
 
-    ads_classPrivateFieldGet(this, _Ads_promise, "f").then(this.load)["catch"](function (error) {
-      var message = 'Ad script could not be loaded; please check if you have an AdBlock';
+    ads_classPrivateFieldGet(this, _Ads_promise, "f").then(function () {
+      _this.load();
+    })["catch"](function (error) {
+      var message = 'Ad script could not be loaded; please check if you have an AdBlock ';
       message += 'turned on, or if you provided a valid URL is correct';
       console.error("Ad error: ".concat(message, "."));
       var details = {
@@ -10915,11 +10916,11 @@ var ads_Ads = function () {
     value: function load() {
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      if (this.loadedAd) {
+      if (typeof google === 'undefined' || !google.ima || !force && this.loadedAd && ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
         return;
       }
 
-      if (typeof google === 'undefined' || !google.ima || !ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
+      if (!ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
         return;
       }
 
@@ -10977,7 +10978,7 @@ var ads_Ads = function () {
       }
 
       google.ima.settings.setPlayerType('openplayerjs');
-      google.ima.settings.setPlayerVersion('2.9.1');
+      google.ima.settings.setPlayerVersion('2.9.3');
 
       ads_classPrivateFieldSet(this, _Ads_adDisplayContainer, new google.ima.AdDisplayContainer(ads_classPrivateFieldGet(this, _Ads_adsContainer, "f"), ads_classPrivateFieldGet(this, _Ads_element, "f"), ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f")), "f");
 
@@ -11013,23 +11014,17 @@ var ads_Ads = function () {
             switch (_context.prev = _context.next) {
               case 0:
                 if (ads_classPrivateFieldGet(this, _Ads_adsDone, "f")) {
-                  _context.next = 6;
+                  _context.next = 4;
                   break;
                 }
 
                 ads_classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
 
-                if (!ads_classPrivateFieldGet(this, _Ads_afterInit, "f")) {
-                  this._initNotDoneAds();
-                }
+                this._initNotDoneAds();
 
-                _context.next = 5;
-                return this.loadPromise;
-
-              case 5:
                 return _context.abrupt("return");
 
-              case 6:
+              case 4:
                 if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
                   try {
                     if (!ads_classPrivateFieldGet(this, _Ads_intervalTimer, "f") && ads_classPrivateFieldGet(this, _Ads_adsActive, "f") === false) {
@@ -11048,7 +11043,7 @@ var ads_Ads = function () {
                   }
                 }
 
-              case 7:
+              case 5:
               case "end":
                 return _context.stop();
             }
@@ -11130,6 +11125,16 @@ var ads_Ads = function () {
       }
 
       removeElement(ads_classPrivateFieldGet(this, _Ads_adsContainer, "f"));
+      this.loadPromise = null;
+      this.loadedAd = false;
+
+      ads_classPrivateFieldSet(this, _Ads_adsDone, false, "f");
+
+      ads_classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
+
+      ads_classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
+
+      ads_classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
     }
   }, {
     key: "resizeAds",
@@ -11384,10 +11389,6 @@ var ads_Ads = function () {
 
             ads_classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
 
-            ads_classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
-
-            ads_classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
-
             if (ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
               ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
             }
@@ -11466,14 +11467,12 @@ var ads_Ads = function () {
       if (Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f")) && ads_classPrivateFieldGet(this, _Ads_ads, "f").length > 1 && ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") < ads_classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
         ads_classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
 
-        ads_classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
+        this.destroy();
 
         ads_classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
 
-        ads_classPrivateFieldSet(this, _Ads_adsDone, false, "f");
+        ads_classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
 
-        this.destroy();
-        this.loadedAd = false;
         this.load(true);
         console.warn("Ad warning: ".concat(error.toString()));
       } else {
@@ -11540,9 +11539,7 @@ var ads_Ads = function () {
         manager.addEventListener(event, _this5._assign, EVENT_OPTIONS);
       });
 
-      manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
-
-      if (ads_classPrivateFieldGet(this, _Ads_autoStart, "f") === true || ads_classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
+      if (ads_classPrivateFieldGet(this, _Ads_autoStart, "f") === true || ads_classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || ads_classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
         ads_classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
 
         if (!ads_classPrivateFieldGet(this, _Ads_adsDone, "f")) {
@@ -11556,10 +11553,6 @@ var ads_Ads = function () {
         var e = addEvent('play');
 
         ads_classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
-
-        var event = addEvent('playing');
-
-        ads_classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
       } else if (ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true) {
         manager.init(ads_classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, ads_classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement && ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
       }
@@ -11567,9 +11560,9 @@ var ads_Ads = function () {
   }, {
     key: "_initNotDoneAds",
     value: function _initNotDoneAds() {
-      ads_classPrivateFieldSet(this, _Ads_adsDone, true, "f");
-
       if (ads_classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")) {
+        ads_classPrivateFieldSet(this, _Ads_adsDone, true, "f");
+
         ads_classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
 
         if (IS_IOS || IS_ANDROID) {
@@ -11636,9 +11629,6 @@ var ads_Ads = function () {
 
         ads_classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
 
-        ads_classPrivateFieldSet(this, _Ads_adsDone, false, "f");
-
-        this.loadedAd = false;
         this.load(true);
       } else {
         ads_classPrivateFieldGet(this, _Ads_element, "f").addEventListener('ended', this._contentEndedListener, EVENT_OPTIONS);
@@ -11824,7 +11814,7 @@ var ads_Ads = function () {
   return Ads;
 }();
 
-_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap(), _Ads_afterInit = new WeakMap();
+_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
 /* harmony default export */ var media_ads = (ads_Ads);
 // CONCATENATED MODULE: ./node_modules/element-closest/index.mjs
 function element_closest_polyfill(window) {
@@ -12127,20 +12117,21 @@ var player_Player = function () {
 
               case 4:
                 if (!player_classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-                  _context2.next = 8;
+                  _context2.next = 9;
                   break;
                 }
 
-                _context2.next = 7;
+                player_classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested = true;
+                _context2.next = 8;
                 return player_classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
 
-              case 7:
+              case 8:
                 return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_adsInstance, "f").play());
 
-              case 8:
+              case 9:
                 return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
 
-              case 9:
+              case 10:
               case "end":
                 return _context2.stop();
             }
@@ -12421,43 +12412,28 @@ var player_Player = function () {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _context4.prev = 0;
+                try {
+                  if (this.isAd()) {
+                    this.getAd().destroy();
+                    this.getAd().src = src;
+                    this.getAd().loadedAd = false;
+                    this.getAd().load();
+                  } else {
+                    adsOptions = player_classPrivateFieldGet(this, _Player_options, "f") && player_classPrivateFieldGet(this, _Player_options, "f").ads ? player_classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
+                    autoplay = !this.activeElement().paused || player_classPrivateFieldGet(this, _Player_canAutoplay, "f");
 
-                if (this.isAd()) {
-                  this.activeElement().destroy();
-                  this.activeElement().src = src;
-                  this.getAd().isDone = false;
-
-                  if (!this.activeElement().paused) {
-                    this.getAd().playRequested = true;
+                    player_classPrivateFieldSet(this, _Player_adsInstance, new media_ads(this, src, autoplay, player_classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
                   }
-
-                  this.activeElement().load(true);
-                } else {
-                  adsOptions = player_classPrivateFieldGet(this, _Player_options, "f") && player_classPrivateFieldGet(this, _Player_options, "f").ads ? player_classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
-                  autoplay = !this.activeElement().paused || player_classPrivateFieldGet(this, _Player_canAutoplay, "f");
-
-                  player_classPrivateFieldSet(this, _Player_adsInstance, new media_ads(this, src, autoplay, player_classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions, true), "f");
+                } catch (err) {
+                  console.error(err);
                 }
 
-                _context4.next = 4;
-                return player_classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
-
-              case 4:
-                _context4.next = 9;
-                break;
-
-              case 6:
-                _context4.prev = 6;
-                _context4.t0 = _context4["catch"](0);
-                console.error(_context4.t0);
-
-              case 9:
+              case 1:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, this, [[0, 6]]);
+        }, _callee4, this);
       }));
     }
   }, {

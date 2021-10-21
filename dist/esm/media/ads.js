@@ -18,12 +18,12 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted, _Ads_afterInit;
+var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
 import { addEvent } from '../utils/events';
 import { isVideo, isXml, loadScript, removeElement } from '../utils/general';
 class Ads {
-    constructor(player, ads, autoStart, autoStartMuted, options, afterInit) {
+    constructor(player, ads, autoStart, autoStartMuted, options) {
         _Ads_adsEnded.set(this, false);
         _Ads_adsDone.set(this, false);
         _Ads_adsActive.set(this, false);
@@ -56,7 +56,6 @@ class Ads {
         _Ads_mediaSources.set(this, []);
         _Ads_mediaStarted.set(this, false);
         this.loadedAd = false;
-        _Ads_afterInit.set(this, false);
         const defaultOpts = {
             autoPlayAdBreaks: true,
             customClick: {
@@ -76,7 +75,6 @@ class Ads {
         };
         __classPrivateFieldSet(this, _Ads_player, player, "f");
         __classPrivateFieldSet(this, _Ads_ads, ads, "f");
-        __classPrivateFieldSet(this, _Ads_afterInit, afterInit || false, "f");
         __classPrivateFieldSet(this, _Ads_media, player.getMedia(), "f");
         __classPrivateFieldSet(this, _Ads_element, player.getElement(), "f");
         __classPrivateFieldSet(this, _Ads_autoStart, autoStart || false, "f");
@@ -113,8 +111,10 @@ class Ads {
             : new Promise(resolve => {
                 resolve({});
             }), "f");
-        __classPrivateFieldGet(this, _Ads_promise, "f").then(this.load).catch(error => {
-            let message = 'Ad script could not be loaded; please check if you have an AdBlock';
+        __classPrivateFieldGet(this, _Ads_promise, "f").then(() => {
+            this.load();
+        }).catch(error => {
+            let message = 'Ad script could not be loaded; please check if you have an AdBlock ';
             message += 'turned on, or if you provided a valid URL is correct';
             console.error(`Ad error: ${message}.`);
             const details = {
@@ -130,10 +130,10 @@ class Ads {
         return this;
     }
     load(force = false) {
-        if (this.loadedAd) {
+        if (typeof google === 'undefined' || !google.ima || (!force && this.loadedAd && __classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks)) {
             return;
         }
-        if (typeof google === 'undefined' || !google.ima || (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force)) {
+        if (!__classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
             return;
         }
         this.loadedAd = true;
@@ -175,7 +175,7 @@ class Ads {
             google.ima.settings.setPpid(__classPrivateFieldGet(this, _Ads_adsOptions, "f").publisherId);
         }
         google.ima.settings.setPlayerType('openplayerjs');
-        google.ima.settings.setPlayerVersion('2.9.1');
+        google.ima.settings.setPlayerVersion('2.9.3');
         __classPrivateFieldSet(this, _Ads_adDisplayContainer, new google.ima.AdDisplayContainer(__classPrivateFieldGet(this, _Ads_adsContainer, "f"), __classPrivateFieldGet(this, _Ads_element, "f"), __classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f")), "f");
         __classPrivateFieldSet(this, _Ads_adsLoader, new google.ima.AdsLoader(__classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")), "f");
         __classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded, EVENT_OPTIONS);
@@ -200,10 +200,7 @@ class Ads {
         return __awaiter(this, void 0, void 0, function* () {
             if (!__classPrivateFieldGet(this, _Ads_adsDone, "f")) {
                 __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
-                if (!__classPrivateFieldGet(this, _Ads_afterInit, "f")) {
-                    this._initNotDoneAds();
-                }
-                yield this.loadPromise;
+                this._initNotDoneAds();
                 return;
             }
             if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
@@ -273,6 +270,12 @@ class Ads {
             __classPrivateFieldGet(this, _Ads_adsContainer, "f").removeEventListener('click', this._handleClickInContainer);
         }
         removeElement(__classPrivateFieldGet(this, _Ads_adsContainer, "f"));
+        this.loadPromise = null;
+        this.loadedAd = false;
+        __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
+        __classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
+        __classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
+        __classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
     }
     resizeAds(width, height) {
         if (__classPrivateFieldGet(this, _Ads_adsManager, "f")) {
@@ -445,8 +448,6 @@ class Ads {
                     __classPrivateFieldSet(this, _Ads_intervalTimer, 0, "f");
                     __classPrivateFieldSet(this, _Ads_adsMuted, false, "f");
                     __classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
-                    __classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
-                    __classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
                     if (__classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
                         __classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
                     }
@@ -507,11 +508,9 @@ class Ads {
         ];
         if (Array.isArray(__classPrivateFieldGet(this, _Ads_ads, "f")) && __classPrivateFieldGet(this, _Ads_ads, "f").length > 1 && __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") < __classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
             __classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = __classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
-            __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
-            __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
-            __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
             this.destroy();
-            this.loadedAd = false;
+            __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
+            __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
             this.load(true);
             console.warn(`Ad warning: ${error.toString()}`);
         }
@@ -586,8 +585,7 @@ class Ads {
         __classPrivateFieldGet(this, _Ads_events, "f").forEach(event => {
             manager.addEventListener(event, this._assign, EVENT_OPTIONS);
         });
-        manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
-        if (__classPrivateFieldGet(this, _Ads_autoStart, "f") === true || __classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
+        if (__classPrivateFieldGet(this, _Ads_autoStart, "f") === true || __classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || __classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
             __classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
             if (!__classPrivateFieldGet(this, _Ads_adsDone, "f")) {
                 this._initNotDoneAds();
@@ -599,8 +597,6 @@ class Ads {
             manager.start();
             const e = addEvent('play');
             __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
-            const event = addEvent('playing');
-            __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
         }
         else if (__classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true) {
             manager.init(__classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, __classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, __classPrivateFieldGet(this, _Ads_element, "f").parentElement && __classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true'
@@ -609,8 +605,8 @@ class Ads {
         }
     }
     _initNotDoneAds() {
-        __classPrivateFieldSet(this, _Ads_adsDone, true, "f");
         if (__classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")) {
+            __classPrivateFieldSet(this, _Ads_adsDone, true, "f");
             __classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
             if (IS_IOS || IS_ANDROID) {
                 __classPrivateFieldSet(this, _Ads_preloadContent, this._contentLoadedAction, "f");
@@ -659,8 +655,6 @@ class Ads {
             __classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
             __classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
             __classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
-            __classPrivateFieldSet(this, _Ads_adsDone, false, "f");
-            this.loadedAd = false;
             this.load(true);
         }
         else {
@@ -791,5 +785,5 @@ class Ads {
         this.resizeAds();
     }
 }
-_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap(), _Ads_afterInit = new WeakMap();
+_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
 export default Ads;

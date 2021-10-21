@@ -169,6 +169,7 @@ class Player {
                 __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
             }
             if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+                __classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested = true;
                 yield __classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
                 return __classPrivateFieldGet(this, _Player_adsInstance, "f").play();
             }
@@ -347,20 +348,16 @@ class Player {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (this.isAd()) {
-                    this.activeElement().destroy();
-                    this.activeElement().src = src;
-                    this.getAd().isDone = false;
-                    if (!this.activeElement().paused) {
-                        this.getAd().playRequested = true;
-                    }
-                    this.activeElement().load(true);
+                    this.getAd().destroy();
+                    this.getAd().src = src;
+                    this.getAd().loadedAd = false;
+                    this.getAd().load();
                 }
                 else {
                     const adsOptions = __classPrivateFieldGet(this, _Player_options, "f") && __classPrivateFieldGet(this, _Player_options, "f").ads ? __classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
                     const autoplay = !this.activeElement().paused || __classPrivateFieldGet(this, _Player_canAutoplay, "f");
-                    __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions, true), "f");
+                    __classPrivateFieldSet(this, _Player_adsInstance, new Ads(this, src, autoplay, __classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
                 }
-                yield __classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
             }
             catch (err) {
                 console.error(err);

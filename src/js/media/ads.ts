@@ -289,8 +289,6 @@ class Ads {
 
     loadedAd = false;
 
-    #afterInit = false;
-
     /**
      * Create an instance of Ads.
      *
@@ -302,7 +300,7 @@ class Ads {
      * @returns {Ads}
      * @memberof Ads
      */
-    constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options, afterInit?: boolean) {
+    constructor(player: Player, ads: string | string[], autoStart?: boolean, autoStartMuted?: boolean, options?: Options) {
         const defaultOpts: Options = {
             autoPlayAdBreaks: true,
             customClick: {
@@ -322,7 +320,6 @@ class Ads {
         };
         this.#player = player;
         this.#ads = ads;
-        this.#afterInit = afterInit || false;
         this.#media = player.getMedia();
         this.#element = player.getElement();
         this.#autoStart = autoStart || false;
@@ -364,8 +361,10 @@ class Ads {
                 resolve({});
             });
 
-        this.#promise.then(this.load).catch(error => {
-            let message = 'Ad script could not be loaded; please check if you have an AdBlock';
+        this.#promise.then(() => {
+            this.load();
+        }).catch(error => {
+            let message = 'Ad script could not be loaded; please check if you have an AdBlock ';
             message += 'turned on, or if you provided a valid URL is correct';
             console.error(`Ad error: ${message}.`);
 
@@ -389,7 +388,7 @@ class Ads {
      * @memberof Ads
      */
     public load(force = false): void {
-        if (this.loadedAd) {
+        if (typeof google === 'undefined' || !google.ima || (!force && this.loadedAd && this.#adsOptions.autoPlayAdBreaks)) {
             return;
         }
 
@@ -397,7 +396,7 @@ class Ads {
          * If we have set `autoPlayAdBreaks` to false and haven't set the
          * force flag, don't load ads yet
          */
-        if (typeof google === 'undefined' || !google.ima || (!this.#adsOptions.autoPlayAdBreaks && !force)) {
+        if (!this.#adsOptions.autoPlayAdBreaks && !force) {
             return;
         }
 
@@ -449,7 +448,7 @@ class Ads {
             google.ima.settings.setPpid(this.#adsOptions.publisherId);
         }
         google.ima.settings.setPlayerType('openplayerjs');
-        google.ima.settings.setPlayerVersion('2.9.1');
+        google.ima.settings.setPlayerVersion('2.9.3');
 
         this.#adDisplayContainer = new google.ima.AdDisplayContainer(this.#adsContainer, this.#element, this.#adsCustomClickContainer);
 
@@ -488,10 +487,7 @@ class Ads {
     public async play(): Promise<void> {
         if (!this.#adsDone) {
             this.#playTriggered = true;
-            if (!this.#afterInit) {
-                this._initNotDoneAds();
-            }
-            await this.loadPromise;
+            this._initNotDoneAds();
             return;
         }
 
@@ -579,7 +575,14 @@ class Ads {
         if (this.#adsContainer) {
             this.#adsContainer.removeEventListener('click', this._handleClickInContainer);
         }
+
         removeElement(this.#adsContainer);
+        this.loadPromise = null;
+        this.loadedAd = false;
+        this.#adsDone = false;
+        this.#playTriggered = false;
+        this.#adsDuration = 0;
+        this.#adsCurrentTime = 0;
     }
 
     /**
@@ -859,8 +862,6 @@ class Ads {
                     this.#intervalTimer = 0;
                     this.#adsMuted = false;
                     this.#adsStarted = false;
-                    this.#adsDuration = 0;
-                    this.#adsCurrentTime = 0;
                     if (this.#element.parentElement) {
                         this.#element.parentElement.classList.remove('op-ads--active');
                     }
@@ -935,11 +936,9 @@ class Ads {
 
         if (Array.isArray(this.#ads) && this.#ads.length > 1 && this.#currentAdsIndex < this.#ads.length - 1) {
             this.#currentAdsIndex++;
-            this.#playTriggered = true;
-            this.#adsStarted = true;
-            this.#adsDone = false;
             this.destroy();
-            this.loadedAd = false;
+            this.#adsStarted = true;
+            this.#playTriggered = true;
             this.load(true);
             console.warn(`Ad warning: ${error.toString()}`);
         } else {
@@ -1035,9 +1034,8 @@ class Ads {
         this.#events.forEach(event => {
             manager.addEventListener(event, this._assign, EVENT_OPTIONS);
         });
-        manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
 
-        if (this.#autoStart === true || this.#playTriggered === true) {
+        if (this.#autoStart === true || this.#autoStartMuted === true || this.#playTriggered === true) {
             this.#playTriggered = false;
             if (!this.#adsDone) {
                 this._initNotDoneAds();
@@ -1053,8 +1051,6 @@ class Ads {
             manager.start();
             const e = addEvent('play');
             this.#element.dispatchEvent(e);
-            const event = addEvent('playing');
-            this.#element.dispatchEvent(event);
         } else if (this.#adsOptions.enablePreloading === true) {
             manager.init(
                 this.#element.offsetWidth,
@@ -1072,8 +1068,8 @@ class Ads {
      * @memberof Ads
      */
     private _initNotDoneAds(): void {
-        this.#adsDone = true;
         if (this.#adDisplayContainer) {
+            this.#adsDone = true;
             this.#adDisplayContainer.initialize();
 
             if (IS_IOS || IS_ANDROID) {
@@ -1138,8 +1134,6 @@ class Ads {
             this.#adsLoader.contentComplete();
             this.#playTriggered = true;
             this.#adsStarted = true;
-            this.#adsDone = false;
-            this.loadedAd = false;
             this.load(true);
         } else {
             this.#element.addEventListener('ended', this._contentEndedListener, EVENT_OPTIONS);

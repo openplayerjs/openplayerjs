@@ -372,6 +372,7 @@ class Player {
             this.#media.loaded = true;
         }
         if (this.#adsInstance) {
+            this.#adsInstance.playRequested = true;
             await this.#adsInstance.loadPromise;
             return this.#adsInstance.play();
         }
@@ -688,19 +689,15 @@ class Player {
     public async loadAd(src: string | string[]): Promise<void> {
         try {
             if (this.isAd()) {
-                this.activeElement().destroy();
-                this.activeElement().src = src;
-                this.getAd().isDone = false;
-                if (!this.activeElement().paused) {
-                    this.getAd().playRequested = true;
-                }
-                this.activeElement().load(true);
+                this.getAd().destroy();
+                this.getAd().src = src;
+                this.getAd().loadedAd = false;
+                this.getAd().load();
             } else {
                 const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
                 const autoplay = !this.activeElement().paused || this.#canAutoplay;
-                this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions, true);
+                this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions);
             }
-            await this.#adsInstance.loadPromise;
         } catch (err) {
             console.error(err);
         }
