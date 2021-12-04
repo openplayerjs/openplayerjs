@@ -19,6 +19,24 @@ function setupZoom(player) {
         height: 68,
     };
 
+    function hideZoom() {
+        const container = player
+            .getContainer()
+            .querySelector('.zoom-container');
+        if (container && container.getAttribute('aria-hidden') === 'false') {
+            container.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    function showZoom() {
+        const container = player
+            .getContainer()
+            .querySelector('.zoom-container');
+        if (container && container.getAttribute('aria-hidden') === 'true' && zoom > 1) {
+            container.setAttribute('aria-hidden', 'false');
+        }
+    }
+
     function updateThumbs() {
         const canvas = player.getContainer().querySelector('.zoom-thumbnail');
         const ctx = canvas.getContext('2d');
@@ -246,7 +264,10 @@ function setupZoom(player) {
             video.addEventListener('play', playEvent, { passive: false });
             video.addEventListener('pause', pauseEvent, { passive: false });
             video.addEventListener('zoomchanged', handleZoomChange, { passive: false });
+            video.addEventListener('mouseenter', showZoom, { passive: false });
+            video.addEventListener('mousemove', showZoom, { passive: false });
             video.addEventListener('mousedown', handleScreenPressed, { passive: false });
+            video.addEventListener('controlshidden', hideZoom, { passive: false });
 
             layer.addEventListener('mousemove', handleMovingScreen, { passive: false });
             layer.addEventListener('mouseup', handleScreenReleased, { passive: false });
@@ -275,6 +296,9 @@ function setupZoom(player) {
             video.removeEventListener('pause', pauseEvent);
             video.removeEventListener('zoomchanged', handleZoomChange);
             video.removeEventListener('mousedown', handleScreenReleased);
+            video.removeEventListener('mouseenter', showZoom);
+            video.removeEventListener('mousemove', showZoom);
+            video.removeEventListener('controlshidden', hideZoom);
 
             const layer = player.getContainer().querySelector('.zoom-layer');
             layer.removeEventListener('mousemove', handleMovingScreen);

@@ -23,20 +23,10 @@
                 type="video/mp4"
             />
         </video>
-        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
         <script src="zoom.js"></script>
         <script>
-            const player = new OpenPlayerJS('player1', {
-                controls: {
-                    alwaysVisible: true,
-                    layers: {
-                        left: ['play', 'time', 'volume'],
-                        middle: ['progress'],
-                        right: ['fullscreen'],
-                    },
-                },
-            });
-
+            const player = new OpenPlayerJS('player1');
             setupZoom(player);
             player.init();
         </script>
