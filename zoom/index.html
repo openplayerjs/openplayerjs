@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>OpenPlayer</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" media="all" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" />
+        <link rel="stylesheet" media="all" href="zoom.css" />
+        <style>
+            body {
+                background: #000;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                max-width: 700px;
+            }
+        </style>
+    </head>
+    <body>
+        <video id="player1" class="op-player__media" playsinline controls>
+            <source
+                src="https://repository.paellaplayer.upv.es/opencast-2018/a46c365a-929f-447e-bcb5-765b81b4cd94/track.mp4"
+                type="video/mp4"
+            />
+        </video>
+        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.js"></script>
+        <script src="zoom.js"></script>
+        <script>
+            const player = new OpenPlayerJS('player1', {
+                controls: {
+                    alwaysVisible: true,
+                    layers: {
+                        left: ['play', 'time', 'volume'],
+                        middle: ['progress'],
+                        right: ['fullscreen'],
+                    },
+                },
+            });
+
+            setupZoom(player);
+            player.init();
+        </script>
+    </body>
+</html>
