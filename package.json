@@ -107,7 +107,7 @@
     "unminified-webpack-plugin": "^2.0.0",
     "url-loader": "^3.0.0",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^4.9.1"
   },
   "dependencies": {
     "@sinonjs/fake-timers": "^7.1.2",
