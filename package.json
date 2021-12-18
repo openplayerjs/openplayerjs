@@ -112,7 +112,7 @@
   "dependencies": {
     "@sinonjs/fake-timers": "^7.1.2",
     "auto-changelog": "^1.16.4",
-    "core-js": "^3.19.3",
+    "core-js": "^3.20.0",
     "custom-event-polyfill": "^1.0.7",
     "element-closest": "^3.0.2",
     "global": "^4.4.0"
