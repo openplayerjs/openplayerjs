@@ -1593,7 +1593,7 @@ var store = __webpack_require__(49);
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.19.2',
+  version: '3.19.3',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2021 Denis Pushkarev (zloirock.ru)'
 });
@@ -3742,9 +3742,9 @@ var Iterators = __webpack_require__(30);
 
 var returnThis = function () { return this; };
 
-module.exports = function (IteratorConstructor, NAME, next) {
+module.exports = function (IteratorConstructor, NAME, next, ENUMERABLE_NEXT) {
   var TO_STRING_TAG = NAME + ' Iterator';
-  IteratorConstructor.prototype = create(IteratorPrototype, { next: createPropertyDescriptor(1, next) });
+  IteratorConstructor.prototype = create(IteratorPrototype, { next: createPropertyDescriptor(+!ENUMERABLE_NEXT, next) });
   setToStringTag(IteratorConstructor, TO_STRING_TAG, false, true);
   Iterators[TO_STRING_TAG] = returnThis;
   return IteratorConstructor;
@@ -4232,7 +4232,7 @@ var V8_VERSION = __webpack_require__(69);
 var SPECIES = wellKnownSymbol('species');
 var PROMISE = 'Promise';
 
-var getInternalState = InternalStateModule.get;
+var getInternalState = InternalStateModule.getterFor(PROMISE);
 var setInternalState = InternalStateModule.set;
 var getInternalPromiseState = InternalStateModule.getterFor(PROMISE);
 var NativePromisePrototype = NativePromise && NativePromise.prototype;
@@ -5383,7 +5383,7 @@ function request(url, dataType, success, error) {
   }
 }
 function hasClass(target, className) {
-  return !!(target.className.split(' ').indexOf(className) > -1);
+  return !!target.classList.contains(className);
 }
 function offset(el) {
   var rect = el.getBoundingClientRect();

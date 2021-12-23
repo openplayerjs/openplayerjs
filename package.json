@@ -1,6 +1,6 @@
 {
   "name": "openplayerjs",
-  "version": "2.9.3",
+  "version": "2.9.4",
   "homepage": "https://www.openplayerjs.com/",
   "author": {
     "name": "Rafael Miranda",
@@ -107,12 +107,12 @@
     "unminified-webpack-plugin": "^2.0.0",
     "url-loader": "^3.0.0",
     "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^4.9.1"
   },
   "dependencies": {
     "@sinonjs/fake-timers": "^7.1.2",
     "auto-changelog": "^1.16.4",
-    "core-js": "^3.19.2",
+    "core-js": "^3.20.0",
     "custom-event-polyfill": "^1.0.7",
     "element-closest": "^3.0.2",
     "global": "^4.4.0"

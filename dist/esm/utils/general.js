@@ -93,7 +93,7 @@ export function request(url, dataType, success, error) {
     }
 }
 export function hasClass(target, className) {
-    return !!(target.className.split(' ').indexOf(className) > -1);
+    return !!(target.classList.contains(className));
 }
 export function offset(el) {
     const rect = el.getBoundingClientRect();
