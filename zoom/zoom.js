@@ -85,6 +85,7 @@ function setupZoom(player) {
             const indicator = player.getContainer().querySelector('.zoom-rect');
             indicator.style.transform = `scale(${indicatorZoom})`;
             indicator.style['transform-origin'] = `${indicatorPos.x} ${indicatorPos.y}`;
+            indicator.style.transform = `matrix(${indicatorZoom} 0 0 ${indicatorZoom} ${indicatorPos.x} ${indicatorPos.y})`;
 
             const container = player
                 .getContainer()
@@ -111,6 +112,7 @@ function setupZoom(player) {
             const indicator = player.getContainer().querySelector('.zoom-rect');
             indicator.style.transform = `scale(${indicatorZoom})`;
             indicator.style['transform-origin'] = `${indicatorPos.x} ${indicatorPos.y}`;
+            indicator.style.transform = `matrix(${indicatorZoom} 0 0 ${indicatorZoom} ${indicatorPos.x} ${indicatorPos.y})`;
 
             const container = player
                 .getContainer()
@@ -132,6 +134,7 @@ function setupZoom(player) {
         const indicator = player.getContainer().querySelector('.zoom-rect');
         indicator.style.transform = `scale(${indicatorZoom})`;
         indicator.style['transform-origin'] = '0 0';
+        indicator.style.transform = 'matrix(1 0 0 1 0 0)';
 
         const container = player
             .getContainer()
@@ -167,6 +170,19 @@ function setupZoom(player) {
         }
     }
 
+    function handleWheel(e) {
+        if (!e.altKey) {
+            return;
+        }
+
+        e.preventDefault();
+        if (Math.sign(e.deltaY) > 0) {
+            zoomOut();
+        } else {
+            zoomIn();
+        }
+    }
+
     function handleScreenPressed(e) {
         pressed = true;
         const layer = player.getContainer().querySelector('.zoom-layer');
@@ -194,8 +210,8 @@ function setupZoom(player) {
             videoPos.y = e.offsetY;
 
             video.style['transform-origin'] = `${videoPos.x}px ${videoPos.y}px`;
-            indicatorPos.x = e.offsetX * canvasDimensions.width / (video.offsetWidth * zoom);
-            indicatorPos.y = e.offsetY * canvasDimensions.height / (video.offsetHeight * zoom);
+            indicatorPos.x = (e.offsetX * canvasDimensions.width) / (video.offsetWidth * zoom);
+            indicatorPos.y = (e.offsetY * canvasDimensions.height) / (video.offsetHeight * zoom);
 
             const indicator = player.getContainer().querySelector('.zoom-rect');
             indicator.style['transform-origin'] = `${indicatorPos.x}px ${indicatorPos.y}px`;
@@ -268,6 +284,7 @@ function setupZoom(player) {
             video.addEventListener('mousemove', showZoom, { passive: false });
             video.addEventListener('mousedown', handleScreenPressed, { passive: false });
             video.addEventListener('controlshidden', hideZoom, { passive: false });
+            video.addEventListener('wheel', handleWheel, { passive: false });
 
             layer.addEventListener('mousemove', handleMovingScreen, { passive: false });
             layer.addEventListener('mouseup', handleScreenReleased, { passive: false });
@@ -299,6 +316,7 @@ function setupZoom(player) {
             video.removeEventListener('mouseenter', showZoom);
             video.removeEventListener('mousemove', showZoom);
             video.removeEventListener('controlshidden', hideZoom);
+            video.removeEventListener('wheel', handleWheel);
 
             const layer = player.getContainer().querySelector('.zoom-layer');
             layer.removeEventListener('mousemove', handleMovingScreen);
