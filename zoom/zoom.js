@@ -5,11 +5,23 @@ function setupZoom(player) {
     let timerId;
     let pressed = false;
     const zoomChange = 0.25;
+    const mouseCenter = {
+        x: player.getElement().offsetWidth / 2,
+        y: player.getElement().offsetHeight / 2
+    };
     const videoPos = {
         x: 0,
         y: 0,
     };
     const indicatorPos = {
+        x: 0,
+        y: 0,
+    };
+    const zoomOffset = {
+        x: 0,
+        y: 0,
+    };
+    const mouseDown = {
         x: 0,
         y: 0,
     };
@@ -74,18 +86,32 @@ function setupZoom(player) {
     function zoomIn() {
         if (zoom < maxZoom) {
             zoom += zoomChange;
+
             const video = player.getElement();
             const newWidth = video.offsetWidth * zoom;
+            const newHeight = video.offsetHeight * zoom;
             const playerWidth = player.getContainer().offsetWidth;
             indicatorZoom = playerWidth / newWidth;
 
+            const maxOffset = zoom - 1;
+            const offset = {
+                x: ((mouseCenter.x * maxOffset) / newWidth) * maxOffset,
+                y: ((mouseCenter.y * maxOffset) / newHeight) * maxOffset,
+            };
+            offset.x = offset.x < maxOffset ? offset.x : maxOffset;
+            offset.y = offset.y < maxOffset ? offset.y : maxOffset;
+            zoomOffset.x = offset.x;
+            zoomOffset.y = offset.y;
+
             video.style.transform = `scale(${zoom})`;
-            video.style['transform-origin'] = `${videoPos.x} ${videoPos.y}`;
+            video.style.transformOrigin = `${offset.x} ${offset.y}`;
+
+            const x = zoomOffset.x / zoom;
+            const y = zoomOffset.y / zoom;
 
             const indicator = player.getContainer().querySelector('.zoom-rect');
             indicator.style.transform = `scale(${indicatorZoom})`;
-            indicator.style['transform-origin'] = `${indicatorPos.x} ${indicatorPos.y}`;
-            indicator.style.transform = `matrix(${indicatorZoom} 0 0 ${indicatorZoom} ${indicatorPos.x} ${indicatorPos.y})`;
+            indicator.style.transformOrigin = `${x} ${y}`;
 
             const container = player
                 .getContainer()
@@ -103,16 +129,29 @@ function setupZoom(player) {
 
             const video = player.getElement();
             const newWidth = video.offsetWidth * zoom;
+            const newHeight = video.offsetHeight * zoom;
             const playerWidth = player.getContainer().offsetWidth;
-            indicatorZoom = playerWidth / newWidth;
+            indicatorZoom = (playerWidth / newWidth);
+
+            const maxOffset = zoom - 1;
+            const offset = {
+                x: ((mouseCenter.x * maxOffset) / newWidth) * maxOffset,
+                y: ((mouseCenter.y * maxOffset) / newHeight) * maxOffset,
+            };
+            offset.x = offset.x < maxOffset ? offset.x : maxOffset;
+            offset.y = offset.y < maxOffset ? offset.y : maxOffset;
+            zoomOffset.x = offset.x;
+            zoomOffset.y = offset.y;
 
             video.style.transform = `scale(${zoom})`;
-            video.style['transform-origin'] = `${videoPos.x} ${videoPos.y}`;
+            video.style.transformOrigin = `${offset.x} ${offset.y}`;
+
+            const x = zoomOffset.x / zoom;
+            const y = zoomOffset.y / zoom;
 
             const indicator = player.getContainer().querySelector('.zoom-rect');
             indicator.style.transform = `scale(${indicatorZoom})`;
-            indicator.style['transform-origin'] = `${indicatorPos.x} ${indicatorPos.y}`;
-            indicator.style.transform = `matrix(${indicatorZoom} 0 0 ${indicatorZoom} ${indicatorPos.x} ${indicatorPos.y})`;
+            indicator.style.transformOrigin = `${x} ${y}`;
 
             const container = player
                 .getContainer()
@@ -129,12 +168,11 @@ function setupZoom(player) {
 
         const video = player.getElement();
         video.style.transform = `scale(${zoom})`;
-        video.style['transform-origin'] = '0 0';
+        video.style.transformOrigin = '0 0';
 
         const indicator = player.getContainer().querySelector('.zoom-rect');
         indicator.style.transform = `scale(${indicatorZoom})`;
-        indicator.style['transform-origin'] = '0 0';
-        indicator.style.transform = 'matrix(1 0 0 1 0 0)';
+        indicator.style.transformOrigin = '0 0';
 
         const container = player
             .getContainer()
@@ -176,11 +214,7 @@ function setupZoom(player) {
         }
 
         e.preventDefault();
-        if (Math.sign(e.deltaY) > 0) {
-            zoomOut();
-        } else {
-            zoomIn();
-        }
+        requestAnimationFrame(() => setTimeout(Math.sign(e.deltaY) > 0 ? zoomOut : zoomIn, 200));
     }
 
     function handleScreenPressed(e) {
@@ -191,16 +225,20 @@ function setupZoom(player) {
             layer.setAttribute('aria-hidden', 'false');
         }
 
+        mouseDown.x = e.offsetX;
+        mouseDown.y = e.offsetY;
+
         e.preventDefault();
     }
 
-    function handleScreenReleased() {
+    function handleScreenReleased(e) {
         pressed = false;
         const layer = player.getContainer().querySelector('.zoom-layer');
 
         if (layer) {
             layer.setAttribute('aria-hidden', 'true');
         }
+        e.preventDefault();
     }
 
     function handleMovingScreen(e) {
@@ -209,13 +247,65 @@ function setupZoom(player) {
             videoPos.x = e.offsetX;
             videoPos.y = e.offsetY;
 
-            video.style['transform-origin'] = `${videoPos.x}px ${videoPos.y}px`;
-            indicatorPos.x = (e.offsetX * canvasDimensions.width) / (video.offsetWidth * zoom);
-            indicatorPos.y = (e.offsetY * canvasDimensions.height) / (video.offsetHeight * zoom);
+            const mouse = {
+                x: e.offsetX,
+                y: e.offsetY,
+            };
+            const offset = {
+                x: mouse.x - mouseDown.x,
+                y: mouse.y - mouseDown.y
+            };
+
+            if ((Math.abs(offset.x) > 80 || Math.abs(this.y) > 80)) {
+                mouseDown.x = mouse.x;
+                mouseDown.y = mouse.y;
+                return;
+            }
+            mouseDown.x = mouse.x;
+            mouseDown.y = mouse.y;
+
+            const center = {
+                x: mouseCenter.x - offset.x * 1.1,
+                y: mouseCenter.y - offset.y * 1.1
+            };
+
+            const maxOffset = zoom - 1;
+            const o = {
+                x: ((center.x * maxOffset) / video.offsetWidth) * maxOffset,
+                y: ((center.y * maxOffset) / video.offsetHeight) * maxOffset,
+            };
+
+            if (o.x > maxOffset) {
+                o.x = maxOffset;
+            } else if (o.x < 0) {
+                o.x = 0;
+            } else {
+                mouseCenter.x = center.x;
+            }
+
+            if (o.y > maxOffset) {
+                o.y = maxOffset;
+            } else if (o.y < 0) {
+                o.y = 0;
+            } else {
+                mouseCenter.y = center.y;
+            }
+
+            video.style.transformOrigin = `${videoPos.x}px ${videoPos.y}px`;
+
+            zoomOffset.x = o.x;
+            zoomOffset.y = o.y;
+
+            const x = videoPos.x / zoom;
+            const y = videoPos.y / zoom;
+
+            indicatorPos.x = (x * canvasDimensions.width) / (video.offsetWidth / zoom);
+            indicatorPos.y = (y * canvasDimensions.height) / (video.offsetHeight / zoom);
 
             const indicator = player.getContainer().querySelector('.zoom-rect');
-            indicator.style['transform-origin'] = `${indicatorPos.x}px ${indicatorPos.y}px`;
+            indicator.style.transformOrigin = `${indicatorPos.x}px ${indicatorPos.y}px`;
         }
+        e.preventDefault();
     }
 
     player.addControl({
