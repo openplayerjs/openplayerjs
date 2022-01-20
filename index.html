@@ -1,341 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
+  <head>
+    <title>OpenPlayer JS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/estilo.css" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="OpenPlayerJS is an ever-green lightweight media player that supports the most common video/audio files for the web, and also VAST/VPAID/VMAP Ads">
-  <meta name="google-site-verification" content="Desj0WKx8CJ5bVxUndGN6WP9k80dxk7fZg0ChsKmIno" />
-
-  <title>OpenPlayerJS - The Lighweight Media Player for Web</title>
-
-  <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
-  <link rel="icon" href="img/favicon.png" type="image/x-icon">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-    crossorigin="anonymous">
-  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
-    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-  <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css">
-  <link href="css/grayscale.min.css" rel="stylesheet">
-
-  <style>
-    @font-face {
-      font-family: "Arrival";
-      src: url("./fonts/arrival/arrival.eot"); /* IE9 Compat Modes */
-      src: url("./fonts/arrival/arrival.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-        url("./fonts/arrival/arrival.otf") format("opentype"), /* Open Type Font */
-        url("./fonts/arrival/arrival.svg") format("svg"), /* Legacy iOS */
-        url("./fonts/arrival/arrival.ttf") format("truetype"), /* Safari, Android, iOS */
-        url("./fonts/arrival/arrival.woff") format("woff"), /* Modern Browsers */
-        url("./fonts/arrival/arrival.woff2") format("woff2"); /* Modern Browsers */
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    html, body {
-      overflow-x: hidden;
-    }
-
-    nav, .masthead h1, h2, h3, h4 {
-      font-family: 'Arrival', Times, serif;
-    }
-    
-    #logo {
-      display: none;
-      overflow: auto;
-    }
-    #logo:after {
-      content: "";
-      clear: both;
-      display: table;
-    }
-    #logo > img {
-      margin-left: -120px;
-    }
-    #logo-min {
-      display: block;
-    }
-    #top-logo {
-      display: none;
-    }
-    #mainNav.navbar-shrink #top-logo {
-      display: block;
-    }
-
-    iframe {
-      width: 100%;
-      min-height: 250px;
-    }
-    a {
-      color: #9a9a9a;
-    }
-    .logo {
-      display: inline-block;
-    }
-
-    .logo + h1 {
-      float: right;
-      margin-top: 110px;
-      margin-left: -135px;
-    }
-    .text-white-50 {
-      color: #fff;
-    }
-    .btn-primary {
-      background-color: #335553;
-    }
-
-    .nav-tabs {
-      border-bottom: none;
-    }
-
-    .masthead {
-      background: #161616;
-      padding: 10rem 0 5rem;
-    }
-    .masthead h1 {
-      font-size: 1.9rem;
-      background: -webkit-linear-gradient(rgba(255,255,255,.9),rgba(255,255,255,.4));
-      -webkit-background-clip: text;
-    }
-
-    .about-section {
-      background: #161616;
-      padding-top: 5rem;
-    }
-
-    .projects-section {
-      padding: 5rem 0;
-    }
-
-    .signup-section {
-      padding: 5rem 0 2rem;
-    }
-    .form-group {
-      padding: 0 20px;
-    }
-    .card {
-      font-size: 0.8em;
-    }
-
-    #download, #load {
-      background: #C90000;
-    }
-
-    #mainNav .navbar-toggler {
-      border: 1px solid #e80c19;
-      color: #e80c19;
-    }
-    .navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav .nav-link:hover {
-      color: #e80c19;
-    }
-
-    #try {
-      padding-bottom: 30px
-    }
-
-    #autoplay-check,
-    #types {
-      text-align: left;
-      padding-left: 0;
-    }
-    #autoplay {
-      margin-top: -1rem;
-      margin-left: 5.25rem;
-    }
-
-    #permalink {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-
-    #permalink a {
-      color: #bee0ff;
-      font-size: 0.85em;
-      -webkit-hyphens: auto;
-      -moz-hyphens: auto;
-      hyphens: auto;
-      text-transform: lowercase;
-      white-space: pre-wrap;
-      -ms-word-break: break-all;
-      word-break: break-all;
-      word-break: break-word;
-    }
-    @media (min-width: 992px) {
-      .projects-section .featured-text {
-        border-left: .5rem solid orange; 
-      }
-      .projects-section .featured-text.text-lg-right {
-        border-left: none;
-        border-right: .5rem solid orange;
-        padding: 0 2rem 0 0;
-      }
-      #mainNav.navbar-shrink .nav-link.active {
-        border-bottom: 0.25rem solid #e80c19;
-        color: #e80c19;
-      }
-      #mainNav.navbar-shrink .nav-link:hover {
-        color: #e80c19;
-      }
-      .masthead h1 {
-        font-size: 2.5rem;
-      }
-      #logo {
-        display: block;
-      }
-      #logo-min {
-        display: none;
-      }
-      
-    }
-  </style>
-</head>
-
-<body id="page-top">
-  <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-    <div class="container">
-      <img src="img/openplayer.png" id="top-logo" width="100" alt="OpenPlayerJS - The lightweight player">
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-        Menu
-        <i class="fa fa-bars"></i>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#about">About OpenPlayerJS</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#features">Features</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#try">Try it Now!</a>
-          </li>
+  <body>
+    <header class="head">
+      <div class="head_tamano">
+        <a href="#" class="logo"><img src="img/openplayer-clean.png" width="100px"></a>
+        <ul>
+          <li><a href="#">About OpenPlayer JS</a></li>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Try it Now!</a></li>
         </ul>
       </div>
-    </div>
-  </nav>
+    </header>
 
-  <header class="masthead">
-    <div class="container d-flex h-100 align-items-center">
-      <div class="mx-auto text-center">
-        <div class="mx-auto text-center" id="logo-min">
-          <img src="img/openplayer.png" class="img-fluid" width="450" alt="OpenPlayerJS - full presentation">
-        </div>
-        <div class="mx-auto text-center" id="logo">
-          <img src="img/openplayer-clean.png" class="logo" width="450" alt="OpenPlayerJS - clean presentation">
-          <h1 class="text-uppercase">OpenPlayerJS</h1>
-        </div>
-        <div class="mx-auto text-center">
-          <h2 class="text-white-50 mx-auto mt-2 mb-5">The lightweight player for the Web.</h2>
-          <p><a id="download" class="btn btn-primary" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip"
-              data-size="medium" aria-label="Download openplayerjs/openplayerjs on GitHub">Download</a></p>
-          <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
-            data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
-          <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
-            aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a>
+    <div class="container0 ">
+      <div class="row0">
+        <div class="col0">
+          <div class="logotipo">
+            <img src="img/logo.png">
+          </div>
         </div>
       </div>
-  </header>
 
-  <section id="about" class="about-section text-center">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 mx-auto">
-          <h2 class="text-white mb-4">Why another media player? And why OpenPlayerJS?</h2>
-          <ul class="nav nav-tabs" id="media-tabs" role="tablist">
-            <li class="nav-item">
-              <a class="nav-link active" id="video-tab" data-toggle="tab" href="#video" role="tab" aria-controls="video"
-                aria-selected="true">Video</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="audio-tab" data-toggle="tab" href="#audio" role="tab" aria-controls="audio"
-                aria-selected="false">Audio</a>
-            </li>
-          </ul>
-          <div class="tab-content" id="showcase">
-            <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
-              <video class="op-player op-player__media" controls playsinline data-op-settings='{"ads": {"src": "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator="}}'>
+      <div class="row1">
+        <h2 class="tamaño200 peso100">The Lightweight Player for the<br><b class="tamaño200 peso700" >Web</b></h2>
+        <button class="descarga" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip">Download</button>
+        <p class="salto"><a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
+            data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
+        <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
+            aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a></p>
+      </div>
+    </div>
+    <div class="espacio200"></div>
+    <div class="row1">
+      <h1 class="color_blanco" data-aos="fade-up" data-aos-delay="1200">Why another media player? And why <b class="peso700">OpenPlayerJS?</b></h1>
+      <div class="espacio100"></div>
+
+      <div class="columna2-1" data-aos="fade-right" data-aos-delay="1200">
+        <ul>
+          <li id="tab1"><a class="activo" id="uno" href="#" onclick="return false;">Video</a></li>
+          <li id="tab2"><a id="dos" href="#" onclick="return false;">Audio</a></li>
+        </ul>
+        <div id="tab-1" class="tab-content show">
+          <p>
+            <video class="op-player op-player__media" width="600px" controls playsinline data-op-settings='{"ads": {"src": "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator="}}'>
                 <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
               </video>
-            </div>
-            <div class="tab-pane fade" id="audio" role="tabpanel" aria-labelledby="audio-tab">
-              <audio class="op-player op-player__media" controls>
-                <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
-              </audio>
-            </div>
-          </div>
-          <p class="text-white text-white-50">Technologies are evolving at a fast pace. Having a player that plays the
-            most popular content in all browsers and devices, keeps itself ever-green, and can be customized easily is
-            a
-            no-brainer for everyone that wants the best.</p>
+          </p>
         </div>
+        <div id="tab-2" class="tab-content">
+          <div class="espacio50"></div>
+          <audio class="op-player op-player__media" controls>
+            <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
+          </audio>
+        </div>
+      </div>
+
+
+      <div class="columna2-2" data-aos="fade-left" data-aos-delay="1200">
+        <span class="texto1">Technologies are evolving at a <b>fast pace</b>. Having a player that plays the most popular content in <b>all browsers and devices,</b> keeps itself ever-green, and can be <b>customized easily</b> is a no-brainer for everyone that wants the best.</span>
       </div>
     </div>
-  </section>
+    <div class="espacio200"></div>
+    <hr></hr>
 
-  <section id="features" class="projects-section bg-light">
-    <div class="container">
-      <div class="row align-items-center no-gutters mb-4 mb-lg-5">
-        <div class="col-xl-8 col-lg-7">
-          <div class="img-fluid">
-            <img src="img/config.png" class="img-fluid" alt="OpenPlayerJS configuration">
-          </div>
-        </div>
-        <div class="col-xl-4 col-lg-5">
-          <div class="featured-text text-center text-lg-left">
-            <h3>Easily configured</h3>
-            <p class="text-black-50 mb-0">Either setting up the player through the video/audio tags or via Javascript,
-              you just need a pair of class names and a small set of configuration options... and you are all set!</p>
-          </div>
-        </div>
+
+    <div class="container seccion1">
+      <div style="background-color:#fff;" class="espacio100"></div>
+      <div class="col6-1" data-aos="fade-down" data-aos-delay="1200">
+        <img src="img/config.png"/>
       </div>
-
-      <div class="row align-items-center no-gutters mb-4 mb-lg-5">
-        <div class="col-xl-8 col-lg-7">
-          <div class="img-fluid">
-            <img class="img-fluid" src="img/browsers.svg" alt="Cross-browser/cross-device player">
-          </div>
-        </div>
-        <div class="col-xl-4 col-lg-5 order-lg-first">
-          <div class="featured-text text-center text-lg-right">
-            <h3>Cross Browser/Cross Device Support</h3>
-            <p class="text-black-50 mb-0">With IE11+ support, OpenPlayerJS is your best choice! Also, giving the
-              constant changes of policies on different browsers, OpenPlayer
-              integrates a smart algorithm to detect autoplay capabilities so you don't have to worry about each
-              browser's
-              quirks or workarounds for that.</p>
-          </div>
-        </div>
+      <div class="col4-1" data-aos="fade-right" data-aos-delay="1200">
+        <span><h2 class="tamaño200">Easily configured</h2><br>Either setting up the player through the <b>video/audio</b> tags or via Javascript, you just need a pair of class names and a small set of configuration options... and you are all set!</span>
       </div>
-
-      <div class="row align-items-center no-gutters mb-4 mb-lg-5">
-        <div class="col-xl-8 col-lg-7">
-          <div class="img-fluid">
-            <img class="img-fluid" src="img/ads.svg" alt="Capable of monetizing with Ads">
-          </div>
-        </div>
-        <div class="col-xl-4 col-lg-5">
-          <div class="featured-text text-center text-lg-left">
-            <h3>Media Advertising support</h3>
-            <p class="mb-0 text-black-50 ">OpenPlayerJS integrates Google IMA SDK so users have full support for all
-              the types of specifications for Ads in the current market: VAST/VPAID/VMAP. Just provide a valid Ads URL
-              and let
-              OpenPlayerJS to take care of the rest!</p>
-          </div>
-        </div>
+      <div class="col4-2" data-aos="fade-up" data-aos-delay="1200">
+        <span><h2 class="color tamaño200">Cross Browser/Cross Device Support</h2><br>With IE11+ support, OpenPlayerJS is your best choice! Also, giving the constant changes of policies on different browsers, OpenPlayer integrates a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's quirks or workarounds for that.</span>
+      </div>
+      <div class="col6-2" data-aos="fade-down" data-aos-delay="1500">
+        <img src="img/browsers.svg"/>
+      </div>
+      <div class="col6-1" data-aos="fade-right" data-aos-delay="1500">
+        <img src="img/ads.svg"/>
+      </div>
+      <div class="col4-1" data-aos="fade-left" data-aos-delay="1500">
+        <span><h2 class="tamaño200">Media Advertising support</h2><br>OpenPlayerJS integrates Google IMA SDK so users have full support for all the types of specifications for Ads in the current market: VAST/VPAID/VMAP. Just provide a valid Ads URL and let OpenPlayerJS to take care of the rest!</span>
       </div>
     </div>
-  </section>
 
-  <section id="try" class="bg-light">
-    <div class="container">
-      <h2 class="mb-5 text-center">Try it Now!</h2>
-      <div class="row">
-        <div class="col-md-5 mx-auto">
+
+    <div class="container seccion2">
+      <h1>Try it Now!</h1>
+      <div class="espacio100"></div>
+      <div class="seccion2_cont1" data-aos="fade-left" data-aos-delay="1500">
           <form id="settings" action="#" method="POST">
             <div class="card">
               <h3 class="card-header">Media settings</h3>
@@ -381,79 +151,14 @@
               </div>
             </div>
           </form>
-        </div>
-        <div class="col-md-5 mx-auto">
-          <iframe title="Inline OpenPlayer" id="media" allowfullscreen scrolling="no" frameborder="0"></iframe>
-          <div class="form-group">
-            <button class="btn btn-primary mb-4" id="permalink" type="submit">Copy Permalink</button>
-          </div>
+      </div>
+      <div class="seccion2_cont2" data-aos="fade-right" data-aos-delay="1500">
+        <iframe title="Inline OpenPlayer" id="media" allowfullscreen scrolling="no" frameborder="0"></iframe>
+        <div class="form-group espacio_blanco">
+          <button class="btn btn-primary mb-4" id="permalink" type="submit">Copy Permalink</button>
         </div>
       </div>
-    </div>
-  </section>
-
-  <footer class="bg-black small text-center text-white-50">
-    <div class="container text-white">
-      OpenPlayerJS was created by Rafael Miranda
-    </div>
-  </footer>
-  <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-    crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-
-  <script src="js/grayscale.min.js"></script>
-  <script src="js/iframeResizer.min.js"></script>
-
-  <script>
-    var form = document.getElementById('settings');
-
-    function loadMedia() {
-      var url = window.location.protocol + '//' + window.location.host + '/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
-      url += form.querySelector('#video-type').checked ? 'video' : 'audio';
-      var ads = form.querySelector('#ads').value;
-      if (ads) {
-        url += '&ads=' + encodeURIComponent(ads.replace(/%/g, '~'));
-      }
-      if (form.querySelector('#autoplay').checked) {
-        url += '&autoplay=true';
-      }
-      document.getElementById('media').src = url;
-    }
-
-    document.getElementById('permalink').addEventListener('click', function () {
-      var el = document.createElement('textarea');
-      el.value = document.getElementById('media').src;
-      el.setAttribute('readonly', '');
-      el.style.position = 'absolute';
-      el.style.left = '-9999px';
-      document.body.appendChild(el);
-      var selected = document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-      if (selected) {
-        document.getSelection().removeAllRanges();
-        document.getSelection().addRange(selected);
-      }
-    });
-    window.addEventListener('load', loadMedia);
-    form.addEventListener('submit', function (e) {
-      loadMedia();
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    });
-    iFrameResize({
-      checkOrigin: false,
-      interval: 450,
-    });
-  </script>
-</body>
-
+      <footer>OpenPlayerJS was created by Rafael Miranda</footer>
+      <script src="js/script.js"></script>
+  </body>
 </html>
