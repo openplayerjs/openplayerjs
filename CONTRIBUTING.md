@@ -1,3 +1,5 @@
+# Contributing guidelines
+
 We appreciate the time you are spending to contribute to this project! 🙌
 
 In order to have your pull request merged successfully, keep in mind the following key points:

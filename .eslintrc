@@ -1,15 +1,26 @@
 {
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "airbnb-base",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "ignorePatterns": ["types/**/*.ts", "src/css/*", "dist/**/*.js", "webpack.config.js"],
   "env": {
     "es6": true,
     "browser": true
   },
-  "extends": ["airbnb-base","plugin:@typescript-eslint/recommended"],
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
-  "parser": "@typescript-eslint/parser",
   "settings": {
     "import/resolver": {
       "node": {
@@ -18,34 +29,14 @@
     }
   },
   "rules": {
-    "no-console": 0,
     "no-undef" : 0,
-    "no-case-declarations": 0,
-    "no-empty": 0,
-    "object-curly-spacing": 0,
-    "import/no-dynamic-require": 0,
-    "global-require": 0,
-    "func-names": 0,
-    "no-plusplus": 0,
-    "no-param-reassign": 0,
-    "no-restricted-properties": 0,
-    "no-template-curly-in-string": 0,
-    "arrow-parens": [2, "as-needed"],
-    "comma-dangle": [2, {
-      "functions": "ignore",
-      "objects": "ignore",
-      "arrays": "ignore"
-    }],
-    "prefer-destructuring": 0,
-    "no-restricted-globals": 0,
-    "indent": [2, 4, {"SwitchCase": 1}],
-    "max-len": [2, 140, 4, {
-      "ignoreUrls": true,
-      "ignoreComments": true,
-      "ignorePattern": "true"
-    }],
-    "no-underscore-dangle": 0,
     "no-bitwise": 0,
+    "no-param-reassign": 0,
+    "no-underscore-dangle": 0,
+    "no-plusplus": 0,
+    "no-case-declarations": 0,
+    "no-console": [2, { "allow": ["warn", "error"] }],
+    "class-methods-use-this": 0,
     "import/extensions": [
       2,
       "ignorePackages",
@@ -53,9 +44,14 @@
         "js": "never",
         "ts": "never"
       }
-   ],
-   "class-methods-use-this": 0,
-   "@typescript-eslint/no-explicit-any": 0,
-   "@typescript-eslint/explicit-module-boundary-types": 0
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": 2,
+    "prettier/prettier": 2,
+    "semi": 0,
+    "newline-per-chained-call": 2,
+    "@typescript-eslint/explicit-module-boundary-types": 0,
+    "@typescript-eslint/no-extra-semi": 2,
+    "@typescript-eslint/explicit-function-return-type": 2
   }
 }

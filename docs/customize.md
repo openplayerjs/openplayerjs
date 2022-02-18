@@ -8,7 +8,7 @@ In the following diagram, you will see a representation of the areas that the pl
 
 The default controls are situated at the left, middle and right layers, so by using CSS3 (specially flexbox) and setting the control items in the new different layers, you can create more complex players.
 
-<img width="1280" alt="layers" src="https://user-images.githubusercontent.com/910829/96354476-24eb9800-10a5-11eb-9ebf-90abc16d6c0d.png">
+![Layers](https://user-images.githubusercontent.com/910829/96354476-24eb9800-10a5-11eb-9ebf-90abc16d6c0d.png)
 
 ## Add Control
 

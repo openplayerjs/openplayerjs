@@ -3,7 +3,7 @@ import * as time from '../../src/js/utils/time';
 import '../helper';
 
 describe('utils/time', () => {
-    it('returns a number of seconds in STMPE format', done => {
+    it('returns a number of seconds in STMPE format', (done) => {
         let formatted = time.formatTime(0);
         expect(formatted).to.equal('00:00');
 
@@ -11,7 +11,7 @@ describe('utils/time', () => {
         expect(formatted).to.equal('01:00:00');
         done();
     });
-    it('returns an STMPE string to a number of seconds', done => {
+    it('returns an STMPE string to a number of seconds', (done) => {
         let formatted = time.timeToSeconds('00:00');
         expect(formatted).to.equal(0);
 

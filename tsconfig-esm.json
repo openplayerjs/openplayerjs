@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-      "module": "ES2020",
+      "module": "es2020",
       "outDir": "./dist/esm/"
   },
   "include": ["./src/js"]

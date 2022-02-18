@@ -1,10 +1,10 @@
 import OpenPlayerJS from '../../src/js/player';
 import '../helper';
 
-describe('controls/play', () => {
+describe('controls/play', (): void => {
     let player = null;
 
-    afterEach(done => {
+    afterEach((done) => {
         player.pause();
 
         if (OpenPlayerJS.instances.video) {
@@ -18,7 +18,7 @@ describe('controls/play', () => {
         done();
     });
 
-    it('displays a Play button in the control bar to the left by default', async () => {
+    it('displays a Play button in the control bar to the left by default', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
@@ -31,7 +31,7 @@ describe('controls/play', () => {
         expect(play.getAttribute('aria-label')).to.equal('Play');
     });
 
-    it('displays a Play button in the control bar in a different layer if indicated by options', async () => {
+    it('displays a Play button in the control bar in a different layer if indicated by options', async (): Promise<void> => {
         player = new OpenPlayerJS('audio', {
             controls: {
                 layers: {
@@ -45,7 +45,7 @@ describe('controls/play', () => {
         expect(player.getControls().getContainer().querySelector('.op-controls-layer__top')).to.not.be(null);
     });
 
-    it('shows a Pause icon and changes its ARIA attributes while playing media, and a Replay icon when ended', async function () {
+    it('shows a Pause icon while playing media, and a Replay icon when ended (changes ARIA values)', async function test(): Promise<void> {
         this.timeout(60000);
 
         player = new OpenPlayerJS('video', {
@@ -53,22 +53,21 @@ describe('controls/play', () => {
             startVolume: 0,
         });
         await player.init();
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const events = {
-                ended: () => {
-                    const play = player.getControls().getContainer()
-                        .querySelector('.op-controls__playpause--replay') as HTMLButtonElement;
+                ended: (): void => {
+                    const play = player.getControls().getContainer().querySelector('.op-controls__playpause--replay') as HTMLButtonElement;
                     expect(play).to.not.be(null);
                     expect(play.getAttribute('aria-label')).to.equal('Play');
                     expect(player.getElement().paused).to.equal(true);
 
-                    Object.keys(events).forEach(event => {
+                    Object.keys(events).forEach((event) => {
                         player.getElement().removeEventListener(event, events[event]);
                     });
                     player.getElement().currentTime = 0;
                     resolve();
                 },
-                play: () => {
+                play: (): void => {
                     const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
                     expect(play).to.not.be(null);
                     expect(play.classList.contains('op-controls__playpause--replay')).to.be(false);
@@ -76,7 +75,7 @@ describe('controls/play', () => {
                     expect(play.getAttribute('aria-label')).to.equal('Pause');
                     expect(player.getElement().paused).to.equal(false);
                 },
-                playing: () => {
+                playing: (): void => {
                     const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
                     expect(play).to.not.be(null);
                     expect(play.classList.contains('op-controls__playpause--replay')).to.be(false);
@@ -86,7 +85,7 @@ describe('controls/play', () => {
                 },
             };
 
-            Object.keys(events).forEach(event => {
+            Object.keys(events).forEach((event) => {
                 player.getElement().addEventListener(event, events[event]);
             });
             try {
@@ -96,11 +95,11 @@ describe('controls/play', () => {
             }
         });
     });
-    it('plays/pauses the media when clicking on the play button', async () => {
+    it('plays/pauses the media when clicking on the play button', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
             const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
             const e = new CustomEvent('click');
             play.dispatchEvent(e);
@@ -110,23 +109,29 @@ describe('controls/play', () => {
         });
     });
 
-    it('plays/pauses the media when using the Enter/tab space keys and play button is focused', async () => {
+    it('plays/pauses the media when using the Enter/tab space keys and play button is focused', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
             const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
             let e = new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, key: 'Enter', keyCode: 13,
+                bubbles: true,
+                cancelable: true,
+                key: 'Enter',
+                keyCode: 13,
             });
             play.focus();
             play.dispatchEvent(e);
 
-            setTimeout(() => {
+            setTimeout((): void => {
                 expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
 
                 e = new KeyboardEvent('keydown', {
-                    bubbles: true, cancelable: true, key: ' ', keyCode: 32,
+                    bubbles: true,
+                    cancelable: true,
+                    key: ' ',
+                    keyCode: 32,
                 });
 
                 play.dispatchEvent(e);

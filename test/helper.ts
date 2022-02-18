@@ -1,4 +1,4 @@
-function onUncaught(err: string) {
+function onUncaught(err: string): void {
     console.error(err);
     process.exit(1);
 }

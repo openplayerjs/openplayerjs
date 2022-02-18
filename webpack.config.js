@@ -1,18 +1,17 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const path = require('path');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
     target: 'node',
-    node: {
-        fs: 'empty',
+    stats: {
+        children: true,
     },
     context: __dirname,
     entry: {
-        'openplayer.min.js': './src/js/player.ts',
-        'openplayer.css': './src/css/player.css',
-        'openplayer.min.css': './src/css/player.css',
+        openplayer: ['./src/js/player.ts', './src/css/player.css'],
     },
     performance: {
         hints: 'error',
@@ -20,7 +19,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, './dist'),
-        filename: '[name]',
+        filename: '[name].min.js',
         publicPath: '/dist/',
         library: 'OpenPlayer',
         libraryTarget: 'umd',
@@ -33,7 +32,6 @@ module.exports = {
                 enforce: 'pre',
                 test: /src\/*\.js$/,
                 exclude: /node_modules/,
-
                 use: [
                     {
                         loader: 'eslint-loader',
@@ -71,62 +69,75 @@ module.exports = {
                 },
             },
             {
-                test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-                use: [
-                    {
-                        loader: 'url-loader',
-
-                        options: {
-                            limit: 100000,
-                        },
-                    },
-                ],
+                test: /\.svg$/,
+                exclude: /node_modules/,
+                type: 'asset/inline',
             },
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
-                use: ExtractTextPlugin.extract({
-                    use: [
-                        {
-                            loader: 'css-loader',
-                            options: { importLoaders: 1 },
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1,
+                            modules: false,
+                            sourceMap: true,
                         },
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                ident: 'postcss',
-                                plugins: [
-                                    require('stylelint')(),
-                                    require('autoprefixer')(),
-                                    require('postcss-cssnext')({
-                                        browsers: ['>0.5%'],
-                                        warnForDuplicates: false,
-                                    }),
-                                ],
+                    },
+
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [require('stylelint'), require('postcss-preset-env'), require('autoprefixer')],
+                                minimize: false,
                             },
+                            sourceMap: true,
                         },
-                    ],
-                }),
+                    },
+                ],
             },
         ],
     },
     resolve: {
         extensions: ['.ts', '.js'],
+        fallback: {
+            fs: false,
+        },
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new CssMinimizerPlugin({
+                minimizerOptions: {
+                    preset: [
+                        'default',
+                        {
+                            discardComments: { removeAll: true },
+                        },
+                    ],
+                },
+            }),
+            new TerserPlugin({
+                parallel: true,
+                terserOptions: {
+                    mangle: true,
+                    format: {
+                        comments: false,
+                    },
+                },
+                extractComments: false,
+            }),
+        ],
     },
     plugins: [
-        new ExtractTextPlugin('[name]'),
-        new UnminifiedWebpackPlugin({
-            postfix: ' ',
-            exclude: /\.css$/,
+        new MiniCssExtractPlugin({
+            filename: '[name].min.css',
         }),
-        new OptimizeCssAssetsPlugin({
-            assetNameRegExp: /\.min\.css$/,
-            cssProcessorOptions: {
-                discardComments: {
-                    removeAll: true,
-                },
-            },
-            cssProcessor: require('cssnano'),
+        new UnminifiedWebpackPlugin({
+            postfix: 'nomin',
         }),
     ],
 };

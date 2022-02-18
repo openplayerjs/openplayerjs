@@ -1,11 +1,15 @@
-module.exports = config => {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+module.exports = (config) => {
     config.set({
         basePath: './',
         browserNoActivityTimeout: 60000,
         frameworks: ['mocha', 'chai', 'karma-typescript'],
         files: [
             {
-                pattern: 'src/css/**/*.svg', watched: false, included: false, served: true
+                pattern: 'src/css/**/*.svg',
+                watched: false,
+                included: false,
+                served: true,
             },
             { pattern: 'node_modules/expect.js/index.js' },
             { pattern: 'test/player.html', type: 'dom', watched: false },
@@ -41,13 +45,13 @@ module.exports = config => {
                 lcov: {
                     directory: 'coverage',
                     filename: 'lcov.info',
-                    subdirectory: '.'
-                }
-            }
+                    subdirectory: '.',
+                },
+            },
         },
         coverageReporter: {
             dir: 'coverage',
-            subdir: '.'
+            subdir: '.',
         },
         reporters: ['mocha', 'karma-typescript', 'coverage'],
         port: 9876,
@@ -59,8 +63,8 @@ module.exports = config => {
             mocha: {
                 asyncOnly: true,
                 forbidOnly: true,
-                bail: true
-            }
+                bail: true,
+            },
         },
     });
 };

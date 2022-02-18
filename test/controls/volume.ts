@@ -4,7 +4,7 @@ import '../helper';
 describe('controls/volume', () => {
     let player = null;
 
-    afterEach(done => {
+    afterEach((done) => {
         player.activeElement().muted = true;
         player.activeElement().volume = 0;
         player.destroy();
@@ -12,7 +12,7 @@ describe('controls/volume', () => {
         done();
     });
 
-    it('displays a Volume button and slider in the control bar to the left by default', async () => {
+    it('displays a Volume button and slider in the control bar to the left by default', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
@@ -51,7 +51,7 @@ describe('controls/volume', () => {
         expect(button.getAttribute('aria-pressed')).to.equal('false');
     });
 
-    it('displays a volume button in the control bar in a different layer if indicated by options', async () => {
+    it('displays a volume button in the control bar in a different layer if indicated by options', async (): Promise<void> => {
         player = new OpenPlayerJS('video', {
             controls: {
                 layers: {
@@ -67,11 +67,11 @@ describe('controls/volume', () => {
         expect(volume).to.not.be(null);
     });
 
-    it('mutes the media when clicking on the volume button', async () => {
+    it('mutes the media when clicking on the volume button', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
             const volume = player.getControls().getContainer().querySelector('.op-controls__mute') as HTMLButtonElement;
             let e = new CustomEvent('click');
 
@@ -86,14 +86,16 @@ describe('controls/volume', () => {
         });
     });
 
-    it.skip('mutes the media when using the Enter/tab space keys and volume button is focused', async () => {
+    it.skip('mutes the media when using the Enter/tab space keys and volume button is focused', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
             const volume = player.getControls().getContainer().querySelector('.op-controls__mute') as HTMLButtonElement;
             let e = new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, keyCode: 32,
+                bubbles: true,
+                cancelable: true,
+                keyCode: 32,
             });
             volume.focus();
             volume.dispatchEvent(e);
@@ -104,7 +106,9 @@ describe('controls/volume', () => {
 
                 volume.focus();
                 e = new KeyboardEvent('keydown', {
-                    bubbles: true, cancelable: true, keyCode: 32,
+                    bubbles: true,
+                    cancelable: true,
+                    keyCode: 32,
                 });
                 volume.dispatchEvent(e);
                 expect(volume.classList.contains('op-controls__mute--muted')).to.be(false);
@@ -113,10 +117,10 @@ describe('controls/volume', () => {
         });
     });
 
-    it.skip('updates the mute button icon depending on the volume value', async () => {
+    it.skip('updates the mute button icon depending on the volume value', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
             const volume = player.getControls().getContainer().querySelector('.op-controls__mute') as HTMLButtonElement;
             expect(volume.classList.contains('op-controls__mute--half')).to.equal(false);
             expect(volume.classList.contains('op-controls__mute--muted')).to.equal(false);

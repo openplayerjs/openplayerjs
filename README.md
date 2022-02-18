@@ -5,7 +5,7 @@
 [![NPM](https://nodei.co/npm/openplayerjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/openplayerjs/)
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Support%20OpenPlayerJS%20by%20giving%20the%20project%20a%20start%20at%20&url=https://www.openplayerjs.com&hashtags=openplayerjs,mediaplayer,vpaid,opensourcerocks,streaming)
-[![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg?branch=master)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg?branch=v3.0.0)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=v3.0.0)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
 [![CircleCI](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master.svg?style=svg)](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master)
 
@@ -37,6 +37,13 @@ So, please consider this before upgrading to any of the 3.x.x version going forw
 - Provides the ability to use a **single VAST/VPAID** source or a **VAST/VPAID playlist** from several different sources (including URLs and valid XML strings).
 - **Can play ads in infinite loop**, desired for ads that are in a heavy text page.
 - Always **responsive** by default, for both video/audio tags; for video, **`fill`** and **`fit`** modes are available to either scale and crop media relative to its parent container, or to attempt to make the media fit its parent container (including black bars), respectively.
+
+## Projects using OpenPlayerJS
+
+| | | |
+|--|--|--|
+|[![MedSims](https://img.medscapestatic.com/pi/global/icons/icon-medsims-logo@2x.png)](https://www.medscape.org/simulation) | [![Arrow Classic Rock](https://player.arrow.nl/tmp/images/logo.1507670326.jpg)](https://player.arrow.nl/ad.html) | [![Uttlesford District Council](https://uttlesford.moderngov.co.uk/SiteSpecific/res/img/uttlesfordlogo.png)](https://uttlesford.moderngov.co.uk/ieListDocuments.aspx?CId=159&MId=5501)|
+|[![LectureTube](https://live.video.tuwien.ac.at/room/assets/lecturetube_landscape.svg)](https://live.video.tuwien.ac.at/room/heart0/player.html)| [Servicio Online](https://40152354.servicio-online.net//INDEX.html)| |
 
 ## Migrating from older version to new ones
 

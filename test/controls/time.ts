@@ -5,13 +5,13 @@ import '../helper';
 describe('controls/time', () => {
     let player = null;
 
-    afterEach(done => {
+    afterEach((done) => {
         player.destroy();
         player = null;
         done();
     });
 
-    it('displays the current time and duration in the control bar to the left by default', async () => {
+    it('displays the current time and duration in the control bar to the left by default', async (): Promise<void> => {
         player = new OpenPlayerJS('audio');
         await player.init();
 
@@ -35,7 +35,7 @@ describe('controls/time', () => {
         expect(player.getControls().getContainer().querySelector('.op-controls-time')).to.not.be(null);
     });
 
-    it('displays the current time and duration in the control bar in a different layer if indicated by options', async () => {
+    it('displays current time and duration in the control bar in a different layer if indicated by options', async (): Promise<void> => {
         player = new OpenPlayerJS('video', {
             controls: {
                 layers: {
@@ -51,7 +51,7 @@ describe('controls/time', () => {
         expect(current).to.not.be(null);
     });
 
-    it('displays the current time ONLY in the control bar if indicated by options', async () => {
+    it('displays the current time ONLY in the control bar if indicated by options', async (): Promise<void> => {
         player = new OpenPlayerJS('video', {
             progress: {
                 showCurrentTimeOnly: true,
@@ -69,7 +69,7 @@ describe('controls/time', () => {
         expect(duration).to.be(null);
     });
 
-    it('displays a different duration if indicated by options', async () => {
+    it('displays a different duration if indicated by options', async (): Promise<void> => {
         player = new OpenPlayerJS('video', {
             progress: {
                 duration: 50,

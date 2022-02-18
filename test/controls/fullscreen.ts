@@ -4,7 +4,7 @@ import '../helper';
 describe('controls/fullscreen', () => {
     let player = null;
 
-    afterEach(done => {
+    afterEach((done) => {
         if (OpenPlayerJS.instances.video) {
             OpenPlayerJS.instances.video.destroy();
         }
@@ -16,7 +16,7 @@ describe('controls/fullscreen', () => {
         done();
     });
 
-    it('displays a Fullscreen button in the control bar to the right by default', async () => {
+    it('displays a Fullscreen button in the control bar to the right by default', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
@@ -30,7 +30,7 @@ describe('controls/fullscreen', () => {
         expect(document.body.classList.contains('op-fullscreen__on')).to.be(false);
     });
 
-    it('does not display a button when using an audio player', async () => {
+    it('does not display a button when using an audio player', async (): Promise<void> => {
         player = new OpenPlayerJS('audio');
         await player.init();
 
@@ -38,7 +38,7 @@ describe('controls/fullscreen', () => {
         expect(fullscreen).to.be(null);
     });
 
-    it('displays a Fullscreen button in the control bar in a different layer if indicated by options', async () => {
+    it('displays a Fullscreen button in the control bar in a different layer if indicated by options', async (): Promise<void> => {
         player = new OpenPlayerJS('video', {
             controls: {
                 layers: {
@@ -54,11 +54,11 @@ describe('controls/fullscreen', () => {
         expect(fullscreen).to.not.be(null);
     });
 
-    it('shows the screen on fullscreen mode when clicking on the fullscreen button', async () => {
+    it('shows the screen on fullscreen mode when clicking on the fullscreen button', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
             const fullscreen = player.getControls().getContainer().querySelector('.op-controls__fullscreen') as HTMLButtonElement;
             const e = new CustomEvent('click');
             fullscreen.dispatchEvent(e);
@@ -67,13 +67,13 @@ describe('controls/fullscreen', () => {
         });
     });
 
-    it('shows the screen on fullscreen mode when using the Enter/tab space keys and fullscreen button is focused', async () => {
+    it('shows fullscreen mode when using the Enter/tab space keys and fullscreen button is focused', async (): Promise<void> => {
         player = new OpenPlayerJS('video');
         await player.init();
 
-        return new Promise<void>(resolve => {
+        return new Promise<void>((resolve) => {
             const fullscreen = player.getControls().getContainer().querySelector('.op-controls__fullscreen') as HTMLButtonElement;
-            const checkFullScreen = () => {
+            const checkFullScreen = (): void => {
                 expect(document.body.classList.contains('op-fullscreen__on')).to.be(true);
                 resolve();
             };
@@ -82,7 +82,9 @@ describe('controls/fullscreen', () => {
             fullscreen.focus();
 
             const event = new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, key: ' ',
+                bubbles: true,
+                cancelable: true,
+                key: ' ',
             });
             fullscreen.dispatchEvent(event);
         });
