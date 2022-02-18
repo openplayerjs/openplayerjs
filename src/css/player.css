@@ -41,14 +41,6 @@
 .op-player .media-controls.mac.fullscreen > .controls-bar {
     display: none;
 }
-.op-sr {
-    height: 1px;
-    left: -10000px;
-    overflow: hidden;
-    position: absolute;
-    top: auto;
-    width: 1px;
-}
 .op-player__loader {
     animation: spin 1s infinite linear;
     border: 5px solid #fff;
@@ -856,6 +848,10 @@ video:-webkit-media-text-track-display {
 
 .op-player__audio .op-ads {
     display: none;
+}
+
+.op-ads__skip {
+    color: #fff;
 }
 
 /* === Focus =================== */

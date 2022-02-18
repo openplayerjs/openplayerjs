@@ -11,8 +11,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _HTML5Media_currentLevel, _HTML5Media_levelList, _HTML5Media_isStreaming, _HTML5Media_retryCount, _HTML5Media_started, _HTML5Media_timer;
 import { DVR_THRESHOLD, EVENT_OPTIONS } from '../utils/constants';
-import { addEvent } from '../utils/events';
-import { isAudio, isVideo } from '../utils/general';
+import { addEvent, isAudio, isVideo } from '../utils/general';
 import { isHlsSource } from '../utils/media';
 import Native from './native';
 class HTML5Media extends Native {
@@ -41,7 +40,7 @@ class HTML5Media extends Native {
         return this;
     }
     canPlayType(mimeType) {
-        return !!(this.element.canPlayType(mimeType).replace('no', ''));
+        return !!this.element.canPlayType(mimeType).replace('no', '');
     }
     load() {
         this.element.load();
@@ -69,7 +68,7 @@ class HTML5Media extends Native {
         return __classPrivateFieldGet(this, _HTML5Media_levelList, "f");
     }
     set level(level) {
-        const idx = __classPrivateFieldGet(this, _HTML5Media_levelList, "f").findIndex(item => item.id === level);
+        const idx = __classPrivateFieldGet(this, _HTML5Media_levelList, "f").findIndex((item) => item.id === level);
         if (idx > -1) {
             __classPrivateFieldSet(this, _HTML5Media_currentLevel, this.levels[idx], "f");
             const levels = this.element.querySelectorAll('source[title]');
@@ -101,7 +100,7 @@ class HTML5Media extends Native {
         const target = e;
         if (((_a = target === null || target === void 0 ? void 0 : target.track) === null || _a === void 0 ? void 0 : _a.kind) === 'metadata') {
             target.track.mode = 'hidden';
-            target.track.addEventListener('cuechange', event => {
+            target.track.addEventListener('cuechange', (event) => {
                 const track = event.target;
                 const cue = track.activeCues ? track.activeCues[0] : null;
                 if (cue) {

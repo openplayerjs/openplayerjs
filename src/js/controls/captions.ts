@@ -1,185 +1,57 @@
-import Cue from '../interfaces/captions/cue';
-import CueList from '../interfaces/captions/cue-list';
-import TrackURL from '../interfaces/captions/track-urls';
-import PlayerComponent from '../interfaces/component';
-import EventsList from '../interfaces/events-list';
-import SettingsItem from '../interfaces/settings/item';
+import { Cue, CueList, EventsList, PlayerComponent, SettingsItem, SettingsSubItem, TrackURL } from '../interfaces';
 import Player from '../player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { addEvent } from '../utils/events';
-import {
-    getAbsoluteUrl, hasClass, removeElement, request
-} from '../utils/general';
+import { addEvent, getAbsoluteUrl, isJson, sanitize } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
-/**
- * Closed Captions element.
- *
- * @description Using `<track>` tags, this class allows the displaying of both local and remote captions/subtitles
- * bypassing CORS, and without the use of the `crossorigin` attribute.
- * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
- * @see https://www.html5rocks.com/en/tutorials/track/basics/
- * @class Captions
- * @implements PlayerComponent
- */
 class Captions implements PlayerComponent {
-    /**
-     * Instance of OpenPlayer.
-     *
-     * @private
-     * @type Player
-     * @memberof Captions
-     */
     #player: Player;
 
-    /**
-     * Button to toggle captions.
-     *
-     * @private
-     * @type HTMLButtonElement
-     * @memberof Captions
-     */
     #button: HTMLButtonElement;
 
-    /**
-     * Container to display captions.
-     *
-     * @private
-     * @type HTMLDivElement
-     * @memberof Captions
-     */
     #captions: HTMLDivElement;
 
-    /**
-     * Container to display captions options if `detachMenus` is set as `true`.
-     *
-     * @private
-     * @type HTMLDivElement
-     * @memberof Captions
-     */
     #menu: HTMLDivElement;
 
-    /**
-     * Events that will be triggered in Caption element:
-     *  - button (for the caption toggle element)
-     *  - global (for dynamic elements)
-     *  - media (to update captions on `timeupdate`, instead of using `oncuechanged`)
-     *
-     * @private
-     * @type EventsList
-     * @memberof Captions
-     */
     #events: EventsList = {
         button: {},
         global: {},
         media: {},
     };
 
-    /**
-     * List of cues associated with a specific language.
-     *
-     * @private
-     * @type CueList
-     * @memberof Captions
-     */
-    #tracks: CueList = {};
+    #langTracks: CueList = {};
 
-    /**
-     * List of tracks found in current media.
-     *
-     * @private
-     * @type TextTrack[]
-     * @memberof Captions
-     */
-    #trackList: TextTrack[];
+    #mediaTrackList: TextTrack[];
 
-    /**
-     * List of remote/local track sources in case no cues are detected natively.
-     *
-     * @private
-     * @type TrackURL
-     * @memberof Captions
-     */
     #trackUrlList: TrackURL = {};
 
-    /**
-     * Whether tracks were found in current media or not.
-     *
-     * @private
-     * @type boolean
-     * @memberof Captions
-     */
     #hasTracks: boolean;
 
-    /**
-     * Current track (either specified by `default` attribute or chosen by the user).
-     *
-     * @private
-     * @type TextTrack
-     * @memberof Captions
-     */
-    #current?: TextTrack;
+    #currentTrack?: TextTrack;
 
-    /**
-     * Initial language to be used to render captions when turned on, and
-     * also as a default value in the `Settings` component.
-     *
-     * @see [[Captions.addSettings]]
-     * @private
-     * @type string
-     * @memberof Captions
-     */
     #default = 'off';
 
-    /**
-     * Determine if a submenu must be created with the CC button, instead of using the Settings menu.
-     *
-     * @private
-     * @type boolean
-     * @memberof Captions
-     */
-    #detachMenu: boolean;
+    #controlPosition: string;
 
-    /**
-     * Default labels from player's config
-     *
-     * @private
-     * @type object
-     * @memberof Captions
-     */
-    #labels: any;
+    #controlLayer: string;
 
-    /**
-     * Position of the button to be indicated as part of its class name
-     *
-     * @private
-     * @type {string}
-     * @memberof Captions
-     */
-    #position: string;
-
-    /**
-     * Layer where the control item will be placed
-     *
-     * @private
-     * @type {string}
-     * @memberof Captions
-     */
-    #layer: string;
-
-    /**
-     * Create an instance of Captions.
-     *
-     * @param {Player} player
-     * @returns {Captions}
-     * @memberof Captions
-     */
     constructor(player: Player, position: string, layer: string) {
         this.#player = player;
-        this.#labels = player.getOptions().labels;
-        this.#detachMenu = player.getOptions().detachMenus;
-        this.#position = position;
-        this.#layer = layer;
+        this.#controlPosition = position;
+        this.#controlLayer = layer;
+
+        this._getCuesFromText = this._getCuesFromText.bind(this);
+        this._getNativeCues = this._getNativeCues.bind(this);
+        this._displayCaptions = this._displayCaptions.bind(this);
+        this._hideCaptions = this._hideCaptions.bind(this);
+        this._search = this._search.bind(this);
+        this._prepareTrack = this._prepareTrack.bind(this);
+        this._formatMenuItems = this._formatMenuItems.bind(this);
+
+        return this;
+    }
+
+    create(): void {
         const trackList = this.#player.getElement().textTracks;
 
         // Check that `trackList` matches with track tags (if any)
@@ -200,80 +72,93 @@ class Captions implements PlayerComponent {
                 tracks.push(trackList[i]);
             }
         }
-        this.#trackList = tracks;
-        this.#hasTracks = !!this.#trackList.length;
-        return this;
-    }
+        this.#mediaTrackList = tracks;
+        this.#hasTracks = !!this.#mediaTrackList.length;
 
-    /**
-     * Create a button and a container to display captions if tracks are detected.
-     *
-     * @inheritDoc
-     * @memberof Captions
-     */
-    public create(): void {
         if (!this.#hasTracks) {
             return;
         }
 
+        const { labels, detachMenus } = this.#player.getOptions();
+
         this.#button = document.createElement('button');
-        this.#button.className = `op-controls__captions op-control__${this.#position}`;
+        this.#button.className = `op-controls__captions op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
-        this.#button.title = this.#labels.toggleCaptions;
+        this.#button.title = labels?.toggleCaptions || '';
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-pressed', 'false');
-        this.#button.setAttribute('aria-label', this.#labels.toggleCaptions);
+        this.#button.setAttribute('aria-label', labels?.toggleCaptions || '');
         this.#button.setAttribute('data-active-captions', 'off');
-        this.#button.innerHTML = `<span class="op-sr">${this.#labels.toggleCaptions}</span>`;
 
         // Build menu if detachMenu is `true`
-        if (this.#detachMenu) {
+        if (detachMenus) {
             this.#button.classList.add('op-control--no-hover');
             this.#menu = document.createElement('div');
             this.#menu.className = 'op-settings op-captions__menu';
             this.#menu.setAttribute('aria-hidden', 'true');
             this.#menu.innerHTML = `<div class="op-settings__menu" role="menu" id="menu-item-captions">
-                <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio" aria-checked="${this.#default === 'off' ? 'true' : 'false'}">
-                    <div class="op-settings__submenu-label op-subtitles__option" data-value="captions-off">${this.#labels.off}</div>
+                <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio" aria-checked="${
+                    this.#default === 'off' ? 'true' : 'false'
+                }">
+                    <div class="op-settings__submenu-label op-subtitles__option" data-value="captions-off">${
+                        labels?.off
+                    }</div>
                 </div>
             </div>`;
         }
 
         // Determine if tracks are valid (have valid URLs and contain cues); if so include them in the list of available tracks.
         // Otherwise, remove the markup associated with them
-        for (let i = 0, tracks = this.#player.getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
-            const element = (tracks[i] as HTMLTrackElement);
+        for (
+            let i = 0, trackItems = this.#player.getElement().querySelectorAll('track'), total = trackItems.length;
+            i < total;
+            i++
+        ) {
+            const element = trackItems[i] as HTMLTrackElement;
             if (element.kind === 'subtitles' || element.kind === 'captions') {
                 if (element.default) {
                     this.#default = element.srclang;
                     this.#button.setAttribute('data-active-captions', element.srclang);
                 }
                 const trackUrl = getAbsoluteUrl(element.src);
-                const currTrack = this.#trackList[i];
+                const currTrack = this.#mediaTrackList[i];
                 if (currTrack && currTrack.language === element.srclang) {
                     if (currTrack.cues && currTrack.cues.length > 0) {
-                        this.#tracks[element.srclang] = this._getNativeCues(this.#trackList[i]);
+                        this.#langTracks[element.srclang] = this._getNativeCues(this.#mediaTrackList[i]);
                         this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
                     } else {
-                        request(trackUrl, 'text', d => {
-                            this.#tracks[element.srclang] = this._getCuesFromText(d);
-                            this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
+                        fetch(trackUrl)
+                            .then((response) => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.text();
+                            })
+                            .then((d) => {
+                                this.#langTracks[element.srclang] = this._getCuesFromText(d);
+                                this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
 
-                            // Build only items that are successful
-                            const selector = `.op-subtitles__option[data-value="captions-${this.#trackList[i].language}"]`;
-                            if (this.#menu && !this.#menu.querySelector(selector)) {
-                                const item = document.createElement('div');
-                                item.className = 'op-settings__submenu-item';
-                                item.tabIndex = 0;
-                                item.setAttribute('role', 'menuitemradio');
-                                item.setAttribute('aria-checked', this.#default === this.#trackList[i].language ? 'true' : 'false');
-                                item.innerHTML = `<div class="op-settings__submenu-label op-subtitles__option"
-                                        data-value="captions-${this.#trackList[i].language}">
-                                        ${this.#labels.lang[this.#trackList[i].language] || this.#trackList[i].label}
+                                // Build only items that are successful
+                                const selector = `.op-subtitles__option[data-value="captions-${
+                                    this.#mediaTrackList[i].language
+                                }"]`;
+                                if (this.#menu && !this.#menu.querySelector(selector)) {
+                                    const item = document.createElement('div');
+                                    const label = labels?.lang ? labels.lang[this.#mediaTrackList[i].language] : null;
+                                    item.className = 'op-settings__submenu-item';
+                                    item.tabIndex = 0;
+                                    item.setAttribute('role', 'menuitemradio');
+                                    item.setAttribute(
+                                        'aria-checked',
+                                        this.#default === this.#mediaTrackList[i].language ? 'true' : 'false'
+                                    );
+                                    item.innerHTML = `<div class="op-settings__submenu-label op-subtitles__option"
+                                        data-value="captions-${this.#mediaTrackList[i].language}">
+                                        ${label || this.#mediaTrackList[i].label}
                                     </div>`;
-                                this.#menu.appendChild(item);
-                            }
-                        });
+                                    this.#menu.appendChild(item);
+                                }
+                            });
                     }
                 }
             }
@@ -285,32 +170,32 @@ class Captions implements PlayerComponent {
         this.#captions.innerHTML = '<span></span>';
 
         const container = this.#captions.querySelector('span');
-        this.#events.media.timeupdate = () => {
+        this.#events.media.timeupdate = (): void => {
             if (this.#player.isMedia()) {
-                if (this.#current) {
-                    const currentCues = this.#tracks[this.#current.language];
+                if (this.#currentTrack) {
+                    const currentCues = this.#langTracks[this.#currentTrack.language];
                     if (container && currentCues !== undefined) {
                         const index = this._search(currentCues, this.#player.getMedia().currentTime);
                         container.innerHTML = '';
-                        if (index > -1 && hasClass(this.#button, 'op-controls__captions--on')) {
+                        if (index > -1 && this.#button.classList.contains('op-controls__captions--on')) {
                             this.#captions.classList.add('op-captions--on');
-                            container.innerHTML = this._sanitize(currentCues[index].text);
+                            container.innerHTML = sanitize(currentCues[index].text, false);
                         } else {
-                            this._hide();
+                            this._hideCaptions();
                         }
                     }
                 } else {
-                    this._hide();
+                    this._hideCaptions();
                 }
             } else {
-                this._hide();
+                this._hideCaptions();
             }
         };
 
         // Show/hide captions
-        this.#events.button.click = (e: Event) => {
-            const button = (e.target as HTMLDivElement);
-            if (this.#detachMenu) {
+        this.#events.button.click = (e: Event): void => {
+            const button = e.target as HTMLDivElement;
+            if (detachMenus) {
                 const menus = this.#player.getContainer().querySelectorAll('.op-settings');
                 for (let i = 0, total = menus.length; i < total; ++i) {
                     if (menus[i] !== this.#menu) {
@@ -324,22 +209,24 @@ class Captions implements PlayerComponent {
                 }
             } else {
                 button.setAttribute('aria-pressed', 'true');
-                if (hasClass(button, 'op-controls__captions--on')) {
-                    this._hide();
+                if (button.classList.contains('op-controls__captions--on')) {
+                    this._hideCaptions();
                     button.classList.remove('op-controls__captions--on');
                     button.setAttribute('data-active-captions', 'off');
                 } else {
-                    if (!this.#current) {
-                        this.#current = this.#trackList[0];
+                    if (!this.#currentTrack) {
+                        const [track] = this.#mediaTrackList;
+                        this.#currentTrack = track;
                     }
-                    this._show();
+                    this._displayCaptions();
                     button.classList.add('op-controls__captions--on');
-                    button.setAttribute('data-active-captions', this.#current.language);
+                    button.setAttribute('data-active-captions', this.#currentTrack.language);
                 }
             }
         };
-        this.#events.button.mouseover = () => {
-            if (!IS_IOS && !IS_ANDROID && this.#detachMenu) {
+
+        this.#events.button.mouseover = (): void => {
+            if (!IS_IOS && !IS_ANDROID && detachMenus) {
                 const menus = this.#player.getContainer().querySelectorAll('.op-settings');
                 for (let i = 0, total = menus.length; i < total; ++i) {
                     if (menus[i] !== this.#menu) {
@@ -351,8 +238,8 @@ class Captions implements PlayerComponent {
                 }
             }
         };
-        this.#events.button.mouseout = () => {
-            if (!IS_IOS && !IS_ANDROID && this.#detachMenu) {
+        this.#events.button.mouseout = (): void => {
+            if (!IS_IOS && !IS_ANDROID && detachMenus) {
                 const menus = this.#player.getContainer().querySelectorAll('.op-settings');
                 for (let i = 0, total = menus.length; i < total; ++i) {
                     menus[i].setAttribute('aria-hidden', 'true');
@@ -366,42 +253,43 @@ class Captions implements PlayerComponent {
         if (this.#hasTracks) {
             const target = this.#player.getContainer();
             target.insertBefore(this.#captions, target.firstChild);
-            if (this.#detachMenu) {
+            if (detachMenus) {
                 const itemContainer = document.createElement('div');
-                itemContainer.className = `op-controls__container op-control__${this.#position}`;
+                itemContainer.className = `op-controls__container op-control__${this.#controlPosition}`;
                 itemContainer.appendChild(this.#button);
                 itemContainer.appendChild(this.#menu);
-                this.#player.getControls().getLayer(this.#layer).appendChild(itemContainer);
+                this.#player.getControls().getLayer(this.#controlLayer).appendChild(itemContainer);
             } else {
-                this.#player.getControls().getLayer(this.#layer).appendChild(this.#button);
+                this.#player.getControls().getLayer(this.#controlLayer).appendChild(this.#button);
             }
             this.#button.addEventListener('click', this.#events.button.click, EVENT_OPTIONS);
         }
 
         // For the following workflow it is required to have more than 1 language available
-        if ((this.#trackList.length <= 1 && !this.#detachMenu) || (!this.#trackList.length && this.#detachMenu)) {
+        if ((this.#mediaTrackList.length <= 1 && !detachMenus) || (!this.#mediaTrackList.length && detachMenus)) {
             return;
         }
 
-        this.#events.global.click = (e: Event) => {
-            const option = (e.target as HTMLElement);
-            if (option.closest(`#${this.#player.id}`) && hasClass(option, 'op-subtitles__option')) {
+        this.#events.global.click = (e: Event): void => {
+            const option = e.target as HTMLElement;
+            if (option.closest(`#${this.#player.id}`) && option.classList.contains('op-subtitles__option')) {
                 const langEl = option.getAttribute('data-value');
                 const language = langEl ? langEl.replace('captions-', '') : '';
-                const currentLang = Array.from(this.#trackList).filter(item => item.language === language);
-                this.#current = currentLang ? currentLang.pop() : undefined;
-                if (this.#detachMenu) {
-                    if (hasClass(this.#button, 'op-controls__captions--on')) {
-                        this._hide();
+                const currentLang = Array.from(this.#mediaTrackList).filter((item) => item.language === language);
+                this.#currentTrack = currentLang ? currentLang.pop() : undefined;
+                if (detachMenus) {
+                    if (this.#button.classList.contains('op-controls__captions--on')) {
+                        this._hideCaptions();
                         this.#button.classList.remove('op-controls__captions--on');
                         this.#button.setAttribute('data-active-captions', 'off');
                     } else {
-                        this._show();
+                        this._displayCaptions();
                         this.#button.classList.add('op-controls__captions--on');
                         this.#button.setAttribute('data-active-captions', language);
                     }
                     if (option.parentElement && option.parentElement.parentElement) {
-                        const captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
+                        const captions =
+                            option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
                         for (let i = 0, total = captions.length; i < total; ++i) {
                             captions[i].setAttribute('aria-checked', 'false');
                         }
@@ -411,7 +299,7 @@ class Captions implements PlayerComponent {
                     }
                     this.#menu.setAttribute('aria-hidden', 'false');
                 } else {
-                    this._show();
+                    this._displayCaptions();
                     this.#button.setAttribute('data-active-captions', language);
                 }
                 const event = addEvent('captionschanged');
@@ -419,7 +307,7 @@ class Captions implements PlayerComponent {
             }
         };
 
-        if (this.#detachMenu) {
+        if (detachMenus) {
             this.#button.addEventListener('mouseover', this.#events.button.mouseover, EVENT_OPTIONS);
             this.#menu.addEventListener('mouseover', this.#events.button.mouseover, EVENT_OPTIONS);
             this.#menu.addEventListener('mouseout', this.#events.button.mouseout, EVENT_OPTIONS);
@@ -431,63 +319,47 @@ class Captions implements PlayerComponent {
         }
     }
 
-    /**
-     *
-     * @inheritDoc
-     * @memberof Captions
-     */
-    public destroy(): void {
+    destroy(): void {
+        const { detachMenus } = this.#player.getOptions();
         if (typeof this.#events.global.click !== 'undefined') {
             document.removeEventListener('click', this.#events.global.click);
         }
 
         if (this.#hasTracks) {
             this.#button.removeEventListener('click', this.#events.button.click);
-            if (this.#detachMenu) {
+            if (detachMenus) {
                 this.#button.removeEventListener('mouseover', this.#events.button.mouseover);
                 this.#menu.removeEventListener('mouseover', this.#events.button.mouseover);
                 this.#menu.removeEventListener('mouseout', this.#events.button.mouseout);
                 this.#player.getElement().removeEventListener('controlshidden', this.#events.button.mouseout);
-                removeElement(this.#menu);
+                this.#menu.remove();
             }
             this.#player.getElement().removeEventListener('timeupdate', this.#events.media.timeupdate);
-            removeElement(this.#button);
-            removeElement(this.#captions);
+            this.#button.remove();
+            this.#captions.remove();
         }
     }
 
-    /**
-     * Add list of available captions in the `Settings` menu.
-     *
-     * @see [[Settings.addSettings]]
-     * @returns {SettingsItem|object}
-     * @memberof Captions
-     */
-    public addSettings(): SettingsItem | unknown {
-        if (this.#detachMenu || this.#trackList.length <= 1) {
+    addSettings(): SettingsItem | unknown {
+        const { detachMenus, labels } = this.#player.getOptions();
+        if (detachMenus || this.#mediaTrackList.length <= 1) {
             return {};
         }
         const subitems = this._formatMenuItems();
         // Avoid implementing submenu for captions if only 2 options were available
-        return subitems.length > 2 ? {
-            className: 'op-subtitles__option',
-            default: this.#default || 'off',
-            key: 'captions',
-            name: this.#labels.captions,
-            subitems,
-        } : {};
+        return subitems.length > 2
+            ? {
+                  className: 'op-subtitles__option',
+                  default: this.#default || 'off',
+                  key: 'captions',
+                  name: labels?.captions || '',
+                  subitems,
+              }
+            : {};
     }
 
-    /**
-     * Parse WebVTT text from external domain to emulate native cues
-     *
-     * @private
-     * @param {string} webvttText
-     * @returns {Cue[]}
-     * @memberof Captions
-     */
-    private _getCuesFromText(webvttText: string): Cue[] {
-        const lines = webvttText.split(/\r?\n/);
+    private _getCuesFromText(vttText: string): Cue[] {
+        const lines = vttText.split(/\r?\n/);
         const entries: Cue[] = [];
         const urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
         let timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
@@ -496,26 +368,11 @@ class Captions implements PlayerComponent {
 
         let identifier;
 
-        function isJson(item: any) {
-            item = typeof item !== 'string' ? JSON.stringify(item) : item;
-            try {
-                item = JSON.parse(item);
-            } catch (e) {
-                return false;
-            }
-
-            if (typeof item === 'object' && item !== null) {
-                return true;
-            }
-
-            return false;
-        }
-
         for (let i = 0, total = lines.length; i < total; i++) {
-            const timecode = regexp.exec(lines[i]);
+            const timeCode = regexp.exec(lines[i]);
 
-            if (timecode && i < lines.length) {
-                if ((i - 1) >= 0 && lines[i - 1] !== '') {
+            if (timeCode && i < lines.length) {
+                if (i - 1 >= 0 && lines[i - 1] !== '') {
                     identifier = lines[i - 1];
                 }
                 i++;
@@ -527,13 +384,13 @@ class Captions implements PlayerComponent {
                     i++;
                 }
                 cue = cue.trim().replace(urlRegexp, "<a href='$1' target='_blank'>$1</a>");
-                const initTime = timeToSeconds(timecode[1]);
+                const initTime = timeToSeconds(timeCode[1]);
 
                 entries.push({
-                    endTime: timeToSeconds(timecode[3]),
+                    endTime: timeToSeconds(timeCode[3]),
                     identifier: identifier || '',
-                    settings: isJson(timecode[5]) ? JSON.parse(timecode[5]) : {},
-                    startTime: (initTime === 0) ? 0.200 : initTime,
+                    settings: isJson(timeCode[5]) ? JSON.parse(timeCode[5]) : {},
+                    startTime: initTime === 0 ? 0.2 : initTime,
                     text: cue,
                 });
             }
@@ -542,20 +399,12 @@ class Captions implements PlayerComponent {
         return entries;
     }
 
-    /**
-     * Store native cues in new container to be read by player.
-     *
-     * @private
-     * @param {TextTrack} track
-     * @returns {Cue[]}
-     * @memberof Captions
-     */
     private _getNativeCues(track: TextTrack): Cue[] {
         const cues: Cue[] = [];
         const trackCues = track.cues as TextTrackCueList;
-        Object.keys(trackCues).forEach(index => {
+        Object.keys(trackCues).forEach((index) => {
             const j = parseInt(index, 10);
-            const current = (trackCues[j] as VTTCue);
+            const current = trackCues[j] as VTTCue;
             cues.push({
                 endTime: current.endTime,
                 identifier: current.id,
@@ -567,13 +416,8 @@ class Captions implements PlayerComponent {
         return cues;
     }
 
-    /**
-     * Display current caption based on the current timestamp.
-     *
-     * @memberof Captions
-     */
-    private _show(): void {
-        if (!this.#captions || !this.#current || this.#current.cues === undefined) {
+    private _displayCaptions(): void {
+        if (!this.#captions || !this.#currentTrack || this.#currentTrack.cues === undefined) {
             return;
         }
 
@@ -584,38 +428,20 @@ class Captions implements PlayerComponent {
         this.#player.getElement().addEventListener('timeupdate', this.#events.media.timeupdate, EVENT_OPTIONS);
     }
 
-    /**
-     * Turn captions off.
-     *
-     * It removed the class from the captions container to hide any text displayed.
-     *
-     * @private
-     * @memberof Captions
-     */
-    private _hide(): void {
+    private _hideCaptions(): void {
         this.#captions.classList.remove('op-captions--on');
-        if (!this.#current) {
+        if (!this.#currentTrack) {
             this.#button.classList.remove('op-controls__captions--on');
             this.#button.setAttribute('data-active-captions', 'off');
         }
     }
 
-    /**
-     * Search track text position using binary search algorithm.
-     *
-     * It determines the position of the track based on the media's current time.
-     * @see https://www.geeksforgeeks.org/binary-search/
-     * @private
-     * @param {Cue[]} tracks
-     * @param {number} currentTime
-     * @returns {number}
-     * @memberof Captions
-     */
+    // Search using binary search algorithm (borrowed from https://www.geeksforgeeks.org/binary-search/)
     private _search(tracks: Cue[], currentTime: number): number {
         let low = 0;
         let high = tracks.length - 1;
         while (low <= high) {
-            const mid = ((low + high) >> 1);
+            const mid = (low + high) >> 1;
             const start = tracks[mid].startTime;
             const stop = tracks[mid].endTime;
 
@@ -631,82 +457,33 @@ class Captions implements PlayerComponent {
         return -1;
     }
 
-    /**
-     * Clean HTML text.
-     *
-     * Prevents the triggering of script code coming from captions' text, removed styles and
-     * also any potential events prefixed with `on`.
-     *
-     * @private
-     * @param {string} html
-     * @returns {string}
-     * @memberof Captions
-     */
-    private _sanitize(html: string): string {
-        const div = document.createElement('div');
-        div.innerHTML = html;
-
-        // Remove all `<script>` tags first
-        const scripts = div.getElementsByTagName('script');
-        let i = scripts.length;
-        while (i--) {
-            removeElement(scripts[i]);
-        }
-
-        // Loop the elements and remove anything that contains value="javascript:" or an `on*` attribute
-        // (`onerror`, `onclick`, etc.)
-        const allElements = div.getElementsByTagName('*');
-        for (let index = 0, n = allElements.length; index < n; index++) {
-            const attributesObj = allElements[index].attributes;
-            const attributes = Array.prototype.slice.call(attributesObj);
-
-            for (let j = 0, total = attributes.length; j < total; j++) {
-                if (/^(on|javascript:)/.test(attributes[j].name)) {
-                    removeElement(allElements[index]);
-                } else if (attributes[j].name === 'style') {
-                    allElements[index].removeAttribute(attributes[j].name);
-                }
-            }
-        }
-        return div.innerHTML;
-    }
-
-    /**
-     * Store valid URL and cues from `track` tags that returned content.
-     *
-     * If a `track` element has a `default` value, make sure it is being displayed.
-     *
-     * @private
-     * @param {number} index
-     * @param {string} language
-     * @param {string} trackUrl
-     * @param {boolean} [showTrack=false]
-     * @memberof Captions
-     */
-    private _prepareTrack(index: number, language: string, trackUrl: string, showTrack = false) {
+    private _prepareTrack(index: number, language: string, trackUrl: string, showTrack = false): void {
         this.#trackUrlList[language] = trackUrl;
-        this.#trackList[index].mode = 'disabled';
+        this.#mediaTrackList[index].mode = 'disabled';
         if (showTrack) {
             this.#default = language;
             this.#button.classList.add('op-controls__captions--on');
             this.#button.setAttribute('data-active-captions', language);
-            this.#current = Array.from(this.#trackList)
-                .filter(item => item.language === this.#default).pop();
-            this._show();
+            this.#currentTrack = Array.from(this.#mediaTrackList)
+                .filter((item) => item.language === this.#default)
+                .pop();
+            this._displayCaptions();
             if (!this.#player.getContainer().classList.contains('op-captions--detected')) {
                 this.#player.getContainer().classList.add('op-captions--detected');
             }
         }
     }
 
-    private _formatMenuItems() {
-        let items = [{ key: 'off', label: this.#labels.off }];
+    private _formatMenuItems(): SettingsSubItem[] {
+        const { labels } = this.#player.getOptions();
+        let items = [{ key: 'off', label: labels?.off || '' }];
         // Build object based on available languages
-        for (let i = 0, total = this.#trackList.length; i < total; i++) {
-            const track = this.#trackList[i];
+        for (let i = 0, total = this.#mediaTrackList.length; i < total; i++) {
+            const track = this.#mediaTrackList[i];
+            const label = labels?.lang ? labels.lang[track.language] : null;
             // Override language item if duplicated when passing list of items
-            items = items.filter(el => el.key !== track.language);
-            items.push({ key: track.language, label: this.#labels.lang[track.language] || this.#trackList[i].label });
+            items = items.filter((el) => el.key !== track.language);
+            items.push({ key: track.language, label: label || this.#mediaTrackList[i].label });
         }
 
         return items;

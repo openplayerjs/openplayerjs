@@ -14,13 +14,13 @@ export default interface ControlItem {
     layer?: 'top' | 'center' | 'bottom' | 'main' | string;
     custom?: boolean;
     content?: string;
-    subitems?: Array<{
+    subitems?: {
         id: string;
         label: string;
         title?: string;
         icon?: string;
         click(): void;
-    }>;
+    }[];
     click(event: any): void;
     init?(player: any): void;
     destroy?(player: any): void;

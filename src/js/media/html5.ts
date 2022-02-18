@@ -1,17 +1,9 @@
-import Level from '../interfaces/level';
-import Source from '../interfaces/source';
+import { Level, Source } from '../interfaces';
 import { DVR_THRESHOLD, EVENT_OPTIONS } from '../utils/constants';
-import { addEvent } from '../utils/events';
-import { isAudio, isVideo } from '../utils/general';
+import { addEvent, isAudio, isVideo } from '../utils/general';
 import { isHlsSource } from '../utils/media';
 import Native from './native';
 
-/**
- * HTML5 Media.
- *
- * @description Class that wraps the native HTML5 media methods
- * @class NativeMedia
- */
 class HTML5Media extends Native {
     #currentLevel: Level;
 
@@ -25,14 +17,6 @@ class HTML5Media extends Native {
 
     #timer: number;
 
-    /**
-     * Creates an instance of NativeMedia.
-     *
-     * @param {HTMLMediaElement} element
-     * @param {Source} mediaFile
-     * @returns {NativeMedia}
-     * @memberof NativeMedia
-     */
     constructor(element: HTMLMediaElement, mediaFile: Source) {
         super(element, mediaFile);
 
@@ -55,31 +39,15 @@ class HTML5Media extends Native {
         return this;
     }
 
-    /**
-     *
-     * @inheritDoc
-     * @memberof NativeMedia
-     */
-    public canPlayType(mimeType: string): boolean {
-        return !!(this.element.canPlayType(mimeType).replace('no', ''));
+    canPlayType(mimeType: string): boolean {
+        return !!this.element.canPlayType(mimeType).replace('no', '');
     }
 
-    /**
-     *
-     * @inheritDoc
-     * @memberof HTML5Media
-     */
-    public load(): void {
+    load(): void {
         this.element.load();
     }
 
-    /**
-     *
-     * @inheritDoc
-     * @returns {HTML5Media}
-     * @memberof HTML5Media
-     */
-    public destroy(): HTML5Media {
+    destroy(): HTML5Media {
         this.element.removeEventListener('playing', this._clearTimeout);
         this.element.removeEventListener('stalled', this._setTimeout);
         this.element.removeEventListener('error', this._dispatchError);
@@ -104,7 +72,7 @@ class HTML5Media extends Native {
     }
 
     set level(level: string) {
-        const idx = this.#levelList.findIndex(item => item.id === level);
+        const idx = this.#levelList.findIndex((item) => item.id === level);
         if (idx > -1) {
             this.#currentLevel = this.levels[idx];
             const levels = this.element.querySelectorAll('source[title]');
@@ -121,10 +89,6 @@ class HTML5Media extends Native {
         return this.#currentLevel?.id || '-1';
     }
 
-    /**
-     *
-     * @inheritDoc
-     */
     set src(media: Source) {
         this.element.src = media.src;
     }
@@ -142,18 +106,22 @@ class HTML5Media extends Native {
         const target = e;
         if (target?.track?.kind === 'metadata') {
             target.track.mode = 'hidden';
-            target.track.addEventListener('cuechange', event => {
-                const track = (event.target as TextTrack);
-                const cue = track.activeCues ? track.activeCues[0] : null;
-                if (cue) {
-                    const metaDataEvent = addEvent('metadataready', { detail: cue });
-                    this.element.dispatchEvent(metaDataEvent);
-                }
-            }, EVENT_OPTIONS);
+            target.track.addEventListener(
+                'cuechange',
+                (event) => {
+                    const track = event.target as TextTrack;
+                    const cue = track.activeCues ? track.activeCues[0] : null;
+                    if (cue) {
+                        const metaDataEvent = addEvent('metadataready', { detail: cue });
+                        this.element.dispatchEvent(metaDataEvent);
+                    }
+                },
+                EVENT_OPTIONS
+            );
         }
     }
 
-    private _setTimeout() {
+    private _setTimeout(): void {
         if (!this.#started && window !== undefined) {
             this.#started = true;
             this.#timer = window.setInterval(() => {
@@ -162,7 +130,7 @@ class HTML5Media extends Native {
                     const message = 'Media download failed part-way due to a network error';
                     const details = {
                         detail: {
-                            data: { message, error: 2},
+                            data: { message, error: 2 },
                             message,
                             type: 'HTML5',
                         },
@@ -178,7 +146,7 @@ class HTML5Media extends Native {
         }
     }
 
-    private _clearTimeout() {
+    private _clearTimeout(): void {
         if (this.#timer) {
             clearInterval(this.#timer);
             this.#retryCount = 0;
@@ -186,7 +154,7 @@ class HTML5Media extends Native {
         }
     }
 
-    private _dispatchError(e: Event) {
+    private _dispatchError(e: Event): void {
         let defaultMessage;
         const target = e.target as HTMLMediaElement;
         const error = target?.error;

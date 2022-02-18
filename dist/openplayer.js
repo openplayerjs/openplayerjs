@@ -8,95 +8,39 @@
 	else
 		root["OpenPlayer"] = factory();
 })(this, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/dist/";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 172);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports) {
+return /******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 228:
+/***/ ((module) => {
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 858:
+/***/ ((module) => {
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
+module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 506:
+/***/ ((module) => {
 
 function _assertThisInitialized(self) {
   if (self === void 0) {
@@ -106,32 +50,12 @@ function _assertThisInitialized(self) {
   return self;
 }
 
-module.exports = _assertThisInitialized;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
 
-var check = function (it) {
-  return it && it.Math == Math && it;
-};
-
-// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-module.exports =
-  // eslint-disable-next-line es/no-global-this -- safe
-  check(typeof globalThis == 'object' && globalThis) ||
-  check(typeof window == 'object' && window) ||
-  // eslint-disable-next-line no-restricted-globals -- safe
-  check(typeof self == 'object' && self) ||
-  check(typeof global == 'object' && global) ||
-  // eslint-disable-next-line no-new-func -- fallback
-  (function () { return this; })() || Function('return this')();
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
+/***/ 575:
+/***/ ((module) => {
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -139,12 +63,12 @@ function _classCallCheck(instance, Constructor) {
   }
 }
 
-module.exports = _classCallCheck;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
+
+/***/ 913:
+/***/ ((module) => {
 
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
@@ -159,304 +83,56 @@ function _defineProperties(target, props) {
 function _createClass(Constructor, protoProps, staticProps) {
   if (protoProps) _defineProperties(Constructor.prototype, protoProps);
   if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
   return Constructor;
 }
 
-module.exports = _createClass;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(98);
+/***/ 713:
+/***/ ((module) => {
 
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-var FunctionPrototype = Function.prototype;
-var bind = FunctionPrototype.bind;
-var call = FunctionPrototype.call;
-var callBind = bind && bind.bind(call);
-
-module.exports = bind ? function (fn) {
-  return fn && callBind(call, fn);
-} : function (fn) {
-  return fn && function () {
-    return call.apply(fn, arguments);
-  };
-};
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-// `IsCallable` abstract operation
-// https://tc39.es/ecma262/#sec-iscallable
-module.exports = function (argument) {
-  return typeof argument == 'function';
-};
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var shared = __webpack_require__(70);
-var hasOwn = __webpack_require__(15);
-var uid = __webpack_require__(71);
-var NATIVE_SYMBOL = __webpack_require__(68);
-var USE_SYMBOL_AS_UID = __webpack_require__(67);
-
-var WellKnownSymbolsStore = shared('wks');
-var Symbol = global.Symbol;
-var symbolFor = Symbol && Symbol['for'];
-var createWellKnownSymbol = USE_SYMBOL_AS_UID ? Symbol : Symbol && Symbol.withoutSetter || uid;
-
-module.exports = function (name) {
-  if (!hasOwn(WellKnownSymbolsStore, name) || !(NATIVE_SYMBOL || typeof WellKnownSymbolsStore[name] == 'string')) {
-    var description = 'Symbol.' + name;
-    if (NATIVE_SYMBOL && hasOwn(Symbol, name)) {
-      WellKnownSymbolsStore[name] = Symbol[name];
-    } else if (USE_SYMBOL_AS_UID && symbolFor) {
-      WellKnownSymbolsStore[name] = symbolFor(description);
-    } else {
-      WellKnownSymbolsStore[name] = createWellKnownSymbol(description);
-    }
-  } return WellKnownSymbolsStore[name];
-};
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-module.exports = function (exec) {
-  try {
-    return !!exec();
-  } catch (error) {
-    return true;
-  }
-};
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-var call = Function.prototype.call;
-
-module.exports = call.bind ? call.bind(call) : function () {
-  return call.apply(call, arguments);
-};
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var _typeof = __webpack_require__(14)["default"];
-
-var assertThisInitialized = __webpack_require__(0);
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
   }
 
-  return assertThisInitialized(self);
+  return obj;
 }
 
-module.exports = _possibleConstructorReturn;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports) {
+
+/***/ 754:
+/***/ ((module) => {
 
 function _getPrototypeOf(o) {
   module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
     return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  module.exports["default"] = module.exports, module.exports.__esModule = true;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
   return _getPrototypeOf(o);
 }
 
-module.exports = _getPrototypeOf;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(1);
-var getOwnPropertyDescriptor = __webpack_require__(44).f;
-var createNonEnumerableProperty = __webpack_require__(21);
-var redefine = __webpack_require__(23);
-var setGlobal = __webpack_require__(50);
-var copyConstructorProperties = __webpack_require__(74);
-var isForced = __webpack_require__(78);
+/***/ 205:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-/*
-  options.target      - name of the target object
-  options.global      - target is the global object
-  options.stat        - export as static methods of target
-  options.proto       - export as prototype methods of target
-  options.real        - real prototype method for the `pure` version
-  options.forced      - export even if the native feature is available
-  options.bind        - bind methods to the target, required for the `pure` version
-  options.wrap        - wrap constructors to preventing global pollution, required for the `pure` version
-  options.unsafe      - use the simple assignment of property instead of delete + defineProperty
-  options.sham        - add a flag to not completely full polyfills
-  options.enumerable  - export as enumerable property
-  options.noTargetGet - prevent calling a getter on target
-  options.name        - the .name of the function if it does not match the key
-*/
-module.exports = function (options, source) {
-  var TARGET = options.target;
-  var GLOBAL = options.global;
-  var STATIC = options.stat;
-  var FORCED, target, key, targetProperty, sourceProperty, descriptor;
-  if (GLOBAL) {
-    target = global;
-  } else if (STATIC) {
-    target = global[TARGET] || setGlobal(TARGET, {});
-  } else {
-    target = (global[TARGET] || {}).prototype;
-  }
-  if (target) for (key in source) {
-    sourceProperty = source[key];
-    if (options.noTargetGet) {
-      descriptor = getOwnPropertyDescriptor(target, key);
-      targetProperty = descriptor && descriptor.value;
-    } else targetProperty = target[key];
-    FORCED = isForced(GLOBAL ? key : TARGET + (STATIC ? '.' : '#') + key, options.forced);
-    // contained in target
-    if (!FORCED && targetProperty !== undefined) {
-      if (typeof sourceProperty == typeof targetProperty) continue;
-      copyConstructorProperties(sourceProperty, targetProperty);
-    }
-    // add a flag to not completely full polyfills
-    if (options.sham || (targetProperty && targetProperty.sham)) {
-      createNonEnumerableProperty(sourceProperty, 'sham', true);
-    }
-    // extend global
-    redefine(target, key, sourceProperty, options);
-  }
-};
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isObject = __webpack_require__(16);
-
-var String = global.String;
-var TypeError = global.TypeError;
-
-// `Assert: Type(argument) is Object`
-module.exports = function (argument) {
-  if (isObject(argument)) return argument;
-  throw TypeError(String(argument) + ' is not an object');
-};
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    module.exports = _typeof = function _typeof(obj) {
-      return typeof obj;
-    };
-
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  } else {
-    module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  }
-
-  return _typeof(obj);
-}
-
-module.exports = _typeof;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-var toObject = __webpack_require__(25);
-
-var hasOwnProperty = uncurryThis({}.hasOwnProperty);
-
-// `HasOwnProperty` abstract operation
-// https://tc39.es/ecma262/#sec-hasownproperty
-module.exports = Object.hasOwn || function hasOwn(it, key) {
-  return hasOwnProperty(toObject(it), key);
-};
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isCallable = __webpack_require__(6);
-
-module.exports = function (it) {
-  return typeof it == 'object' ? it !== null : isCallable(it);
-};
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isCallable = __webpack_require__(6);
-
-var aFunction = function (argument) {
-  return isCallable(argument) ? argument : undefined;
-};
-
-module.exports = function (namespace, method) {
-  return arguments.length < 2 ? aFunction(global[namespace]) : global[namespace] && global[namespace][method];
-};
-
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var fails = __webpack_require__(8);
-
-// Detect IE8's incomplete defineProperty implementation
-module.exports = !fails(function () {
-  // eslint-disable-next-line es/no-object-defineproperty -- required for testing
-  return Object.defineProperty({}, 1, { get: function () { return 7; } })[1] != 7;
-});
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var setPrototypeOf = __webpack_require__(171);
+var setPrototypeOf = __webpack_require__(489);
 
 function _inherits(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
@@ -470,2051 +146,164 @@ function _inherits(subClass, superClass) {
       configurable: true
     }
   });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
+  });
   if (superClass) setPrototypeOf(subClass, superClass);
 }
 
-module.exports = _inherits;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(1);
-var isCallable = __webpack_require__(6);
-var tryToString = __webpack_require__(35);
+/***/ 884:
+/***/ ((module) => {
 
-var TypeError = global.TypeError;
+function _iterableToArrayLimit(arr, i) {
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
 
-// `Assert: IsCallable(argument) is true`
-module.exports = function (argument) {
-  if (isCallable(argument)) return argument;
-  throw TypeError(tryToString(argument) + ' is not a function');
-};
+  if (_i == null) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
 
+  var _s, _e;
 
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(18);
-var definePropertyModule = __webpack_require__(22);
-var createPropertyDescriptor = __webpack_require__(24);
-
-module.exports = DESCRIPTORS ? function (object, key, value) {
-  return definePropertyModule.f(object, key, createPropertyDescriptor(1, value));
-} : function (object, key, value) {
-  object[key] = value;
-  return object;
-};
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var DESCRIPTORS = __webpack_require__(18);
-var IE8_DOM_DEFINE = __webpack_require__(72);
-var anObject = __webpack_require__(13);
-var toPropertyKey = __webpack_require__(47);
-
-var TypeError = global.TypeError;
-// eslint-disable-next-line es/no-object-defineproperty -- safe
-var $defineProperty = Object.defineProperty;
-
-// `Object.defineProperty` method
-// https://tc39.es/ecma262/#sec-object.defineproperty
-exports.f = DESCRIPTORS ? $defineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPropertyKey(P);
-  anObject(Attributes);
-  if (IE8_DOM_DEFINE) try {
-    return $defineProperty(O, P, Attributes);
-  } catch (error) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isCallable = __webpack_require__(6);
-var hasOwn = __webpack_require__(15);
-var createNonEnumerableProperty = __webpack_require__(21);
-var setGlobal = __webpack_require__(50);
-var inspectSource = __webpack_require__(37);
-var InternalStateModule = __webpack_require__(38);
-var CONFIGURABLE_FUNCTION_NAME = __webpack_require__(73).CONFIGURABLE;
-
-var getInternalState = InternalStateModule.get;
-var enforceInternalState = InternalStateModule.enforce;
-var TEMPLATE = String(String).split('String');
-
-(module.exports = function (O, key, value, options) {
-  var unsafe = options ? !!options.unsafe : false;
-  var simple = options ? !!options.enumerable : false;
-  var noTargetGet = options ? !!options.noTargetGet : false;
-  var name = options && options.name !== undefined ? options.name : key;
-  var state;
-  if (isCallable(value)) {
-    if (String(name).slice(0, 7) === 'Symbol(') {
-      name = '[' + String(name).replace(/^Symbol\(([^)]*)\)/, '$1') + ']';
-    }
-    if (!hasOwn(value, 'name') || (CONFIGURABLE_FUNCTION_NAME && value.name !== name)) {
-      createNonEnumerableProperty(value, 'name', name);
-    }
-    state = enforceInternalState(value);
-    if (!state.source) {
-      state.source = TEMPLATE.join(typeof name == 'string' ? name : '');
-    }
-  }
-  if (O === global) {
-    if (simple) O[key] = value;
-    else setGlobal(key, value);
-    return;
-  } else if (!unsafe) {
-    delete O[key];
-  } else if (!noTargetGet && O[key]) {
-    simple = true;
-  }
-  if (simple) O[key] = value;
-  else createNonEnumerableProperty(O, key, value);
-// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
-})(Function.prototype, 'toString', function toString() {
-  return isCallable(this) && getInternalState(this).source || inspectSource(this);
-});
-
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports) {
-
-module.exports = function (bitmap, value) {
-  return {
-    enumerable: !(bitmap & 1),
-    configurable: !(bitmap & 2),
-    writable: !(bitmap & 4),
-    value: value
-  };
-};
-
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var requireObjectCoercible = __webpack_require__(46);
-
-var Object = global.Object;
-
-// `ToObject` abstract operation
-// https://tc39.es/ecma262/#sec-toobject
-module.exports = function (argument) {
-  return Object(requireObjectCoercible(argument));
-};
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// toObject with fallback for non-array-like ES3 strings
-var IndexedObject = __webpack_require__(45);
-var requireObjectCoercible = __webpack_require__(46);
-
-module.exports = function (it) {
-  return IndexedObject(requireObjectCoercible(it));
-};
-
-
-/***/ }),
-/* 27 */
-/***/ (function(module, exports) {
-
-module.exports = false;
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toLength = __webpack_require__(109);
-
-// `LengthOfArrayLike` abstract operation
-// https://tc39.es/ecma262/#sec-lengthofarraylike
-module.exports = function (obj) {
-  return toLength(obj.length);
-};
-
-
-/***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-var aCallable = __webpack_require__(20);
-
-var bind = uncurryThis(uncurryThis.bind);
-
-// optional / simple context binding
-module.exports = function (fn, that) {
-  aCallable(fn);
-  return that === undefined ? fn : bind ? bind(fn, that) : function (/* ...args */) {
-    return fn.apply(that, arguments);
-  };
-};
-
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports) {
-
-module.exports = {};
-
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var aCallable = __webpack_require__(20);
-
-var PromiseCapability = function (C) {
-  var resolve, reject;
-  this.promise = new C(function ($$resolve, $$reject) {
-    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');
-    resolve = $$resolve;
-    reject = $$reject;
-  });
-  this.resolve = aCallable(resolve);
-  this.reject = aCallable(reject);
-};
-
-// `NewPromiseCapability` abstract operation
-// https://tc39.es/ecma262/#sec-newpromisecapability
-module.exports.f = function (C) {
-  return new PromiseCapability(C);
-};
-
-
-/***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-
-var toString = uncurryThis({}.toString);
-var stringSlice = uncurryThis(''.slice);
-
-module.exports = function (it) {
-  return stringSlice(toString(it), 8, -1);
-};
-
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-
-module.exports = uncurryThis({}.isPrototypeOf);
-
-
-/***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getBuiltIn = __webpack_require__(17);
-
-module.exports = getBuiltIn('navigator', 'userAgent') || '';
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-
-var String = global.String;
-
-module.exports = function (argument) {
   try {
-    return String(argument);
-  } catch (error) {
-    return 'Object';
-  }
-};
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
 
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isObject = __webpack_require__(16);
-
-var document = global.document;
-// typeof document.createElement is 'object' in old IE
-var EXISTS = isObject(document) && isObject(document.createElement);
-
-module.exports = function (it) {
-  return EXISTS ? document.createElement(it) : {};
-};
-
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-var isCallable = __webpack_require__(6);
-var store = __webpack_require__(49);
-
-var functionToString = uncurryThis(Function.toString);
-
-// this helper broken in `core-js@3.4.1-3.4.4`, so we can't use `shared` helper
-if (!isCallable(store.inspectSource)) {
-  store.inspectSource = function (it) {
-    return functionToString(it);
-  };
-}
-
-module.exports = store.inspectSource;
-
-
-/***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var NATIVE_WEAK_MAP = __webpack_require__(105);
-var global = __webpack_require__(1);
-var uncurryThis = __webpack_require__(5);
-var isObject = __webpack_require__(16);
-var createNonEnumerableProperty = __webpack_require__(21);
-var hasOwn = __webpack_require__(15);
-var shared = __webpack_require__(49);
-var sharedKey = __webpack_require__(51);
-var hiddenKeys = __webpack_require__(52);
-
-var OBJECT_ALREADY_INITIALIZED = 'Object already initialized';
-var TypeError = global.TypeError;
-var WeakMap = global.WeakMap;
-var set, get, has;
-
-var enforce = function (it) {
-  return has(it) ? get(it) : set(it, {});
-};
-
-var getterFor = function (TYPE) {
-  return function (it) {
-    var state;
-    if (!isObject(it) || (state = get(it)).type !== TYPE) {
-      throw TypeError('Incompatible receiver, ' + TYPE + ' required');
-    } return state;
-  };
-};
-
-if (NATIVE_WEAK_MAP || shared.state) {
-  var store = shared.state || (shared.state = new WeakMap());
-  var wmget = uncurryThis(store.get);
-  var wmhas = uncurryThis(store.has);
-  var wmset = uncurryThis(store.set);
-  set = function (it, metadata) {
-    if (wmhas(store, it)) throw new TypeError(OBJECT_ALREADY_INITIALIZED);
-    metadata.facade = it;
-    wmset(store, it, metadata);
-    return metadata;
-  };
-  get = function (it) {
-    return wmget(store, it) || {};
-  };
-  has = function (it) {
-    return wmhas(store, it);
-  };
-} else {
-  var STATE = sharedKey('state');
-  hiddenKeys[STATE] = true;
-  set = function (it, metadata) {
-    if (hasOwn(it, STATE)) throw new TypeError(OBJECT_ALREADY_INITIALIZED);
-    metadata.facade = it;
-    createNonEnumerableProperty(it, STATE, metadata);
-    return metadata;
-  };
-  get = function (it) {
-    return hasOwn(it, STATE) ? it[STATE] : {};
-  };
-  has = function (it) {
-    return hasOwn(it, STATE);
-  };
-}
-
-module.exports = {
-  set: set,
-  get: get,
-  has: has,
-  enforce: enforce,
-  getterFor: getterFor
-};
-
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var TO_STRING_TAG_SUPPORT = __webpack_require__(56);
-var isCallable = __webpack_require__(6);
-var classofRaw = __webpack_require__(32);
-var wellKnownSymbol = __webpack_require__(7);
-
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-var Object = global.Object;
-
-// ES3 wrong here
-var CORRECT_ARGUMENTS = classofRaw(function () { return arguments; }()) == 'Arguments';
-
-// fallback for IE11 Script Access Denied error
-var tryGet = function (it, key) {
-  try {
-    return it[key];
-  } catch (error) { /* empty */ }
-};
-
-// getting tag from ES6+ `Object.prototype.toString`
-module.exports = TO_STRING_TAG_SUPPORT ? classofRaw : function (it) {
-  var O, tag, result;
-  return it === undefined ? 'Undefined' : it === null ? 'Null'
-    // @@toStringTag case
-    : typeof (tag = tryGet(O = Object(it), TO_STRING_TAG)) == 'string' ? tag
-    // builtinTag case
-    : CORRECT_ARGUMENTS ? classofRaw(O)
-    // ES3 arguments fallback
-    : (result = classofRaw(O)) == 'Object' && isCallable(O.callee) ? 'Arguments' : result;
-};
-
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* global ActiveXObject -- old IE, WSH */
-var anObject = __webpack_require__(13);
-var defineProperties = __webpack_require__(114);
-var enumBugKeys = __webpack_require__(54);
-var hiddenKeys = __webpack_require__(52);
-var html = __webpack_require__(80);
-var documentCreateElement = __webpack_require__(36);
-var sharedKey = __webpack_require__(51);
-
-var GT = '>';
-var LT = '<';
-var PROTOTYPE = 'prototype';
-var SCRIPT = 'script';
-var IE_PROTO = sharedKey('IE_PROTO');
-
-var EmptyConstructor = function () { /* empty */ };
-
-var scriptTag = function (content) {
-  return LT + SCRIPT + GT + content + LT + '/' + SCRIPT + GT;
-};
-
-// Create object with fake `null` prototype: use ActiveX Object with cleared prototype
-var NullProtoObjectViaActiveX = function (activeXDocument) {
-  activeXDocument.write(scriptTag(''));
-  activeXDocument.close();
-  var temp = activeXDocument.parentWindow.Object;
-  activeXDocument = null; // avoid memory leak
-  return temp;
-};
-
-// Create object with fake `null` prototype: use iframe Object with cleared prototype
-var NullProtoObjectViaIFrame = function () {
-  // Thrash, waste and sodomy: IE GC bug
-  var iframe = documentCreateElement('iframe');
-  var JS = 'java' + SCRIPT + ':';
-  var iframeDocument;
-  iframe.style.display = 'none';
-  html.appendChild(iframe);
-  // https://github.com/zloirock/core-js/issues/475
-  iframe.src = String(JS);
-  iframeDocument = iframe.contentWindow.document;
-  iframeDocument.open();
-  iframeDocument.write(scriptTag('document.F=Object'));
-  iframeDocument.close();
-  return iframeDocument.F;
-};
-
-// Check for document.domain and active x support
-// No need to use active x approach when document.domain is not set
-// see https://github.com/es-shims/es5-shim/issues/150
-// variation of https://github.com/kitcambridge/es5-shim/commit/4f738ac066346
-// avoid IE GC bug
-var activeXDocument;
-var NullProtoObject = function () {
-  try {
-    activeXDocument = new ActiveXObject('htmlfile');
-  } catch (error) { /* ignore */ }
-  NullProtoObject = typeof document != 'undefined'
-    ? document.domain && activeXDocument
-      ? NullProtoObjectViaActiveX(activeXDocument) // old IE
-      : NullProtoObjectViaIFrame()
-    : NullProtoObjectViaActiveX(activeXDocument); // WSH
-  var length = enumBugKeys.length;
-  while (length--) delete NullProtoObject[PROTOTYPE][enumBugKeys[length]];
-  return NullProtoObject();
-};
-
-hiddenKeys[IE_PROTO] = true;
-
-// `Object.create` method
-// https://tc39.es/ecma262/#sec-object.create
-module.exports = Object.create || function create(O, Properties) {
-  var result;
-  if (O !== null) {
-    EmptyConstructor[PROTOTYPE] = anObject(O);
-    result = new EmptyConstructor();
-    EmptyConstructor[PROTOTYPE] = null;
-    // add "__proto__" for Object.getPrototypeOf polyfill
-    result[IE_PROTO] = O;
-  } else result = NullProtoObject();
-  return Properties === undefined ? result : defineProperties(result, Properties);
-};
-
-
-/***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-
-module.exports = global;
-
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var bind = __webpack_require__(29);
-var call = __webpack_require__(9);
-var anObject = __webpack_require__(13);
-var tryToString = __webpack_require__(35);
-var isArrayIteratorMethod = __webpack_require__(85);
-var lengthOfArrayLike = __webpack_require__(28);
-var isPrototypeOf = __webpack_require__(33);
-var getIterator = __webpack_require__(87);
-var getIteratorMethod = __webpack_require__(62);
-var iteratorClose = __webpack_require__(84);
-
-var TypeError = global.TypeError;
-
-var Result = function (stopped, result) {
-  this.stopped = stopped;
-  this.result = result;
-};
-
-var ResultPrototype = Result.prototype;
-
-module.exports = function (iterable, unboundFunction, options) {
-  var that = options && options.that;
-  var AS_ENTRIES = !!(options && options.AS_ENTRIES);
-  var IS_ITERATOR = !!(options && options.IS_ITERATOR);
-  var INTERRUPTED = !!(options && options.INTERRUPTED);
-  var fn = bind(unboundFunction, that);
-  var iterator, iterFn, index, length, result, next, step;
-
-  var stop = function (condition) {
-    if (iterator) iteratorClose(iterator, 'normal', condition);
-    return new Result(true, condition);
-  };
-
-  var callFn = function (value) {
-    if (AS_ENTRIES) {
-      anObject(value);
-      return INTERRUPTED ? fn(value[0], value[1], stop) : fn(value[0], value[1]);
-    } return INTERRUPTED ? fn(value, stop) : fn(value);
-  };
-
-  if (IS_ITERATOR) {
-    iterator = iterable;
-  } else {
-    iterFn = getIteratorMethod(iterable);
-    if (!iterFn) throw TypeError(tryToString(iterable) + ' is not iterable');
-    // optimisation for array iterators
-    if (isArrayIteratorMethod(iterFn)) {
-      for (index = 0, length = lengthOfArrayLike(iterable); length > index; index++) {
-        result = callFn(iterable[index]);
-        if (result && isPrototypeOf(ResultPrototype, result)) return result;
-      } return new Result(false);
+      if (i && _arr.length === i) break;
     }
-    iterator = getIterator(iterable, iterFn);
-  }
-
-  next = iterator.next;
-  while (!(step = call(next, iterator)).done) {
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
     try {
-      result = callFn(step.value);
-    } catch (error) {
-      iteratorClose(iterator, 'throw', error);
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
     }
-    if (typeof result == 'object' && result && isPrototypeOf(ResultPrototype, result)) return result;
-  } return new Result(false);
-};
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports) {
-
-module.exports = function (exec) {
-  try {
-    return { error: false, value: exec() };
-  } catch (error) {
-    return { error: true, value: error };
   }
-};
 
+  return _arr;
+}
 
-/***/ }),
-/* 44 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(18);
-var call = __webpack_require__(9);
-var propertyIsEnumerableModule = __webpack_require__(65);
-var createPropertyDescriptor = __webpack_require__(24);
-var toIndexedObject = __webpack_require__(26);
-var toPropertyKey = __webpack_require__(47);
-var hasOwn = __webpack_require__(15);
-var IE8_DOM_DEFINE = __webpack_require__(72);
-
-// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
-var $getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-
-// `Object.getOwnPropertyDescriptor` method
-// https://tc39.es/ecma262/#sec-object.getownpropertydescriptor
-exports.f = DESCRIPTORS ? $getOwnPropertyDescriptor : function getOwnPropertyDescriptor(O, P) {
-  O = toIndexedObject(O);
-  P = toPropertyKey(P);
-  if (IE8_DOM_DEFINE) try {
-    return $getOwnPropertyDescriptor(O, P);
-  } catch (error) { /* empty */ }
-  if (hasOwn(O, P)) return createPropertyDescriptor(!call(propertyIsEnumerableModule.f, O, P), O[P]);
-};
-
+module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 45 */
-/***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(1);
-var uncurryThis = __webpack_require__(5);
-var fails = __webpack_require__(8);
-var classof = __webpack_require__(32);
+/***/ 521:
+/***/ ((module) => {
 
-var Object = global.Object;
-var split = uncurryThis(''.split);
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
 
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
-module.exports = fails(function () {
-  // throws an error in rhino, see https://github.com/mozilla/rhino/issues/346
-  // eslint-disable-next-line no-prototype-builtins -- safe
-  return !Object('z').propertyIsEnumerable(0);
-}) ? function (it) {
-  return classof(it) == 'String' ? split(it, '') : Object(it);
-} : Object;
-
+module.exports = _nonIterableRest, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(1);
+/***/ 585:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var TypeError = global.TypeError;
+var _typeof = (__webpack_require__(8)["default"]);
 
-// `RequireObjectCoercible` abstract operation
-// https://tc39.es/ecma262/#sec-requireobjectcoercible
-module.exports = function (it) {
-  if (it == undefined) throw TypeError("Can't call method on " + it);
-  return it;
-};
+var assertThisInitialized = __webpack_require__(506);
 
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toPrimitive = __webpack_require__(103);
-var isSymbol = __webpack_require__(66);
-
-// `ToPropertyKey` abstract operation
-// https://tc39.es/ecma262/#sec-topropertykey
-module.exports = function (argument) {
-  var key = toPrimitive(argument, 'string');
-  return isSymbol(key) ? key : key + '';
-};
-
-
-/***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var aCallable = __webpack_require__(20);
-
-// `GetMethod` abstract operation
-// https://tc39.es/ecma262/#sec-getmethod
-module.exports = function (V, P) {
-  var func = V[P];
-  return func == null ? undefined : aCallable(func);
-};
-
-
-/***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var setGlobal = __webpack_require__(50);
-
-var SHARED = '__core-js_shared__';
-var store = global[SHARED] || setGlobal(SHARED, {});
-
-module.exports = store;
-
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-
-// eslint-disable-next-line es/no-object-defineproperty -- safe
-var defineProperty = Object.defineProperty;
-
-module.exports = function (key, value) {
-  try {
-    defineProperty(global, key, { value: value, configurable: true, writable: true });
-  } catch (error) {
-    global[key] = value;
-  } return value;
-};
-
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var shared = __webpack_require__(70);
-var uid = __webpack_require__(71);
-
-var keys = shared('keys');
-
-module.exports = function (key) {
-  return keys[key] || (keys[key] = uid(key));
-};
-
-
-/***/ }),
-/* 52 */
-/***/ (function(module, exports) {
-
-module.exports = {};
-
-
-/***/ }),
-/* 53 */
-/***/ (function(module, exports) {
-
-var ceil = Math.ceil;
-var floor = Math.floor;
-
-// `ToIntegerOrInfinity` abstract operation
-// https://tc39.es/ecma262/#sec-tointegerorinfinity
-module.exports = function (argument) {
-  var number = +argument;
-  // eslint-disable-next-line no-self-compare -- safe
-  return number !== number || number === 0 ? 0 : (number > 0 ? floor : ceil)(number);
-};
-
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports) {
-
-// IE8- don't enum bug keys
-module.exports = [
-  'constructor',
-  'hasOwnProperty',
-  'isPrototypeOf',
-  'propertyIsEnumerable',
-  'toLocaleString',
-  'toString',
-  'valueOf'
-];
-
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-var fails = __webpack_require__(8);
-var isCallable = __webpack_require__(6);
-var classof = __webpack_require__(39);
-var getBuiltIn = __webpack_require__(17);
-var inspectSource = __webpack_require__(37);
-
-var noop = function () { /* empty */ };
-var empty = [];
-var construct = getBuiltIn('Reflect', 'construct');
-var constructorRegExp = /^\s*(?:class|function)\b/;
-var exec = uncurryThis(constructorRegExp.exec);
-var INCORRECT_TO_STRING = !constructorRegExp.exec(noop);
-
-var isConstructorModern = function (argument) {
-  if (!isCallable(argument)) return false;
-  try {
-    construct(noop, empty, argument);
-    return true;
-  } catch (error) {
-    return false;
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
   }
-};
 
-var isConstructorLegacy = function (argument) {
-  if (!isCallable(argument)) return false;
-  switch (classof(argument)) {
-    case 'AsyncFunction':
-    case 'GeneratorFunction':
-    case 'AsyncGeneratorFunction': return false;
-    // we can't check .prototype since constructors produced by .bind haven't it
-  } return INCORRECT_TO_STRING || !!exec(constructorRegExp, inspectSource(argument));
-};
+  return assertThisInitialized(self);
+}
 
-// `IsConstructor` abstract operation
-// https://tc39.es/ecma262/#sec-isconstructor
-module.exports = !construct || fails(function () {
-  var called;
-  return isConstructorModern(isConstructorModern.call)
-    || !isConstructorModern(Object)
-    || !isConstructorModern(function () { called = true; })
-    || called;
-}) ? isConstructorLegacy : isConstructorModern;
-
+module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
 
-var wellKnownSymbol = __webpack_require__(7);
+/***/ 489:
+/***/ ((module) => {
 
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-var test = {};
+function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+  return _setPrototypeOf(o, p);
+}
 
-test[TO_STRING_TAG] = 'z';
-
-module.exports = String(test) === '[object z]';
-
-
-/***/ }),
-/* 57 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var internalObjectKeys = __webpack_require__(75);
-var enumBugKeys = __webpack_require__(54);
-
-// `Object.keys` method
-// https://tc39.es/ecma262/#sec-object.keys
-// eslint-disable-next-line es/no-object-keys -- safe
-module.exports = Object.keys || function keys(O) {
-  return internalObjectKeys(O, enumBugKeys);
-};
-
+module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(1);
-var classof = __webpack_require__(39);
+/***/ 38:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var String = global.String;
+var arrayWithHoles = __webpack_require__(858);
 
-module.exports = function (argument) {
-  if (classof(argument) === 'Symbol') throw TypeError('Cannot convert a Symbol value to a string');
-  return String(argument);
-};
+var iterableToArrayLimit = __webpack_require__(884);
 
+var unsupportedIterableToArray = __webpack_require__(379);
 
-/***/ }),
-/* 59 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var hasOwn = __webpack_require__(15);
-var isCallable = __webpack_require__(6);
-var toObject = __webpack_require__(25);
-var sharedKey = __webpack_require__(51);
-var CORRECT_PROTOTYPE_GETTER = __webpack_require__(121);
-
-var IE_PROTO = sharedKey('IE_PROTO');
-var Object = global.Object;
-var ObjectPrototype = Object.prototype;
-
-// `Object.getPrototypeOf` method
-// https://tc39.es/ecma262/#sec-object.getprototypeof
-module.exports = CORRECT_PROTOTYPE_GETTER ? Object.getPrototypeOf : function (O) {
-  var object = toObject(O);
-  if (hasOwn(object, IE_PROTO)) return object[IE_PROTO];
-  var constructor = object.constructor;
-  if (isCallable(constructor) && object instanceof constructor) {
-    return constructor.prototype;
-  } return object instanceof Object ? ObjectPrototype : null;
-};
-
-
-/***/ }),
-/* 60 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var defineProperty = __webpack_require__(22).f;
-var hasOwn = __webpack_require__(15);
-var wellKnownSymbol = __webpack_require__(7);
-
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-
-module.exports = function (it, TAG, STATIC) {
-  if (it && !hasOwn(it = STATIC ? it : it.prototype, TO_STRING_TAG)) {
-    defineProperty(it, TO_STRING_TAG, { configurable: true, value: TAG });
-  }
-};
-
-
-/***/ }),
-/* 61 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint-disable no-proto -- safe */
-var uncurryThis = __webpack_require__(5);
-var anObject = __webpack_require__(13);
-var aPossiblePrototype = __webpack_require__(122);
-
-// `Object.setPrototypeOf` method
-// https://tc39.es/ecma262/#sec-object.setprototypeof
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-// eslint-disable-next-line es/no-object-setprototypeof -- safe
-module.exports = Object.setPrototypeOf || ('__proto__' in {} ? function () {
-  var CORRECT_SETTER = false;
-  var test = {};
-  var setter;
-  try {
-    // eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
-    setter = uncurryThis(Object.getOwnPropertyDescriptor(Object.prototype, '__proto__').set);
-    setter(test, []);
-    CORRECT_SETTER = test instanceof Array;
-  } catch (error) { /* empty */ }
-  return function setPrototypeOf(O, proto) {
-    anObject(O);
-    aPossiblePrototype(proto);
-    if (CORRECT_SETTER) setter(O, proto);
-    else O.__proto__ = proto;
-    return O;
-  };
-}() : undefined);
-
-
-/***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var classof = __webpack_require__(39);
-var getMethod = __webpack_require__(48);
-var Iterators = __webpack_require__(30);
-var wellKnownSymbol = __webpack_require__(7);
-
-var ITERATOR = wellKnownSymbol('iterator');
-
-module.exports = function (it) {
-  if (it != undefined) return getMethod(it, ITERATOR)
-    || getMethod(it, '@@iterator')
-    || Iterators[classof(it)];
-};
-
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var classof = __webpack_require__(32);
-var global = __webpack_require__(1);
-
-module.exports = classof(global.process) == 'process';
-
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayWithHoles = __webpack_require__(166);
-
-var iterableToArrayLimit = __webpack_require__(167);
-
-var unsupportedIterableToArray = __webpack_require__(168);
-
-var nonIterableRest = __webpack_require__(170);
+var nonIterableRest = __webpack_require__(521);
 
 function _slicedToArray(arr, i) {
   return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
 }
 
-module.exports = _slicedToArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+/***/ 8:
+/***/ ((module) => {
 
-var $propertyIsEnumerable = {}.propertyIsEnumerable;
-// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+function _typeof(obj) {
+  "@babel/helpers - typeof";
 
-// Nashorn ~ JDK8 bug
-var NASHORN_BUG = getOwnPropertyDescriptor && !$propertyIsEnumerable.call({ 1: 2 }, 1);
-
-// `Object.prototype.propertyIsEnumerable` method implementation
-// https://tc39.es/ecma262/#sec-object.prototype.propertyisenumerable
-exports.f = NASHORN_BUG ? function propertyIsEnumerable(V) {
-  var descriptor = getOwnPropertyDescriptor(this, V);
-  return !!descriptor && descriptor.enumerable;
-} : $propertyIsEnumerable;
-
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var getBuiltIn = __webpack_require__(17);
-var isCallable = __webpack_require__(6);
-var isPrototypeOf = __webpack_require__(33);
-var USE_SYMBOL_AS_UID = __webpack_require__(67);
-
-var Object = global.Object;
-
-module.exports = USE_SYMBOL_AS_UID ? function (it) {
-  return typeof it == 'symbol';
-} : function (it) {
-  var $Symbol = getBuiltIn('Symbol');
-  return isCallable($Symbol) && isPrototypeOf($Symbol.prototype, Object(it));
-};
-
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint-disable es/no-symbol -- required for testing */
-var NATIVE_SYMBOL = __webpack_require__(68);
-
-module.exports = NATIVE_SYMBOL
-  && !Symbol.sham
-  && typeof Symbol.iterator == 'symbol';
-
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint-disable es/no-symbol -- required for testing */
-var V8_VERSION = __webpack_require__(69);
-var fails = __webpack_require__(8);
-
-// eslint-disable-next-line es/no-object-getownpropertysymbols -- required for testing
-module.exports = !!Object.getOwnPropertySymbols && !fails(function () {
-  var symbol = Symbol();
-  // Chrome 38 Symbol has incorrect toString conversion
-  // `get-own-property-symbols` polyfill symbols converted to object are not Symbol instances
-  return !String(symbol) || !(Object(symbol) instanceof Symbol) ||
-    // Chrome 38-40 symbols are not inherited from DOM collections prototypes to instances
-    !Symbol.sham && V8_VERSION && V8_VERSION < 41;
-});
-
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var userAgent = __webpack_require__(34);
-
-var process = global.process;
-var Deno = global.Deno;
-var versions = process && process.versions || Deno && Deno.version;
-var v8 = versions && versions.v8;
-var match, version;
-
-if (v8) {
-  match = v8.split('.');
-  // in old Chrome, versions of V8 isn't V8 = Chrome / 10
-  // but their correct versions are not interesting for us
-  version = match[0] > 0 && match[0] < 4 ? 1 : +(match[0] + match[1]);
+  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
 }
 
-// BrowserFS NodeJS `process` polyfill incorrectly set `.v8` to `0.0`
-// so check `userAgent` even if `.v8` exists, but 0
-if (!version && userAgent) {
-  match = userAgent.match(/Edge\/(\d+)/);
-  if (!match || match[1] >= 74) {
-    match = userAgent.match(/Chrome\/(\d+)/);
-    if (match) version = +match[1];
-  }
+module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 379:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var arrayLikeToArray = __webpack_require__(228);
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
 }
 
-module.exports = version;
+module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+
+/***/ 757:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__(666);
 
 
 /***/ }),
-/* 70 */
-/***/ (function(module, exports, __webpack_require__) {
 
-var IS_PURE = __webpack_require__(27);
-var store = __webpack_require__(49);
-
-(module.exports = function (key, value) {
-  return store[key] || (store[key] = value !== undefined ? value : {});
-})('versions', []).push({
-  version: '3.19.3',
-  mode: IS_PURE ? 'pure' : 'global',
-  copyright: '© 2021 Denis Pushkarev (zloirock.ru)'
-});
-
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-
-var id = 0;
-var postfix = Math.random();
-var toString = uncurryThis(1.0.toString);
-
-module.exports = function (key) {
-  return 'Symbol(' + (key === undefined ? '' : key) + ')_' + toString(++id + postfix, 36);
-};
-
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(18);
-var fails = __webpack_require__(8);
-var createElement = __webpack_require__(36);
-
-// Thank's IE8 for his funny defineProperty
-module.exports = !DESCRIPTORS && !fails(function () {
-  // eslint-disable-next-line es/no-object-defineproperty -- requied for testing
-  return Object.defineProperty(createElement('div'), 'a', {
-    get: function () { return 7; }
-  }).a != 7;
-});
-
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(18);
-var hasOwn = __webpack_require__(15);
-
-var FunctionPrototype = Function.prototype;
-// eslint-disable-next-line es/no-object-getownpropertydescriptor -- safe
-var getDescriptor = DESCRIPTORS && Object.getOwnPropertyDescriptor;
-
-var EXISTS = hasOwn(FunctionPrototype, 'name');
-// additional protection from minified / mangled / dropped function names
-var PROPER = EXISTS && (function something() { /* empty */ }).name === 'something';
-var CONFIGURABLE = EXISTS && (!DESCRIPTORS || (DESCRIPTORS && getDescriptor(FunctionPrototype, 'name').configurable));
-
-module.exports = {
-  EXISTS: EXISTS,
-  PROPER: PROPER,
-  CONFIGURABLE: CONFIGURABLE
-};
-
-
-/***/ }),
-/* 74 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var hasOwn = __webpack_require__(15);
-var ownKeys = __webpack_require__(106);
-var getOwnPropertyDescriptorModule = __webpack_require__(44);
-var definePropertyModule = __webpack_require__(22);
-
-module.exports = function (target, source) {
-  var keys = ownKeys(source);
-  var defineProperty = definePropertyModule.f;
-  var getOwnPropertyDescriptor = getOwnPropertyDescriptorModule.f;
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    if (!hasOwn(target, key)) defineProperty(target, key, getOwnPropertyDescriptor(source, key));
-  }
-};
-
-
-/***/ }),
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-var hasOwn = __webpack_require__(15);
-var toIndexedObject = __webpack_require__(26);
-var indexOf = __webpack_require__(108).indexOf;
-var hiddenKeys = __webpack_require__(52);
-
-var push = uncurryThis([].push);
-
-module.exports = function (object, names) {
-  var O = toIndexedObject(object);
-  var i = 0;
-  var result = [];
-  var key;
-  for (key in O) !hasOwn(hiddenKeys, key) && hasOwn(O, key) && push(result, key);
-  // Don't enum bug & hidden keys
-  while (names.length > i) if (hasOwn(O, key = names[i++])) {
-    ~indexOf(result, key) || push(result, key);
-  }
-  return result;
-};
-
-
-/***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toIntegerOrInfinity = __webpack_require__(53);
-
-var max = Math.max;
-var min = Math.min;
-
-// Helper for a popular repeating case of the spec:
-// Let integer be ? ToInteger(index).
-// If integer < 0, let result be max((length + integer), 0); else let result be min(integer, length).
-module.exports = function (index, length) {
-  var integer = toIntegerOrInfinity(index);
-  return integer < 0 ? max(integer + length, 0) : min(integer, length);
-};
-
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports) {
-
-// eslint-disable-next-line es/no-object-getownpropertysymbols -- safe
-exports.f = Object.getOwnPropertySymbols;
-
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var fails = __webpack_require__(8);
-var isCallable = __webpack_require__(6);
-
-var replacement = /#|\.prototype\./;
-
-var isForced = function (feature, detection) {
-  var value = data[normalize(feature)];
-  return value == POLYFILL ? true
-    : value == NATIVE ? false
-    : isCallable(detection) ? fails(detection)
-    : !!detection;
-};
-
-var normalize = isForced.normalize = function (string) {
-  return String(string).replace(replacement, '.').toLowerCase();
-};
-
-var data = isForced.data = {};
-var NATIVE = isForced.NATIVE = 'N';
-var POLYFILL = isForced.POLYFILL = 'P';
-
-module.exports = isForced;
-
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var wellKnownSymbol = __webpack_require__(7);
-var create = __webpack_require__(40);
-var definePropertyModule = __webpack_require__(22);
-
-var UNSCOPABLES = wellKnownSymbol('unscopables');
-var ArrayPrototype = Array.prototype;
-
-// Array.prototype[@@unscopables]
-// https://tc39.es/ecma262/#sec-array.prototype-@@unscopables
-if (ArrayPrototype[UNSCOPABLES] == undefined) {
-  definePropertyModule.f(ArrayPrototype, UNSCOPABLES, {
-    configurable: true,
-    value: create(null)
-  });
-}
-
-// add a key to Array.prototype[@@unscopables]
-module.exports = function (key) {
-  ArrayPrototype[UNSCOPABLES][key] = true;
-};
-
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getBuiltIn = __webpack_require__(17);
-
-module.exports = getBuiltIn('document', 'documentElement');
-
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var charAt = __webpack_require__(119).charAt;
-var toString = __webpack_require__(58);
-var InternalStateModule = __webpack_require__(38);
-var defineIterator = __webpack_require__(82);
-
-var STRING_ITERATOR = 'String Iterator';
-var setInternalState = InternalStateModule.set;
-var getInternalState = InternalStateModule.getterFor(STRING_ITERATOR);
-
-// `String.prototype[@@iterator]` method
-// https://tc39.es/ecma262/#sec-string.prototype-@@iterator
-defineIterator(String, 'String', function (iterated) {
-  setInternalState(this, {
-    type: STRING_ITERATOR,
-    string: toString(iterated),
-    index: 0
-  });
-// `%StringIteratorPrototype%.next` method
-// https://tc39.es/ecma262/#sec-%stringiteratorprototype%.next
-}, function next() {
-  var state = getInternalState(this);
-  var string = state.string;
-  var index = state.index;
-  var point;
-  if (index >= string.length) return { value: undefined, done: true };
-  point = charAt(string, index);
-  state.index += point.length;
-  return { value: point, done: false };
-});
-
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $ = __webpack_require__(12);
-var call = __webpack_require__(9);
-var IS_PURE = __webpack_require__(27);
-var FunctionName = __webpack_require__(73);
-var isCallable = __webpack_require__(6);
-var createIteratorConstructor = __webpack_require__(120);
-var getPrototypeOf = __webpack_require__(59);
-var setPrototypeOf = __webpack_require__(61);
-var setToStringTag = __webpack_require__(60);
-var createNonEnumerableProperty = __webpack_require__(21);
-var redefine = __webpack_require__(23);
-var wellKnownSymbol = __webpack_require__(7);
-var Iterators = __webpack_require__(30);
-var IteratorsCore = __webpack_require__(83);
-
-var PROPER_FUNCTION_NAME = FunctionName.PROPER;
-var CONFIGURABLE_FUNCTION_NAME = FunctionName.CONFIGURABLE;
-var IteratorPrototype = IteratorsCore.IteratorPrototype;
-var BUGGY_SAFARI_ITERATORS = IteratorsCore.BUGGY_SAFARI_ITERATORS;
-var ITERATOR = wellKnownSymbol('iterator');
-var KEYS = 'keys';
-var VALUES = 'values';
-var ENTRIES = 'entries';
-
-var returnThis = function () { return this; };
-
-module.exports = function (Iterable, NAME, IteratorConstructor, next, DEFAULT, IS_SET, FORCED) {
-  createIteratorConstructor(IteratorConstructor, NAME, next);
-
-  var getIterationMethod = function (KIND) {
-    if (KIND === DEFAULT && defaultIterator) return defaultIterator;
-    if (!BUGGY_SAFARI_ITERATORS && KIND in IterablePrototype) return IterablePrototype[KIND];
-    switch (KIND) {
-      case KEYS: return function keys() { return new IteratorConstructor(this, KIND); };
-      case VALUES: return function values() { return new IteratorConstructor(this, KIND); };
-      case ENTRIES: return function entries() { return new IteratorConstructor(this, KIND); };
-    } return function () { return new IteratorConstructor(this); };
-  };
-
-  var TO_STRING_TAG = NAME + ' Iterator';
-  var INCORRECT_VALUES_NAME = false;
-  var IterablePrototype = Iterable.prototype;
-  var nativeIterator = IterablePrototype[ITERATOR]
-    || IterablePrototype['@@iterator']
-    || DEFAULT && IterablePrototype[DEFAULT];
-  var defaultIterator = !BUGGY_SAFARI_ITERATORS && nativeIterator || getIterationMethod(DEFAULT);
-  var anyNativeIterator = NAME == 'Array' ? IterablePrototype.entries || nativeIterator : nativeIterator;
-  var CurrentIteratorPrototype, methods, KEY;
-
-  // fix native
-  if (anyNativeIterator) {
-    CurrentIteratorPrototype = getPrototypeOf(anyNativeIterator.call(new Iterable()));
-    if (CurrentIteratorPrototype !== Object.prototype && CurrentIteratorPrototype.next) {
-      if (!IS_PURE && getPrototypeOf(CurrentIteratorPrototype) !== IteratorPrototype) {
-        if (setPrototypeOf) {
-          setPrototypeOf(CurrentIteratorPrototype, IteratorPrototype);
-        } else if (!isCallable(CurrentIteratorPrototype[ITERATOR])) {
-          redefine(CurrentIteratorPrototype, ITERATOR, returnThis);
-        }
-      }
-      // Set @@toStringTag to native iterators
-      setToStringTag(CurrentIteratorPrototype, TO_STRING_TAG, true, true);
-      if (IS_PURE) Iterators[TO_STRING_TAG] = returnThis;
-    }
-  }
-
-  // fix Array.prototype.{ values, @@iterator }.name in V8 / FF
-  if (PROPER_FUNCTION_NAME && DEFAULT == VALUES && nativeIterator && nativeIterator.name !== VALUES) {
-    if (!IS_PURE && CONFIGURABLE_FUNCTION_NAME) {
-      createNonEnumerableProperty(IterablePrototype, 'name', VALUES);
-    } else {
-      INCORRECT_VALUES_NAME = true;
-      defaultIterator = function values() { return call(nativeIterator, this); };
-    }
-  }
-
-  // export additional methods
-  if (DEFAULT) {
-    methods = {
-      values: getIterationMethod(VALUES),
-      keys: IS_SET ? defaultIterator : getIterationMethod(KEYS),
-      entries: getIterationMethod(ENTRIES)
-    };
-    if (FORCED) for (KEY in methods) {
-      if (BUGGY_SAFARI_ITERATORS || INCORRECT_VALUES_NAME || !(KEY in IterablePrototype)) {
-        redefine(IterablePrototype, KEY, methods[KEY]);
-      }
-    } else $({ target: NAME, proto: true, forced: BUGGY_SAFARI_ITERATORS || INCORRECT_VALUES_NAME }, methods);
-  }
-
-  // define iterator
-  if ((!IS_PURE || FORCED) && IterablePrototype[ITERATOR] !== defaultIterator) {
-    redefine(IterablePrototype, ITERATOR, defaultIterator, { name: DEFAULT });
-  }
-  Iterators[NAME] = defaultIterator;
-
-  return methods;
-};
-
-
-/***/ }),
-/* 83 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var fails = __webpack_require__(8);
-var isCallable = __webpack_require__(6);
-var create = __webpack_require__(40);
-var getPrototypeOf = __webpack_require__(59);
-var redefine = __webpack_require__(23);
-var wellKnownSymbol = __webpack_require__(7);
-var IS_PURE = __webpack_require__(27);
-
-var ITERATOR = wellKnownSymbol('iterator');
-var BUGGY_SAFARI_ITERATORS = false;
-
-// `%IteratorPrototype%` object
-// https://tc39.es/ecma262/#sec-%iteratorprototype%-object
-var IteratorPrototype, PrototypeOfArrayIteratorPrototype, arrayIterator;
-
-/* eslint-disable es/no-array-prototype-keys -- safe */
-if ([].keys) {
-  arrayIterator = [].keys();
-  // Safari 8 has buggy iterators w/o `next`
-  if (!('next' in arrayIterator)) BUGGY_SAFARI_ITERATORS = true;
-  else {
-    PrototypeOfArrayIteratorPrototype = getPrototypeOf(getPrototypeOf(arrayIterator));
-    if (PrototypeOfArrayIteratorPrototype !== Object.prototype) IteratorPrototype = PrototypeOfArrayIteratorPrototype;
-  }
-}
-
-var NEW_ITERATOR_PROTOTYPE = IteratorPrototype == undefined || fails(function () {
-  var test = {};
-  // FF44- legacy iterators case
-  return IteratorPrototype[ITERATOR].call(test) !== test;
-});
-
-if (NEW_ITERATOR_PROTOTYPE) IteratorPrototype = {};
-else if (IS_PURE) IteratorPrototype = create(IteratorPrototype);
-
-// `%IteratorPrototype%[@@iterator]()` method
-// https://tc39.es/ecma262/#sec-%iteratorprototype%-@@iterator
-if (!isCallable(IteratorPrototype[ITERATOR])) {
-  redefine(IteratorPrototype, ITERATOR, function () {
-    return this;
-  });
-}
-
-module.exports = {
-  IteratorPrototype: IteratorPrototype,
-  BUGGY_SAFARI_ITERATORS: BUGGY_SAFARI_ITERATORS
-};
-
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var call = __webpack_require__(9);
-var anObject = __webpack_require__(13);
-var getMethod = __webpack_require__(48);
-
-module.exports = function (iterator, kind, value) {
-  var innerResult, innerError;
-  anObject(iterator);
-  try {
-    innerResult = getMethod(iterator, 'return');
-    if (!innerResult) {
-      if (kind === 'throw') throw value;
-      return value;
-    }
-    innerResult = call(innerResult, iterator);
-  } catch (error) {
-    innerError = true;
-    innerResult = error;
-  }
-  if (kind === 'throw') throw value;
-  if (innerError) throw innerResult;
-  anObject(innerResult);
-  return value;
-};
-
-
-/***/ }),
-/* 85 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var wellKnownSymbol = __webpack_require__(7);
-var Iterators = __webpack_require__(30);
-
-var ITERATOR = wellKnownSymbol('iterator');
-var ArrayPrototype = Array.prototype;
-
-// check on default Array iterator
-module.exports = function (it) {
-  return it !== undefined && (Iterators.Array === it || ArrayPrototype[ITERATOR] === it);
-};
-
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var toPropertyKey = __webpack_require__(47);
-var definePropertyModule = __webpack_require__(22);
-var createPropertyDescriptor = __webpack_require__(24);
-
-module.exports = function (object, key, value) {
-  var propertyKey = toPropertyKey(key);
-  if (propertyKey in object) definePropertyModule.f(object, propertyKey, createPropertyDescriptor(0, value));
-  else object[propertyKey] = value;
-};
-
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var call = __webpack_require__(9);
-var aCallable = __webpack_require__(20);
-var anObject = __webpack_require__(13);
-var tryToString = __webpack_require__(35);
-var getIteratorMethod = __webpack_require__(62);
-
-var TypeError = global.TypeError;
-
-module.exports = function (argument, usingIterator) {
-  var iteratorMethod = arguments.length < 2 ? getIteratorMethod(argument) : usingIterator;
-  if (aCallable(iteratorMethod)) return anObject(call(iteratorMethod, argument));
-  throw TypeError(tryToString(argument) + ' is not iterable');
-};
-
-
-/***/ }),
-/* 88 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var wellKnownSymbol = __webpack_require__(7);
-
-var ITERATOR = wellKnownSymbol('iterator');
-var SAFE_CLOSING = false;
-
-try {
-  var called = 0;
-  var iteratorWithReturn = {
-    next: function () {
-      return { done: !!called++ };
-    },
-    'return': function () {
-      SAFE_CLOSING = true;
-    }
-  };
-  iteratorWithReturn[ITERATOR] = function () {
-    return this;
-  };
-  // eslint-disable-next-line es/no-array-from, no-throw-literal -- required for testing
-  Array.from(iteratorWithReturn, function () { throw 2; });
-} catch (error) { /* empty */ }
-
-module.exports = function (exec, SKIP_CLOSING) {
-  if (!SKIP_CLOSING && !SAFE_CLOSING) return false;
-  var ITERATION_SUPPORT = false;
-  try {
-    var object = {};
-    object[ITERATOR] = function () {
-      return {
-        next: function () {
-          return { done: ITERATION_SUPPORT = true };
-        }
-      };
-    };
-    exec(object);
-  } catch (error) { /* empty */ }
-  return ITERATION_SUPPORT;
-};
-
-
-/***/ }),
-/* 89 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $ = __webpack_require__(12);
-var global = __webpack_require__(1);
-var isPrototypeOf = __webpack_require__(33);
-var getPrototypeOf = __webpack_require__(59);
-var setPrototypeOf = __webpack_require__(61);
-var copyConstructorProperties = __webpack_require__(74);
-var create = __webpack_require__(40);
-var createNonEnumerableProperty = __webpack_require__(21);
-var createPropertyDescriptor = __webpack_require__(24);
-var clearErrorStack = __webpack_require__(138);
-var installErrorCause = __webpack_require__(140);
-var iterate = __webpack_require__(42);
-var normalizeStringArgument = __webpack_require__(141);
-var wellKnownSymbol = __webpack_require__(7);
-var ERROR_STACK_INSTALLABLE = __webpack_require__(142);
-
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-var Error = global.Error;
-var push = [].push;
-
-var $AggregateError = function AggregateError(errors, message /* , options */) {
-  var options = arguments.length > 2 ? arguments[2] : undefined;
-  var isInstance = isPrototypeOf(AggregateErrorPrototype, this);
-  var that;
-  if (setPrototypeOf) {
-    that = setPrototypeOf(new Error(undefined), isInstance ? getPrototypeOf(this) : AggregateErrorPrototype);
-  } else {
-    that = isInstance ? this : create(AggregateErrorPrototype);
-    createNonEnumerableProperty(that, TO_STRING_TAG, 'Error');
-  }
-  createNonEnumerableProperty(that, 'message', normalizeStringArgument(message, ''));
-  if (ERROR_STACK_INSTALLABLE) createNonEnumerableProperty(that, 'stack', clearErrorStack(that.stack, 1));
-  installErrorCause(that, options);
-  var errorsArray = [];
-  iterate(errors, push, { that: errorsArray });
-  createNonEnumerableProperty(that, 'errors', errorsArray);
-  return that;
-};
-
-if (setPrototypeOf) setPrototypeOf($AggregateError, Error);
-else copyConstructorProperties($AggregateError, Error);
-
-var AggregateErrorPrototype = $AggregateError.prototype = create(Error.prototype, {
-  constructor: createPropertyDescriptor(1, $AggregateError),
-  message: createPropertyDescriptor(1, ''),
-  name: createPropertyDescriptor(1, 'AggregateError')
-});
-
-// `AggregateError` constructor
-// https://tc39.es/ecma262/#sec-aggregate-error-constructor
-$({ global: true }, {
-  AggregateError: $AggregateError
-});
-
-
-/***/ }),
-/* 90 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var toIndexedObject = __webpack_require__(26);
-var addToUnscopables = __webpack_require__(79);
-var Iterators = __webpack_require__(30);
-var InternalStateModule = __webpack_require__(38);
-var defineIterator = __webpack_require__(82);
-
-var ARRAY_ITERATOR = 'Array Iterator';
-var setInternalState = InternalStateModule.set;
-var getInternalState = InternalStateModule.getterFor(ARRAY_ITERATOR);
-
-// `Array.prototype.entries` method
-// https://tc39.es/ecma262/#sec-array.prototype.entries
-// `Array.prototype.keys` method
-// https://tc39.es/ecma262/#sec-array.prototype.keys
-// `Array.prototype.values` method
-// https://tc39.es/ecma262/#sec-array.prototype.values
-// `Array.prototype[@@iterator]` method
-// https://tc39.es/ecma262/#sec-array.prototype-@@iterator
-// `CreateArrayIterator` internal method
-// https://tc39.es/ecma262/#sec-createarrayiterator
-module.exports = defineIterator(Array, 'Array', function (iterated, kind) {
-  setInternalState(this, {
-    type: ARRAY_ITERATOR,
-    target: toIndexedObject(iterated), // target
-    index: 0,                          // next index
-    kind: kind                         // kind
-  });
-// `%ArrayIteratorPrototype%.next` method
-// https://tc39.es/ecma262/#sec-%arrayiteratorprototype%.next
-}, function () {
-  var state = getInternalState(this);
-  var target = state.target;
-  var kind = state.kind;
-  var index = state.index++;
-  if (!target || index >= target.length) {
-    state.target = undefined;
-    return { value: undefined, done: true };
-  }
-  if (kind == 'keys') return { value: index, done: false };
-  if (kind == 'values') return { value: target[index], done: false };
-  return { value: [index, target[index]], done: false };
-}, 'values');
-
-// argumentsList[@@iterator] is %ArrayProto_values%
-// https://tc39.es/ecma262/#sec-createunmappedargumentsobject
-// https://tc39.es/ecma262/#sec-createmappedargumentsobject
-Iterators.Arguments = Iterators.Array;
-
-// https://tc39.es/ecma262/#sec-array.prototype-@@unscopables
-addToUnscopables('keys');
-addToUnscopables('values');
-addToUnscopables('entries');
-
-
-/***/ }),
-/* 91 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-
-module.exports = global.Promise;
-
-
-/***/ }),
-/* 92 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var anObject = __webpack_require__(13);
-var aConstructor = __webpack_require__(149);
-var wellKnownSymbol = __webpack_require__(7);
-
-var SPECIES = wellKnownSymbol('species');
-
-// `SpeciesConstructor` abstract operation
-// https://tc39.es/ecma262/#sec-speciesconstructor
-module.exports = function (O, defaultConstructor) {
-  var C = anObject(O).constructor;
-  var S;
-  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? defaultConstructor : aConstructor(S);
-};
-
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var apply = __webpack_require__(150);
-var bind = __webpack_require__(29);
-var isCallable = __webpack_require__(6);
-var hasOwn = __webpack_require__(15);
-var fails = __webpack_require__(8);
-var html = __webpack_require__(80);
-var arraySlice = __webpack_require__(151);
-var createElement = __webpack_require__(36);
-var IS_IOS = __webpack_require__(94);
-var IS_NODE = __webpack_require__(63);
-
-var set = global.setImmediate;
-var clear = global.clearImmediate;
-var process = global.process;
-var Dispatch = global.Dispatch;
-var Function = global.Function;
-var MessageChannel = global.MessageChannel;
-var String = global.String;
-var counter = 0;
-var queue = {};
-var ONREADYSTATECHANGE = 'onreadystatechange';
-var location, defer, channel, port;
-
-try {
-  // Deno throws a ReferenceError on `location` access without `--location` flag
-  location = global.location;
-} catch (error) { /* empty */ }
-
-var run = function (id) {
-  if (hasOwn(queue, id)) {
-    var fn = queue[id];
-    delete queue[id];
-    fn();
-  }
-};
-
-var runner = function (id) {
-  return function () {
-    run(id);
-  };
-};
-
-var listener = function (event) {
-  run(event.data);
-};
-
-var post = function (id) {
-  // old engines have not location.origin
-  global.postMessage(String(id), location.protocol + '//' + location.host);
-};
-
-// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
-if (!set || !clear) {
-  set = function setImmediate(fn) {
-    var args = arraySlice(arguments, 1);
-    queue[++counter] = function () {
-      apply(isCallable(fn) ? fn : Function(fn), undefined, args);
-    };
-    defer(counter);
-    return counter;
-  };
-  clear = function clearImmediate(id) {
-    delete queue[id];
-  };
-  // Node.js 0.8-
-  if (IS_NODE) {
-    defer = function (id) {
-      process.nextTick(runner(id));
-    };
-  // Sphere (JS game engine) Dispatch API
-  } else if (Dispatch && Dispatch.now) {
-    defer = function (id) {
-      Dispatch.now(runner(id));
-    };
-  // Browsers with MessageChannel, includes WebWorkers
-  // except iOS - https://github.com/zloirock/core-js/issues/624
-  } else if (MessageChannel && !IS_IOS) {
-    channel = new MessageChannel();
-    port = channel.port2;
-    channel.port1.onmessage = listener;
-    defer = bind(port.postMessage, port);
-  // Browsers with postMessage, skip WebWorkers
-  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if (
-    global.addEventListener &&
-    isCallable(global.postMessage) &&
-    !global.importScripts &&
-    location && location.protocol !== 'file:' &&
-    !fails(post)
-  ) {
-    defer = post;
-    global.addEventListener('message', listener, false);
-  // IE8-
-  } else if (ONREADYSTATECHANGE in createElement('script')) {
-    defer = function (id) {
-      html.appendChild(createElement('script'))[ONREADYSTATECHANGE] = function () {
-        html.removeChild(this);
-        run(id);
-      };
-    };
-  // Rest old browsers
-  } else {
-    defer = function (id) {
-      setTimeout(runner(id), 0);
-    };
-  }
-}
-
-module.exports = {
-  set: set,
-  clear: clear
-};
-
-
-/***/ }),
-/* 94 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var userAgent = __webpack_require__(34);
-
-module.exports = /(?:ipad|iphone|ipod).*applewebkit/i.test(userAgent);
-
-
-/***/ }),
-/* 95 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var anObject = __webpack_require__(13);
-var isObject = __webpack_require__(16);
-var newPromiseCapability = __webpack_require__(31);
-
-module.exports = function (C, x) {
-  anObject(C);
-  if (isObject(x) && x.constructor === C) return x;
-  var promiseCapability = newPromiseCapability.f(C);
-  var resolve = promiseCapability.resolve;
-  resolve(x);
-  return promiseCapability.promise;
-};
-
-
-/***/ }),
-/* 96 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $ = __webpack_require__(12);
-var call = __webpack_require__(9);
-var aCallable = __webpack_require__(20);
-var newPromiseCapabilityModule = __webpack_require__(31);
-var perform = __webpack_require__(43);
-var iterate = __webpack_require__(42);
-
-// `Promise.allSettled` method
-// https://tc39.es/ecma262/#sec-promise.allsettled
-$({ target: 'Promise', stat: true }, {
-  allSettled: function allSettled(iterable) {
-    var C = this;
-    var capability = newPromiseCapabilityModule.f(C);
-    var resolve = capability.resolve;
-    var reject = capability.reject;
-    var result = perform(function () {
-      var promiseResolve = aCallable(C.resolve);
-      var values = [];
-      var counter = 0;
-      var remaining = 1;
-      iterate(iterable, function (promise) {
-        var index = counter++;
-        var alreadyCalled = false;
-        remaining++;
-        call(promiseResolve, C, promise).then(function (value) {
-          if (alreadyCalled) return;
-          alreadyCalled = true;
-          values[index] = { status: 'fulfilled', value: value };
-          --remaining || resolve(values);
-        }, function (error) {
-          if (alreadyCalled) return;
-          alreadyCalled = true;
-          values[index] = { status: 'rejected', reason: error };
-          --remaining || resolve(values);
-        });
-      });
-      --remaining || resolve(values);
-    });
-    if (result.error) reject(result.value);
-    return capability.promise;
-  }
-});
-
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $ = __webpack_require__(12);
-var aCallable = __webpack_require__(20);
-var getBuiltIn = __webpack_require__(17);
-var call = __webpack_require__(9);
-var newPromiseCapabilityModule = __webpack_require__(31);
-var perform = __webpack_require__(43);
-var iterate = __webpack_require__(42);
-
-var PROMISE_ANY_ERROR = 'No one promise resolved';
-
-// `Promise.any` method
-// https://tc39.es/ecma262/#sec-promise.any
-$({ target: 'Promise', stat: true }, {
-  any: function any(iterable) {
-    var C = this;
-    var AggregateError = getBuiltIn('AggregateError');
-    var capability = newPromiseCapabilityModule.f(C);
-    var resolve = capability.resolve;
-    var reject = capability.reject;
-    var result = perform(function () {
-      var promiseResolve = aCallable(C.resolve);
-      var errors = [];
-      var counter = 0;
-      var remaining = 1;
-      var alreadyResolved = false;
-      iterate(iterable, function (promise) {
-        var index = counter++;
-        var alreadyRejected = false;
-        remaining++;
-        call(promiseResolve, C, promise).then(function (value) {
-          if (alreadyRejected || alreadyResolved) return;
-          alreadyResolved = true;
-          resolve(value);
-        }, function (error) {
-          if (alreadyRejected || alreadyResolved) return;
-          alreadyRejected = true;
-          errors[index] = error;
-          --remaining || reject(new AggregateError(errors, PROMISE_ANY_ERROR));
-        });
-      });
-      --remaining || reject(new AggregateError(errors, PROMISE_ANY_ERROR));
-    });
-    if (result.error) reject(result.value);
-    return capability.promise;
-  }
-});
-
-
-/***/ }),
-/* 98 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ 666:
+/***/ ((module) => {
 
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -3248,7 +1037,7 @@ var runtime = (function (exports) {
   // as the regeneratorRuntime namespace. Otherwise create a new empty
   // object. Either way, the resulting object will be used to initialize
   // the regeneratorRuntime variable at the top of this file.
-   true ? module.exports : undefined
+   true ? module.exports : 0
 ));
 
 try {
@@ -3272,1963 +1061,95 @@ try {
 }
 
 
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ })
 
-var parent = __webpack_require__(100);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(101);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 101 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(102);
-var entryUnbind = __webpack_require__(115);
-
-module.exports = entryUnbind('Array', 'find');
-
-
-/***/ }),
-/* 102 */
-/***/ (function(module, exports, __webpack_require__) {
-
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
 "use strict";
+var __webpack_exports__ = {};
 
-var $ = __webpack_require__(12);
-var $find = __webpack_require__(110).find;
-var addToUnscopables = __webpack_require__(79);
-
-var FIND = 'find';
-var SKIPS_HOLES = true;
-
-// Shouldn't skip holes
-if (FIND in []) Array(1)[FIND](function () { SKIPS_HOLES = false; });
-
-// `Array.prototype.find` method
-// https://tc39.es/ecma262/#sec-array.prototype.find
-$({ target: 'Array', proto: true, forced: SKIPS_HOLES }, {
-  find: function find(callbackfn /* , that = undefined */) {
-    return $find(this, callbackfn, arguments.length > 1 ? arguments[1] : undefined);
-  }
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "Z": () => (/* binding */ player)
 });
 
-// https://tc39.es/ecma262/#sec-array.prototype-@@unscopables
-addToUnscopables(FIND);
-
-
-/***/ }),
-/* 103 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var call = __webpack_require__(9);
-var isObject = __webpack_require__(16);
-var isSymbol = __webpack_require__(66);
-var getMethod = __webpack_require__(48);
-var ordinaryToPrimitive = __webpack_require__(104);
-var wellKnownSymbol = __webpack_require__(7);
-
-var TypeError = global.TypeError;
-var TO_PRIMITIVE = wellKnownSymbol('toPrimitive');
-
-// `ToPrimitive` abstract operation
-// https://tc39.es/ecma262/#sec-toprimitive
-module.exports = function (input, pref) {
-  if (!isObject(input) || isSymbol(input)) return input;
-  var exoticToPrim = getMethod(input, TO_PRIMITIVE);
-  var result;
-  if (exoticToPrim) {
-    if (pref === undefined) pref = 'default';
-    result = call(exoticToPrim, input, pref);
-    if (!isObject(result) || isSymbol(result)) return result;
-    throw TypeError("Can't convert object to primitive value");
-  }
-  if (pref === undefined) pref = 'number';
-  return ordinaryToPrimitive(input, pref);
-};
-
-
-/***/ }),
-/* 104 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var call = __webpack_require__(9);
-var isCallable = __webpack_require__(6);
-var isObject = __webpack_require__(16);
-
-var TypeError = global.TypeError;
-
-// `OrdinaryToPrimitive` abstract operation
-// https://tc39.es/ecma262/#sec-ordinarytoprimitive
-module.exports = function (input, pref) {
-  var fn, val;
-  if (pref === 'string' && isCallable(fn = input.toString) && !isObject(val = call(fn, input))) return val;
-  if (isCallable(fn = input.valueOf) && !isObject(val = call(fn, input))) return val;
-  if (pref !== 'string' && isCallable(fn = input.toString) && !isObject(val = call(fn, input))) return val;
-  throw TypeError("Can't convert object to primitive value");
-};
-
-
-/***/ }),
-/* 105 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isCallable = __webpack_require__(6);
-var inspectSource = __webpack_require__(37);
-
-var WeakMap = global.WeakMap;
-
-module.exports = isCallable(WeakMap) && /native code/.test(inspectSource(WeakMap));
-
-
-/***/ }),
-/* 106 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getBuiltIn = __webpack_require__(17);
-var uncurryThis = __webpack_require__(5);
-var getOwnPropertyNamesModule = __webpack_require__(107);
-var getOwnPropertySymbolsModule = __webpack_require__(77);
-var anObject = __webpack_require__(13);
-
-var concat = uncurryThis([].concat);
-
-// all object keys, includes non-enumerable and symbols
-module.exports = getBuiltIn('Reflect', 'ownKeys') || function ownKeys(it) {
-  var keys = getOwnPropertyNamesModule.f(anObject(it));
-  var getOwnPropertySymbols = getOwnPropertySymbolsModule.f;
-  return getOwnPropertySymbols ? concat(keys, getOwnPropertySymbols(it)) : keys;
-};
-
-
-/***/ }),
-/* 107 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var internalObjectKeys = __webpack_require__(75);
-var enumBugKeys = __webpack_require__(54);
-
-var hiddenKeys = enumBugKeys.concat('length', 'prototype');
-
-// `Object.getOwnPropertyNames` method
-// https://tc39.es/ecma262/#sec-object.getownpropertynames
-// eslint-disable-next-line es/no-object-getownpropertynames -- safe
-exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
-  return internalObjectKeys(O, hiddenKeys);
-};
-
-
-/***/ }),
-/* 108 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toIndexedObject = __webpack_require__(26);
-var toAbsoluteIndex = __webpack_require__(76);
-var lengthOfArrayLike = __webpack_require__(28);
-
-// `Array.prototype.{ indexOf, includes }` methods implementation
-var createMethod = function (IS_INCLUDES) {
-  return function ($this, el, fromIndex) {
-    var O = toIndexedObject($this);
-    var length = lengthOfArrayLike(O);
-    var index = toAbsoluteIndex(fromIndex, length);
-    var value;
-    // Array#includes uses SameValueZero equality algorithm
-    // eslint-disable-next-line no-self-compare -- NaN check
-    if (IS_INCLUDES && el != el) while (length > index) {
-      value = O[index++];
-      // eslint-disable-next-line no-self-compare -- NaN check
-      if (value != value) return true;
-    // Array#indexOf ignores holes, Array#includes - not
-    } else for (;length > index; index++) {
-      if ((IS_INCLUDES || index in O) && O[index] === el) return IS_INCLUDES || index || 0;
-    } return !IS_INCLUDES && -1;
-  };
-};
-
-module.exports = {
-  // `Array.prototype.includes` method
-  // https://tc39.es/ecma262/#sec-array.prototype.includes
-  includes: createMethod(true),
-  // `Array.prototype.indexOf` method
-  // https://tc39.es/ecma262/#sec-array.prototype.indexof
-  indexOf: createMethod(false)
-};
-
-
-/***/ }),
-/* 109 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toIntegerOrInfinity = __webpack_require__(53);
-
-var min = Math.min;
-
-// `ToLength` abstract operation
-// https://tc39.es/ecma262/#sec-tolength
-module.exports = function (argument) {
-  return argument > 0 ? min(toIntegerOrInfinity(argument), 0x1FFFFFFFFFFFFF) : 0; // 2 ** 53 - 1 == 9007199254740991
-};
-
-
-/***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var bind = __webpack_require__(29);
-var uncurryThis = __webpack_require__(5);
-var IndexedObject = __webpack_require__(45);
-var toObject = __webpack_require__(25);
-var lengthOfArrayLike = __webpack_require__(28);
-var arraySpeciesCreate = __webpack_require__(111);
-
-var push = uncurryThis([].push);
-
-// `Array.prototype.{ forEach, map, filter, some, every, find, findIndex, filterReject }` methods implementation
-var createMethod = function (TYPE) {
-  var IS_MAP = TYPE == 1;
-  var IS_FILTER = TYPE == 2;
-  var IS_SOME = TYPE == 3;
-  var IS_EVERY = TYPE == 4;
-  var IS_FIND_INDEX = TYPE == 6;
-  var IS_FILTER_REJECT = TYPE == 7;
-  var NO_HOLES = TYPE == 5 || IS_FIND_INDEX;
-  return function ($this, callbackfn, that, specificCreate) {
-    var O = toObject($this);
-    var self = IndexedObject(O);
-    var boundFunction = bind(callbackfn, that);
-    var length = lengthOfArrayLike(self);
-    var index = 0;
-    var create = specificCreate || arraySpeciesCreate;
-    var target = IS_MAP ? create($this, length) : IS_FILTER || IS_FILTER_REJECT ? create($this, 0) : undefined;
-    var value, result;
-    for (;length > index; index++) if (NO_HOLES || index in self) {
-      value = self[index];
-      result = boundFunction(value, index, O);
-      if (TYPE) {
-        if (IS_MAP) target[index] = result; // map
-        else if (result) switch (TYPE) {
-          case 3: return true;              // some
-          case 5: return value;             // find
-          case 6: return index;             // findIndex
-          case 2: push(target, value);      // filter
-        } else switch (TYPE) {
-          case 4: return false;             // every
-          case 7: push(target, value);      // filterReject
-        }
-      }
-    }
-    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : target;
-  };
-};
-
-module.exports = {
-  // `Array.prototype.forEach` method
-  // https://tc39.es/ecma262/#sec-array.prototype.foreach
-  forEach: createMethod(0),
-  // `Array.prototype.map` method
-  // https://tc39.es/ecma262/#sec-array.prototype.map
-  map: createMethod(1),
-  // `Array.prototype.filter` method
-  // https://tc39.es/ecma262/#sec-array.prototype.filter
-  filter: createMethod(2),
-  // `Array.prototype.some` method
-  // https://tc39.es/ecma262/#sec-array.prototype.some
-  some: createMethod(3),
-  // `Array.prototype.every` method
-  // https://tc39.es/ecma262/#sec-array.prototype.every
-  every: createMethod(4),
-  // `Array.prototype.find` method
-  // https://tc39.es/ecma262/#sec-array.prototype.find
-  find: createMethod(5),
-  // `Array.prototype.findIndex` method
-  // https://tc39.es/ecma262/#sec-array.prototype.findIndex
-  findIndex: createMethod(6),
-  // `Array.prototype.filterReject` method
-  // https://github.com/tc39/proposal-array-filtering
-  filterReject: createMethod(7)
-};
-
-
-/***/ }),
-/* 111 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arraySpeciesConstructor = __webpack_require__(112);
-
-// `ArraySpeciesCreate` abstract operation
-// https://tc39.es/ecma262/#sec-arrayspeciescreate
-module.exports = function (originalArray, length) {
-  return new (arraySpeciesConstructor(originalArray))(length === 0 ? 0 : length);
-};
-
-
-/***/ }),
-/* 112 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isArray = __webpack_require__(113);
-var isConstructor = __webpack_require__(55);
-var isObject = __webpack_require__(16);
-var wellKnownSymbol = __webpack_require__(7);
-
-var SPECIES = wellKnownSymbol('species');
-var Array = global.Array;
-
-// a part of `ArraySpeciesCreate` abstract operation
-// https://tc39.es/ecma262/#sec-arrayspeciescreate
-module.exports = function (originalArray) {
-  var C;
-  if (isArray(originalArray)) {
-    C = originalArray.constructor;
-    // cross-realm fallback
-    if (isConstructor(C) && (C === Array || isArray(C.prototype))) C = undefined;
-    else if (isObject(C)) {
-      C = C[SPECIES];
-      if (C === null) C = undefined;
-    }
-  } return C === undefined ? Array : C;
-};
-
-
-/***/ }),
-/* 113 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var classof = __webpack_require__(32);
-
-// `IsArray` abstract operation
-// https://tc39.es/ecma262/#sec-isarray
-// eslint-disable-next-line es/no-array-isarray -- safe
-module.exports = Array.isArray || function isArray(argument) {
-  return classof(argument) == 'Array';
-};
-
-
-/***/ }),
-/* 114 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DESCRIPTORS = __webpack_require__(18);
-var definePropertyModule = __webpack_require__(22);
-var anObject = __webpack_require__(13);
-var toIndexedObject = __webpack_require__(26);
-var objectKeys = __webpack_require__(57);
-
-// `Object.defineProperties` method
-// https://tc39.es/ecma262/#sec-object.defineproperties
-// eslint-disable-next-line es/no-object-defineproperties -- safe
-module.exports = DESCRIPTORS ? Object.defineProperties : function defineProperties(O, Properties) {
-  anObject(O);
-  var props = toIndexedObject(Properties);
-  var keys = objectKeys(Properties);
-  var length = keys.length;
-  var index = 0;
-  var key;
-  while (length > index) definePropertyModule.f(O, key = keys[index++], props[key]);
-  return O;
-};
-
-
-/***/ }),
-/* 115 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var uncurryThis = __webpack_require__(5);
-
-module.exports = function (CONSTRUCTOR, METHOD) {
-  return uncurryThis(global[CONSTRUCTOR].prototype[METHOD]);
-};
-
-
-/***/ }),
-/* 116 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(117);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 117 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(118);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 118 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(81);
-__webpack_require__(123);
-var path = __webpack_require__(41);
-
-module.exports = path.Array.from;
-
-
-/***/ }),
-/* 119 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-var toIntegerOrInfinity = __webpack_require__(53);
-var toString = __webpack_require__(58);
-var requireObjectCoercible = __webpack_require__(46);
-
-var charAt = uncurryThis(''.charAt);
-var charCodeAt = uncurryThis(''.charCodeAt);
-var stringSlice = uncurryThis(''.slice);
-
-var createMethod = function (CONVERT_TO_STRING) {
-  return function ($this, pos) {
-    var S = toString(requireObjectCoercible($this));
-    var position = toIntegerOrInfinity(pos);
-    var size = S.length;
-    var first, second;
-    if (position < 0 || position >= size) return CONVERT_TO_STRING ? '' : undefined;
-    first = charCodeAt(S, position);
-    return first < 0xD800 || first > 0xDBFF || position + 1 === size
-      || (second = charCodeAt(S, position + 1)) < 0xDC00 || second > 0xDFFF
-        ? CONVERT_TO_STRING
-          ? charAt(S, position)
-          : first
-        : CONVERT_TO_STRING
-          ? stringSlice(S, position, position + 2)
-          : (first - 0xD800 << 10) + (second - 0xDC00) + 0x10000;
-  };
-};
-
-module.exports = {
-  // `String.prototype.codePointAt` method
-  // https://tc39.es/ecma262/#sec-string.prototype.codepointat
-  codeAt: createMethod(false),
-  // `String.prototype.at` method
-  // https://github.com/mathiasbynens/String.prototype.at
-  charAt: createMethod(true)
-};
-
-
-/***/ }),
-/* 120 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var IteratorPrototype = __webpack_require__(83).IteratorPrototype;
-var create = __webpack_require__(40);
-var createPropertyDescriptor = __webpack_require__(24);
-var setToStringTag = __webpack_require__(60);
-var Iterators = __webpack_require__(30);
-
-var returnThis = function () { return this; };
-
-module.exports = function (IteratorConstructor, NAME, next, ENUMERABLE_NEXT) {
-  var TO_STRING_TAG = NAME + ' Iterator';
-  IteratorConstructor.prototype = create(IteratorPrototype, { next: createPropertyDescriptor(+!ENUMERABLE_NEXT, next) });
-  setToStringTag(IteratorConstructor, TO_STRING_TAG, false, true);
-  Iterators[TO_STRING_TAG] = returnThis;
-  return IteratorConstructor;
-};
-
-
-/***/ }),
-/* 121 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var fails = __webpack_require__(8);
-
-module.exports = !fails(function () {
-  function F() { /* empty */ }
-  F.prototype.constructor = null;
-  // eslint-disable-next-line es/no-object-getprototypeof -- required for testing
-  return Object.getPrototypeOf(new F()) !== F.prototype;
-});
-
-
-/***/ }),
-/* 122 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isCallable = __webpack_require__(6);
-
-var String = global.String;
-var TypeError = global.TypeError;
-
-module.exports = function (argument) {
-  if (typeof argument == 'object' || isCallable(argument)) return argument;
-  throw TypeError("Can't set " + String(argument) + ' as a prototype');
-};
-
-
-/***/ }),
-/* 123 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $ = __webpack_require__(12);
-var from = __webpack_require__(124);
-var checkCorrectnessOfIteration = __webpack_require__(88);
-
-var INCORRECT_ITERATION = !checkCorrectnessOfIteration(function (iterable) {
-  // eslint-disable-next-line es/no-array-from -- required for testing
-  Array.from(iterable);
-});
-
-// `Array.from` method
-// https://tc39.es/ecma262/#sec-array.from
-$({ target: 'Array', stat: true, forced: INCORRECT_ITERATION }, {
-  from: from
-});
-
-
-/***/ }),
-/* 124 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var global = __webpack_require__(1);
-var bind = __webpack_require__(29);
-var call = __webpack_require__(9);
-var toObject = __webpack_require__(25);
-var callWithSafeIterationClosing = __webpack_require__(125);
-var isArrayIteratorMethod = __webpack_require__(85);
-var isConstructor = __webpack_require__(55);
-var lengthOfArrayLike = __webpack_require__(28);
-var createProperty = __webpack_require__(86);
-var getIterator = __webpack_require__(87);
-var getIteratorMethod = __webpack_require__(62);
-
-var Array = global.Array;
-
-// `Array.from` method implementation
-// https://tc39.es/ecma262/#sec-array.from
-module.exports = function from(arrayLike /* , mapfn = undefined, thisArg = undefined */) {
-  var O = toObject(arrayLike);
-  var IS_CONSTRUCTOR = isConstructor(this);
-  var argumentsLength = arguments.length;
-  var mapfn = argumentsLength > 1 ? arguments[1] : undefined;
-  var mapping = mapfn !== undefined;
-  if (mapping) mapfn = bind(mapfn, argumentsLength > 2 ? arguments[2] : undefined);
-  var iteratorMethod = getIteratorMethod(O);
-  var index = 0;
-  var length, result, step, iterator, next, value;
-  // if the target is not iterable or it's an array with the default iterator - use a simple case
-  if (iteratorMethod && !(this == Array && isArrayIteratorMethod(iteratorMethod))) {
-    iterator = getIterator(O, iteratorMethod);
-    next = iterator.next;
-    result = IS_CONSTRUCTOR ? new this() : [];
-    for (;!(step = call(next, iterator)).done; index++) {
-      value = mapping ? callWithSafeIterationClosing(iterator, mapfn, [step.value, index], true) : step.value;
-      createProperty(result, index, value);
-    }
-  } else {
-    length = lengthOfArrayLike(O);
-    result = IS_CONSTRUCTOR ? new this(length) : Array(length);
-    for (;length > index; index++) {
-      value = mapping ? mapfn(O[index], index) : O[index];
-      createProperty(result, index, value);
-    }
-  }
-  result.length = index;
-  return result;
-};
-
-
-/***/ }),
-/* 125 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var anObject = __webpack_require__(13);
-var iteratorClose = __webpack_require__(84);
-
-// call something on iterator step with safe closing on error
-module.exports = function (iterator, fn, value, ENTRIES) {
-  try {
-    return ENTRIES ? fn(anObject(value)[0], value[1]) : fn(value);
-  } catch (error) {
-    iteratorClose(iterator, 'throw', error);
-  }
-};
-
-
-/***/ }),
-/* 126 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(127);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 127 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(128);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 128 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(129);
-var path = __webpack_require__(41);
-
-module.exports = path.Object.assign;
-
-
-/***/ }),
-/* 129 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $ = __webpack_require__(12);
-var assign = __webpack_require__(130);
-
-// `Object.assign` method
-// https://tc39.es/ecma262/#sec-object.assign
-// eslint-disable-next-line es/no-object-assign -- required for testing
-$({ target: 'Object', stat: true, forced: Object.assign !== assign }, {
-  assign: assign
-});
-
-
-/***/ }),
-/* 130 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var DESCRIPTORS = __webpack_require__(18);
-var uncurryThis = __webpack_require__(5);
-var call = __webpack_require__(9);
-var fails = __webpack_require__(8);
-var objectKeys = __webpack_require__(57);
-var getOwnPropertySymbolsModule = __webpack_require__(77);
-var propertyIsEnumerableModule = __webpack_require__(65);
-var toObject = __webpack_require__(25);
-var IndexedObject = __webpack_require__(45);
-
-// eslint-disable-next-line es/no-object-assign -- safe
-var $assign = Object.assign;
-// eslint-disable-next-line es/no-object-defineproperty -- required for testing
-var defineProperty = Object.defineProperty;
-var concat = uncurryThis([].concat);
-
-// `Object.assign` method
-// https://tc39.es/ecma262/#sec-object.assign
-module.exports = !$assign || fails(function () {
-  // should have correct order of operations (Edge bug)
-  if (DESCRIPTORS && $assign({ b: 1 }, $assign(defineProperty({}, 'a', {
-    enumerable: true,
-    get: function () {
-      defineProperty(this, 'b', {
-        value: 3,
-        enumerable: false
-      });
-    }
-  }), { b: 2 })).b !== 1) return true;
-  // should work with symbols and should have deterministic property order (V8 bug)
-  var A = {};
-  var B = {};
-  // eslint-disable-next-line es/no-symbol -- safe
-  var symbol = Symbol();
-  var alphabet = 'abcdefghijklmnopqrst';
-  A[symbol] = 7;
-  alphabet.split('').forEach(function (chr) { B[chr] = chr; });
-  return $assign({}, A)[symbol] != 7 || objectKeys($assign({}, B)).join('') != alphabet;
-}) ? function assign(target, source) { // eslint-disable-line no-unused-vars -- required for `.length`
-  var T = toObject(target);
-  var argumentsLength = arguments.length;
-  var index = 1;
-  var getOwnPropertySymbols = getOwnPropertySymbolsModule.f;
-  var propertyIsEnumerable = propertyIsEnumerableModule.f;
-  while (argumentsLength > index) {
-    var S = IndexedObject(arguments[index++]);
-    var keys = getOwnPropertySymbols ? concat(objectKeys(S), getOwnPropertySymbols(S)) : objectKeys(S);
-    var length = keys.length;
-    var j = 0;
-    var key;
-    while (length > j) {
-      key = keys[j++];
-      if (!DESCRIPTORS || call(propertyIsEnumerable, S, key)) T[key] = S[key];
-    }
-  } return T;
-} : $assign;
-
-
-/***/ }),
-/* 131 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(132);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 132 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(133);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 133 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(134);
-var path = __webpack_require__(41);
-
-module.exports = path.Object.keys;
-
-
-/***/ }),
-/* 134 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $ = __webpack_require__(12);
-var toObject = __webpack_require__(25);
-var nativeKeys = __webpack_require__(57);
-var fails = __webpack_require__(8);
-
-var FAILS_ON_PRIMITIVES = fails(function () { nativeKeys(1); });
-
-// `Object.keys` method
-// https://tc39.es/ecma262/#sec-object.keys
-$({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
-  keys: function keys(it) {
-    return nativeKeys(toObject(it));
-  }
-});
-
-
-/***/ }),
-/* 135 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(136);
-__webpack_require__(161);
-// TODO: Remove from `core-js@4`
-__webpack_require__(162);
-__webpack_require__(163);
-__webpack_require__(164);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 136 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var parent = __webpack_require__(137);
-__webpack_require__(158);
-
-module.exports = parent;
-
-
-/***/ }),
-/* 137 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(89);
-__webpack_require__(90);
-__webpack_require__(143);
-__webpack_require__(145);
-__webpack_require__(96);
-__webpack_require__(97);
-__webpack_require__(157);
-__webpack_require__(81);
-var path = __webpack_require__(41);
-
-module.exports = path.Promise;
-
-
-/***/ }),
-/* 138 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-var arraySlice = __webpack_require__(139);
-
-var replace = uncurryThis(''.replace);
-var split = uncurryThis(''.split);
-var join = uncurryThis([].join);
-
-var TEST = (function (arg) { return String(Error(arg).stack); })('zxcasd');
-var V8_OR_CHAKRA_STACK_ENTRY = /\n\s*at [^:]*:[^\n]*/;
-var IS_V8_OR_CHAKRA_STACK = V8_OR_CHAKRA_STACK_ENTRY.test(TEST);
-var IS_FIREFOX_OR_SAFARI_STACK = /@[^\n]*\n/.test(TEST) && !/zxcasd/.test(TEST);
-
-module.exports = function (stack, dropEntries) {
-  if (typeof stack != 'string') return stack;
-  if (IS_V8_OR_CHAKRA_STACK) {
-    while (dropEntries--) stack = replace(stack, V8_OR_CHAKRA_STACK_ENTRY, '');
-  } else if (IS_FIREFOX_OR_SAFARI_STACK) {
-    return join(arraySlice(split(stack, '\n'), dropEntries), '\n');
-  } return stack;
-};
-
-
-/***/ }),
-/* 139 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var toAbsoluteIndex = __webpack_require__(76);
-var lengthOfArrayLike = __webpack_require__(28);
-var createProperty = __webpack_require__(86);
-
-var Array = global.Array;
-var max = Math.max;
-
-module.exports = function (O, start, end) {
-  var length = lengthOfArrayLike(O);
-  var k = toAbsoluteIndex(start, length);
-  var fin = toAbsoluteIndex(end === undefined ? length : end, length);
-  var result = Array(max(fin - k, 0));
-  for (var n = 0; k < fin; k++, n++) createProperty(result, n, O[k]);
-  result.length = n;
-  return result;
-};
-
-
-/***/ }),
-/* 140 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var isObject = __webpack_require__(16);
-var createNonEnumerableProperty = __webpack_require__(21);
-
-// `InstallErrorCause` abstract operation
-// https://tc39.es/proposal-error-cause/#sec-errorobjects-install-error-cause
-module.exports = function (O, options) {
-  if (isObject(options) && 'cause' in options) {
-    createNonEnumerableProperty(O, 'cause', options.cause);
-  }
-};
-
-
-/***/ }),
-/* 141 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var toString = __webpack_require__(58);
-
-module.exports = function (argument, $default) {
-  return argument === undefined ? arguments.length < 2 ? '' : $default : toString(argument);
-};
-
-
-/***/ }),
-/* 142 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var fails = __webpack_require__(8);
-var createPropertyDescriptor = __webpack_require__(24);
-
-module.exports = !fails(function () {
-  var error = Error('a');
-  if (!('stack' in error)) return true;
-  // eslint-disable-next-line es/no-object-defineproperty -- safe
-  Object.defineProperty(error, 'stack', createPropertyDescriptor(1, 7));
-  return error.stack !== 7;
-});
-
-
-/***/ }),
-/* 143 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var TO_STRING_TAG_SUPPORT = __webpack_require__(56);
-var redefine = __webpack_require__(23);
-var toString = __webpack_require__(144);
-
-// `Object.prototype.toString` method
-// https://tc39.es/ecma262/#sec-object.prototype.tostring
-if (!TO_STRING_TAG_SUPPORT) {
-  redefine(Object.prototype, 'toString', toString, { unsafe: true });
-}
-
-
-/***/ }),
-/* 144 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var TO_STRING_TAG_SUPPORT = __webpack_require__(56);
-var classof = __webpack_require__(39);
-
-// `Object.prototype.toString` method implementation
-// https://tc39.es/ecma262/#sec-object.prototype.tostring
-module.exports = TO_STRING_TAG_SUPPORT ? {}.toString : function toString() {
-  return '[object ' + classof(this) + ']';
-};
-
-
-/***/ }),
-/* 145 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $ = __webpack_require__(12);
-var IS_PURE = __webpack_require__(27);
-var global = __webpack_require__(1);
-var getBuiltIn = __webpack_require__(17);
-var call = __webpack_require__(9);
-var NativePromise = __webpack_require__(91);
-var redefine = __webpack_require__(23);
-var redefineAll = __webpack_require__(146);
-var setPrototypeOf = __webpack_require__(61);
-var setToStringTag = __webpack_require__(60);
-var setSpecies = __webpack_require__(147);
-var aCallable = __webpack_require__(20);
-var isCallable = __webpack_require__(6);
-var isObject = __webpack_require__(16);
-var anInstance = __webpack_require__(148);
-var inspectSource = __webpack_require__(37);
-var iterate = __webpack_require__(42);
-var checkCorrectnessOfIteration = __webpack_require__(88);
-var speciesConstructor = __webpack_require__(92);
-var task = __webpack_require__(93).set;
-var microtask = __webpack_require__(152);
-var promiseResolve = __webpack_require__(95);
-var hostReportErrors = __webpack_require__(155);
-var newPromiseCapabilityModule = __webpack_require__(31);
-var perform = __webpack_require__(43);
-var InternalStateModule = __webpack_require__(38);
-var isForced = __webpack_require__(78);
-var wellKnownSymbol = __webpack_require__(7);
-var IS_BROWSER = __webpack_require__(156);
-var IS_NODE = __webpack_require__(63);
-var V8_VERSION = __webpack_require__(69);
-
-var SPECIES = wellKnownSymbol('species');
-var PROMISE = 'Promise';
-
-var getInternalState = InternalStateModule.getterFor(PROMISE);
-var setInternalState = InternalStateModule.set;
-var getInternalPromiseState = InternalStateModule.getterFor(PROMISE);
-var NativePromisePrototype = NativePromise && NativePromise.prototype;
-var PromiseConstructor = NativePromise;
-var PromisePrototype = NativePromisePrototype;
-var TypeError = global.TypeError;
-var document = global.document;
-var process = global.process;
-var newPromiseCapability = newPromiseCapabilityModule.f;
-var newGenericPromiseCapability = newPromiseCapability;
-
-var DISPATCH_EVENT = !!(document && document.createEvent && global.dispatchEvent);
-var NATIVE_REJECTION_EVENT = isCallable(global.PromiseRejectionEvent);
-var UNHANDLED_REJECTION = 'unhandledrejection';
-var REJECTION_HANDLED = 'rejectionhandled';
-var PENDING = 0;
-var FULFILLED = 1;
-var REJECTED = 2;
-var HANDLED = 1;
-var UNHANDLED = 2;
-var SUBCLASSING = false;
-
-var Internal, OwnPromiseCapability, PromiseWrapper, nativeThen;
-
-var FORCED = isForced(PROMISE, function () {
-  var PROMISE_CONSTRUCTOR_SOURCE = inspectSource(PromiseConstructor);
-  var GLOBAL_CORE_JS_PROMISE = PROMISE_CONSTRUCTOR_SOURCE !== String(PromiseConstructor);
-  // V8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
-  // We can't detect it synchronously, so just check versions
-  if (!GLOBAL_CORE_JS_PROMISE && V8_VERSION === 66) return true;
-  // We need Promise#finally in the pure version for preventing prototype pollution
-  if (IS_PURE && !PromisePrototype['finally']) return true;
-  // We can't use @@species feature detection in V8 since it causes
-  // deoptimization and performance degradation
-  // https://github.com/zloirock/core-js/issues/679
-  if (V8_VERSION >= 51 && /native code/.test(PROMISE_CONSTRUCTOR_SOURCE)) return false;
-  // Detect correctness of subclassing with @@species support
-  var promise = new PromiseConstructor(function (resolve) { resolve(1); });
-  var FakePromise = function (exec) {
-    exec(function () { /* empty */ }, function () { /* empty */ });
-  };
-  var constructor = promise.constructor = {};
-  constructor[SPECIES] = FakePromise;
-  SUBCLASSING = promise.then(function () { /* empty */ }) instanceof FakePromise;
-  if (!SUBCLASSING) return true;
-  // Unhandled rejections tracking support, NodeJS Promise without it fails @@species test
-  return !GLOBAL_CORE_JS_PROMISE && IS_BROWSER && !NATIVE_REJECTION_EVENT;
-});
-
-var INCORRECT_ITERATION = FORCED || !checkCorrectnessOfIteration(function (iterable) {
-  PromiseConstructor.all(iterable)['catch'](function () { /* empty */ });
-});
-
-// helpers
-var isThenable = function (it) {
-  var then;
-  return isObject(it) && isCallable(then = it.then) ? then : false;
-};
-
-var notify = function (state, isReject) {
-  if (state.notified) return;
-  state.notified = true;
-  var chain = state.reactions;
-  microtask(function () {
-    var value = state.value;
-    var ok = state.state == FULFILLED;
-    var index = 0;
-    // variable length - can't use forEach
-    while (chain.length > index) {
-      var reaction = chain[index++];
-      var handler = ok ? reaction.ok : reaction.fail;
-      var resolve = reaction.resolve;
-      var reject = reaction.reject;
-      var domain = reaction.domain;
-      var result, then, exited;
-      try {
-        if (handler) {
-          if (!ok) {
-            if (state.rejection === UNHANDLED) onHandleUnhandled(state);
-            state.rejection = HANDLED;
-          }
-          if (handler === true) result = value;
-          else {
-            if (domain) domain.enter();
-            result = handler(value); // can throw
-            if (domain) {
-              domain.exit();
-              exited = true;
-            }
-          }
-          if (result === reaction.promise) {
-            reject(TypeError('Promise-chain cycle'));
-          } else if (then = isThenable(result)) {
-            call(then, result, resolve, reject);
-          } else resolve(result);
-        } else reject(value);
-      } catch (error) {
-        if (domain && !exited) domain.exit();
-        reject(error);
-      }
-    }
-    state.reactions = [];
-    state.notified = false;
-    if (isReject && !state.rejection) onUnhandled(state);
-  });
-};
-
-var dispatchEvent = function (name, promise, reason) {
-  var event, handler;
-  if (DISPATCH_EVENT) {
-    event = document.createEvent('Event');
-    event.promise = promise;
-    event.reason = reason;
-    event.initEvent(name, false, true);
-    global.dispatchEvent(event);
-  } else event = { promise: promise, reason: reason };
-  if (!NATIVE_REJECTION_EVENT && (handler = global['on' + name])) handler(event);
-  else if (name === UNHANDLED_REJECTION) hostReportErrors('Unhandled promise rejection', reason);
-};
-
-var onUnhandled = function (state) {
-  call(task, global, function () {
-    var promise = state.facade;
-    var value = state.value;
-    var IS_UNHANDLED = isUnhandled(state);
-    var result;
-    if (IS_UNHANDLED) {
-      result = perform(function () {
-        if (IS_NODE) {
-          process.emit('unhandledRejection', value, promise);
-        } else dispatchEvent(UNHANDLED_REJECTION, promise, value);
-      });
-      // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
-      state.rejection = IS_NODE || isUnhandled(state) ? UNHANDLED : HANDLED;
-      if (result.error) throw result.value;
-    }
-  });
-};
-
-var isUnhandled = function (state) {
-  return state.rejection !== HANDLED && !state.parent;
-};
-
-var onHandleUnhandled = function (state) {
-  call(task, global, function () {
-    var promise = state.facade;
-    if (IS_NODE) {
-      process.emit('rejectionHandled', promise);
-    } else dispatchEvent(REJECTION_HANDLED, promise, state.value);
-  });
-};
-
-var bind = function (fn, state, unwrap) {
-  return function (value) {
-    fn(state, value, unwrap);
-  };
-};
-
-var internalReject = function (state, value, unwrap) {
-  if (state.done) return;
-  state.done = true;
-  if (unwrap) state = unwrap;
-  state.value = value;
-  state.state = REJECTED;
-  notify(state, true);
-};
-
-var internalResolve = function (state, value, unwrap) {
-  if (state.done) return;
-  state.done = true;
-  if (unwrap) state = unwrap;
-  try {
-    if (state.facade === value) throw TypeError("Promise can't be resolved itself");
-    var then = isThenable(value);
-    if (then) {
-      microtask(function () {
-        var wrapper = { done: false };
-        try {
-          call(then, value,
-            bind(internalResolve, wrapper, state),
-            bind(internalReject, wrapper, state)
-          );
-        } catch (error) {
-          internalReject(wrapper, error, state);
-        }
-      });
-    } else {
-      state.value = value;
-      state.state = FULFILLED;
-      notify(state, false);
-    }
-  } catch (error) {
-    internalReject({ done: false }, error, state);
-  }
-};
-
-// constructor polyfill
-if (FORCED) {
-  // 25.4.3.1 Promise(executor)
-  PromiseConstructor = function Promise(executor) {
-    anInstance(this, PromisePrototype);
-    aCallable(executor);
-    call(Internal, this);
-    var state = getInternalState(this);
-    try {
-      executor(bind(internalResolve, state), bind(internalReject, state));
-    } catch (error) {
-      internalReject(state, error);
-    }
-  };
-  PromisePrototype = PromiseConstructor.prototype;
-  // eslint-disable-next-line no-unused-vars -- required for `.length`
-  Internal = function Promise(executor) {
-    setInternalState(this, {
-      type: PROMISE,
-      done: false,
-      notified: false,
-      parent: false,
-      reactions: [],
-      rejection: false,
-      state: PENDING,
-      value: undefined
-    });
-  };
-  Internal.prototype = redefineAll(PromisePrototype, {
-    // `Promise.prototype.then` method
-    // https://tc39.es/ecma262/#sec-promise.prototype.then
-    then: function then(onFulfilled, onRejected) {
-      var state = getInternalPromiseState(this);
-      var reactions = state.reactions;
-      var reaction = newPromiseCapability(speciesConstructor(this, PromiseConstructor));
-      reaction.ok = isCallable(onFulfilled) ? onFulfilled : true;
-      reaction.fail = isCallable(onRejected) && onRejected;
-      reaction.domain = IS_NODE ? process.domain : undefined;
-      state.parent = true;
-      reactions[reactions.length] = reaction;
-      if (state.state != PENDING) notify(state, false);
-      return reaction.promise;
-    },
-    // `Promise.prototype.catch` method
-    // https://tc39.es/ecma262/#sec-promise.prototype.catch
-    'catch': function (onRejected) {
-      return this.then(undefined, onRejected);
-    }
-  });
-  OwnPromiseCapability = function () {
-    var promise = new Internal();
-    var state = getInternalState(promise);
-    this.promise = promise;
-    this.resolve = bind(internalResolve, state);
-    this.reject = bind(internalReject, state);
-  };
-  newPromiseCapabilityModule.f = newPromiseCapability = function (C) {
-    return C === PromiseConstructor || C === PromiseWrapper
-      ? new OwnPromiseCapability(C)
-      : newGenericPromiseCapability(C);
-  };
-
-  if (!IS_PURE && isCallable(NativePromise) && NativePromisePrototype !== Object.prototype) {
-    nativeThen = NativePromisePrototype.then;
-
-    if (!SUBCLASSING) {
-      // make `Promise#then` return a polyfilled `Promise` for native promise-based APIs
-      redefine(NativePromisePrototype, 'then', function then(onFulfilled, onRejected) {
-        var that = this;
-        return new PromiseConstructor(function (resolve, reject) {
-          call(nativeThen, that, resolve, reject);
-        }).then(onFulfilled, onRejected);
-      // https://github.com/zloirock/core-js/issues/640
-      }, { unsafe: true });
-
-      // makes sure that native promise-based APIs `Promise#catch` properly works with patched `Promise#then`
-      redefine(NativePromisePrototype, 'catch', PromisePrototype['catch'], { unsafe: true });
-    }
-
-    // make `.constructor === Promise` work for native promise-based APIs
-    try {
-      delete NativePromisePrototype.constructor;
-    } catch (error) { /* empty */ }
-
-    // make `instanceof Promise` work for native promise-based APIs
-    if (setPrototypeOf) {
-      setPrototypeOf(NativePromisePrototype, PromisePrototype);
-    }
-  }
-}
-
-$({ global: true, wrap: true, forced: FORCED }, {
-  Promise: PromiseConstructor
-});
-
-setToStringTag(PromiseConstructor, PROMISE, false, true);
-setSpecies(PROMISE);
-
-PromiseWrapper = getBuiltIn(PROMISE);
-
-// statics
-$({ target: PROMISE, stat: true, forced: FORCED }, {
-  // `Promise.reject` method
-  // https://tc39.es/ecma262/#sec-promise.reject
-  reject: function reject(r) {
-    var capability = newPromiseCapability(this);
-    call(capability.reject, undefined, r);
-    return capability.promise;
-  }
-});
-
-$({ target: PROMISE, stat: true, forced: IS_PURE || FORCED }, {
-  // `Promise.resolve` method
-  // https://tc39.es/ecma262/#sec-promise.resolve
-  resolve: function resolve(x) {
-    return promiseResolve(IS_PURE && this === PromiseWrapper ? PromiseConstructor : this, x);
-  }
-});
-
-$({ target: PROMISE, stat: true, forced: INCORRECT_ITERATION }, {
-  // `Promise.all` method
-  // https://tc39.es/ecma262/#sec-promise.all
-  all: function all(iterable) {
-    var C = this;
-    var capability = newPromiseCapability(C);
-    var resolve = capability.resolve;
-    var reject = capability.reject;
-    var result = perform(function () {
-      var $promiseResolve = aCallable(C.resolve);
-      var values = [];
-      var counter = 0;
-      var remaining = 1;
-      iterate(iterable, function (promise) {
-        var index = counter++;
-        var alreadyCalled = false;
-        remaining++;
-        call($promiseResolve, C, promise).then(function (value) {
-          if (alreadyCalled) return;
-          alreadyCalled = true;
-          values[index] = value;
-          --remaining || resolve(values);
-        }, reject);
-      });
-      --remaining || resolve(values);
-    });
-    if (result.error) reject(result.value);
-    return capability.promise;
-  },
-  // `Promise.race` method
-  // https://tc39.es/ecma262/#sec-promise.race
-  race: function race(iterable) {
-    var C = this;
-    var capability = newPromiseCapability(C);
-    var reject = capability.reject;
-    var result = perform(function () {
-      var $promiseResolve = aCallable(C.resolve);
-      iterate(iterable, function (promise) {
-        call($promiseResolve, C, promise).then(capability.resolve, reject);
-      });
-    });
-    if (result.error) reject(result.value);
-    return capability.promise;
-  }
-});
-
-
-/***/ }),
-/* 146 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var redefine = __webpack_require__(23);
-
-module.exports = function (target, src, options) {
-  for (var key in src) redefine(target, key, src[key], options);
-  return target;
-};
-
-
-/***/ }),
-/* 147 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var getBuiltIn = __webpack_require__(17);
-var definePropertyModule = __webpack_require__(22);
-var wellKnownSymbol = __webpack_require__(7);
-var DESCRIPTORS = __webpack_require__(18);
-
-var SPECIES = wellKnownSymbol('species');
-
-module.exports = function (CONSTRUCTOR_NAME) {
-  var Constructor = getBuiltIn(CONSTRUCTOR_NAME);
-  var defineProperty = definePropertyModule.f;
-
-  if (DESCRIPTORS && Constructor && !Constructor[SPECIES]) {
-    defineProperty(Constructor, SPECIES, {
-      configurable: true,
-      get: function () { return this; }
-    });
-  }
-};
-
-
-/***/ }),
-/* 148 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isPrototypeOf = __webpack_require__(33);
-
-var TypeError = global.TypeError;
-
-module.exports = function (it, Prototype) {
-  if (isPrototypeOf(Prototype, it)) return it;
-  throw TypeError('Incorrect invocation');
-};
-
-
-/***/ }),
-/* 149 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var isConstructor = __webpack_require__(55);
-var tryToString = __webpack_require__(35);
-
-var TypeError = global.TypeError;
-
-// `Assert: IsConstructor(argument) is true`
-module.exports = function (argument) {
-  if (isConstructor(argument)) return argument;
-  throw TypeError(tryToString(argument) + ' is not a constructor');
-};
-
-
-/***/ }),
-/* 150 */
-/***/ (function(module, exports) {
-
-var FunctionPrototype = Function.prototype;
-var apply = FunctionPrototype.apply;
-var bind = FunctionPrototype.bind;
-var call = FunctionPrototype.call;
-
-// eslint-disable-next-line es/no-reflect -- safe
-module.exports = typeof Reflect == 'object' && Reflect.apply || (bind ? call.bind(apply) : function () {
-  return call.apply(apply, arguments);
-});
-
-
-/***/ }),
-/* 151 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var uncurryThis = __webpack_require__(5);
-
-module.exports = uncurryThis([].slice);
-
-
-/***/ }),
-/* 152 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var bind = __webpack_require__(29);
-var getOwnPropertyDescriptor = __webpack_require__(44).f;
-var macrotask = __webpack_require__(93).set;
-var IS_IOS = __webpack_require__(94);
-var IS_IOS_PEBBLE = __webpack_require__(153);
-var IS_WEBOS_WEBKIT = __webpack_require__(154);
-var IS_NODE = __webpack_require__(63);
-
-var MutationObserver = global.MutationObserver || global.WebKitMutationObserver;
-var document = global.document;
-var process = global.process;
-var Promise = global.Promise;
-// Node.js 11 shows ExperimentalWarning on getting `queueMicrotask`
-var queueMicrotaskDescriptor = getOwnPropertyDescriptor(global, 'queueMicrotask');
-var queueMicrotask = queueMicrotaskDescriptor && queueMicrotaskDescriptor.value;
-
-var flush, head, last, notify, toggle, node, promise, then;
-
-// modern engines have queueMicrotask method
-if (!queueMicrotask) {
-  flush = function () {
-    var parent, fn;
-    if (IS_NODE && (parent = process.domain)) parent.exit();
-    while (head) {
-      fn = head.fn;
-      head = head.next;
-      try {
-        fn();
-      } catch (error) {
-        if (head) notify();
-        else last = undefined;
-        throw error;
-      }
-    } last = undefined;
-    if (parent) parent.enter();
-  };
-
-  // browsers with MutationObserver, except iOS - https://github.com/zloirock/core-js/issues/339
-  // also except WebOS Webkit https://github.com/zloirock/core-js/issues/898
-  if (!IS_IOS && !IS_NODE && !IS_WEBOS_WEBKIT && MutationObserver && document) {
-    toggle = true;
-    node = document.createTextNode('');
-    new MutationObserver(flush).observe(node, { characterData: true });
-    notify = function () {
-      node.data = toggle = !toggle;
-    };
-  // environments with maybe non-completely correct, but existent Promise
-  } else if (!IS_IOS_PEBBLE && Promise && Promise.resolve) {
-    // Promise.resolve without an argument throws an error in LG WebOS 2
-    promise = Promise.resolve(undefined);
-    // workaround of WebKit ~ iOS Safari 10.1 bug
-    promise.constructor = Promise;
-    then = bind(promise.then, promise);
-    notify = function () {
-      then(flush);
-    };
-  // Node.js without promises
-  } else if (IS_NODE) {
-    notify = function () {
-      process.nextTick(flush);
-    };
-  // for other environments - macrotask based on:
-  // - setImmediate
-  // - MessageChannel
-  // - window.postMessag
-  // - onreadystatechange
-  // - setTimeout
-  } else {
-    // strange IE + webpack dev server bug - use .bind(global)
-    macrotask = bind(macrotask, global);
-    notify = function () {
-      macrotask(flush);
-    };
-  }
-}
-
-module.exports = queueMicrotask || function (fn) {
-  var task = { fn: fn, next: undefined };
-  if (last) last.next = task;
-  if (!head) {
-    head = task;
-    notify();
-  } last = task;
-};
-
-
-/***/ }),
-/* 153 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var userAgent = __webpack_require__(34);
-var global = __webpack_require__(1);
-
-module.exports = /ipad|iphone|ipod/i.test(userAgent) && global.Pebble !== undefined;
-
-
-/***/ }),
-/* 154 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var userAgent = __webpack_require__(34);
-
-module.exports = /web0s(?!.*chrome)/i.test(userAgent);
-
-
-/***/ }),
-/* 155 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-
-module.exports = function (a, b) {
-  var console = global.console;
-  if (console && console.error) {
-    arguments.length == 1 ? console.error(a) : console.error(a, b);
-  }
-};
-
-
-/***/ }),
-/* 156 */
-/***/ (function(module, exports) {
-
-module.exports = typeof window == 'object';
-
-
-/***/ }),
-/* 157 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $ = __webpack_require__(12);
-var IS_PURE = __webpack_require__(27);
-var NativePromise = __webpack_require__(91);
-var fails = __webpack_require__(8);
-var getBuiltIn = __webpack_require__(17);
-var isCallable = __webpack_require__(6);
-var speciesConstructor = __webpack_require__(92);
-var promiseResolve = __webpack_require__(95);
-var redefine = __webpack_require__(23);
-
-// Safari bug https://bugs.webkit.org/show_bug.cgi?id=200829
-var NON_GENERIC = !!NativePromise && fails(function () {
-  NativePromise.prototype['finally'].call({ then: function () { /* empty */ } }, function () { /* empty */ });
-});
-
-// `Promise.prototype.finally` method
-// https://tc39.es/ecma262/#sec-promise.prototype.finally
-$({ target: 'Promise', proto: true, real: true, forced: NON_GENERIC }, {
-  'finally': function (onFinally) {
-    var C = speciesConstructor(this, getBuiltIn('Promise'));
-    var isFunction = isCallable(onFinally);
-    return this.then(
-      isFunction ? function (x) {
-        return promiseResolve(C, onFinally()).then(function () { return x; });
-      } : onFinally,
-      isFunction ? function (e) {
-        return promiseResolve(C, onFinally()).then(function () { throw e; });
-      } : onFinally
-    );
-  }
-});
-
-// makes sure that native promise-based APIs `Promise#finally` properly works with patched `Promise#then`
-if (!IS_PURE && isCallable(NativePromise)) {
-  var method = getBuiltIn('Promise').prototype['finally'];
-  if (NativePromise.prototype['finally'] !== method) {
-    redefine(NativePromise.prototype, 'finally', method, { unsafe: true });
-  }
-}
-
-
-/***/ }),
-/* 158 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var global = __webpack_require__(1);
-var DOMIterables = __webpack_require__(159);
-var DOMTokenListPrototype = __webpack_require__(160);
-var ArrayIteratorMethods = __webpack_require__(90);
-var createNonEnumerableProperty = __webpack_require__(21);
-var wellKnownSymbol = __webpack_require__(7);
-
-var ITERATOR = wellKnownSymbol('iterator');
-var TO_STRING_TAG = wellKnownSymbol('toStringTag');
-var ArrayValues = ArrayIteratorMethods.values;
-
-var handlePrototype = function (CollectionPrototype, COLLECTION_NAME) {
-  if (CollectionPrototype) {
-    // some Chrome versions have non-configurable methods on DOMTokenList
-    if (CollectionPrototype[ITERATOR] !== ArrayValues) try {
-      createNonEnumerableProperty(CollectionPrototype, ITERATOR, ArrayValues);
-    } catch (error) {
-      CollectionPrototype[ITERATOR] = ArrayValues;
-    }
-    if (!CollectionPrototype[TO_STRING_TAG]) {
-      createNonEnumerableProperty(CollectionPrototype, TO_STRING_TAG, COLLECTION_NAME);
-    }
-    if (DOMIterables[COLLECTION_NAME]) for (var METHOD_NAME in ArrayIteratorMethods) {
-      // some Chrome versions have non-configurable methods on DOMTokenList
-      if (CollectionPrototype[METHOD_NAME] !== ArrayIteratorMethods[METHOD_NAME]) try {
-        createNonEnumerableProperty(CollectionPrototype, METHOD_NAME, ArrayIteratorMethods[METHOD_NAME]);
-      } catch (error) {
-        CollectionPrototype[METHOD_NAME] = ArrayIteratorMethods[METHOD_NAME];
-      }
-    }
-  }
-};
-
-for (var COLLECTION_NAME in DOMIterables) {
-  handlePrototype(global[COLLECTION_NAME] && global[COLLECTION_NAME].prototype, COLLECTION_NAME);
-}
-
-handlePrototype(DOMTokenListPrototype, 'DOMTokenList');
-
-
-/***/ }),
-/* 159 */
-/***/ (function(module, exports) {
-
-// iterable DOM collections
-// flag - `iterable` interface - 'entries', 'keys', 'values', 'forEach' methods
-module.exports = {
-  CSSRuleList: 0,
-  CSSStyleDeclaration: 0,
-  CSSValueList: 0,
-  ClientRectList: 0,
-  DOMRectList: 0,
-  DOMStringList: 0,
-  DOMTokenList: 1,
-  DataTransferItemList: 0,
-  FileList: 0,
-  HTMLAllCollection: 0,
-  HTMLCollection: 0,
-  HTMLFormElement: 0,
-  HTMLSelectElement: 0,
-  MediaList: 0,
-  MimeTypeArray: 0,
-  NamedNodeMap: 0,
-  NodeList: 1,
-  PaintRequestList: 0,
-  Plugin: 0,
-  PluginArray: 0,
-  SVGLengthList: 0,
-  SVGNumberList: 0,
-  SVGPathSegList: 0,
-  SVGPointList: 0,
-  SVGStringList: 0,
-  SVGTransformList: 0,
-  SourceBufferList: 0,
-  StyleSheetList: 0,
-  TextTrackCueList: 0,
-  TextTrackList: 0,
-  TouchList: 0
-};
-
-
-/***/ }),
-/* 160 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// in old WebKit versions, `element.classList` is not an instance of global `DOMTokenList`
-var documentCreateElement = __webpack_require__(36);
-
-var classList = documentCreateElement('span').classList;
-var DOMTokenListPrototype = classList && classList.constructor && classList.constructor.prototype;
-
-module.exports = DOMTokenListPrototype === Object.prototype ? undefined : DOMTokenListPrototype;
-
-
-/***/ }),
-/* 161 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// TODO: Remove from `core-js@4`
-__webpack_require__(89);
-
-
-/***/ }),
-/* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// TODO: Remove from `core-js@4`
-__webpack_require__(96);
-
-
-/***/ }),
-/* 163 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var $ = __webpack_require__(12);
-var newPromiseCapabilityModule = __webpack_require__(31);
-var perform = __webpack_require__(43);
-
-// `Promise.try` method
-// https://github.com/tc39/proposal-promise-try
-$({ target: 'Promise', stat: true }, {
-  'try': function (callbackfn) {
-    var promiseCapability = newPromiseCapabilityModule.f(this);
-    var result = perform(callbackfn);
-    (result.error ? promiseCapability.reject : promiseCapability.resolve)(result.value);
-    return promiseCapability.promise;
-  }
-});
-
-
-/***/ }),
-/* 164 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// TODO: Remove from `core-js@4`
-__webpack_require__(97);
-
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports) {
-
-// Polyfill for creating CustomEvents on IE9/10/11
-
-// code pulled from:
-// https://github.com/d4tocchini/customevent-polyfill
-// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
-
-(function() {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  try {
-    var ce = new window.CustomEvent('test', { cancelable: true });
-    ce.preventDefault();
-    if (ce.defaultPrevented !== true) {
-      // IE has problems with .preventDefault() on custom events
-      // http://stackoverflow.com/questions/23349191
-      throw new Error('Could not prevent default');
-    }
-  } catch (e) {
-    var CustomEvent = function(event, params) {
-      var evt, origPrevent;
-      params = params || {};
-      params.bubbles = !!params.bubbles;
-      params.cancelable = !!params.cancelable;
-
-      evt = document.createEvent('CustomEvent');
-      evt.initCustomEvent(
-        event,
-        params.bubbles,
-        params.cancelable,
-        params.detail
-      );
-      origPrevent = evt.preventDefault;
-      evt.preventDefault = function() {
-        origPrevent.call(this);
-        try {
-          Object.defineProperty(this, 'defaultPrevented', {
-            get: function() {
-              return true;
-            }
-          });
-        } catch (e) {
-          this.defaultPrevented = true;
-        }
-      };
-      return evt;
-    };
-
-    CustomEvent.prototype = window.Event.prototype;
-    window.CustomEvent = CustomEvent; // expose definition to window
-  }
-})();
-
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports) {
-
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
-module.exports = _arrayWithHoles;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 167 */
-/***/ (function(module, exports) {
-
-function _iterableToArrayLimit(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-
-  if (_i == null) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-
-  var _s, _e;
-
-  try {
-    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-
-module.exports = _iterableToArrayLimit;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 168 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var arrayLikeToArray = __webpack_require__(169);
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
-}
-
-module.exports = _unsupportedIterableToArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 169 */
-/***/ (function(module, exports) {
-
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-
-  return arr2;
-}
-
-module.exports = _arrayLikeToArray;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 170 */
-/***/ (function(module, exports) {
-
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
-module.exports = _nonIterableRest;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 171 */
-/***/ (function(module, exports) {
-
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  module.exports["default"] = module.exports, module.exports.__esModule = true;
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 172 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
-
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
+var defineProperty = __webpack_require__(713);
+var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
-var helpers_typeof = __webpack_require__(14);
+var helpers_typeof = __webpack_require__(8);
 var typeof_default = /*#__PURE__*/__webpack_require__.n(helpers_typeof);
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/classCallCheck.js
-var classCallCheck = __webpack_require__(2);
+var classCallCheck = __webpack_require__(575);
 var classCallCheck_default = /*#__PURE__*/__webpack_require__.n(classCallCheck);
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/createClass.js
-var createClass = __webpack_require__(3);
+var createClass = __webpack_require__(913);
 var createClass_default = /*#__PURE__*/__webpack_require__.n(createClass);
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/regenerator/index.js
-var regenerator = __webpack_require__(4);
+var regenerator = __webpack_require__(757);
 var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
-
-// EXTERNAL MODULE: ./node_modules/core-js/features/array/find.js
-var find = __webpack_require__(99);
-
-// EXTERNAL MODULE: ./node_modules/core-js/features/array/from.js
-var from = __webpack_require__(116);
-
-// EXTERNAL MODULE: ./node_modules/core-js/features/object/assign.js
-var object_assign = __webpack_require__(126);
-
-// EXTERNAL MODULE: ./node_modules/core-js/features/object/keys.js
-var keys = __webpack_require__(131);
-
-// EXTERNAL MODULE: ./node_modules/core-js/features/promise/index.js
-var promise = __webpack_require__(135);
-
-// EXTERNAL MODULE: ./node_modules/custom-event-polyfill/polyfill.js
-var polyfill = __webpack_require__(165);
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
-var slicedToArray = __webpack_require__(64);
+var slicedToArray = __webpack_require__(38);
 var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
-
-// CONCATENATED MODULE: ./src/js/utils/constants.ts
+;// CONCATENATED MODULE: ./src/js/utils/constants.ts
 var NAV = typeof window !== 'undefined' ? window.navigator : null;
 var UA = NAV ? NAV.userAgent.toLowerCase() : null;
 var IS_IPAD = UA ? /ipad/i.test(UA) && !window.MSStream : false;
@@ -5236,7 +1157,6 @@ var IS_IPHONE = UA ? /iphone/i.test(UA) && !window.MSStream : false;
 var IS_IPOD = UA ? /ipod/i.test(UA) && !window.MSStream : false;
 var IS_IOS = UA ? /ipad|iphone|ipod/i.test(UA) && !window.MSStream : false;
 var IS_ANDROID = UA ? /android/i.test(UA) : false;
-var IS_IE = UA ? /(trident|microsoft)/i.test(NAV.appName) : false;
 var IS_EDGE = NAV ? 'msLaunchUri' in NAV && !('documentMode' in document) : false;
 var IS_CHROME = UA ? /chrome/i.test(UA) : false;
 var IS_FIREFOX = UA ? /firefox/i.test(UA) : false;
@@ -5255,23 +1175,11 @@ var SUPPORTS_HLS = function SUPPORTS_HLS() {
   return !!isTypeSupported && !!sourceBufferValidAPI && !IS_SAFARI;
 };
 var DVR_THRESHOLD = 120;
-var EVENT_OPTIONS = IS_IE ? false : {
+var EVENT_OPTIONS = {
   passive: false
 };
-// CONCATENATED MODULE: ./src/js/utils/events.ts
-function addEvent(event, details) {
-  var detail = {};
+;// CONCATENATED MODULE: ./src/js/utils/general.ts
 
-  if (details && details.detail) {
-    detail = {
-      detail: details.detail
-    };
-  }
-
-  return new CustomEvent(event, detail);
-}
-var events = ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'];
-// CONCATENATED MODULE: ./src/js/utils/general.ts
 function getAbsoluteUrl(url) {
   var a = document.createElement('a');
   a.href = url;
@@ -5283,15 +1191,6 @@ function isVideo(element) {
 function isAudio(element) {
   return element.tagName.toLowerCase() === 'audio';
 }
-function removeElement(node) {
-  if (node) {
-    var parentNode = node.parentNode;
-
-    if (parentNode) {
-      parentNode.removeChild(node);
-    }
-  }
-}
 function loadScript(url) {
   return new Promise(function (resolve, reject) {
     var script = document.createElement('script');
@@ -5299,91 +1198,19 @@ function loadScript(url) {
     script.async = true;
 
     script.onload = function () {
-      removeElement(script);
+      script.remove();
       resolve();
     };
 
     script.onerror = function () {
-      removeElement(script);
-      reject({
-        src: url
-      });
+      script.remove();
+      reject(new Error("".concat(url, " could not be loaded")));
     };
 
     if (document.head) {
       document.head.appendChild(script);
     }
   });
-}
-function request(url, dataType, success, error) {
-  var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-  var type;
-
-  switch (dataType) {
-    case 'text':
-      type = 'text/plain';
-      break;
-
-    case 'json':
-      type = 'application/json, text/javascript';
-      break;
-
-    case 'html':
-      type = 'text/html';
-      break;
-
-    case 'xml':
-      type = 'application/xml, text/xml';
-      break;
-
-    default:
-      type = 'application/x-www-form-urlencoded; charset=UTF-8';
-      break;
-  }
-
-  var completed = false;
-  var accept = type !== 'application/x-www-form-urlencoded' ? "".concat(type, ", */*; q=0.01") : '*/'.concat('*');
-
-  if (xhr) {
-    xhr.open('GET', url, true);
-    xhr.setRequestHeader('Accept', accept);
-
-    xhr.onreadystatechange = function () {
-      if (completed) {
-        return;
-      }
-
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          completed = true;
-          var data;
-
-          switch (dataType) {
-            case 'json':
-              data = JSON.parse(xhr.responseText);
-              break;
-
-            case 'xml':
-              data = xhr.responseXML;
-              break;
-
-            default:
-              data = xhr.responseText;
-              break;
-          }
-
-          success(data);
-        } else if (typeof error === 'function') {
-          error(xhr.status);
-        }
-      }
-    };
-
-    xhr.send();
-  }
-}
-function hasClass(target, className) {
-  return !!target.classList.contains(className);
 }
 function offset(el) {
   var rect = el.getBoundingClientRect();
@@ -5392,19 +1219,54 @@ function offset(el) {
     top: rect.top + (window.pageYOffset || document.documentElement.scrollTop)
   };
 }
+function sanitize(html) {
+  var plainText = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var parser = new DOMParser();
+  var content = parser.parseFromString(html, 'text/html');
+  var formattedContent = content.body || document.createElement('body');
+  var scripts = formattedContent.querySelectorAll('script');
+
+  for (var i = 0, total = scripts.length; i < total; i++) {
+    scripts[i].remove();
+  }
+
+  function clean(element) {
+    var nodes = element.children;
+
+    for (var _i = 0, _total = nodes.length; _i < _total; _i++) {
+      var node = nodes[_i];
+      var attributes = node.attributes;
+
+      for (var j = 0, t = attributes.length; j < t; j++) {
+        var _attributes$j = attributes[j],
+            name = _attributes$j.name,
+            value = _attributes$j.value;
+        var val = value.replace(/\s+/g, '').toLowerCase();
+
+        if (['src', 'href', 'xlink:href'].includes(name)) {
+          if (val.includes('javascript:') || val.includes('data:')) {
+            node.removeAttribute(name);
+          }
+        }
+
+        if (name.startsWith('on')) {
+          node.removeAttribute(name);
+        }
+      }
+
+      clean(node);
+    }
+  }
+
+  clean(formattedContent);
+  return plainText ? (formattedContent.textContent || '').replace(/\s{2,}/g, '') : formattedContent.innerHTML;
+}
 function isXml(input) {
   var parsedXml;
 
-  if (typeof window.DOMParser !== 'undefined') {
+  if (typeof DOMParser !== 'undefined') {
     parsedXml = function parsedXml(text) {
-      return new window.DOMParser().parseFromString(text, 'text/xml');
-    };
-  } else if (typeof window.ActiveXObject !== 'undefined' && new window.ActiveXObject('Microsoft.XMLDOM')) {
-    parsedXml = function parsedXml(text) {
-      var xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-      xmlDoc.async = false;
-      xmlDoc.loadXML(text);
-      return xmlDoc;
+      return new DOMParser().parseFromString(text, 'text/xml');
     };
   } else {
     return false;
@@ -5416,17 +1278,39 @@ function isXml(input) {
     if (response.getElementsByTagName('parsererror').length > 0) {
       return false;
     }
-
-    if (response.parseError && response.parseError.errorCode !== 0) {
-      return false;
-    }
   } catch (e) {
     return false;
   }
 
   return true;
 }
-// CONCATENATED MODULE: ./src/js/utils/time.ts
+function isJson(item) {
+  item = typeof item !== 'string' ? JSON.stringify(item) : item;
+
+  try {
+    item = JSON.parse(item);
+  } catch (e) {
+    return false;
+  }
+
+  if (typeof_default()(item) === 'object' && item !== null) {
+    return true;
+  }
+
+  return false;
+}
+function addEvent(event, details) {
+  var detail = {};
+
+  if (details && details.detail) {
+    detail = {
+      detail: details.detail
+    };
+  }
+
+  return new CustomEvent(event, detail);
+}
+;// CONCATENATED MODULE: ./src/js/utils/time.ts
 function formatTime(seconds, frameRate) {
   var f = Math.floor(seconds % 1 * (frameRate || 0));
   var s = Math.floor(seconds);
@@ -5439,18 +1323,18 @@ function formatTime(seconds, frameRate) {
         return '00';
       }
 
-      return "0".concat(value);
+      return "0".concat(value.toString());
     }
 
-    return value;
+    return value.toString();
   };
 
   m %= 60;
   s %= 60;
   return "".concat(h > 0 ? "".concat(wrap(h), ":") : '').concat(wrap(m), ":").concat(wrap(s)).concat(f ? ":".concat(wrap(f)) : '');
 }
-function timeToSeconds(timecode) {
-  var time = timecode.replace(/;/g, ':').split(':');
+function timeToSeconds(timeCode) {
+  var time = timeCode.replace(/;/g, ':').split(':');
   var seconds = 0;
 
   if (time.length === 3) {
@@ -5464,7 +1348,7 @@ function timeToSeconds(timecode) {
 
   return seconds;
 }
-// CONCATENATED MODULE: ./src/js/controls/captions.ts
+;// CONCATENATED MODULE: ./src/js/controls/captions.ts
 
 
 
@@ -5482,14 +1366,13 @@ var __classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet || fu
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Captions_player, _Captions_button, _Captions_captions, _Captions_menu, _Captions_events, _Captions_tracks, _Captions_trackList, _Captions_trackUrlList, _Captions_hasTracks, _Captions_current, _Captions_default, _Captions_detachMenu, _Captions_labels, _Captions_position, _Captions_layer;
+var _Captions_player, _Captions_button, _Captions_captions, _Captions_menu, _Captions_events, _Captions_langTracks, _Captions_mediaTrackList, _Captions_trackUrlList, _Captions_hasTracks, _Captions_currentTrack, _Captions_default, _Captions_controlPosition, _Captions_controlLayer;
 
 
 
 
 
-
-var captions_Captions = function () {
+var Captions = function () {
   function Captions(player, position, layer) {
     classCallCheck_default()(this, Captions);
 
@@ -5507,60 +1390,35 @@ var captions_Captions = function () {
       media: {}
     });
 
-    _Captions_tracks.set(this, {});
+    _Captions_langTracks.set(this, {});
 
-    _Captions_trackList.set(this, void 0);
+    _Captions_mediaTrackList.set(this, void 0);
 
     _Captions_trackUrlList.set(this, {});
 
     _Captions_hasTracks.set(this, void 0);
 
-    _Captions_current.set(this, void 0);
+    _Captions_currentTrack.set(this, void 0);
 
     _Captions_default.set(this, 'off');
 
-    _Captions_detachMenu.set(this, void 0);
+    _Captions_controlPosition.set(this, void 0);
 
-    _Captions_labels.set(this, void 0);
-
-    _Captions_position.set(this, void 0);
-
-    _Captions_layer.set(this, void 0);
+    _Captions_controlLayer.set(this, void 0);
 
     __classPrivateFieldSet(this, _Captions_player, player, "f");
 
-    __classPrivateFieldSet(this, _Captions_labels, player.getOptions().labels, "f");
+    __classPrivateFieldSet(this, _Captions_controlPosition, position, "f");
 
-    __classPrivateFieldSet(this, _Captions_detachMenu, player.getOptions().detachMenus, "f");
+    __classPrivateFieldSet(this, _Captions_controlLayer, layer, "f");
 
-    __classPrivateFieldSet(this, _Captions_position, position, "f");
-
-    __classPrivateFieldSet(this, _Captions_layer, layer, "f");
-
-    var trackList = __classPrivateFieldGet(this, _Captions_player, "f").getElement().textTracks;
-
-    var tracks = [];
-
-    for (var i = 0, total = trackList.length; i < total; i++) {
-      var selector = ["track[kind=\"subtitles\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]"), "track[kind=\"captions\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]")];
-
-      var tag = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelector(selector.join(', '));
-
-      if (tag) {
-        tracks.push(trackList[i]);
-      }
-    }
-
-    if (!tracks.length) {
-      for (var _i = 0, _total = trackList.length; _i < _total; _i++) {
-        tracks.push(trackList[_i]);
-      }
-    }
-
-    __classPrivateFieldSet(this, _Captions_trackList, tracks, "f");
-
-    __classPrivateFieldSet(this, _Captions_hasTracks, !!__classPrivateFieldGet(this, _Captions_trackList, "f").length, "f");
-
+    this._getCuesFromText = this._getCuesFromText.bind(this);
+    this._getNativeCues = this._getNativeCues.bind(this);
+    this._displayCaptions = this._displayCaptions.bind(this);
+    this._hideCaptions = this._hideCaptions.bind(this);
+    this._search = this._search.bind(this);
+    this._prepareTrack = this._prepareTrack.bind(this);
+    this._formatMenuItems = this._formatMenuItems.bind(this);
     return this;
   }
 
@@ -5569,27 +1427,53 @@ var captions_Captions = function () {
     value: function create() {
       var _this = this;
 
+      var trackList = __classPrivateFieldGet(this, _Captions_player, "f").getElement().textTracks;
+
+      var tracks = [];
+
+      for (var i = 0, total = trackList.length; i < total; i++) {
+        var selector = ["track[kind=\"subtitles\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]"), "track[kind=\"captions\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]")];
+
+        var tag = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelector(selector.join(', '));
+
+        if (tag) {
+          tracks.push(trackList[i]);
+        }
+      }
+
+      if (!tracks.length) {
+        for (var _i = 0, _total = trackList.length; _i < _total; _i++) {
+          tracks.push(trackList[_i]);
+        }
+      }
+
+      __classPrivateFieldSet(this, _Captions_mediaTrackList, tracks, "f");
+
+      __classPrivateFieldSet(this, _Captions_hasTracks, !!__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length, "f");
+
       if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
         return;
       }
 
+      var _classPrivateFieldGe = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels,
+          detachMenus = _classPrivateFieldGe.detachMenus;
+
       __classPrivateFieldSet(this, _Captions_button, document.createElement('button'), "f");
 
-      __classPrivateFieldGet(this, _Captions_button, "f").className = "op-controls__captions op-control__".concat(__classPrivateFieldGet(this, _Captions_position, "f"));
+      __classPrivateFieldGet(this, _Captions_button, "f").className = "op-controls__captions op-control__".concat(__classPrivateFieldGet(this, _Captions_controlPosition, "f"));
       __classPrivateFieldGet(this, _Captions_button, "f").tabIndex = 0;
-      __classPrivateFieldGet(this, _Captions_button, "f").title = __classPrivateFieldGet(this, _Captions_labels, "f").toggleCaptions;
+      __classPrivateFieldGet(this, _Captions_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.toggleCaptions) || '';
 
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Captions_player, "f").id);
 
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-pressed', 'false');
 
-      __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-label', __classPrivateFieldGet(this, _Captions_labels, "f").toggleCaptions);
+      __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.toggleCaptions) || '');
 
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
 
-      __classPrivateFieldGet(this, _Captions_button, "f").innerHTML = "<span class=\"op-sr\">".concat(__classPrivateFieldGet(this, _Captions_labels, "f").toggleCaptions, "</span>");
-
-      if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+      if (detachMenus) {
         __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-control--no-hover');
 
         __classPrivateFieldSet(this, _Captions_menu, document.createElement('div'), "f");
@@ -5598,14 +1482,14 @@ var captions_Captions = function () {
 
         __classPrivateFieldGet(this, _Captions_menu, "f").setAttribute('aria-hidden', 'true');
 
-        __classPrivateFieldGet(this, _Captions_menu, "f").innerHTML = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\" aria-checked=\"".concat(__classPrivateFieldGet(this, _Captions_default, "f") === 'off' ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label op-subtitles__option\" data-value=\"captions-off\">").concat(__classPrivateFieldGet(this, _Captions_labels, "f").off, "</div>\n                </div>\n            </div>");
+        __classPrivateFieldGet(this, _Captions_menu, "f").innerHTML = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\" aria-checked=\"".concat(__classPrivateFieldGet(this, _Captions_default, "f") === 'off' ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label op-subtitles__option\" data-value=\"captions-off\">").concat(labels === null || labels === void 0 ? void 0 : labels.off, "</div>\n                </div>\n            </div>");
       }
 
-      var _loop = function _loop(i, tracks, total) {
-        var element = tracks[i];
+      var _loop = function _loop(trackItems, _i2, _total2) {
+        var element = trackItems[_i2];
 
         if (element.kind === 'subtitles' || element.kind === 'captions') {
-          if (element["default"]) {
+          if (element.default) {
             __classPrivateFieldSet(_this, _Captions_default, element.srclang, "f");
 
             __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', element.srclang);
@@ -5613,28 +1497,35 @@ var captions_Captions = function () {
 
           var trackUrl = getAbsoluteUrl(element.src);
 
-          var currTrack = __classPrivateFieldGet(_this, _Captions_trackList, "f")[i];
+          var currTrack = __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[_i2];
 
           if (currTrack && currTrack.language === element.srclang) {
             if (currTrack.cues && currTrack.cues.length > 0) {
-              __classPrivateFieldGet(_this, _Captions_tracks, "f")[element.srclang] = _this._getNativeCues(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i]);
+              __classPrivateFieldGet(_this, _Captions_langTracks, "f")[element.srclang] = _this._getNativeCues(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[_i2]);
 
-              _this._prepareTrack(i, element.srclang, trackUrl, element["default"] || false);
+              _this._prepareTrack(_i2, element.srclang, trackUrl, element.default || false);
             } else {
-              request(trackUrl, 'text', function (d) {
-                __classPrivateFieldGet(_this, _Captions_tracks, "f")[element.srclang] = _this._getCuesFromText(d);
+              fetch(trackUrl).then(function (response) {
+                if (!response.ok) {
+                  throw new Error('Network response was not ok');
+                }
 
-                _this._prepareTrack(i, element.srclang, trackUrl, element["default"] || false);
+                return response.text();
+              }).then(function (d) {
+                __classPrivateFieldGet(_this, _Captions_langTracks, "f")[element.srclang] = _this._getCuesFromText(d);
 
-                var selector = ".op-subtitles__option[data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language, "\"]");
+                _this._prepareTrack(_i2, element.srclang, trackUrl, element.default || false);
+
+                var selector = ".op-subtitles__option[data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[_i2].language, "\"]");
 
                 if (__classPrivateFieldGet(_this, _Captions_menu, "f") && !__classPrivateFieldGet(_this, _Captions_menu, "f").querySelector(selector)) {
                   var item = document.createElement('div');
+                  var label = (labels === null || labels === void 0 ? void 0 : labels.lang) ? labels.lang[__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[_i2].language] : null;
                   item.className = 'op-settings__submenu-item';
                   item.tabIndex = 0;
                   item.setAttribute('role', 'menuitemradio');
-                  item.setAttribute('aria-checked', __classPrivateFieldGet(_this, _Captions_default, "f") === __classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language ? 'true' : 'false');
-                  item.innerHTML = "<div class=\"op-settings__submenu-label op-subtitles__option\"\n                                        data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language, "\">\n                                        ").concat(__classPrivateFieldGet(_this, _Captions_labels, "f").lang[__classPrivateFieldGet(_this, _Captions_trackList, "f")[i].language] || __classPrivateFieldGet(_this, _Captions_trackList, "f")[i].label, "\n                                    </div>");
+                  item.setAttribute('aria-checked', __classPrivateFieldGet(_this, _Captions_default, "f") === __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[_i2].language ? 'true' : 'false');
+                  item.innerHTML = "<div class=\"op-settings__submenu-label op-subtitles__option\"\n                                        data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[_i2].language, "\">\n                                        ").concat(label || __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[_i2].label, "\n                                    </div>");
 
                   __classPrivateFieldGet(_this, _Captions_menu, "f").appendChild(item);
                 }
@@ -5644,8 +1535,8 @@ var captions_Captions = function () {
         }
       };
 
-      for (var i = 0, tracks = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelectorAll('track'), total = tracks.length; i < total; i++) {
-        _loop(i, tracks, total);
+      for (var _i2 = 0, trackItems = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelectorAll('track'), _total2 = trackItems.length; _i2 < _total2; _i2++) {
+        _loop(trackItems, _i2, _total2);
       }
 
       __classPrivateFieldSet(this, _Captions_captions, document.createElement('div'), "f");
@@ -5657,39 +1548,39 @@ var captions_Captions = function () {
 
       __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate = function () {
         if (__classPrivateFieldGet(_this, _Captions_player, "f").isMedia()) {
-          if (__classPrivateFieldGet(_this, _Captions_current, "f")) {
-            var currentCues = __classPrivateFieldGet(_this, _Captions_tracks, "f")[__classPrivateFieldGet(_this, _Captions_current, "f").language];
+          if (__classPrivateFieldGet(_this, _Captions_currentTrack, "f")) {
+            var currentCues = __classPrivateFieldGet(_this, _Captions_langTracks, "f")[__classPrivateFieldGet(_this, _Captions_currentTrack, "f").language];
 
             if (container && currentCues !== undefined) {
               var index = _this._search(currentCues, __classPrivateFieldGet(_this, _Captions_player, "f").getMedia().currentTime);
 
               container.innerHTML = '';
 
-              if (index > -1 && hasClass(__classPrivateFieldGet(_this, _Captions_button, "f"), 'op-controls__captions--on')) {
+              if (index > -1 && __classPrivateFieldGet(_this, _Captions_button, "f").classList.contains('op-controls__captions--on')) {
                 __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
 
-                container.innerHTML = _this._sanitize(currentCues[index].text);
+                container.innerHTML = sanitize(currentCues[index].text, false);
               } else {
-                _this._hide();
+                _this._hideCaptions();
               }
             }
           } else {
-            _this._hide();
+            _this._hideCaptions();
           }
         } else {
-          _this._hide();
+          _this._hideCaptions();
         }
       };
 
       __classPrivateFieldGet(this, _Captions_events, "f").button.click = function (e) {
         var button = e.target;
 
-        if (__classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
+        if (detachMenus) {
           var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
 
-          for (var _i2 = 0, _total2 = menus.length; _i2 < _total2; ++_i2) {
-            if (menus[_i2] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
-              menus[_i2].setAttribute('aria-hidden', 'true');
+          for (var _i3 = 0, _total3 = menus.length; _i3 < _total3; ++_i3) {
+            if (menus[_i3] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
+              menus[_i3].setAttribute('aria-hidden', 'true');
             }
           }
 
@@ -5701,31 +1592,35 @@ var captions_Captions = function () {
         } else {
           button.setAttribute('aria-pressed', 'true');
 
-          if (hasClass(button, 'op-controls__captions--on')) {
-            _this._hide();
+          if (button.classList.contains('op-controls__captions--on')) {
+            _this._hideCaptions();
 
             button.classList.remove('op-controls__captions--on');
             button.setAttribute('data-active-captions', 'off');
           } else {
-            if (!__classPrivateFieldGet(_this, _Captions_current, "f")) {
-              __classPrivateFieldSet(_this, _Captions_current, __classPrivateFieldGet(_this, _Captions_trackList, "f")[0], "f");
+            if (!__classPrivateFieldGet(_this, _Captions_currentTrack, "f")) {
+              var _classPrivateFieldGe2 = __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f"),
+                  _classPrivateFieldGe3 = slicedToArray_default()(_classPrivateFieldGe2, 1),
+                  track = _classPrivateFieldGe3[0];
+
+              __classPrivateFieldSet(_this, _Captions_currentTrack, track, "f");
             }
 
-            _this._show();
+            _this._displayCaptions();
 
             button.classList.add('op-controls__captions--on');
-            button.setAttribute('data-active-captions', __classPrivateFieldGet(_this, _Captions_current, "f").language);
+            button.setAttribute('data-active-captions', __classPrivateFieldGet(_this, _Captions_currentTrack, "f").language);
           }
         }
       };
 
       __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover = function () {
-        if (!IS_IOS && !IS_ANDROID && __classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
+        if (!IS_IOS && !IS_ANDROID && detachMenus) {
           var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
 
-          for (var _i3 = 0, _total3 = menus.length; _i3 < _total3; ++_i3) {
-            if (menus[_i3] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
-              menus[_i3].setAttribute('aria-hidden', 'true');
+          for (var _i4 = 0, _total4 = menus.length; _i4 < _total4; ++_i4) {
+            if (menus[_i4] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
+              menus[_i4].setAttribute('aria-hidden', 'true');
             }
           }
 
@@ -5736,11 +1631,11 @@ var captions_Captions = function () {
       };
 
       __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout = function () {
-        if (!IS_IOS && !IS_ANDROID && __classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
+        if (!IS_IOS && !IS_ANDROID && detachMenus) {
           var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
 
-          for (var _i4 = 0, _total4 = menus.length; _i4 < _total4; ++_i4) {
-            menus[_i4].setAttribute('aria-hidden', 'true');
+          for (var _i5 = 0, _total5 = menus.length; _i5 < _total5; ++_i5) {
+            menus[_i5].setAttribute('aria-hidden', 'true');
           }
 
           if (__classPrivateFieldGet(_this, _Captions_menu, "f").getAttribute('aria-hidden') === 'false') {
@@ -5754,45 +1649,45 @@ var captions_Captions = function () {
 
         target.insertBefore(__classPrivateFieldGet(this, _Captions_captions, "f"), target.firstChild);
 
-        if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+        if (detachMenus) {
           var itemContainer = document.createElement('div');
-          itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _Captions_position, "f"));
+          itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _Captions_controlPosition, "f"));
           itemContainer.appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
           itemContainer.appendChild(__classPrivateFieldGet(this, _Captions_menu, "f"));
 
-          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_layer, "f")).appendChild(itemContainer);
+          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_controlLayer, "f")).appendChild(itemContainer);
         } else {
-          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_layer, "f")).appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
+          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_controlLayer, "f")).appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
         }
 
         __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click, EVENT_OPTIONS);
       }
 
-      if (__classPrivateFieldGet(this, _Captions_trackList, "f").length <= 1 && !__classPrivateFieldGet(this, _Captions_detachMenu, "f") || !__classPrivateFieldGet(this, _Captions_trackList, "f").length && __classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+      if (__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length <= 1 && !detachMenus || !__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length && detachMenus) {
         return;
       }
 
       __classPrivateFieldGet(this, _Captions_events, "f").global.click = function (e) {
         var option = e.target;
 
-        if (option.closest("#".concat(__classPrivateFieldGet(_this, _Captions_player, "f").id)) && hasClass(option, 'op-subtitles__option')) {
+        if (option.closest("#".concat(__classPrivateFieldGet(_this, _Captions_player, "f").id)) && option.classList.contains('op-subtitles__option')) {
           var langEl = option.getAttribute('data-value');
           var language = langEl ? langEl.replace('captions-', '') : '';
-          var currentLang = Array.from(__classPrivateFieldGet(_this, _Captions_trackList, "f")).filter(function (item) {
+          var currentLang = Array.from(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")).filter(function (item) {
             return item.language === language;
           });
 
-          __classPrivateFieldSet(_this, _Captions_current, currentLang ? currentLang.pop() : undefined, "f");
+          __classPrivateFieldSet(_this, _Captions_currentTrack, currentLang ? currentLang.pop() : undefined, "f");
 
-          if (__classPrivateFieldGet(_this, _Captions_detachMenu, "f")) {
-            if (hasClass(__classPrivateFieldGet(_this, _Captions_button, "f"), 'op-controls__captions--on')) {
-              _this._hide();
+          if (detachMenus) {
+            if (__classPrivateFieldGet(_this, _Captions_button, "f").classList.contains('op-controls__captions--on')) {
+              _this._hideCaptions();
 
               __classPrivateFieldGet(_this, _Captions_button, "f").classList.remove('op-controls__captions--on');
 
               __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
             } else {
-              _this._show();
+              _this._displayCaptions();
 
               __classPrivateFieldGet(_this, _Captions_button, "f").classList.add('op-controls__captions--on');
 
@@ -5802,8 +1697,8 @@ var captions_Captions = function () {
             if (option.parentElement && option.parentElement.parentElement) {
               var captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
 
-              for (var _i5 = 0, _total5 = captions.length; _i5 < _total5; ++_i5) {
-                captions[_i5].setAttribute('aria-checked', 'false');
+              for (var _i6 = 0, _total6 = captions.length; _i6 < _total6; ++_i6) {
+                captions[_i6].setAttribute('aria-checked', 'false');
               }
             }
 
@@ -5813,7 +1708,7 @@ var captions_Captions = function () {
 
             __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'false');
           } else {
-            _this._show();
+            _this._displayCaptions();
 
             __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', language);
           }
@@ -5824,7 +1719,7 @@ var captions_Captions = function () {
         }
       };
 
-      if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+      if (detachMenus) {
         __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, EVENT_OPTIONS);
 
         __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, EVENT_OPTIONS);
@@ -5841,6 +1736,9 @@ var captions_Captions = function () {
   }, {
     key: "destroy",
     value: function destroy() {
+      var _classPrivateFieldGe4 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+          detachMenus = _classPrivateFieldGe4.detachMenus;
+
       if (typeof __classPrivateFieldGet(this, _Captions_events, "f").global.click !== 'undefined') {
         document.removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click);
       }
@@ -5848,7 +1746,7 @@ var captions_Captions = function () {
       if (__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
         __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click);
 
-        if (__classPrivateFieldGet(this, _Captions_detachMenu, "f")) {
+        if (detachMenus) {
           __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
 
           __classPrivateFieldGet(this, _Captions_menu, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
@@ -5857,19 +1755,24 @@ var captions_Captions = function () {
 
           __classPrivateFieldGet(this, _Captions_player, "f").getElement().removeEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout);
 
-          removeElement(__classPrivateFieldGet(this, _Captions_menu, "f"));
+          __classPrivateFieldGet(this, _Captions_menu, "f").remove();
         }
 
         __classPrivateFieldGet(this, _Captions_player, "f").getElement().removeEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate);
 
-        removeElement(__classPrivateFieldGet(this, _Captions_button, "f"));
-        removeElement(__classPrivateFieldGet(this, _Captions_captions, "f"));
+        __classPrivateFieldGet(this, _Captions_button, "f").remove();
+
+        __classPrivateFieldGet(this, _Captions_captions, "f").remove();
       }
     }
   }, {
     key: "addSettings",
     value: function addSettings() {
-      if (__classPrivateFieldGet(this, _Captions_detachMenu, "f") || __classPrivateFieldGet(this, _Captions_trackList, "f").length <= 1) {
+      var _classPrivateFieldGe5 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+          detachMenus = _classPrivateFieldGe5.detachMenus,
+          labels = _classPrivateFieldGe5.labels;
+
+      if (detachMenus || __classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length <= 1) {
         return {};
       }
 
@@ -5877,16 +1780,16 @@ var captions_Captions = function () {
 
       return subitems.length > 2 ? {
         className: 'op-subtitles__option',
-        "default": __classPrivateFieldGet(this, _Captions_default, "f") || 'off',
+        default: __classPrivateFieldGet(this, _Captions_default, "f") || 'off',
         key: 'captions',
-        name: __classPrivateFieldGet(this, _Captions_labels, "f").captions,
+        name: (labels === null || labels === void 0 ? void 0 : labels.captions) || '',
         subitems: subitems
       } : {};
     }
   }, {
     key: "_getCuesFromText",
-    value: function _getCuesFromText(webvttText) {
-      var lines = webvttText.split(/\r?\n/);
+    value: function _getCuesFromText(vttText) {
+      var lines = vttText.split(/\r?\n/);
       var entries = [];
       var urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
       var timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
@@ -5894,26 +1797,10 @@ var captions_Captions = function () {
       var regexp = new RegExp(timePattern);
       var identifier;
 
-      function isJson(item) {
-        item = typeof item !== 'string' ? JSON.stringify(item) : item;
-
-        try {
-          item = JSON.parse(item);
-        } catch (e) {
-          return false;
-        }
-
-        if (typeof_default()(item) === 'object' && item !== null) {
-          return true;
-        }
-
-        return false;
-      }
-
       for (var i = 0, total = lines.length; i < total; i++) {
-        var timecode = regexp.exec(lines[i]);
+        var timeCode = regexp.exec(lines[i]);
 
-        if (timecode && i < lines.length) {
+        if (timeCode && i < lines.length) {
           if (i - 1 >= 0 && lines[i - 1] !== '') {
             identifier = lines[i - 1];
           }
@@ -5928,12 +1815,12 @@ var captions_Captions = function () {
           }
 
           cue = cue.trim().replace(urlRegexp, "<a href='$1' target='_blank'>$1</a>");
-          var initTime = timeToSeconds(timecode[1]);
+          var initTime = timeToSeconds(timeCode[1]);
           entries.push({
-            endTime: timeToSeconds(timecode[3]),
+            endTime: timeToSeconds(timeCode[3]),
             identifier: identifier || '',
-            settings: isJson(timecode[5]) ? JSON.parse(timecode[5]) : {},
-            startTime: initTime === 0 ? 0.200 : initTime,
+            settings: isJson(timeCode[5]) ? JSON.parse(timeCode[5]) : {},
+            startTime: initTime === 0 ? 0.2 : initTime,
             text: cue
           });
         }
@@ -5962,9 +1849,9 @@ var captions_Captions = function () {
       return cues;
     }
   }, {
-    key: "_show",
-    value: function _show() {
-      if (!__classPrivateFieldGet(this, _Captions_captions, "f") || !__classPrivateFieldGet(this, _Captions_current, "f") || __classPrivateFieldGet(this, _Captions_current, "f").cues === undefined) {
+    key: "_displayCaptions",
+    value: function _displayCaptions() {
+      if (!__classPrivateFieldGet(this, _Captions_captions, "f") || !__classPrivateFieldGet(this, _Captions_currentTrack, "f") || __classPrivateFieldGet(this, _Captions_currentTrack, "f").cues === undefined) {
         return;
       }
 
@@ -5977,11 +1864,11 @@ var captions_Captions = function () {
       __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate, EVENT_OPTIONS);
     }
   }, {
-    key: "_hide",
-    value: function _hide() {
+    key: "_hideCaptions",
+    value: function _hideCaptions() {
       __classPrivateFieldGet(this, _Captions_captions, "f").classList.remove('op-captions--on');
 
-      if (!__classPrivateFieldGet(this, _Captions_current, "f")) {
+      if (!__classPrivateFieldGet(this, _Captions_currentTrack, "f")) {
         __classPrivateFieldGet(this, _Captions_button, "f").classList.remove('op-controls__captions--on');
 
         __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
@@ -6012,42 +1899,13 @@ var captions_Captions = function () {
       return -1;
     }
   }, {
-    key: "_sanitize",
-    value: function _sanitize(html) {
-      var div = document.createElement('div');
-      div.innerHTML = html;
-      var scripts = div.getElementsByTagName('script');
-      var i = scripts.length;
-
-      while (i--) {
-        removeElement(scripts[i]);
-      }
-
-      var allElements = div.getElementsByTagName('*');
-
-      for (var index = 0, n = allElements.length; index < n; index++) {
-        var attributesObj = allElements[index].attributes;
-        var attributes = Array.prototype.slice.call(attributesObj);
-
-        for (var j = 0, total = attributes.length; j < total; j++) {
-          if (/^(on|javascript:)/.test(attributes[j].name)) {
-            removeElement(allElements[index]);
-          } else if (attributes[j].name === 'style') {
-            allElements[index].removeAttribute(attributes[j].name);
-          }
-        }
-      }
-
-      return div.innerHTML;
-    }
-  }, {
     key: "_prepareTrack",
     value: function _prepareTrack(index, language, trackUrl) {
       var _this2 = this;
 
       var showTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
       __classPrivateFieldGet(this, _Captions_trackUrlList, "f")[language] = trackUrl;
-      __classPrivateFieldGet(this, _Captions_trackList, "f")[index].mode = 'disabled';
+      __classPrivateFieldGet(this, _Captions_mediaTrackList, "f")[index].mode = 'disabled';
 
       if (showTrack) {
         __classPrivateFieldSet(this, _Captions_default, language, "f");
@@ -6056,11 +1914,11 @@ var captions_Captions = function () {
 
         __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', language);
 
-        __classPrivateFieldSet(this, _Captions_current, Array.from(__classPrivateFieldGet(this, _Captions_trackList, "f")).filter(function (item) {
+        __classPrivateFieldSet(this, _Captions_currentTrack, Array.from(__classPrivateFieldGet(this, _Captions_mediaTrackList, "f")).filter(function (item) {
           return item.language === __classPrivateFieldGet(_this2, _Captions_default, "f");
         }).pop(), "f");
 
-        this._show();
+        this._displayCaptions();
 
         if (!__classPrivateFieldGet(this, _Captions_player, "f").getContainer().classList.contains('op-captions--detected')) {
           __classPrivateFieldGet(this, _Captions_player, "f").getContainer().classList.add('op-captions--detected');
@@ -6072,24 +1930,28 @@ var captions_Captions = function () {
     value: function _formatMenuItems() {
       var _this3 = this;
 
+      var _classPrivateFieldGe6 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+          labels = _classPrivateFieldGe6.labels;
+
       var items = [{
         key: 'off',
-        label: __classPrivateFieldGet(this, _Captions_labels, "f").off
+        label: (labels === null || labels === void 0 ? void 0 : labels.off) || ''
       }];
 
       var _loop2 = function _loop2(i, total) {
-        var track = __classPrivateFieldGet(_this3, _Captions_trackList, "f")[i];
+        var track = __classPrivateFieldGet(_this3, _Captions_mediaTrackList, "f")[i];
 
+        var label = (labels === null || labels === void 0 ? void 0 : labels.lang) ? labels.lang[track.language] : null;
         items = items.filter(function (el) {
           return el.key !== track.language;
         });
         items.push({
           key: track.language,
-          label: __classPrivateFieldGet(_this3, _Captions_labels, "f").lang[track.language] || __classPrivateFieldGet(_this3, _Captions_trackList, "f")[i].label
+          label: label || __classPrivateFieldGet(_this3, _Captions_mediaTrackList, "f")[i].label
         });
       };
 
-      for (var i = 0, total = __classPrivateFieldGet(this, _Captions_trackList, "f").length; i < total; i++) {
+      for (var i = 0, total = __classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length; i < total; i++) {
         _loop2(i, total);
       }
 
@@ -6100,9 +1962,9 @@ var captions_Captions = function () {
   return Captions;
 }();
 
-_Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_tracks = new WeakMap(), _Captions_trackList = new WeakMap(), _Captions_trackUrlList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_current = new WeakMap(), _Captions_default = new WeakMap(), _Captions_detachMenu = new WeakMap(), _Captions_labels = new WeakMap(), _Captions_position = new WeakMap(), _Captions_layer = new WeakMap();
-/* harmony default export */ var controls_captions = (captions_Captions);
-// CONCATENATED MODULE: ./src/js/controls/fullscreen.ts
+_Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_langTracks = new WeakMap(), _Captions_mediaTrackList = new WeakMap(), _Captions_trackUrlList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_currentTrack = new WeakMap(), _Captions_default = new WeakMap(), _Captions_controlPosition = new WeakMap(), _Captions_controlLayer = new WeakMap();
+/* harmony default export */ const captions = (Captions);
+;// CONCATENATED MODULE: ./src/js/controls/fullscreen.ts
 
 
 
@@ -6119,12 +1981,11 @@ var fullscreen_classPrivateFieldGet = undefined && undefined.__classPrivateField
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Fullscreen_player, _Fullscreen_isFullscreen, _Fullscreen_button, _Fullscreen_fullscreenEvents, _Fullscreen_fullscreenWidth, _Fullscreen_fullscreenHeight, _Fullscreen_clickEvent, _Fullscreen_labels, _Fullscreen_position, _Fullscreen_layer;
+var _Fullscreen_player, _Fullscreen_isFullscreen, _Fullscreen_button, _Fullscreen_fullscreenEvents, _Fullscreen_fullscreenWidth, _Fullscreen_fullscreenHeight, _Fullscreen_clickEvent, _Fullscreen_controlPosition, _Fullscreen_controlLayer;
 
 
 
-
-var fullscreen_Fullscreen = function () {
+var Fullscreen = function () {
   function Fullscreen(player, position, layer) {
     var _this = this;
 
@@ -6144,26 +2005,25 @@ var fullscreen_Fullscreen = function () {
 
     _Fullscreen_clickEvent.set(this, void 0);
 
-    _Fullscreen_labels.set(this, void 0);
+    _Fullscreen_controlPosition.set(this, void 0);
 
-    _Fullscreen_position.set(this, void 0);
-
-    _Fullscreen_layer.set(this, void 0);
+    _Fullscreen_controlLayer.set(this, void 0);
 
     fullscreen_classPrivateFieldSet(this, _Fullscreen_player, player, "f");
 
-    fullscreen_classPrivateFieldSet(this, _Fullscreen_labels, player.getOptions().labels, "f");
+    fullscreen_classPrivateFieldSet(this, _Fullscreen_controlPosition, position, "f");
 
-    fullscreen_classPrivateFieldSet(this, _Fullscreen_position, position, "f");
-
-    fullscreen_classPrivateFieldSet(this, _Fullscreen_layer, layer, "f");
+    fullscreen_classPrivateFieldSet(this, _Fullscreen_controlLayer, layer, "f");
 
     fullscreen_classPrivateFieldSet(this, _Fullscreen_isFullscreen, document.body.classList.contains('op-fullscreen__on'), "f");
 
     var target = document;
     this.fullScreenEnabled = !!(target.fullscreenEnabled || target.mozFullScreenEnabled || target.msFullscreenEnabled || target.webkitSupportsFullscreen || target.webkitFullscreenEnabled || document.createElement('video').webkitRequestFullScreen);
-    this._keydownEvent = this._keydownEvent.bind(this);
+    this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
+    this._resize = this._resize.bind(this);
     this._fullscreenChange = this._fullscreenChange.bind(this);
+    this._setFullscreen = this._setFullscreen.bind(this);
+    this._unsetFullscreen = this._unsetFullscreen.bind(this);
 
     fullscreen_classPrivateFieldSet(this, _Fullscreen_fullscreenEvents, ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'], "f");
 
@@ -6173,24 +2033,12 @@ var fullscreen_Fullscreen = function () {
 
     this._setFullscreenData(false);
 
-    fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
+    fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
 
     if (IS_IPHONE) {
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitbeginfullscreen', function () {
-        fullscreen_classPrivateFieldSet(_this, _Fullscreen_isFullscreen, true, "f");
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitbeginfullscreen', this._setFullscreen, EVENT_OPTIONS);
 
-        _this._setFullscreenData(true);
-
-        document.body.classList.add('op-fullscreen__on');
-      }, EVENT_OPTIONS);
-
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitendfullscreen', function () {
-        fullscreen_classPrivateFieldSet(_this, _Fullscreen_isFullscreen, false, "f");
-
-        _this._setFullscreenData(false);
-
-        document.body.classList.remove('op-fullscreen__on');
-      }, EVENT_OPTIONS);
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitendfullscreen', this._unsetFullscreen, EVENT_OPTIONS);
     }
 
     return this;
@@ -6201,20 +2049,21 @@ var fullscreen_Fullscreen = function () {
     value: function create() {
       var _this2 = this;
 
+      var _classPrivateFieldGe = fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels;
+
       fullscreen_classPrivateFieldSet(this, _Fullscreen_button, document.createElement('button'), "f");
 
       fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").type = 'button';
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").className = "op-controls__fullscreen op-control__".concat(fullscreen_classPrivateFieldGet(this, _Fullscreen_position, "f"));
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").className = "op-controls__fullscreen op-control__".concat(fullscreen_classPrivateFieldGet(this, _Fullscreen_controlPosition, "f"));
       fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").tabIndex = 0;
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").title = fullscreen_classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen;
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.fullscreen) || '';
 
       fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-controls', fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").id);
 
       fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-pressed', 'false');
 
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-label', fullscreen_classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen);
-
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").innerHTML = "<span class=\"op-sr\">".concat(fullscreen_classPrivateFieldGet(this, _Fullscreen_labels, "f").fullscreen, "</span>");
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.fullscreen) || '');
 
       fullscreen_classPrivateFieldSet(this, _Fullscreen_clickEvent, function () {
         fullscreen_classPrivateFieldGet(_this2, _Fullscreen_button, "f").setAttribute('aria-pressed', 'true');
@@ -6226,40 +2075,28 @@ var fullscreen_Fullscreen = function () {
 
       fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").addEventListener('click', fullscreen_classPrivateFieldGet(this, _Fullscreen_clickEvent, "f"), EVENT_OPTIONS);
 
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getControls().getLayer(fullscreen_classPrivateFieldGet(this, _Fullscreen_layer, "f")).appendChild(fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f"));
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getControls().getLayer(fullscreen_classPrivateFieldGet(this, _Fullscreen_controlLayer, "f")).appendChild(fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f"));
     }
   }, {
     key: "destroy",
     value: function destroy() {
       var _this3 = this;
 
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().removeEventListener('keydown', this._enterSpaceKeyEvent);
 
       fullscreen_classPrivateFieldGet(this, _Fullscreen_fullscreenEvents, "f").forEach(function (event) {
         document.removeEventListener(event, _this3._fullscreenChange);
       });
 
       if (IS_IPHONE) {
-        fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitbeginfullscreen', function () {
-          fullscreen_classPrivateFieldSet(_this3, _Fullscreen_isFullscreen, true, "f");
+        fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitbeginfullscreen', this._setFullscreen);
 
-          _this3._setFullscreenData(false);
-
-          document.body.classList.add('op-fullscreen__on');
-        });
-
-        fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitendfullscreen', function () {
-          fullscreen_classPrivateFieldSet(_this3, _Fullscreen_isFullscreen, false, "f");
-
-          _this3._setFullscreenData(true);
-
-          document.body.classList.remove('op-fullscreen__on');
-        });
+        fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().removeEventListener('webkitendfullscreen', this._unsetFullscreen);
       }
 
       fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").removeEventListener('click', fullscreen_classPrivateFieldGet(this, _Fullscreen_clickEvent, "f"));
 
-      removeElement(fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f"));
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").remove();
     }
   }, {
     key: "toggleFullscreen",
@@ -6271,7 +2108,7 @@ var fullscreen_Fullscreen = function () {
           target.exitFullscreen();
         } else if (target.mozCancelFullScreen) {
           target.mozCancelFullScreen();
-        } else if (document.webkitCancelFullScreen) {
+        } else if (target.webkitCancelFullScreen) {
           target.webkitCancelFullScreen();
         } else if (target.msExitFullscreen) {
           target.msExitFullscreen();
@@ -6305,12 +2142,11 @@ var fullscreen_Fullscreen = function () {
       }
 
       if (typeof window !== 'undefined' && (IS_ANDROID || IS_IPHONE)) {
-        var screen = window.screen;
+        var _window = window,
+            screen = _window.screen;
 
-        if (screen.orientation) {
-          if (!fullscreen_classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
-            screen.orientation.lock('landscape');
-          }
+        if (screen.orientation && !fullscreen_classPrivateFieldGet(this, _Fullscreen_isFullscreen, "f")) {
+          screen.orientation.lock('landscape');
         }
       }
     }
@@ -6338,11 +2174,11 @@ var fullscreen_Fullscreen = function () {
     }
   }, {
     key: "_setFullscreenData",
-    value: function _setFullscreenData(state) {
-      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().setAttribute('data-fullscreen', (!!state).toString());
+    value: function _setFullscreenData(isFullscreen) {
+      fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getContainer().setAttribute('data-fullscreen', (!!isFullscreen).toString());
 
       if (fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f")) {
-        if (state) {
+        if (isFullscreen) {
           fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").classList.add('op-controls__fullscreen--out');
         } else {
           fullscreen_classPrivateFieldGet(this, _Fullscreen_button, "f").classList.remove('op-controls__fullscreen--out');
@@ -6389,8 +2225,8 @@ var fullscreen_Fullscreen = function () {
       }
     }
   }, {
-    key: "_keydownEvent",
-    value: function _keydownEvent(e) {
+    key: "_enterSpaceKeyEvent",
+    value: function _enterSpaceKeyEvent(e) {
       var _a;
 
       var key = e.which || e.keyCode || 0;
@@ -6402,14 +2238,32 @@ var fullscreen_Fullscreen = function () {
         e.stopPropagation();
       }
     }
+  }, {
+    key: "_setFullscreen",
+    value: function _setFullscreen() {
+      fullscreen_classPrivateFieldSet(this, _Fullscreen_isFullscreen, true, "f");
+
+      this._setFullscreenData(true);
+
+      document.body.classList.add('op-fullscreen__on');
+    }
+  }, {
+    key: "_unsetFullscreen",
+    value: function _unsetFullscreen() {
+      fullscreen_classPrivateFieldSet(this, _Fullscreen_isFullscreen, false, "f");
+
+      this._setFullscreenData(false);
+
+      document.body.classList.remove('op-fullscreen__on');
+    }
   }]);
 
   return Fullscreen;
 }();
 
-_Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _Fullscreen_button = new WeakMap(), _Fullscreen_fullscreenEvents = new WeakMap(), _Fullscreen_fullscreenWidth = new WeakMap(), _Fullscreen_fullscreenHeight = new WeakMap(), _Fullscreen_clickEvent = new WeakMap(), _Fullscreen_labels = new WeakMap(), _Fullscreen_position = new WeakMap(), _Fullscreen_layer = new WeakMap();
-/* harmony default export */ var fullscreen = (fullscreen_Fullscreen);
-// CONCATENATED MODULE: ./src/js/utils/media.ts
+_Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _Fullscreen_button = new WeakMap(), _Fullscreen_fullscreenEvents = new WeakMap(), _Fullscreen_fullscreenWidth = new WeakMap(), _Fullscreen_fullscreenHeight = new WeakMap(), _Fullscreen_clickEvent = new WeakMap(), _Fullscreen_controlPosition = new WeakMap(), _Fullscreen_controlLayer = new WeakMap();
+/* harmony default export */ const fullscreen = (Fullscreen);
+;// CONCATENATED MODULE: ./src/js/utils/media.ts
 
 function getExtension(url) {
   var baseUrl = url.split('?')[0];
@@ -6431,7 +2285,7 @@ function isDashSource(media) {
 function isFlvSource(media) {
   return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].indexOf(media.type) > -1;
 }
-function predictType(url, element) {
+function predictMimeType(url, element) {
   var extension = getExtension(url);
 
   if (!extension) {
@@ -6489,7 +2343,7 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
       autoplay(true);
       muted(false);
       return callback();
-    })["catch"](function () {
+    }).catch(function () {
       media.volume = 0;
       media.muted = true;
       media.play().then(function () {
@@ -6497,7 +2351,7 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
         autoplay(true);
         muted(true);
         return callback();
-      })["catch"](function () {
+      }).catch(function () {
         media.volume = defaultVol;
         media.muted = false;
         autoplay(false);
@@ -6512,7 +2366,7 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
     callback();
   }
 }
-// CONCATENATED MODULE: ./src/js/controls/levels.ts
+;// CONCATENATED MODULE: ./src/js/controls/levels.ts
 
 
 
@@ -6529,14 +2383,13 @@ var levels_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet 
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Levels_player, _Levels_button, _Levels_menu, _Levels_events, _Levels_detachMenu, _Levels_labels, _Levels_levels, _Levels_default, _Levels_position, _Levels_layer;
+var _Levels_player, _Levels_button, _Levels_menu, _Levels_events, _Levels_levels, _Levels_defaultLevel, _Levels_controlPosition, _Levels_controlLayer;
 
 
 
 
 
-
-var levels_Levels = function () {
+var Levels = function () {
   function Levels(player, position, layer) {
     classCallCheck_default()(this, Levels);
 
@@ -6552,27 +2405,19 @@ var levels_Levels = function () {
       media: {}
     });
 
-    _Levels_detachMenu.set(this, void 0);
-
-    _Levels_labels.set(this, void 0);
-
     _Levels_levels.set(this, []);
 
-    _Levels_default.set(this, '');
+    _Levels_defaultLevel.set(this, '');
 
-    _Levels_position.set(this, void 0);
+    _Levels_controlPosition.set(this, void 0);
 
-    _Levels_layer.set(this, void 0);
+    _Levels_controlLayer.set(this, void 0);
 
     levels_classPrivateFieldSet(this, _Levels_player, player, "f");
 
-    levels_classPrivateFieldSet(this, _Levels_labels, player.getOptions().labels, "f");
+    levels_classPrivateFieldSet(this, _Levels_controlPosition, position, "f");
 
-    levels_classPrivateFieldSet(this, _Levels_detachMenu, player.getOptions().detachMenus, "f");
-
-    levels_classPrivateFieldSet(this, _Levels_position, position, "f");
-
-    levels_classPrivateFieldSet(this, _Levels_layer, layer, "f");
+    levels_classPrivateFieldSet(this, _Levels_controlLayer, layer, "f");
 
     return this;
   }
@@ -6582,29 +2427,34 @@ var levels_Levels = function () {
     value: function create() {
       var _this = this;
 
-      var initialLevel = levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel !== null ? parseInt(levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions().defaultLevel, 10) : levels_classPrivateFieldGet(this, _Levels_player, "f").getMedia().level;
+      var _classPrivateFieldGe = levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels,
+          startLevel = _classPrivateFieldGe.defaultLevel,
+          detachMenus = _classPrivateFieldGe.detachMenus;
 
-      levels_classPrivateFieldSet(this, _Levels_default, "".concat(initialLevel), "f");
+      var initialLevel = startLevel !== null ? parseInt(startLevel || '0', 10) : levels_classPrivateFieldGet(this, _Levels_player, "f").getMedia().level;
+
+      levels_classPrivateFieldSet(this, _Levels_defaultLevel, "".concat(initialLevel), "f");
 
       var menuItems = this._formatMenuItems();
 
       var defaultLevel = menuItems.length ? menuItems.find(function (items) {
-        return items.key === levels_classPrivateFieldGet(_this, _Levels_default, "f");
+        return items.key === levels_classPrivateFieldGet(_this, _Levels_defaultLevel, "f");
       }) : null;
-      var defaultLabel = defaultLevel ? defaultLevel.label : levels_classPrivateFieldGet(this, _Levels_labels, "f").auto;
+      var defaultLabel = defaultLevel ? defaultLevel.label : (labels === null || labels === void 0 ? void 0 : labels.auto) || '';
       var levelSet = false;
 
       levels_classPrivateFieldSet(this, _Levels_button, document.createElement('button'), "f");
 
-      levels_classPrivateFieldGet(this, _Levels_button, "f").className = "op-controls__levels op-control__".concat(levels_classPrivateFieldGet(this, _Levels_position, "f"));
+      levels_classPrivateFieldGet(this, _Levels_button, "f").className = "op-controls__levels op-control__".concat(levels_classPrivateFieldGet(this, _Levels_controlPosition, "f"));
       levels_classPrivateFieldGet(this, _Levels_button, "f").tabIndex = 0;
-      levels_classPrivateFieldGet(this, _Levels_button, "f").title = levels_classPrivateFieldGet(this, _Levels_labels, "f").mediaLevels;
+      levels_classPrivateFieldGet(this, _Levels_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.mediaLevels) || '';
 
       levels_classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-controls', levels_classPrivateFieldGet(this, _Levels_player, "f").id);
 
-      levels_classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-label', levels_classPrivateFieldGet(this, _Levels_labels, "f").mediaLevels);
+      levels_classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.mediaLevels) || '');
 
-      levels_classPrivateFieldGet(this, _Levels_button, "f").setAttribute('data-active-level', levels_classPrivateFieldGet(this, _Levels_default, "f"));
+      levels_classPrivateFieldGet(this, _Levels_button, "f").setAttribute('data-active-level', levels_classPrivateFieldGet(this, _Levels_defaultLevel, "f"));
 
       levels_classPrivateFieldGet(this, _Levels_button, "f").innerHTML = "<span>".concat(defaultLabel, "</span>");
 
@@ -6628,11 +2478,11 @@ var levels_Levels = function () {
       levels_classPrivateFieldGet(this, _Levels_events, "f").media.manifestLoaded = loadLevelsEvent.bind(this);
       levels_classPrivateFieldGet(this, _Levels_events, "f").media.hlsManifestParsed = loadLevelsEvent.bind(this);
 
-      if (levels_classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
+      if (detachMenus) {
         this._buildMenu();
 
         levels_classPrivateFieldGet(this, _Levels_events, "f").button.click = function () {
-          if (levels_classPrivateFieldGet(_this, _Levels_detachMenu, "f")) {
+          if (detachMenus) {
             var menus = levels_classPrivateFieldGet(_this, _Levels_player, "f").getContainer().querySelectorAll('.op-settings');
 
             for (var i = 0, total = menus.length; i < total; ++i) {
@@ -6693,20 +2543,21 @@ var levels_Levels = function () {
       levels_classPrivateFieldGet(this, _Levels_events, "f").global.click = function (e) {
         var option = e.target;
 
-        var currentTime = levels_classPrivateFieldGet(_this, _Levels_player, "f").getMedia().currentTime;
+        var _classPrivateFieldGe2 = levels_classPrivateFieldGet(_this, _Levels_player, "f").getMedia(),
+            currentTime = _classPrivateFieldGe2.currentTime;
 
         var isPaused = levels_classPrivateFieldGet(_this, _Levels_player, "f").getMedia().paused;
 
-        if (option.closest("#".concat(levels_classPrivateFieldGet(_this, _Levels_player, "f").id)) && hasClass(option, 'op-levels__option')) {
+        if (option.closest("#".concat(levels_classPrivateFieldGet(_this, _Levels_player, "f").id)) && option.classList.contains('op-levels__option')) {
           var levelVal = option.getAttribute('data-value');
           var level = parseInt(levelVal ? levelVal.replace('levels-', '') : '-1', 10);
 
-          levels_classPrivateFieldSet(_this, _Levels_default, "".concat(level), "f");
+          levels_classPrivateFieldSet(_this, _Levels_defaultLevel, "".concat(level), "f");
 
-          if (levels_classPrivateFieldGet(_this, _Levels_detachMenu, "f")) {
+          if (detachMenus) {
             levels_classPrivateFieldGet(_this, _Levels_button, "f").setAttribute('data-active-level', "".concat(level));
 
-            levels_classPrivateFieldGet(_this, _Levels_button, "f").innerHTML = "<span>".concat(option.innerText, "</span>");
+            levels_classPrivateFieldGet(_this, _Levels_button, "f").innerHTML = "<span>".concat(sanitize(option.innerText, true), "</span>");
             var levels = option.parentElement && option.parentElement.parentElement ? option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item') : [];
 
             for (var i = 0, total = levels.length; i < total; ++i) {
@@ -6741,13 +2592,13 @@ var levels_Levels = function () {
         }
       };
 
-      var connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;
+      var connection = (NAV === null || NAV === void 0 ? void 0 : NAV.connection) || (NAV === null || NAV === void 0 ? void 0 : NAV.mozConnection) || (NAV === null || NAV === void 0 ? void 0 : NAV.webkitConnection);
 
       levels_classPrivateFieldGet(this, _Levels_events, "f").global.connection = function () {
         var media = levels_classPrivateFieldGet(_this, _Levels_player, "f").getMedia().current;
 
         if (!isDashSource(media) && !isHlsSource(media)) {
-          var type = connection.effectiveType;
+          var type = (connection === null || connection === void 0 ? void 0 : connection.effectiveType) || '';
 
           var levels = levels_classPrivateFieldGet(_this, _Levels_levels, "f").map(function (item) {
             return Object.assign(Object.assign({}, item), {
@@ -6776,8 +2627,6 @@ var levels_Levels = function () {
 
             levels_classPrivateFieldGet(_this, _Levels_player, "f").play();
           }
-
-          type = connection.effectiveType;
         }
       };
 
@@ -6795,7 +2644,10 @@ var levels_Levels = function () {
     value: function destroy() {
       var _this2 = this;
 
-      var connection = NAV.connection || NAV.mozConnection || NAV.webkitConnection;
+      var _classPrivateFieldGe3 = levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions(),
+          detachMenus = _classPrivateFieldGe3.detachMenus;
+
+      var connection = (NAV === null || NAV === void 0 ? void 0 : NAV.connection) || (NAV === null || NAV === void 0 ? void 0 : NAV.mozConnection) || (NAV === null || NAV === void 0 ? void 0 : NAV.webkitConnection);
       Object.keys(levels_classPrivateFieldGet(this, _Levels_events, "f").media).forEach(function (event) {
         levels_classPrivateFieldGet(_this2, _Levels_player, "f").getElement().removeEventListener(event, levels_classPrivateFieldGet(_this2, _Levels_events, "f").media[event]);
       });
@@ -6805,10 +2657,10 @@ var levels_Levels = function () {
         connection.removeEventListener('change', levels_classPrivateFieldGet(this, _Levels_events, "f").global.connection);
       }
 
-      if (levels_classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
+      if (detachMenus) {
         levels_classPrivateFieldGet(this, _Levels_button, "f").removeEventListener('click', levels_classPrivateFieldGet(this, _Levels_events, "f").button.click);
 
-        removeElement(levels_classPrivateFieldGet(this, _Levels_button, "f"));
+        levels_classPrivateFieldGet(this, _Levels_button, "f").remove();
 
         levels_classPrivateFieldGet(this, _Levels_button, "f").removeEventListener('mouseover', levels_classPrivateFieldGet(this, _Levels_events, "f").button.mouseover);
 
@@ -6818,13 +2670,17 @@ var levels_Levels = function () {
 
         levels_classPrivateFieldGet(this, _Levels_player, "f").getElement().removeEventListener('controlshidden', levels_classPrivateFieldGet(this, _Levels_events, "f").button.mouseout);
 
-        removeElement(levels_classPrivateFieldGet(this, _Levels_menu, "f"));
+        levels_classPrivateFieldGet(this, _Levels_menu, "f").remove();
       }
     }
   }, {
     key: "addSettings",
     value: function addSettings() {
-      if (levels_classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
+      var _classPrivateFieldGe4 = levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions(),
+          labels = _classPrivateFieldGe4.labels,
+          detachMenus = _classPrivateFieldGe4.detachMenus;
+
+      if (detachMenus) {
         return {};
       }
 
@@ -6832,21 +2688,24 @@ var levels_Levels = function () {
 
       return subitems.length > 2 ? {
         className: 'op-levels__option',
-        "default": levels_classPrivateFieldGet(this, _Levels_default, "f") || '-1',
+        default: levels_classPrivateFieldGet(this, _Levels_defaultLevel, "f") || '-1',
         key: 'levels',
-        name: levels_classPrivateFieldGet(this, _Levels_labels, "f").levels,
+        name: labels === null || labels === void 0 ? void 0 : labels.levels,
         subitems: subitems
       } : {};
     }
   }, {
     key: "_formatMenuItems",
     value: function _formatMenuItems() {
+      var _classPrivateFieldGe5 = levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions(),
+          labels = _classPrivateFieldGe5.labels;
+
       var levels = this._gatherLevels();
 
       var total = levels.length;
       var items = total ? [{
         key: '-1',
-        label: levels_classPrivateFieldGet(this, _Levels_labels, "f").auto
+        label: labels === null || labels === void 0 ? void 0 : labels.auto
       }] : [];
 
       var _loop = function _loop(i) {
@@ -6864,7 +2723,7 @@ var levels_Levels = function () {
         _loop(i);
       }
 
-      items = items.reduce(function (acc, current) {
+      return items.reduce(function (acc, current) {
         var duplicate = acc.find(function (item) {
           return item.label === current.label;
         });
@@ -6875,13 +2734,15 @@ var levels_Levels = function () {
 
         return acc;
       }, []).sort(function (a, b) {
-        return parseInt(a.label, 10) > parseInt(b.label, 10) ? 1 : -1;
+        return parseInt((a === null || a === void 0 ? void 0 : a.label) || '', 10) > parseInt((b === null || b === void 0 ? void 0 : b.label) || '', 10) ? 1 : -1;
       });
-      return items;
     }
   }, {
     key: "_getResolutionsLabel",
     value: function _getResolutionsLabel(height) {
+      var _classPrivateFieldGe6 = levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions(),
+          labels = _classPrivateFieldGe6.labels;
+
       if (height >= 4320) {
         return '8K';
       }
@@ -6918,7 +2779,7 @@ var levels_Levels = function () {
         return '144p';
       }
 
-      return levels_classPrivateFieldGet(this, _Levels_labels, "f").auto;
+      return (labels === null || labels === void 0 ? void 0 : labels.auto) || '';
     }
   }, {
     key: "_gatherLevels",
@@ -6940,7 +2801,10 @@ var levels_Levels = function () {
     value: function _buildMenu() {
       var _this4 = this;
 
-      if (levels_classPrivateFieldGet(this, _Levels_detachMenu, "f")) {
+      var _classPrivateFieldGe7 = levels_classPrivateFieldGet(this, _Levels_player, "f").getOptions(),
+          detachMenus = _classPrivateFieldGe7.detachMenus;
+
+      if (detachMenus) {
         levels_classPrivateFieldGet(this, _Levels_button, "f").classList.add('op-control--no-hover');
 
         levels_classPrivateFieldSet(this, _Levels_menu, document.createElement('div'), "f");
@@ -6954,15 +2818,15 @@ var levels_Levels = function () {
         var options = this._formatMenuItems();
 
         var menu = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-levels\">\n                ".concat(options.map(function (item) {
-          return "\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                    aria-checked=\"".concat(levels_classPrivateFieldGet(_this4, _Levels_default, "f") === item.key ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"levels-").concat(item.key, "\">").concat(item.label, "</div>\n                </div>");
+          return "\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\"\n                    aria-checked=\"".concat(levels_classPrivateFieldGet(_this4, _Levels_defaultLevel, "f") === item.key ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label ").concat(className || '', "\" data-value=\"levels-").concat(item.key, "\">").concat(item.label, "</div>\n                </div>");
         }).join(''), "\n            </div>");
         levels_classPrivateFieldGet(this, _Levels_menu, "f").innerHTML = menu;
         var itemContainer = document.createElement('div');
-        itemContainer.className = "op-controls__container op-control__".concat(levels_classPrivateFieldGet(this, _Levels_position, "f"));
+        itemContainer.className = "op-controls__container op-control__".concat(levels_classPrivateFieldGet(this, _Levels_controlPosition, "f"));
         itemContainer.appendChild(levels_classPrivateFieldGet(this, _Levels_button, "f"));
         itemContainer.appendChild(levels_classPrivateFieldGet(this, _Levels_menu, "f"));
 
-        levels_classPrivateFieldGet(this, _Levels_player, "f").getControls().getLayer(levels_classPrivateFieldGet(this, _Levels_layer, "f")).appendChild(itemContainer);
+        levels_classPrivateFieldGet(this, _Levels_player, "f").getControls().getLayer(levels_classPrivateFieldGet(this, _Levels_controlLayer, "f")).appendChild(itemContainer);
       }
     }
   }]);
@@ -6970,9 +2834,9 @@ var levels_Levels = function () {
   return Levels;
 }();
 
-_Levels_player = new WeakMap(), _Levels_button = new WeakMap(), _Levels_menu = new WeakMap(), _Levels_events = new WeakMap(), _Levels_detachMenu = new WeakMap(), _Levels_labels = new WeakMap(), _Levels_levels = new WeakMap(), _Levels_default = new WeakMap(), _Levels_position = new WeakMap(), _Levels_layer = new WeakMap();
-/* harmony default export */ var controls_levels = (levels_Levels);
-// CONCATENATED MODULE: ./src/js/controls/play.ts
+_Levels_player = new WeakMap(), _Levels_button = new WeakMap(), _Levels_menu = new WeakMap(), _Levels_events = new WeakMap(), _Levels_levels = new WeakMap(), _Levels_defaultLevel = new WeakMap(), _Levels_controlPosition = new WeakMap(), _Levels_controlLayer = new WeakMap();
+/* harmony default export */ const levels = (Levels);
+;// CONCATENATED MODULE: ./src/js/controls/play.ts
 
 
 
@@ -6989,14 +2853,13 @@ var play_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet ||
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Play_player, _Play_button, _Play_events, _Play_labels, _Play_position, _Play_layer;
+var _Play_player, _Play_button, _Play_events, _Play_controlPosition, _Play_controlLayer;
 
 
 
 
 
-
-var play_Play = function () {
+var Play = function () {
   function Play(player, position, layer) {
     classCallCheck_default()(this, Play);
 
@@ -7009,21 +2872,17 @@ var play_Play = function () {
       media: {}
     });
 
-    _Play_labels.set(this, void 0);
+    _Play_controlPosition.set(this, void 0);
 
-    _Play_position.set(this, void 0);
-
-    _Play_layer.set(this, void 0);
+    _Play_controlLayer.set(this, void 0);
 
     play_classPrivateFieldSet(this, _Play_player, player, "f");
 
-    play_classPrivateFieldSet(this, _Play_labels, play_classPrivateFieldGet(this, _Play_player, "f").getOptions().labels, "f");
+    play_classPrivateFieldSet(this, _Play_controlPosition, position, "f");
 
-    play_classPrivateFieldSet(this, _Play_position, position, "f");
+    play_classPrivateFieldSet(this, _Play_controlLayer, layer, "f");
 
-    play_classPrivateFieldSet(this, _Play_layer, layer, "f");
-
-    this._keydownEvent = this._keydownEvent.bind(this);
+    this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
     return this;
   }
 
@@ -7032,24 +2891,27 @@ var play_Play = function () {
     value: function create() {
       var _this = this;
 
+      var _a;
+
+      var _classPrivateFieldGe = play_classPrivateFieldGet(this, _Play_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels;
+
       play_classPrivateFieldSet(this, _Play_button, document.createElement('button'), "f");
 
       play_classPrivateFieldGet(this, _Play_button, "f").type = 'button';
-      play_classPrivateFieldGet(this, _Play_button, "f").className = "op-controls__playpause op-control__".concat(play_classPrivateFieldGet(this, _Play_position, "f"));
+      play_classPrivateFieldGet(this, _Play_button, "f").className = "op-controls__playpause op-control__".concat(play_classPrivateFieldGet(this, _Play_controlPosition, "f"));
       play_classPrivateFieldGet(this, _Play_button, "f").tabIndex = 0;
-      play_classPrivateFieldGet(this, _Play_button, "f").title = play_classPrivateFieldGet(this, _Play_labels, "f").play;
+      play_classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
 
       play_classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-controls', play_classPrivateFieldGet(this, _Play_player, "f").id);
 
       play_classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-pressed', 'false');
 
-      play_classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(this, _Play_labels, "f").play);
+      play_classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
 
-      play_classPrivateFieldGet(this, _Play_button, "f").innerHTML = "<span class=\"op-sr\">".concat(play_classPrivateFieldGet(this, _Play_labels, "f").play, "/").concat(play_classPrivateFieldGet(this, _Play_labels, "f").pause, "</span>");
+      play_classPrivateFieldGet(this, _Play_player, "f").getControls().getLayer(play_classPrivateFieldGet(this, _Play_controlLayer, "f")).appendChild(play_classPrivateFieldGet(this, _Play_button, "f"));
 
-      play_classPrivateFieldGet(this, _Play_player, "f").getControls().getLayer(play_classPrivateFieldGet(this, _Play_layer, "f")).appendChild(play_classPrivateFieldGet(this, _Play_button, "f"));
-
-      play_classPrivateFieldGet(this, _Play_events, "f").media.click = function (e) {
+      play_classPrivateFieldGet(this, _Play_events, "f").button = function (e) {
         play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-pressed', 'true');
 
         var el = play_classPrivateFieldGet(_this, _Play_player, "f").activeElement();
@@ -7075,6 +2937,8 @@ var play_Play = function () {
       var isAudioEl = isAudio(play_classPrivateFieldGet(this, _Play_player, "f").getElement());
 
       play_classPrivateFieldGet(this, _Play_events, "f").media.play = function () {
+        var _a;
+
         if (play_classPrivateFieldGet(_this, _Play_player, "f").activeElement().ended) {
           if (play_classPrivateFieldGet(_this, _Play_player, "f").isMedia()) {
             play_classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--replay');
@@ -7082,22 +2946,22 @@ var play_Play = function () {
             play_classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
           }
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").title = play_classPrivateFieldGet(_this, _Play_labels, "f").play;
+          play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(_this, _Play_labels, "f").play);
+          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
         } else {
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").title = play_classPrivateFieldGet(_this, _Play_labels, "f").pause;
+          play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(_this, _Play_labels, "f").pause);
+          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
 
-          if (play_classPrivateFieldGet(_this, _Play_player, "f").getOptions().pauseOthers) {
-            Object.keys(js_player.instances).forEach(function (key) {
+          if ((_a = play_classPrivateFieldGet(_this, _Play_player, "f").getOptions()) === null || _a === void 0 ? void 0 : _a.pauseOthers) {
+            Object.keys(player.instances).forEach(function (key) {
               if (key !== play_classPrivateFieldGet(_this, _Play_player, "f").id) {
-                var target = js_player.instances[key].activeElement();
+                var target = player.instances[key].activeElement();
                 target.pause();
               }
             });
@@ -7106,35 +2970,35 @@ var play_Play = function () {
       };
 
       play_classPrivateFieldGet(this, _Play_events, "f").media.loadedmetadata = function () {
-        if (hasClass(play_classPrivateFieldGet(_this, _Play_button, "f"), 'op-controls__playpause--pause')) {
+        if (play_classPrivateFieldGet(_this, _Play_button, "f").classList.contains('op-controls__playpause--pause')) {
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").title = play_classPrivateFieldGet(_this, _Play_labels, "f").play;
+          play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(_this, _Play_labels, "f").play);
+          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
         }
       };
 
       play_classPrivateFieldGet(this, _Play_events, "f").media.playing = function () {
-        if (!hasClass(play_classPrivateFieldGet(_this, _Play_button, "f"), 'op-controls__playpause--pause')) {
+        if (!play_classPrivateFieldGet(_this, _Play_button, "f").classList.contains('op-controls__playpause--pause')) {
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
 
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").title = play_classPrivateFieldGet(_this, _Play_labels, "f").pause;
+          play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
 
-          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(_this, _Play_labels, "f").pause);
+          play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
         }
       };
 
       play_classPrivateFieldGet(this, _Play_events, "f").media.pause = function () {
         play_classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
 
-        play_classPrivateFieldGet(_this, _Play_button, "f").title = play_classPrivateFieldGet(_this, _Play_labels, "f").play;
+        play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
 
-        play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(_this, _Play_labels, "f").play);
+        play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
       };
 
       play_classPrivateFieldGet(this, _Play_events, "f").media.ended = function () {
@@ -7152,9 +3016,9 @@ var play_Play = function () {
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
         }
 
-        play_classPrivateFieldGet(_this, _Play_button, "f").title = play_classPrivateFieldGet(_this, _Play_labels, "f").play;
+        play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
 
-        play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(_this, _Play_labels, "f").play);
+        play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
       };
 
       play_classPrivateFieldGet(this, _Play_events, "f").media.adsmediaended = function () {
@@ -7162,9 +3026,9 @@ var play_Play = function () {
 
         play_classPrivateFieldGet(_this, _Play_button, "f").classList.add('op-controls__playpause--pause');
 
-        play_classPrivateFieldGet(_this, _Play_button, "f").title = play_classPrivateFieldGet(_this, _Play_labels, "f").pause;
+        play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
 
-        play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', play_classPrivateFieldGet(_this, _Play_labels, "f").pause);
+        play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
       };
 
       play_classPrivateFieldGet(this, _Play_events, "f").media.playererror = function () {
@@ -7188,39 +3052,49 @@ var play_Play = function () {
         element.addEventListener(event, play_classPrivateFieldGet(_this, _Play_events, "f").media[event], EVENT_OPTIONS);
       });
 
+      if ((_a = play_classPrivateFieldGet(this, _Play_player, "f").getOptions().media) === null || _a === void 0 ? void 0 : _a.pauseOnClick) {
+        element.addEventListener('click', play_classPrivateFieldGet(this, _Play_events, "f").button, EVENT_OPTIONS);
+      }
+
       play_classPrivateFieldGet(this, _Play_player, "f").getControls().getContainer().addEventListener('controlschanged', play_classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged, EVENT_OPTIONS);
 
-      play_classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
+      play_classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
 
-      play_classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', play_classPrivateFieldGet(this, _Play_events, "f").media.click, EVENT_OPTIONS);
+      play_classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', play_classPrivateFieldGet(this, _Play_events, "f").button, EVENT_OPTIONS);
     }
   }, {
     key: "destroy",
     value: function destroy() {
       var _this2 = this;
 
+      var _a;
+
       Object.keys(play_classPrivateFieldGet(this, _Play_events, "f").media).forEach(function (event) {
         play_classPrivateFieldGet(_this2, _Play_player, "f").getElement().removeEventListener(event, play_classPrivateFieldGet(_this2, _Play_events, "f").media[event]);
       });
 
+      if ((_a = play_classPrivateFieldGet(this, _Play_player, "f").getOptions().media) === null || _a === void 0 ? void 0 : _a.pauseOnClick) {
+        play_classPrivateFieldGet(this, _Play_player, "f").getElement().removeEventListener('click', play_classPrivateFieldGet(this, _Play_events, "f").button);
+      }
+
       play_classPrivateFieldGet(this, _Play_player, "f").getControls().getContainer().removeEventListener('controlschanged', play_classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged);
 
-      play_classPrivateFieldGet(this, _Play_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
+      play_classPrivateFieldGet(this, _Play_player, "f").getContainer().removeEventListener('keydown', this._enterSpaceKeyEvent);
 
-      play_classPrivateFieldGet(this, _Play_button, "f").removeEventListener('click', play_classPrivateFieldGet(this, _Play_events, "f").media.click);
+      play_classPrivateFieldGet(this, _Play_button, "f").removeEventListener('click', play_classPrivateFieldGet(this, _Play_events, "f").button);
 
-      removeElement(play_classPrivateFieldGet(this, _Play_button, "f"));
+      play_classPrivateFieldGet(this, _Play_button, "f").remove();
     }
   }, {
-    key: "_keydownEvent",
-    value: function _keydownEvent(e) {
+    key: "_enterSpaceKeyEvent",
+    value: function _enterSpaceKeyEvent(e) {
       var _a;
 
       var key = e.which || e.keyCode || 0;
       var playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__playpause');
 
       if (playBtnFocused && (key === 13 || key === 32)) {
-        play_classPrivateFieldGet(this, _Play_events, "f").media.click(e);
+        play_classPrivateFieldGet(this, _Play_events, "f").button(e);
       }
     }
   }]);
@@ -7228,9 +3102,9 @@ var play_Play = function () {
   return Play;
 }();
 
-_Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_labels = new WeakMap(), _Play_position = new WeakMap(), _Play_layer = new WeakMap();
-/* harmony default export */ var controls_play = (play_Play);
-// CONCATENATED MODULE: ./src/js/controls/progress.ts
+_Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_controlPosition = new WeakMap(), _Play_controlLayer = new WeakMap();
+/* harmony default export */ const play = (Play);
+;// CONCATENATED MODULE: ./src/js/controls/progress.ts
 
 
 
@@ -7247,13 +3121,13 @@ var progress_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGe
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Progress_player, _Progress_progress, _Progress_slider, _Progress_buffer, _Progress_played, _Progress_tooltip, _Progress_events, _Progress_forcePause, _Progress_labels, _Progress_position, _Progress_layer;
+var _Progress_player, _Progress_progress, _Progress_slider, _Progress_buffer, _Progress_played, _Progress_tooltip, _Progress_events, _Progress_forcePause, _Progress_controlPosition, _Progress_controlLayer;
 
 
 
 
 
-var progress_Progress = function () {
+var Progress = function () {
   function Progress(player, position, layer) {
     classCallCheck_default()(this, Progress);
 
@@ -7277,25 +3151,19 @@ var progress_Progress = function () {
       slider: {}
     });
 
-    _Progress_forcePause.set(this, void 0);
+    _Progress_forcePause.set(this, false);
 
-    _Progress_labels.set(this, void 0);
+    _Progress_controlPosition.set(this, void 0);
 
-    _Progress_position.set(this, void 0);
-
-    _Progress_layer.set(this, void 0);
+    _Progress_controlLayer.set(this, void 0);
 
     progress_classPrivateFieldSet(this, _Progress_player, player, "f");
 
-    progress_classPrivateFieldSet(this, _Progress_labels, player.getOptions().labels, "f");
+    progress_classPrivateFieldSet(this, _Progress_controlPosition, position, "f");
 
-    progress_classPrivateFieldSet(this, _Progress_forcePause, false, "f");
+    progress_classPrivateFieldSet(this, _Progress_controlLayer, layer, "f");
 
-    progress_classPrivateFieldSet(this, _Progress_position, position, "f");
-
-    progress_classPrivateFieldSet(this, _Progress_layer, layer, "f");
-
-    this._keydownEvent = this._keydownEvent.bind(this);
+    this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
     return this;
   }
 
@@ -7304,12 +3172,17 @@ var progress_Progress = function () {
     value: function create() {
       var _this = this;
 
+      var _a;
+
+      var _classPrivateFieldGe = progress_classPrivateFieldGet(this, _Progress_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels;
+
       progress_classPrivateFieldSet(this, _Progress_progress, document.createElement('div'), "f");
 
-      progress_classPrivateFieldGet(this, _Progress_progress, "f").className = "op-controls__progress op-control__".concat(progress_classPrivateFieldGet(this, _Progress_position, "f"));
+      progress_classPrivateFieldGet(this, _Progress_progress, "f").className = "op-controls__progress op-control__".concat(progress_classPrivateFieldGet(this, _Progress_controlPosition, "f"));
       progress_classPrivateFieldGet(this, _Progress_progress, "f").tabIndex = 0;
 
-      progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-label', progress_classPrivateFieldGet(this, _Progress_labels, "f").progressSlider);
+      progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.progressSlider) || '');
 
       progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemin', '0');
 
@@ -7327,7 +3200,7 @@ var progress_Progress = function () {
 
       progress_classPrivateFieldGet(this, _Progress_slider, "f").value = '0';
 
-      progress_classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('aria-label', progress_classPrivateFieldGet(this, _Progress_labels, "f").progressRail);
+      progress_classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.progressRail) || '');
 
       progress_classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('role', 'slider');
 
@@ -7366,6 +3239,8 @@ var progress_Progress = function () {
       }
 
       var setInitialProgress = function setInitialProgress() {
+        var _a;
+
         if (progress_classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('error')) {
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").classList.remove('error');
         }
@@ -7389,18 +3264,20 @@ var progress_Progress = function () {
           progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', '1');
 
           progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
-        } else if (!progress_classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live.showProgress) {
+        } else if (!((_a = progress_classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live) === null || _a === void 0 ? void 0 : _a.showProgress)) {
           progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'true');
         }
       };
 
       var lastCurrentTime = 0;
-      var defaultDuration = progress_classPrivateFieldGet(this, _Progress_player, "f").getOptions().progress.duration || 0;
+      var defaultDuration = ((_a = progress_classPrivateFieldGet(this, _Progress_player, "f").getOptions().progress) === null || _a === void 0 ? void 0 : _a.duration) || 0;
       var isAudioEl = isAudio(progress_classPrivateFieldGet(this, _Progress_player, "f").getElement());
       progress_classPrivateFieldGet(this, _Progress_events, "f").media.loadedmetadata = setInitialProgress.bind(this);
       progress_classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged = setInitialProgress.bind(this);
 
       progress_classPrivateFieldGet(this, _Progress_events, "f").media.progress = function (e) {
+        var _a;
+
         var el = e.target;
 
         if (el.duration !== Infinity && !progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled')) {
@@ -7412,7 +3289,7 @@ var progress_Progress = function () {
               }
             }
           }
-        } else if (!progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && progress_classPrivateFieldGet(_this, _Progress_progress, "f").getAttribute('aria-hidden') === 'false' && !progress_classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live.showProgress) {
+        } else if (!progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && progress_classPrivateFieldGet(_this, _Progress_progress, "f").getAttribute('aria-hidden') === 'false' && !((_a = progress_classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live) === null || _a === void 0 ? void 0 : _a.showProgress)) {
           progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'true');
         }
       };
@@ -7476,6 +3353,8 @@ var progress_Progress = function () {
       };
 
       progress_classPrivateFieldGet(this, _Progress_events, "f").media.timeupdate = function () {
+        var _a;
+
         var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
         if (el.duration !== Infinity && (!progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') || progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled'))) {
@@ -7491,14 +3370,14 @@ var progress_Progress = function () {
           var max = parseFloat(progress_classPrivateFieldGet(_this, _Progress_slider, "f").max);
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = current.toString();
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").style.backgroundSize = "".concat((current - min) * 100 / (max - min), "% 100%");
-          progress_classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
+          progress_classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || Number.isNaN(el.duration) || !Number.isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
 
           if (progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && Math.floor(progress_classPrivateFieldGet(_this, _Progress_played, "f").value) >= 99) {
             lastCurrentTime = el.currentTime;
 
             progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
           }
-        } else if (!progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && progress_classPrivateFieldGet(_this, _Progress_progress, "f").getAttribute('aria-hidden') === 'false' && !progress_classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live.showProgress) {
+        } else if (!progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled') && progress_classPrivateFieldGet(_this, _Progress_progress, "f").getAttribute('aria-hidden') === 'false' && !((_a = progress_classPrivateFieldGet(_this, _Progress_player, "f").getOptions().live) === null || _a === void 0 ? void 0 : _a.showProgress)) {
           progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'true');
         }
       };
@@ -7512,7 +3391,7 @@ var progress_Progress = function () {
 
         progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
 
-        progress_classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
+        progress_classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || Number.isNaN(el.duration) || !Number.isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
       };
 
       progress_classPrivateFieldGet(this, _Progress_events, "f").media.ended = function () {
@@ -7525,7 +3404,7 @@ var progress_Progress = function () {
       };
 
       var updateSlider = function updateSlider(e) {
-        if (hasClass(progress_classPrivateFieldGet(_this, _Progress_slider, "f"), 'op-progress--pressed')) {
+        if (progress_classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('op-progress--pressed')) {
           return;
         }
 
@@ -7539,7 +3418,7 @@ var progress_Progress = function () {
         var max = parseFloat(target.max);
         var val = parseFloat(target.value);
         progress_classPrivateFieldGet(_this, _Progress_slider, "f").style.backgroundSize = "".concat((val - min) * 100 / (max - min), "% 100%");
-        progress_classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || isNaN(el.duration) || !isFinite(el.duration) ? defaultDuration : val / el.duration * 100;
+        progress_classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || Number.isNaN(el.duration) || !Number.isFinite(el.duration) ? defaultDuration : val / el.duration * 100;
 
         if (progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
           el.currentTime = Math.round(progress_classPrivateFieldGet(_this, _Progress_played, "f").value) >= 99 ? lastCurrentTime : val;
@@ -7553,7 +3432,9 @@ var progress_Progress = function () {
       var forcePause = function forcePause(e) {
         var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
-        if ((e.which === 1 || e.which === 0) && progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia()) {
+        var key = e.which || e.keyCode || 0;
+
+        if ((key === 1 || key === 0) && progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia()) {
           if (!el.paused) {
             el.pause();
 
@@ -7575,11 +3456,13 @@ var progress_Progress = function () {
       };
 
       var mobileForcePause = function mobileForcePause(e) {
+        var _a;
+
         var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
         if (el.duration !== Infinity) {
-          var changedTouches = e.originalEvent ? e.originalEvent.changedTouches : e.changedTouches;
-          var x = changedTouches ? changedTouches[0].pageX : e.pageX;
+          var changedTouches = e.changedTouches;
+          var x = ((_a = changedTouches[0]) === null || _a === void 0 ? void 0 : _a.pageX) || 0;
           var pos = x - offset(progress_classPrivateFieldGet(_this, _Progress_progress, "f")).left;
 
           var percentage = pos / progress_classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
@@ -7587,7 +3470,12 @@ var progress_Progress = function () {
           var time = percentage * el.duration;
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = time.toString();
           updateSlider(e);
-          forcePause(e);
+
+          if (!el.paused) {
+            el.pause();
+
+            progress_classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
+          }
         }
       };
 
@@ -7603,7 +3491,7 @@ var progress_Progress = function () {
           var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
           if (el.duration !== Infinity && !progress_classPrivateFieldGet(_this, _Progress_player, "f").isAd()) {
-            var x = e.originalEvent && e.originalEvent.changedTouches ? e.originalEvent.changedTouches[0].pageX : e.pageX;
+            var x = e.pageX;
             var pos = x - offset(progress_classPrivateFieldGet(_this, _Progress_progress, "f")).left;
             var half = progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").offsetWidth / 2;
 
@@ -7630,7 +3518,7 @@ var progress_Progress = function () {
             }
 
             progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").style.left = "".concat(pos, "px");
-            progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").innerHTML = isNaN(time) ? '00:00' : formatTime(time);
+            progress_classPrivateFieldGet(_this, _Progress_tooltip, "f").innerHTML = Number.isNaN(time) ? '00:00' : formatTime(time);
           }
         };
 
@@ -7654,11 +3542,11 @@ var progress_Progress = function () {
 
       document.addEventListener('mousemove', progress_classPrivateFieldGet(this, _Progress_events, "f").global.mousemove, EVENT_OPTIONS);
 
-      progress_classPrivateFieldGet(this, _Progress_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
+      progress_classPrivateFieldGet(this, _Progress_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
 
       progress_classPrivateFieldGet(this, _Progress_player, "f").getControls().getContainer().addEventListener('controlschanged', progress_classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged, EVENT_OPTIONS);
 
-      progress_classPrivateFieldGet(this, _Progress_player, "f").getControls().getLayer(progress_classPrivateFieldGet(this, _Progress_layer, "f")).appendChild(progress_classPrivateFieldGet(this, _Progress_progress, "f"));
+      progress_classPrivateFieldGet(this, _Progress_player, "f").getControls().getLayer(progress_classPrivateFieldGet(this, _Progress_controlLayer, "f")).appendChild(progress_classPrivateFieldGet(this, _Progress_progress, "f"));
     }
   }, {
     key: "destroy",
@@ -7678,23 +3566,25 @@ var progress_Progress = function () {
 
       document.removeEventListener('mousemove', progress_classPrivateFieldGet(this, _Progress_events, "f").global.mousemove);
 
-      progress_classPrivateFieldGet(this, _Progress_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
+      progress_classPrivateFieldGet(this, _Progress_player, "f").getContainer().removeEventListener('keydown', this._enterSpaceKeyEvent);
 
       progress_classPrivateFieldGet(this, _Progress_player, "f").getControls().getContainer().removeEventListener('controlschanged', progress_classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged);
 
-      removeElement(progress_classPrivateFieldGet(this, _Progress_buffer, "f"));
-      removeElement(progress_classPrivateFieldGet(this, _Progress_played, "f"));
-      removeElement(progress_classPrivateFieldGet(this, _Progress_slider, "f"));
+      progress_classPrivateFieldGet(this, _Progress_buffer, "f").remove();
+
+      progress_classPrivateFieldGet(this, _Progress_played, "f").remove();
+
+      progress_classPrivateFieldGet(this, _Progress_slider, "f").remove();
 
       if (!IS_IOS && !IS_ANDROID) {
-        removeElement(progress_classPrivateFieldGet(this, _Progress_tooltip, "f"));
+        progress_classPrivateFieldGet(this, _Progress_tooltip, "f").remove();
       }
 
-      removeElement(progress_classPrivateFieldGet(this, _Progress_progress, "f"));
+      progress_classPrivateFieldGet(this, _Progress_progress, "f").remove();
     }
   }, {
-    key: "_keydownEvent",
-    value: function _keydownEvent(e) {
+    key: "_enterSpaceKeyEvent",
+    value: function _enterSpaceKeyEvent(e) {
       var el = progress_classPrivateFieldGet(this, _Progress_player, "f").activeElement();
 
       var isAd = progress_classPrivateFieldGet(this, _Progress_player, "f").isAd();
@@ -7720,10 +3610,9 @@ var progress_Progress = function () {
   return Progress;
 }();
 
-_Progress_player = new WeakMap(), _Progress_progress = new WeakMap(), _Progress_slider = new WeakMap(), _Progress_buffer = new WeakMap(), _Progress_played = new WeakMap(), _Progress_tooltip = new WeakMap(), _Progress_events = new WeakMap(), _Progress_forcePause = new WeakMap(), _Progress_labels = new WeakMap(), _Progress_position = new WeakMap(), _Progress_layer = new WeakMap();
-/* harmony default export */ var progress = (progress_Progress);
-// CONCATENATED MODULE: ./src/js/controls/settings.ts
-
+_Progress_player = new WeakMap(), _Progress_progress = new WeakMap(), _Progress_slider = new WeakMap(), _Progress_buffer = new WeakMap(), _Progress_played = new WeakMap(), _Progress_tooltip = new WeakMap(), _Progress_events = new WeakMap(), _Progress_forcePause = new WeakMap(), _Progress_controlPosition = new WeakMap(), _Progress_controlLayer = new WeakMap();
+/* harmony default export */ const progress = (Progress);
+;// CONCATENATED MODULE: ./src/js/controls/settings.ts
 
 
 
@@ -7740,12 +3629,12 @@ var settings_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGe
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Settings_player, _Settings_submenu, _Settings_button, _Settings_menu, _Settings_events, _Settings_originalOutput, _Settings_labels, _Settings_position, _Settings_layer;
+var _Settings_player, _Settings_submenu, _Settings_button, _Settings_menu, _Settings_events, _Settings_originalOutput, _Settings_controlPosition, _Settings_controlLayer;
 
 
 
 
-var settings_Settings = function () {
+var Settings = function () {
   function Settings(player, position, layer) {
     classCallCheck_default()(this, Settings);
 
@@ -7764,21 +3653,17 @@ var settings_Settings = function () {
 
     _Settings_originalOutput.set(this, '');
 
-    _Settings_labels.set(this, void 0);
+    _Settings_controlPosition.set(this, void 0);
 
-    _Settings_position.set(this, void 0);
-
-    _Settings_layer.set(this, void 0);
+    _Settings_controlLayer.set(this, void 0);
 
     settings_classPrivateFieldSet(this, _Settings_player, player, "f");
 
-    settings_classPrivateFieldSet(this, _Settings_labels, player.getOptions().labels, "f");
+    settings_classPrivateFieldSet(this, _Settings_controlPosition, position, "f");
 
-    settings_classPrivateFieldSet(this, _Settings_position, position, "f");
+    settings_classPrivateFieldSet(this, _Settings_controlLayer, layer, "f");
 
-    settings_classPrivateFieldSet(this, _Settings_layer, layer, "f");
-
-    this._keydownEvent = this._keydownEvent.bind(this);
+    this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
     return this;
   }
 
@@ -7787,19 +3672,20 @@ var settings_Settings = function () {
     value: function create() {
       var _this = this;
 
+      var _classPrivateFieldGe = settings_classPrivateFieldGet(this, _Settings_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels;
+
       settings_classPrivateFieldSet(this, _Settings_button, document.createElement('button'), "f");
 
-      settings_classPrivateFieldGet(this, _Settings_button, "f").className = "op-controls__settings op-control__".concat(settings_classPrivateFieldGet(this, _Settings_position, "f"));
+      settings_classPrivateFieldGet(this, _Settings_button, "f").className = "op-controls__settings op-control__".concat(settings_classPrivateFieldGet(this, _Settings_controlPosition, "f"));
       settings_classPrivateFieldGet(this, _Settings_button, "f").tabIndex = 0;
-      settings_classPrivateFieldGet(this, _Settings_button, "f").title = settings_classPrivateFieldGet(this, _Settings_labels, "f").settings;
+      settings_classPrivateFieldGet(this, _Settings_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.settings) || '';
 
       settings_classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-controls', settings_classPrivateFieldGet(this, _Settings_player, "f").id);
 
       settings_classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-pressed', 'false');
 
-      settings_classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-label', settings_classPrivateFieldGet(this, _Settings_labels, "f").settings);
-
-      settings_classPrivateFieldGet(this, _Settings_button, "f").innerHTML = "<span class=\"op-sr\">".concat(settings_classPrivateFieldGet(this, _Settings_labels, "f").settings, "</span>");
+      settings_classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.settings) || '');
 
       settings_classPrivateFieldSet(this, _Settings_menu, document.createElement('div'), "f");
 
@@ -7847,19 +3733,23 @@ var settings_Settings = function () {
         _this.removeItem(id, type);
       };
 
+      this.clickEvent = this.clickEvent.bind(this);
+      this.hideEvent = this.hideEvent.bind(this);
+      this.removeEvent = this.removeEvent.bind(this);
       settings_classPrivateFieldGet(this, _Settings_events, "f").media.controlshidden = this.hideEvent.bind(this);
       settings_classPrivateFieldGet(this, _Settings_events, "f").media.settingremoved = this.removeEvent.bind(this);
       settings_classPrivateFieldGet(this, _Settings_events, "f").media.play = this.hideEvent.bind(this);
       settings_classPrivateFieldGet(this, _Settings_events, "f").media.pause = this.hideEvent.bind(this);
 
-      settings_classPrivateFieldGet(this, _Settings_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
-
-      this.clickEvent = this.clickEvent.bind(this);
-      this.hideEvent = this.hideEvent.bind(this);
+      settings_classPrivateFieldGet(this, _Settings_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
 
       settings_classPrivateFieldGet(this, _Settings_events, "f").global.click = function (e) {
-        if (e.target.closest("#".concat(settings_classPrivateFieldGet(_this, _Settings_player, "f").id)) && hasClass(e.target, 'op-speed__option')) {
-          settings_classPrivateFieldGet(_this, _Settings_player, "f").getMedia().playbackRate = parseFloat(e.target.getAttribute('data-value').replace('speed-', ''));
+        var target = e.target;
+        var current = target;
+
+        if ((current === null || current === void 0 ? void 0 : current.closest("#".concat(settings_classPrivateFieldGet(_this, _Settings_player, "f").id))) && (current === null || current === void 0 ? void 0 : current.classList.contains('op-speed__option'))) {
+          var level = (current === null || current === void 0 ? void 0 : current.getAttribute('data-value')) || '';
+          settings_classPrivateFieldGet(_this, _Settings_player, "f").getMedia().playbackRate = parseFloat(level.replace('speed-', ''));
         }
       };
 
@@ -7877,7 +3767,7 @@ var settings_Settings = function () {
         window.addEventListener('resize', settings_classPrivateFieldGet(this, _Settings_events, "f").global.resize, EVENT_OPTIONS);
       }
 
-      settings_classPrivateFieldGet(this, _Settings_player, "f").getControls().getLayer(settings_classPrivateFieldGet(this, _Settings_layer, "f")).appendChild(settings_classPrivateFieldGet(this, _Settings_button, "f"));
+      settings_classPrivateFieldGet(this, _Settings_player, "f").getControls().getLayer(settings_classPrivateFieldGet(this, _Settings_controlLayer, "f")).appendChild(settings_classPrivateFieldGet(this, _Settings_button, "f"));
 
       settings_classPrivateFieldGet(this, _Settings_player, "f").getContainer().appendChild(settings_classPrivateFieldGet(this, _Settings_menu, "f"));
     }
@@ -7904,15 +3794,19 @@ var settings_Settings = function () {
         settings_classPrivateFieldGet(this, _Settings_player, "f").getElement().removeEventListener('controlshidden', this.hideEvent);
       }
 
-      settings_classPrivateFieldGet(this, _Settings_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
+      settings_classPrivateFieldGet(this, _Settings_player, "f").getContainer().removeEventListener('keydown', this._enterSpaceKeyEvent);
 
-      removeElement(settings_classPrivateFieldGet(this, _Settings_menu, "f"));
-      removeElement(settings_classPrivateFieldGet(this, _Settings_button, "f"));
+      settings_classPrivateFieldGet(this, _Settings_menu, "f").remove();
+
+      settings_classPrivateFieldGet(this, _Settings_button, "f").remove();
     }
   }, {
     key: "addSettings",
     value: function addSettings() {
       var media = settings_classPrivateFieldGet(this, _Settings_player, "f").getMedia();
+
+      var _classPrivateFieldGe2 = settings_classPrivateFieldGet(this, _Settings_player, "f").getOptions(),
+          labels = _classPrivateFieldGe2.labels;
 
       var rate = 1;
 
@@ -7922,9 +3816,9 @@ var settings_Settings = function () {
 
       return {
         className: 'op-speed__option',
-        "default": rate.toString(),
+        default: rate.toString(),
         key: 'speed',
-        name: settings_classPrivateFieldGet(this, _Settings_labels, "f").speed,
+        name: (labels === null || labels === void 0 ? void 0 : labels.speed) || '',
         subitems: [{
           key: '0.25',
           label: '0.25'
@@ -7936,7 +3830,7 @@ var settings_Settings = function () {
           label: '0.75'
         }, {
           key: '1',
-          label: settings_classPrivateFieldGet(this, _Settings_labels, "f").speedNormal
+          label: (labels === null || labels === void 0 ? void 0 : labels.speedNormal) || ''
         }, {
           key: '1.25',
           label: '1.25'
@@ -7954,11 +3848,12 @@ var settings_Settings = function () {
     value: function addItem(name, key, defaultValue, submenu, className) {
       var _this3 = this;
 
+      var dataValue = "".concat(key, "-").concat(sanitize(defaultValue, true));
       var menuItem = document.createElement('div');
       menuItem.className = 'op-settings__menu-item';
       menuItem.tabIndex = 0;
       menuItem.setAttribute('role', 'menuitemradio');
-      menuItem.innerHTML = "<div class=\"op-settings__menu-label\" data-value=\"".concat(key, "-").concat(defaultValue, "\">").concat(name, "</div>");
+      menuItem.innerHTML = "<div class=\"op-settings__menu-label\" data-value=\"".concat(dataValue, "\">").concat(name, "</div>");
       var submenuMatch = submenu ? submenu.find(function (x) {
         return x.key === defaultValue;
       }) : null;
@@ -7986,7 +3881,7 @@ var settings_Settings = function () {
         var target = e.target;
 
         if (target.closest("#".concat(settings_classPrivateFieldGet(_this3, _Settings_player, "f").id))) {
-          if (hasClass(target, 'op-settings__back')) {
+          if (target.classList.contains('op-settings__back')) {
             settings_classPrivateFieldGet(_this3, _Settings_menu, "f").classList.add('op-settings--sliding');
 
             setTimeout(function () {
@@ -7994,7 +3889,7 @@ var settings_Settings = function () {
 
               settings_classPrivateFieldGet(_this3, _Settings_menu, "f").classList.remove('op-settings--sliding');
             }, 100);
-          } else if (hasClass(target, 'op-settings__menu-content')) {
+          } else if (target.classList.contains('op-settings__menu-content')) {
             var labelEl = target.parentElement ? target.parentElement.querySelector('.op-settings__menu-label') : null;
             var label = labelEl ? labelEl.getAttribute('data-value') : null;
             var fragments = label ? label.split('-') : [];
@@ -8003,7 +3898,7 @@ var settings_Settings = function () {
               fragments.pop();
               var current = fragments.join('-').replace(/^\-|\-$/, '');
 
-              if (typeof_default()(settings_classPrivateFieldGet(_this3, _Settings_submenu, "f")[current]) !== undefined) {
+              if (typeof settings_classPrivateFieldGet(_this3, _Settings_submenu, "f")[current] !== 'undefined') {
                 settings_classPrivateFieldGet(_this3, _Settings_menu, "f").classList.add('op-settings--sliding');
 
                 setTimeout(function () {
@@ -8013,7 +3908,7 @@ var settings_Settings = function () {
                 }, 100);
               }
             }
-          } else if (hasClass(target, 'op-settings__submenu-label')) {
+          } else if (target.classList.contains('op-settings__submenu-label')) {
             var _current = target.getAttribute('data-value');
 
             var value = _current ? _current.replace("".concat(key, "-"), '') : '';
@@ -8041,7 +3936,7 @@ var settings_Settings = function () {
                   prev.setAttribute('data-value', "".concat(_current));
 
                   if (prev.nextElementSibling) {
-                    prev.nextElementSibling.innerHTML = _label;
+                    prev.nextElementSibling.textContent = _label;
                   }
                 }
 
@@ -8070,7 +3965,7 @@ var settings_Settings = function () {
       var target = settings_classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelector(".op-settings__submenu-label[data-value=".concat(type, "-").concat(id, "]"));
 
       if (target) {
-        removeElement(target);
+        target.remove();
       }
 
       if (settings_classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelectorAll(".op-settings__submenu-label[data-value^=".concat(type, "]")).length < minItems) {
@@ -8081,13 +3976,13 @@ var settings_Settings = function () {
         var menuItem = label ? label.closest('.op-settings__menu-item') : null;
 
         if (menuItem) {
-          removeElement(menuItem);
+          menuItem.remove();
         }
       }
     }
   }, {
-    key: "_keydownEvent",
-    value: function _keydownEvent(e) {
+    key: "_enterSpaceKeyEvent",
+    value: function _enterSpaceKeyEvent(e) {
       var _a, _b, _c, _d;
 
       var key = e.which || e.keyCode || 0;
@@ -8115,9 +4010,9 @@ var settings_Settings = function () {
   return Settings;
 }();
 
-_Settings_player = new WeakMap(), _Settings_submenu = new WeakMap(), _Settings_button = new WeakMap(), _Settings_menu = new WeakMap(), _Settings_events = new WeakMap(), _Settings_originalOutput = new WeakMap(), _Settings_labels = new WeakMap(), _Settings_position = new WeakMap(), _Settings_layer = new WeakMap();
-/* harmony default export */ var settings = (settings_Settings);
-// CONCATENATED MODULE: ./src/js/controls/time.ts
+_Settings_player = new WeakMap(), _Settings_submenu = new WeakMap(), _Settings_button = new WeakMap(), _Settings_menu = new WeakMap(), _Settings_events = new WeakMap(), _Settings_originalOutput = new WeakMap(), _Settings_controlPosition = new WeakMap(), _Settings_controlLayer = new WeakMap();
+/* harmony default export */ const settings = (Settings);
+;// CONCATENATED MODULE: ./src/js/controls/time.ts
 
 
 
@@ -8134,19 +4029,18 @@ var time_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet ||
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Time_player, _Time_current, _Time_delimiter, _Time_duration, _Time_container, _Time_events, _Time_labels, _Time_position, _Time_layer;
+var _Time_player, _Time_currentTime, _Time_delimiter, _Time_duration, _Time_container, _Time_events, _Time_controlPosition, _Time_controlLayer;
 
 
 
 
-
-var time_Time = function () {
+var Time = function () {
   function Time(player, position, layer) {
     classCallCheck_default()(this, Time);
 
     _Time_player.set(this, void 0);
 
-    _Time_current.set(this, void 0);
+    _Time_currentTime.set(this, void 0);
 
     _Time_delimiter.set(this, void 0);
 
@@ -8159,19 +4053,15 @@ var time_Time = function () {
       media: {}
     });
 
-    _Time_labels.set(this, void 0);
+    _Time_controlPosition.set(this, void 0);
 
-    _Time_position.set(this, void 0);
-
-    _Time_layer.set(this, void 0);
+    _Time_controlLayer.set(this, void 0);
 
     time_classPrivateFieldSet(this, _Time_player, player, "f");
 
-    time_classPrivateFieldSet(this, _Time_labels, player.getOptions().labels, "f");
+    time_classPrivateFieldSet(this, _Time_controlPosition, position, "f");
 
-    time_classPrivateFieldSet(this, _Time_position, position, "f");
-
-    time_classPrivateFieldSet(this, _Time_layer, layer, "f");
+    time_classPrivateFieldSet(this, _Time_controlLayer, layer, "f");
 
     return this;
   }
@@ -8181,19 +4071,22 @@ var time_Time = function () {
     value: function create() {
       var _this = this;
 
-      time_classPrivateFieldSet(this, _Time_current, document.createElement('time'), "f");
+      var _classPrivateFieldGe = time_classPrivateFieldGet(this, _Time_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels,
+          progress = _classPrivateFieldGe.progress;
 
-      time_classPrivateFieldGet(this, _Time_current, "f").className = 'op-controls__current';
+      time_classPrivateFieldSet(this, _Time_currentTime, document.createElement('time'), "f");
 
-      time_classPrivateFieldGet(this, _Time_current, "f").setAttribute('role', 'timer');
+      time_classPrivateFieldGet(this, _Time_currentTime, "f").className = 'op-controls__current';
 
-      time_classPrivateFieldGet(this, _Time_current, "f").setAttribute('aria-live', 'off');
+      time_classPrivateFieldGet(this, _Time_currentTime, "f").setAttribute('role', 'timer');
 
-      time_classPrivateFieldGet(this, _Time_current, "f").setAttribute('aria-hidden', 'false');
+      time_classPrivateFieldGet(this, _Time_currentTime, "f").setAttribute('aria-live', 'off');
 
-      time_classPrivateFieldGet(this, _Time_current, "f").innerText = '0:00';
+      time_classPrivateFieldGet(this, _Time_currentTime, "f").setAttribute('aria-hidden', 'false');
 
-      var showOnlyCurrent = time_classPrivateFieldGet(this, _Time_player, "f").getOptions().progress.showCurrentTimeOnly;
+      time_classPrivateFieldGet(this, _Time_currentTime, "f").innerText = '0:00';
+      var showOnlyCurrent = (progress === null || progress === void 0 ? void 0 : progress.showCurrentTimeOnly) || false;
 
       if (!showOnlyCurrent) {
         time_classPrivateFieldSet(this, _Time_delimiter, document.createElement('span'), "f");
@@ -8210,16 +4103,16 @@ var time_Time = function () {
 
         time_classPrivateFieldGet(this, _Time_duration, "f").setAttribute('aria-hidden', 'false');
 
-        time_classPrivateFieldGet(this, _Time_duration, "f").innerText = formatTime(time_classPrivateFieldGet(this, _Time_player, "f").getOptions().progress.duration);
+        time_classPrivateFieldGet(this, _Time_duration, "f").innerText = formatTime((progress === null || progress === void 0 ? void 0 : progress.duration) || 0);
       }
 
-      var controls = time_classPrivateFieldGet(this, _Time_player, "f").getControls().getLayer(time_classPrivateFieldGet(this, _Time_layer, "f"));
+      var controls = time_classPrivateFieldGet(this, _Time_player, "f").getControls().getLayer(time_classPrivateFieldGet(this, _Time_controlLayer, "f"));
 
       time_classPrivateFieldSet(this, _Time_container, document.createElement('span'), "f");
 
-      time_classPrivateFieldGet(this, _Time_container, "f").className = "op-controls-time op-control__".concat(time_classPrivateFieldGet(this, _Time_position, "f"));
+      time_classPrivateFieldGet(this, _Time_container, "f").className = "op-controls-time op-control__".concat(time_classPrivateFieldGet(this, _Time_controlPosition, "f"));
 
-      time_classPrivateFieldGet(this, _Time_container, "f").appendChild(time_classPrivateFieldGet(this, _Time_current, "f"));
+      time_classPrivateFieldGet(this, _Time_container, "f").appendChild(time_classPrivateFieldGet(this, _Time_currentTime, "f"));
 
       if (!showOnlyCurrent) {
         time_classPrivateFieldGet(this, _Time_container, "f").appendChild(time_classPrivateFieldGet(this, _Time_delimiter, "f"));
@@ -8230,15 +4123,17 @@ var time_Time = function () {
       controls.appendChild(time_classPrivateFieldGet(this, _Time_container, "f"));
 
       var setInitialTime = function setInitialTime() {
+        var _a;
+
         var el = time_classPrivateFieldGet(_this, _Time_player, "f").activeElement();
 
         if (el.duration !== Infinity && !time_classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-live__enabled')) {
           if (!showOnlyCurrent) {
-            var duration = !isNaN(el.duration) ? el.duration : time_classPrivateFieldGet(_this, _Time_player, "f").getOptions().progress.duration;
+            var duration = !Number.isNaN(el.duration) ? el.duration : ((_a = time_classPrivateFieldGet(_this, _Time_player, "f").getOptions().progress) === null || _a === void 0 ? void 0 : _a.duration) || 0;
             time_classPrivateFieldGet(_this, _Time_duration, "f").innerText = formatTime(duration);
           }
 
-          time_classPrivateFieldGet(_this, _Time_current, "f").innerText = formatTime(el.currentTime);
+          time_classPrivateFieldGet(_this, _Time_currentTime, "f").innerText = formatTime(el.currentTime);
         } else if (!showOnlyCurrent) {
           time_classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
 
@@ -8249,7 +4144,8 @@ var time_Time = function () {
       time_classPrivateFieldGet(this, _Time_events, "f").media.loadedmetadata = setInitialTime.bind(this);
       time_classPrivateFieldGet(this, _Time_events, "f").controls.controlschanged = setInitialTime.bind(this);
 
-      var showLiveLabel = time_classPrivateFieldGet(this, _Time_player, "f").getOptions().live.showLabel;
+      var _ref = time_classPrivateFieldGet(this, _Time_player, "f").getOptions().live || {},
+          showLiveLabel = _ref.showLabel;
 
       time_classPrivateFieldGet(this, _Time_events, "f").media.timeupdate = function () {
         var el = time_classPrivateFieldGet(_this, _Time_player, "f").activeElement();
@@ -8257,17 +4153,17 @@ var time_Time = function () {
         if (el.duration !== Infinity && !time_classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-live__enabled') && !time_classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled')) {
           var duration = formatTime(el.duration);
 
-          if (!showOnlyCurrent && !isNaN(el.duration) && duration !== time_classPrivateFieldGet(_this, _Time_duration, "f").innerText) {
+          if (!showOnlyCurrent && !Number.isNaN(el.duration) && duration !== time_classPrivateFieldGet(_this, _Time_duration, "f").innerText) {
             time_classPrivateFieldGet(_this, _Time_duration, "f").innerText = duration;
 
             time_classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'false');
 
             time_classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'false');
           } else if (showOnlyCurrent || duration !== time_classPrivateFieldGet(_this, _Time_duration, "f").innerText) {
-            time_classPrivateFieldGet(_this, _Time_current, "f").innerText = showLiveLabel ? time_classPrivateFieldGet(_this, _Time_labels, "f").live : formatTime(el.currentTime);
+            time_classPrivateFieldGet(_this, _Time_currentTime, "f").innerText = showLiveLabel ? (labels === null || labels === void 0 ? void 0 : labels.live) || '' : formatTime(el.currentTime);
           }
 
-          time_classPrivateFieldGet(_this, _Time_current, "f").innerText = formatTime(el.currentTime);
+          time_classPrivateFieldGet(_this, _Time_currentTime, "f").innerText = formatTime(el.currentTime);
         } else if (time_classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled')) {
           if (!showOnlyCurrent) {
             time_classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
@@ -8275,7 +4171,7 @@ var time_Time = function () {
             time_classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
           }
 
-          time_classPrivateFieldGet(_this, _Time_current, "f").innerText = formatTime(el.currentTime);
+          time_classPrivateFieldGet(_this, _Time_currentTime, "f").innerText = formatTime(el.currentTime);
         } else if (showOnlyCurrent || !time_classPrivateFieldGet(_this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled') && time_classPrivateFieldGet(_this, _Time_duration, "f").getAttribute('aria-hidden') === 'false') {
           if (!showOnlyCurrent) {
             time_classPrivateFieldGet(_this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
@@ -8283,16 +4179,18 @@ var time_Time = function () {
             time_classPrivateFieldGet(_this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
           }
 
-          time_classPrivateFieldGet(_this, _Time_current, "f").innerText = showLiveLabel ? time_classPrivateFieldGet(_this, _Time_labels, "f").live : formatTime(el.currentTime);
+          time_classPrivateFieldGet(_this, _Time_currentTime, "f").innerText = showLiveLabel ? (labels === null || labels === void 0 ? void 0 : labels.live) || '' : formatTime(el.currentTime);
         } else {
-          time_classPrivateFieldGet(_this, _Time_current, "f").innerText = showLiveLabel ? time_classPrivateFieldGet(_this, _Time_labels, "f").live : formatTime(el.currentTime);
+          time_classPrivateFieldGet(_this, _Time_currentTime, "f").innerText = showLiveLabel ? (labels === null || labels === void 0 ? void 0 : labels.live) || '' : formatTime(el.currentTime);
         }
       };
 
       time_classPrivateFieldGet(this, _Time_events, "f").media.ended = function () {
+        var _a;
+
         var el = time_classPrivateFieldGet(_this, _Time_player, "f").activeElement();
 
-        var duration = !isNaN(el.duration) ? el.duration : time_classPrivateFieldGet(_this, _Time_player, "f").getOptions().progress.duration;
+        var duration = !Number.isNaN(el.duration) ? el.duration : ((_a = time_classPrivateFieldGet(_this, _Time_player, "f").getOptions().progress) === null || _a === void 0 ? void 0 : _a.duration) || 0;
 
         if (!showOnlyCurrent && time_classPrivateFieldGet(_this, _Time_player, "f").isMedia()) {
           time_classPrivateFieldGet(_this, _Time_duration, "f").innerText = formatTime(duration);
@@ -8316,23 +4214,27 @@ var time_Time = function () {
 
       time_classPrivateFieldGet(this, _Time_player, "f").getControls().getContainer().removeEventListener('controlschanged', time_classPrivateFieldGet(this, _Time_events, "f").controls.controlschanged);
 
-      removeElement(time_classPrivateFieldGet(this, _Time_current, "f"));
+      time_classPrivateFieldGet(this, _Time_currentTime, "f").remove();
 
-      if (!time_classPrivateFieldGet(this, _Time_player, "f").getOptions().progress.showCurrentTimeOnly) {
-        removeElement(time_classPrivateFieldGet(this, _Time_delimiter, "f"));
-        removeElement(time_classPrivateFieldGet(this, _Time_duration, "f"));
+      var _ref2 = time_classPrivateFieldGet(this, _Time_player, "f").getOptions().progress || {},
+          showCurrentTimeOnly = _ref2.showCurrentTimeOnly;
+
+      if (!showCurrentTimeOnly) {
+        time_classPrivateFieldGet(this, _Time_delimiter, "f").remove();
+
+        time_classPrivateFieldGet(this, _Time_duration, "f").remove();
       }
 
-      removeElement(time_classPrivateFieldGet(this, _Time_container, "f"));
+      time_classPrivateFieldGet(this, _Time_container, "f").remove();
     }
   }]);
 
   return Time;
 }();
 
-_Time_player = new WeakMap(), _Time_current = new WeakMap(), _Time_delimiter = new WeakMap(), _Time_duration = new WeakMap(), _Time_container = new WeakMap(), _Time_events = new WeakMap(), _Time_labels = new WeakMap(), _Time_position = new WeakMap(), _Time_layer = new WeakMap();
-/* harmony default export */ var controls_time = (time_Time);
-// CONCATENATED MODULE: ./src/js/controls/volume.ts
+_Time_player = new WeakMap(), _Time_currentTime = new WeakMap(), _Time_delimiter = new WeakMap(), _Time_duration = new WeakMap(), _Time_container = new WeakMap(), _Time_events = new WeakMap(), _Time_controlPosition = new WeakMap(), _Time_controlLayer = new WeakMap();
+/* harmony default export */ const time = (Time);
+;// CONCATENATED MODULE: ./src/js/controls/volume.ts
 
 
 
@@ -8349,13 +4251,12 @@ var volume_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet 
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Volume_player, _Volume_button, _Volume_container, _Volume_display, _Volume_slider, _Volume_events, _Volume_volume, _Volume_labels, _Volume_position, _Volume_layer;
+var _Volume_player, _Volume_button, _Volume_container, _Volume_display, _Volume_slider, _Volume_events, _Volume_volume, _Volume_controlPosition, _Volume_controlLayer;
 
 
 
 
-
-var volume_Volume = function () {
+var Volume = function () {
   function Volume(player, position, layer) {
     classCallCheck_default()(this, Volume);
 
@@ -8377,23 +4278,19 @@ var volume_Volume = function () {
 
     _Volume_volume.set(this, void 0);
 
-    _Volume_labels.set(this, void 0);
+    _Volume_controlPosition.set(this, void 0);
 
-    _Volume_position.set(this, void 0);
-
-    _Volume_layer.set(this, void 0);
+    _Volume_controlLayer.set(this, void 0);
 
     volume_classPrivateFieldSet(this, _Volume_player, player, "f");
 
-    volume_classPrivateFieldSet(this, _Volume_labels, player.getOptions().labels, "f");
-
     volume_classPrivateFieldSet(this, _Volume_volume, volume_classPrivateFieldGet(this, _Volume_player, "f").getMedia().volume, "f");
 
-    volume_classPrivateFieldSet(this, _Volume_position, position, "f");
+    volume_classPrivateFieldSet(this, _Volume_controlPosition, position, "f");
 
-    volume_classPrivateFieldSet(this, _Volume_layer, layer, "f");
+    volume_classPrivateFieldSet(this, _Volume_controlLayer, layer, "f");
 
-    this._keydownEvent = this._keydownEvent.bind(this);
+    this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
     return this;
   }
 
@@ -8402,9 +4299,12 @@ var volume_Volume = function () {
     value: function create() {
       var _this = this;
 
+      var _classPrivateFieldGe = volume_classPrivateFieldGet(this, _Volume_player, "f").getOptions(),
+          labels = _classPrivateFieldGe.labels;
+
       volume_classPrivateFieldSet(this, _Volume_container, document.createElement('div'), "f");
 
-      volume_classPrivateFieldGet(this, _Volume_container, "f").className = "op-controls__volume op-control__".concat(volume_classPrivateFieldGet(this, _Volume_position, "f"));
+      volume_classPrivateFieldGet(this, _Volume_container, "f").className = "op-controls__volume op-control__".concat(volume_classPrivateFieldGet(this, _Volume_controlPosition, "f"));
       volume_classPrivateFieldGet(this, _Volume_container, "f").tabIndex = 0;
 
       volume_classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuemin', '0');
@@ -8413,11 +4313,11 @@ var volume_Volume = function () {
 
       volume_classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuenow', "".concat(volume_classPrivateFieldGet(this, _Volume_volume, "f")));
 
-      volume_classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuetext', "".concat(volume_classPrivateFieldGet(this, _Volume_labels, "f").volume, ": ").concat(volume_classPrivateFieldGet(this, _Volume_volume, "f")));
+      volume_classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuetext', "".concat((labels === null || labels === void 0 ? void 0 : labels.volume) || '', ": ").concat(volume_classPrivateFieldGet(this, _Volume_volume, "f")));
 
       volume_classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-orientation', 'vertical');
 
-      volume_classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-label', volume_classPrivateFieldGet(this, _Volume_labels, "f").volumeSlider);
+      volume_classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.volumeSlider) || '');
 
       volume_classPrivateFieldSet(this, _Volume_slider, document.createElement('input'), "f");
 
@@ -8432,7 +4332,7 @@ var volume_Volume = function () {
 
       volume_classPrivateFieldGet(this, _Volume_slider, "f").setAttribute('step', '0.1');
 
-      volume_classPrivateFieldGet(this, _Volume_slider, "f").setAttribute('aria-label', volume_classPrivateFieldGet(this, _Volume_labels, "f").volumeControl);
+      volume_classPrivateFieldGet(this, _Volume_slider, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.volumeControl) || '');
 
       volume_classPrivateFieldSet(this, _Volume_display, document.createElement('progress'), "f");
 
@@ -8451,17 +4351,15 @@ var volume_Volume = function () {
       volume_classPrivateFieldSet(this, _Volume_button, document.createElement('button'), "f");
 
       volume_classPrivateFieldGet(this, _Volume_button, "f").type = 'button';
-      volume_classPrivateFieldGet(this, _Volume_button, "f").className = "op-controls__mute op-control__".concat(volume_classPrivateFieldGet(this, _Volume_position, "f"));
+      volume_classPrivateFieldGet(this, _Volume_button, "f").className = "op-controls__mute op-control__".concat(volume_classPrivateFieldGet(this, _Volume_controlPosition, "f"));
       volume_classPrivateFieldGet(this, _Volume_button, "f").tabIndex = 0;
-      volume_classPrivateFieldGet(this, _Volume_button, "f").title = volume_classPrivateFieldGet(this, _Volume_labels, "f").mute;
+      volume_classPrivateFieldGet(this, _Volume_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.mute) || '';
 
       volume_classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-controls', volume_classPrivateFieldGet(this, _Volume_player, "f").id);
 
       volume_classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-pressed', 'false');
 
-      volume_classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-label', volume_classPrivateFieldGet(this, _Volume_labels, "f").mute);
-
-      volume_classPrivateFieldGet(this, _Volume_button, "f").innerHTML = "<span class=\"op-sr\">".concat(volume_classPrivateFieldGet(this, _Volume_labels, "f").mute, "</span>");
+      volume_classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.mute) || '');
 
       var updateSlider = function updateSlider(element) {
         var mediaVolume = element.volume * 1;
@@ -8471,7 +4369,7 @@ var volume_Volume = function () {
 
         volume_classPrivateFieldGet(_this, _Volume_container, "f").setAttribute('aria-valuenow', "".concat(vol));
 
-        volume_classPrivateFieldGet(_this, _Volume_container, "f").setAttribute('aria-valuetext', "".concat(volume_classPrivateFieldGet(_this, _Volume_labels, "f").volume, ": ").concat(vol));
+        volume_classPrivateFieldGet(_this, _Volume_container, "f").setAttribute('aria-valuetext', "".concat(labels === null || labels === void 0 ? void 0 : labels.volume, ": ").concat(vol));
       };
 
       var updateButton = function updateButton(element) {
@@ -8504,7 +4402,7 @@ var volume_Volume = function () {
         var unmuteEl = volume_classPrivateFieldGet(_this, _Volume_player, "f").getContainer().querySelector('.op-player__unmute');
 
         if (!el.muted && unmuteEl) {
-          removeElement(unmuteEl);
+          unmuteEl.remove();
         }
 
         var e = addEvent('volumechange');
@@ -8517,10 +4415,6 @@ var volume_Volume = function () {
 
         updateSlider(el);
         updateButton(el);
-      };
-
-      volume_classPrivateFieldGet(this, _Volume_events, "f").media.timeupdate = function () {
-        if (isAudio(volume_classPrivateFieldGet(_this, _Volume_player, "f").getElement()) && (volume_classPrivateFieldGet(_this, _Volume_player, "f").activeElement().duration === Infinity || volume_classPrivateFieldGet(_this, _Volume_player, "f").getElement().getAttribute('op-live__enabled'))) {}
       };
 
       volume_classPrivateFieldGet(this, _Volume_events, "f").media.loadedmetadata = function () {
@@ -8547,14 +4441,14 @@ var volume_Volume = function () {
 
         if (el.muted) {
           el.volume = 0;
-          volume_classPrivateFieldGet(_this, _Volume_button, "f").title = volume_classPrivateFieldGet(_this, _Volume_labels, "f").unmute;
+          volume_classPrivateFieldGet(_this, _Volume_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.unmute) || '';
 
-          volume_classPrivateFieldGet(_this, _Volume_button, "f").setAttribute('aria-label', volume_classPrivateFieldGet(_this, _Volume_labels, "f").unmute);
+          volume_classPrivateFieldGet(_this, _Volume_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.unmute) || '');
         } else {
           el.volume = volume_classPrivateFieldGet(_this, _Volume_volume, "f");
-          volume_classPrivateFieldGet(_this, _Volume_button, "f").title = volume_classPrivateFieldGet(_this, _Volume_labels, "f").mute;
+          volume_classPrivateFieldGet(_this, _Volume_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.mute) || '';
 
-          volume_classPrivateFieldGet(_this, _Volume_button, "f").setAttribute('aria-label', volume_classPrivateFieldGet(_this, _Volume_labels, "f").mute);
+          volume_classPrivateFieldGet(_this, _Volume_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.mute) || '');
         }
 
         var event = addEvent('volumechange');
@@ -8571,10 +4465,10 @@ var volume_Volume = function () {
         volume_classPrivateFieldGet(_this, _Volume_slider, "f").addEventListener(event, volume_classPrivateFieldGet(_this, _Volume_events, "f").slider[event], EVENT_OPTIONS);
       });
 
-      volume_classPrivateFieldGet(this, _Volume_player, "f").getContainer().addEventListener('keydown', this._keydownEvent, EVENT_OPTIONS);
+      volume_classPrivateFieldGet(this, _Volume_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
 
-      if (!IS_ANDROID && !IS_IOS) {
-        var controls = volume_classPrivateFieldGet(this, _Volume_player, "f").getControls().getLayer(volume_classPrivateFieldGet(this, _Volume_layer, "f"));
+      if (!IS_ANDROID && !IS_IOS || !volume_classPrivateFieldGet(this, _Volume_player, "f").getOptions().useDeviceVolume) {
+        var controls = volume_classPrivateFieldGet(this, _Volume_player, "f").getControls().getLayer(volume_classPrivateFieldGet(this, _Volume_controlLayer, "f"));
 
         controls.appendChild(volume_classPrivateFieldGet(this, _Volume_button, "f"));
         controls.appendChild(volume_classPrivateFieldGet(this, _Volume_container, "f"));
@@ -8594,15 +4488,17 @@ var volume_Volume = function () {
         volume_classPrivateFieldGet(_this2, _Volume_slider, "f").removeEventListener(event, volume_classPrivateFieldGet(_this2, _Volume_events, "f").slider[event]);
       });
 
-      volume_classPrivateFieldGet(this, _Volume_player, "f").getContainer().removeEventListener('keydown', this._keydownEvent);
+      volume_classPrivateFieldGet(this, _Volume_player, "f").getContainer().removeEventListener('keydown', this._enterSpaceKeyEvent);
 
-      removeElement(volume_classPrivateFieldGet(this, _Volume_slider, "f"));
-      removeElement(volume_classPrivateFieldGet(this, _Volume_display, "f"));
-      removeElement(volume_classPrivateFieldGet(this, _Volume_container, "f"));
+      volume_classPrivateFieldGet(this, _Volume_slider, "f").remove();
+
+      volume_classPrivateFieldGet(this, _Volume_display, "f").remove();
+
+      volume_classPrivateFieldGet(this, _Volume_container, "f").remove();
     }
   }, {
-    key: "_keydownEvent",
-    value: function _keydownEvent(e) {
+    key: "_enterSpaceKeyEvent",
+    value: function _enterSpaceKeyEvent(e) {
       var _a;
 
       var key = e.which || e.keyCode || 0;
@@ -8626,9 +4522,9 @@ var volume_Volume = function () {
   return Volume;
 }();
 
-_Volume_player = new WeakMap(), _Volume_button = new WeakMap(), _Volume_container = new WeakMap(), _Volume_display = new WeakMap(), _Volume_slider = new WeakMap(), _Volume_events = new WeakMap(), _Volume_volume = new WeakMap(), _Volume_labels = new WeakMap(), _Volume_position = new WeakMap(), _Volume_layer = new WeakMap();
-/* harmony default export */ var volume = (volume_Volume);
-// CONCATENATED MODULE: ./src/js/controls.ts
+_Volume_player = new WeakMap(), _Volume_button = new WeakMap(), _Volume_container = new WeakMap(), _Volume_display = new WeakMap(), _Volume_slider = new WeakMap(), _Volume_events = new WeakMap(), _Volume_volume = new WeakMap(), _Volume_controlPosition = new WeakMap(), _Volume_controlLayer = new WeakMap();
+/* harmony default export */ const volume = (Volume);
+;// CONCATENATED MODULE: ./src/js/controls.ts
 
 
 
@@ -8659,8 +4555,7 @@ var _Controls_settings, _Controls_timer, _Controls_controls, _Controls_player, _
 
 
 
-
-var controls_Controls = function () {
+var Controls = function () {
   function Controls(player) {
     classCallCheck_default()(this, Controls);
 
@@ -8680,13 +4575,13 @@ var controls_Controls = function () {
     _Controls_items.set(this, void 0);
 
     _Controls_controlEls.set(this, {
-      Captions: controls_captions,
+      Captions: captions,
       Fullscreen: fullscreen,
-      Levels: controls_levels,
-      Play: controls_play,
+      Levels: levels,
+      Play: play,
       Progress: progress,
       Settings: settings,
-      Time: controls_time,
+      Time: time,
       Volume: volume
     });
 
@@ -8725,7 +4620,8 @@ var controls_Controls = function () {
 
       controls_classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('ended', this.events.ended, EVENT_OPTIONS);
 
-      var alwaysVisible = controls_classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls.alwaysVisible;
+      var _ref = controls_classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls || {},
+          alwaysVisible = _ref.alwaysVisible;
 
       if (!alwaysVisible) {
         var showControls = function showControls() {
@@ -8782,7 +4678,7 @@ var controls_Controls = function () {
 
         this.events.media.play = function () {
           if (isMediaVideo) {
-            _this._startControlTimer(controls_classPrivateFieldGet(_this, _Controls_player, "f").getOptions().hidePlayBtnTimer);
+            _this._startControlTimer(controls_classPrivateFieldGet(_this, _Controls_player, "f").getOptions().hidePlayBtnTimer || 350);
           }
         };
 
@@ -8837,7 +4733,8 @@ var controls_Controls = function () {
           }
         });
       });
-      removeElement(controls_classPrivateFieldGet(this, _Controls_controls, "f"));
+
+      controls_classPrivateFieldGet(this, _Controls_controls, "f").remove();
     }
   }, {
     key: "getContainer",
@@ -8909,7 +4806,9 @@ var controls_Controls = function () {
     value: function _setElements() {
       var _this4 = this;
 
-      var controls = controls_classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls.layers;
+      var _a;
+
+      var controls = ((_a = controls_classPrivateFieldGet(this, _Controls_player, "f").getOptions().controls) === null || _a === void 0 ? void 0 : _a.layers) || {};
 
       controls_classPrivateFieldSet(this, _Controls_items, {
         'bottom-left': [],
@@ -8964,21 +4863,25 @@ var controls_Controls = function () {
           }
         }
 
-        controls[position].filter(function (v, i, a) {
-          return a.indexOf(v) === i;
-        }).forEach(function (el) {
-          var currentLayer = layersExist && !pos ? 'center' : layer;
-          var className = "".concat(el.charAt(0).toUpperCase()).concat(el.slice(1));
-          var item = new (controls_classPrivateFieldGet(_this4, _Controls_controlEls, "f")[className])(controls_classPrivateFieldGet(_this4, _Controls_player, "f"), pos || layer, currentLayer);
+        var layers = controls ? controls[position] : null;
 
-          if (el === 'settings') {
-            controls_classPrivateFieldSet(_this4, _Controls_settings, item, "f");
-          }
+        if (layers) {
+          layers.filter(function (v, i, a) {
+            return a.indexOf(v) === i;
+          }).forEach(function (el) {
+            var currentLayer = layersExist && !pos ? 'center' : layer;
+            var className = "".concat(el.charAt(0).toUpperCase()).concat(el.slice(1));
+            var item = new (controls_classPrivateFieldGet(_this4, _Controls_controlEls, "f")[className])(controls_classPrivateFieldGet(_this4, _Controls_player, "f"), pos || layer, currentLayer);
 
-          if (isVideoEl || el !== 'fullscreen' && isAudioEl) {
-            controls_classPrivateFieldGet(_this4, _Controls_items, "f")[position].push(item);
-          }
-        });
+            if (el === 'settings') {
+              controls_classPrivateFieldSet(_this4, _Controls_settings, item, "f");
+            }
+
+            if (isVideoEl || el !== 'fullscreen' && isAudioEl) {
+              controls_classPrivateFieldGet(_this4, _Controls_items, "f")[position].push(item);
+            }
+          });
+        }
       });
 
       controls_classPrivateFieldGet(this, _Controls_player, "f").getCustomControls().forEach(function (item) {
@@ -9015,12 +4918,13 @@ var controls_Controls = function () {
       Object.keys(controls_classPrivateFieldGet(this, _Controls_items, "f")).forEach(function (position) {
         controls_classPrivateFieldGet(_this5, _Controls_items, "f")[position].forEach(function (item) {
           var allowDefault = !controls_classPrivateFieldGet(_this5, _Controls_player, "f").getOptions().detachMenus || item instanceof settings;
+          var current = item;
 
-          if (allowDefault && !item.custom && typeof item.addSettings === 'function') {
-            var menuItem = item.addSettings();
+          if (allowDefault && !current.custom && typeof current.addSettings === 'function') {
+            var menuItem = current.addSettings();
 
             if (controls_classPrivateFieldGet(_this5, _Controls_settings, "f") && Object.keys(menuItem).length) {
-              controls_classPrivateFieldGet(_this5, _Controls_settings, "f").addItem(menuItem.name, menuItem.key, menuItem["default"], menuItem.subitems, menuItem.className);
+              controls_classPrivateFieldGet(_this5, _Controls_settings, "f").addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems, menuItem.className);
             }
           }
         });
@@ -9066,12 +4970,12 @@ var controls_Controls = function () {
       var _this6 = this;
 
       var control = document.createElement('button');
-      var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(item.icon, "\">") : item.icon;
+      var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
       control.className = "op-controls__".concat(item.id, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
       control.tabIndex = 0;
       control.id = item.id;
-      control.title = item.title;
-      control.innerHTML = item.content || "".concat(icon, " <span class=\"op-sr\">").concat(item.title, "</span>");
+      control.title = sanitize(item.title);
+      control.innerHTML = item.content ? sanitize(item.content) : icon;
 
       if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
         var menu = document.createElement('div');
@@ -9114,7 +5018,7 @@ var controls_Controls = function () {
       }
 
       if (item.mouseleave && typeof item.mouseleave === 'function') {
-        control.addEventListener('mouseenter', item.mouseleave, EVENT_OPTIONS);
+        control.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
       }
 
       if (item.keydown && typeof item.keydown === 'function') {
@@ -9169,7 +5073,7 @@ var controls_Controls = function () {
               return _this7._hideCustomMenu(menu);
             });
 
-            removeElement(menu);
+            menu.remove();
           }
         }
 
@@ -9182,7 +5086,7 @@ var controls_Controls = function () {
         }
 
         if (item.mouseleave && typeof item.mouseleave === 'function') {
-          control.removeEventListener('mouseenter', item.mouseleave);
+          control.removeEventListener('mouseleave', item.mouseleave);
         }
 
         if (item.keydown && typeof item.keydown === 'function') {
@@ -9197,7 +5101,7 @@ var controls_Controls = function () {
           control.removeEventListener('focus', item.focus);
         }
 
-        removeElement(control);
+        control.remove();
 
         if (item.destroy && typeof item.destroy === 'function') {
           item.destroy(controls_classPrivateFieldGet(this, _Controls_player, "f"));
@@ -9210,24 +5114,20 @@ var controls_Controls = function () {
 }();
 
 _Controls_settings = new WeakMap(), _Controls_timer = new WeakMap(), _Controls_controls = new WeakMap(), _Controls_player = new WeakMap(), _Controls_items = new WeakMap(), _Controls_controlEls = new WeakMap();
-/* harmony default export */ var js_controls = (controls_Controls);
+/* harmony default export */ const controls = (Controls);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/assertThisInitialized.js
-var assertThisInitialized = __webpack_require__(0);
+var assertThisInitialized = __webpack_require__(506);
 var assertThisInitialized_default = /*#__PURE__*/__webpack_require__.n(assertThisInitialized);
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/inherits.js
-var inherits = __webpack_require__(19);
+var inherits = __webpack_require__(205);
 var inherits_default = /*#__PURE__*/__webpack_require__.n(inherits);
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js
-var possibleConstructorReturn = __webpack_require__(10);
+var possibleConstructorReturn = __webpack_require__(585);
 var possibleConstructorReturn_default = /*#__PURE__*/__webpack_require__.n(possibleConstructorReturn);
-
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/getPrototypeOf.js
-var getPrototypeOf = __webpack_require__(11);
+var getPrototypeOf = __webpack_require__(754);
 var getPrototypeOf_default = /*#__PURE__*/__webpack_require__.n(getPrototypeOf);
-
-// CONCATENATED MODULE: ./src/js/media/native.ts
+;// CONCATENATED MODULE: ./src/js/media/native.ts
 
 
 
@@ -9246,7 +5146,7 @@ var native_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet 
 
 var _Native_customPlayer;
 
-var native_Native = function () {
+var Native = function () {
   function Native(element, media) {
     classCallCheck_default()(this, Native);
 
@@ -9255,7 +5155,7 @@ var native_Native = function () {
     this.element = element;
     this.media = media;
     this.promise = new Promise(function (resolve) {
-      resolve({});
+      resolve();
     });
   }
 
@@ -9338,9 +5238,8 @@ var native_Native = function () {
 }();
 
 _Native_customPlayer = new WeakMap();
-/* harmony default export */ var media_native = (native_Native);
-// CONCATENATED MODULE: ./src/js/media/dash.ts
-
+/* harmony default export */ const media_native = (Native);
+;// CONCATENATED MODULE: ./src/js/media/dash.ts
 
 
 
@@ -9372,8 +5271,7 @@ var _DashMedia_player, _DashMedia_events, _DashMedia_options;
 
 
 
-
-var dash_DashMedia = function (_Native) {
+var DashMedia = function (_Native) {
   inherits_default()(DashMedia, _Native);
 
   var _super = _createSuper(DashMedia);
@@ -9393,10 +5291,11 @@ var dash_DashMedia = function (_Native) {
 
     dash_classPrivateFieldSet(assertThisInitialized_default()(_this), _DashMedia_options, options, "f");
 
+    _this._assign = _this._assign.bind(assertThisInitialized_default()(_this));
+    _this._preparePlayer = _this._preparePlayer.bind(assertThisInitialized_default()(_this));
     _this.promise = typeof dashjs === 'undefined' ? loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') : new Promise(function (resolve) {
       resolve({});
     });
-    _this._assign = _this._assign.bind(assertThisInitialized_default()(_this));
 
     _this.promise.then(function () {
       dash_classPrivateFieldSet(assertThisInitialized_default()(_this), _DashMedia_player, dashjs.MediaPlayer().create(), "f");
@@ -9435,15 +5334,25 @@ var dash_DashMedia = function (_Native) {
   }, {
     key: "destroy",
     value: function destroy() {
-      this._revoke();
+      var _this3 = this;
+
+      if (dash_classPrivateFieldGet(this, _DashMedia_events, "f")) {
+        Object.keys(dash_classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(function (event) {
+          dash_classPrivateFieldGet(_this3, _DashMedia_player, "f").off(dash_classPrivateFieldGet(_this3, _DashMedia_events, "f")[event], _this3._assign);
+        });
+
+        dash_classPrivateFieldSet(this, _DashMedia_events, [], "f");
+      }
+
+      dash_classPrivateFieldGet(this, _DashMedia_player, "f").reset();
     }
   }, {
     key: "src",
     set: function set(media) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (isDashSource(media)) {
-        this._revoke();
+        this.destroy();
 
         dash_classPrivateFieldSet(this, _DashMedia_player, dashjs.MediaPlayer().create(), "f");
 
@@ -9454,7 +5363,7 @@ var dash_DashMedia = function (_Native) {
         dash_classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
 
         Object.keys(dash_classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(function (event) {
-          dash_classPrivateFieldGet(_this3, _DashMedia_player, "f").on(dash_classPrivateFieldGet(_this3, _DashMedia_events, "f")[event], _this3._assign);
+          dash_classPrivateFieldGet(_this4, _DashMedia_player, "f").on(dash_classPrivateFieldGet(_this4, _DashMedia_events, "f")[event], _this4._assign);
         });
       }
     }
@@ -9519,54 +5428,23 @@ var dash_DashMedia = function (_Native) {
       }
     }
   }, {
-    key: "_revoke",
-    value: function _revoke() {
-      var _this4 = this;
-
-      if (dash_classPrivateFieldGet(this, _DashMedia_events, "f")) {
-        Object.keys(dash_classPrivateFieldGet(this, _DashMedia_events, "f")).forEach(function (event) {
-          dash_classPrivateFieldGet(_this4, _DashMedia_player, "f").off(dash_classPrivateFieldGet(_this4, _DashMedia_events, "f")[event], _this4._assign);
-        });
-
-        dash_classPrivateFieldSet(this, _DashMedia_events, [], "f");
-      }
-
-      dash_classPrivateFieldGet(this, _DashMedia_player, "f").reset();
-    }
-  }, {
     key: "_preparePlayer",
     value: function _preparePlayer() {
-      if (typeof dash_classPrivateFieldGet(this, _DashMedia_player, "f").getDebug().setLogToBrowserConsole === 'undefined') {
-        dash_classPrivateFieldGet(this, _DashMedia_player, "f").updateSettings({
-          debug: {
-            logLevel: dashjs.Debug.LOG_LEVEL_NONE
-          },
-          streaming: {
-            fastSwitchEnabled: true,
-            scheduleWhilePaused: false
-          }
-        });
-      } else {
-        dash_classPrivateFieldGet(this, _DashMedia_player, "f").getDebug().setLogToBrowserConsole(false);
-
-        dash_classPrivateFieldGet(this, _DashMedia_player, "f").setScheduleWhilePaused(false);
-
-        dash_classPrivateFieldGet(this, _DashMedia_player, "f").setFastSwitchEnabled(true);
-      }
+      dash_classPrivateFieldGet(this, _DashMedia_player, "f").updateSettings(Object.assign({
+        debug: {
+          logLevel: dashjs.Debug.LOG_LEVEL_NONE
+        },
+        streaming: {
+          fastSwitchEnabled: true,
+          scheduleWhilePaused: false
+        }
+      }, dash_classPrivateFieldGet(this, _DashMedia_options, "f") || {}));
 
       dash_classPrivateFieldGet(this, _DashMedia_player, "f").initialize();
 
       dash_classPrivateFieldGet(this, _DashMedia_player, "f").attachView(this.element);
 
       dash_classPrivateFieldGet(this, _DashMedia_player, "f").setAutoPlay(false);
-
-      if (dash_classPrivateFieldGet(this, _DashMedia_options, "f") && typeof_default()(dash_classPrivateFieldGet(this, _DashMedia_options, "f").drm) === 'object' && Object.keys(dash_classPrivateFieldGet(this, _DashMedia_options, "f").drm).length) {
-        dash_classPrivateFieldGet(this, _DashMedia_player, "f").setProtectionData(dash_classPrivateFieldGet(this, _DashMedia_options, "f").drm);
-
-        if (dash_classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel && dash_classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel) {
-          dash_classPrivateFieldGet(this, _DashMedia_player, "f").getProtectionController().setRobustnessLevel(dash_classPrivateFieldGet(this, _DashMedia_options, "f").robustnessLevel);
-        }
-      }
     }
   }]);
 
@@ -9574,8 +5452,8 @@ var dash_DashMedia = function (_Native) {
 }(media_native);
 
 _DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia_options = new WeakMap();
-/* harmony default export */ var dash = (dash_DashMedia);
-// CONCATENATED MODULE: ./src/js/media/flv.ts
+/* harmony default export */ const dash = (DashMedia);
+;// CONCATENATED MODULE: ./src/js/media/flv.ts
 
 
 
@@ -9600,6 +5478,19 @@ var flv_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet || 
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
+var __rest = undefined && undefined.__rest || function (s, e) {
+  var t = {};
+
+  for (var p in s) {
+    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  }
+
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+
 var _FlvMedia_player, _FlvMedia_events, _FlvMedia_options;
 
 
@@ -9607,8 +5498,7 @@ var _FlvMedia_player, _FlvMedia_events, _FlvMedia_options;
 
 
 
-
-var flv_FlvMedia = function (_Native) {
+var FlvMedia = function (_Native) {
   inherits_default()(FlvMedia, _Native);
 
   var _super = flv_createSuper(FlvMedia);
@@ -9624,16 +5514,17 @@ var flv_FlvMedia = function (_Native) {
 
     _FlvMedia_events.set(assertThisInitialized_default()(_this), {});
 
-    _FlvMedia_options.set(assertThisInitialized_default()(_this), void 0);
+    _FlvMedia_options.set(assertThisInitialized_default()(_this), {});
 
     flv_classPrivateFieldSet(assertThisInitialized_default()(_this), _FlvMedia_options, options, "f");
 
     _this.element = element;
     _this.media = mediaSource;
+    _this._create = _this._create.bind(assertThisInitialized_default()(_this));
+    _this._assign = _this._assign.bind(assertThisInitialized_default()(_this));
     _this.promise = typeof flvjs === 'undefined' ? loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js') : new Promise(function (resolve) {
       resolve({});
     });
-    _this._create = _this._create.bind(assertThisInitialized_default()(_this));
 
     _this.promise.then(_this._create);
 
@@ -9678,13 +5569,15 @@ var flv_FlvMedia = function (_Native) {
   }, {
     key: "destroy",
     value: function destroy() {
-      this._revoke();
+      flv_classPrivateFieldGet(this, _FlvMedia_player, "f").destroy();
+
+      flv_classPrivateFieldSet(this, _FlvMedia_player, null, "f");
     }
   }, {
     key: "src",
     set: function set(media) {
       if (isFlvSource(media)) {
-        this._revoke();
+        this.destroy();
 
         this._create();
       }
@@ -9726,18 +5619,18 @@ var flv_FlvMedia = function (_Native) {
     value: function _create() {
       var _this4 = this;
 
-      var _a, _b, _c, _d;
+      var _a = flv_classPrivateFieldGet(this, _FlvMedia_options, "f") || {},
+          configs = _a.configs,
+          rest = __rest(_a, ["configs"]);
 
-      var configs = (_a = flv_classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _a === void 0 ? void 0 : _a.configs;
-      (_b = flv_classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _b === void 0 ? true : delete _b.configs;
-      flvjs.LoggingControl.enableDebug = ((_c = flv_classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _c === void 0 ? void 0 : _c.debug) || false;
-      flvjs.LoggingControl.enableVerbose = ((_d = flv_classPrivateFieldGet(this, _FlvMedia_options, "f")) === null || _d === void 0 ? void 0 : _d.debug) || false;
-      var options = Object.assign(Object.assign({}, flv_classPrivateFieldGet(this, _FlvMedia_options, "f") || {}), {
+      flvjs.LoggingControl.enableDebug = (rest === null || rest === void 0 ? void 0 : rest.debug) || false;
+      flvjs.LoggingControl.enableVerbose = (rest === null || rest === void 0 ? void 0 : rest.debug) || false;
+      var options = Object.assign(Object.assign({}, rest), {
         type: 'flv',
         url: this.media.src
       });
 
-      flv_classPrivateFieldSet(this, _FlvMedia_player, flvjs.createPlayer(options, configs), "f");
+      flv_classPrivateFieldSet(this, _FlvMedia_player, flvjs.createPlayer(options, configs || {}), "f");
 
       this.instance = flv_classPrivateFieldGet(this, _FlvMedia_player, "f");
 
@@ -9777,21 +5670,14 @@ var flv_FlvMedia = function (_Native) {
         this.element.dispatchEvent(e);
       }
     }
-  }, {
-    key: "_revoke",
-    value: function _revoke() {
-      flv_classPrivateFieldGet(this, _FlvMedia_player, "f").destroy();
-
-      flv_classPrivateFieldSet(this, _FlvMedia_player, null, "f");
-    }
   }]);
 
   return FlvMedia;
 }(media_native);
 
 _FlvMedia_player = new WeakMap(), _FlvMedia_events = new WeakMap(), _FlvMedia_options = new WeakMap();
-/* harmony default export */ var flv = (flv_FlvMedia);
-// CONCATENATED MODULE: ./src/js/media/hls.ts
+/* harmony default export */ const flv = (FlvMedia);
+;// CONCATENATED MODULE: ./src/js/media/hls.ts
 
 
 
@@ -9823,8 +5709,7 @@ var _HlsMedia_player, _HlsMedia_events, _HlsMedia_recoverDecodingErrorDate, _Hls
 
 
 
-
-var hls_HlsMedia = function (_Native) {
+var HlsMedia = function (_Native) {
   inherits_default()(HlsMedia, _Native);
 
   var _super = hls_createSuper(HlsMedia);
@@ -9858,13 +5743,13 @@ var hls_HlsMedia = function (_Native) {
 
     hls_classPrivateFieldSet(assertThisInitialized_default()(_this), _HlsMedia_autoplay, autoplay, "f");
 
+    _this._create = _this._create.bind(assertThisInitialized_default()(_this));
+    _this._play = _this._play.bind(assertThisInitialized_default()(_this));
+    _this._pause = _this._pause.bind(assertThisInitialized_default()(_this));
+    _this._assign = _this._assign.bind(assertThisInitialized_default()(_this));
     _this.promise = typeof Hls === 'undefined' ? loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') : new Promise(function (resolve) {
       resolve({});
     });
-    _this._create = _this._create.bind(assertThisInitialized_default()(_this));
-    _this._revoke = _this._revoke.bind(assertThisInitialized_default()(_this));
-    _this._play = _this._play.bind(assertThisInitialized_default()(_this));
-    _this._pause = _this._pause.bind(assertThisInitialized_default()(_this));
 
     _this.promise.then(_this._create);
 
@@ -9909,15 +5794,40 @@ var hls_HlsMedia = function (_Native) {
   }, {
     key: "destroy",
     value: function destroy() {
-      this._revoke();
+      var _this3 = this;
+
+      if (hls_classPrivateFieldGet(this, _HlsMedia_player, "f")) {
+        hls_classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
+      }
+
+      if (hls_classPrivateFieldGet(this, _HlsMedia_events, "f")) {
+        Object.keys(hls_classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
+          hls_classPrivateFieldGet(_this3, _HlsMedia_player, "f").off(hls_classPrivateFieldGet(_this3, _HlsMedia_events, "f")[event], function () {
+            for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+              args[_key2] = arguments[_key2];
+            }
+
+            return _this3._assign(hls_classPrivateFieldGet(_this3, _HlsMedia_events, "f")[event], args);
+          });
+        });
+      }
+
+      this.element.removeEventListener('play', this._play);
+      this.element.removeEventListener('pause', this._pause);
+
+      if (hls_classPrivateFieldGet(this, _HlsMedia_player, "f")) {
+        hls_classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
+
+        hls_classPrivateFieldSet(this, _HlsMedia_player, null, "f");
+      }
     }
   }, {
     key: "src",
     set: function set(media) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (isHlsSource(media)) {
-        this._revoke();
+        this.destroy();
 
         hls_classPrivateFieldSet(this, _HlsMedia_player, new Hls(hls_classPrivateFieldGet(this, _HlsMedia_options, "f")), "f");
 
@@ -9928,12 +5838,12 @@ var hls_HlsMedia = function (_Native) {
         hls_classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
 
         Object.keys(hls_classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
-          hls_classPrivateFieldGet(_this3, _HlsMedia_player, "f").on(hls_classPrivateFieldGet(_this3, _HlsMedia_events, "f")[event], function () {
-            for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-              args[_key2] = arguments[_key2];
+          hls_classPrivateFieldGet(_this4, _HlsMedia_player, "f").on(hls_classPrivateFieldGet(_this4, _HlsMedia_events, "f")[event], function () {
+            for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+              args[_key3] = arguments[_key3];
             }
 
-            return _this3._assign(hls_classPrivateFieldGet(_this3, _HlsMedia_events, "f")[event], args);
+            return _this4._assign(hls_classPrivateFieldGet(_this4, _HlsMedia_events, "f")[event], args);
           });
         });
       }
@@ -9941,13 +5851,13 @@ var hls_HlsMedia = function (_Native) {
   }, {
     key: "levels",
     get: function get() {
-      var _this4 = this;
+      var _this5 = this;
 
       var levels = [];
 
       if (hls_classPrivateFieldGet(this, _HlsMedia_player, "f") && hls_classPrivateFieldGet(this, _HlsMedia_player, "f").levels && hls_classPrivateFieldGet(this, _HlsMedia_player, "f").levels.length) {
         Object.keys(hls_classPrivateFieldGet(this, _HlsMedia_player, "f").levels).forEach(function (item) {
-          var _classPrivateFieldGe = hls_classPrivateFieldGet(_this4, _HlsMedia_player, "f").levels[item],
+          var _classPrivateFieldGe = hls_classPrivateFieldGet(_this5, _HlsMedia_player, "f").levels[item],
               height = _classPrivateFieldGe.height,
               name = _classPrivateFieldGe.name;
 
@@ -9973,7 +5883,7 @@ var hls_HlsMedia = function (_Native) {
   }, {
     key: "_create",
     value: function _create() {
-      var _this5 = this;
+      var _this6 = this;
 
       var autoplay = !!(this.element.preload === 'auto' || hls_classPrivateFieldGet(this, _HlsMedia_autoplay, "f"));
       hls_classPrivateFieldGet(this, _HlsMedia_options, "f").autoStartLoad = autoplay;
@@ -9985,12 +5895,12 @@ var hls_HlsMedia = function (_Native) {
       hls_classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
 
       Object.keys(hls_classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
-        hls_classPrivateFieldGet(_this5, _HlsMedia_player, "f").on(hls_classPrivateFieldGet(_this5, _HlsMedia_events, "f")[event], function () {
-          for (var _len3 = arguments.length, args = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-            args[_key3] = arguments[_key3];
+        hls_classPrivateFieldGet(_this6, _HlsMedia_player, "f").on(hls_classPrivateFieldGet(_this6, _HlsMedia_events, "f")[event], function () {
+          for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+            args[_key4] = arguments[_key4];
           }
 
-          return _this5._assign(hls_classPrivateFieldGet(_this5, _HlsMedia_events, "f")[event], args);
+          return _this6._assign(hls_classPrivateFieldGet(_this6, _HlsMedia_events, "f")[event], args);
         });
       });
 
@@ -10107,36 +6017,6 @@ var hls_HlsMedia = function (_Native) {
       }
     }
   }, {
-    key: "_revoke",
-    value: function _revoke() {
-      var _this6 = this;
-
-      if (hls_classPrivateFieldGet(this, _HlsMedia_player, "f")) {
-        hls_classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
-      }
-
-      if (hls_classPrivateFieldGet(this, _HlsMedia_events, "f")) {
-        Object.keys(hls_classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach(function (event) {
-          hls_classPrivateFieldGet(_this6, _HlsMedia_player, "f").off(hls_classPrivateFieldGet(_this6, _HlsMedia_events, "f")[event], function () {
-            for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-              args[_key4] = arguments[_key4];
-            }
-
-            return _this6._assign(hls_classPrivateFieldGet(_this6, _HlsMedia_events, "f")[event], args);
-          });
-        });
-      }
-
-      this.element.removeEventListener('play', this._play);
-      this.element.removeEventListener('pause', this._pause);
-
-      if (hls_classPrivateFieldGet(this, _HlsMedia_player, "f")) {
-        hls_classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
-
-        hls_classPrivateFieldSet(this, _HlsMedia_player, null, "f");
-      }
-    }
-  }, {
     key: "_play",
     value: function _play() {
       if (hls_classPrivateFieldGet(this, _HlsMedia_player, "f")) {
@@ -10156,8 +6036,8 @@ var hls_HlsMedia = function (_Native) {
 }(media_native);
 
 _HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_recoverDecodingErrorDate = new WeakMap(), _HlsMedia_recoverSwapAudioCodecDate = new WeakMap(), _HlsMedia_options = new WeakMap(), _HlsMedia_autoplay = new WeakMap();
-/* harmony default export */ var hls = (hls_HlsMedia);
-// CONCATENATED MODULE: ./src/js/media/html5.ts
+/* harmony default export */ const hls = (HlsMedia);
+;// CONCATENATED MODULE: ./src/js/media/html5.ts
 
 
 
@@ -10189,8 +6069,7 @@ var _HTML5Media_currentLevel, _HTML5Media_levelList, _HTML5Media_isStreaming, _H
 
 
 
-
-var html5_HTML5Media = function (_Native) {
+var HTML5Media = function (_Native) {
   inherits_default()(HTML5Media, _Native);
 
   var _super = html5_createSuper(HTML5Media);
@@ -10441,8 +6320,9 @@ var html5_HTML5Media = function (_Native) {
 }(media_native);
 
 _HTML5Media_currentLevel = new WeakMap(), _HTML5Media_levelList = new WeakMap(), _HTML5Media_isStreaming = new WeakMap(), _HTML5Media_retryCount = new WeakMap(), _HTML5Media_started = new WeakMap(), _HTML5Media_timer = new WeakMap();
-/* harmony default export */ var html5 = (html5_HTML5Media);
-// CONCATENATED MODULE: ./src/js/media.ts
+/* harmony default export */ const html5 = (HTML5Media);
+;// CONCATENATED MODULE: ./src/js/media.ts
+
 
 
 
@@ -10501,7 +6381,7 @@ var _Media_element, _Media_media, _Media_files, _Media_promisePlay, _Media_optio
 
 
 
-var media_Media = function () {
+var Media = function () {
   function Media(element, options) {
     var autoplay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
     var customMedia = arguments.length > 3 ? arguments[3] : undefined;
@@ -10551,11 +6431,11 @@ var media_Media = function () {
   }, {
     key: "load",
     value: function load() {
-      return __awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee() {
+      return __awaiter(this, void 0, void 0, regenerator_default().mark(function _callee() {
         var _this = this;
 
         var sameMedia;
-        return regenerator_default.a.wrap(function _callee$(_context) {
+        return regenerator_default().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -10635,8 +6515,8 @@ var media_Media = function () {
   }, {
     key: "play",
     value: function play() {
-      return __awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee2() {
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
+      return __awaiter(this, void 0, void 0, regenerator_default().mark(function _callee2() {
+        return regenerator_default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -10676,8 +6556,8 @@ var media_Media = function () {
   }, {
     key: "pause",
     value: function pause() {
-      return __awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee3() {
-        return regenerator_default.a.wrap(function _callee3$(_context3) {
+      return __awaiter(this, void 0, void 0, regenerator_default().mark(function _callee3() {
+        return regenerator_default().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
@@ -10716,7 +6596,7 @@ var media_Media = function () {
       if (typeof media === 'string') {
         media_classPrivateFieldGet(this, _Media_files, "f").push({
           src: media,
-          type: predictType(media, media_classPrivateFieldGet(this, _Media_element, "f"))
+          type: predictMimeType(media, media_classPrivateFieldGet(this, _Media_element, "f"))
         });
       } else if (Array.isArray(media)) {
         media_classPrivateFieldSet(this, _Media_files, media, "f");
@@ -10729,16 +6609,20 @@ var media_Media = function () {
       }), "f");
 
       if (media_classPrivateFieldGet(this, _Media_files, "f").length > 0) {
+        var _classPrivateFieldGe = media_classPrivateFieldGet(this, _Media_files, "f"),
+            _classPrivateFieldGe2 = slicedToArray_default()(_classPrivateFieldGe, 1),
+            file = _classPrivateFieldGe2[0];
+
         if (media_classPrivateFieldGet(this, _Media_element, "f").src) {
           media_classPrivateFieldGet(this, _Media_element, "f").setAttribute('data-op-file', media_classPrivateFieldGet(this, _Media_files, "f")[0].src);
         }
 
-        media_classPrivateFieldGet(this, _Media_element, "f").src = media_classPrivateFieldGet(this, _Media_files, "f")[0].src;
+        media_classPrivateFieldGet(this, _Media_element, "f").src = file.src;
 
-        media_classPrivateFieldSet(this, _Media_currentSrc, media_classPrivateFieldGet(this, _Media_files, "f")[0], "f");
+        media_classPrivateFieldSet(this, _Media_currentSrc, file, "f");
 
         if (media_classPrivateFieldGet(this, _Media_media, "f")) {
-          media_classPrivateFieldGet(this, _Media_media, "f").src = media_classPrivateFieldGet(this, _Media_files, "f")[0];
+          media_classPrivateFieldGet(this, _Media_media, "f").src = file;
         }
       } else {
         media_classPrivateFieldGet(this, _Media_element, "f").src = '';
@@ -10868,7 +6752,7 @@ var media_Media = function () {
       if (nodeSource) {
         mediaFiles.push({
           src: nodeSource,
-          type: media_classPrivateFieldGet(this, _Media_element, "f").getAttribute('type') || predictType(nodeSource, media_classPrivateFieldGet(this, _Media_element, "f"))
+          type: media_classPrivateFieldGet(this, _Media_element, "f").getAttribute('type') || predictMimeType(nodeSource, media_classPrivateFieldGet(this, _Media_element, "f"))
         });
       }
 
@@ -10877,18 +6761,20 @@ var media_Media = function () {
         var src = item.src;
         mediaFiles.push({
           src: src,
-          type: item.getAttribute('type') || predictType(src, media_classPrivateFieldGet(this, _Media_element, "f"))
+          type: item.getAttribute('type') || predictMimeType(src, media_classPrivateFieldGet(this, _Media_element, "f"))
         });
 
         if (i === 0) {
-          media_classPrivateFieldSet(this, _Media_currentSrc, mediaFiles[0], "f");
+          var file = mediaFiles[0];
+
+          media_classPrivateFieldSet(this, _Media_currentSrc, file, "f");
         }
       }
 
       if (!mediaFiles.length) {
         mediaFiles.push({
           src: '',
-          type: predictType('', media_classPrivateFieldGet(this, _Media_element, "f"))
+          type: predictMimeType('', media_classPrivateFieldGet(this, _Media_element, "f"))
         });
       }
 
@@ -10899,16 +6785,26 @@ var media_Media = function () {
     value: function _invoke(media) {
       var _this2 = this;
 
+      var _a, _b, _c;
+
       var playHLSNatively = media_classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/vnd.apple.mpegurl') || media_classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/x-mpegURL');
 
       media_classPrivateFieldSet(this, _Media_currentSrc, media, "f");
 
+      var _ref = media_classPrivateFieldGet(this, _Media_options, "f").controls || {},
+          layers = _ref.layers;
+
       var activeLevels = false;
-      Object.keys(media_classPrivateFieldGet(this, _Media_options, "f").controls.layers).forEach(function (layer) {
-        if (media_classPrivateFieldGet(_this2, _Media_options, "f").controls.layers[layer].indexOf('levels') > -1) {
-          activeLevels = true;
-        }
-      });
+
+      if (layers) {
+        Object.keys(layers).forEach(function (layer) {
+          var current = layers ? layers[layer] : null;
+
+          if (current && current.indexOf('levels') > -1) {
+            activeLevels = true;
+          }
+        });
+      }
 
       if (Object.keys(media_classPrivateFieldGet(this, _Media_customMedia, "f").media).length) {
         var customRef;
@@ -10937,17 +6833,17 @@ var media_Media = function () {
           return new html5(media_classPrivateFieldGet(this, _Media_element, "f"), media);
         }
 
-        var hlsOptions = media_classPrivateFieldGet(this, _Media_options, "f") && media_classPrivateFieldGet(this, _Media_options, "f").hls ? media_classPrivateFieldGet(this, _Media_options, "f").hls : undefined;
+        var hlsOptions = ((_a = media_classPrivateFieldGet(this, _Media_options, "f")) === null || _a === void 0 ? void 0 : _a.hls) || undefined;
         return new hls(media_classPrivateFieldGet(this, _Media_element, "f"), media, media_classPrivateFieldGet(this, _Media_autoplay, "f"), hlsOptions);
       }
 
       if (isDashSource(media)) {
-        var dashOptions = media_classPrivateFieldGet(this, _Media_options, "f") && media_classPrivateFieldGet(this, _Media_options, "f").dash ? media_classPrivateFieldGet(this, _Media_options, "f").dash : undefined;
+        var dashOptions = ((_b = media_classPrivateFieldGet(this, _Media_options, "f")) === null || _b === void 0 ? void 0 : _b.dash) || undefined;
         return new dash(media_classPrivateFieldGet(this, _Media_element, "f"), media, dashOptions);
       }
 
       if (isFlvSource(media)) {
-        var flvOptions = media_classPrivateFieldGet(this, _Media_options, "f") && media_classPrivateFieldGet(this, _Media_options, "f").flv ? media_classPrivateFieldGet(this, _Media_options, "f").flv : {
+        var flvOptions = ((_c = media_classPrivateFieldGet(this, _Media_options, "f")) === null || _c === void 0 ? void 0 : _c.flv) || {
           debug: false,
           type: 'flv',
           url: media.src
@@ -10963,8 +6859,8 @@ var media_Media = function () {
 }();
 
 _Media_element = new WeakMap(), _Media_media = new WeakMap(), _Media_files = new WeakMap(), _Media_promisePlay = new WeakMap(), _Media_options = new WeakMap(), _Media_autoplay = new WeakMap(), _Media_mediaLoaded = new WeakMap(), _Media_customMedia = new WeakMap(), _Media_currentSrc = new WeakMap();
-/* harmony default export */ var js_media = (media_Media);
-// CONCATENATED MODULE: ./src/js/media/ads.ts
+/* harmony default export */ const js_media = (Media);
+;// CONCATENATED MODULE: ./src/js/media/ads.ts
 
 
 
@@ -11014,37 +6910,40 @@ var ads_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet || 
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Ads_adsEnded, _Ads_adsDone, _Ads_adsActive, _Ads_adsStarted, _Ads_intervalTimer, _Ads_adsVolume, _Ads_adsMuted, _Ads_adsDuration, _Ads_adsCurrentTime, _Ads_adsManager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_adsLoader, _Ads_adsContainer, _Ads_adsCustomClickContainer, _Ads_adDisplayContainer, _Ads_adsRequest, _Ads_autoStart, _Ads_autoStartMuted, _Ads_playTriggered, _Ads_adsOptions, _Ads_currentAdsIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
+var _Ads_ended, _Ads_done, _Ads_active, _Ads_started, _Ads_intervalTimer, _Ads_volume, _Ads_muted, _Ads_duration, _Ads_currentTime, _Ads_manager, _Ads_player, _Ads_media, _Ads_element, _Ads_events, _Ads_ads, _Ads_promise, _Ads_loader, _Ads_container, _Ads_customClickContainer, _Ads_skipElement, _Ads_displayContainer, _Ads_request, _Ads_autostart, _Ads_autostartMuted, _Ads_playTriggered, _Ads_options, _Ads_currentIndex, _Ads_originalVolume, _Ads_preloadContent, _Ads_lastTimePaused, _Ads_mediaSources, _Ads_mediaStarted;
 
 
 
 
-
-var ads_Ads = function () {
-  function Ads(player, ads, autoStart, autoStartMuted, options) {
+var Ads = function () {
+  function Ads(player, ads, autostart, autostartMuted, options) {
     var _this = this;
 
     classCallCheck_default()(this, Ads);
 
-    _Ads_adsEnded.set(this, false);
+    var _a, _b, _c, _d;
 
-    _Ads_adsDone.set(this, false);
+    this.loadedAd = false;
 
-    _Ads_adsActive.set(this, false);
+    _Ads_ended.set(this, false);
 
-    _Ads_adsStarted.set(this, false);
+    _Ads_done.set(this, false);
+
+    _Ads_active.set(this, false);
+
+    _Ads_started.set(this, false);
 
     _Ads_intervalTimer.set(this, 0);
 
-    _Ads_adsVolume.set(this, void 0);
+    _Ads_volume.set(this, void 0);
 
-    _Ads_adsMuted.set(this, false);
+    _Ads_muted.set(this, false);
 
-    _Ads_adsDuration.set(this, 0);
+    _Ads_duration.set(this, 0);
 
-    _Ads_adsCurrentTime.set(this, 0);
+    _Ads_currentTime.set(this, 0);
 
-    _Ads_adsManager.set(this, null);
+    _Ads_manager.set(this, null);
 
     _Ads_player.set(this, void 0);
 
@@ -11058,25 +6957,27 @@ var ads_Ads = function () {
 
     _Ads_promise.set(this, void 0);
 
-    _Ads_adsLoader.set(this, void 0);
+    _Ads_loader.set(this, void 0);
 
-    _Ads_adsContainer.set(this, void 0);
+    _Ads_container.set(this, void 0);
 
-    _Ads_adsCustomClickContainer.set(this, void 0);
+    _Ads_customClickContainer.set(this, void 0);
 
-    _Ads_adDisplayContainer.set(this, void 0);
+    _Ads_skipElement.set(this, void 0);
 
-    _Ads_adsRequest.set(this, void 0);
+    _Ads_displayContainer.set(this, void 0);
 
-    _Ads_autoStart.set(this, false);
+    _Ads_request.set(this, void 0);
 
-    _Ads_autoStartMuted.set(this, false);
+    _Ads_autostart.set(this, false);
+
+    _Ads_autostartMuted.set(this, false);
 
     _Ads_playTriggered.set(this, false);
 
-    _Ads_adsOptions.set(this, void 0);
+    _Ads_options.set(this, void 0);
 
-    _Ads_currentAdsIndex.set(this, 0);
+    _Ads_currentIndex.set(this, 0);
 
     _Ads_originalVolume.set(this, void 0);
 
@@ -11088,21 +6989,25 @@ var ads_Ads = function () {
 
     _Ads_mediaStarted.set(this, false);
 
-    this.loadedAd = false;
     var defaultOpts = {
       autoPlayAdBreaks: true,
       customClick: {
         enabled: false,
         label: 'Click here for more info'
       },
+      audioSkip: {
+        enabled: true,
+        label: 'Skip Ad',
+        remainingLabel: 'Skip in [[secs]] seconds'
+      },
       debug: false,
       enablePreloading: false,
       language: 'en',
       loop: false,
       numRedirects: 4,
-      publisherId: null,
+      publisherId: undefined,
       sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-      sessionId: null,
+      sessionId: undefined,
       src: [],
       vpaidMode: 'enabled'
     };
@@ -11115,48 +7020,46 @@ var ads_Ads = function () {
 
     ads_classPrivateFieldSet(this, _Ads_element, player.getElement(), "f");
 
-    ads_classPrivateFieldSet(this, _Ads_autoStart, autoStart || false, "f");
+    ads_classPrivateFieldSet(this, _Ads_autostart, autostart || false, "f");
 
-    ads_classPrivateFieldSet(this, _Ads_adsMuted, player.getElement().muted, "f");
+    ads_classPrivateFieldSet(this, _Ads_muted, player.getElement().muted, "f");
 
-    ads_classPrivateFieldSet(this, _Ads_autoStartMuted, autoStartMuted || false, "f");
+    ads_classPrivateFieldSet(this, _Ads_autostartMuted, autostartMuted || false, "f");
 
-    ads_classPrivateFieldSet(this, _Ads_adsOptions, Object.assign(Object.assign({}, defaultOpts), options), "f");
+    ads_classPrivateFieldSet(this, _Ads_options, Object.assign(Object.assign({}, defaultOpts), options), "f");
 
-    if (options) {
-      var objectElements = ['customClick'];
-      objectElements.forEach(function (item) {
-        ads_classPrivateFieldGet(_this, _Ads_adsOptions, "f")[item] = options[item] && Object.keys(options[item]).length ? Object.assign(Object.assign({}, defaultOpts[item]), options[item]) : defaultOpts[item];
-      });
+    if ((options === null || options === void 0 ? void 0 : options.customClick) && Object.keys(options.customClick).length) {
+      ads_classPrivateFieldGet(this, _Ads_options, "f").customClick = Object.assign(Object.assign({}, defaultOpts.customClick), options.customClick);
     }
 
     ads_classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
 
     ads_classPrivateFieldSet(this, _Ads_originalVolume, ads_classPrivateFieldGet(this, _Ads_element, "f").volume, "f");
 
-    ads_classPrivateFieldSet(this, _Ads_adsVolume, ads_classPrivateFieldGet(this, _Ads_originalVolume, "f"), "f");
+    ads_classPrivateFieldSet(this, _Ads_volume, ads_classPrivateFieldGet(this, _Ads_originalVolume, "f"), "f");
 
-    var path = ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").debug && ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath ? ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath.replace(/(\.js$)/, '_debug.js') : ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").sdkPath;
-    this._handleClickInContainer = this._handleClickInContainer.bind(this);
+    var path = ((_a = ads_classPrivateFieldGet(this, _Ads_options, "f")) === null || _a === void 0 ? void 0 : _a.debug) ? (_c = (_b = ads_classPrivateFieldGet(this, _Ads_options, "f")) === null || _b === void 0 ? void 0 : _b.sdkPath) === null || _c === void 0 ? void 0 : _c.replace(/(\.js$)/, '_debug.js') : (_d = ads_classPrivateFieldGet(this, _Ads_options, "f")) === null || _d === void 0 ? void 0 : _d.sdkPath;
     this.load = this.load.bind(this);
+    this.resizeAds = this.resizeAds.bind(this);
+    this._handleClickInContainer = this._handleClickInContainer.bind(this);
+    this._handleSkipAds = this._handleSkipAds.bind(this);
     this._loaded = this._loaded.bind(this);
     this._error = this._error.bind(this);
     this._assign = this._assign.bind(this);
     this._contentLoadedAction = this._contentLoadedAction.bind(this);
     this._loadedMetadataHandler = this._loadedMetadataHandler.bind(this);
     this._contentEndedListener = this._contentEndedListener.bind(this);
-    this.resizeAds = this.resizeAds.bind(this);
     this._handleResizeAds = this._handleResizeAds.bind(this);
     this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
     this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
 
     ads_classPrivateFieldSet(this, _Ads_promise, path && (typeof google === 'undefined' || typeof google.ima === 'undefined') ? loadScript(path) : new Promise(function (resolve) {
-      resolve({});
+      resolve();
     }), "f");
 
     ads_classPrivateFieldGet(this, _Ads_promise, "f").then(function () {
       _this.load();
-    })["catch"](function (error) {
+    }).catch(function (error) {
       var message = 'Ad script could not be loaded; please check if you have an AdBlock ';
       message += 'turned on, or if you provided a valid URL is correct';
       console.error("Ad error: ".concat(message, "."));
@@ -11180,11 +7083,13 @@ var ads_Ads = function () {
     value: function load() {
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      if (typeof google === 'undefined' || !google.ima || !force && this.loadedAd && ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+      var _a, _b, _c;
+
+      if (typeof google === 'undefined' || !google.ima || !force && this.loadedAd && ads_classPrivateFieldGet(this, _Ads_options, "f").autoPlayAdBreaks) {
         return;
       }
 
-      if (!ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks && !force) {
+      if (!ads_classPrivateFieldGet(this, _Ads_options, "f").autoPlayAdBreaks && !force) {
         return;
       }
 
@@ -11196,27 +7101,54 @@ var ads_Ads = function () {
         existingContainer.parentNode.removeChild(existingContainer);
       }
 
-      ads_classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
+      ads_classPrivateFieldSet(this, _Ads_started, true, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsContainer, document.createElement('div'), "f");
+      ads_classPrivateFieldSet(this, _Ads_container, document.createElement('div'), "f");
 
-      ads_classPrivateFieldGet(this, _Ads_adsContainer, "f").className = 'op-ads';
-      ads_classPrivateFieldGet(this, _Ads_adsContainer, "f").tabIndex = -1;
+      ads_classPrivateFieldGet(this, _Ads_container, "f").className = 'op-ads';
+      ads_classPrivateFieldGet(this, _Ads_container, "f").tabIndex = -1;
 
       if (ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
-        ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(ads_classPrivateFieldGet(this, _Ads_adsContainer, "f"), ads_classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
+        ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(ads_classPrivateFieldGet(this, _Ads_container, "f"), ads_classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
       }
 
-      ads_classPrivateFieldGet(this, _Ads_adsContainer, "f").addEventListener('click', this._handleClickInContainer);
+      ads_classPrivateFieldGet(this, _Ads_container, "f").addEventListener('click', this._handleClickInContainer);
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.enabled) {
-        ads_classPrivateFieldSet(this, _Ads_adsCustomClickContainer, document.createElement('div'), "f");
+      if ((_a = ads_classPrivateFieldGet(this, _Ads_options, "f").customClick) === null || _a === void 0 ? void 0 : _a.enabled) {
+        ads_classPrivateFieldSet(this, _Ads_customClickContainer, document.createElement('div'), "f");
 
-        ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").className = 'op-ads__click-container';
-        ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").innerHTML = "<div class=\"op-ads__click-label\">".concat(ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.label, "</div>");
+        ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f").className = 'op-ads__click-container';
+        ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f").innerHTML = "<div class=\"op-ads__click-label\">".concat(ads_classPrivateFieldGet(this, _Ads_options, "f").customClick.label, "</div>");
 
         if (ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
-          ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f"), ads_classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
+          ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.insertBefore(ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f"), ads_classPrivateFieldGet(this, _Ads_element, "f").nextSibling);
+        }
+      }
+
+      if (isAudio(ads_classPrivateFieldGet(this, _Ads_element, "f")) && ((_b = ads_classPrivateFieldGet(this, _Ads_options, "f").audioSkip) === null || _b === void 0 ? void 0 : _b.enabled)) {
+        if ((_c = ads_classPrivateFieldGet(this, _Ads_options, "f").audioSkip) === null || _c === void 0 ? void 0 : _c.element) {
+          var _ref = ads_classPrivateFieldGet(this, _Ads_options, "f").audioSkip || {},
+              element = _ref.element;
+
+          if (typeof element === 'string') {
+            var target = document.getElementById(element);
+
+            if (target) {
+              ads_classPrivateFieldSet(this, _Ads_skipElement, target, "f");
+            }
+          } else if (element instanceof HTMLElement) {
+            ads_classPrivateFieldSet(this, _Ads_skipElement, element, "f");
+          }
+        } else {
+          ads_classPrivateFieldSet(this, _Ads_skipElement, document.createElement('button'), "f");
+
+          ads_classPrivateFieldGet(this, _Ads_skipElement, "f").className = 'op-ads__skip hidden';
+
+          ads_classPrivateFieldGet(this, _Ads_player, "f").getControls().getContainer().appendChild(ads_classPrivateFieldGet(this, _Ads_skipElement, "f"));
+        }
+
+        if (ads_classPrivateFieldGet(this, _Ads_skipElement, "f")) {
+          ads_classPrivateFieldGet(this, _Ads_skipElement, "f").addEventListener('click', this._handleSkipAds, EVENT_OPTIONS);
         }
       }
 
@@ -11227,30 +7159,30 @@ var ads_Ads = function () {
         enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED,
         insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE
       };
-      google.ima.settings.setVpaidMode(vpaidModeMap[ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").vpaidMode]);
+      google.ima.settings.setVpaidMode(vpaidModeMap[ads_classPrivateFieldGet(this, _Ads_options, "f").vpaidMode || 'enabled']);
       google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
-      google.ima.settings.setAutoPlayAdBreaks(ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks);
-      google.ima.settings.setNumRedirects(ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").numRedirects);
-      google.ima.settings.setLocale(ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").language);
+      google.ima.settings.setAutoPlayAdBreaks(ads_classPrivateFieldGet(this, _Ads_options, "f").autoPlayAdBreaks);
+      google.ima.settings.setNumRedirects(ads_classPrivateFieldGet(this, _Ads_options, "f").numRedirects);
+      google.ima.settings.setLocale(ads_classPrivateFieldGet(this, _Ads_options, "f").language);
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").sessionId) {
-        google.ima.settings.setSessionId(ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").sessionId);
+      if (ads_classPrivateFieldGet(this, _Ads_options, "f").sessionId) {
+        google.ima.settings.setSessionId(ads_classPrivateFieldGet(this, _Ads_options, "f").sessionId);
       }
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").publisherId) {
-        google.ima.settings.setPpid(ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").publisherId);
+      if (ads_classPrivateFieldGet(this, _Ads_options, "f").publisherId) {
+        google.ima.settings.setPpid(ads_classPrivateFieldGet(this, _Ads_options, "f").publisherId);
       }
 
       google.ima.settings.setPlayerType('openplayerjs');
-      google.ima.settings.setPlayerVersion('2.9.3');
+      google.ima.settings.setPlayerVersion('3.0.0');
 
-      ads_classPrivateFieldSet(this, _Ads_adDisplayContainer, new google.ima.AdDisplayContainer(ads_classPrivateFieldGet(this, _Ads_adsContainer, "f"), ads_classPrivateFieldGet(this, _Ads_element, "f"), ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f")), "f");
+      ads_classPrivateFieldSet(this, _Ads_displayContainer, new google.ima.AdDisplayContainer(ads_classPrivateFieldGet(this, _Ads_container, "f"), ads_classPrivateFieldGet(this, _Ads_element, "f"), ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f")), "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsLoader, new google.ima.AdsLoader(ads_classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")), "f");
+      ads_classPrivateFieldSet(this, _Ads_loader, new google.ima.AdsLoader(ads_classPrivateFieldGet(this, _Ads_displayContainer, "f")), "f");
 
-      ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded, EVENT_OPTIONS);
+      ads_classPrivateFieldGet(this, _Ads_loader, "f").addEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded, EVENT_OPTIONS);
 
-      ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
+      ads_classPrivateFieldGet(this, _Ads_loader, "f").addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
 
       if (typeof window !== 'undefined') {
         window.addEventListener('resize', this._handleResizeAds, EVENT_OPTIONS);
@@ -11258,11 +7190,11 @@ var ads_Ads = function () {
 
       ads_classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._handleResizeAds, EVENT_OPTIONS);
 
-      if (ads_classPrivateFieldGet(this, _Ads_autoStart, "f") === true || ads_classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || force === true || ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true || ads_classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
-        if (!ads_classPrivateFieldGet(this, _Ads_adsDone, "f")) {
-          ads_classPrivateFieldSet(this, _Ads_adsDone, true, "f");
+      if (ads_classPrivateFieldGet(this, _Ads_autostart, "f") === true || ads_classPrivateFieldGet(this, _Ads_autostartMuted, "f") === true || force === true || ads_classPrivateFieldGet(this, _Ads_options, "f").enablePreloading === true || ads_classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
+        if (!ads_classPrivateFieldGet(this, _Ads_done, "f")) {
+          ads_classPrivateFieldSet(this, _Ads_done, true, "f");
 
-          ads_classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
+          ads_classPrivateFieldGet(this, _Ads_displayContainer, "f").initialize();
         }
 
         this._requestAds();
@@ -11271,13 +7203,13 @@ var ads_Ads = function () {
   }, {
     key: "play",
     value: function play() {
-      return ads_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee() {
+      return ads_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee() {
         var e;
-        return regenerator_default.a.wrap(function _callee$(_context) {
+        return regenerator_default().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (ads_classPrivateFieldGet(this, _Ads_adsDone, "f")) {
+                if (ads_classPrivateFieldGet(this, _Ads_done, "f")) {
                   _context.next = 4;
                   break;
                 }
@@ -11289,15 +7221,15 @@ var ads_Ads = function () {
                 return _context.abrupt("return");
 
               case 4:
-                if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+                if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
                   try {
-                    if (!ads_classPrivateFieldGet(this, _Ads_intervalTimer, "f") && ads_classPrivateFieldGet(this, _Ads_adsActive, "f") === false) {
-                      ads_classPrivateFieldGet(this, _Ads_adsManager, "f").start();
+                    if (!ads_classPrivateFieldGet(this, _Ads_intervalTimer, "f") && ads_classPrivateFieldGet(this, _Ads_active, "f") === false) {
+                      ads_classPrivateFieldGet(this, _Ads_manager, "f").start();
                     } else {
-                      ads_classPrivateFieldGet(this, _Ads_adsManager, "f").resume();
+                      ads_classPrivateFieldGet(this, _Ads_manager, "f").resume();
                     }
 
-                    ads_classPrivateFieldSet(this, _Ads_adsActive, true, "f");
+                    ads_classPrivateFieldSet(this, _Ads_active, true, "f");
 
                     e = addEvent('play');
 
@@ -11318,10 +7250,10 @@ var ads_Ads = function () {
   }, {
     key: "pause",
     value: function pause() {
-      if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
-        ads_classPrivateFieldSet(this, _Ads_adsActive, false, "f");
+      if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
+        ads_classPrivateFieldSet(this, _Ads_active, false, "f");
 
-        ads_classPrivateFieldGet(this, _Ads_adsManager, "f").pause();
+        ads_classPrivateFieldGet(this, _Ads_manager, "f").pause();
 
         var e = addEvent('pause');
 
@@ -11333,12 +7265,14 @@ var ads_Ads = function () {
     value: function destroy() {
       var _this2 = this;
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
-        ads_classPrivateFieldGet(this, _Ads_adsManager, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
+      var _a, _b;
+
+      if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
+        ads_classPrivateFieldGet(this, _Ads_manager, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
         if (ads_classPrivateFieldGet(this, _Ads_events, "f")) {
           ads_classPrivateFieldGet(this, _Ads_events, "f").forEach(function (event) {
-            ads_classPrivateFieldGet(_this2, _Ads_adsManager, "f").removeEventListener(event, _this2._assign);
+            ads_classPrivateFieldGet(_this2, _Ads_manager, "f").removeEventListener(event, _this2._assign);
           });
         }
       }
@@ -11349,25 +7283,31 @@ var ads_Ads = function () {
 
       var mouseEvents = controls ? controls.events.mouse : {};
       Object.keys(mouseEvents).forEach(function (event) {
-        if (ads_classPrivateFieldGet(_this2, _Ads_adsContainer, "f")) {
-          ads_classPrivateFieldGet(_this2, _Ads_adsContainer, "f").removeEventListener(event, mouseEvents[event]);
+        if (ads_classPrivateFieldGet(_this2, _Ads_container, "f")) {
+          ads_classPrivateFieldGet(_this2, _Ads_container, "f").removeEventListener(event, mouseEvents[event]);
         }
       });
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsLoader, "f")) {
-        ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
+      if (ads_classPrivateFieldGet(this, _Ads_loader, "f")) {
+        ads_classPrivateFieldGet(this, _Ads_loader, "f").removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
 
-        ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded);
+        ads_classPrivateFieldGet(this, _Ads_loader, "f").removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded);
       }
 
-      var destroy = !Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f")) || ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") > ads_classPrivateFieldGet(this, _Ads_ads, "f").length;
+      var destroy = !Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f")) || ads_classPrivateFieldGet(this, _Ads_currentIndex, "f") > ads_classPrivateFieldGet(this, _Ads_ads, "f").length;
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f") && destroy) {
-        ads_classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
+      if (ads_classPrivateFieldGet(this, _Ads_manager, "f") && destroy) {
+        ads_classPrivateFieldGet(this, _Ads_manager, "f").destroy();
       }
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").customClick.enabled) {
-        removeElement(ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f"));
+      if (((_a = ads_classPrivateFieldGet(this, _Ads_options, "f").customClick) === null || _a === void 0 ? void 0 : _a.enabled) && ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f")) {
+        ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f").remove();
+      }
+
+      if (((_b = ads_classPrivateFieldGet(this, _Ads_options, "f").audioSkip) === null || _b === void 0 ? void 0 : _b.enabled) && ads_classPrivateFieldGet(this, _Ads_skipElement, "f")) {
+        ads_classPrivateFieldGet(this, _Ads_skipElement, "f").removeEventListener('click', this._handleSkipAds);
+
+        ads_classPrivateFieldGet(this, _Ads_skipElement, "f").remove();
       }
 
       if (IS_IOS || IS_ANDROID) {
@@ -11384,28 +7324,29 @@ var ads_Ads = function () {
         window.removeEventListener('resize', this._handleResizeAds);
       }
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsContainer, "f")) {
-        ads_classPrivateFieldGet(this, _Ads_adsContainer, "f").removeEventListener('click', this._handleClickInContainer);
+      if (ads_classPrivateFieldGet(this, _Ads_container, "f")) {
+        ads_classPrivateFieldGet(this, _Ads_container, "f").removeEventListener('click', this._handleClickInContainer);
+
+        ads_classPrivateFieldGet(this, _Ads_container, "f").remove();
       }
 
-      removeElement(ads_classPrivateFieldGet(this, _Ads_adsContainer, "f"));
       this.loadPromise = null;
       this.loadedAd = false;
 
-      ads_classPrivateFieldSet(this, _Ads_adsDone, false, "f");
+      ads_classPrivateFieldSet(this, _Ads_done, false, "f");
 
       ads_classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
+      ads_classPrivateFieldSet(this, _Ads_duration, 0, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
+      ads_classPrivateFieldSet(this, _Ads_currentTime, 0, "f");
     }
   }, {
     key: "resizeAds",
     value: function resizeAds(width, height) {
       var _this3 = this;
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+      if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
         var target = ads_classPrivateFieldGet(this, _Ads_element, "f");
 
         var mode = target.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL;
@@ -11435,7 +7376,7 @@ var ads_Ads = function () {
 
         if (typeof window !== 'undefined') {
           timeout = window.requestAnimationFrame(function () {
-            ads_classPrivateFieldGet(_this3, _Ads_adsManager, "f").resize(formattedWidth || target.offsetWidth, formattedHeight || target.offsetHeight, mode);
+            ads_classPrivateFieldGet(_this3, _Ads_manager, "f").resize(formattedWidth || target.offsetWidth, formattedHeight || target.offsetHeight, mode);
           });
         }
       }
@@ -11443,12 +7384,17 @@ var ads_Ads = function () {
   }, {
     key: "getAdsManager",
     value: function getAdsManager() {
-      return ads_classPrivateFieldGet(this, _Ads_adsManager, "f");
+      return ads_classPrivateFieldGet(this, _Ads_manager, "f");
+    }
+  }, {
+    key: "getAdsLoader",
+    value: function getAdsLoader() {
+      return ads_classPrivateFieldGet(this, _Ads_loader, "f");
     }
   }, {
     key: "started",
     value: function started() {
-      return ads_classPrivateFieldGet(this, _Ads_adsStarted, "f");
+      return ads_classPrivateFieldGet(this, _Ads_started, "f");
     }
   }, {
     key: "src",
@@ -11458,7 +7404,7 @@ var ads_Ads = function () {
   }, {
     key: "isDone",
     set: function set(value) {
-      ads_classPrivateFieldSet(this, _Ads_adsDone, value, "f");
+      ads_classPrivateFieldSet(this, _Ads_done, value, "f");
     }
   }, {
     key: "playRequested",
@@ -11468,68 +7414,70 @@ var ads_Ads = function () {
   }, {
     key: "volume",
     get: function get() {
-      return ads_classPrivateFieldGet(this, _Ads_adsManager, "f") ? ads_classPrivateFieldGet(this, _Ads_adsManager, "f").getVolume() : ads_classPrivateFieldGet(this, _Ads_originalVolume, "f");
+      return ads_classPrivateFieldGet(this, _Ads_manager, "f") ? ads_classPrivateFieldGet(this, _Ads_manager, "f").getVolume() : ads_classPrivateFieldGet(this, _Ads_originalVolume, "f");
     },
     set: function set(value) {
-      if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
-        ads_classPrivateFieldSet(this, _Ads_adsVolume, value, "f");
+      if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
+        ads_classPrivateFieldSet(this, _Ads_volume, value, "f");
 
-        ads_classPrivateFieldGet(this, _Ads_adsManager, "f").setVolume(value);
+        ads_classPrivateFieldGet(this, _Ads_manager, "f").setVolume(value);
 
         this._setMediaVolume(value);
 
-        ads_classPrivateFieldSet(this, _Ads_adsMuted, value === 0, "f");
+        ads_classPrivateFieldSet(this, _Ads_muted, value === 0, "f");
       }
     }
   }, {
     key: "muted",
     get: function get() {
-      return ads_classPrivateFieldGet(this, _Ads_adsMuted, "f");
+      return ads_classPrivateFieldGet(this, _Ads_muted, "f");
     },
     set: function set(value) {
-      if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
+      if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
         if (value) {
-          ads_classPrivateFieldGet(this, _Ads_adsManager, "f").setVolume(0);
+          ads_classPrivateFieldGet(this, _Ads_manager, "f").setVolume(0);
 
-          ads_classPrivateFieldSet(this, _Ads_adsMuted, true, "f");
+          ads_classPrivateFieldSet(this, _Ads_muted, true, "f");
 
           this._setMediaVolume(0);
         } else {
-          ads_classPrivateFieldGet(this, _Ads_adsManager, "f").setVolume(ads_classPrivateFieldGet(this, _Ads_adsVolume, "f"));
+          ads_classPrivateFieldGet(this, _Ads_manager, "f").setVolume(ads_classPrivateFieldGet(this, _Ads_volume, "f"));
 
-          ads_classPrivateFieldSet(this, _Ads_adsMuted, false, "f");
+          ads_classPrivateFieldSet(this, _Ads_muted, false, "f");
 
-          this._setMediaVolume(ads_classPrivateFieldGet(this, _Ads_adsVolume, "f"));
+          this._setMediaVolume(ads_classPrivateFieldGet(this, _Ads_volume, "f"));
         }
       }
     }
   }, {
     key: "currentTime",
     get: function get() {
-      return ads_classPrivateFieldGet(this, _Ads_adsCurrentTime, "f");
+      return ads_classPrivateFieldGet(this, _Ads_currentTime, "f");
     },
     set: function set(value) {
-      ads_classPrivateFieldSet(this, _Ads_adsCurrentTime, value, "f");
+      ads_classPrivateFieldSet(this, _Ads_currentTime, value, "f");
     }
   }, {
     key: "duration",
     get: function get() {
-      return ads_classPrivateFieldGet(this, _Ads_adsDuration, "f");
+      return ads_classPrivateFieldGet(this, _Ads_duration, "f");
     }
   }, {
     key: "paused",
     get: function get() {
-      return !ads_classPrivateFieldGet(this, _Ads_adsActive, "f");
+      return !ads_classPrivateFieldGet(this, _Ads_active, "f");
     }
   }, {
     key: "ended",
     get: function get() {
-      return ads_classPrivateFieldGet(this, _Ads_adsEnded, "f");
+      return ads_classPrivateFieldGet(this, _Ads_ended, "f");
     }
   }, {
     key: "_assign",
     value: function _assign(event) {
       var _this4 = this;
+
+      var _a, _b;
 
       var ad = event.getAd();
 
@@ -11542,9 +7490,9 @@ var ads_Ads = function () {
               ads_classPrivateFieldGet(this, _Ads_element, "f").controls = false;
             }
 
-            ads_classPrivateFieldSet(this, _Ads_adsDuration, ad.getDuration(), "f");
+            ads_classPrivateFieldSet(this, _Ads_duration, ad.getDuration(), "f");
 
-            ads_classPrivateFieldSet(this, _Ads_adsCurrentTime, ad.getDuration(), "f");
+            ads_classPrivateFieldSet(this, _Ads_currentTime, ad.getDuration(), "f");
 
             if (!ads_classPrivateFieldGet(this, _Ads_mediaStarted, "f") && !IS_IOS && !IS_ANDROID) {
               var waitingEvent = addEvent('waiting');
@@ -11571,7 +7519,7 @@ var ads_Ads = function () {
               ads_classPrivateFieldGet(this, _Ads_media, "f").pause();
             }
 
-            ads_classPrivateFieldSet(this, _Ads_adsActive, true, "f");
+            ads_classPrivateFieldSet(this, _Ads_active, true, "f");
 
             var playEvent = addEvent('play');
 
@@ -11585,7 +7533,7 @@ var ads_Ads = function () {
             }
 
             if (ads_classPrivateFieldGet(this, _Ads_media, "f").ended) {
-              ads_classPrivateFieldSet(this, _Ads_adsEnded, false, "f");
+              ads_classPrivateFieldSet(this, _Ads_ended, false, "f");
 
               var endEvent = addEvent('adsmediaended');
 
@@ -11594,8 +7542,8 @@ var ads_Ads = function () {
 
             if (typeof window !== 'undefined') {
               ads_classPrivateFieldSet(this, _Ads_intervalTimer, window.setInterval(function () {
-                if (ads_classPrivateFieldGet(_this4, _Ads_adsActive, "f") === true) {
-                  ads_classPrivateFieldSet(_this4, _Ads_adsCurrentTime, Math.round(ads_classPrivateFieldGet(_this4, _Ads_adsManager, "f").getRemainingTime()), "f");
+                if (ads_classPrivateFieldGet(_this4, _Ads_active, "f") === true) {
+                  ads_classPrivateFieldSet(_this4, _Ads_currentTime, Math.round(ads_classPrivateFieldGet(_this4, _Ads_manager, "f").getRemainingTime()), "f");
 
                   var timeEvent = addEvent('timeupdate');
 
@@ -11620,7 +7568,7 @@ var ads_Ads = function () {
               ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
             }
 
-            ads_classPrivateFieldSet(this, _Ads_adsActive, false, "f");
+            ads_classPrivateFieldSet(this, _Ads_active, false, "f");
 
             clearInterval(ads_classPrivateFieldGet(this, _Ads_intervalTimer, "f"));
           }
@@ -11643,15 +7591,15 @@ var ads_Ads = function () {
 
         case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
           if (ad.isLinear()) {
-            ads_classPrivateFieldSet(this, _Ads_adsActive, false, "f");
+            ads_classPrivateFieldSet(this, _Ads_active, false, "f");
 
-            ads_classPrivateFieldSet(this, _Ads_adsEnded, true, "f");
+            ads_classPrivateFieldSet(this, _Ads_ended, true, "f");
 
             ads_classPrivateFieldSet(this, _Ads_intervalTimer, 0, "f");
 
-            ads_classPrivateFieldSet(this, _Ads_adsMuted, false, "f");
+            ads_classPrivateFieldSet(this, _Ads_muted, false, "f");
 
-            ads_classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
+            ads_classPrivateFieldSet(this, _Ads_started, false, "f");
 
             if (ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
               ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
@@ -11676,8 +7624,36 @@ var ads_Ads = function () {
           break;
 
         case google.ima.AdEvent.Type.AD_BREAK_READY:
-          if (!ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+          if (!ads_classPrivateFieldGet(this, _Ads_options, "f").autoPlayAdBreaks) {
             this.play();
+          }
+
+          break;
+
+        case google.ima.AdEvent.Type.AD_PROGRESS:
+          var progressData = event.getAdData();
+          var offset = ad ? ad.getSkipTimeOffset() : -1;
+
+          if (ads_classPrivateFieldGet(this, _Ads_skipElement, "f")) {
+            if (offset !== -1) {
+              var canSkip = ads_classPrivateFieldGet(this, _Ads_manager, "f").getAdSkippableState();
+
+              var remainingTime = Math.ceil(offset - progressData.currentTime);
+
+              ads_classPrivateFieldGet(this, _Ads_skipElement, "f").classList.remove('hidden');
+
+              if (canSkip) {
+                ads_classPrivateFieldGet(this, _Ads_skipElement, "f").textContent = ((_a = ads_classPrivateFieldGet(this, _Ads_options, "f").audioSkip) === null || _a === void 0 ? void 0 : _a.label) || '';
+
+                ads_classPrivateFieldGet(this, _Ads_skipElement, "f").classList.remove('disabled');
+              } else {
+                ads_classPrivateFieldGet(this, _Ads_skipElement, "f").textContent = ((_b = ads_classPrivateFieldGet(this, _Ads_options, "f").audioSkip) === null || _b === void 0 ? void 0 : _b.remainingLabel.replace('[[secs]]', remainingTime.toString())) || '';
+
+                ads_classPrivateFieldGet(this, _Ads_skipElement, "f").classList.add('disabled');
+              }
+            } else {
+              ads_classPrivateFieldGet(this, _Ads_skipElement, "f").classList.add('hidden');
+            }
           }
 
           break;
@@ -11728,12 +7704,12 @@ var ads_Ads = function () {
 
       var fatalErrorCodes = [100, 101, 102, 300, 301, 302, 303, 400, 401, 402, 403, 405, 406, 407, 408, 409, 410, 500, 501, 502, 503, 900, 901, 1005];
 
-      if (Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f")) && ads_classPrivateFieldGet(this, _Ads_ads, "f").length > 1 && ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") < ads_classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
-        ads_classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
+      if (Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f")) && ads_classPrivateFieldGet(this, _Ads_ads, "f").length > 1 && ads_classPrivateFieldGet(this, _Ads_currentIndex, "f") < ads_classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
+        ads_classPrivateFieldSet(this, _Ads_currentIndex, (_a = ads_classPrivateFieldGet(this, _Ads_currentIndex, "f"), _a++, _a), "f");
 
         this.destroy();
 
-        ads_classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
+        ads_classPrivateFieldSet(this, _Ads_started, true, "f");
 
         ads_classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
 
@@ -11741,8 +7717,8 @@ var ads_Ads = function () {
         console.warn("Ad warning: ".concat(error.toString()));
       } else {
         if (fatalErrorCodes.indexOf(error.getErrorCode()) > -1) {
-          if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
-            ads_classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
+          if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
+            ads_classPrivateFieldGet(this, _Ads_manager, "f").destroy();
           }
 
           console.error("Ad error: ".concat(error.toString()));
@@ -11750,8 +7726,8 @@ var ads_Ads = function () {
           console.warn("Ad warning: ".concat(error.toString()));
         }
 
-        if (ads_classPrivateFieldGet(this, _Ads_autoStart, "f") === true || ads_classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || ads_classPrivateFieldGet(this, _Ads_adsStarted, "f") === true) {
-          ads_classPrivateFieldSet(this, _Ads_adsActive, false, "f");
+        if (ads_classPrivateFieldGet(this, _Ads_autostart, "f") === true || ads_classPrivateFieldGet(this, _Ads_autostartMuted, "f") === true || ads_classPrivateFieldGet(this, _Ads_started, "f") === true) {
+          ads_classPrivateFieldSet(this, _Ads_active, false, "f");
 
           this._resumeMedia();
         }
@@ -11759,14 +7735,14 @@ var ads_Ads = function () {
     }
   }, {
     key: "_loaded",
-    value: function _loaded(adsManagerLoadedEvent) {
+    value: function _loaded(managerLoadedEvent) {
       var adsRenderingSettings = new google.ima.AdsRenderingSettings();
       adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-      adsRenderingSettings.enablePreloading = ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading;
+      adsRenderingSettings.enablePreloading = ads_classPrivateFieldGet(this, _Ads_options, "f").enablePreloading;
 
-      ads_classPrivateFieldSet(this, _Ads_adsManager, adsManagerLoadedEvent.getAdsManager(ads_classPrivateFieldGet(this, _Ads_element, "f"), adsRenderingSettings), "f");
+      ads_classPrivateFieldSet(this, _Ads_manager, managerLoadedEvent.getAdsManager(ads_classPrivateFieldGet(this, _Ads_element, "f"), adsRenderingSettings), "f");
 
-      this._start(ads_classPrivateFieldGet(this, _Ads_adsManager, "f"));
+      this._start(ads_classPrivateFieldGet(this, _Ads_manager, "f"));
 
       this.loadPromise = new Promise(function (resolve) {
         return resolve;
@@ -11777,8 +7753,8 @@ var ads_Ads = function () {
     value: function _start(manager) {
       var _this5 = this;
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f") && manager.isCustomClickTrackingUsed()) {
-        ads_classPrivateFieldGet(this, _Ads_adsCustomClickContainer, "f").classList.add('op-ads__click-container--visible');
+      if (ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f") && manager.isCustomClickTrackingUsed()) {
+        ads_classPrivateFieldGet(this, _Ads_customClickContainer, "f").classList.add('op-ads__click-container--visible');
       }
 
       manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onContentPauseRequested, EVENT_OPTIONS);
@@ -11786,7 +7762,7 @@ var ads_Ads = function () {
 
       ads_classPrivateFieldSet(this, _Ads_events, [google.ima.AdEvent.Type.ALL_ADS_COMPLETED, google.ima.AdEvent.Type.CLICK, google.ima.AdEvent.Type.VIDEO_CLICKED, google.ima.AdEvent.Type.VIDEO_ICON_CLICKED, google.ima.AdEvent.Type.AD_PROGRESS, google.ima.AdEvent.Type.AD_BUFFERING, google.ima.AdEvent.Type.IMPRESSION, google.ima.AdEvent.Type.DURATION_CHANGE, google.ima.AdEvent.Type.USER_CLOSE, google.ima.AdEvent.Type.LINEAR_CHANGED, google.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED, google.ima.AdEvent.Type.AD_METADATA, google.ima.AdEvent.Type.INTERACTION, google.ima.AdEvent.Type.COMPLETE, google.ima.AdEvent.Type.FIRST_QUARTILE, google.ima.AdEvent.Type.LOADED, google.ima.AdEvent.Type.MIDPOINT, google.ima.AdEvent.Type.PAUSED, google.ima.AdEvent.Type.RESUMED, google.ima.AdEvent.Type.USER_CLOSE, google.ima.AdEvent.Type.STARTED, google.ima.AdEvent.Type.THIRD_QUARTILE, google.ima.AdEvent.Type.SKIPPED, google.ima.AdEvent.Type.VOLUME_CHANGED, google.ima.AdEvent.Type.VOLUME_MUTED, google.ima.AdEvent.Type.LOG], "f");
 
-      if (!ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+      if (!ads_classPrivateFieldGet(this, _Ads_options, "f").autoPlayAdBreaks) {
         ads_classPrivateFieldGet(this, _Ads_events, "f").push(google.ima.AdEvent.Type.AD_BREAK_READY);
       }
 
@@ -11794,8 +7770,8 @@ var ads_Ads = function () {
 
       var mouseEvents = controls ? controls.events.mouse : {};
       Object.keys(mouseEvents).forEach(function (event) {
-        if (ads_classPrivateFieldGet(_this5, _Ads_adsContainer, "f")) {
-          ads_classPrivateFieldGet(_this5, _Ads_adsContainer, "f").addEventListener(event, mouseEvents[event], EVENT_OPTIONS);
+        if (ads_classPrivateFieldGet(_this5, _Ads_container, "f")) {
+          ads_classPrivateFieldGet(_this5, _Ads_container, "f").addEventListener(event, mouseEvents[event], EVENT_OPTIONS);
         }
       });
 
@@ -11803,10 +7779,10 @@ var ads_Ads = function () {
         manager.addEventListener(event, _this5._assign, EVENT_OPTIONS);
       });
 
-      if (ads_classPrivateFieldGet(this, _Ads_autoStart, "f") === true || ads_classPrivateFieldGet(this, _Ads_autoStartMuted, "f") === true || ads_classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
+      if (ads_classPrivateFieldGet(this, _Ads_autostart, "f") === true || ads_classPrivateFieldGet(this, _Ads_autostartMuted, "f") === true || ads_classPrivateFieldGet(this, _Ads_playTriggered, "f") === true) {
         ads_classPrivateFieldSet(this, _Ads_playTriggered, false, "f");
 
-        if (!ads_classPrivateFieldGet(this, _Ads_adsDone, "f")) {
+        if (!ads_classPrivateFieldGet(this, _Ads_done, "f")) {
           this._initNotDoneAds();
 
           return;
@@ -11817,17 +7793,17 @@ var ads_Ads = function () {
         var e = addEvent('play');
 
         ads_classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(e);
-      } else if (ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").enablePreloading === true) {
+      } else if (ads_classPrivateFieldGet(this, _Ads_options, "f").enablePreloading === true) {
         manager.init(ads_classPrivateFieldGet(this, _Ads_element, "f").offsetWidth, ads_classPrivateFieldGet(this, _Ads_element, "f").offsetHeight, ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement && ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.getAttribute('data-fullscreen') === 'true' ? google.ima.ViewMode.FULLSCREEN : google.ima.ViewMode.NORMAL);
       }
     }
   }, {
     key: "_initNotDoneAds",
     value: function _initNotDoneAds() {
-      if (ads_classPrivateFieldGet(this, _Ads_adDisplayContainer, "f")) {
-        ads_classPrivateFieldSet(this, _Ads_adsDone, true, "f");
+      if (ads_classPrivateFieldGet(this, _Ads_displayContainer, "f")) {
+        ads_classPrivateFieldSet(this, _Ads_done, true, "f");
 
-        ads_classPrivateFieldGet(this, _Ads_adDisplayContainer, "f").initialize();
+        ads_classPrivateFieldGet(this, _Ads_displayContainer, "f").initialize();
 
         if (IS_IOS || IS_ANDROID) {
           ads_classPrivateFieldSet(this, _Ads_preloadContent, this._contentLoadedAction, "f");
@@ -11846,13 +7822,13 @@ var ads_Ads = function () {
   }, {
     key: "_contentEndedListener",
     value: function _contentEndedListener() {
-      ads_classPrivateFieldSet(this, _Ads_adsEnded, true, "f");
+      ads_classPrivateFieldSet(this, _Ads_ended, true, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsActive, false, "f");
+      ads_classPrivateFieldSet(this, _Ads_active, false, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
+      ads_classPrivateFieldSet(this, _Ads_started, false, "f");
 
-      ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
+      ads_classPrivateFieldGet(this, _Ads_loader, "f").contentComplete();
     }
   }, {
     key: "_onContentPauseRequested",
@@ -11861,10 +7837,10 @@ var ads_Ads = function () {
 
       ads_classPrivateFieldSet(this, _Ads_lastTimePaused, ads_classPrivateFieldGet(this, _Ads_media, "f").currentTime, "f");
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsStarted, "f")) {
+      if (ads_classPrivateFieldGet(this, _Ads_started, "f")) {
         ads_classPrivateFieldGet(this, _Ads_media, "f").pause();
       } else {
-        ads_classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
+        ads_classPrivateFieldSet(this, _Ads_started, true, "f");
       }
 
       var e = addEvent('play');
@@ -11874,46 +7850,24 @@ var ads_Ads = function () {
   }, {
     key: "_onContentResumeRequested",
     value: function _onContentResumeRequested() {
-      var _a;
+      ads_classPrivateFieldGet(this, _Ads_element, "f").addEventListener('ended', this._contentEndedListener, EVENT_OPTIONS);
 
-      if (ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").loop) {
-        if (Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f"))) {
-          if (ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") === ads_classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
-            ads_classPrivateFieldSet(this, _Ads_currentAdsIndex, 0, "f");
-          } else {
-            ads_classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
-          }
+      ads_classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._loadedMetadataHandler, EVENT_OPTIONS);
+
+      if (IS_IOS || IS_ANDROID) {
+        ads_classPrivateFieldGet(this, _Ads_media, "f").src = ads_classPrivateFieldGet(this, _Ads_mediaSources, "f");
+
+        ads_classPrivateFieldGet(this, _Ads_media, "f").load();
+
+        this._prepareMedia();
+
+        if (ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
+          ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.add('op-ads--active');
         }
-
-        this.destroy();
-
-        ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
-
-        ads_classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
-
-        ads_classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
-
-        this.load(true);
       } else {
-        ads_classPrivateFieldGet(this, _Ads_element, "f").addEventListener('ended', this._contentEndedListener, EVENT_OPTIONS);
+        var event = addEvent('loadedmetadata');
 
-        ads_classPrivateFieldGet(this, _Ads_element, "f").addEventListener('loadedmetadata', this._loadedMetadataHandler, EVENT_OPTIONS);
-
-        if (IS_IOS || IS_ANDROID) {
-          ads_classPrivateFieldGet(this, _Ads_media, "f").src = ads_classPrivateFieldGet(this, _Ads_mediaSources, "f");
-
-          ads_classPrivateFieldGet(this, _Ads_media, "f").load();
-
-          this._prepareMedia();
-
-          if (ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
-            ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.add('op-ads--active');
-          }
-        } else {
-          var event = addEvent('loadedmetadata');
-
-          ads_classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
-        }
+        ads_classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(event);
       }
     }
   }, {
@@ -11922,24 +7876,24 @@ var ads_Ads = function () {
       var _a;
 
       if (Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f"))) {
-        ads_classPrivateFieldSet(this, _Ads_currentAdsIndex, (_a = ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f"), _a++, _a), "f");
+        ads_classPrivateFieldSet(this, _Ads_currentIndex, (_a = ads_classPrivateFieldGet(this, _Ads_currentIndex, "f"), _a++, _a), "f");
 
-        if (ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f") <= ads_classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
-          if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
-            ads_classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
+        if (ads_classPrivateFieldGet(this, _Ads_currentIndex, "f") <= ads_classPrivateFieldGet(this, _Ads_ads, "f").length - 1) {
+          if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
+            ads_classPrivateFieldGet(this, _Ads_manager, "f").destroy();
           }
 
-          ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
+          ads_classPrivateFieldGet(this, _Ads_loader, "f").contentComplete();
 
           ads_classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
 
-          ads_classPrivateFieldSet(this, _Ads_adsStarted, true, "f");
+          ads_classPrivateFieldSet(this, _Ads_started, true, "f");
 
-          ads_classPrivateFieldSet(this, _Ads_adsDone, false, "f");
+          ads_classPrivateFieldSet(this, _Ads_done, false, "f");
 
-          this._requestAds();
+          this.load(true);
         } else {
-          if (!ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+          if (!ads_classPrivateFieldGet(this, _Ads_options, "f").autoPlayAdBreaks) {
             this._resetAdsAfterManualBreak();
           }
 
@@ -11947,7 +7901,7 @@ var ads_Ads = function () {
         }
       } else if (ads_classPrivateFieldGet(this, _Ads_element, "f").seekable.length) {
         if (ads_classPrivateFieldGet(this, _Ads_element, "f").seekable.end(0) > ads_classPrivateFieldGet(this, _Ads_lastTimePaused, "f")) {
-          if (!ads_classPrivateFieldGet(this, _Ads_adsOptions, "f").autoPlayAdBreaks) {
+          if (!ads_classPrivateFieldGet(this, _Ads_options, "f").autoPlayAdBreaks) {
             this._resetAdsAfterManualBreak();
           }
 
@@ -11964,13 +7918,13 @@ var ads_Ads = function () {
 
       ads_classPrivateFieldSet(this, _Ads_intervalTimer, 0, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsMuted, false, "f");
+      ads_classPrivateFieldSet(this, _Ads_muted, false, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsStarted, false, "f");
+      ads_classPrivateFieldSet(this, _Ads_started, false, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsDuration, 0, "f");
+      ads_classPrivateFieldSet(this, _Ads_duration, 0, "f");
 
-      ads_classPrivateFieldSet(this, _Ads_adsCurrentTime, 0, "f");
+      ads_classPrivateFieldSet(this, _Ads_currentTime, 0, "f");
 
       if (ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement) {
         ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.classList.remove('op-ads--active');
@@ -11989,34 +7943,36 @@ var ads_Ads = function () {
 
             ads_classPrivateFieldGet(_this6, _Ads_element, "f").dispatchEvent(e);
           }, 50);
-        } catch (err) {}
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
   }, {
     key: "_requestAds",
     value: function _requestAds() {
-      ads_classPrivateFieldSet(this, _Ads_adsRequest, new google.ima.AdsRequest(), "f");
+      ads_classPrivateFieldSet(this, _Ads_request, new google.ima.AdsRequest(), "f");
 
-      var ads = Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f")) ? ads_classPrivateFieldGet(this, _Ads_ads, "f")[ads_classPrivateFieldGet(this, _Ads_currentAdsIndex, "f")] : ads_classPrivateFieldGet(this, _Ads_ads, "f");
+      var ads = Array.isArray(ads_classPrivateFieldGet(this, _Ads_ads, "f")) ? ads_classPrivateFieldGet(this, _Ads_ads, "f")[ads_classPrivateFieldGet(this, _Ads_currentIndex, "f")] : ads_classPrivateFieldGet(this, _Ads_ads, "f");
 
       if (isXml(ads)) {
-        ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").adsResponse = ads;
+        ads_classPrivateFieldGet(this, _Ads_request, "f").adsResponse = ads;
       } else {
-        ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").adTagUrl = ads;
+        ads_classPrivateFieldGet(this, _Ads_request, "f").adTagUrl = ads;
       }
 
       var width = ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement ? ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetWidth : 0;
       var height = ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement ? ads_classPrivateFieldGet(this, _Ads_element, "f").parentElement.offsetHeight : 0;
-      ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").linearAdSlotWidth = width;
-      ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").linearAdSlotHeight = height;
-      ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").nonLinearAdSlotWidth = width;
-      ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").nonLinearAdSlotHeight = height / 3;
+      ads_classPrivateFieldGet(this, _Ads_request, "f").linearAdSlotWidth = width;
+      ads_classPrivateFieldGet(this, _Ads_request, "f").linearAdSlotHeight = height;
+      ads_classPrivateFieldGet(this, _Ads_request, "f").nonLinearAdSlotWidth = width;
+      ads_classPrivateFieldGet(this, _Ads_request, "f").nonLinearAdSlotHeight = height / 3;
 
-      ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").setAdWillAutoPlay(ads_classPrivateFieldGet(this, _Ads_autoStart, "f"));
+      ads_classPrivateFieldGet(this, _Ads_request, "f").setAdWillAutoPlay(ads_classPrivateFieldGet(this, _Ads_autostart, "f"));
 
-      ads_classPrivateFieldGet(this, _Ads_adsRequest, "f").setAdWillPlayMuted(ads_classPrivateFieldGet(this, _Ads_autoStartMuted, "f"));
+      ads_classPrivateFieldGet(this, _Ads_request, "f").setAdWillPlayMuted(ads_classPrivateFieldGet(this, _Ads_autostartMuted, "f"));
 
-      ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").requestAds(ads_classPrivateFieldGet(this, _Ads_adsRequest, "f"));
+      ads_classPrivateFieldGet(this, _Ads_loader, "f").requestAds(ads_classPrivateFieldGet(this, _Ads_request, "f"));
     }
   }, {
     key: "_contentLoadedAction",
@@ -12032,13 +7988,13 @@ var ads_Ads = function () {
   }, {
     key: "_resetAdsAfterManualBreak",
     value: function _resetAdsAfterManualBreak() {
-      if (ads_classPrivateFieldGet(this, _Ads_adsManager, "f")) {
-        ads_classPrivateFieldGet(this, _Ads_adsManager, "f").destroy();
+      if (ads_classPrivateFieldGet(this, _Ads_manager, "f")) {
+        ads_classPrivateFieldGet(this, _Ads_manager, "f").destroy();
       }
 
-      ads_classPrivateFieldGet(this, _Ads_adsLoader, "f").contentComplete();
+      ads_classPrivateFieldGet(this, _Ads_loader, "f").contentComplete();
 
-      ads_classPrivateFieldSet(this, _Ads_adsDone, false, "f");
+      ads_classPrivateFieldSet(this, _Ads_done, false, "f");
 
       ads_classPrivateFieldSet(this, _Ads_playTriggered, true, "f");
     }
@@ -12073,58 +8029,20 @@ var ads_Ads = function () {
     value: function _handleResizeAds() {
       this.resizeAds();
     }
+  }, {
+    key: "_handleSkipAds",
+    value: function _handleSkipAds() {
+      ads_classPrivateFieldGet(this, _Ads_manager, "f").skip();
+    }
   }]);
 
   return Ads;
 }();
 
-_Ads_adsEnded = new WeakMap(), _Ads_adsDone = new WeakMap(), _Ads_adsActive = new WeakMap(), _Ads_adsStarted = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_adsVolume = new WeakMap(), _Ads_adsMuted = new WeakMap(), _Ads_adsDuration = new WeakMap(), _Ads_adsCurrentTime = new WeakMap(), _Ads_adsManager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_adsLoader = new WeakMap(), _Ads_adsContainer = new WeakMap(), _Ads_adsCustomClickContainer = new WeakMap(), _Ads_adDisplayContainer = new WeakMap(), _Ads_adsRequest = new WeakMap(), _Ads_autoStart = new WeakMap(), _Ads_autoStartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_adsOptions = new WeakMap(), _Ads_currentAdsIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
-/* harmony default export */ var media_ads = (ads_Ads);
-// CONCATENATED MODULE: ./node_modules/element-closest/index.mjs
-function element_closest_polyfill(window) {
-  var ElementPrototype = window.Element.prototype;
+_Ads_ended = new WeakMap(), _Ads_done = new WeakMap(), _Ads_active = new WeakMap(), _Ads_started = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_volume = new WeakMap(), _Ads_muted = new WeakMap(), _Ads_duration = new WeakMap(), _Ads_currentTime = new WeakMap(), _Ads_manager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_loader = new WeakMap(), _Ads_container = new WeakMap(), _Ads_customClickContainer = new WeakMap(), _Ads_skipElement = new WeakMap(), _Ads_displayContainer = new WeakMap(), _Ads_request = new WeakMap(), _Ads_autostart = new WeakMap(), _Ads_autostartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_options = new WeakMap(), _Ads_currentIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap();
+/* harmony default export */ const ads = (Ads);
+;// CONCATENATED MODULE: ./src/js/player.ts
 
-  if (typeof ElementPrototype.matches !== 'function') {
-    ElementPrototype.matches = ElementPrototype.msMatchesSelector || ElementPrototype.mozMatchesSelector || ElementPrototype.webkitMatchesSelector || function matches(selector) {
-      var element = this;
-      var elements = (element.document || element.ownerDocument).querySelectorAll(selector);
-      var index = 0;
-
-      while (elements[index] && elements[index] !== element) {
-        ++index;
-      }
-
-      return Boolean(elements[index]);
-    };
-  }
-
-  if (typeof ElementPrototype.closest !== 'function') {
-    ElementPrototype.closest = function closest(selector) {
-      var element = this;
-
-      while (element && element.nodeType === 1) {
-        if (element.matches(selector)) {
-          return element;
-        }
-
-        element = element.parentNode;
-      }
-
-      return null;
-    };
-  }
-}
-
-/* harmony default export */ var element_closest = (element_closest_polyfill);
-//# sourceMappingURL=index.mjs.map
-
-// CONCATENATED MODULE: ./src/js/utils/closest.ts
-
-
-if (typeof window !== 'undefined') {
-  element_closest(window);
-}
-// CONCATENATED MODULE: ./src/js/player.ts
 
 
 
@@ -12185,23 +8103,17 @@ var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player
 
 
 
-
-
-
-
-
-
-
-
-var player_Player = function () {
+var Player = function () {
   function Player(element, options) {
     classCallCheck_default()(this, Player);
+
+    var _a;
+
+    this.proxy = null;
 
     _Player_controls.set(this, void 0);
 
     _Player_adsInstance.set(this, void 0);
-
-    this.proxy = null;
 
     _Player_uid.set(this, '');
 
@@ -12223,7 +8135,7 @@ var player_Player = function () {
 
     _Player_processedAutoplay.set(this, false);
 
-    _Player_options.set(this, {});
+    _Player_options.set(this, void 0);
 
     _Player_customControlItems.set(this, []);
 
@@ -12238,7 +8150,7 @@ var player_Player = function () {
           right: ['captions', 'settings', 'fullscreen']
         }
       },
-      defaultLevel: null,
+      defaultLevel: undefined,
       detachMenus: false,
       forceNative: true,
       height: 0,
@@ -12274,6 +8186,9 @@ var player_Player = function () {
         showLabel: true,
         showProgress: false
       },
+      media: {
+        pauseOnClick: false
+      },
       mode: 'responsive',
       onError: function onError(e) {
         return console.error(e);
@@ -12287,6 +8202,7 @@ var player_Player = function () {
       startTime: 0,
       startVolume: 1,
       step: 0,
+      useDeviceVolume: true,
       width: 0
     });
 
@@ -12305,8 +8221,8 @@ var player_Player = function () {
         player_classPrivateFieldSet(this, _Player_ads, player_classPrivateFieldGet(this, _Player_options, "f").ads.src, "f");
       }
 
-      if (player_classPrivateFieldGet(this, _Player_options, "f").startTime > 0) {
-        player_classPrivateFieldGet(this, _Player_element, "f").currentTime = player_classPrivateFieldGet(this, _Player_options, "f").startTime;
+      if ((((_a = player_classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.startTime) || 0) > 0) {
+        player_classPrivateFieldGet(this, _Player_element, "f").currentTime = player_classPrivateFieldGet(this, _Player_options, "f").startTime || 0;
       }
 
       player_classPrivateFieldSet(this, _Player_volume, player_classPrivateFieldGet(this, _Player_element, "f").volume, "f");
@@ -12320,8 +8236,8 @@ var player_Player = function () {
   createClass_default()(Player, [{
     key: "init",
     value: function init() {
-      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee() {
-        return regenerator_default.a.wrap(function _callee$(_context) {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee() {
+        return regenerator_default().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -12363,8 +8279,8 @@ var player_Player = function () {
   }, {
     key: "play",
     value: function play() {
-      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee2() {
-        return regenerator_default.a.wrap(function _callee2$(_context2) {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee2() {
+        return regenerator_default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
@@ -12417,6 +8333,8 @@ var player_Player = function () {
     value: function destroy() {
       var _this = this;
 
+      var _a;
+
       if (player_classPrivateFieldGet(this, _Player_adsInstance, "f")) {
         player_classPrivateFieldGet(this, _Player_adsInstance, "f").pause();
 
@@ -12447,11 +8365,13 @@ var player_Player = function () {
       }
 
       if (isVideo(player_classPrivateFieldGet(this, _Player_element, "f"))) {
-        removeElement(this.playBtn);
-        removeElement(this.loader);
+        this.playBtn.remove();
+        this.loader.remove();
       }
 
-      player_classPrivateFieldGet(this, _Player_element, "f").removeEventListener('playererror', player_classPrivateFieldGet(this, _Player_options, "f").onError);
+      if ((_a = player_classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.onError) {
+        player_classPrivateFieldGet(this, _Player_element, "f").removeEventListener('playererror', player_classPrivateFieldGet(this, _Player_options, "f").onError);
+      }
 
       el.controls = true;
       el.setAttribute('id', player_classPrivateFieldGet(this, _Player_uid, "f"));
@@ -12510,7 +8430,7 @@ var player_Player = function () {
   }, {
     key: "isAd",
     value: function isAd() {
-      return this.activeElement() instanceof media_ads;
+      return this.activeElement() instanceof ads;
     }
   }, {
     key: "getMedia",
@@ -12525,11 +8445,11 @@ var player_Player = function () {
   }, {
     key: "addCaptions",
     value: function addCaptions(args) {
-      if (args["default"]) {
+      if (args.default) {
         var tracks = player_classPrivateFieldGet(this, _Player_element, "f").querySelectorAll('track');
 
         for (var i = 0, total = tracks.length; i < total; i++) {
-          tracks[i]["default"] = false;
+          tracks[i].default = false;
         }
       }
 
@@ -12540,14 +8460,14 @@ var player_Player = function () {
       if (track) {
         track.src = args.src;
         track.label = args.label;
-        track["default"] = args["default"] || false;
+        track.default = args.default || false;
       } else {
         track = document.createElement('track');
         track.srclang = args.srclang;
         track.src = args.src;
         track.kind = args.kind;
         track.label = args.label;
-        track["default"] = args["default"] || false;
+        track.default = args.default || false;
         el.appendChild(track);
       }
 
@@ -12570,15 +8490,6 @@ var player_Player = function () {
     value: function removeControl(controlName) {
       var _this2 = this;
 
-      var layers = this.getOptions().controls.layers;
-      Object.keys(layers).forEach(function (layer) {
-        layers[layer].forEach(function (item, idx) {
-          if (item === controlName) {
-            layers[layer].splice(idx, 1);
-          }
-        });
-      });
-
       player_classPrivateFieldGet(this, _Player_customControlItems, "f").forEach(function (item, idx) {
         if (item.id === controlName) {
           player_classPrivateFieldGet(_this2, _Player_customControlItems, "f").splice(idx, 1);
@@ -12592,15 +8503,19 @@ var player_Player = function () {
   }, {
     key: "_prepareMedia",
     value: function _prepareMedia() {
-      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee3() {
+      var _a;
+
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee3() {
         var preload, adsOptions;
-        return regenerator_default.a.wrap(function _callee3$(_context3) {
+        return regenerator_default().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 _context3.prev = 0;
 
-                player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', player_classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
+                if ((_a = player_classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.onError) {
+                  player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', player_classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
+                }
 
                 if (player_classPrivateFieldGet(this, _Player_autoplay, "f") && isVideo(player_classPrivateFieldGet(this, _Player_element, "f"))) {
                   player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
@@ -12625,7 +8540,7 @@ var player_Player = function () {
                 if (!player_classPrivateFieldGet(this, _Player_autoplay, "f") && player_classPrivateFieldGet(this, _Player_ads, "f")) {
                   adsOptions = player_classPrivateFieldGet(this, _Player_options, "f") && player_classPrivateFieldGet(this, _Player_options, "f").ads ? player_classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
 
-                  player_classPrivateFieldSet(this, _Player_adsInstance, new media_ads(this, player_classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
+                  player_classPrivateFieldSet(this, _Player_adsInstance, new ads(this, player_classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
                 }
 
                 _context3.next = 15;
@@ -12670,9 +8585,9 @@ var player_Player = function () {
   }, {
     key: "loadAd",
     value: function loadAd(src) {
-      return player_awaiter(this, void 0, void 0, regenerator_default.a.mark(function _callee4() {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee4() {
         var adsOptions, autoplay;
-        return regenerator_default.a.wrap(function _callee4$(_context4) {
+        return regenerator_default().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -12686,7 +8601,7 @@ var player_Player = function () {
                     adsOptions = player_classPrivateFieldGet(this, _Player_options, "f") && player_classPrivateFieldGet(this, _Player_options, "f").ads ? player_classPrivateFieldGet(this, _Player_options, "f").ads : undefined;
                     autoplay = !this.activeElement().paused || player_classPrivateFieldGet(this, _Player_canAutoplay, "f");
 
-                    player_classPrivateFieldSet(this, _Player_adsInstance, new media_ads(this, src, autoplay, player_classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
+                    player_classPrivateFieldSet(this, _Player_adsInstance, new ads(this, src, autoplay, player_classPrivateFieldGet(this, _Player_canAutoplayMuted, "f"), adsOptions), "f");
                   }
                 } catch (err) {
                   console.error(err);
@@ -12717,7 +8632,7 @@ var player_Player = function () {
         media.forEach(function (m) {
           var source = document.createElement('source');
           source.src = m.src;
-          source.type = m.type || predictType(m.src, player_classPrivateFieldGet(_this4, _Player_element, "f"));
+          source.type = m.type || predictMimeType(m.src, player_classPrivateFieldGet(_this4, _Player_element, "f"));
 
           player_classPrivateFieldGet(_this4, _Player_element, "f").appendChild(source);
         });
@@ -12823,7 +8738,7 @@ var player_Player = function () {
         this.getContainer().classList.add('op-player__ios--iphone');
       }
 
-      player_classPrivateFieldSet(this, _Player_controls, new js_controls(this), "f");
+      player_classPrivateFieldSet(this, _Player_controls, new controls(this), "f");
 
       player_classPrivateFieldGet(this, _Player_controls, "f").create();
     }
@@ -12835,10 +8750,11 @@ var player_Player = function () {
 
         player_classPrivateFieldGet(this, _Player_element, "f").removeAttribute('id');
       } else {
+        var encryption = typeof crypto.getRandomBytes === 'function' ? crypto.getRandomBytes : crypto.getRandomValues;
         var uid;
 
         do {
-          uid = "op_".concat(Math.random().toString(36).substr(2, 9));
+          uid = "op_".concat(encryption(new Uint32Array(1))[0].toString(36).substr(2, 9));
         } while (Player.instances[uid] !== undefined);
 
         player_classPrivateFieldSet(this, _Player_uid, uid, "f");
@@ -12853,6 +8769,8 @@ var player_Player = function () {
     value: function _createPlayButton() {
       var _this5 = this;
 
+      var _a, _b;
+
       if (isAudio(player_classPrivateFieldGet(this, _Player_element, "f"))) {
         return;
       }
@@ -12860,8 +8778,8 @@ var player_Player = function () {
       this.playBtn = document.createElement('button');
       this.playBtn.className = 'op-player__play';
       this.playBtn.tabIndex = 0;
-      this.playBtn.title = player_classPrivateFieldGet(this, _Player_options, "f").labels.play;
-      this.playBtn.innerHTML = "<span>".concat(player_classPrivateFieldGet(this, _Player_options, "f").labels.play, "</span>");
+      this.playBtn.title = ((_a = player_classPrivateFieldGet(this, _Player_options, "f").labels) === null || _a === void 0 ? void 0 : _a.play) || '';
+      this.playBtn.innerHTML = "<span>".concat(((_b = player_classPrivateFieldGet(this, _Player_options, "f").labels) === null || _b === void 0 ? void 0 : _b.play) || '', "</span>");
       this.playBtn.setAttribute('aria-pressed', 'false');
       this.playBtn.setAttribute('aria-hidden', 'false');
       this.loader = document.createElement('span');
@@ -12942,9 +8860,11 @@ var player_Player = function () {
         };
 
         player_classPrivateFieldGet(this, _Player_events, "f").play = function () {
+          var _a;
+
           _this6.playBtn.classList.add('op-player__play--paused');
 
-          _this6.playBtn.title = player_classPrivateFieldGet(_this6, _Player_options, "f").labels.pause;
+          _this6.playBtn.title = ((_a = player_classPrivateFieldGet(_this6, _Player_options, "f").labels) === null || _a === void 0 ? void 0 : _a.pause) || '';
 
           _this6.loader.setAttribute('aria-hidden', 'true');
 
@@ -12964,11 +8884,13 @@ var player_Player = function () {
         };
 
         player_classPrivateFieldGet(this, _Player_events, "f").pause = function () {
+          var _a;
+
           var el = _this6.activeElement();
 
           _this6.playBtn.classList.remove('op-player__play--paused');
 
-          _this6.playBtn.title = player_classPrivateFieldGet(_this6, _Player_options, "f").labels.play;
+          _this6.playBtn.title = ((_a = player_classPrivateFieldGet(_this6, _Player_options, "f").labels) === null || _a === void 0 ? void 0 : _a.play) || '';
 
           if (player_classPrivateFieldGet(_this6, _Player_options, "f").showLoaderOnInit && Math.round(el.currentTime) === 0) {
             _this6.playBtn.setAttribute('aria-hidden', 'true');
@@ -12985,6 +8907,25 @@ var player_Player = function () {
           _this6.loader.setAttribute('aria-hidden', 'true');
 
           _this6.playBtn.setAttribute('aria-hidden', 'true');
+        };
+
+        var postRollCalled = false;
+
+        player_classPrivateFieldGet(this, _Player_events, "f").timeupdate = function () {
+          if (player_classPrivateFieldGet(_this6, _Player_element, "f").loop && _this6.isMedia() && player_classPrivateFieldGet(_this6, _Player_adsInstance, "f")) {
+            var el = _this6.getMedia();
+
+            var remainingTime = el.duration - el.currentTime;
+
+            if (remainingTime > 0 && remainingTime <= 0.25 && !postRollCalled) {
+              postRollCalled = true;
+              var e = addEvent('ended');
+
+              player_classPrivateFieldGet(_this6, _Player_element, "f").dispatchEvent(e);
+            } else if (remainingTime === 0) {
+              postRollCalled = false;
+            }
+          }
         };
       }
 
@@ -13008,6 +8949,8 @@ var player_Player = function () {
         }, function (muted) {
           player_classPrivateFieldSet(_this7, _Player_canAutoplayMuted, muted, "f");
         }, function () {
+          var _a, _b;
+
           if (player_classPrivateFieldGet(_this7, _Player_canAutoplayMuted, "f")) {
             _this7.activeElement().muted = true;
             _this7.activeElement().volume = 0;
@@ -13016,7 +8959,7 @@ var player_Player = function () {
             player_classPrivateFieldGet(_this7, _Player_element, "f").dispatchEvent(e);
 
             var volumeEl = document.createElement('div');
-            var action = IS_IOS || IS_ANDROID ? player_classPrivateFieldGet(_this7, _Player_options, "f").labels.tap : player_classPrivateFieldGet(_this7, _Player_options, "f").labels.click;
+            var action = IS_IOS || IS_ANDROID ? (_a = player_classPrivateFieldGet(_this7, _Player_options, "f").labels) === null || _a === void 0 ? void 0 : _a.tap : (_b = player_classPrivateFieldGet(_this7, _Player_options, "f").labels) === null || _b === void 0 ? void 0 : _b.click;
             volumeEl.className = 'op-player__unmute';
             volumeEl.innerHTML = "<span>".concat(action, "</span>");
             volumeEl.tabIndex = 0;
@@ -13027,7 +8970,7 @@ var player_Player = function () {
 
               player_classPrivateFieldGet(_this7, _Player_element, "f").dispatchEvent(event);
 
-              removeElement(volumeEl);
+              volumeEl.remove();
             }, EVENT_OPTIONS);
 
             var target = _this7.getContainer();
@@ -13041,7 +8984,7 @@ var player_Player = function () {
           if (player_classPrivateFieldGet(_this7, _Player_ads, "f")) {
             var adsOptions = player_classPrivateFieldGet(_this7, _Player_options, "f") && player_classPrivateFieldGet(_this7, _Player_options, "f").ads ? player_classPrivateFieldGet(_this7, _Player_options, "f").ads : undefined;
 
-            player_classPrivateFieldSet(_this7, _Player_adsInstance, new media_ads(_this7, player_classPrivateFieldGet(_this7, _Player_ads, "f"), player_classPrivateFieldGet(_this7, _Player_canAutoplay, "f"), player_classPrivateFieldGet(_this7, _Player_canAutoplayMuted, "f"), adsOptions), "f");
+            player_classPrivateFieldSet(_this7, _Player_adsInstance, new ads(_this7, player_classPrivateFieldGet(_this7, _Player_ads, "f"), player_classPrivateFieldGet(_this7, _Player_canAutoplay, "f"), player_classPrivateFieldGet(_this7, _Player_canAutoplayMuted, "f"), adsOptions), "f");
           } else if (player_classPrivateFieldGet(_this7, _Player_canAutoplay, "f") || player_classPrivateFieldGet(_this7, _Player_canAutoplayMuted, "f")) {
             _this7.play();
           }
@@ -13051,21 +8994,42 @@ var player_Player = function () {
   }, {
     key: "_mergeOptions",
     value: function _mergeOptions(playerOptions) {
-      var _this8 = this;
+      player_classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f")), playerOptions || {}), "f");
 
-      player_classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f")), playerOptions), "f");
+      if ((playerOptions === null || playerOptions === void 0 ? void 0 : playerOptions.controls) && Object.keys(playerOptions.controls).length) {
+        player_classPrivateFieldGet(this, _Player_options, "f").controls = Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f").controls), playerOptions.controls);
+      }
 
-      if (playerOptions) {
-        var objectElements = ['labels', 'controls'];
-        objectElements.forEach(function (item) {
-          player_classPrivateFieldGet(_this8, _Player_options, "f")[item] = playerOptions[item] && Object.keys(playerOptions[item]).length ? Object.assign(Object.assign({}, player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[item]), playerOptions[item]) : player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[item];
+      if (playerOptions === null || playerOptions === void 0 ? void 0 : playerOptions.labels) {
+        var _ref = playerOptions || {},
+            labels = _ref.labels;
+
+        var keys = labels ? Object.keys(labels) : [];
+        var sanitizedLabels = {};
+        keys.forEach(function (key) {
+          var current = labels ? labels[key] : null;
+
+          if (current && typeof_default()(current) === 'object' && key === 'lang') {
+            Object.keys(current).forEach(function (k) {
+              var lang = current ? current[k] : null;
+
+              if (lang) {
+                sanitizedLabels = Object.assign(Object.assign({}, sanitizedLabels), {
+                  lang: Object.assign(Object.assign({}, sanitizedLabels.lang), defineProperty_default()({}, k, sanitize(lang)))
+                });
+              }
+            });
+          } else if (current) {
+            sanitizedLabels = Object.assign(Object.assign({}, sanitizedLabels), defineProperty_default()({}, key, sanitize(current)));
+          }
         });
+        player_classPrivateFieldGet(this, _Player_options, "f").labels = Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f").labels), sanitizedLabels);
       }
     }
   }, {
     key: "_enableKeyBindings",
     value: function _enableKeyBindings(e) {
-      var _a;
+      var _a, _b;
 
       var key = e.which || e.keyCode || 0;
       var el = this.activeElement();
@@ -13126,7 +9090,7 @@ var player_Player = function () {
               newStep = 10;
             }
 
-            var step = el.duration !== Infinity ? newStep : this.getOptions().progress.duration;
+            var step = el.duration !== Infinity ? newStep : ((_b = this.getOptions().progress) === null || _b === void 0 ? void 0 : _b.duration) || 0;
             el.currentTime += key === 37 || key === 74 ? step * -1 : step;
 
             if (el.currentTime < 0) {
@@ -13241,20 +9205,30 @@ var player_Player = function () {
 }();
 
 _Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customControlItems = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
-player_Player.instances = {};
-player_Player.customMedia = {
+Player.instances = {};
+Player.customMedia = {
   media: {},
   optionsKey: {},
   rules: []
 };
-/* harmony default export */ var js_player = __webpack_exports__["default"] = (player_Player);
+/* harmony default export */ const player = (Player);
 
 if (typeof window !== 'undefined') {
-  window.OpenPlayer = player_Player;
-  window.OpenPlayerJS = player_Player;
-  player_Player.init();
+  window.OpenPlayer = Player;
+  window.OpenPlayerJS = Player;
+  Player.init();
 }
+})();
 
-/***/ })
-/******/ ])["default"];
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+// extracted by mini-css-extract-plugin
+
+})();
+
+__webpack_exports__ = __webpack_exports__["default"];
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
 });

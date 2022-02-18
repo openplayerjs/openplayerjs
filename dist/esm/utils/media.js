@@ -19,7 +19,7 @@ export function isDashSource(media) {
 export function isFlvSource(media) {
     return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].indexOf(media.type) > -1;
 }
-export function predictType(url, element) {
+export function predictMimeType(url, element) {
     const extension = getExtension(url);
     if (!extension) {
         return isAudio(element) ? 'audio/mp3' : 'video/mp4';
@@ -57,20 +57,25 @@ export function predictType(url, element) {
 export function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
     const playPromise = media.play();
     if (playPromise !== undefined) {
-        playPromise.then(() => {
+        playPromise
+            .then(() => {
             media.pause();
             autoplay(true);
             muted(false);
             return callback();
-        }).catch(() => {
+        })
+            .catch(() => {
             media.volume = 0;
             media.muted = true;
-            media.play().then(() => {
+            media
+                .play()
+                .then(() => {
                 media.pause();
                 autoplay(true);
                 muted(true);
                 return callback();
-            }).catch(() => {
+            })
+                .catch(() => {
                 media.volume = defaultVol;
                 media.muted = false;
                 autoplay(false);

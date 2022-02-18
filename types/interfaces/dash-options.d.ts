@@ -13,5 +13,5 @@ export default interface DashOptions {
     /**
      * Digital rights management object to allow play restricted media.
      */
-    readonly drm?: object;
+    readonly drm?: Record<string, unknown>;
 }

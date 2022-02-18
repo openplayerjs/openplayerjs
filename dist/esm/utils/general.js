@@ -9,91 +9,23 @@ export function isVideo(element) {
 export function isAudio(element) {
     return element.tagName.toLowerCase() === 'audio';
 }
-export function removeElement(node) {
-    if (node) {
-        const parentNode = node.parentNode;
-        if (parentNode) {
-            parentNode.removeChild(node);
-        }
-    }
-}
 export function loadScript(url) {
     return new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.src = url;
         script.async = true;
         script.onload = () => {
-            removeElement(script);
+            script.remove();
             resolve();
         };
         script.onerror = () => {
-            removeElement(script);
-            reject({
-                src: url,
-            });
+            script.remove();
+            reject(new Error(`${url} could not be loaded`));
         };
         if (document.head) {
             document.head.appendChild(script);
         }
     });
-}
-export function request(url, dataType, success, error) {
-    const xhr = window.XMLHttpRequest ? new XMLHttpRequest()
-        : new ActiveXObject('Microsoft.XMLHTTP');
-    let type;
-    switch (dataType) {
-        case 'text':
-            type = 'text/plain';
-            break;
-        case 'json':
-            type = 'application/json, text/javascript';
-            break;
-        case 'html':
-            type = 'text/html';
-            break;
-        case 'xml':
-            type = 'application/xml, text/xml';
-            break;
-        default:
-            type = 'application/x-www-form-urlencoded; charset=UTF-8';
-            break;
-    }
-    let completed = false;
-    const accept = type !== 'application/x-www-form-urlencoded' ? `${type}, */*; q=0.01` : '*/'.concat('*');
-    if (xhr) {
-        xhr.open('GET', url, true);
-        xhr.setRequestHeader('Accept', accept);
-        xhr.onreadystatechange = () => {
-            if (completed) {
-                return;
-            }
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    completed = true;
-                    let data;
-                    switch (dataType) {
-                        case 'json':
-                            data = JSON.parse(xhr.responseText);
-                            break;
-                        case 'xml':
-                            data = xhr.responseXML;
-                            break;
-                        default:
-                            data = xhr.responseText;
-                            break;
-                    }
-                    success(data);
-                }
-                else if (typeof error === 'function') {
-                    error(xhr.status);
-                }
-            }
-        };
-        xhr.send();
-    }
-}
-export function hasClass(target, className) {
-    return !!(target.classList.contains(className));
 }
 export function offset(el) {
     const rect = el.getBoundingClientRect();
@@ -102,18 +34,41 @@ export function offset(el) {
         top: rect.top + (window.pageYOffset || document.documentElement.scrollTop),
     };
 }
+export function sanitize(html, plainText = true) {
+    const parser = new DOMParser();
+    const content = parser.parseFromString(html, 'text/html');
+    const formattedContent = content.body || document.createElement('body');
+    const scripts = formattedContent.querySelectorAll('script');
+    for (let i = 0, total = scripts.length; i < total; i++) {
+        scripts[i].remove();
+    }
+    function clean(element) {
+        const nodes = element.children;
+        for (let i = 0, total = nodes.length; i < total; i++) {
+            const node = nodes[i];
+            const { attributes } = node;
+            for (let j = 0, t = attributes.length; j < t; j++) {
+                const { name, value } = attributes[j];
+                const val = value.replace(/\s+/g, '').toLowerCase();
+                if (['src', 'href', 'xlink:href'].includes(name)) {
+                    if (val.includes('javascript:') || val.includes('data:')) {
+                        node.removeAttribute(name);
+                    }
+                }
+                if (name.startsWith('on')) {
+                    node.removeAttribute(name);
+                }
+            }
+            clean(node);
+        }
+    }
+    clean(formattedContent);
+    return plainText ? (formattedContent.textContent || '').replace(/\s{2,}/g, '') : formattedContent.innerHTML;
+}
 export function isXml(input) {
     let parsedXml;
-    if (typeof window.DOMParser !== 'undefined') {
-        parsedXml = (text) => new window.DOMParser().parseFromString(text, 'text/xml');
-    }
-    else if (typeof window.ActiveXObject !== 'undefined' && new window.ActiveXObject('Microsoft.XMLDOM')) {
-        parsedXml = (text) => {
-            const xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-            xmlDoc.async = false;
-            xmlDoc.loadXML(text);
-            return xmlDoc;
-        };
+    if (typeof DOMParser !== 'undefined') {
+        parsedXml = (text) => new DOMParser().parseFromString(text, 'text/xml');
     }
     else {
         return false;
@@ -123,12 +78,29 @@ export function isXml(input) {
         if (response.getElementsByTagName('parsererror').length > 0) {
             return false;
         }
-        if (response.parseError && response.parseError.errorCode !== 0) {
-            return false;
-        }
     }
     catch (e) {
         return false;
     }
     return true;
+}
+export function isJson(item) {
+    item = typeof item !== 'string' ? JSON.stringify(item) : item;
+    try {
+        item = JSON.parse(item);
+    }
+    catch (e) {
+        return false;
+    }
+    if (typeof item === 'object' && item !== null) {
+        return true;
+    }
+    return false;
+}
+export function addEvent(event, details) {
+    let detail = {};
+    if (details && details.detail) {
+        detail = { detail: details.detail };
+    }
+    return new CustomEvent(event, detail);
 }

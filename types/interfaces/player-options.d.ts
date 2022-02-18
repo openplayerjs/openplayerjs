@@ -1,4 +1,4 @@
-import { default as AdsOptions } from './ads/options';
+import AdsOptions from './ads-options';
 import DashOptions from './dash-options';
 /**
  * Player options
@@ -9,7 +9,7 @@ import DashOptions from './dash-options';
  */
 export default interface PlayerOptions {
     readonly dash?: DashOptions;
-    readonly hls?: object;
+    readonly hls?: any;
     readonly ads?: AdsOptions;
     [key: string]: any;
 }

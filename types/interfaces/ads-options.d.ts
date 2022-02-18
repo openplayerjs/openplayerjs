@@ -5,7 +5,7 @@
  * @interface Options
  * @export
  */
-export default interface Options {
+export default interface AdsOptions {
     /**
      * Flag to interrupt automatic ad breaks and give end user control over it.
      */
@@ -38,6 +38,5 @@ export default interface Options {
      * Ad or collection of Ads to be played.
      */
     readonly src: string | string[];
-
     [key: string]: any;
 }

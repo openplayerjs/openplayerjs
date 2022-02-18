@@ -1,91 +1,48 @@
-import EventsList from '../interfaces/events-list';
-import Level from '../interfaces/level';
-import Source from '../interfaces/source';
+import { EventsList, Level, Source } from '../interfaces';
 import { HAS_MSE } from '../utils/constants';
-import { addEvent } from '../utils/events';
-import { loadScript } from '../utils/general';
+import { addEvent, loadScript } from '../utils/general';
 import { isFlvSource } from '../utils/media';
 import Native from './native';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const flvjs: any;
 
-/**
- * FLV Media.
- *
- * @description Class that handles FLV and RTMP files using flv.js within the player
- * @see https://github.com/bilibili/flv.js
- * @class FlvMedia
- */
 class FlvMedia extends Native {
-    /**
-     * Instance of flv.js player.
-     *
-     * @type flvjs
-     * @memberof FlvMedia
-     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #player: any;
 
-    /**
-     * Hls events that will be triggered in Player.
-     *
-     * @see https://github.com/video-dev/hls.js/blob/master/src/events.js
-     * @type EventsList
-     * @memberof HlsMedia
-     */
+    // @see https://github.com/video-dev/hls.js/blob/master/src/events.js
     #events: EventsList = {};
 
-    /**
-     * Flv options to be passed to the flvplayer instance.
-     *
-     * @see https://github.com/bilibili/flv.js/blob/master/docs/api.md
-     * @private
-     * @type object
-     * @memberof FlvMedia
-     */
-    #options?: {
-        [key: string]: unknown;
-    };
+    // @see https://github.com/bilibili/flv.js/blob/master/docs/api.md
+    #options?: unknown = {};
 
-    /**
-     * Creates an instance of FlvMedia.
-     *
-     * @param {HTMLMediaElement} element
-     * @param {Source} mediaSource
-     * @memberof FlvMedia
-     */
-    constructor(element: HTMLMediaElement, mediaSource: Source, options?: Record<string, unknown>) {
+    constructor(element: HTMLMediaElement, mediaSource: Source, options?: unknown) {
         super(element, mediaSource);
         this.#options = options;
         this.element = element;
         this.media = mediaSource;
-        this.promise = (typeof flvjs === 'undefined')
-            // Ever-green script
-            ? loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js')
-            : new Promise(resolve => {
-                resolve({});
-            });
 
         this._create = this._create.bind(this);
+        this._assign = this._assign.bind(this);
+
+        this.promise =
+            typeof flvjs === 'undefined'
+                ? // Ever-green script
+                  loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js')
+                : new Promise((resolve) => {
+                      resolve({});
+                  });
+
         this.promise.then(this._create);
         return this;
     }
 
-    /**
-     * Provide support via flv.js for modern browsers only
-     *
-     * @inheritDoc
-     * @memberof FlvMedia
-     */
-    public canPlayType(mimeType: string): boolean {
+    canPlayType(mimeType: string): boolean {
         return HAS_MSE && (mimeType === 'video/x-flv' || mimeType === 'video/flv');
     }
 
-    /**
-     *
-     * @inheritDoc
-     * @memberof FlvMedia
-     */
-    public load(): void {
+    load(): void {
         this.#player.unload();
         this.#player.detachMediaElement();
         this.#player.attachMediaElement(this.element);
@@ -96,29 +53,20 @@ class FlvMedia extends Native {
 
         if (!this.#events) {
             this.#events = flvjs.Events;
-            Object.keys(this.#events).forEach(event => {
-                this.#player.on(this.#events[event], (...args: Array<Record<string, unknown>>) => this._assign(this.#events[event], args));
+            Object.keys(this.#events).forEach((event) => {
+                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
             });
         }
     }
 
-    /**
-     *
-     * @inheritDoc
-     * @memberof FlvMedia
-     */
-    public destroy(): void {
-        this._revoke();
+    destroy(): void {
+        this.#player.destroy();
+        this.#player = null;
     }
 
-    /**
-     *
-     * @inheritDoc
-     * @memberof FlvMedia
-     */
     set src(media: Source) {
         if (isFlvSource(media)) {
-            this._revoke();
+            this.destroy();
             this._create();
         }
     }
@@ -126,7 +74,7 @@ class FlvMedia extends Native {
     get levels(): Level[] {
         const levels: Level[] = [];
         if (this.#player && this.#player.levels && this.#player.levels.length) {
-            Object.keys(this.#player.levels).forEach(item => {
+            Object.keys(this.#player.levels).forEach((item) => {
                 const { height, name } = this.#player.levels[item];
                 const level = {
                     height,
@@ -147,45 +95,27 @@ class FlvMedia extends Native {
         return this.#player ? this.#player.currentLevel : -1;
     }
 
-    /**
-     * Setup Flv player with options and config.
-     *
-     * Some of the options/events will be overridden to improve performance and user's experience.
-     *
-     * @private
-     * @memberof FlvMedia
-     */
-    private _create() {
-        const configs = this.#options?.configs;
-        delete this.#options?.configs;
+    private _create(): void {
+        const { configs, ...rest } = (this.#options as Record<string, unknown>) || {};
 
-        flvjs.LoggingControl.enableDebug = this.#options?.debug || false;
-        flvjs.LoggingControl.enableVerbose = this.#options?.debug || false;
-        const options = { ...this.#options || {}, type: 'flv', url: this.media.src };
-        this.#player = flvjs.createPlayer(options, configs);
+        flvjs.LoggingControl.enableDebug = rest?.debug || false;
+        flvjs.LoggingControl.enableVerbose = rest?.debug || false;
+        const options = { ...rest, type: 'flv', url: this.media.src };
+        this.#player = flvjs.createPlayer(options, configs || {});
         this.instance = this.#player;
 
         if (!this.#events) {
             this.#events = flvjs.Events;
-            Object.keys(this.#events).forEach(event => {
-                this.#player.on(this.#events[event], (...args: Array<Record<string, unknown>>) => this._assign(this.#events[event], args));
+            Object.keys(this.#events).forEach((event) => {
+                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
             });
         }
     }
 
-    /**
-     * Custom FLV events
-     *
-     * These events can be attached to the original node using addEventListener and the name of the event,
-     * using or not flvjs.Events object
-     * @see https://github.com/bilibili/flv.js/blob/master/docs/api.md#flvjsevents
-     * @see https://github.com/bilibili/flv.js/blob/master/docs/api.md#flvjserrortypes
-     * @see https://github.com/bilibili/flv.js/blob/master/docs/api.md#flvjserrordetails
-     * @param {string} event The name of the FLV event
-     * @param {any} data The data passed to the event, could be an object or an array
-     * @memberof FlvMedia
-     */
-    private _assign(event: string, data: Array<Record<string, unknown>>): void {
+    // @see https://github.com/bilibili/flv.js/blob/master/docs/api.md#flvjsevents
+    // @see https://github.com/bilibili/flv.js/blob/master/docs/api.md#flvjserrortypes
+    // @see https://github.com/bilibili/flv.js/blob/master/docs/api.md#flvjserrordetails
+    private _assign(event: string, data: Record<string, unknown>[]): void {
         if (event === 'error') {
             const errorDetails = {
                 detail: {
@@ -197,19 +127,9 @@ class FlvMedia extends Native {
             const errorEvent = addEvent('playererror', errorDetails);
             this.element.dispatchEvent(errorEvent);
         } else {
-            const e = addEvent(event, { detail: { data }});
+            const e = addEvent(event, { detail: { data } });
             this.element.dispatchEvent(e);
         }
-    }
-
-    /**
-     * Destroy flvjs player instance.
-     *
-     * @memberof FlvMedia
-     */
-    private _revoke(): void {
-        this.#player.destroy();
-        this.#player = null;
     }
 }
 
