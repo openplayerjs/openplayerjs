@@ -81,6 +81,8 @@ class Ads {
 
     #mediaStarted = false;
 
+    #adEvent: any = null;
+
     constructor(
         player: Player,
         ads: string | string[],
@@ -385,6 +387,7 @@ class Ads {
         this.#playTriggered = false;
         this.#duration = 0;
         this.#currentTime = 0;
+        this.#adEvent = null;
     }
 
     resizeAds(width?: number, height?: number): void {
@@ -505,6 +508,9 @@ class Ads {
 
     private _assign(event: any): void {
         const ad = event.getAd();
+        if (ad) {
+            this.#adEvent = ad;
+        }
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 if (!ad.isLinear()) {
@@ -596,6 +602,7 @@ class Ads {
                     this.#intervalTimer = 0;
                     this.#muted = false;
                     this.#started = false;
+                    this.#adEvent = null;
                     if (this.#element.parentElement) {
                         this.#element.parentElement.classList.remove('op-ads--active');
                     }
@@ -617,7 +624,7 @@ class Ads {
                 break;
             case google.ima.AdEvent.Type.AD_PROGRESS:
                 const progressData = event.getAdData();
-                const offset = ad ? ad.getSkipTimeOffset() : -1;
+                const offset = this.#adEvent ? this.#adEvent.getSkipTimeOffset() : -1;
                 if (this.#skipElement) {
                     if (offset !== -1) {
                         const canSkip = this.#manager.getAdSkippableState();
@@ -700,6 +707,7 @@ class Ads {
             } else {
                 console.warn(`Ad warning: ${error.toString()}`);
             }
+            this.#adEvent = null;
             if (this.#autostart === true || this.#autostartMuted === true || this.#started === true) {
                 this.#active = false;
                 // Sometimes, due to pre-fetch issues, Ads could report an error, but the SDK is able to
