@@ -116,6 +116,6 @@
   },
   "dependencies": {
     "auto-changelog": "^1.16.4",
-    "core-js": "^3.21.1"
+    "core-js": "^3.22.0"
   }
 }
