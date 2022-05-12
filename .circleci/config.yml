@@ -8,7 +8,7 @@ orbs:
 jobs:
     test_player:
         docker:
-            - image: cimg/node:13.12-browsers
+            - image: cimg/node:18.1.0-browsers
         steps:
             - checkout
             - node/install-packages:
