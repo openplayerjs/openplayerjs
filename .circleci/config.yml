@@ -20,7 +20,7 @@ jobs:
                   command: npm test
             - run:
                   name: Send results to Coverage
-                  command: echo 'done'
+                  command: npm run coveralls
 
 workflows:
     end-to-end-tests:
