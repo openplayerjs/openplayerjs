@@ -12,7 +12,7 @@ jobs:
         steps:
             - checkout
             - node/install-packages:
-              pkg-manager: npm
+                  pkg-manager: npm
             - browser-tools/install-chrome
             - browser-tools/install-chromedriver
             - run:
