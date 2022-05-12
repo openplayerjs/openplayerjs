@@ -11,6 +11,7 @@ jobs:
             - image: cimg/node:12.22-browsers
         steps:
             - checkout
+            - node/install-npm
             - browser-tools/install-chrome
             - node/install-packages
             - run:
