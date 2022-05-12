@@ -48,7 +48,8 @@
     "release": "npm run build && release-it",
     "test": "npm run test:sources && tsd",
     "test:sources": "karma start --single-run --browsers ChromeHeadless --log-level info karma.conf.js",
-    "test:dev": "karma start --watch --browsers Chrome karma.conf.js"
+    "test:dev": "karma start --watch --browsers Chrome karma.conf.js",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "devDependencies": {
