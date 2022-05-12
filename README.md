@@ -44,7 +44,7 @@ So, please consider this before upgrading to any of the 3.x.x version going forw
 |--|--|--|
 |[![MedSims](https://img.medscapestatic.com/pi/global/icons/icon-medsims-logo@2x.png)](https://www.medscape.org/simulation) | [![Arrow Classic Rock](https://player.arrow.nl/tmp/images/logo.1507670326.jpg)](https://player.arrow.nl/ad.html) | [![Uttlesford District Council](https://uttlesford.moderngov.co.uk/SiteSpecific/res/img/uttlesfordlogo.png)](https://uttlesford.moderngov.co.uk/ieListDocuments.aspx?CId=159&MId=5501)|
 |[![LectureTube](https://live.video.tuwien.ac.at/room/assets/lecturetube_landscape.svg)](<https://live.video.tuwien.ac.at/room/heart0/player.html>)| [Servicio Online](https://40152354.servicio-online.net//INDEX.html)|[![HitRadio Center](https://user-images.githubusercontent.com/910829/155380459-76856a41-5a19-4831-8ef8-6d0ae8d471f0.svg)](https://radiocenter.si)|
-|[![Rock Radio](https://user-images.githubusercontent.com/910829/155380461-9c74ff57-50a2-419c-b85a-dad8810b42c6.svg)](https://rockradio.si)| |
+|[![Rock Radio](https://user-images.githubusercontent.com/910829/155380461-9c74ff57-50a2-419c-b85a-dad8810b42c6.svg)](https://rockradio.si)| [![Geração Rádios](https://user-images.githubusercontent.com/910829/168053773-8871dcf9-1f3a-4487-9f6d-95d4d461d945.png)](https://geracaoradios.com) |
 
 ## Migrating from older version to new ones
 
