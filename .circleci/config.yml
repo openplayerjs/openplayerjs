@@ -1,25 +1,26 @@
 version: 2.1
 
 orbs:
-    node: circleci/node@4.3.0
-    browser-tools: circleci/browser-tools@1.1.3
+    node: circleci/node@4.7.0
+    browser-tools: circleci/browser-tools@1.3.0
     coveralls: coveralls/coveralls@1.0.6
 
 jobs:
-    chrome:
+    test_player:
         docker:
-            - image: cimg/node:12.22-browsers
+            - image: cimg/node:13.12-browsers
         steps:
             - checkout
-            - node/install-npm
+            - node/install-packages:
+              pkg-manager: npm
             - browser-tools/install-chrome
-            - node/install-packages
+            - browser-tools/install-chromedriver
             - run:
-                  name: Run OpenPlayerJS tests on headless Chrome
+                  name: Headless Chrome tests
                   command: npm test
             - coveralls/upload
 
 workflows:
     end-to-end-tests:
         jobs:
-            - chrome
+            - test_player
