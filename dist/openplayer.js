@@ -8377,8 +8377,13 @@ var Player = function () {
       }
 
       if (isVideo(player_classPrivateFieldGet(this, _Player_element, "f"))) {
-        this.playBtn.remove();
-        this.loader.remove();
+        if (this.playBtn) {
+          this.playBtn.remove();
+        }
+
+        if (this.loader) {
+          this.loader.remove();
+        }
       }
 
       if ((_a = player_classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.onError) {

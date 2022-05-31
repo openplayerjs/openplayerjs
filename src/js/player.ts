@@ -223,8 +223,12 @@ class Player {
         }
 
         if (isVideo(this.#element)) {
-            this.playBtn.remove();
-            this.loader.remove();
+            if (this.playBtn) {
+                this.playBtn.remove();
+            }
+            if (this.loader) {
+                this.loader.remove();
+            }
         }
 
         if (this.#options?.onError) {
