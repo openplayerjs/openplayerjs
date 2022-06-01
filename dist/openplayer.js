@@ -3175,7 +3175,8 @@ var Progress = function () {
       var _a;
 
       var _classPrivateFieldGe = progress_classPrivateFieldGet(this, _Progress_player, "f").getOptions(),
-          labels = _classPrivateFieldGe.labels;
+          labels = _classPrivateFieldGe.labels,
+          progress = _classPrivateFieldGe.progress;
 
       progress_classPrivateFieldSet(this, _Progress_progress, document.createElement('div'), "f");
 
@@ -3404,15 +3405,17 @@ var Progress = function () {
       };
 
       var updateSlider = function updateSlider(e) {
-        if (progress_classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('op-progress--pressed')) {
+        var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
+
+        var target = e.target;
+        var value = parseFloat(target.value);
+
+        if (progress_classPrivateFieldGet(_this, _Progress_slider, "f").classList.contains('op-progress--pressed') || value < el.currentTime && !(progress === null || progress === void 0 ? void 0 : progress.allowRewind) || value > el.currentTime && !(progress === null || progress === void 0 ? void 0 : progress.allowSkip)) {
+          progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = el.currentTime.toString();
           return;
         }
 
-        var target = e.target;
-
         progress_classPrivateFieldGet(_this, _Progress_slider, "f").classList.add('.op-progress--pressed');
-
-        var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
 
         var min = parseFloat(target.min);
         var max = parseFloat(target.max);
@@ -3434,12 +3437,16 @@ var Progress = function () {
 
         var key = e.which || e.keyCode || 0;
 
-        if ((key === 1 || key === 0) && progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia()) {
-          if (!el.paused) {
-            el.pause();
+        var target = progress_classPrivateFieldGet(_this, _Progress_slider, "f");
 
-            progress_classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
-          }
+        var value = Math.round(Number(target.value));
+        var current = Math.round(el.currentTime);
+        var isProgressManipulationAllowed = value < current && (progress === null || progress === void 0 ? void 0 : progress.allowRewind) || value >= current && (progress === null || progress === void 0 ? void 0 : progress.allowSkip);
+
+        if (isProgressManipulationAllowed && (key === 1 || key === 0) && progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia() && !el.paused) {
+          el.pause();
+
+          progress_classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
         }
       };
 
@@ -3468,13 +3475,16 @@ var Progress = function () {
           var percentage = pos / progress_classPrivateFieldGet(_this, _Progress_progress, "f").offsetWidth;
 
           var time = percentage * el.duration;
-          progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = time.toString();
-          updateSlider(e);
 
-          if (!el.paused) {
-            el.pause();
+          if (time < el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowRewind) || time > el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowSkip)) {
+            progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = time.toString();
+            updateSlider(e);
 
-            progress_classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
+            if (!el.paused) {
+              el.pause();
+
+              progress_classPrivateFieldSet(_this, _Progress_forcePause, true, "f");
+            }
           }
         }
       };
@@ -8207,6 +8217,8 @@ var Player = function () {
       },
       pauseOthers: true,
       progress: {
+        allowRewind: true,
+        allowSkip: true,
         duration: 0,
         showCurrentTimeOnly: false
       },
@@ -9011,20 +9023,28 @@ var Player = function () {
   }, {
     key: "_mergeOptions",
     value: function _mergeOptions(playerOptions) {
-      player_classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f")), playerOptions || {}), "f");
+      var _this8 = this;
 
-      if ((playerOptions === null || playerOptions === void 0 ? void 0 : playerOptions.controls) && Object.keys(playerOptions.controls).length) {
-        player_classPrivateFieldGet(this, _Player_options, "f").controls = Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f").controls), playerOptions.controls);
-      }
+      var opts = Object.assign({}, playerOptions || {});
 
-      if (playerOptions === null || playerOptions === void 0 ? void 0 : playerOptions.labels) {
-        var _ref = playerOptions || {},
-            labels = _ref.labels;
+      player_classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f")), opts), "f");
 
-        var keys = labels ? Object.keys(labels) : [];
+      var complexOptions = Object.keys(player_classPrivateFieldGet(this, _Player_defaultOptions, "f")).filter(function (key) {
+        return key !== 'labels' && typeof_default()(player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[key]) === 'object';
+      });
+      complexOptions.forEach(function (key) {
+        var currOption = opts[key] || {};
+
+        if (currOption && Object.keys(currOption).length) {
+          player_classPrivateFieldGet(_this8, _Player_options, "f")[key] = Object.assign(Object.assign({}, player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[key]), currOption);
+        }
+      });
+
+      if (opts.labels) {
+        var keys = opts.labels ? Object.keys(opts.labels) : [];
         var sanitizedLabels = {};
         keys.forEach(function (key) {
-          var current = labels ? labels[key] : null;
+          var current = opts.labels ? opts.labels[key] : null;
 
           if (current && typeof_default()(current) === 'object' && key === 'lang') {
             Object.keys(current).forEach(function (k) {

@@ -123,6 +123,8 @@ class Player {
         onError: (e: unknown) => console.error(e),
         pauseOthers: true,
         progress: {
+            allowRewind: true,
+            allowSkip: true,
             duration: 0,
             showCurrentTimeOnly: false,
         },
@@ -751,17 +753,21 @@ class Player {
     }
 
     private _mergeOptions(playerOptions?: PlayerOptions): void {
-        this.#options = { ...this.#defaultOptions, ...(playerOptions || {}) };
-        if (playerOptions?.controls && Object.keys(playerOptions.controls).length) {
-            this.#options.controls = { ...this.#defaultOptions.controls, ...playerOptions.controls };
-        }
-        if (playerOptions?.labels) {
-            const { labels } = playerOptions || {};
-            const keys = labels ? Object.keys(labels) : [];
+        const opts = {...(playerOptions || {})};
+        this.#options = { ...this.#defaultOptions, ...opts };
+        const complexOptions = Object.keys(this.#defaultOptions).filter(key => key !== 'labels' && typeof this.#defaultOptions[key] === 'object')
+        complexOptions.forEach(key => {
+            const currOption = (opts[key] as Record<string, unknown>) || {};
+            if (currOption && Object.keys(currOption).length) {
+                this.#options[key] = { ...this.#defaultOptions[key] as Record<string, unknown>, ...currOption };
+            }
+        });
+        if (opts.labels) {
+            const keys = opts.labels ? Object.keys(opts.labels) : [];
             let sanitizedLabels: PlayerLabels = {};
 
             keys.forEach((key) => {
-                const current = labels ? labels[key as keyof PlayerLabels] : null;
+                const current = opts.labels ? opts.labels[key as keyof PlayerLabels] : null;
                 if (current && typeof current === 'object' && key === 'lang') {
                     Object.keys(current).forEach((k) => {
                         const lang = current ? (current as Languages)[k] : null;

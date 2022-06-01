@@ -247,6 +247,8 @@ export interface PlayerOptions {
     onError?: (e: unknown) => void;
     pauseOthers?: boolean;
     progress?: {
+        allowRewind?: boolean;
+        allowSkip?: boolean;
         duration?: number;
         showCurrentTimeOnly?: boolean;
     };

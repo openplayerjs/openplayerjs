@@ -39,7 +39,7 @@ class Progress {
     }
     create() {
         var _a;
-        const { labels } = __classPrivateFieldGet(this, _Progress_player, "f").getOptions();
+        const { labels, progress } = __classPrivateFieldGet(this, _Progress_player, "f").getOptions();
         __classPrivateFieldSet(this, _Progress_progress, document.createElement('div'), "f");
         __classPrivateFieldGet(this, _Progress_progress, "f").className = `op-controls__progress op-control__${__classPrivateFieldGet(this, _Progress_controlPosition, "f")}`;
         __classPrivateFieldGet(this, _Progress_progress, "f").tabIndex = 0;
@@ -217,12 +217,16 @@ class Progress {
             __classPrivateFieldGet(this, _Progress_played, "f").value = 0;
         };
         const updateSlider = (e) => {
-            if (__classPrivateFieldGet(this, _Progress_slider, "f").classList.contains('op-progress--pressed')) {
+            const el = __classPrivateFieldGet(this, _Progress_player, "f").activeElement();
+            const target = e.target;
+            const value = parseFloat(target.value);
+            if (__classPrivateFieldGet(this, _Progress_slider, "f").classList.contains('op-progress--pressed') ||
+                (value < el.currentTime && !(progress === null || progress === void 0 ? void 0 : progress.allowRewind)) ||
+                (value > el.currentTime && !(progress === null || progress === void 0 ? void 0 : progress.allowSkip))) {
+                __classPrivateFieldGet(this, _Progress_slider, "f").value = el.currentTime.toString();
                 return;
             }
-            const target = e.target;
             __classPrivateFieldGet(this, _Progress_slider, "f").classList.add('.op-progress--pressed');
-            const el = __classPrivateFieldGet(this, _Progress_player, "f").activeElement();
             const min = parseFloat(target.min);
             const max = parseFloat(target.max);
             const val = parseFloat(target.value);
@@ -242,11 +246,13 @@ class Progress {
         const forcePause = (e) => {
             const el = __classPrivateFieldGet(this, _Progress_player, "f").activeElement();
             const key = e.which || e.keyCode || 0;
-            if ((key === 1 || key === 0) && __classPrivateFieldGet(this, _Progress_player, "f").isMedia()) {
-                if (!el.paused) {
-                    el.pause();
-                    __classPrivateFieldSet(this, _Progress_forcePause, true, "f");
-                }
+            const target = __classPrivateFieldGet(this, _Progress_slider, "f");
+            const value = Math.round(Number(target.value));
+            const current = Math.round(el.currentTime);
+            const isProgressManipulationAllowed = (value < current && (progress === null || progress === void 0 ? void 0 : progress.allowRewind)) || (value >= current && (progress === null || progress === void 0 ? void 0 : progress.allowSkip));
+            if (isProgressManipulationAllowed && (key === 1 || key === 0) && __classPrivateFieldGet(this, _Progress_player, "f").isMedia() && !el.paused) {
+                el.pause();
+                __classPrivateFieldSet(this, _Progress_forcePause, true, "f");
             }
         };
         const releasePause = () => {
@@ -267,11 +273,13 @@ class Progress {
                 const pos = x - offset(__classPrivateFieldGet(this, _Progress_progress, "f")).left;
                 const percentage = pos / __classPrivateFieldGet(this, _Progress_progress, "f").offsetWidth;
                 const time = percentage * el.duration;
-                __classPrivateFieldGet(this, _Progress_slider, "f").value = time.toString();
-                updateSlider(e);
-                if (!el.paused) {
-                    el.pause();
-                    __classPrivateFieldSet(this, _Progress_forcePause, true, "f");
+                if ((time < el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowRewind)) || (time > el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowSkip))) {
+                    __classPrivateFieldGet(this, _Progress_slider, "f").value = time.toString();
+                    updateSlider(e);
+                    if (!el.paused) {
+                        el.pause();
+                        __classPrivateFieldSet(this, _Progress_forcePause, true, "f");
+                    }
                 }
             }
         };

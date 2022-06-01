@@ -97,6 +97,8 @@ class Player {
             onError: (e) => console.error(e),
             pauseOthers: true,
             progress: {
+                allowRewind: true,
+                allowSkip: true,
                 duration: 0,
                 showCurrentTimeOnly: false,
             },
@@ -205,8 +207,12 @@ class Player {
             __classPrivateFieldGet(this, _Player_controls, "f").destroy();
         }
         if (isVideo(__classPrivateFieldGet(this, _Player_element, "f"))) {
-            this.playBtn.remove();
-            this.loader.remove();
+            if (this.playBtn) {
+                this.playBtn.remove();
+            }
+            if (this.loader) {
+                this.loader.remove();
+            }
         }
         if ((_a = __classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.onError) {
             __classPrivateFieldGet(this, _Player_element, "f").removeEventListener('playererror', __classPrivateFieldGet(this, _Player_options, "f").onError);
@@ -650,16 +656,20 @@ class Player {
         }
     }
     _mergeOptions(playerOptions) {
-        __classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")), (playerOptions || {})), "f");
-        if ((playerOptions === null || playerOptions === void 0 ? void 0 : playerOptions.controls) && Object.keys(playerOptions.controls).length) {
-            __classPrivateFieldGet(this, _Player_options, "f").controls = Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f").controls), playerOptions.controls);
-        }
-        if (playerOptions === null || playerOptions === void 0 ? void 0 : playerOptions.labels) {
-            const { labels } = playerOptions || {};
-            const keys = labels ? Object.keys(labels) : [];
+        const opts = Object.assign({}, (playerOptions || {}));
+        __classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")), opts), "f");
+        const complexOptions = Object.keys(__classPrivateFieldGet(this, _Player_defaultOptions, "f")).filter(key => key !== 'labels' && typeof __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key] === 'object');
+        complexOptions.forEach(key => {
+            const currOption = opts[key] || {};
+            if (currOption && Object.keys(currOption).length) {
+                __classPrivateFieldGet(this, _Player_options, "f")[key] = Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key]), currOption);
+            }
+        });
+        if (opts.labels) {
+            const keys = opts.labels ? Object.keys(opts.labels) : [];
             let sanitizedLabels = {};
             keys.forEach((key) => {
-                const current = labels ? labels[key] : null;
+                const current = opts.labels ? opts.labels[key] : null;
                 if (current && typeof current === 'object' && key === 'lang') {
                     Object.keys(current).forEach((k) => {
                         const lang = current ? current[k] : null;

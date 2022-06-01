@@ -41,7 +41,7 @@ class Progress implements PlayerComponent {
     }
 
     create(): void {
-        const { labels } = this.#player.getOptions();
+        const { labels, progress } = this.#player.getOptions();
         this.#progress = document.createElement('div');
         this.#progress.className = `op-controls__progress op-control__${this.#controlPosition}`;
         this.#progress.tabIndex = 0;
@@ -238,13 +238,17 @@ class Progress implements PlayerComponent {
         };
 
         const updateSlider = (e: Event): void => {
-            if (this.#slider.classList.contains('op-progress--pressed')) {
+            const el = this.#player.activeElement();
+            const target = e.target as HTMLInputElement;
+            const value = parseFloat(target.value);
+            if (this.#slider.classList.contains('op-progress--pressed') ||
+                (value < el.currentTime && !progress?.allowRewind) ||
+                (value > el.currentTime && !progress?.allowSkip)) {
+                this.#slider.value = el.currentTime.toString();
                 return;
             }
-            const target = e.target as HTMLInputElement;
             this.#slider.classList.add('.op-progress--pressed');
 
-            const el = this.#player.activeElement();
             const min = parseFloat(target.min);
             const max = parseFloat(target.max);
             const val = parseFloat(target.value);
@@ -266,12 +270,16 @@ class Progress implements PlayerComponent {
         const forcePause = (e: KeyboardEvent): void => {
             const el = this.#player.activeElement();
             const key = e.which || e.keyCode || 0;
+            const target = this.#slider;
+            const value = Math.round(Number(target.value));
+            const current = Math.round(el.currentTime);
+            const isProgressManipulationAllowed =
+                (value < current && progress?.allowRewind) || (value >= current && progress?.allowSkip);
+
             // If current progress is not related to an Ad, manipulate current time
-            if ((key === 1 || key === 0) && this.#player.isMedia()) {
-                if (!el.paused) {
-                    el.pause();
-                    this.#forcePause = true;
-                }
+            if (isProgressManipulationAllowed && (key === 1 || key === 0) && this.#player.isMedia() && !el.paused) {
+                el.pause();
+                this.#forcePause = true;
             }
         };
 
@@ -294,11 +302,14 @@ class Progress implements PlayerComponent {
                 const pos = x - offset(this.#progress).left;
                 const percentage = pos / this.#progress.offsetWidth;
                 const time = percentage * el.duration;
-                this.#slider.value = time.toString();
-                updateSlider(e);
-                if (!el.paused) {
-                    el.pause();
-                    this.#forcePause = true;
+
+                if ((time < el.currentTime && progress?.allowRewind) || (time > el.currentTime && progress?.allowSkip)) {
+                    this.#slider.value = time.toString();
+                    updateSlider(e);
+                    if (!el.paused) {
+                        el.pause();
+                        this.#forcePause = true;
+                    }
                 }
             }
         };
