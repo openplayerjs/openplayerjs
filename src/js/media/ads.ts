@@ -171,7 +171,6 @@ class Ads {
                 const errorEvent = addEvent('playererror', details);
                 this.#element.dispatchEvent(errorEvent);
             });
-        return this;
     }
 
     load(force = false): void {
@@ -724,7 +723,9 @@ class Ads {
         // Get the ads manager.
         this.#manager = managerLoadedEvent.getAdsManager(this.#element, adsRenderingSettings);
         this._start(this.#manager);
-        this.loadPromise = new Promise((resolve) => resolve);
+        this.loadPromise = new Promise<void>((resolve) => {
+            resolve();
+        });
     }
 
     private _start(manager: any): void {

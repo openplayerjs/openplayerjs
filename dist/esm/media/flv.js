@@ -44,7 +44,6 @@ class FlvMedia extends Native {
                     resolve({});
                 });
         this.promise.then(this._create);
-        return this;
     }
     canPlayType(mimeType) {
         return HAS_MSE && (mimeType === 'video/x-flv' || mimeType === 'video/flv');

@@ -24,7 +24,7 @@ describe('player', (): void => {
         await videoPlayer.init();
 
         expect(videoPlayer instanceof OpenPlayerJS).to.equal(true);
-        expect(document.getElementById('video').nodeName).to.equal('DIV');
+        expect(document.getElementById('video')?.nodeName).to.equal('DIV');
         expect(videoPlayer.id).to.equal('video');
         expect(document.querySelector('video#video')).to.be(null);
         expect(OpenPlayerJS.instances.video).to.not.equal(undefined);
@@ -125,7 +125,7 @@ describe('player', (): void => {
     });
 
     it('displays the duration of media when player plays media, and `preload` attribute is set to `none`', async (): Promise<void> => {
-        document.getElementById('video').setAttribute('preload', 'none');
+        document.getElementById('video')?.setAttribute('preload', 'none');
 
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
@@ -133,7 +133,7 @@ describe('player', (): void => {
             const checkDuration = (): void => {
                 expect(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
                 videoPlayer.getElement().removeEventListener('play', checkDuration);
-                document.getElementById('video').removeAttribute('preload');
+                document.getElementById('video')?.removeAttribute('preload');
                 resolve();
             };
             videoPlayer.getElement().addEventListener('play', checkDuration);
@@ -168,7 +168,10 @@ describe('player', (): void => {
             },
         });
         await audioPlayer.init();
-        const play = audioPlayer.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+        const play = audioPlayer
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__playpause') as HTMLButtonElement;
         expect(play.getAttribute('aria-label')).to.equal('Test');
     });
 
@@ -233,14 +236,16 @@ describe('player', (): void => {
                 }, 2000);
             };
             videoPlayer.getElement().addEventListener('play', checkForAds);
-            const play = videoPlayer.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            const play = videoPlayer
+                .getControls()
+                .getContainer()
+                .querySelector('.op-controls__playpause') as HTMLButtonElement;
             const e = new CustomEvent('click');
             play.dispatchEvent(e);
         });
     });
 
-    it.skip('allows to play an Ad in a loop setting them up from the configuration', async function x(done) {
-        this.timeout(30000);
+    it('allows to play an Ad in a loop setting them up from the configuration', async () => {
         videoPlayer = new OpenPlayerJS('video', {
             ads: {
                 loop: true,
@@ -248,14 +253,19 @@ describe('player', (): void => {
             },
         });
         await videoPlayer.init();
-        const play = videoPlayer.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+        const play = videoPlayer
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__playpause') as HTMLButtonElement;
         const e = new CustomEvent('click');
         play.dispatchEvent(e);
 
-        setTimeout(() => {
-            expect(videoPlayer.getElement().closest('.op-ads--active')).to.not.be(null);
-            done();
-        }, 5000);
+        return new Promise<void>((resolve) => {
+            setTimeout(() => {
+                expect(videoPlayer.getElement().closest('.op-ads--active')).to.not.be(null);
+                resolve();
+            }, 1500);
+        });
     });
 
     it.skip('allows to play media with Ads in loop', async function x() {
@@ -272,7 +282,10 @@ describe('player', (): void => {
         await videoPlayer.init();
 
         return new Promise<void>((resolve) => {
-            const play = videoPlayer.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            const play = videoPlayer
+                .getControls()
+                .getContainer()
+                .querySelector('.op-controls__playpause') as HTMLButtonElement;
             const e = new CustomEvent('click');
             play.dispatchEvent(e);
 
@@ -286,10 +299,10 @@ describe('player', (): void => {
 
     it('allows to set dynamically any sources (media and Ads) when no sources are detected in media (#283)', async () => {
         const id = 'video';
-        const source = document.getElementById(id).querySelector('source');
+        const source = document.getElementById(id)?.querySelector('source');
         const media = document.getElementById(id) as HTMLMediaElement;
         media.setAttribute('preload', 'none');
-        media.querySelector('source').remove();
+        media.querySelector('source')?.remove();
 
         videoPlayer = new OpenPlayerJS(id);
         await videoPlayer.init();
@@ -298,7 +311,7 @@ describe('player', (): void => {
             let assessed = false;
             videoPlayer.getElement().addEventListener('play', (): void => {
                 const target = videoPlayer.activeElement();
-                if (!assessed && target.currentTime > 0) {
+                if (!assessed && target.currentTime > 0 && source) {
                     expect(target.currentTime).to.not.equal(0);
                     media.appendChild(source);
                     assessed = true;
@@ -323,7 +336,7 @@ describe('player', (): void => {
     it('should allow listening to custom events and add custom config (i.e., HLS library) (#279)', async (): Promise<void> => {
         const media = document.getElementById('video') as HTMLMediaElement;
         const source = media.querySelector('source');
-        media.querySelector('source').remove();
+        media.querySelector('source')?.remove();
         media.src = 'https://storage.googleapis.com/shaka-demo-assets/angel-one-widevine-hls/hls.m3u8';
 
         videoPlayer = new OpenPlayerJS('video', {
@@ -341,7 +354,9 @@ describe('player', (): void => {
                 expect(true).to.be(true);
                 videoPlayer.getElement().removeEventListener('hlsLevelLoaded', manifestEvent);
                 media.src = '';
-                document.getElementById('video').appendChild(source);
+                if (source) {
+                    document.getElementById('video')?.appendChild(source);
+                }
                 resolve();
             };
             videoPlayer.getElement().addEventListener('hlsLevelLoaded', manifestEvent);

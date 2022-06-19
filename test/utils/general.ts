@@ -32,7 +32,7 @@ describe('utils/general', () => {
             await general.loadScript('https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js');
             expect((window as any).OpenPlayerJS).to.not.equal(null);
         } catch (err) {
-            expect(err.src).to.be(null);
+            expect(err.src).to.be('');
         }
 
         // try {

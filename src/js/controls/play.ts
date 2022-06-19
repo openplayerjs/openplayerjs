@@ -23,7 +23,6 @@ class Play implements PlayerComponent {
         this.#controlLayer = layer;
 
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
 
     create(): void {

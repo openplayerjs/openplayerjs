@@ -43,7 +43,6 @@ class Controls implements PlayerComponent {
     constructor(player: Player) {
         this.#player = player;
         this._setElements();
-        return this;
     }
 
     create(): void {
@@ -97,8 +96,14 @@ class Controls implements PlayerComponent {
                         this.#player.loader.setAttribute('aria-hidden', 'true');
                         this.#player.playBtn.setAttribute('aria-hidden', this.#player.isMedia() ? 'false' : 'true');
                     } else {
-                        this.#player.playBtn.setAttribute('aria-hidden', this.#player.getOptions().showLoaderOnInit ? 'true' : 'false');
-                        this.#player.loader.setAttribute('aria-hidden', this.#player.getOptions().showLoaderOnInit ? 'false' : 'true');
+                        this.#player.playBtn.setAttribute(
+                            'aria-hidden',
+                            this.#player.getOptions().showLoaderOnInit ? 'true' : 'false'
+                        );
+                        this.#player.loader.setAttribute(
+                            'aria-hidden',
+                            this.#player.getOptions().showLoaderOnInit ? 'false' : 'true'
+                        );
                     }
 
                     this.#player.getContainer().classList.remove('op-controls--hidden');
@@ -319,7 +324,13 @@ class Controls implements PlayerComponent {
                 if (allowDefault && !current.custom && typeof current.addSettings === 'function') {
                     const menuItem = current.addSettings() as SettingsItem;
                     if (this.#settings && Object.keys(menuItem).length) {
-                        this.#settings.addItem(menuItem.name, menuItem.key, menuItem.default, menuItem.subitems, menuItem.className);
+                        this.#settings.addItem(
+                            menuItem.name,
+                            menuItem.key,
+                            menuItem.default,
+                            menuItem.subitems,
+                            menuItem.className
+                        );
                     }
                 }
             });
@@ -357,8 +368,12 @@ class Controls implements PlayerComponent {
 
     private _createCustomControl(item: ControlItem): void {
         const control = document.createElement('button');
-        const icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? `<img src="${sanitize(item.icon)}">` : sanitize(item.icon);
-        control.className = `op-controls__${item.id} op-control__${item.position} ${item.showInAds ? '' : 'op-control__hide-in-ad'}`;
+        const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
+            ? `<img src="${sanitize(item.icon)}">`
+            : sanitize(item.icon);
+        control.className = `op-controls__${item.id} op-control__${item.position} ${
+            item.showInAds ? '' : 'op-control__hide-in-ad'
+        }`;
         control.tabIndex = 0;
         control.id = item.id;
         control.title = sanitize(item.title);
@@ -375,8 +390,12 @@ class Controls implements PlayerComponent {
                 if (s.icon) {
                     itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? `<img src="${s.icon}">` : s.icon;
                 }
-                return `<div class="op-settings__menu-item" tabindex="0" ${s.title ? `title="${s.title}"` : ''} role="menuitemradio">
-                    <div class="op-settings__menu-label" id="${s.id}" data-value="${item.id}-${s.id}">${itemIcon} ${s.label}</div>
+                return `<div class="op-settings__menu-item" tabindex="0" ${
+                    s.title ? `title="${s.title}"` : ''
+                } role="menuitemradio">
+                    <div class="op-settings__menu-label" id="${s.id}" data-value="${item.id}-${s.id}">${itemIcon} ${
+                    s.label
+                }</div>
                 </div>`;
             });
 
@@ -394,7 +413,9 @@ class Controls implements PlayerComponent {
             // click event (if created)
             control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
 
-            this.#player.getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
+            this.#player
+                .getElement()
+                .addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         } else if (item.click && typeof item.click === 'function') {
             control.addEventListener('click', item.click, EVENT_OPTIONS);
         }

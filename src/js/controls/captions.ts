@@ -47,8 +47,6 @@ class Captions implements PlayerComponent {
         this._search = this._search.bind(this);
         this._prepareTrack = this._prepareTrack.bind(this);
         this._formatMenuItems = this._formatMenuItems.bind(this);
-
-        return this;
     }
 
     create(): void {

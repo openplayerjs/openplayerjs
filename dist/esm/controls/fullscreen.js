@@ -53,7 +53,6 @@ class Fullscreen {
             __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitbeginfullscreen', this._setFullscreen, EVENT_OPTIONS);
             __classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitendfullscreen', this._unsetFullscreen, EVENT_OPTIONS);
         }
-        return this;
     }
     create() {
         const { labels } = __classPrivateFieldGet(this, _Fullscreen_player, "f").getOptions();

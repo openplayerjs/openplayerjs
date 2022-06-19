@@ -35,7 +35,6 @@ class FlvMedia extends Native {
                   });
 
         this.promise.then(this._create);
-        return this;
     }
 
     canPlayType(mimeType: string): boolean {
@@ -54,7 +53,9 @@ class FlvMedia extends Native {
         if (!this.#events) {
             this.#events = flvjs.Events;
             Object.keys(this.#events).forEach((event) => {
-                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
+                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) =>
+                    this._assign(this.#events[event], args)
+                );
             });
         }
     }
@@ -107,7 +108,9 @@ class FlvMedia extends Native {
         if (!this.#events) {
             this.#events = flvjs.Events;
             Object.keys(this.#events).forEach((event) => {
-                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
+                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) =>
+                    this._assign(this.#events[event], args)
+                );
             });
         }
     }

@@ -42,7 +42,6 @@ class Captions {
         this._search = this._search.bind(this);
         this._prepareTrack = this._prepareTrack.bind(this);
         this._formatMenuItems = this._formatMenuItems.bind(this);
-        return this;
     }
     create() {
         const trackList = __classPrivateFieldGet(this, _Captions_player, "f").getElement().textTracks;

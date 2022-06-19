@@ -32,7 +32,6 @@ class Volume implements PlayerComponent {
         this.#controlPosition = position;
         this.#controlLayer = layer;
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
 
     create(): void {

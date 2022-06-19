@@ -28,7 +28,6 @@ class Time {
         __classPrivateFieldSet(this, _Time_player, player, "f");
         __classPrivateFieldSet(this, _Time_controlPosition, position, "f");
         __classPrivateFieldSet(this, _Time_controlLayer, layer, "f");
-        return this;
     }
     create() {
         const { labels, progress } = __classPrivateFieldGet(this, _Time_player, "f").getOptions();
@@ -63,7 +62,9 @@ class Time {
             const el = __classPrivateFieldGet(this, _Time_player, "f").activeElement();
             if (el.duration !== Infinity && !__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-live__enabled')) {
                 if (!showOnlyCurrent) {
-                    const duration = !Number.isNaN(el.duration) ? el.duration : ((_a = __classPrivateFieldGet(this, _Time_player, "f").getOptions().progress) === null || _a === void 0 ? void 0 : _a.duration) || 0;
+                    const duration = !Number.isNaN(el.duration)
+                        ? el.duration
+                        : ((_a = __classPrivateFieldGet(this, _Time_player, "f").getOptions().progress) === null || _a === void 0 ? void 0 : _a.duration) || 0;
                     __classPrivateFieldGet(this, _Time_duration, "f").innerText = formatTime(duration);
                 }
                 __classPrivateFieldGet(this, _Time_currentTime, "f").innerText = formatTime(el.currentTime);
@@ -100,7 +101,8 @@ class Time {
                 __classPrivateFieldGet(this, _Time_currentTime, "f").innerText = formatTime(el.currentTime);
             }
             else if (showOnlyCurrent ||
-                (!__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled') && __classPrivateFieldGet(this, _Time_duration, "f").getAttribute('aria-hidden') === 'false')) {
+                (!__classPrivateFieldGet(this, _Time_player, "f").getElement().getAttribute('op-dvr__enabled') &&
+                    __classPrivateFieldGet(this, _Time_duration, "f").getAttribute('aria-hidden') === 'false')) {
                 if (!showOnlyCurrent) {
                     __classPrivateFieldGet(this, _Time_duration, "f").setAttribute('aria-hidden', 'true');
                     __classPrivateFieldGet(this, _Time_delimiter, "f").setAttribute('aria-hidden', 'true');
@@ -114,7 +116,9 @@ class Time {
         __classPrivateFieldGet(this, _Time_events, "f").media.ended = () => {
             var _a;
             const el = __classPrivateFieldGet(this, _Time_player, "f").activeElement();
-            const duration = !Number.isNaN(el.duration) ? el.duration : ((_a = __classPrivateFieldGet(this, _Time_player, "f").getOptions().progress) === null || _a === void 0 ? void 0 : _a.duration) || 0;
+            const duration = !Number.isNaN(el.duration)
+                ? el.duration
+                : ((_a = __classPrivateFieldGet(this, _Time_player, "f").getOptions().progress) === null || _a === void 0 ? void 0 : _a.duration) || 0;
             if (!showOnlyCurrent && __classPrivateFieldGet(this, _Time_player, "f").isMedia()) {
                 __classPrivateFieldGet(this, _Time_duration, "f").innerText = formatTime(duration);
             }

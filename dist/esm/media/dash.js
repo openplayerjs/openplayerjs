@@ -34,7 +34,6 @@ class DashMedia extends Native {
             __classPrivateFieldSet(this, _DashMedia_player, dashjs.MediaPlayer().create(), "f");
             this.instance = __classPrivateFieldGet(this, _DashMedia_player, "f");
         });
-        return this;
     }
     canPlayType(mimeType) {
         return HAS_MSE && mimeType === 'application/dash+xml';

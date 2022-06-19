@@ -36,7 +36,6 @@ class HTML5Media extends Native {
         this.element.addEventListener('error', this._dispatchError, EVENT_OPTIONS);
         this.element.addEventListener('loadeddata', this._isDvrEnabled, EVENT_OPTIONS);
         this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo, EVENT_OPTIONS);
-        return this;
     }
 
     canPlayType(mimeType: string): boolean {
@@ -47,13 +46,12 @@ class HTML5Media extends Native {
         this.element.load();
     }
 
-    destroy(): HTML5Media {
+    destroy(): void {
         this.element.removeEventListener('playing', this._clearTimeout);
         this.element.removeEventListener('stalled', this._setTimeout);
         this.element.removeEventListener('error', this._dispatchError);
         this.element.removeEventListener('loadeddata', this._isDvrEnabled);
         this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo);
-        return this;
     }
 
     get levels(): Level[] {

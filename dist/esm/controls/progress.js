@@ -35,7 +35,6 @@ class Progress {
         __classPrivateFieldSet(this, _Progress_controlPosition, position, "f");
         __classPrivateFieldSet(this, _Progress_controlLayer, layer, "f");
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
     create() {
         var _a;
@@ -155,7 +154,8 @@ class Progress {
             if (isAudioEl && __classPrivateFieldGet(this, _Progress_slider, "f").classList.contains('error')) {
                 __classPrivateFieldGet(this, _Progress_slider, "f").classList.remove('error');
             }
-            if (__classPrivateFieldGet(this, _Progress_player, "f").activeElement().duration !== Infinity && !__classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-live__enabled')) {
+            if (__classPrivateFieldGet(this, _Progress_player, "f").activeElement().duration !== Infinity &&
+                !__classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-live__enabled')) {
                 __classPrivateFieldGet(this, _Progress_progress, "f").removeAttribute('aria-valuenow');
                 __classPrivateFieldGet(this, _Progress_progress, "f").removeAttribute('aria-valuetext');
             }
@@ -172,7 +172,8 @@ class Progress {
             var _a;
             const el = __classPrivateFieldGet(this, _Progress_player, "f").activeElement();
             if (el.duration !== Infinity &&
-                (!__classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') || __classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled'))) {
+                (!__classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') ||
+                    __classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled'))) {
                 if (!__classPrivateFieldGet(this, _Progress_slider, "f").getAttribute('max') ||
                     __classPrivateFieldGet(this, _Progress_slider, "f").getAttribute('max') === '0' ||
                     parseFloat(__classPrivateFieldGet(this, _Progress_slider, "f").getAttribute('max') || '-1') !== el.duration) {
@@ -273,7 +274,8 @@ class Progress {
                 const pos = x - offset(__classPrivateFieldGet(this, _Progress_progress, "f")).left;
                 const percentage = pos / __classPrivateFieldGet(this, _Progress_progress, "f").offsetWidth;
                 const time = percentage * el.duration;
-                if ((time < el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowRewind)) || (time > el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowSkip))) {
+                if ((time < el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowRewind)) ||
+                    (time > el.currentTime && (progress === null || progress === void 0 ? void 0 : progress.allowSkip))) {
                     __classPrivateFieldGet(this, _Progress_slider, "f").value = time.toString();
                     updateSlider(e);
                     if (!el.paused) {
@@ -339,10 +341,7 @@ class Progress {
             .getControls()
             .getContainer()
             .addEventListener('controlschanged', __classPrivateFieldGet(this, _Progress_events, "f").controls.controlschanged, EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _Progress_player, "f")
-            .getControls()
-            .getLayer(__classPrivateFieldGet(this, _Progress_controlLayer, "f"))
-            .appendChild(__classPrivateFieldGet(this, _Progress_progress, "f"));
+        __classPrivateFieldGet(this, _Progress_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Progress_controlLayer, "f")).appendChild(__classPrivateFieldGet(this, _Progress_progress, "f"));
     }
     destroy() {
         Object.keys(__classPrivateFieldGet(this, _Progress_events, "f")).forEach((event) => {

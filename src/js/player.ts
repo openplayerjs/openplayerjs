@@ -1,14 +1,52 @@
 import Controls from './controls';
 import Fullscreen from './controls/fullscreen';
-import { ControlItem, CustomMedia, EventsList, Languages, PlayerLabels, PlayerOptions, Source, Track } from './interfaces';
+import {
+    ControlItem,
+    CustomMedia,
+    EventsList,
+    Languages,
+    PlayerLabels,
+    PlayerOptions,
+    Source,
+    Track,
+} from './interfaces';
 import Media from './media';
 import Ads from './media/ads';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants';
 import { addEvent, isAudio, isVideo, sanitize } from './utils/general';
 import { isAutoplaySupported, predictMimeType } from './utils/media';
 
+interface P {
+    loader: HTMLSpanElement;
+    playBtn: HTMLButtonElement;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    proxy: any;
+    init(): Promise<void>;
+    load(): Promise<void> | void;
+    play(): Promise<void>;
+    pause(): void;
+    destroy(): void;
+    getContainer(): HTMLElement;
+    getControls(): Controls;
+    getCustomControls(): ControlItem[];
+    getElement(): HTMLMediaElement;
+    getEvents(): EventsList;
+    getOptions(): PlayerOptions;
+    activeElement(): Ads | Media;
+    isMedia(): boolean;
+    isAd(): boolean;
+    getMedia(): Media;
+    getAd(): Ads;
+    addCaptions(args: Track): void;
+    addControl(args: ControlItem): void;
+    removeControl(controlName: string): void;
+    _prepareMedia(): Promise<void>;
+    enableDefaultPlayer(): void;
+    loadAd(src: string | string[]): Promise<void>;
+}
+
 class Player {
-    static instances: { [id: string]: Player } = {};
+    static instances: { [id: string]: P } = {};
 
     static customMedia: CustomMedia = {
         media: {},
@@ -137,7 +175,8 @@ class Player {
     };
 
     constructor(element: HTMLMediaElement | string, options?: PlayerOptions) {
-        this.#element = element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
+        this.#element =
+            element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
         if (this.#element) {
             this.#autoplay = this.#element.autoplay || false;
             if (typeof options !== 'string' && !Array.isArray(options)) {
@@ -155,7 +194,6 @@ class Player {
         }
         this._autoplay = this._autoplay.bind(this);
         this._enableKeyBindings = this._enableKeyBindings.bind(this);
-        return this;
     }
 
     async init(): Promise<void> {
@@ -241,7 +279,8 @@ class Player {
         el.setAttribute('id', this.#uid);
         el.removeAttribute('op-live__enabled');
         el.removeAttribute('op-dvr__enabled');
-        const parent = this.#options.mode === 'fit' && !isAudio(el) ? el.closest('.op-player__fit--wrapper') : el.parentElement;
+        const parent =
+            this.#options.mode === 'fit' && !isAudio(el) ? el.closest('.op-player__fit--wrapper') : el.parentElement;
         if (parent && parent.parentNode) {
             parent.parentNode.replaceChild(el, parent);
         }
@@ -268,13 +307,6 @@ class Player {
         return this.#element;
     }
 
-    /**
-     * Retrieve the events attached to the player.
-     *
-     * This list does not include individual events associated with other player's components.
-     * @returns {EventsList}
-     * @memberof Player
-     */
     getEvents(): EventsList {
         return this.#events;
     }
@@ -515,11 +547,13 @@ class Player {
         } else {
             let style = '';
             if (this.#options.width) {
-                const width = typeof this.#options.width === 'number' ? `${this.#options.width}px` : this.#options.width;
+                const width =
+                    typeof this.#options.width === 'number' ? `${this.#options.width}px` : this.#options.width;
                 style += `width: ${width} !important;`;
             }
             if (this.#options.height) {
-                const height = typeof this.#options.height === 'number' ? `${this.#options.height}px` : this.#options.height;
+                const height =
+                    typeof this.#options.height === 'number' ? `${this.#options.height}px` : this.#options.height;
                 style += `height: ${height} !important;`;
             }
 
@@ -542,14 +576,11 @@ class Player {
             this.#uid = this.#element.id;
             this.#element.removeAttribute('id');
         } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const cryptoLib = crypto as any;
             const encryption =
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                typeof (crypto as any).getRandomBytes === 'function' ? (crypto as any).getRandomBytes : crypto.getRandomValues;
-            let uid;
-            do {
-                uid = `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`;
-            } while (Player.instances[uid] !== undefined);
-            this.#uid = uid;
+                typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
+            this.#uid = `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`;
         }
 
         if (this.#element.parentElement) {
@@ -743,7 +774,13 @@ class Player {
 
                     if (this.#ads) {
                         const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
-                        this.#adsInstance = new Ads(this, this.#ads, this.#canAutoplay, this.#canAutoplayMuted, adsOptions);
+                        this.#adsInstance = new Ads(
+                            this,
+                            this.#ads,
+                            this.#canAutoplay,
+                            this.#canAutoplayMuted,
+                            adsOptions
+                        );
                     } else if (this.#canAutoplay || this.#canAutoplayMuted) {
                         this.play();
                     }
@@ -753,13 +790,15 @@ class Player {
     }
 
     private _mergeOptions(playerOptions?: PlayerOptions): void {
-        const opts = {...(playerOptions || {})};
+        const opts = { ...(playerOptions || {}) };
         this.#options = { ...this.#defaultOptions, ...opts };
-        const complexOptions = Object.keys(this.#defaultOptions).filter(key => key !== 'labels' && typeof this.#defaultOptions[key] === 'object')
-        complexOptions.forEach(key => {
+        const complexOptions = Object.keys(this.#defaultOptions).filter(
+            (key) => key !== 'labels' && typeof this.#defaultOptions[key] === 'object'
+        );
+        complexOptions.forEach((key) => {
             const currOption = (opts[key] as Record<string, unknown>) || {};
             if (currOption && Object.keys(currOption).length) {
-                this.#options[key] = { ...this.#defaultOptions[key] as Record<string, unknown>, ...currOption };
+                this.#options[key] = { ...(this.#defaultOptions[key] as Record<string, unknown>), ...currOption };
             }
         });
         if (opts.labels) {
@@ -772,7 +811,10 @@ class Player {
                     Object.keys(current).forEach((k) => {
                         const lang = current ? (current as Languages)[k] : null;
                         if (lang) {
-                            sanitizedLabels = { ...sanitizedLabels, lang: { ...sanitizedLabels.lang, [k]: sanitize(lang as string) } };
+                            sanitizedLabels = {
+                                ...sanitizedLabels,
+                                lang: { ...sanitizedLabels.lang, [k]: sanitize(lang as string) },
+                            };
                         }
                     });
                 } else if (current) {
@@ -890,7 +932,8 @@ class Player {
             case 190:
                 if (!isAd && e.shiftKey) {
                     const elem = el as Media;
-                    elem.playbackRate = key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
+                    elem.playbackRate =
+                        key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
                     // Show playbackRate and update controls to reflect change in settings
                     const target = this.getContainer().querySelector('.op-status>span');
                     if (target) {

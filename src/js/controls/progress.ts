@@ -37,7 +37,6 @@ class Progress implements PlayerComponent {
         this.#controlLayer = layer;
 
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
 
     create(): void {
@@ -165,7 +164,10 @@ class Progress implements PlayerComponent {
             if (isAudioEl && this.#slider.classList.contains('error')) {
                 this.#slider.classList.remove('error');
             }
-            if (this.#player.activeElement().duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled')) {
+            if (
+                this.#player.activeElement().duration !== Infinity &&
+                !this.#player.getElement().getAttribute('op-live__enabled')
+            ) {
                 this.#progress.removeAttribute('aria-valuenow');
                 this.#progress.removeAttribute('aria-valuetext');
             }
@@ -182,7 +184,8 @@ class Progress implements PlayerComponent {
             const el = this.#player.activeElement();
             if (
                 el.duration !== Infinity &&
-                (!this.#player.getElement().getAttribute('op-live__enabled') || this.#player.getElement().getAttribute('op-dvr__enabled'))
+                (!this.#player.getElement().getAttribute('op-live__enabled') ||
+                    this.#player.getElement().getAttribute('op-dvr__enabled'))
             ) {
                 if (
                     !this.#slider.getAttribute('max') ||
@@ -241,9 +244,11 @@ class Progress implements PlayerComponent {
             const el = this.#player.activeElement();
             const target = e.target as HTMLInputElement;
             const value = parseFloat(target.value);
-            if (this.#slider.classList.contains('op-progress--pressed') ||
+            if (
+                this.#slider.classList.contains('op-progress--pressed') ||
                 (value < el.currentTime && !progress?.allowRewind) ||
-                (value > el.currentTime && !progress?.allowSkip)) {
+                (value > el.currentTime && !progress?.allowSkip)
+            ) {
                 this.#slider.value = el.currentTime.toString();
                 return;
             }
@@ -303,7 +308,10 @@ class Progress implements PlayerComponent {
                 const percentage = pos / this.#progress.offsetWidth;
                 const time = percentage * el.duration;
 
-                if ((time < el.currentTime && progress?.allowRewind) || (time > el.currentTime && progress?.allowSkip)) {
+                if (
+                    (time < el.currentTime && progress?.allowRewind) ||
+                    (time > el.currentTime && progress?.allowSkip)
+                ) {
                     this.#slider.value = time.toString();
                     updateSlider(e);
                     if (!el.paused) {
@@ -375,10 +383,7 @@ class Progress implements PlayerComponent {
             .getControls()
             .getContainer()
             .addEventListener('controlschanged', this.#events.controls.controlschanged, EVENT_OPTIONS);
-        this.#player
-            .getControls()
-            .getLayer(this.#controlLayer)
-            .appendChild(this.#progress);
+        this.#player.getControls().getLayer(this.#controlLayer).appendChild(this.#progress);
     }
 
     destroy(): void {

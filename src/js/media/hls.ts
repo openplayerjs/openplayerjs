@@ -44,7 +44,6 @@ class HlsMedia extends Native {
                   });
 
         this.promise.then(this._create);
-        return this;
     }
 
     canPlayType(mimeType: string): boolean {
@@ -64,7 +63,9 @@ class HlsMedia extends Native {
         if (!this.#events) {
             this.#events = Hls.Events;
             Object.keys(this.#events).forEach((event) => {
-                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
+                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) =>
+                    this._assign(this.#events[event], args)
+                );
             });
         }
     }
@@ -75,7 +76,9 @@ class HlsMedia extends Native {
         }
         if (this.#events) {
             Object.keys(this.#events).forEach((event) => {
-                this.#player.off(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
+                this.#player.off(this.#events[event], (...args: Record<string, unknown>[]) =>
+                    this._assign(this.#events[event], args)
+                );
             });
         }
         this.element.removeEventListener('play', this._play);
@@ -95,7 +98,9 @@ class HlsMedia extends Native {
 
             this.#events = Hls.Events;
             Object.keys(this.#events).forEach((event) => {
-                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
+                this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) =>
+                    this._assign(this.#events[event], args)
+                );
             });
         }
     }
@@ -132,7 +137,9 @@ class HlsMedia extends Native {
         this.instance = this.#player;
         this.#events = Hls.Events;
         Object.keys(this.#events).forEach((event) => {
-            this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) => this._assign(this.#events[event], args));
+            this.#player.on(this.#events[event], (...args: Record<string, unknown>[]) =>
+                this._assign(this.#events[event], args)
+            );
         });
 
         if (!autoplay) {
@@ -202,7 +209,11 @@ class HlsMedia extends Native {
                 this.element.setAttribute('op-live__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
-            } else if (event === 'hlsLevelUpdated' && details.live === true && (details.totalduration as number) > DVR_THRESHOLD) {
+            } else if (
+                event === 'hlsLevelUpdated' &&
+                details.live === true &&
+                (details.totalduration as number) > DVR_THRESHOLD
+            ) {
                 this.element.setAttribute('op-dvr__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);

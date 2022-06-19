@@ -126,7 +126,6 @@ class Player {
         }
         this._autoplay = this._autoplay.bind(this);
         this._enableKeyBindings = this._enableKeyBindings.bind(this);
-        return this;
     }
     static init() {
         Player.instances = {};
@@ -474,12 +473,9 @@ class Player {
             __classPrivateFieldGet(this, _Player_element, "f").removeAttribute('id');
         }
         else {
-            const encryption = typeof crypto.getRandomBytes === 'function' ? crypto.getRandomBytes : crypto.getRandomValues;
-            let uid;
-            do {
-                uid = `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`;
-            } while (Player.instances[uid] !== undefined);
-            __classPrivateFieldSet(this, _Player_uid, uid, "f");
+            const cryptoLib = crypto;
+            const encryption = typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
+            __classPrivateFieldSet(this, _Player_uid, `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`, "f");
         }
         if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
             __classPrivateFieldGet(this, _Player_element, "f").parentElement.id = __classPrivateFieldGet(this, _Player_uid, "f");
@@ -658,8 +654,8 @@ class Player {
     _mergeOptions(playerOptions) {
         const opts = Object.assign({}, (playerOptions || {}));
         __classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")), opts), "f");
-        const complexOptions = Object.keys(__classPrivateFieldGet(this, _Player_defaultOptions, "f")).filter(key => key !== 'labels' && typeof __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key] === 'object');
-        complexOptions.forEach(key => {
+        const complexOptions = Object.keys(__classPrivateFieldGet(this, _Player_defaultOptions, "f")).filter((key) => key !== 'labels' && typeof __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key] === 'object');
+        complexOptions.forEach((key) => {
             const currOption = opts[key] || {};
             if (currOption && Object.keys(currOption).length) {
                 __classPrivateFieldGet(this, _Player_options, "f")[key] = Object.assign(Object.assign({}, __classPrivateFieldGet(this, _Player_defaultOptions, "f")[key]), currOption);
@@ -786,7 +782,8 @@ class Player {
             case 190:
                 if (!isAd && e.shiftKey) {
                     const elem = el;
-                    elem.playbackRate = key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
+                    elem.playbackRate =
+                        key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
                     const target = this.getContainer().querySelector('.op-status>span');
                     if (target) {
                         target.textContent = `${elem.playbackRate}x`;

@@ -27,7 +27,6 @@ class Play {
         __classPrivateFieldSet(this, _Play_controlPosition, position, "f");
         __classPrivateFieldSet(this, _Play_controlLayer, layer, "f");
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
     create() {
         var _a;

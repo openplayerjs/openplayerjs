@@ -37,7 +37,6 @@ class HTML5Media extends Native {
         this.element.addEventListener('error', this._dispatchError, EVENT_OPTIONS);
         this.element.addEventListener('loadeddata', this._isDvrEnabled, EVENT_OPTIONS);
         this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo, EVENT_OPTIONS);
-        return this;
     }
     canPlayType(mimeType) {
         return !!this.element.canPlayType(mimeType).replace('no', '');
@@ -51,7 +50,6 @@ class HTML5Media extends Native {
         this.element.removeEventListener('error', this._dispatchError);
         this.element.removeEventListener('loadeddata', this._isDvrEnabled);
         this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo);
-        return this;
     }
     get levels() {
         if (!__classPrivateFieldGet(this, _HTML5Media_levelList, "f").length) {
