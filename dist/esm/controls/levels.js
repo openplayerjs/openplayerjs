@@ -30,7 +30,6 @@ class Levels {
         __classPrivateFieldSet(this, _Levels_player, player, "f");
         __classPrivateFieldSet(this, _Levels_controlPosition, position, "f");
         __classPrivateFieldSet(this, _Levels_controlLayer, layer, "f");
-        return this;
     }
     create() {
         const { labels, defaultLevel: startLevel, detachMenus } = __classPrivateFieldGet(this, _Levels_player, "f").getOptions();
@@ -297,10 +296,7 @@ class Levels {
             itemContainer.className = `op-controls__container op-control__${__classPrivateFieldGet(this, _Levels_controlPosition, "f")}`;
             itemContainer.appendChild(__classPrivateFieldGet(this, _Levels_button, "f"));
             itemContainer.appendChild(__classPrivateFieldGet(this, _Levels_menu, "f"));
-            __classPrivateFieldGet(this, _Levels_player, "f")
-                .getControls()
-                .getLayer(__classPrivateFieldGet(this, _Levels_controlLayer, "f"))
-                .appendChild(itemContainer);
+            __classPrivateFieldGet(this, _Levels_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Levels_controlLayer, "f")).appendChild(itemContainer);
         }
     }
 }

@@ -32,7 +32,6 @@ class Volume {
         __classPrivateFieldSet(this, _Volume_controlPosition, position, "f");
         __classPrivateFieldSet(this, _Volume_controlLayer, layer, "f");
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
     create() {
         const { labels } = __classPrivateFieldGet(this, _Volume_player, "f").getOptions();

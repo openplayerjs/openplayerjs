@@ -49,7 +49,7 @@ export function sanitize(html: string, plainText = true): string {
         scripts[i].remove();
     }
 
-    function clean(element: Element): void {
+    const clean = (element: Element): void => {
         const nodes = element.children;
         for (let i = 0, total = nodes.length; i < total; i++) {
             const node = nodes[i];
@@ -69,7 +69,7 @@ export function sanitize(html: string, plainText = true): string {
             }
             clean(node);
         }
-    }
+    };
 
     clean(formattedContent);
     return plainText ? (formattedContent.textContent || '').replace(/\s{2,}/g, '') : formattedContent.innerHTML;

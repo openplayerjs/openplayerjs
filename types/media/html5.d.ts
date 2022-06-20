@@ -5,7 +5,7 @@ declare class HTML5Media extends Native {
     constructor(element: HTMLMediaElement, mediaFile: Source);
     canPlayType(mimeType: string): boolean;
     load(): void;
-    destroy(): HTML5Media;
+    destroy(): void;
     get levels(): Level[];
     set level(level: string);
     get level(): string;

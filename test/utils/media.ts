@@ -108,27 +108,51 @@ describe('utils/media', () => {
     it('predicts the extension of a media source based on the URL provided', (done) => {
         const video = document.getElementById('video') as HTMLMediaElement;
         const audio = document.getElementById('audio') as HTMLMediaElement;
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp4', video)).to.equal('video/mp4');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.webm', video)).to.equal('video/webm');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.webm', audio)).to.equal('audio/webm');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogg', video)).to.equal('video/ogg');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogg', audio)).to.equal('audio/ogg');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8', video)).to.equal(
-            'application/x-mpegURL'
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp4', video)).to.equal(
+            'video/mp4'
         );
+        expect(
+            media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.webm', video)
+        ).to.equal('video/webm');
+        expect(
+            media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.webm', audio)
+        ).to.equal('audio/webm');
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogg', video)).to.equal(
+            'video/ogg'
+        );
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogg', audio)).to.equal(
+            'audio/ogg'
+        );
+        expect(
+            media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8', video)
+        ).to.equal('application/x-mpegURL');
         expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u', video)).to.equal(
             'application/x-mpegURL'
         );
         expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mpd', video)).to.equal(
             'application/dash+xml'
         );
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp3', video)).to.equal('audio/mp3');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogv', video)).to.equal('video/ogg');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.oga', video)).to.equal('audio/ogg');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.3gp', video)).to.equal('audio/3gpp');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.wav', video)).to.equal('audio/wav');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.aac', video)).to.equal('audio/aac');
-        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.flac', video)).to.equal('audio/flac');
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mp3', video)).to.equal(
+            'audio/mp3'
+        );
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.ogv', video)).to.equal(
+            'video/ogg'
+        );
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.oga', video)).to.equal(
+            'audio/ogg'
+        );
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.3gp', video)).to.equal(
+            'audio/3gpp'
+        );
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.wav', video)).to.equal(
+            'audio/wav'
+        );
+        expect(media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.aac', video)).to.equal(
+            'audio/aac'
+        );
+        expect(
+            media.predictMimeType('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.flac', video)
+        ).to.equal('audio/flac');
         expect(media.predictMimeType('https://www.w3schools.com/xml/note.xml', video)).to.equal('video/mp4');
         expect(media.predictMimeType('test.pdf', video)).to.equal('video/mp4');
         expect(media.predictMimeType('test', video)).to.equal('video/mp4');

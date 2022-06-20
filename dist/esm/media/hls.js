@@ -39,7 +39,6 @@ class HlsMedia extends Native {
                     resolve({});
                 });
         this.promise.then(this._create);
-        return this;
     }
     canPlayType(mimeType) {
         return SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
@@ -182,7 +181,9 @@ class HlsMedia extends Native {
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);
             }
-            else if (event === 'hlsLevelUpdated' && details.live === true && details.totalduration > DVR_THRESHOLD) {
+            else if (event === 'hlsLevelUpdated' &&
+                details.live === true &&
+                details.totalduration > DVR_THRESHOLD) {
                 this.element.setAttribute('op-dvr__enabled', 'true');
                 const timeEvent = addEvent('timeupdate');
                 this.element.dispatchEvent(timeEvent);

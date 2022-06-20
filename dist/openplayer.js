@@ -843,7 +843,7 @@ function sanitize(html) {
     scripts[i].remove();
   }
 
-  function clean(element) {
+  var clean = function clean(element) {
     var nodes = element.children;
 
     for (var _i = 0, _total = nodes.length; _i < _total; _i++) {
@@ -869,7 +869,7 @@ function sanitize(html) {
 
       clean(node);
     }
-  }
+  };
 
   clean(formattedContent);
   return plainText ? (formattedContent.textContent || '').replace(/\s{2,}/g, '') : formattedContent.innerHTML;
@@ -931,15 +931,17 @@ function formatTime(seconds, frameRate) {
   var h = Math.floor(m / 60);
 
   var wrap = function wrap(value) {
+    var formattedVal = value.toString();
+
     if (value < 10) {
       if (value <= 0) {
         return '00';
       }
 
-      return "0".concat(value.toString());
+      return "0".concat(formattedVal);
     }
 
-    return value.toString();
+    return formattedVal;
   };
 
   m %= 60;
@@ -1032,7 +1034,6 @@ var Captions = function () {
     this._search = this._search.bind(this);
     this._prepareTrack = this._prepareTrack.bind(this);
     this._formatMenuItems = this._formatMenuItems.bind(this);
-    return this;
   }
 
   createClass_default()(Captions, [{
@@ -1653,8 +1654,6 @@ var Fullscreen = function () {
 
       fullscreen_classPrivateFieldGet(this, _Fullscreen_player, "f").getElement().addEventListener('webkitendfullscreen', this._unsetFullscreen, EVENT_OPTIONS);
     }
-
-    return this;
   }
 
   createClass_default()(Fullscreen, [{
@@ -1880,14 +1879,14 @@ _Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _F
 
 function getExtension(url) {
   var baseUrl = url.split('?')[0];
-  var baseFrags = baseUrl ? baseUrl.split('\\') : null;
-  var baseUrlFragment = baseFrags ? baseFrags.pop() : null;
-  var baseNameFrags = baseUrlFragment ? baseUrlFragment.split('/') : null;
-  var baseName = baseNameFrags ? baseNameFrags.pop() : null;
-  return baseName && baseName.indexOf('.') > -1 ? baseName.substring(baseName.lastIndexOf('.') + 1) : '';
+  var baseFrags = (baseUrl || '').split('\\');
+  var baseUrlFragment = (baseFrags || []).pop();
+  var baseNameFrags = (baseUrlFragment || '').split('/');
+  var baseName = (baseNameFrags || []).pop() || '';
+  return baseName.includes('.') ? baseName.substring(baseName.lastIndexOf('.') + 1) : '';
 }
 function isHlsSource(media) {
-  return /\.m3u8$/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
+  return /\.m3u8$/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].includes(media.type);
 }
 function isM3USource(media) {
   return /\.m3u$/i.test(media.src);
@@ -1896,7 +1895,7 @@ function isDashSource(media) {
   return /\.mpd/i.test(media.src) || media.type === 'application/dash+xml';
 }
 function isFlvSource(media) {
-  return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].indexOf(media.type) > -1;
+  return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].includes(media.type);
 }
 function predictMimeType(url, element) {
   var extension = getExtension(url);
@@ -1955,7 +1954,7 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
       media.pause();
       autoplay(true);
       muted(false);
-      return callback();
+      callback();
     }).catch(function () {
       media.volume = 0;
       media.muted = true;
@@ -1963,7 +1962,7 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
         media.pause();
         autoplay(true);
         muted(true);
-        return callback();
+        callback();
       }).catch(function () {
         media.volume = defaultVol;
         media.muted = false;
@@ -2031,8 +2030,6 @@ var Levels = function () {
     levels_classPrivateFieldSet(this, _Levels_controlPosition, position, "f");
 
     levels_classPrivateFieldSet(this, _Levels_controlLayer, layer, "f");
-
-    return this;
   }
 
   createClass_default()(Levels, [{
@@ -2496,7 +2493,6 @@ var Play = function () {
     play_classPrivateFieldSet(this, _Play_controlLayer, layer, "f");
 
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-    return this;
   }
 
   createClass_default()(Play, [{
@@ -2777,7 +2773,6 @@ var Progress = function () {
     progress_classPrivateFieldSet(this, _Progress_controlLayer, layer, "f");
 
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-    return this;
   }
 
   createClass_default()(Progress, [{
@@ -3287,7 +3282,6 @@ var Settings = function () {
     settings_classPrivateFieldSet(this, _Settings_controlLayer, layer, "f");
 
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-    return this;
   }
 
   createClass_default()(Settings, [{
@@ -3685,8 +3679,6 @@ var Time = function () {
     time_classPrivateFieldSet(this, _Time_controlPosition, position, "f");
 
     time_classPrivateFieldSet(this, _Time_controlLayer, layer, "f");
-
-    return this;
   }
 
   createClass_default()(Time, [{
@@ -3914,7 +3906,6 @@ var Volume = function () {
     volume_classPrivateFieldSet(this, _Volume_controlLayer, layer, "f");
 
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-    return this;
   }
 
   createClass_default()(Volume, [{
@@ -4211,8 +4202,6 @@ var Controls = function () {
     controls_classPrivateFieldSet(this, _Controls_player, player, "f");
 
     this._setElements();
-
-    return this;
   }
 
   createClass_default()(Controls, [{
@@ -4926,7 +4915,7 @@ var DashMedia = function (_Native) {
       _this.instance = dash_classPrivateFieldGet(assertThisInitialized_default()(_this), _DashMedia_player, "f");
     });
 
-    return possibleConstructorReturn_default()(_this, assertThisInitialized_default()(_this));
+    return _this;
   }
 
   createClass_default()(DashMedia, [{
@@ -5151,7 +5140,7 @@ var FlvMedia = function (_Native) {
 
     _this.promise.then(_this._create);
 
-    return possibleConstructorReturn_default()(_this, assertThisInitialized_default()(_this));
+    return _this;
   }
 
   createClass_default()(FlvMedia, [{
@@ -5376,7 +5365,7 @@ var HlsMedia = function (_Native) {
 
     _this.promise.then(_this._create);
 
-    return possibleConstructorReturn_default()(_this, assertThisInitialized_default()(_this));
+    return _this;
   }
 
   createClass_default()(HlsMedia, [{
@@ -5738,7 +5727,7 @@ var HTML5Media = function (_Native) {
 
     _this.element.textTracks.addEventListener('addtrack', _this._readMediadataInfo, EVENT_OPTIONS);
 
-    return possibleConstructorReturn_default()(_this, assertThisInitialized_default()(_this));
+    return _this;
   }
 
   createClass_default()(HTML5Media, [{
@@ -5759,7 +5748,6 @@ var HTML5Media = function (_Native) {
       this.element.removeEventListener('error', this._dispatchError);
       this.element.removeEventListener('loadeddata', this._isDvrEnabled);
       this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo);
-      return this;
     }
   }, {
     key: "levels",
@@ -6005,10 +5993,7 @@ var _Media_element, _Media_media, _Media_files, _Media_promisePlay, _Media_optio
 
 
 var Media = function () {
-  function Media(element, options) {
-    var autoplay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var customMedia = arguments.length > 3 ? arguments[3] : undefined;
-
+  function Media(element, options, autoplay, customMedia) {
     classCallCheck_default()(this, Media);
 
     _Media_element.set(this, void 0);
@@ -6042,8 +6027,6 @@ var Media = function () {
     media_classPrivateFieldSet(this, _Media_customMedia, customMedia, "f");
 
     media_classPrivateFieldSet(this, _Media_autoplay, autoplay, "f");
-
-    return this;
   }
 
   createClass_default()(Media, [{
@@ -6699,8 +6682,6 @@ var Ads = function () {
 
       ads_classPrivateFieldGet(_this, _Ads_element, "f").dispatchEvent(errorEvent);
     });
-
-    return this;
   }
 
   createClass_default()(Ads, [{
@@ -7380,7 +7361,7 @@ var Ads = function () {
       this._start(ads_classPrivateFieldGet(this, _Ads_manager, "f"));
 
       this.loadPromise = new Promise(function (resolve) {
-        return resolve;
+        resolve();
       });
     }
   }, {
@@ -7867,7 +7848,6 @@ var Player = function () {
 
     this._autoplay = this._autoplay.bind(this);
     this._enableKeyBindings = this._enableKeyBindings.bind(this);
-    return this;
   }
 
   createClass_default()(Player, [{
@@ -8392,14 +8372,10 @@ var Player = function () {
 
         player_classPrivateFieldGet(this, _Player_element, "f").removeAttribute('id');
       } else {
-        var encryption = typeof crypto.getRandomBytes === 'function' ? crypto.getRandomBytes : crypto.getRandomValues;
-        var uid;
+        var cryptoLib = crypto;
+        var encryption = typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
 
-        do {
-          uid = "op_".concat(encryption(new Uint32Array(1))[0].toString(36).substr(2, 9));
-        } while (Player.instances[uid] !== undefined);
-
-        player_classPrivateFieldSet(this, _Player_uid, uid, "f");
+        player_classPrivateFieldSet(this, _Player_uid, "op_".concat(encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)), "f");
       }
 
       if (player_classPrivateFieldGet(this, _Player_element, "f").parentElement) {

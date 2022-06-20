@@ -29,7 +29,6 @@ class Levels implements PlayerComponent {
         this.#player = player;
         this.#controlPosition = position;
         this.#controlLayer = layer;
-        return this;
     }
 
     create(): void {
@@ -317,7 +316,9 @@ class Levels implements PlayerComponent {
                         (item) => `
                 <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio"
                     aria-checked="${this.#defaultLevel === item.key ? 'true' : 'false'}">
-                    <div class="op-settings__submenu-label ${className || ''}" data-value="levels-${item.key}">${item.label}</div>
+                    <div class="op-settings__submenu-label ${className || ''}" data-value="levels-${item.key}">${
+                            item.label
+                        }</div>
                 </div>`
                     )
                     .join('')}
@@ -328,10 +329,7 @@ class Levels implements PlayerComponent {
             itemContainer.className = `op-controls__container op-control__${this.#controlPosition}`;
             itemContainer.appendChild(this.#button);
             itemContainer.appendChild(this.#menu);
-            this.#player
-                .getControls()
-                .getLayer(this.#controlLayer)
-                .appendChild(itemContainer);
+            this.#player.getControls().getLayer(this.#controlLayer).appendChild(itemContainer);
         }
     }
 }

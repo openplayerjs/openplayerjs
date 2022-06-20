@@ -34,7 +34,6 @@ class Settings implements PlayerComponent {
         this.#controlPosition = position;
         this.#controlLayer = layer;
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
 
     create(): void {
@@ -61,7 +60,10 @@ class Settings implements PlayerComponent {
                     menus[i].setAttribute('aria-hidden', 'true');
                 }
             }
-            this.#menu.setAttribute('aria-hidden', this.#menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false');
+            this.#menu.setAttribute(
+                'aria-hidden',
+                this.#menu.getAttribute('aria-hidden') === 'false' ? 'true' : 'false'
+            );
         };
 
         this.hideEvent = (): void => {
@@ -114,10 +116,7 @@ class Settings implements PlayerComponent {
             window.addEventListener('resize', this.#events.global.resize, EVENT_OPTIONS);
         }
 
-        this.#player
-            .getControls()
-            .getLayer(this.#controlLayer)
-            .appendChild(this.#button);
+        this.#player.getControls().getLayer(this.#controlLayer).appendChild(this.#button);
         this.#player.getContainer().appendChild(this.#menu);
     }
 
@@ -200,7 +199,9 @@ class Settings implements PlayerComponent {
                     <div class="op-settings__submenu-item" role="menuitemradio" aria-checked="${
                         defaultValue === item.key ? 'true' : 'false'
                     }">
-                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${item.key}">
+                        <div class="op-settings__submenu-label ${className || ''}" tabindex="0" data-value="${key}-${
+                                item.key
+                            }">
                             ${item.label}
                         </div>
                     </div>`
@@ -220,7 +221,9 @@ class Settings implements PlayerComponent {
                         this.#menu.classList.remove('op-settings--sliding');
                     }, 100);
                 } else if (target.classList.contains('op-settings__menu-content')) {
-                    const labelEl = target.parentElement ? target.parentElement.querySelector('.op-settings__menu-label') : null;
+                    const labelEl = target.parentElement
+                        ? target.parentElement.querySelector('.op-settings__menu-label')
+                        : null;
                     const label = labelEl ? labelEl.getAttribute('data-value') : null;
                     const fragments = label ? label.split('-') : [];
                     if (fragments.length > 0) {
@@ -242,7 +245,9 @@ class Settings implements PlayerComponent {
                     const label = target.innerText;
 
                     // Update values in submenu and store
-                    const menuTarget = this.#menu.querySelector(`#menu-item-${key} .op-settings__submenu-item[aria-checked=true]`);
+                    const menuTarget = this.#menu.querySelector(
+                        `#menu-item-${key} .op-settings__submenu-item[aria-checked=true]`
+                    );
                     if (menuTarget) {
                         menuTarget.setAttribute('aria-checked', 'false');
                         if (target.parentElement) {
@@ -254,7 +259,9 @@ class Settings implements PlayerComponent {
                         this.#menu.classList.add('op-settings--sliding');
                         setTimeout((): void => {
                             this.#menu.innerHTML = this.#originalOutput;
-                            const prev = this.#menu.querySelector(`.op-settings__menu-label[data-value="${key}-${defaultValue}"]`);
+                            const prev = this.#menu.querySelector(
+                                `.op-settings__menu-label[data-value="${key}-${defaultValue}"]`
+                            );
                             if (prev) {
                                 prev.setAttribute('data-value', `${current}`);
                                 if (prev.nextElementSibling) {
@@ -282,7 +289,10 @@ class Settings implements PlayerComponent {
             target.remove();
         }
 
-        if (this.#player.getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length < minItems) {
+        if (
+            this.#player.getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length <
+            minItems
+        ) {
             delete this.#submenu[type];
             const label = this.#player.getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`);
             const menuItem = label ? label.closest('.op-settings__menu-item') : null;

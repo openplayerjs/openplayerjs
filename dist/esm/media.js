@@ -25,7 +25,7 @@ import HlsMedia from './media/hls';
 import HTML5Media from './media/html5';
 import * as source from './utils/media';
 class Media {
-    constructor(element, options, autoplay = false, customMedia) {
+    constructor(element, options, autoplay, customMedia) {
         _Media_element.set(this, void 0);
         _Media_media.set(this, void 0);
         _Media_files.set(this, void 0);
@@ -44,7 +44,6 @@ class Media {
         __classPrivateFieldSet(this, _Media_files, this._getMediaFiles(), "f");
         __classPrivateFieldSet(this, _Media_customMedia, customMedia, "f");
         __classPrivateFieldSet(this, _Media_autoplay, autoplay, "f");
-        return this;
     }
     canPlayType(mimeType) {
         return __classPrivateFieldGet(this, _Media_media, "f").canPlayType(mimeType);
@@ -261,7 +260,8 @@ class Media {
     }
     _invoke(media) {
         var _a, _b, _c;
-        const playHLSNatively = __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/vnd.apple.mpegurl') || __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/x-mpegURL');
+        const playHLSNatively = __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/vnd.apple.mpegurl') ||
+            __classPrivateFieldGet(this, _Media_element, "f").canPlayType('application/x-mpegURL');
         __classPrivateFieldSet(this, _Media_currentSrc, media, "f");
         const { layers } = __classPrivateFieldGet(this, _Media_options, "f").controls || {};
         let activeLevels = false;

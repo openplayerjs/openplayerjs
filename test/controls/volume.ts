@@ -2,7 +2,7 @@ import OpenPlayerJS from '../../src/js/player';
 import '../helper';
 
 describe('controls/volume', () => {
-    let player = null;
+    let player;
 
     afterEach((done) => {
         player.activeElement().muted = true;
@@ -26,7 +26,10 @@ describe('controls/volume', () => {
         expect(volume.getAttribute('aria-valuenow')).to.equal('1');
         expect(volume.getAttribute('aria-valuetext')).to.equal('Volume: 1');
 
-        const range = player.getControls().getContainer().querySelector('.op-controls__volume--input') as HTMLInputElement;
+        const range = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__volume--input') as HTMLInputElement;
         expect(range).to.not.be(null);
         expect(range.type).to.equal('range');
         expect(range.tabIndex).to.equal(-1);
@@ -36,7 +39,10 @@ describe('controls/volume', () => {
         expect(range.getAttribute('step')).to.equal('0.1');
         expect(range.getAttribute('aria-label')).to.equal('Volume Control');
 
-        const progress = player.getControls().getContainer().querySelector('.op-controls__volume--display') as HTMLInputElement;
+        const progress = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__volume--display') as HTMLInputElement;
         expect(progress).to.not.be(null);
         expect(progress.getAttribute('max')).to.equal('10');
         expect(progress.getAttribute('role')).to.equal('presentation');

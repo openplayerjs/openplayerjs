@@ -3,15 +3,17 @@ import { isAudio } from './general';
 
 export function getExtension(url: string): string {
     const baseUrl = url.split('?')[0];
-    const baseFrags = baseUrl ? baseUrl.split('\\') : null;
-    const baseUrlFragment = baseFrags ? baseFrags.pop() : null;
-    const baseNameFrags = baseUrlFragment ? baseUrlFragment.split('/') : null;
-    const baseName = baseNameFrags ? baseNameFrags.pop() : null;
-    return baseName && baseName.indexOf('.') > -1 ? baseName.substring(baseName.lastIndexOf('.') + 1) : '';
+    const baseFrags = (baseUrl || '').split('\\');
+    const baseUrlFragment = (baseFrags || []).pop();
+    const baseNameFrags = (baseUrlFragment || '').split('/');
+    const baseName = (baseNameFrags || []).pop() || '';
+    return baseName.includes('.') ? baseName.substring(baseName.lastIndexOf('.') + 1) : '';
 }
 
 export function isHlsSource(media: Source): boolean {
-    return /\.m3u8$/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].indexOf(media.type) > -1;
+    return (
+        /\.m3u8$/i.test(media.src) || ['application/x-mpegURL', 'application/vnd.apple.mpegurl'].includes(media.type)
+    );
 }
 
 export function isM3USource(media: Source): boolean {
@@ -23,7 +25,7 @@ export function isDashSource(media: Source): boolean {
 }
 
 export function isFlvSource(media: Source): boolean {
-    return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].indexOf(media.type) > -1;
+    return /(^rtmp:\/\/|\.flv$)/i.test(media.src) || ['video/x-flv', 'video/flv'].includes(media.type);
 }
 
 export function predictMimeType(url: string, element: HTMLMediaElement): string {
@@ -83,7 +85,7 @@ export function isAutoplaySupported(
                 media.pause();
                 autoplay(true);
                 muted(false);
-                return callback();
+                callback();
             })
             .catch(() => {
                 // Unmuted autoplay failed. New attempt with muted autoplay.
@@ -96,7 +98,7 @@ export function isAutoplaySupported(
                         media.pause();
                         autoplay(true);
                         muted(true);
-                        return callback();
+                        callback();
                     })
                     .catch(() => {
                         // Both muted and unmuted autoplay failed. Fallback to click to play.

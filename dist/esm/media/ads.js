@@ -133,7 +133,6 @@ class Ads {
             const errorEvent = addEvent('playererror', details);
             __classPrivateFieldGet(this, _Ads_element, "f").dispatchEvent(errorEvent);
         });
-        return this;
     }
     load(force = false) {
         var _a, _b, _c;
@@ -610,7 +609,9 @@ class Ads {
         adsRenderingSettings.enablePreloading = __classPrivateFieldGet(this, _Ads_options, "f").enablePreloading;
         __classPrivateFieldSet(this, _Ads_manager, managerLoadedEvent.getAdsManager(__classPrivateFieldGet(this, _Ads_element, "f"), adsRenderingSettings), "f");
         this._start(__classPrivateFieldGet(this, _Ads_manager, "f"));
-        this.loadPromise = new Promise((resolve) => resolve);
+        this.loadPromise = new Promise((resolve) => {
+            resolve();
+        });
     }
     _start(manager) {
         if (__classPrivateFieldGet(this, _Ads_customClickContainer, "f") && manager.isCustomClickTrackingUsed()) {

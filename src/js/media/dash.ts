@@ -35,8 +35,6 @@ class DashMedia extends Native {
             this.#player = dashjs.MediaPlayer().create();
             this.instance = this.#player;
         });
-
-        return this;
     }
 
     canPlayType(mimeType: string): boolean {

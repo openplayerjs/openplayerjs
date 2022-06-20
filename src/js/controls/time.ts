@@ -27,7 +27,6 @@ class Time implements PlayerComponent {
         this.#player = player;
         this.#controlPosition = position;
         this.#controlLayer = layer;
-        return this;
     }
 
     create(): void {
@@ -68,7 +67,9 @@ class Time implements PlayerComponent {
             const el = this.#player.activeElement();
             if (el.duration !== Infinity && !this.#player.getElement().getAttribute('op-live__enabled')) {
                 if (!showOnlyCurrent) {
-                    const duration = !Number.isNaN(el.duration) ? el.duration : this.#player.getOptions().progress?.duration || 0;
+                    const duration = !Number.isNaN(el.duration)
+                        ? el.duration
+                        : this.#player.getOptions().progress?.duration || 0;
                     this.#duration.innerText = formatTime(duration);
                 }
                 this.#currentTime.innerText = formatTime(el.currentTime);
@@ -107,7 +108,8 @@ class Time implements PlayerComponent {
                 this.#currentTime.innerText = formatTime(el.currentTime);
             } else if (
                 showOnlyCurrent ||
-                (!this.#player.getElement().getAttribute('op-dvr__enabled') && this.#duration.getAttribute('aria-hidden') === 'false')
+                (!this.#player.getElement().getAttribute('op-dvr__enabled') &&
+                    this.#duration.getAttribute('aria-hidden') === 'false')
             ) {
                 if (!showOnlyCurrent) {
                     this.#duration.setAttribute('aria-hidden', 'true');
@@ -120,7 +122,9 @@ class Time implements PlayerComponent {
         };
         this.#events.media.ended = (): void => {
             const el = this.#player.activeElement();
-            const duration = !Number.isNaN(el.duration) ? el.duration : this.#player.getOptions().progress?.duration || 0;
+            const duration = !Number.isNaN(el.duration)
+                ? el.duration
+                : this.#player.getOptions().progress?.duration || 0;
             if (!showOnlyCurrent && this.#player.isMedia()) {
                 this.#duration.innerText = formatTime(duration);
             }

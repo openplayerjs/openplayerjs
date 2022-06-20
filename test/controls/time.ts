@@ -3,7 +3,7 @@ import { formatTime } from '../../src/js/utils/time';
 import '../helper';
 
 describe('controls/time', () => {
-    let player = null;
+    let player;
 
     afterEach((done) => {
         player.destroy();
@@ -22,12 +22,18 @@ describe('controls/time', () => {
         expect(current.getAttribute('aria-hidden')).to.equal('false');
         expect(current.textContent).to.equal('00:00');
 
-        const delimiter = player.getControls().getContainer().querySelector('.op-controls__time-delimiter') as HTMLElement;
+        const delimiter = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__time-delimiter') as HTMLElement;
         expect(delimiter).to.not.be(null);
         expect(delimiter.getAttribute('aria-hidden')).to.equal('false');
         expect(delimiter.textContent).to.equal('/');
 
-        const duration = player.getControls().getContainer().querySelector('.op-controls__duration') as HTMLInputElement;
+        const duration = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__duration') as HTMLInputElement;
         expect(duration).to.not.be(null);
         expect(duration.getAttribute('aria-hidden')).to.equal('false');
         expect(duration.textContent).to.equal(formatTime(player.getOptions().progress.duration));
@@ -62,10 +68,16 @@ describe('controls/time', () => {
         const current = player.getControls().getContainer().querySelector('.op-controls__current') as HTMLInputElement;
         expect(current).to.not.be(null);
 
-        const delimiter = player.getControls().getContainer().querySelector('.op-controls__time-delimiter') as HTMLElement;
+        const delimiter = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__time-delimiter') as HTMLElement;
         expect(delimiter).to.be(null);
 
-        const duration = player.getControls().getContainer().querySelector('.op-controls__duration') as HTMLInputElement;
+        const duration = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__duration') as HTMLInputElement;
         expect(duration).to.be(null);
     });
 
@@ -80,10 +92,16 @@ describe('controls/time', () => {
         const current = player.getControls().getContainer().querySelector('.op-controls__current') as HTMLInputElement;
         expect(current).to.not.be(null);
 
-        const delimiter = player.getControls().getContainer().querySelector('.op-controls__time-delimiter') as HTMLElement;
+        const delimiter = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__time-delimiter') as HTMLElement;
         expect(delimiter).to.not.be(null);
 
-        const duration = player.getControls().getContainer().querySelector('.op-controls__duration') as HTMLInputElement;
+        const duration = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__duration') as HTMLInputElement;
         expect(duration).to.not.be(null);
         expect(duration.textContent).to.equal(formatTime(50));
     });

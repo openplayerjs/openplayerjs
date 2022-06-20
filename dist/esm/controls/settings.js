@@ -29,7 +29,6 @@ class Settings {
         __classPrivateFieldSet(this, _Settings_controlPosition, position, "f");
         __classPrivateFieldSet(this, _Settings_controlLayer, layer, "f");
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
-        return this;
     }
     create() {
         const { labels } = __classPrivateFieldGet(this, _Settings_player, "f").getOptions();
@@ -96,10 +95,7 @@ class Settings {
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', __classPrivateFieldGet(this, _Settings_events, "f").global.resize, EVENT_OPTIONS);
         }
-        __classPrivateFieldGet(this, _Settings_player, "f")
-            .getControls()
-            .getLayer(__classPrivateFieldGet(this, _Settings_controlLayer, "f"))
-            .appendChild(__classPrivateFieldGet(this, _Settings_button, "f"));
+        __classPrivateFieldGet(this, _Settings_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Settings_controlLayer, "f")).appendChild(__classPrivateFieldGet(this, _Settings_button, "f"));
         __classPrivateFieldGet(this, _Settings_player, "f").getContainer().appendChild(__classPrivateFieldGet(this, _Settings_menu, "f"));
     }
     destroy() {
@@ -187,7 +183,9 @@ class Settings {
                     }, 100);
                 }
                 else if (target.classList.contains('op-settings__menu-content')) {
-                    const labelEl = target.parentElement ? target.parentElement.querySelector('.op-settings__menu-label') : null;
+                    const labelEl = target.parentElement
+                        ? target.parentElement.querySelector('.op-settings__menu-label')
+                        : null;
                     const label = labelEl ? labelEl.getAttribute('data-value') : null;
                     const fragments = label ? label.split('-') : [];
                     if (fragments.length > 0) {
@@ -242,7 +240,8 @@ class Settings {
         if (target) {
             target.remove();
         }
-        if (__classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length < minItems) {
+        if (__classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelectorAll(`.op-settings__submenu-label[data-value^=${type}]`).length <
+            minItems) {
             delete __classPrivateFieldGet(this, _Settings_submenu, "f")[type];
             const label = __classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelector(`.op-settings__menu-label[data-value^=${type}]`);
             const menuItem = label ? label.closest('.op-settings__menu-item') : null;

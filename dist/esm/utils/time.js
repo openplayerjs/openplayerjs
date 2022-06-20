@@ -4,13 +4,14 @@ export function formatTime(seconds, frameRate) {
     let m = Math.floor(s / 60);
     const h = Math.floor(m / 60);
     const wrap = (value) => {
+        const formattedVal = value.toString();
         if (value < 10) {
             if (value <= 0) {
                 return '00';
             }
-            return `0${value.toString()}`;
+            return `0${formattedVal}`;
         }
-        return value.toString();
+        return formattedVal;
     };
     m %= 60;
     s %= 60;

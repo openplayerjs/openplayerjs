@@ -42,7 +42,7 @@ export function sanitize(html, plainText = true) {
     for (let i = 0, total = scripts.length; i < total; i++) {
         scripts[i].remove();
     }
-    function clean(element) {
+    const clean = (element) => {
         const nodes = element.children;
         for (let i = 0, total = nodes.length; i < total; i++) {
             const node = nodes[i];
@@ -61,7 +61,7 @@ export function sanitize(html, plainText = true) {
             }
             clean(node);
         }
-    }
+    };
     clean(formattedContent);
     return plainText ? (formattedContent.textContent || '').replace(/\s{2,}/g, '') : formattedContent.innerHTML;
 }

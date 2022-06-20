@@ -2,7 +2,7 @@ import OpenPlayerJS from '../../src/js/player';
 import '../helper';
 
 describe('controls/play', (): void => {
-    let player = null;
+    let player;
 
     afterEach((done) => {
         player.pause();
@@ -56,7 +56,10 @@ describe('controls/play', (): void => {
         return new Promise((resolve) => {
             const events = {
                 ended: (): void => {
-                    const play = player.getControls().getContainer().querySelector('.op-controls__playpause--replay') as HTMLButtonElement;
+                    const play = player
+                        .getControls()
+                        .getContainer()
+                        .querySelector('.op-controls__playpause--replay') as HTMLButtonElement;
                     expect(play).to.not.be(null);
                     expect(play.getAttribute('aria-label')).to.equal('Play');
                     expect(player.getElement().paused).to.equal(true);
@@ -68,7 +71,10 @@ describe('controls/play', (): void => {
                     resolve();
                 },
                 play: (): void => {
-                    const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+                    const play = player
+                        .getControls()
+                        .getContainer()
+                        .querySelector('.op-controls__playpause') as HTMLButtonElement;
                     expect(play).to.not.be(null);
                     expect(play.classList.contains('op-controls__playpause--replay')).to.be(false);
                     expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
@@ -76,7 +82,10 @@ describe('controls/play', (): void => {
                     expect(player.getElement().paused).to.equal(false);
                 },
                 playing: (): void => {
-                    const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+                    const play = player
+                        .getControls()
+                        .getContainer()
+                        .querySelector('.op-controls__playpause') as HTMLButtonElement;
                     expect(play).to.not.be(null);
                     expect(play.classList.contains('op-controls__playpause--replay')).to.be(false);
                     expect(play.classList.contains('op-controls__playpause--pause')).to.be(true);
@@ -100,7 +109,10 @@ describe('controls/play', (): void => {
         await player.init();
 
         return new Promise<void>((resolve) => {
-            const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            const play = player
+                .getControls()
+                .getContainer()
+                .querySelector('.op-controls__playpause') as HTMLButtonElement;
             const e = new CustomEvent('click');
             play.dispatchEvent(e);
 
@@ -114,7 +126,10 @@ describe('controls/play', (): void => {
         await player.init();
 
         return new Promise<void>((resolve) => {
-            const play = player.getControls().getContainer().querySelector('.op-controls__playpause') as HTMLButtonElement;
+            const play = player
+                .getControls()
+                .getContainer()
+                .querySelector('.op-controls__playpause') as HTMLButtonElement;
             let e = new KeyboardEvent('keydown', {
                 bubbles: true,
                 cancelable: true,

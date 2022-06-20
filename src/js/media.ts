@@ -29,13 +29,12 @@ class Media {
 
     #currentSrc: Source;
 
-    constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay = false, customMedia: CustomMedia) {
+    constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay: boolean, customMedia: CustomMedia) {
         this.#element = element;
         this.#options = options;
         this.#files = this._getMediaFiles();
         this.#customMedia = customMedia;
         this.#autoplay = autoplay;
-        return this;
     }
 
     canPlayType(mimeType: string): boolean {
@@ -299,7 +298,8 @@ class Media {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
         const playHLSNatively =
-            this.#element.canPlayType('application/vnd.apple.mpegurl') || this.#element.canPlayType('application/x-mpegURL');
+            this.#element.canPlayType('application/vnd.apple.mpegurl') ||
+            this.#element.canPlayType('application/x-mpegURL');
 
         this.#currentSrc = media;
 

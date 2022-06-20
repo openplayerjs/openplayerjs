@@ -2,7 +2,7 @@ import OpenPlayerJS from '../../src/js/player';
 import '../helper';
 
 describe('controls/fullscreen', () => {
-    let player = null;
+    let player;
 
     afterEach((done) => {
         if (OpenPlayerJS.instances.video) {
@@ -20,7 +20,10 @@ describe('controls/fullscreen', () => {
         player = new OpenPlayerJS('video');
         await player.init();
 
-        const fullscreen = player.getControls().getContainer().querySelector('.op-controls__fullscreen') as HTMLButtonElement;
+        const fullscreen = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__fullscreen') as HTMLButtonElement;
         expect(fullscreen).to.not.be(null);
         expect(fullscreen.tabIndex).to.equal(0);
         expect(fullscreen.title).to.equal('Fullscreen');
@@ -34,7 +37,10 @@ describe('controls/fullscreen', () => {
         player = new OpenPlayerJS('audio');
         await player.init();
 
-        const fullscreen = player.getControls().getContainer().querySelector('.op-controls__fullscreen') as HTMLButtonElement;
+        const fullscreen = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__fullscreen') as HTMLButtonElement;
         expect(fullscreen).to.be(null);
     });
 
@@ -50,7 +56,10 @@ describe('controls/fullscreen', () => {
 
         expect(player.getControls().getContainer().querySelector('.op-control__right')).to.not.be(null);
         expect(player.getControls().getContainer().querySelector('.op-controls-layer__top')).to.not.be(null);
-        const fullscreen = player.getControls().getContainer().querySelector('.op-controls__fullscreen') as HTMLButtonElement;
+        const fullscreen = player
+            .getControls()
+            .getContainer()
+            .querySelector('.op-controls__fullscreen') as HTMLButtonElement;
         expect(fullscreen).to.not.be(null);
     });
 
@@ -59,7 +68,10 @@ describe('controls/fullscreen', () => {
         await player.init();
 
         return new Promise<void>((resolve) => {
-            const fullscreen = player.getControls().getContainer().querySelector('.op-controls__fullscreen') as HTMLButtonElement;
+            const fullscreen = player
+                .getControls()
+                .getContainer()
+                .querySelector('.op-controls__fullscreen') as HTMLButtonElement;
             const e = new CustomEvent('click');
             fullscreen.dispatchEvent(e);
             expect(document.body.classList.contains('op-fullscreen__on')).to.be(true);
@@ -72,7 +84,10 @@ describe('controls/fullscreen', () => {
         await player.init();
 
         return new Promise<void>((resolve) => {
-            const fullscreen = player.getControls().getContainer().querySelector('.op-controls__fullscreen') as HTMLButtonElement;
+            const fullscreen = player
+                .getControls()
+                .getContainer()
+                .querySelector('.op-controls__fullscreen') as HTMLButtonElement;
             const checkFullScreen = (): void => {
                 expect(document.body.classList.contains('op-fullscreen__on')).to.be(true);
                 resolve();

@@ -43,7 +43,6 @@ class Controls {
         });
         __classPrivateFieldSet(this, _Controls_player, player, "f");
         this._setElements();
-        return this;
     }
     create() {
         __classPrivateFieldGet(this, _Controls_player, "f").getElement().controls = false;
@@ -316,7 +315,9 @@ class Controls {
     }
     _createCustomControl(item) {
         const control = document.createElement('button');
-        const icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? `<img src="${sanitize(item.icon)}">` : sanitize(item.icon);
+        const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
+            ? `<img src="${sanitize(item.icon)}">`
+            : sanitize(item.icon);
         control.className = `op-controls__${item.id} op-control__${item.position} ${item.showInAds ? '' : 'op-control__hide-in-ad'}`;
         control.tabIndex = 0;
         control.id = item.id;
@@ -345,7 +346,9 @@ class Controls {
                 }
             });
             control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Controls_player, "f").getElement().addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Controls_player, "f")
+                .getElement()
+                .addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         }
         else if (item.click && typeof item.click === 'function') {
             control.addEventListener('click', item.click, EVENT_OPTIONS);
