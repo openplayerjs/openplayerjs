@@ -6,19 +6,19 @@ module.exports = (config) => {
         frameworks: ['mocha', 'chai', 'karma-typescript'],
         files: [
             {
-                pattern: 'src/css/**/*.svg',
+                pattern: 'styles/**/*.svg',
                 watched: false,
                 included: false,
                 served: true,
             },
             { pattern: 'node_modules/expect.js/index.js' },
             { pattern: 'test/player.html', type: 'dom', watched: false },
-            'src/css/*.css',
-            'src/js/**/*.ts',
+            'styles/*.css',
+            'src/**/*.ts',
             'test/**/*.ts',
         ],
         preprocessors: {
-            'src/js/**/*.ts': ['karma-typescript', 'coverage'],
+            'src/**/*.ts': ['karma-typescript', 'coverage'],
             'test/**/*.ts': 'karma-typescript',
         },
         karmaTypescriptConfig: {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { expect } from 'chai';
-import * as general from '../../src/js/utils/general';
+import * as general from '../../src/utils/general';
 import '../helper';
 
 describe('utils/general', () => {

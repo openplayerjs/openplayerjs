@@ -1,11 +1,9 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-      "module": "es2020",
-      "outDir": "./dist/esm/",
-      "types": [
-        "node"
-      ]
-  },
-  "include": ["./src/js"]
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "esnext",
+        "outDir": "./dist/esm/",
+        "types": ["node"]
+    },
+    "include": ["./src"]
 }

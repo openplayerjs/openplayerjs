@@ -1,5 +1,5 @@
-import OpenPlayerJS from '../../src/js/player';
-import { formatTime } from '../../src/js/utils/time';
+import OpenPlayerJS from '../../src/player';
+import { formatTime } from '../../src/utils/time';
 import '../helper';
 
 describe('controls/time', () => {

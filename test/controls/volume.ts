@@ -1,4 +1,4 @@
-import OpenPlayerJS from '../../src/js/player';
+import OpenPlayerJS from '../../src/player';
 import '../helper';
 
 describe('controls/volume', () => {

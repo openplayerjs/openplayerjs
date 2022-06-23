@@ -2,7 +2,7 @@ import { Level, Source } from '../interfaces';
 import Native from './native';
 declare class HlsMedia extends Native {
     #private;
-    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay?: boolean, options?: unknown);
+    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean, options?: unknown);
     canPlayType(mimeType: string): boolean;
     load(): void;
     destroy(): void;

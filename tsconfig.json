@@ -1,38 +1,27 @@
 {
-  "buildOnSave": false,
-  "compileOnSave": false,
-  "compilerOptions": {
-      "allowSyntheticDefaultImports": true,
-      "lib": [
-        "dom",
-        "es6"
-      ],
-      "declaration": false,
-      "allowJs": true,
-      "target": "es6",
-      "noImplicitAny": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "removeComments": true,
-      "preserveConstEnums": true,
-      "sourceMap": false,
-      "skipLibCheck": true,
-      "strict": true,
-      "moduleResolution": "node",
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "esModuleInterop": true,
-      "strictPropertyInitialization": false
-  },
-  "include": [
-      "./src/js",
-      "./test"
-  ],
-  "exclude": [
-      "node_modules",
-      "ts-dist",
-      "dist",
-      "test",
-      "webpack.config.js"
-  ],
+    "buildOnSave": false,
+    "compileOnSave": false,
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "lib": ["dom", "es6"],
+        "declaration": false,
+        "allowJs": true,
+        "target": "esnext",
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "skipLibCheck": true,
+        "strict": true,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "strictPropertyInitialization": false,
+        "baseUrl": "src/"
+    },
+    "include": ["./src/**/*.ts", "./test"],
+    "exclude": ["node_modules", "ts-dist", "dist", "test", "webpack.config.js"]
 }

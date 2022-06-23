@@ -1,8 +1,8 @@
 # Migration
 
-## Starting in v3.x.x
+## From v2.x to v3.x
 
-No longer support for IE11.
+**No longer support for IE11.**
 
 Bundles will not support IE11 going forward to reduce the footprint of supporting Promises and other ES6 native functions.
 
@@ -53,7 +53,7 @@ const player = new OpenPlayerJS('player', {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
             right: ['captions', 'settings', 'fullscreen'],
-        }
+        },
     },
     live: {
         showLabel: true,

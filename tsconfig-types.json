@@ -4,7 +4,7 @@
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "target": "es6",
+        "target": "esnext",
         "declaration": true,
         "allowJs": true,
         "emitDeclarationOnly": true,
@@ -12,5 +12,5 @@
         "moduleResolution": "node",
         "outDir": "./types"
     },
-    "include": ["./src/js"]
+    "include": ["./src"]
 }

@@ -15,7 +15,7 @@ import { addEvent, loadScript } from '../utils/general';
 import { isHlsSource } from '../utils/media';
 import Native from './native';
 class HlsMedia extends Native {
-    constructor(element, mediaSource, autoplay = false, options) {
+    constructor(element, mediaSource, autoplay, options) {
         super(element, mediaSource);
         _HlsMedia_player.set(this, void 0);
         _HlsMedia_events.set(this, {});

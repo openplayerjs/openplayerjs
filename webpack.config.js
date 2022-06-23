@@ -11,7 +11,7 @@ module.exports = {
     },
     context: __dirname,
     entry: {
-        openplayer: ['./src/js/player.ts', './src/css/player.css'],
+        openplayer: ['./src/player.ts', './styles/player.css'],
     },
     performance: {
         hints: 'error',

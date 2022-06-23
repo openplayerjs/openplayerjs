@@ -11,7 +11,7 @@
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 228:
+/***/ 669:
 /***/ ((module) => {
 
 function _arrayLikeToArray(arr, len) {
@@ -639,7 +639,7 @@ module.exports = _typeof, module.exports.__esModule = true, module.exports["defa
 /***/ 379:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-var arrayLikeToArray = __webpack_require__(228);
+var arrayLikeToArray = __webpack_require__(669);
 
 function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
@@ -762,7 +762,7 @@ var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
 var slicedToArray = __webpack_require__(38);
 var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
-;// CONCATENATED MODULE: ./src/js/utils/constants.ts
+;// CONCATENATED MODULE: ./src/utils/constants.ts
 var NAV = typeof window !== 'undefined' ? window.navigator : null;
 var UA = NAV ? NAV.userAgent.toLowerCase() : null;
 var IS_IPAD = UA ? /ipad/i.test(UA) && !window.MSStream : false;
@@ -791,7 +791,7 @@ var DVR_THRESHOLD = 120;
 var EVENT_OPTIONS = {
   passive: false
 };
-;// CONCATENATED MODULE: ./src/js/utils/general.ts
+;// CONCATENATED MODULE: ./src/utils/general.ts
 
 function getAbsoluteUrl(url) {
   var a = document.createElement('a');
@@ -923,7 +923,7 @@ function addEvent(event, details) {
 
   return new CustomEvent(event, detail);
 }
-;// CONCATENATED MODULE: ./src/js/utils/time.ts
+;// CONCATENATED MODULE: ./src/utils/time.ts
 function formatTime(seconds, frameRate) {
   var f = Math.floor(seconds % 1 * (frameRate || 0));
   var s = Math.floor(seconds);
@@ -963,7 +963,7 @@ function timeToSeconds(timeCode) {
 
   return seconds;
 }
-;// CONCATENATED MODULE: ./src/js/controls/captions.ts
+;// CONCATENATED MODULE: ./src/controls/captions.ts
 
 
 
@@ -1578,7 +1578,7 @@ var Captions = function () {
 
 _Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_langTracks = new WeakMap(), _Captions_mediaTrackList = new WeakMap(), _Captions_trackUrlList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_currentTrack = new WeakMap(), _Captions_default = new WeakMap(), _Captions_controlPosition = new WeakMap(), _Captions_controlLayer = new WeakMap();
 /* harmony default export */ const captions = (Captions);
-;// CONCATENATED MODULE: ./src/js/controls/fullscreen.ts
+;// CONCATENATED MODULE: ./src/controls/fullscreen.ts
 
 
 
@@ -1875,7 +1875,7 @@ var Fullscreen = function () {
 
 _Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _Fullscreen_button = new WeakMap(), _Fullscreen_fullscreenEvents = new WeakMap(), _Fullscreen_fullscreenWidth = new WeakMap(), _Fullscreen_fullscreenHeight = new WeakMap(), _Fullscreen_clickEvent = new WeakMap(), _Fullscreen_controlPosition = new WeakMap(), _Fullscreen_controlLayer = new WeakMap();
 /* harmony default export */ const fullscreen = (Fullscreen);
-;// CONCATENATED MODULE: ./src/js/utils/media.ts
+;// CONCATENATED MODULE: ./src/utils/media.ts
 
 function getExtension(url) {
   var baseUrl = url.split('?')[0];
@@ -1978,7 +1978,7 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
     callback();
   }
 }
-;// CONCATENATED MODULE: ./src/js/controls/levels.ts
+;// CONCATENATED MODULE: ./src/controls/levels.ts
 
 
 
@@ -2446,7 +2446,7 @@ var Levels = function () {
 
 _Levels_player = new WeakMap(), _Levels_button = new WeakMap(), _Levels_menu = new WeakMap(), _Levels_events = new WeakMap(), _Levels_levels = new WeakMap(), _Levels_defaultLevel = new WeakMap(), _Levels_controlPosition = new WeakMap(), _Levels_controlLayer = new WeakMap();
 /* harmony default export */ const levels = (Levels);
-;// CONCATENATED MODULE: ./src/js/controls/play.ts
+;// CONCATENATED MODULE: ./src/controls/play.ts
 
 
 
@@ -2713,7 +2713,7 @@ var Play = function () {
 
 _Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_controlPosition = new WeakMap(), _Play_controlLayer = new WeakMap();
 /* harmony default export */ const play = (Play);
-;// CONCATENATED MODULE: ./src/js/controls/progress.ts
+;// CONCATENATED MODULE: ./src/controls/progress.ts
 
 
 
@@ -3230,7 +3230,7 @@ var Progress = function () {
 
 _Progress_player = new WeakMap(), _Progress_progress = new WeakMap(), _Progress_slider = new WeakMap(), _Progress_buffer = new WeakMap(), _Progress_played = new WeakMap(), _Progress_tooltip = new WeakMap(), _Progress_events = new WeakMap(), _Progress_forcePause = new WeakMap(), _Progress_controlPosition = new WeakMap(), _Progress_controlLayer = new WeakMap();
 /* harmony default export */ const progress = (Progress);
-;// CONCATENATED MODULE: ./src/js/controls/settings.ts
+;// CONCATENATED MODULE: ./src/controls/settings.ts
 
 
 
@@ -3629,7 +3629,7 @@ var Settings = function () {
 
 _Settings_player = new WeakMap(), _Settings_submenu = new WeakMap(), _Settings_button = new WeakMap(), _Settings_menu = new WeakMap(), _Settings_events = new WeakMap(), _Settings_originalOutput = new WeakMap(), _Settings_controlPosition = new WeakMap(), _Settings_controlLayer = new WeakMap();
 /* harmony default export */ const settings = (Settings);
-;// CONCATENATED MODULE: ./src/js/controls/time.ts
+;// CONCATENATED MODULE: ./src/controls/time.ts
 
 
 
@@ -3849,7 +3849,7 @@ var Time = function () {
 
 _Time_player = new WeakMap(), _Time_currentTime = new WeakMap(), _Time_delimiter = new WeakMap(), _Time_duration = new WeakMap(), _Time_container = new WeakMap(), _Time_events = new WeakMap(), _Time_controlPosition = new WeakMap(), _Time_controlLayer = new WeakMap();
 /* harmony default export */ const time = (Time);
-;// CONCATENATED MODULE: ./src/js/controls/volume.ts
+;// CONCATENATED MODULE: ./src/controls/volume.ts
 
 
 
@@ -4138,7 +4138,7 @@ var Volume = function () {
 
 _Volume_player = new WeakMap(), _Volume_button = new WeakMap(), _Volume_container = new WeakMap(), _Volume_display = new WeakMap(), _Volume_slider = new WeakMap(), _Volume_events = new WeakMap(), _Volume_volume = new WeakMap(), _Volume_controlPosition = new WeakMap(), _Volume_controlLayer = new WeakMap();
 /* harmony default export */ const volume = (Volume);
-;// CONCATENATED MODULE: ./src/js/controls.ts
+;// CONCATENATED MODULE: ./src/controls.ts
 
 
 
@@ -4739,7 +4739,7 @@ var possibleConstructorReturn_default = /*#__PURE__*/__webpack_require__.n(possi
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/getPrototypeOf.js
 var getPrototypeOf = __webpack_require__(754);
 var getPrototypeOf_default = /*#__PURE__*/__webpack_require__.n(getPrototypeOf);
-;// CONCATENATED MODULE: ./src/js/media/native.ts
+;// CONCATENATED MODULE: ./src/media/native.ts
 
 
 
@@ -4851,7 +4851,7 @@ var Native = function () {
 
 _Native_customPlayer = new WeakMap();
 /* harmony default export */ const media_native = (Native);
-;// CONCATENATED MODULE: ./src/js/media/dash.ts
+;// CONCATENATED MODULE: ./src/media/dash.ts
 
 
 
@@ -5065,7 +5065,7 @@ var DashMedia = function (_Native) {
 
 _DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia_options = new WeakMap();
 /* harmony default export */ const dash = (DashMedia);
-;// CONCATENATED MODULE: ./src/js/media/flv.ts
+;// CONCATENATED MODULE: ./src/media/flv.ts
 
 
 
@@ -5289,7 +5289,7 @@ var FlvMedia = function (_Native) {
 
 _FlvMedia_player = new WeakMap(), _FlvMedia_events = new WeakMap(), _FlvMedia_options = new WeakMap();
 /* harmony default export */ const flv = (FlvMedia);
-;// CONCATENATED MODULE: ./src/js/media/hls.ts
+;// CONCATENATED MODULE: ./src/media/hls.ts
 
 
 
@@ -5326,11 +5326,8 @@ var HlsMedia = function (_Native) {
 
   var _super = hls_createSuper(HlsMedia);
 
-  function HlsMedia(element, mediaSource) {
+  function HlsMedia(element, mediaSource, autoplay, options) {
     var _this;
-
-    var autoplay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var options = arguments.length > 3 ? arguments[3] : undefined;
 
     classCallCheck_default()(this, HlsMedia);
 
@@ -5649,7 +5646,7 @@ var HlsMedia = function (_Native) {
 
 _HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_recoverDecodingErrorDate = new WeakMap(), _HlsMedia_recoverSwapAudioCodecDate = new WeakMap(), _HlsMedia_options = new WeakMap(), _HlsMedia_autoplay = new WeakMap();
 /* harmony default export */ const hls = (HlsMedia);
-;// CONCATENATED MODULE: ./src/js/media/html5.ts
+;// CONCATENATED MODULE: ./src/media/html5.ts
 
 
 
@@ -5932,7 +5929,7 @@ var HTML5Media = function (_Native) {
 
 _HTML5Media_currentLevel = new WeakMap(), _HTML5Media_levelList = new WeakMap(), _HTML5Media_isStreaming = new WeakMap(), _HTML5Media_retryCount = new WeakMap(), _HTML5Media_started = new WeakMap(), _HTML5Media_timer = new WeakMap();
 /* harmony default export */ const html5 = (HTML5Media);
-;// CONCATENATED MODULE: ./src/js/media.ts
+;// CONCATENATED MODULE: ./src/media.ts
 
 
 
@@ -6465,8 +6462,8 @@ var Media = function () {
 }();
 
 _Media_element = new WeakMap(), _Media_media = new WeakMap(), _Media_files = new WeakMap(), _Media_promisePlay = new WeakMap(), _Media_options = new WeakMap(), _Media_autoplay = new WeakMap(), _Media_mediaLoaded = new WeakMap(), _Media_customMedia = new WeakMap(), _Media_currentSrc = new WeakMap();
-/* harmony default export */ const js_media = (Media);
-;// CONCATENATED MODULE: ./src/js/media/ads.ts
+/* harmony default export */ const src_media = (Media);
+;// CONCATENATED MODULE: ./src/media/ads.ts
 
 
 
@@ -7657,7 +7654,7 @@ var Ads = function () {
 
 _Ads_ended = new WeakMap(), _Ads_done = new WeakMap(), _Ads_active = new WeakMap(), _Ads_started = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_volume = new WeakMap(), _Ads_muted = new WeakMap(), _Ads_duration = new WeakMap(), _Ads_currentTime = new WeakMap(), _Ads_manager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_loader = new WeakMap(), _Ads_container = new WeakMap(), _Ads_customClickContainer = new WeakMap(), _Ads_skipElement = new WeakMap(), _Ads_displayContainer = new WeakMap(), _Ads_request = new WeakMap(), _Ads_autostart = new WeakMap(), _Ads_autostartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_options = new WeakMap(), _Ads_currentIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap(), _Ads_adEvent = new WeakMap();
 /* harmony default export */ const ads = (Ads);
-;// CONCATENATED MODULE: ./src/js/player.ts
+;// CONCATENATED MODULE: ./src/player.ts
 
 
 
@@ -8047,7 +8044,7 @@ var Player = function () {
   }, {
     key: "isMedia",
     value: function isMedia() {
-      return this.activeElement() instanceof js_media;
+      return this.activeElement() instanceof src_media;
     }
   }, {
     key: "isAd",
@@ -8143,7 +8140,7 @@ var Player = function () {
                   player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
                 }
 
-                player_classPrivateFieldSet(this, _Player_media, new js_media(player_classPrivateFieldGet(this, _Player_element, "f"), player_classPrivateFieldGet(this, _Player_options, "f"), player_classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
+                player_classPrivateFieldSet(this, _Player_media, new src_media(player_classPrivateFieldGet(this, _Player_element, "f"), player_classPrivateFieldGet(this, _Player_options, "f"), player_classPrivateFieldGet(this, _Player_autoplay, "f"), Player.customMedia), "f");
 
                 preload = player_classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
 
@@ -8245,7 +8242,7 @@ var Player = function () {
     set: function set(media) {
       var _this4 = this;
 
-      if (player_classPrivateFieldGet(this, _Player_media, "f") instanceof js_media) {
+      if (player_classPrivateFieldGet(this, _Player_media, "f") instanceof src_media) {
         player_classPrivateFieldGet(this, _Player_media, "f").mediaFiles = [];
         player_classPrivateFieldGet(this, _Player_media, "f").src = media;
       } else if (typeof media === 'string') {
@@ -8460,7 +8457,7 @@ var Player = function () {
 
           _this6.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this6.loader.setAttribute('aria-hidden', el instanceof js_media ? 'false' : 'true');
+          _this6.loader.setAttribute('aria-hidden', el instanceof src_media ? 'false' : 'true');
         };
 
         player_classPrivateFieldGet(this, _Player_events, "f").seeked = function () {
@@ -8471,7 +8468,7 @@ var Player = function () {
 
             _this6.loader.setAttribute('aria-hidden', 'false');
           } else {
-            _this6.playBtn.setAttribute('aria-hidden', el instanceof js_media ? 'false' : 'true');
+            _this6.playBtn.setAttribute('aria-hidden', el instanceof src_media ? 'false' : 'true');
 
             _this6.loader.setAttribute('aria-hidden', 'true');
           }
