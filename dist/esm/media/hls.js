@@ -1,32 +1,20 @@
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _HlsMedia_player, _HlsMedia_events, _HlsMedia_recoverDecodingErrorDate, _HlsMedia_recoverSwapAudioCodecDate, _HlsMedia_options, _HlsMedia_autoplay;
 import { DVR_THRESHOLD, EVENT_OPTIONS, SUPPORTS_HLS } from '../utils/constants';
 import { addEvent, loadScript } from '../utils/general';
 import { isHlsSource } from '../utils/media';
 import Native from './native';
 class HlsMedia extends Native {
+    #player;
+    #events = {};
+    #recoverDecodingErrorDate = 0;
+    #recoverSwapAudioCodecDate = 0;
+    #options;
+    #autoplay;
     constructor(element, mediaSource, autoplay, options) {
         super(element, mediaSource);
-        _HlsMedia_player.set(this, void 0);
-        _HlsMedia_events.set(this, {});
-        _HlsMedia_recoverDecodingErrorDate.set(this, 0);
-        _HlsMedia_recoverSwapAudioCodecDate.set(this, 0);
-        _HlsMedia_options.set(this, void 0);
-        _HlsMedia_autoplay.set(this, void 0);
-        __classPrivateFieldSet(this, _HlsMedia_options, options || {}, "f");
+        this.#options = options || {};
         this.element = element;
         this.media = mediaSource;
-        __classPrivateFieldSet(this, _HlsMedia_autoplay, autoplay, "f");
+        this.#autoplay = autoplay;
         this._create = this._create.bind(this);
         this._play = this._play.bind(this);
         this._pause = this._pause.bind(this);
@@ -44,53 +32,53 @@ class HlsMedia extends Native {
         return SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
     }
     load() {
-        if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").detachMedia();
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(this.media.src);
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").attachMedia(this.element);
+        if (this.#player) {
+            this.#player.detachMedia();
+            this.#player.loadSource(this.media.src);
+            this.#player.attachMedia(this.element);
         }
         const e = addEvent('loadedmetadata');
         this.element.dispatchEvent(e);
-        if (!__classPrivateFieldGet(this, _HlsMedia_events, "f")) {
-            __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
-            Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach((event) => {
-                __classPrivateFieldGet(this, _HlsMedia_player, "f").on(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], (...args) => this._assign(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], args));
+        if (!this.#events) {
+            this.#events = Hls.Events;
+            Object.keys(this.#events).forEach((event) => {
+                this.#player.on(this.#events[event], (...args) => this._assign(this.#events[event], args));
             });
         }
     }
     destroy() {
-        if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
+        if (this.#player) {
+            this.#player.stopLoad();
         }
-        if (__classPrivateFieldGet(this, _HlsMedia_events, "f")) {
-            Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach((event) => {
-                __classPrivateFieldGet(this, _HlsMedia_player, "f").off(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], (...args) => this._assign(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], args));
+        if (this.#events) {
+            Object.keys(this.#events).forEach((event) => {
+                this.#player.off(this.#events[event], (...args) => this._assign(this.#events[event], args));
             });
         }
         this.element.removeEventListener('play', this._play);
         this.element.removeEventListener('pause', this._pause);
-        if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
-            __classPrivateFieldSet(this, _HlsMedia_player, null, "f");
+        if (this.#player) {
+            this.#player.destroy();
+            this.#player = null;
         }
     }
     set src(media) {
         if (isHlsSource(media)) {
             this.destroy();
-            __classPrivateFieldSet(this, _HlsMedia_player, new Hls(__classPrivateFieldGet(this, _HlsMedia_options, "f")), "f");
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(media.src);
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").attachMedia(this.element);
-            __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
-            Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach((event) => {
-                __classPrivateFieldGet(this, _HlsMedia_player, "f").on(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], (...args) => this._assign(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], args));
+            this.#player = new Hls(this.#options);
+            this.#player.loadSource(media.src);
+            this.#player.attachMedia(this.element);
+            this.#events = Hls.Events;
+            Object.keys(this.#events).forEach((event) => {
+                this.#player.on(this.#events[event], (...args) => this._assign(this.#events[event], args));
             });
         }
     }
     get levels() {
         const levels = [];
-        if (__classPrivateFieldGet(this, _HlsMedia_player, "f") && __classPrivateFieldGet(this, _HlsMedia_player, "f").levels && __classPrivateFieldGet(this, _HlsMedia_player, "f").levels.length) {
-            Object.keys(__classPrivateFieldGet(this, _HlsMedia_player, "f").levels).forEach((item) => {
-                const { height, name } = __classPrivateFieldGet(this, _HlsMedia_player, "f").levels[item];
+        if (this.#player && this.#player.levels && this.#player.levels.length) {
+            Object.keys(this.#player.levels).forEach((item) => {
+                const { height, name } = this.#player.levels[item];
                 const level = {
                     height,
                     id: item,
@@ -102,19 +90,19 @@ class HlsMedia extends Native {
         return levels;
     }
     set level(level) {
-        __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = level;
+        this.#player.currentLevel = level;
     }
     get level() {
-        return __classPrivateFieldGet(this, _HlsMedia_player, "f") ? __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : -1;
+        return this.#player ? this.#player.currentLevel : -1;
     }
     _create() {
-        const autoplay = !!(this.element.preload === 'auto' || __classPrivateFieldGet(this, _HlsMedia_autoplay, "f"));
-        __classPrivateFieldGet(this, _HlsMedia_options, "f").autoStartLoad = autoplay;
-        __classPrivateFieldSet(this, _HlsMedia_player, new Hls(__classPrivateFieldGet(this, _HlsMedia_options, "f")), "f");
-        this.instance = __classPrivateFieldGet(this, _HlsMedia_player, "f");
-        __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
-        Object.keys(__classPrivateFieldGet(this, _HlsMedia_events, "f")).forEach((event) => {
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").on(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], (...args) => this._assign(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], args));
+        const autoplay = !!(this.element.preload === 'auto' || this.#autoplay);
+        this.#options.autoStartLoad = autoplay;
+        this.#player = new Hls(this.#options);
+        this.instance = this.#player;
+        this.#events = Hls.Events;
+        Object.keys(this.#events).forEach((event) => {
+            this.#player.on(this.#events[event], (...args) => this._assign(this.#events[event], args));
         });
         if (!autoplay) {
             this.element.addEventListener('play', this._play, EVENT_OPTIONS);
@@ -139,15 +127,15 @@ class HlsMedia extends Native {
                 switch (type) {
                     case 'mediaError':
                         const now = new Date().getTime();
-                        if (!__classPrivateFieldGet(this, _HlsMedia_recoverDecodingErrorDate, "f") || now - __classPrivateFieldGet(this, _HlsMedia_recoverDecodingErrorDate, "f") > 3000) {
-                            __classPrivateFieldSet(this, _HlsMedia_recoverDecodingErrorDate, new Date().getTime(), "f");
-                            __classPrivateFieldGet(this, _HlsMedia_player, "f").recoverMediaError();
+                        if (!this.#recoverDecodingErrorDate || now - this.#recoverDecodingErrorDate > 3000) {
+                            this.#recoverDecodingErrorDate = new Date().getTime();
+                            this.#player.recoverMediaError();
                         }
-                        else if (!__classPrivateFieldGet(this, _HlsMedia_recoverSwapAudioCodecDate, "f") || now - __classPrivateFieldGet(this, _HlsMedia_recoverSwapAudioCodecDate, "f") > 3000) {
-                            __classPrivateFieldSet(this, _HlsMedia_recoverSwapAudioCodecDate, new Date().getTime(), "f");
+                        else if (!this.#recoverSwapAudioCodecDate || now - this.#recoverSwapAudioCodecDate > 3000) {
+                            this.#recoverSwapAudioCodecDate = new Date().getTime();
                             console.warn('Attempting to swap Audio Codec and recover from media error');
-                            __classPrivateFieldGet(this, _HlsMedia_player, "f").swapAudioCodec();
-                            __classPrivateFieldGet(this, _HlsMedia_player, "f").recoverMediaError();
+                            this.#player.swapAudioCodec();
+                            this.#player.recoverMediaError();
                         }
                         else {
                             const msg = 'Cannot recover, last media error recovery failed';
@@ -163,7 +151,7 @@ class HlsMedia extends Native {
                         this.element.dispatchEvent(networkEvent);
                         break;
                     default:
-                        __classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
+                        this.#player.destroy();
                         const fatalEvent = addEvent(type, { detail: { data: details } });
                         this.element.dispatchEvent(fatalEvent);
                         break;
@@ -197,15 +185,14 @@ class HlsMedia extends Native {
         }
     }
     _play() {
-        if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").startLoad();
+        if (this.#player) {
+            this.#player.startLoad();
         }
     }
     _pause() {
-        if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
-            __classPrivateFieldGet(this, _HlsMedia_player, "f").stopLoad();
+        if (this.#player) {
+            this.#player.stopLoad();
         }
     }
 }
-_HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_recoverDecodingErrorDate = new WeakMap(), _HlsMedia_recoverSwapAudioCodecDate = new WeakMap(), _HlsMedia_options = new WeakMap(), _HlsMedia_autoplay = new WeakMap();
 export default HlsMedia;

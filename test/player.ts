@@ -21,6 +21,9 @@ describe('player', (): void => {
 
     it('creates an instance of a video player by initializing it via configuration', async (): Promise<void> => {
         videoPlayer = new OpenPlayerJS('video');
+
+        expect(videoPlayer.initialized()).to.be(false);
+
         await videoPlayer.init();
 
         expect(videoPlayer instanceof OpenPlayerJS).to.equal(true);
@@ -38,6 +41,8 @@ describe('player', (): void => {
         expect(videoPlayer.getControls().getContainer().querySelector('.op-controls__settings')).to.not.equal(null);
         expect(videoPlayer.getContainer().querySelector('.op-player__play')).to.not.equal(null);
         expect(videoPlayer.getContainer().querySelector('.op-controls__duration').innerText).to.equal('00:00');
+
+        expect(videoPlayer.initialized()).to.be(true);
     });
 
     it('creates an instance of an audio player by initializing it via configuration', async (): Promise<void> => {

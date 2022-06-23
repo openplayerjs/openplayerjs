@@ -40,9 +40,10 @@ interface P {
     addCaptions(args: Track): void;
     addControl(args: ControlItem): void;
     removeControl(controlName: string): void;
-    _prepareMedia(): Promise<void>;
+    prepareMedia(): Promise<void>;
     enableDefaultPlayer(): void;
     loadAd(src: string | string[]): Promise<void>;
+    initialized(): boolean;
 }
 
 class Player {
@@ -78,6 +79,8 @@ class Player {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     proxy: any = null;
+
+    #initialized = false;
 
     #controls: Controls;
 
@@ -199,11 +202,12 @@ class Player {
     async init(): Promise<void> {
         if (this._isValid()) {
             this._wrapInstance();
-            await this._prepareMedia();
+            await this.prepareMedia();
             this._createPlayButton();
             this._createUID();
             this._createControls();
             this._setEvents();
+            this.#initialized = true;
             Player.instances[this.id] = this;
         }
     }
@@ -285,6 +289,7 @@ class Player {
             parent.parentNode.replaceChild(el, parent);
         }
 
+        this.#initialized = false;
         delete Player.instances[this.#uid];
 
         const e = addEvent('playerdestroyed');
@@ -383,7 +388,7 @@ class Player {
         this.#element.dispatchEvent(e);
     }
 
-    async _prepareMedia(): Promise<void> {
+    async prepareMedia(): Promise<void> {
         try {
             if (this.#options?.onError) {
                 this.#element.addEventListener('playererror', this.#options.onError, EVENT_OPTIONS);
@@ -405,6 +410,10 @@ class Player {
         } catch (e) {
             console.error(e);
         }
+    }
+
+    initialized(): boolean {
+        return this.#initialized;
     }
 
     enableDefaultPlayer(): void {

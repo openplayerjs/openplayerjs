@@ -25,9 +25,10 @@ interface P {
     addCaptions(args: Track): void;
     addControl(args: ControlItem): void;
     removeControl(controlName: string): void;
-    _prepareMedia(): Promise<void>;
+    prepareMedia(): Promise<void>;
     enableDefaultPlayer(): void;
     loadAd(src: string | string[]): Promise<void>;
+    initialized(): boolean;
 }
 declare class Player {
     #private;
@@ -60,7 +61,8 @@ declare class Player {
     addCaptions(args: Track): void;
     addControl(args: ControlItem): void;
     removeControl(controlName: string): void;
-    _prepareMedia(): Promise<void>;
+    prepareMedia(): Promise<void>;
+    initialized(): boolean;
     enableDefaultPlayer(): void;
     loadAd(src: string | string[]): Promise<void>;
     set src(media: Source[]);
