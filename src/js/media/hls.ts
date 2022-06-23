@@ -23,7 +23,7 @@ class HlsMedia extends Native {
 
     #autoplay: boolean;
 
-    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay = false, options?: unknown) {
+    constructor(element: HTMLMediaElement, mediaSource: Source, autoplay: boolean, options?: unknown) {
         super(element, mediaSource);
         this.#options = options || {};
         this.element = element;
