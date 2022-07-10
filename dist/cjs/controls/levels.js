@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -10,9 +11,10 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Levels_player, _Levels_button, _Levels_menu, _Levels_events, _Levels_levels, _Levels_defaultLevel, _Levels_controlPosition, _Levels_controlLayer;
-import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, NAV } from '../utils/constants';
-import { addEvent, sanitize } from '../utils/general';
-import { isDashSource, isHlsSource } from '../utils/media';
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
+const media_1 = require("../utils/media");
 class Levels {
     constructor(player, position, layer) {
         _Levels_player.set(this, void 0);
@@ -52,7 +54,7 @@ class Levels {
                 this._gatherLevels();
                 setTimeout(() => {
                     __classPrivateFieldGet(this, _Levels_player, "f").getMedia().level = initialLevel;
-                    const e = addEvent('controlschanged');
+                    const e = (0, general_1.addEvent)('controlschanged');
                     __classPrivateFieldGet(this, _Levels_player, "f").getElement().dispatchEvent(e);
                 }, 0);
             }
@@ -83,7 +85,7 @@ class Levels {
                 }
             };
             __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover = () => {
-                if (!IS_IOS && !IS_ANDROID) {
+                if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
                     const menus = __classPrivateFieldGet(this, _Levels_player, "f").getContainer().querySelectorAll('.op-settings');
                     for (let i = 0, total = menus.length; i < total; ++i) {
                         if (menus[i] !== __classPrivateFieldGet(this, _Levels_menu, "f")) {
@@ -96,7 +98,7 @@ class Levels {
                 }
             };
             __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout = () => {
-                if (!IS_IOS && !IS_ANDROID) {
+                if (!constants_1.IS_IOS && !constants_1.IS_ANDROID) {
                     const menus = __classPrivateFieldGet(this, _Levels_player, "f").getContainer().querySelectorAll('.op-settings');
                     for (let i = 0, total = menus.length; i < total; ++i) {
                         menus[i].setAttribute('aria-hidden', 'true');
@@ -106,11 +108,11 @@ class Levels {
                     }
                 }
             };
-            __classPrivateFieldGet(this, _Levels_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").button.click, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Levels_button, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Levels_menu, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Levels_menu, "f").addEventListener('mouseout', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Levels_player, "f").getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout, EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Levels_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").button.click, constants_1.EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Levels_button, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Levels_menu, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Levels_menu, "f").addEventListener('mouseout', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Levels_player, "f").getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _Levels_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
         }
         __classPrivateFieldGet(this, _Levels_events, "f").global.click = (e) => {
             const option = e.target;
@@ -122,7 +124,7 @@ class Levels {
                 __classPrivateFieldSet(this, _Levels_defaultLevel, `${level}`, "f");
                 if (detachMenus) {
                     __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('data-active-level', `${level}`);
-                    __classPrivateFieldGet(this, _Levels_button, "f").innerHTML = `<span>${sanitize(option.innerText, true)}</span>`;
+                    __classPrivateFieldGet(this, _Levels_button, "f").innerHTML = `<span>${(0, general_1.sanitize)(option.innerText, true)}</span>`;
                     const levels = option.parentElement && option.parentElement.parentElement
                         ? option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item')
                         : [];
@@ -139,7 +141,7 @@ class Levels {
                 if (!isPaused) {
                     __classPrivateFieldGet(this, _Levels_player, "f").play();
                 }
-                const event = addEvent('levelchanged', {
+                const event = (0, general_1.addEvent)('levelchanged', {
                     detail: {
                         label: option.innerText.trim(),
                         level,
@@ -150,10 +152,10 @@ class Levels {
                 e.stopPropagation();
             }
         };
-        const connection = (NAV === null || NAV === void 0 ? void 0 : NAV.connection) || (NAV === null || NAV === void 0 ? void 0 : NAV.mozConnection) || (NAV === null || NAV === void 0 ? void 0 : NAV.webkitConnection);
+        const connection = (constants_1.NAV === null || constants_1.NAV === void 0 ? void 0 : constants_1.NAV.connection) || (constants_1.NAV === null || constants_1.NAV === void 0 ? void 0 : constants_1.NAV.mozConnection) || (constants_1.NAV === null || constants_1.NAV === void 0 ? void 0 : constants_1.NAV.webkitConnection);
         __classPrivateFieldGet(this, _Levels_events, "f").global.connection = () => {
             const media = __classPrivateFieldGet(this, _Levels_player, "f").getMedia().current;
-            if (!isDashSource(media) && !isHlsSource(media)) {
+            if (!(0, media_1.isDashSource)(media) && !(0, media_1.isHlsSource)(media)) {
                 const type = (connection === null || connection === void 0 ? void 0 : connection.effectiveType) || '';
                 const levels = __classPrivateFieldGet(this, _Levels_levels, "f").map((item) => (Object.assign(Object.assign({}, item), { resolution: parseInt(item.label.replace('p', ''), 10) })));
                 let level = levels.find((item) => item.resolution < 360);
@@ -171,16 +173,16 @@ class Levels {
             }
         };
         Object.keys(__classPrivateFieldGet(this, _Levels_events, "f").media).forEach((event) => {
-            __classPrivateFieldGet(this, _Levels_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Levels_events, "f").media[event], EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Levels_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Levels_events, "f").media[event], constants_1.EVENT_OPTIONS);
         });
-        document.addEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").global.click, EVENT_OPTIONS);
+        document.addEventListener('click', __classPrivateFieldGet(this, _Levels_events, "f").global.click, constants_1.EVENT_OPTIONS);
         if (connection) {
-            connection.addEventListener('change', __classPrivateFieldGet(this, _Levels_events, "f").global.connection, EVENT_OPTIONS);
+            connection.addEventListener('change', __classPrivateFieldGet(this, _Levels_events, "f").global.connection, constants_1.EVENT_OPTIONS);
         }
     }
     destroy() {
         const { detachMenus } = __classPrivateFieldGet(this, _Levels_player, "f").getOptions();
-        const connection = (NAV === null || NAV === void 0 ? void 0 : NAV.connection) || (NAV === null || NAV === void 0 ? void 0 : NAV.mozConnection) || (NAV === null || NAV === void 0 ? void 0 : NAV.webkitConnection);
+        const connection = (constants_1.NAV === null || constants_1.NAV === void 0 ? void 0 : constants_1.NAV.connection) || (constants_1.NAV === null || constants_1.NAV === void 0 ? void 0 : constants_1.NAV.mozConnection) || (constants_1.NAV === null || constants_1.NAV === void 0 ? void 0 : constants_1.NAV.webkitConnection);
         Object.keys(__classPrivateFieldGet(this, _Levels_events, "f").media).forEach((event) => {
             __classPrivateFieldGet(this, _Levels_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(this, _Levels_events, "f").media[event]);
         });
@@ -301,4 +303,4 @@ class Levels {
     }
 }
 _Levels_player = new WeakMap(), _Levels_button = new WeakMap(), _Levels_menu = new WeakMap(), _Levels_events = new WeakMap(), _Levels_levels = new WeakMap(), _Levels_defaultLevel = new WeakMap(), _Levels_controlPosition = new WeakMap(), _Levels_controlLayer = new WeakMap();
-export default Levels;
+exports.default = Levels;

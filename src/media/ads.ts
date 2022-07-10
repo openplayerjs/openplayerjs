@@ -3,7 +3,7 @@ import { AdsOptions, Source } from '../interfaces';
 import Media from '../media';
 import Player from '../player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from '../utils/constants';
-import { addEvent, isAudio, isVideo, isXml, loadScript } from '../utils/general';
+import { addEvent, isAudio, isVideo, isXml, loadScript, sanitize } from '../utils/general';
 
 declare const google: any;
 
@@ -206,9 +206,9 @@ class Ads {
         if (this.#options.customClick?.enabled) {
             this.#customClickContainer = document.createElement('div');
             this.#customClickContainer.className = 'op-ads__click-container';
-            this.#customClickContainer.innerHTML = `<div class="op-ads__click-label">${
+            this.#customClickContainer.innerHTML = `<div class="op-ads__click-label">${sanitize(
                 this.#options.customClick.label
-            }</div>`;
+            )}</div>`;
             if (this.#element.parentElement) {
                 this.#element.parentElement.insertBefore(this.#customClickContainer, this.#element.nextSibling);
             }

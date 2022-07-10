@@ -7426,7 +7426,7 @@ var Ads = function () {
         classPrivateFieldSet_default()(this, _customClickContainer, document.createElement('div'));
 
         classPrivateFieldGet_default()(this, _customClickContainer).className = 'op-ads__click-container';
-        classPrivateFieldGet_default()(this, _customClickContainer).innerHTML = "<div class=\"op-ads__click-label\">".concat(classPrivateFieldGet_default()(this, ads_options).customClick.label, "</div>");
+        classPrivateFieldGet_default()(this, _customClickContainer).innerHTML = "<div class=\"op-ads__click-label\">".concat(sanitize(classPrivateFieldGet_default()(this, ads_options).customClick.label), "</div>");
 
         if (classPrivateFieldGet_default()(this, ads_element).parentElement) {
           classPrivateFieldGet_default()(this, ads_element).parentElement.insertBefore(classPrivateFieldGet_default()(this, _customClickContainer), classPrivateFieldGet_default()(this, ads_element).nextSibling);

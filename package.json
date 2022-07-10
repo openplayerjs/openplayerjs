@@ -42,9 +42,10 @@
     ],
     "scripts": {
         "build": "npm test && npm run build:sources",
-        "build:sources": "webpack --mode=production && npm run create-esm && npm run create-d-types",
-        "create-d-types": "tsc -p tsconfig-types.json",
-        "create-esm": "tsc -p tsconfig-esm.json",
+        "build:sources": "webpack --mode=production && npm run create:esm && npm run create:types && npm run create:cjs",
+        "create:types": "tsc -p tsconfig-types.json",
+        "create:esm": "tsc --module es2015 --target es6 --outDir dist/esm",
+        "create:cjs": "tsc --module commonjs --target es6 --outDir dist/cjs",
         "release": "npm run build && release-it",
         "test": "npm run test:sources && tsd",
         "test:sources": "karma start --single-run --browsers ChromeHeadless --log-level info karma.conf.js",

@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -9,12 +10,16 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _DashMedia_player, _DashMedia_events, _DashMedia_options;
-import { HAS_MSE } from '../utils/constants';
-import { addEvent, loadScript } from '../utils/general';
-import { isDashSource } from '../utils/media';
-import Native from './native';
-class DashMedia extends Native {
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
+const media_1 = require("../utils/media");
+const native_1 = __importDefault(require("./native"));
+class DashMedia extends native_1.default {
     constructor(element, mediaSource, options) {
         super(element, mediaSource);
         _DashMedia_player.set(this, void 0);
@@ -26,7 +31,7 @@ class DashMedia extends Native {
         this.promise =
             typeof dashjs === 'undefined'
                 ?
-                    loadScript('https://cdn.dashjs.org/latest/dash.all.min.js')
+                    (0, general_1.loadScript)('https://cdn.dashjs.org/latest/dash.all.min.js')
                 : new Promise((resolve) => {
                     resolve({});
                 });
@@ -36,12 +41,12 @@ class DashMedia extends Native {
         });
     }
     canPlayType(mimeType) {
-        return HAS_MSE && mimeType === 'application/dash+xml';
+        return constants_1.HAS_MSE && mimeType === 'application/dash+xml';
     }
     load() {
         this._preparePlayer();
         __classPrivateFieldGet(this, _DashMedia_player, "f").attachSource(this.media.src);
-        const e = addEvent('loadedmetadata');
+        const e = (0, general_1.addEvent)('loadedmetadata');
         this.element.dispatchEvent(e);
         if (!__classPrivateFieldGet(this, _DashMedia_events, "f")) {
             __classPrivateFieldSet(this, _DashMedia_events, dashjs.MediaPlayer.events, "f");
@@ -60,7 +65,7 @@ class DashMedia extends Native {
         __classPrivateFieldGet(this, _DashMedia_player, "f").reset();
     }
     set src(media) {
-        if (isDashSource(media)) {
+        if ((0, media_1.isDashSource)(media)) {
             this.destroy();
             __classPrivateFieldSet(this, _DashMedia_player, dashjs.MediaPlayer().create(), "f");
             this._preparePlayer();
@@ -111,11 +116,11 @@ class DashMedia extends Native {
                     type: 'M(PEG)-DASH',
                 },
             };
-            const errorEvent = addEvent('playererror', details);
+            const errorEvent = (0, general_1.addEvent)('playererror', details);
             this.element.dispatchEvent(errorEvent);
         }
         else {
-            const e = addEvent(event.type, { detail: event });
+            const e = (0, general_1.addEvent)(event.type, { detail: event });
             this.element.dispatchEvent(e);
         }
     }
@@ -132,4 +137,4 @@ class DashMedia extends Native {
     }
 }
 _DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia_options = new WeakMap();
-export default DashMedia;
+exports.default = DashMedia;

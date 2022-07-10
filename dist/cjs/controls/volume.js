@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -10,8 +11,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Volume_player, _Volume_button, _Volume_container, _Volume_display, _Volume_slider, _Volume_events, _Volume_volume, _Volume_controlPosition, _Volume_controlLayer;
-import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { addEvent } from '../utils/general';
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
 class Volume {
     constructor(player, position, layer) {
         _Volume_player.set(this, void 0);
@@ -101,7 +103,7 @@ class Volume {
             if (!el.muted && unmuteEl) {
                 unmuteEl.remove();
             }
-            const e = addEvent('volumechange');
+            const e = (0, general_1.addEvent)('volumechange');
             __classPrivateFieldGet(this, _Volume_player, "f").getElement().dispatchEvent(e);
         };
         __classPrivateFieldGet(this, _Volume_events, "f").media.volumechange = () => {
@@ -114,7 +116,7 @@ class Volume {
             if (el.muted) {
                 el.volume = 0;
             }
-            const e = addEvent('volumechange');
+            const e = (0, general_1.addEvent)('volumechange');
             __classPrivateFieldGet(this, _Volume_player, "f").getElement().dispatchEvent(e);
         };
         __classPrivateFieldGet(this, _Volume_events, "f").slider.input = updateVolume.bind(this);
@@ -133,18 +135,18 @@ class Volume {
                 __classPrivateFieldGet(this, _Volume_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.mute) || '';
                 __classPrivateFieldGet(this, _Volume_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.mute) || '');
             }
-            const event = addEvent('volumechange');
+            const event = (0, general_1.addEvent)('volumechange');
             __classPrivateFieldGet(this, _Volume_player, "f").getElement().dispatchEvent(event);
         };
-        __classPrivateFieldGet(this, _Volume_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Volume_events, "f").button.click, EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Volume_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Volume_events, "f").button.click, constants_1.EVENT_OPTIONS);
         Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").media).forEach((event) => {
-            __classPrivateFieldGet(this, _Volume_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Volume_events, "f").media[event], EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Volume_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Volume_events, "f").media[event], constants_1.EVENT_OPTIONS);
         });
         Object.keys(__classPrivateFieldGet(this, _Volume_events, "f").slider).forEach((event) => {
-            __classPrivateFieldGet(this, _Volume_slider, "f").addEventListener(event, __classPrivateFieldGet(this, _Volume_events, "f").slider[event], EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Volume_slider, "f").addEventListener(event, __classPrivateFieldGet(this, _Volume_events, "f").slider[event], constants_1.EVENT_OPTIONS);
         });
-        __classPrivateFieldGet(this, _Volume_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
-        if ((!IS_ANDROID && !IS_IOS) || !__classPrivateFieldGet(this, _Volume_player, "f").getOptions().useDeviceVolume) {
+        __classPrivateFieldGet(this, _Volume_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, constants_1.EVENT_OPTIONS);
+        if ((!constants_1.IS_ANDROID && !constants_1.IS_IOS) || !__classPrivateFieldGet(this, _Volume_player, "f").getOptions().useDeviceVolume) {
             const controls = __classPrivateFieldGet(this, _Volume_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Volume_controlLayer, "f"));
             controls.appendChild(__classPrivateFieldGet(this, _Volume_button, "f"));
             controls.appendChild(__classPrivateFieldGet(this, _Volume_container, "f"));
@@ -178,4 +180,4 @@ class Volume {
     }
 }
 _Volume_player = new WeakMap(), _Volume_button = new WeakMap(), _Volume_container = new WeakMap(), _Volume_display = new WeakMap(), _Volume_slider = new WeakMap(), _Volume_events = new WeakMap(), _Volume_volume = new WeakMap(), _Volume_controlPosition = new WeakMap(), _Volume_controlLayer = new WeakMap();
-export default Volume;
+exports.default = Volume;

@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -10,8 +11,9 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Settings_player, _Settings_submenu, _Settings_button, _Settings_menu, _Settings_events, _Settings_originalOutput, _Settings_controlPosition, _Settings_controlLayer;
-import { EVENT_OPTIONS } from '../utils/constants';
-import { sanitize } from '../utils/general';
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
 class Settings {
     constructor(player, position, layer) {
         _Settings_player.set(this, void 0);
@@ -76,7 +78,7 @@ class Settings {
         __classPrivateFieldGet(this, _Settings_events, "f").media.settingremoved = this.removeEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").media.play = this.hideEvent.bind(this);
         __classPrivateFieldGet(this, _Settings_events, "f").media.pause = this.hideEvent.bind(this);
-        __classPrivateFieldGet(this, _Settings_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Settings_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, constants_1.EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Settings_events, "f").global.click = (e) => {
             const { target } = e;
             const current = target;
@@ -86,14 +88,14 @@ class Settings {
             }
         };
         __classPrivateFieldGet(this, _Settings_events, "f").global.resize = this.hideEvent.bind(this);
-        __classPrivateFieldGet(this, _Settings_button, "f").addEventListener('click', this.clickEvent, EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Settings_button, "f").addEventListener('click', this.clickEvent, constants_1.EVENT_OPTIONS);
         Object.keys(__classPrivateFieldGet(this, _Settings_events, "f")).forEach((event) => {
-            __classPrivateFieldGet(this, _Settings_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Settings_events, "f").media[event], EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Settings_player, "f").getElement().addEventListener(event, __classPrivateFieldGet(this, _Settings_events, "f").media[event], constants_1.EVENT_OPTIONS);
         });
-        document.addEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global.click, EVENT_OPTIONS);
-        document.addEventListener('keydown', __classPrivateFieldGet(this, _Settings_events, "f").global.click, EVENT_OPTIONS);
+        document.addEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global.click, constants_1.EVENT_OPTIONS);
+        document.addEventListener('keydown', __classPrivateFieldGet(this, _Settings_events, "f").global.click, constants_1.EVENT_OPTIONS);
         if (typeof window !== 'undefined') {
-            window.addEventListener('resize', __classPrivateFieldGet(this, _Settings_events, "f").global.resize, EVENT_OPTIONS);
+            window.addEventListener('resize', __classPrivateFieldGet(this, _Settings_events, "f").global.resize, constants_1.EVENT_OPTIONS);
         }
         __classPrivateFieldGet(this, _Settings_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Settings_controlLayer, "f")).appendChild(__classPrivateFieldGet(this, _Settings_button, "f"));
         __classPrivateFieldGet(this, _Settings_player, "f").getContainer().appendChild(__classPrivateFieldGet(this, _Settings_menu, "f"));
@@ -140,7 +142,7 @@ class Settings {
         };
     }
     addItem(name, key, defaultValue, submenu, className) {
-        const dataValue = `${key}-${sanitize(defaultValue, true)}`;
+        const dataValue = `${key}-${(0, general_1.sanitize)(defaultValue, true)}`;
         const menuItem = document.createElement('div');
         menuItem.className = 'op-settings__menu-item';
         menuItem.tabIndex = 0;
@@ -232,8 +234,8 @@ class Settings {
                 this.hideEvent();
             }
         };
-        document.addEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'], EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _Settings_player, "f").getElement().addEventListener('controlshidden', this.hideEvent, EVENT_OPTIONS);
+        document.addEventListener('click', __classPrivateFieldGet(this, _Settings_events, "f").global['settings.submenu'], constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Settings_player, "f").getElement().addEventListener('controlshidden', this.hideEvent, constants_1.EVENT_OPTIONS);
     }
     removeItem(id, type, minItems = 2) {
         const target = __classPrivateFieldGet(this, _Settings_player, "f").getElement().querySelector(`.op-settings__submenu-label[data-value=${type}-${id}]`);
@@ -273,4 +275,4 @@ class Settings {
     }
 }
 _Settings_player = new WeakMap(), _Settings_submenu = new WeakMap(), _Settings_button = new WeakMap(), _Settings_menu = new WeakMap(), _Settings_events = new WeakMap(), _Settings_originalOutput = new WeakMap(), _Settings_controlPosition = new WeakMap(), _Settings_controlLayer = new WeakMap();
-export default Settings;
+exports.default = Settings;

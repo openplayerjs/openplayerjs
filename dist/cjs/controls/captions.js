@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -10,9 +11,10 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _Captions_player, _Captions_button, _Captions_captions, _Captions_menu, _Captions_events, _Captions_langTracks, _Captions_mediaTrackList, _Captions_trackUrlList, _Captions_hasTracks, _Captions_currentTrack, _Captions_default, _Captions_controlPosition, _Captions_controlLayer;
-import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from '../utils/constants';
-import { addEvent, getAbsoluteUrl, isJson, sanitize } from '../utils/general';
-import { timeToSeconds } from '../utils/time';
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
+const time_1 = require("../utils/time");
 class Captions {
     constructor(player, position, layer) {
         _Captions_player.set(this, void 0);
@@ -93,7 +95,7 @@ class Captions {
                     __classPrivateFieldSet(this, _Captions_default, element.srclang, "f");
                     __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', element.srclang);
                 }
-                const trackUrl = getAbsoluteUrl(element.src);
+                const trackUrl = (0, general_1.getAbsoluteUrl)(element.src);
                 const currTrack = __classPrivateFieldGet(this, _Captions_mediaTrackList, "f")[i];
                 if (currTrack && currTrack.language === element.srclang) {
                     if (currTrack.cues && currTrack.cues.length > 0) {
@@ -143,7 +145,7 @@ class Captions {
                         container.innerHTML = '';
                         if (index > -1 && __classPrivateFieldGet(this, _Captions_button, "f").classList.contains('op-controls__captions--on')) {
                             __classPrivateFieldGet(this, _Captions_captions, "f").classList.add('op-captions--on');
-                            container.innerHTML = sanitize(currentCues[index].text, false);
+                            container.innerHTML = (0, general_1.sanitize)(currentCues[index].text, false);
                         }
                         else {
                             this._hideCaptions();
@@ -193,7 +195,7 @@ class Captions {
             }
         };
         __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover = () => {
-            if (!IS_IOS && !IS_ANDROID && detachMenus) {
+            if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && detachMenus) {
                 const menus = __classPrivateFieldGet(this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
                 for (let i = 0, total = menus.length; i < total; ++i) {
                     if (menus[i] !== __classPrivateFieldGet(this, _Captions_menu, "f")) {
@@ -206,7 +208,7 @@ class Captions {
             }
         };
         __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout = () => {
-            if (!IS_IOS && !IS_ANDROID && detachMenus) {
+            if (!constants_1.IS_IOS && !constants_1.IS_ANDROID && detachMenus) {
                 const menus = __classPrivateFieldGet(this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
                 for (let i = 0, total = menus.length; i < total; ++i) {
                     menus[i].setAttribute('aria-hidden', 'true');
@@ -229,7 +231,7 @@ class Captions {
             else {
                 __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_controlLayer, "f")).appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
             }
-            __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click, EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click, constants_1.EVENT_OPTIONS);
         }
         if ((__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length <= 1 && !detachMenus) || (!__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length && detachMenus)) {
             return;
@@ -267,18 +269,18 @@ class Captions {
                     this._displayCaptions();
                     __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', language);
                 }
-                const event = addEvent('captionschanged');
+                const event = (0, general_1.addEvent)('captionschanged');
                 __classPrivateFieldGet(this, _Captions_player, "f").getElement().dispatchEvent(event);
             }
         };
         if (detachMenus) {
-            __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseout', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, EVENT_OPTIONS);
-            __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover, constants_1.EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseout', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
+            __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, constants_1.EVENT_OPTIONS);
         }
         if (typeof __classPrivateFieldGet(this, _Captions_events, "f").global.click !== 'undefined') {
-            document.addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click, EVENT_OPTIONS);
+            document.addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click, constants_1.EVENT_OPTIONS);
         }
     }
     destroy() {
@@ -338,11 +340,11 @@ class Captions {
                     i++;
                 }
                 cue = cue.trim().replace(urlRegexp, "<a href='$1' target='_blank'>$1</a>");
-                const initTime = timeToSeconds(timeCode[1]);
+                const initTime = (0, time_1.timeToSeconds)(timeCode[1]);
                 entries.push({
-                    endTime: timeToSeconds(timeCode[3]),
+                    endTime: (0, time_1.timeToSeconds)(timeCode[3]),
                     identifier: identifier || '',
-                    settings: isJson(timeCode[5]) ? JSON.parse(timeCode[5]) : {},
+                    settings: (0, general_1.isJson)(timeCode[5]) ? JSON.parse(timeCode[5]) : {},
                     startTime: initTime === 0 ? 0.2 : initTime,
                     text: cue,
                 });
@@ -375,7 +377,7 @@ class Captions {
         if (container) {
             container.innerHTML = '';
         }
-        __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate, EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate, constants_1.EVENT_OPTIONS);
     }
     _hideCaptions() {
         __classPrivateFieldGet(this, _Captions_captions, "f").classList.remove('op-captions--on');
@@ -432,4 +434,4 @@ class Captions {
     }
 }
 _Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_langTracks = new WeakMap(), _Captions_mediaTrackList = new WeakMap(), _Captions_trackUrlList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_currentTrack = new WeakMap(), _Captions_default = new WeakMap(), _Captions_controlPosition = new WeakMap(), _Captions_controlLayer = new WeakMap();
-export default Captions;
+exports.default = Captions;

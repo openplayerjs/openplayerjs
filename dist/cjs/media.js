@@ -1,3 +1,27 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -18,12 +42,16 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _Media_element, _Media_media, _Media_files, _Media_promisePlay, _Media_options, _Media_autoplay, _Media_mediaLoaded, _Media_customMedia, _Media_currentSrc;
-import DashMedia from './media/dash';
-import FlvMedia from './media/flv';
-import HlsMedia from './media/hls';
-import HTML5Media from './media/html5';
-import * as source from './utils/media';
+Object.defineProperty(exports, "__esModule", { value: true });
+const dash_1 = __importDefault(require("./media/dash"));
+const flv_1 = __importDefault(require("./media/flv"));
+const hls_1 = __importDefault(require("./media/hls"));
+const html5_1 = __importDefault(require("./media/html5"));
+const source = __importStar(require("./utils/media"));
 class Media {
     constructor(element, options, autoplay, customMedia) {
         _Media_element.set(this, void 0);
@@ -68,7 +96,7 @@ class Media {
                     __classPrivateFieldSet(this, _Media_media, this._invoke(media), "f");
                 }
                 catch (e) {
-                    __classPrivateFieldSet(this, _Media_media, new HTML5Media(__classPrivateFieldGet(this, _Media_element, "f"), media), "f");
+                    __classPrivateFieldSet(this, _Media_media, new html5_1.default(__classPrivateFieldGet(this, _Media_element, "f"), media), "f");
                 }
                 return __classPrivateFieldGet(this, _Media_media, "f").canPlayType(media.type);
             });
@@ -287,18 +315,18 @@ class Media {
                 customRef.create();
                 return customRef;
             }
-            return new HTML5Media(__classPrivateFieldGet(this, _Media_element, "f"), media);
+            return new html5_1.default(__classPrivateFieldGet(this, _Media_element, "f"), media);
         }
         if (source.isHlsSource(media)) {
             if (playHLSNatively && __classPrivateFieldGet(this, _Media_options, "f").forceNative && !activeLevels) {
-                return new HTML5Media(__classPrivateFieldGet(this, _Media_element, "f"), media);
+                return new html5_1.default(__classPrivateFieldGet(this, _Media_element, "f"), media);
             }
             const hlsOptions = ((_a = __classPrivateFieldGet(this, _Media_options, "f")) === null || _a === void 0 ? void 0 : _a.hls) || undefined;
-            return new HlsMedia(__classPrivateFieldGet(this, _Media_element, "f"), media, __classPrivateFieldGet(this, _Media_autoplay, "f"), hlsOptions);
+            return new hls_1.default(__classPrivateFieldGet(this, _Media_element, "f"), media, __classPrivateFieldGet(this, _Media_autoplay, "f"), hlsOptions);
         }
         if (source.isDashSource(media)) {
             const dashOptions = ((_b = __classPrivateFieldGet(this, _Media_options, "f")) === null || _b === void 0 ? void 0 : _b.dash) || undefined;
-            return new DashMedia(__classPrivateFieldGet(this, _Media_element, "f"), media, dashOptions);
+            return new dash_1.default(__classPrivateFieldGet(this, _Media_element, "f"), media, dashOptions);
         }
         if (source.isFlvSource(media)) {
             const flvOptions = ((_c = __classPrivateFieldGet(this, _Media_options, "f")) === null || _c === void 0 ? void 0 : _c.flv) || {
@@ -306,10 +334,10 @@ class Media {
                 type: 'flv',
                 url: media.src,
             };
-            return new FlvMedia(__classPrivateFieldGet(this, _Media_element, "f"), media, flvOptions);
+            return new flv_1.default(__classPrivateFieldGet(this, _Media_element, "f"), media, flvOptions);
         }
-        return new HTML5Media(__classPrivateFieldGet(this, _Media_element, "f"), media);
+        return new html5_1.default(__classPrivateFieldGet(this, _Media_element, "f"), media);
     }
 }
 _Media_element = new WeakMap(), _Media_media = new WeakMap(), _Media_files = new WeakMap(), _Media_promisePlay = new WeakMap(), _Media_options = new WeakMap(), _Media_autoplay = new WeakMap(), _Media_mediaLoaded = new WeakMap(), _Media_customMedia = new WeakMap(), _Media_currentSrc = new WeakMap();
-export default Media;
+exports.default = Media;

@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -9,10 +10,14 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _Play_player, _Play_button, _Play_events, _Play_controlPosition, _Play_controlLayer;
-import Player from '../player';
-import { EVENT_OPTIONS } from '../utils/constants';
-import { addEvent, isAudio } from '../utils/general';
+Object.defineProperty(exports, "__esModule", { value: true });
+const player_1 = __importDefault(require("../player"));
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
 class Play {
     constructor(player, position, layer) {
         _Play_player.set(this, void 0);
@@ -57,7 +62,7 @@ class Play {
             e.preventDefault();
             e.stopPropagation();
         };
-        const isAudioEl = isAudio(__classPrivateFieldGet(this, _Play_player, "f").getElement());
+        const isAudioEl = (0, general_1.isAudio)(__classPrivateFieldGet(this, _Play_player, "f").getElement());
         __classPrivateFieldGet(this, _Play_events, "f").media.play = () => {
             var _a;
             if (__classPrivateFieldGet(this, _Play_player, "f").activeElement().ended) {
@@ -76,9 +81,9 @@ class Play {
                 __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
                 __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
                 if ((_a = __classPrivateFieldGet(this, _Play_player, "f").getOptions()) === null || _a === void 0 ? void 0 : _a.pauseOthers) {
-                    Object.keys(Player.instances).forEach((key) => {
+                    Object.keys(player_1.default.instances).forEach((key) => {
                         if (key !== __classPrivateFieldGet(this, _Play_player, "f").id) {
-                            const target = Player.instances[key].activeElement();
+                            const target = player_1.default.instances[key].activeElement();
                             target.pause();
                         }
                     });
@@ -138,22 +143,22 @@ class Play {
         const element = __classPrivateFieldGet(this, _Play_player, "f").getElement();
         __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged = () => {
             if (!__classPrivateFieldGet(this, _Play_player, "f").activeElement().paused) {
-                const event = addEvent('playing');
+                const event = (0, general_1.addEvent)('playing');
                 element.dispatchEvent(event);
             }
         };
         Object.keys(__classPrivateFieldGet(this, _Play_events, "f").media).forEach((event) => {
-            element.addEventListener(event, __classPrivateFieldGet(this, _Play_events, "f").media[event], EVENT_OPTIONS);
+            element.addEventListener(event, __classPrivateFieldGet(this, _Play_events, "f").media[event], constants_1.EVENT_OPTIONS);
         });
         if ((_a = __classPrivateFieldGet(this, _Play_player, "f").getOptions().media) === null || _a === void 0 ? void 0 : _a.pauseOnClick) {
-            element.addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button, EVENT_OPTIONS);
+            element.addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button, constants_1.EVENT_OPTIONS);
         }
         __classPrivateFieldGet(this, _Play_player, "f")
             .getControls()
             .getContainer()
-            .addEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged, EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button, EVENT_OPTIONS);
+            .addEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button, constants_1.EVENT_OPTIONS);
     }
     destroy() {
         var _a;
@@ -181,4 +186,4 @@ class Play {
     }
 }
 _Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_controlPosition = new WeakMap(), _Play_controlLayer = new WeakMap();
-export default Play;
+exports.default = Play;

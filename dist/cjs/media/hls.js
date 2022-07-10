@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -9,12 +10,16 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _HlsMedia_player, _HlsMedia_events, _HlsMedia_recoverDecodingErrorDate, _HlsMedia_recoverSwapAudioCodecDate, _HlsMedia_options, _HlsMedia_autoplay;
-import { DVR_THRESHOLD, EVENT_OPTIONS, SUPPORTS_HLS } from '../utils/constants';
-import { addEvent, loadScript } from '../utils/general';
-import { isHlsSource } from '../utils/media';
-import Native from './native';
-class HlsMedia extends Native {
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
+const media_1 = require("../utils/media");
+const native_1 = __importDefault(require("./native"));
+class HlsMedia extends native_1.default {
     constructor(element, mediaSource, autoplay, options) {
         super(element, mediaSource);
         _HlsMedia_player.set(this, void 0);
@@ -34,14 +39,14 @@ class HlsMedia extends Native {
         this.promise =
             typeof Hls === 'undefined'
                 ?
-                    loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js')
+                    (0, general_1.loadScript)('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js')
                 : new Promise((resolve) => {
                     resolve({});
                 });
         this.promise.then(this._create);
     }
     canPlayType(mimeType) {
-        return SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
+        return (0, constants_1.SUPPORTS_HLS)() && mimeType === 'application/x-mpegURL';
     }
     load() {
         if (__classPrivateFieldGet(this, _HlsMedia_player, "f")) {
@@ -49,7 +54,7 @@ class HlsMedia extends Native {
             __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(this.media.src);
             __classPrivateFieldGet(this, _HlsMedia_player, "f").attachMedia(this.element);
         }
-        const e = addEvent('loadedmetadata');
+        const e = (0, general_1.addEvent)('loadedmetadata');
         this.element.dispatchEvent(e);
         if (!__classPrivateFieldGet(this, _HlsMedia_events, "f")) {
             __classPrivateFieldSet(this, _HlsMedia_events, Hls.Events, "f");
@@ -75,7 +80,7 @@ class HlsMedia extends Native {
         }
     }
     set src(media) {
-        if (isHlsSource(media)) {
+        if ((0, media_1.isHlsSource)(media)) {
             this.destroy();
             __classPrivateFieldSet(this, _HlsMedia_player, new Hls(__classPrivateFieldGet(this, _HlsMedia_options, "f")), "f");
             __classPrivateFieldGet(this, _HlsMedia_player, "f").loadSource(media.src);
@@ -117,8 +122,8 @@ class HlsMedia extends Native {
             __classPrivateFieldGet(this, _HlsMedia_player, "f").on(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], (...args) => this._assign(__classPrivateFieldGet(this, _HlsMedia_events, "f")[event], args));
         });
         if (!autoplay) {
-            this.element.addEventListener('play', this._play, EVENT_OPTIONS);
-            this.element.addEventListener('pause', this._pause, EVENT_OPTIONS);
+            this.element.addEventListener('play', this._play, constants_1.EVENT_OPTIONS);
+            this.element.addEventListener('pause', this._pause, constants_1.EVENT_OPTIONS);
         }
     }
     _assign(event, data) {
@@ -130,7 +135,7 @@ class HlsMedia extends Native {
                     type: 'HLS',
                 },
             };
-            const errorEvent = addEvent('playererror', errorDetails);
+            const errorEvent = (0, general_1.addEvent)('playererror', errorDetails);
             this.element.dispatchEvent(errorEvent);
             const type = data[1].type;
             const { fatal } = data[1];
@@ -152,25 +157,25 @@ class HlsMedia extends Native {
                         else {
                             const msg = 'Cannot recover, last media error recovery failed';
                             console.error(msg);
-                            const mediaEvent = addEvent(type, { detail: { data: details } });
+                            const mediaEvent = (0, general_1.addEvent)(type, { detail: { data: details } });
                             this.element.dispatchEvent(mediaEvent);
                         }
                         break;
                     case 'networkError':
                         const message = 'Network error';
                         console.error(message);
-                        const networkEvent = addEvent(type, { detail: { data: details } });
+                        const networkEvent = (0, general_1.addEvent)(type, { detail: { data: details } });
                         this.element.dispatchEvent(networkEvent);
                         break;
                     default:
                         __classPrivateFieldGet(this, _HlsMedia_player, "f").destroy();
-                        const fatalEvent = addEvent(type, { detail: { data: details } });
+                        const fatalEvent = (0, general_1.addEvent)(type, { detail: { data: details } });
                         this.element.dispatchEvent(fatalEvent);
                         break;
                 }
             }
             else {
-                const err = addEvent(type, { detail: { data: details } });
+                const err = (0, general_1.addEvent)(type, { detail: { data: details } });
                 this.element.dispatchEvent(err);
             }
         }
@@ -178,21 +183,21 @@ class HlsMedia extends Native {
             const details = data[1];
             if (event === 'hlsLevelLoaded' && details.live === true) {
                 this.element.setAttribute('op-live__enabled', 'true');
-                const timeEvent = addEvent('timeupdate');
+                const timeEvent = (0, general_1.addEvent)('timeupdate');
                 this.element.dispatchEvent(timeEvent);
             }
             else if (event === 'hlsLevelUpdated' &&
                 details.live === true &&
-                details.totalduration > DVR_THRESHOLD) {
+                details.totalduration > constants_1.DVR_THRESHOLD) {
                 this.element.setAttribute('op-dvr__enabled', 'true');
-                const timeEvent = addEvent('timeupdate');
+                const timeEvent = (0, general_1.addEvent)('timeupdate');
                 this.element.dispatchEvent(timeEvent);
             }
             else if (event === 'hlsFragParsingMetadata') {
-                const metaEvent = addEvent('metadataready', { detail: { data: data[1] } });
+                const metaEvent = (0, general_1.addEvent)('metadataready', { detail: { data: data[1] } });
                 this.element.dispatchEvent(metaEvent);
             }
-            const e = addEvent(event, { detail: { data: data[1] } });
+            const e = (0, general_1.addEvent)(event, { detail: { data: data[1] } });
             this.element.dispatchEvent(e);
         }
     }
@@ -208,4 +213,4 @@ class HlsMedia extends Native {
     }
 }
 _HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_recoverDecodingErrorDate = new WeakMap(), _HlsMedia_recoverSwapAudioCodecDate = new WeakMap(), _HlsMedia_options = new WeakMap(), _HlsMedia_autoplay = new WeakMap();
-export default HlsMedia;
+exports.default = HlsMedia;

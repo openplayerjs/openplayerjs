@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -9,12 +10,16 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _HTML5Media_currentLevel, _HTML5Media_levelList, _HTML5Media_isStreaming, _HTML5Media_retryCount, _HTML5Media_started, _HTML5Media_timer;
-import { DVR_THRESHOLD, EVENT_OPTIONS } from '../utils/constants';
-import { addEvent, isAudio, isVideo } from '../utils/general';
-import { isHlsSource } from '../utils/media';
-import Native from './native';
-class HTML5Media extends Native {
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
+const media_1 = require("../utils/media");
+const native_1 = __importDefault(require("./native"));
+class HTML5Media extends native_1.default {
     constructor(element, mediaFile) {
         super(element, mediaFile);
         _HTML5Media_currentLevel.set(this, void 0);
@@ -23,7 +28,7 @@ class HTML5Media extends Native {
         _HTML5Media_retryCount.set(this, 0);
         _HTML5Media_started.set(this, false);
         _HTML5Media_timer.set(this, void 0);
-        if (!isAudio(element) && !isVideo(element)) {
+        if (!(0, general_1.isAudio)(element) && !(0, general_1.isVideo)(element)) {
             throw new TypeError('Native method only supports video/audio tags');
         }
         this._clearTimeout = this._clearTimeout.bind(this);
@@ -31,12 +36,12 @@ class HTML5Media extends Native {
         this._dispatchError = this._dispatchError.bind(this);
         this._isDvrEnabled = this._isDvrEnabled.bind(this);
         this._readMediadataInfo = this._readMediadataInfo.bind(this);
-        __classPrivateFieldSet(this, _HTML5Media_isStreaming, isHlsSource(mediaFile), "f");
-        this.element.addEventListener('playing', this._clearTimeout, EVENT_OPTIONS);
-        this.element.addEventListener('stalled', this._setTimeout, EVENT_OPTIONS);
-        this.element.addEventListener('error', this._dispatchError, EVENT_OPTIONS);
-        this.element.addEventListener('loadeddata', this._isDvrEnabled, EVENT_OPTIONS);
-        this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo, EVENT_OPTIONS);
+        __classPrivateFieldSet(this, _HTML5Media_isStreaming, (0, media_1.isHlsSource)(mediaFile), "f");
+        this.element.addEventListener('playing', this._clearTimeout, constants_1.EVENT_OPTIONS);
+        this.element.addEventListener('stalled', this._setTimeout, constants_1.EVENT_OPTIONS);
+        this.element.addEventListener('error', this._dispatchError, constants_1.EVENT_OPTIONS);
+        this.element.addEventListener('loadeddata', this._isDvrEnabled, constants_1.EVENT_OPTIONS);
+        this.element.textTracks.addEventListener('addtrack', this._readMediadataInfo, constants_1.EVENT_OPTIONS);
     }
     canPlayType(mimeType) {
         return !!this.element.canPlayType(mimeType).replace('no', '');
@@ -87,9 +92,9 @@ class HTML5Media extends Native {
     }
     _isDvrEnabled() {
         const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
-        if (__classPrivateFieldGet(this, _HTML5Media_isStreaming, "f") && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
+        if (__classPrivateFieldGet(this, _HTML5Media_isStreaming, "f") && time > constants_1.DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
             this.element.setAttribute('op-dvr__enabled', 'true');
-            const timeEvent = addEvent('timeupdate');
+            const timeEvent = (0, general_1.addEvent)('timeupdate');
             this.element.dispatchEvent(timeEvent);
         }
     }
@@ -102,10 +107,10 @@ class HTML5Media extends Native {
                 const track = event.target;
                 const cue = track.activeCues ? track.activeCues[0] : null;
                 if (cue) {
-                    const metaDataEvent = addEvent('metadataready', { detail: cue });
+                    const metaDataEvent = (0, general_1.addEvent)('metadataready', { detail: cue });
                     this.element.dispatchEvent(metaDataEvent);
                 }
-            }, EVENT_OPTIONS);
+            }, constants_1.EVENT_OPTIONS);
         }
     }
     _setTimeout() {
@@ -123,7 +128,7 @@ class HTML5Media extends Native {
                             type: 'HTML5',
                         },
                     };
-                    const errorEvent = addEvent('playererror', details);
+                    const errorEvent = (0, general_1.addEvent)('playererror', details);
                     this.element.dispatchEvent(errorEvent);
                     __classPrivateFieldSet(this, _HTML5Media_retryCount, 0, "f");
                     __classPrivateFieldSet(this, _HTML5Media_started, false, "f");
@@ -171,9 +176,9 @@ class HTML5Media extends Native {
                 type: 'HTML5',
             },
         };
-        const errorEvent = addEvent('playererror', details);
+        const errorEvent = (0, general_1.addEvent)('playererror', details);
         this.element.dispatchEvent(errorEvent);
     }
 }
 _HTML5Media_currentLevel = new WeakMap(), _HTML5Media_levelList = new WeakMap(), _HTML5Media_isStreaming = new WeakMap(), _HTML5Media_retryCount = new WeakMap(), _HTML5Media_started = new WeakMap(), _HTML5Media_timer = new WeakMap();
-export default HTML5Media;
+exports.default = HTML5Media;

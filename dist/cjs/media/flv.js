@@ -1,3 +1,4 @@
+"use strict";
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -20,12 +21,16 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _FlvMedia_player, _FlvMedia_events, _FlvMedia_options;
-import { HAS_MSE } from '../utils/constants';
-import { addEvent, loadScript } from '../utils/general';
-import { isFlvSource } from '../utils/media';
-import Native from './native';
-class FlvMedia extends Native {
+Object.defineProperty(exports, "__esModule", { value: true });
+const constants_1 = require("../utils/constants");
+const general_1 = require("../utils/general");
+const media_1 = require("../utils/media");
+const native_1 = __importDefault(require("./native"));
+class FlvMedia extends native_1.default {
     constructor(element, mediaSource, options) {
         super(element, mediaSource);
         _FlvMedia_player.set(this, void 0);
@@ -39,21 +44,21 @@ class FlvMedia extends Native {
         this.promise =
             typeof flvjs === 'undefined'
                 ?
-                    loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js')
+                    (0, general_1.loadScript)('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js')
                 : new Promise((resolve) => {
                     resolve({});
                 });
         this.promise.then(this._create);
     }
     canPlayType(mimeType) {
-        return HAS_MSE && (mimeType === 'video/x-flv' || mimeType === 'video/flv');
+        return constants_1.HAS_MSE && (mimeType === 'video/x-flv' || mimeType === 'video/flv');
     }
     load() {
         __classPrivateFieldGet(this, _FlvMedia_player, "f").unload();
         __classPrivateFieldGet(this, _FlvMedia_player, "f").detachMediaElement();
         __classPrivateFieldGet(this, _FlvMedia_player, "f").attachMediaElement(this.element);
         __classPrivateFieldGet(this, _FlvMedia_player, "f").load();
-        const e = addEvent('loadedmetadata');
+        const e = (0, general_1.addEvent)('loadedmetadata');
         this.element.dispatchEvent(e);
         if (!__classPrivateFieldGet(this, _FlvMedia_events, "f")) {
             __classPrivateFieldSet(this, _FlvMedia_events, flvjs.Events, "f");
@@ -67,7 +72,7 @@ class FlvMedia extends Native {
         __classPrivateFieldSet(this, _FlvMedia_player, null, "f");
     }
     set src(media) {
-        if (isFlvSource(media)) {
+        if ((0, media_1.isFlvSource)(media)) {
             this.destroy();
             this._create();
         }
@@ -116,14 +121,14 @@ class FlvMedia extends Native {
                     type: 'FLV',
                 },
             };
-            const errorEvent = addEvent('playererror', errorDetails);
+            const errorEvent = (0, general_1.addEvent)('playererror', errorDetails);
             this.element.dispatchEvent(errorEvent);
         }
         else {
-            const e = addEvent(event, { detail: { data } });
+            const e = (0, general_1.addEvent)(event, { detail: { data } });
             this.element.dispatchEvent(e);
         }
     }
 }
 _FlvMedia_player = new WeakMap(), _FlvMedia_events = new WeakMap(), _FlvMedia_options = new WeakMap();
-export default FlvMedia;
+exports.default = FlvMedia;
