@@ -1,19 +1,19 @@
   $(window).scroll(function() {
-      var scroll = $(window).scrollTop();
+      const scroll = $(window).scrollTop();
       if (scroll > 0) {
-          $('.head').addClass('sticky');
+          document.getElementsByClassName("head").classList.add("sticky");
       } else{
-        $('.head').removeClass('sticky');
+        document.getElementsByClassName("head").classList.remove("sticky");
       }
   });
   AOS.init();
 
-  $("#uno").click(function(){
+  $("#one").click(function(){
     $("#tab-1").addClass("show");
     $("#tab-1").removeClass("tab-content");
     $("#tab-2").removeClass("show");
     $("#tab-2").addClass("tab-content");
-    $("#uno").addClass("activo");
+    $("#one").addClass("activo");
     $("#dos").removeClass("activo");
   });
   $("#dos").click(function(){
@@ -22,7 +22,7 @@
     $("#tab-1").removeClass("show");
     $("#tab-1").addClass("tab-content");
     $("#dos").addClass("activo");
-    $("#uno").removeClass("activo");
+    $("#one").removeClass("activo");
   });
 
 /*---------------*/
