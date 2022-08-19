@@ -1,1 +1,4 @@
 img/.DS_Store
+node_modules
+coverage
+test
