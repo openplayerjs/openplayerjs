@@ -1,0 +1,15 @@
+version: 2.1
+
+jobs:
+  test_site:
+    docker:
+      - image: cimg/node:18.1.0-browsers
+    steps:
+      - run:
+          name: Default test
+          command: echo \"No tests found\" && exit 1
+
+workflows:
+  end-to-end-tests:
+    jobs:
+      - test_site
