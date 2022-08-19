@@ -243,19 +243,13 @@ A valid example of how to use OpenPlayerJS with Vue is as follows:
 
 ```javascript
 const app = Vue.createApp({
-  data() {
-    return {
-      // This is key: a variable preceded by `$` is a non-reactive variable, and this is what we need to make it work with OpenPlayerJS
-      $player: null,
-    }
-  },
   mounted() {
     this.$player = new OpenPlayerJS('player', {
         showLoaderOnInit: false,
         pauseOthers: false,
     });
     this.$player.init();
-},
+  },
 });
 app.mount('#app');
 ```
