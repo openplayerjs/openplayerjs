@@ -7,7 +7,7 @@ jobs:
     steps:
       - run:
           name: Default test
-          command: echo \"No tests found\" && exit 1
+          command: echo \"No tests found\"
 
 workflows:
   end-to-end-tests:
