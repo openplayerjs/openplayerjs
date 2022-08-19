@@ -1,4 +1,4 @@
-img/.DS_Store
+.DS_Store
 node_modules
 coverage
 test
