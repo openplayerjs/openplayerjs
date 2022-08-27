@@ -101,8 +101,8 @@ class DashMedia extends Native {
         return levels;
     }
 
-    set level(level: number) {
-        if (level === 0) {
+    set level(level: string) {
+        if (level === '0') {
             this.#player.setAutoSwitchQuality(true);
         } else {
             this.#player.setAutoSwitchQuality(false);
@@ -110,8 +110,8 @@ class DashMedia extends Native {
         }
     }
 
-    get level(): number {
-        return this.#player ? this.#player.getQualityFor('video') : -1;
+    get level(): string {
+        return this.#player ? this.#player.getQualityFor('video') : '-1';
     }
 
     // @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html

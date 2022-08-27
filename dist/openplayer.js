@@ -2160,7 +2160,7 @@ var Levels = function () {
 
         if (option.closest("#".concat(levels_classPrivateFieldGet(_this, _Levels_player, "f").id)) && option.classList.contains('op-levels__option')) {
           var levelVal = option.getAttribute('data-value');
-          var level = parseInt(levelVal ? levelVal.replace('levels-', '') : '-1', 10);
+          var level = levelVal ? levelVal.replace('levels-', '') : '-1';
 
           levels_classPrivateFieldSet(_this, _Levels_defaultLevel, "".concat(level), "f");
 
@@ -5009,10 +5009,10 @@ var DashMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
-      return dash_classPrivateFieldGet(this, _DashMedia_player, "f") ? dash_classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : -1;
+      return dash_classPrivateFieldGet(this, _DashMedia_player, "f") ? dash_classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : '-1';
     },
     set: function set(level) {
-      if (level === 0) {
+      if (level === '0') {
         dash_classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(true);
       } else {
         dash_classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(false);
@@ -5221,7 +5221,7 @@ var FlvMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
-      return flv_classPrivateFieldGet(this, _FlvMedia_player, "f") ? flv_classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : -1;
+      return flv_classPrivateFieldGet(this, _FlvMedia_player, "f") ? flv_classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : '-1';
     },
     set: function set(level) {
       flv_classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel = level;
@@ -5484,7 +5484,7 @@ var HlsMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
-      return hls_classPrivateFieldGet(this, _HlsMedia_player, "f") ? hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : -1;
+      return hls_classPrivateFieldGet(this, _HlsMedia_player, "f") ? hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : '-1';
     },
     set: function set(level) {
       hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = level;

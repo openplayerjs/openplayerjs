@@ -92,7 +92,7 @@ class DashMedia extends Native {
         return levels;
     }
     set level(level) {
-        if (level === 0) {
+        if (level === '0') {
             __classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(true);
         }
         else {
@@ -101,7 +101,7 @@ class DashMedia extends Native {
         }
     }
     get level() {
-        return __classPrivateFieldGet(this, _DashMedia_player, "f") ? __classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : -1;
+        return __classPrivateFieldGet(this, _DashMedia_player, "f") ? __classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : '-1';
     }
     _assign(event) {
         if (event.type === 'error') {

@@ -122,7 +122,7 @@ class Levels implements PlayerComponent {
             const isPaused = this.#player.getMedia().paused;
             if (option.closest(`#${this.#player.id}`) && option.classList.contains('op-levels__option')) {
                 const levelVal = option.getAttribute('data-value');
-                const level = parseInt(levelVal ? levelVal.replace('levels-', '') : '-1', 10);
+                const level = levelVal ? levelVal.replace('levels-', '') : '-1';
                 this.#defaultLevel = `${level}`;
                 if (detachMenus) {
                     this.#button.setAttribute('data-active-level', `${level}`);
