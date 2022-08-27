@@ -5326,11 +5326,8 @@ var HlsMedia = function (_Native) {
 
   var _super = hls_createSuper(HlsMedia);
 
-  function HlsMedia(element, mediaSource) {
+  function HlsMedia(element, mediaSource, autoplay, options) {
     var _this;
-
-    var autoplay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-    var options = arguments.length > 3 ? arguments[3] : undefined;
 
     classCallCheck_default()(this, HlsMedia);
 
@@ -7890,23 +7887,48 @@ var Player = function () {
   }, {
     key: "load",
     value: function load() {
-      player_classPrivateFieldGet(this, _Player_media, "f").loaded = false;
-      return this.isMedia() ? player_classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
-    }
-  }, {
-    key: "play",
-    value: function play() {
       return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee2() {
         return regenerator_default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!(player_classPrivateFieldGet(this, _Player_media, "f") && !player_classPrivateFieldGet(this, _Player_media, "f").loaded)) {
+                if (player_classPrivateFieldGet(this, _Player_media, "f")) {
                   _context2.next = 4;
                   break;
                 }
 
                 _context2.next = 3;
+                return this._prepareMedia();
+
+              case 3:
+                return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").load());
+
+              case 4:
+                player_classPrivateFieldGet(this, _Player_media, "f").loaded = false;
+                return _context2.abrupt("return", this.isMedia() ? player_classPrivateFieldGet(this, _Player_media, "f").load() : undefined);
+
+              case 6:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee3() {
+        return regenerator_default().wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                if (player_classPrivateFieldGet(this, _Player_media, "f").loaded) {
+                  _context3.next = 4;
+                  break;
+                }
+
+                _context3.next = 3;
                 return player_classPrivateFieldGet(this, _Player_media, "f").load();
 
               case 3:
@@ -7914,26 +7936,26 @@ var Player = function () {
 
               case 4:
                 if (!player_classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-                  _context2.next = 9;
+                  _context3.next = 9;
                   break;
                 }
 
                 player_classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested = true;
-                _context2.next = 8;
+                _context3.next = 8;
                 return player_classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
 
               case 8:
-                return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_adsInstance, "f").play());
+                return _context3.abrupt("return", player_classPrivateFieldGet(this, _Player_adsInstance, "f").play());
 
               case 9:
-                return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
+                return _context3.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
 
               case 10:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
     }
   }, {
@@ -8127,13 +8149,13 @@ var Player = function () {
     value: function _prepareMedia() {
       var _a;
 
-      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee3() {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee4() {
         var preload, adsOptions;
-        return regenerator_default().wrap(function _callee3$(_context3) {
+        return regenerator_default().wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
-                _context3.prev = 0;
+                _context4.prev = 0;
 
                 if ((_a = player_classPrivateFieldGet(this, _Player_options, "f")) === null || _a === void 0 ? void 0 : _a.onError) {
                   player_classPrivateFieldGet(this, _Player_element, "f").addEventListener('playererror', player_classPrivateFieldGet(this, _Player_options, "f").onError, EVENT_OPTIONS);
@@ -8148,11 +8170,11 @@ var Player = function () {
                 preload = player_classPrivateFieldGet(this, _Player_element, "f").getAttribute('preload');
 
                 if (!(player_classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none')) {
-                  _context3.next = 9;
+                  _context4.next = 9;
                   break;
                 }
 
-                _context3.next = 8;
+                _context4.next = 8;
                 return player_classPrivateFieldGet(this, _Player_media, "f").load();
 
               case 8:
@@ -8165,20 +8187,20 @@ var Player = function () {
                   player_classPrivateFieldSet(this, _Player_adsInstance, new ads(this, player_classPrivateFieldGet(this, _Player_ads, "f"), false, false, adsOptions), "f");
                 }
 
-                _context3.next = 15;
+                _context4.next = 15;
                 break;
 
               case 12:
-                _context3.prev = 12;
-                _context3.t0 = _context3["catch"](0);
-                console.error(_context3.t0);
+                _context4.prev = 12;
+                _context4.t0 = _context4["catch"](0);
+                console.error(_context4.t0);
 
               case 15:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this, [[0, 12]]);
+        }, _callee4, this, [[0, 12]]);
       }));
     }
   }, {
@@ -8207,11 +8229,11 @@ var Player = function () {
   }, {
     key: "loadAd",
     value: function loadAd(src) {
-      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee4() {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee5() {
         var adsOptions, autoplay;
-        return regenerator_default().wrap(function _callee4$(_context4) {
+        return regenerator_default().wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 try {
                   if (this.isAd()) {
@@ -8231,10 +8253,10 @@ var Player = function () {
 
               case 1:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
     }
   }, {

@@ -208,13 +208,17 @@ class Player {
         }
     }
 
-    load(): Promise<void> | void {
+    async load(): Promise<void> {
+        if (!this.#media) {
+            await this._prepareMedia();
+            return (this.#media as Media).load();
+        }
         this.#media.loaded = false;
         return this.isMedia() ? this.#media.load() : undefined;
     }
 
     async play(): Promise<void> {
-        if (this.#media && !this.#media.loaded) {
+        if (!this.#media.loaded) {
             await this.#media.load();
             this.#media.loaded = true;
         }

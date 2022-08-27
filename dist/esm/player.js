@@ -157,12 +157,18 @@ class Player {
         });
     }
     load() {
-        __classPrivateFieldGet(this, _Player_media, "f").loaded = false;
-        return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!__classPrivateFieldGet(this, _Player_media, "f")) {
+                yield this._prepareMedia();
+                return __classPrivateFieldGet(this, _Player_media, "f").load();
+            }
+            __classPrivateFieldGet(this, _Player_media, "f").loaded = false;
+            return this.isMedia() ? __classPrivateFieldGet(this, _Player_media, "f").load() : undefined;
+        });
     }
     play() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (__classPrivateFieldGet(this, _Player_media, "f") && !__classPrivateFieldGet(this, _Player_media, "f").loaded) {
+            if (!__classPrivateFieldGet(this, _Player_media, "f").loaded) {
                 yield __classPrivateFieldGet(this, _Player_media, "f").load();
                 __classPrivateFieldGet(this, _Player_media, "f").loaded = true;
             }

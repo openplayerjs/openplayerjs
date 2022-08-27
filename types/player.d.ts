@@ -42,7 +42,7 @@ declare class Player {
     proxy: any;
     constructor(element: HTMLMediaElement | string, options?: PlayerOptions);
     init(): Promise<void>;
-    load(): Promise<void> | void;
+    load(): Promise<void>;
     play(): Promise<void>;
     pause(): void;
     destroy(): void;
