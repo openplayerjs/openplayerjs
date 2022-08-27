@@ -9,7 +9,7 @@
     [
       "@babel/preset-env",
       {
-        "corejs": "3.21"
+        "corejs": "3.22"
       }
     ]
   ]
