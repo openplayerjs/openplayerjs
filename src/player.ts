@@ -214,7 +214,7 @@ class Player {
 
     async load(): Promise<void> {
         if (!this.#media) {
-            await this._prepareMedia();
+            await this.prepareMedia();
             return (this.#media as Media).load();
         }
         this.#media.loaded = false;

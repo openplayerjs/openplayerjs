@@ -5150,11 +5150,7 @@ var Controls = function () {
 
       if (item.layer) {
         if (item.layer === 'main') {
-<<<<<<< HEAD
-          classPrivateFieldGet_default()(this, controls_player).getContainer().appendChild(control);
-=======
-          controls_classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(element);
->>>>>>> master
+          classPrivateFieldGet_default()(this, controls_player).getContainer().appendChild(element);
         } else {
           this.getLayer(item.layer).appendChild(element);
         }
@@ -5527,19 +5523,11 @@ var DashMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
-<<<<<<< HEAD
-      return classPrivateFieldGet_default()(this, dash_player) ? classPrivateFieldGet_default()(this, dash_player).getQualityFor('video') : -1;
-    },
-    set: function set(level) {
-      if (level === 0) {
-        classPrivateFieldGet_default()(this, dash_player).setAutoSwitchQuality(true);
-=======
-      return dash_classPrivateFieldGet(this, _DashMedia_player, "f") ? dash_classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : '-1';
+      return classPrivateFieldGet_default()(this, dash_player) ? classPrivateFieldGet_default()(this, dash_player).getQualityFor('video') : '-1';
     },
     set: function set(level) {
       if (level === '0') {
-        dash_classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(true);
->>>>>>> master
+        classPrivateFieldGet_default()(this, dash_player).setAutoSwitchQuality(true);
       } else {
         classPrivateFieldGet_default()(this, dash_player).setAutoSwitchQuality(false);
 
@@ -5749,11 +5737,7 @@ var FlvMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
-<<<<<<< HEAD
-      return classPrivateFieldGet_default()(this, flv_player) ? classPrivateFieldGet_default()(this, flv_player).currentLevel : -1;
-=======
-      return flv_classPrivateFieldGet(this, _FlvMedia_player, "f") ? flv_classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : '-1';
->>>>>>> master
+      return classPrivateFieldGet_default()(this, flv_player) ? classPrivateFieldGet_default()(this, flv_player).currentLevel : '-1';
     },
     set: function set(level) {
       classPrivateFieldGet_default()(this, flv_player).currentLevel = level;
@@ -6037,11 +6021,7 @@ var HlsMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
-<<<<<<< HEAD
-      return classPrivateFieldGet_default()(this, hls_player) ? classPrivateFieldGet_default()(this, hls_player).currentLevel : -1;
-=======
-      return hls_classPrivateFieldGet(this, _HlsMedia_player, "f") ? hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : '-1';
->>>>>>> master
+      return classPrivateFieldGet_default()(this, hls_player) ? classPrivateFieldGet_default()(this, hls_player).currentLevel : '-1';
     },
     set: function set(level) {
       classPrivateFieldGet_default()(this, hls_player).currentLevel = level;
@@ -8402,63 +8382,7 @@ var Ads = function () {
 }();
 
 /* harmony default export */ const ads = (Ads);
-<<<<<<< HEAD
 ;// CONCATENATED MODULE: ./src/player.ts
-=======
-;// CONCATENATED MODULE: ./src/js/player.ts
-
-
-
-
-
-
-var player_awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
-  function adopt(value) {
-    return value instanceof P ? value : new P(function (resolve) {
-      resolve(value);
-    });
-  }
-
-  return new (P || (P = Promise))(function (resolve, reject) {
-    function fulfilled(value) {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    }
-
-    function rejected(value) {
-      try {
-        step(generator["throw"](value));
-      } catch (e) {
-        reject(e);
-      }
-    }
-
-    function step(result) {
-      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-    }
-
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
-  });
-};
-
-var player_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
-  if (kind === "m") throw new TypeError("Private method is not writable");
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
-};
-
-var player_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet || function (receiver, state, kind, f) {
-  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-
-var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player_ads, _Player_media, _Player_events, _Player_autoplay, _Player_volume, _Player_canAutoplay, _Player_canAutoplayMuted, _Player_processedAutoplay, _Player_options, _Player_customElements, _Player_fullscreen, _Player_defaultOptions;
->>>>>>> master
 
 
 
@@ -8513,7 +8437,7 @@ var _processedAutoplay = new WeakMap();
 
 var player_options = new WeakMap();
 
-var _customControlItems = new WeakMap();
+var _customElements = new WeakMap();
 
 var _fullscreen = new WeakMap();
 
@@ -8529,105 +8453,9 @@ var Player = function () {
 
     defineProperty_default()(this, "proxy", null);
 
-<<<<<<< HEAD
     player_classPrivateFieldInitSpec(this, _initialized, {
       writable: true,
       value: false
-=======
-    _Player_adsInstance.set(this, void 0);
-
-    _Player_uid.set(this, '');
-
-    _Player_element.set(this, void 0);
-
-    _Player_ads.set(this, void 0);
-
-    _Player_media.set(this, void 0);
-
-    _Player_events.set(this, {});
-
-    _Player_autoplay.set(this, false);
-
-    _Player_volume.set(this, void 0);
-
-    _Player_canAutoplay.set(this, false);
-
-    _Player_canAutoplayMuted.set(this, false);
-
-    _Player_processedAutoplay.set(this, false);
-
-    _Player_options.set(this, void 0);
-
-    _Player_customElements.set(this, []);
-
-    _Player_fullscreen.set(this, void 0);
-
-    _Player_defaultOptions.set(this, {
-      controls: {
-        alwaysVisible: false,
-        layers: {
-          left: ['play', 'time', 'volume'],
-          middle: ['progress'],
-          right: ['captions', 'settings', 'fullscreen']
-        }
-      },
-      defaultLevel: undefined,
-      detachMenus: false,
-      forceNative: true,
-      height: 0,
-      hidePlayBtnTimer: 350,
-      labels: {
-        auto: 'Auto',
-        captions: 'CC/Subtitles',
-        click: 'Click to unmute',
-        fullscreen: 'Fullscreen',
-        lang: {
-          en: 'English'
-        },
-        levels: 'Quality Levels',
-        live: 'Live Broadcast',
-        mediaLevels: 'Change Quality',
-        mute: 'Mute',
-        off: 'Off',
-        pause: 'Pause',
-        play: 'Play',
-        progressRail: 'Time Rail',
-        progressSlider: 'Time Slider',
-        settings: 'Player Settings',
-        speed: 'Speed',
-        speedNormal: 'Normal',
-        tap: 'Tap to unmute',
-        toggleCaptions: 'Toggle Captions',
-        unmute: 'Unmute',
-        volume: 'Volume',
-        volumeControl: 'Volume Control',
-        volumeSlider: 'Volume Slider'
-      },
-      live: {
-        showLabel: true,
-        showProgress: false
-      },
-      media: {
-        pauseOnClick: false
-      },
-      mode: 'responsive',
-      onError: function onError(e) {
-        return console.error(e);
-      },
-      pauseOthers: true,
-      progress: {
-        allowRewind: true,
-        allowSkip: true,
-        duration: 0,
-        showCurrentTimeOnly: false
-      },
-      showLoaderOnInit: false,
-      startTime: 0,
-      startVolume: 1,
-      step: 0,
-      useDeviceVolume: true,
-      width: 0
->>>>>>> master
     });
 
     player_classPrivateFieldInitSpec(this, player_controls, {
@@ -8695,7 +8523,7 @@ var Player = function () {
       value: void 0
     });
 
-    player_classPrivateFieldInitSpec(this, _customControlItems, {
+    player_classPrivateFieldInitSpec(this, _customElements, {
       writable: true,
       value: []
     });
@@ -8850,43 +8678,26 @@ var Player = function () {
     }()
   }, {
     key: "load",
-    value: function load() {
-<<<<<<< HEAD
-      classPrivateFieldGet_default()(this, player_media).loaded = false;
-      return this.isMedia() ? classPrivateFieldGet_default()(this, player_media).load() : undefined;
-    }
-  }, {
-    key: "play",
     value: function () {
-      var _play = asyncToGenerator_default()(regenerator_default().mark(function _callee2() {
-=======
-      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee2() {
->>>>>>> master
+      var _load = asyncToGenerator_default()(regenerator_default().mark(function _callee2() {
         return regenerator_default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-<<<<<<< HEAD
-                if (!(classPrivateFieldGet_default()(this, player_media) && !classPrivateFieldGet_default()(this, player_media).loaded)) {
-=======
-                if (player_classPrivateFieldGet(this, _Player_media, "f")) {
->>>>>>> master
+                if (classPrivateFieldGet_default()(this, player_media)) {
                   _context2.next = 4;
                   break;
                 }
 
                 _context2.next = 3;
-<<<<<<< HEAD
-                return classPrivateFieldGet_default()(this, player_media).load();
-=======
-                return this._prepareMedia();
+                return this.prepareMedia();
 
               case 3:
-                return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").load());
+                return _context2.abrupt("return", classPrivateFieldGet_default()(this, player_media).load());
 
               case 4:
-                player_classPrivateFieldGet(this, _Player_media, "f").loaded = false;
-                return _context2.abrupt("return", this.isMedia() ? player_classPrivateFieldGet(this, _Player_media, "f").load() : undefined);
+                classPrivateFieldGet_default()(this, player_media).loaded = false;
+                return _context2.abrupt("return", this.isMedia() ? classPrivateFieldGet_default()(this, player_media).load() : undefined);
 
               case 6:
               case "end":
@@ -8895,59 +8706,47 @@ var Player = function () {
           }
         }, _callee2, this);
       }));
-    }
+
+      function load() {
+        return _load.apply(this, arguments);
+      }
+
+      return load;
+    }()
   }, {
     key: "play",
-    value: function play() {
-      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee3() {
+    value: function () {
+      var _play = asyncToGenerator_default()(regenerator_default().mark(function _callee3() {
         return regenerator_default().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                if (player_classPrivateFieldGet(this, _Player_media, "f").loaded) {
+                if (classPrivateFieldGet_default()(this, player_media).loaded) {
                   _context3.next = 4;
                   break;
                 }
 
                 _context3.next = 3;
-                return player_classPrivateFieldGet(this, _Player_media, "f").load();
->>>>>>> master
+                return classPrivateFieldGet_default()(this, player_media).load();
 
               case 3:
                 classPrivateFieldGet_default()(this, player_media).loaded = true;
 
               case 4:
-<<<<<<< HEAD
                 if (!classPrivateFieldGet_default()(this, _adsInstance)) {
-                  _context2.next = 9;
-                  break;
-                }
-
-                classPrivateFieldGet_default()(this, _adsInstance).playRequested = true;
-                _context2.next = 8;
-                return classPrivateFieldGet_default()(this, _adsInstance).loadPromise;
-
-              case 8:
-                return _context2.abrupt("return", classPrivateFieldGet_default()(this, _adsInstance).play());
-
-              case 9:
-                return _context2.abrupt("return", classPrivateFieldGet_default()(this, player_media).play());
-=======
-                if (!player_classPrivateFieldGet(this, _Player_adsInstance, "f")) {
                   _context3.next = 9;
                   break;
                 }
 
-                player_classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested = true;
+                classPrivateFieldGet_default()(this, _adsInstance).playRequested = true;
                 _context3.next = 8;
-                return player_classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
+                return classPrivateFieldGet_default()(this, _adsInstance).loadPromise;
 
               case 8:
-                return _context3.abrupt("return", player_classPrivateFieldGet(this, _Player_adsInstance, "f").play());
+                return _context3.abrupt("return", classPrivateFieldGet_default()(this, _adsInstance).play());
 
               case 9:
-                return _context3.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
->>>>>>> master
+                return _context3.abrupt("return", classPrivateFieldGet_default()(this, player_media).play());
 
               case 10:
               case "end":
@@ -8977,8 +8776,8 @@ var Player = function () {
     value: function stop() {
       this.pause();
 
-      if (player_classPrivateFieldGet(this, _Player_media, "f")) {
-        player_classPrivateFieldGet(this, _Player_media, "f").currentTime = 0;
+      if (classPrivateFieldGet_default()(this, player_media)) {
+        classPrivateFieldGet_default()(this, player_media).currentTime = 0;
         this.src = [{
           src: '',
           type: 'video/mp4'
@@ -9063,11 +8862,7 @@ var Player = function () {
   }, {
     key: "getCustomControls",
     value: function getCustomControls() {
-<<<<<<< HEAD
-      return classPrivateFieldGet_default()(this, _customControlItems);
-=======
-      return player_classPrivateFieldGet(this, _Player_customElements, "f");
->>>>>>> master
+      return classPrivateFieldGet_default()(this, _customElements);
     }
   }, {
     key: "getElement",
@@ -9147,22 +8942,18 @@ var Player = function () {
       args.custom = true;
       args.type = 'button';
 
-<<<<<<< HEAD
-      classPrivateFieldGet_default()(this, _customControlItems).push(args);
-=======
-      player_classPrivateFieldGet(this, _Player_customElements, "f").push(args);
+      classPrivateFieldGet_default()(this, _customElements).push(args);
 
       var e = addEvent('controlschanged');
 
-      player_classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
+      classPrivateFieldGet_default()(this, player_element).dispatchEvent(e);
     }
   }, {
     key: "addElement",
     value: function addElement(args) {
       args.custom = true;
 
-      player_classPrivateFieldGet(this, _Player_customElements, "f").push(args);
->>>>>>> master
+      classPrivateFieldGet_default()(this, _customElements).push(args);
 
       var e = addEvent('controlschanged');
 
@@ -9173,15 +8964,9 @@ var Player = function () {
     value: function removeControl(controlName) {
       var _this2 = this;
 
-<<<<<<< HEAD
-      classPrivateFieldGet_default()(this, _customControlItems).forEach(function (item, idx) {
+      classPrivateFieldGet_default()(this, _customElements).forEach(function (item, idx) {
         if (item.id === controlName) {
-          classPrivateFieldGet_default()(_this2, _customControlItems).splice(idx, 1);
-=======
-      player_classPrivateFieldGet(this, _Player_customElements, "f").forEach(function (item, idx) {
-        if (item.id === controlName) {
-          player_classPrivateFieldGet(_this2, _Player_customElements, "f").splice(idx, 1);
->>>>>>> master
+          classPrivateFieldGet_default()(_this2, _customElements).splice(idx, 1);
         }
       });
 
@@ -9192,16 +8977,10 @@ var Player = function () {
   }, {
     key: "prepareMedia",
     value: function () {
-      var _prepareMedia = asyncToGenerator_default()(regenerator_default().mark(function _callee3() {
+      var _prepareMedia = asyncToGenerator_default()(regenerator_default().mark(function _callee4() {
         var _classPrivateFieldGet4, preload, adsOptions;
 
-<<<<<<< HEAD
-        return regenerator_default().wrap(function _callee3$(_context3) {
-=======
-      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee4() {
-        var preload, adsOptions;
         return regenerator_default().wrap(function _callee4$(_context4) {
->>>>>>> master
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
@@ -9219,23 +8998,13 @@ var Player = function () {
 
                 preload = classPrivateFieldGet_default()(this, player_element).getAttribute('preload');
 
-<<<<<<< HEAD
                 if (!(classPrivateFieldGet_default()(this, player_ads) || !preload || preload !== 'none')) {
-                  _context3.next = 9;
-                  break;
-                }
-
-                _context3.next = 8;
-                return classPrivateFieldGet_default()(this, player_media).load();
-=======
-                if (!(player_classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none')) {
                   _context4.next = 9;
                   break;
                 }
 
                 _context4.next = 8;
-                return player_classPrivateFieldGet(this, _Player_media, "f").load();
->>>>>>> master
+                return classPrivateFieldGet_default()(this, player_media).load();
 
               case 8:
                 classPrivateFieldGet_default()(this, player_media).loaded = true;
@@ -9299,13 +9068,8 @@ var Player = function () {
     }
   }, {
     key: "loadAd",
-<<<<<<< HEAD
     value: function () {
-      var _loadAd = asyncToGenerator_default()(regenerator_default().mark(function _callee4(src) {
-=======
-    value: function loadAd(src) {
-      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee5() {
->>>>>>> master
+      var _loadAd = asyncToGenerator_default()(regenerator_default().mark(function _callee5(src) {
         var adsOptions, autoplay;
         return regenerator_default().wrap(function _callee5$(_context5) {
           while (1) {
@@ -9936,15 +9700,9 @@ var Player = function () {
   return Player;
 }();
 
-<<<<<<< HEAD
 defineProperty_default()(Player, "instances", {});
 
 defineProperty_default()(Player, "customMedia", {
-=======
-_Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customElements = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
-Player.instances = {};
-Player.customMedia = {
->>>>>>> master
   media: {},
   optionsKey: {},
   rules: []

@@ -96,7 +96,7 @@ class FlvMedia extends native_1.default {
         __classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel = level;
     }
     get level() {
-        return __classPrivateFieldGet(this, _FlvMedia_player, "f") ? __classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : -1;
+        return __classPrivateFieldGet(this, _FlvMedia_player, "f") ? __classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : '-1';
     }
     _create() {
         const _a = __classPrivateFieldGet(this, _FlvMedia_options, "f") || {}, { configs } = _a, rest = __rest(_a, ["configs"]);

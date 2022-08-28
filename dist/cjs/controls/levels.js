@@ -120,7 +120,7 @@ class Levels {
             const isPaused = __classPrivateFieldGet(this, _Levels_player, "f").getMedia().paused;
             if (option.closest(`#${__classPrivateFieldGet(this, _Levels_player, "f").id}`) && option.classList.contains('op-levels__option')) {
                 const levelVal = option.getAttribute('data-value');
-                const level = parseInt(levelVal ? levelVal.replace('levels-', '') : '-1', 10);
+                const level = levelVal ? levelVal.replace('levels-', '') : '-1';
                 __classPrivateFieldSet(this, _Levels_defaultLevel, `${level}`, "f");
                 if (detachMenus) {
                     __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('data-active-level', `${level}`);
