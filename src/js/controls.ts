@@ -379,11 +379,9 @@ class Controls implements PlayerComponent {
         }
 
         if (item.type === 'button' && item.icon) {
-            const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
+            element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon)
                 ? `<img src="${sanitize(item.icon)}">`
                 : sanitize(item.icon);
-
-            element.innerHTML = icon;
         } else if (item.content) {
             element.innerHTML = sanitize(item.content, false);
         }
@@ -404,7 +402,9 @@ class Controls implements PlayerComponent {
             const items = item.subitems.map((s) => {
                 let itemIcon = '';
                 if (s.icon) {
-                    itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? `<img src="${s.icon}">` : s.icon;
+                    itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon)
+                        ? `<img src="${sanitize(s.icon)}">`
+                        : sanitize(s.icon, false);
                 }
                 return `<div class="op-settings__menu-item" tabindex="0" ${
                     s.title ? `title="${s.title}"` : ''

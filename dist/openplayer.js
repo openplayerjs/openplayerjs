@@ -4591,8 +4591,7 @@ var Controls = function () {
       }
 
       if (item.type === 'button' && item.icon) {
-        var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
-        element.innerHTML = icon;
+        element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
       } else if (item.content) {
         element.innerHTML = sanitize(item.content, false);
       }
@@ -4614,7 +4613,7 @@ var Controls = function () {
           var itemIcon = '';
 
           if (s.icon) {
-            itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? "<img src=\"".concat(s.icon, "\">") : s.icon;
+            itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? "<img src=\"".concat(sanitize(s.icon), "\">") : sanitize(s.icon, false);
           }
 
           return "<div class=\"op-settings__menu-item\" tabindex=\"0\" ".concat(s.title ? "title=\"".concat(s.title, "\"") : '', " role=\"menuitemradio\">\n                    <div class=\"op-settings__menu-label\" id=\"").concat(s.id, "\" data-value=\"").concat(item.id, "-").concat(s.id, "\">").concat(itemIcon, " ").concat(s.label, "</div>\n                </div>");
