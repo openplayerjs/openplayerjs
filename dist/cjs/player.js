@@ -34,7 +34,6 @@ const media_2 = require("./utils/media");
 class Player {
     constructor(element, options) {
         var _a;
-        this.proxy = null;
         _Player_initialized.set(this, false);
         _Player_controls.set(this, void 0);
         _Player_adsInstance.set(this, void 0);
@@ -63,6 +62,7 @@ class Player {
             defaultLevel: undefined,
             detachMenus: false,
             forceNative: true,
+            minimalist: false,
             height: 0,
             hidePlayBtnTimer: 350,
             labels: {
@@ -131,6 +131,7 @@ class Player {
             __classPrivateFieldSet(this, _Player_volume, __classPrivateFieldGet(this, _Player_element, "f").volume, "f");
         }
         this._autoplay = this._autoplay.bind(this);
+        this._setDimensions = this._setDimensions.bind(this);
         this._enableKeyBindings = this._enableKeyBindings.bind(this);
     }
     static init() {
@@ -152,14 +153,20 @@ class Player {
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             if (this._isValid()) {
+                return;
+            }
+            this._createUID();
+            yield this.prepareMedia();
+            __classPrivateFieldSet(this, _Player_initialized, true, "f");
+            Player.instances[this.id] = this;
+            if (__classPrivateFieldGet(this, _Player_options, "f").minimalist) {
                 this._wrapInstance();
-                yield this.prepareMedia();
                 this._createPlayButton();
-                this._createUID();
                 this._createControls();
                 this._setEvents();
-                __classPrivateFieldSet(this, _Player_initialized, true, "f");
-                Player.instances[this.id] = this;
+            }
+            else {
+                this._setDimensions(__classPrivateFieldGet(this, _Player_element, "f"));
             }
         });
     }
@@ -359,22 +366,6 @@ class Player {
     initialized() {
         return __classPrivateFieldGet(this, _Player_initialized, "f");
     }
-    enableDefaultPlayer() {
-        let paused = true;
-        let currentTime = 0;
-        if (this.proxy && !this.proxy.paused) {
-            paused = false;
-            currentTime = this.proxy.currentTime;
-            this.proxy.pause();
-        }
-        this.proxy = this;
-        this.getElement().addEventListener('loadedmetadata', () => {
-            this.getMedia().currentTime = currentTime;
-            if (!paused) {
-                this.play();
-            }
-        });
-    }
     loadAd(src) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -477,18 +468,21 @@ class Player {
             }
         }
         else {
-            let style = '';
-            if (__classPrivateFieldGet(this, _Player_options, "f").width) {
-                const width = typeof __classPrivateFieldGet(this, _Player_options, "f").width === 'number' ? `${__classPrivateFieldGet(this, _Player_options, "f").width}px` : __classPrivateFieldGet(this, _Player_options, "f").width;
-                style += `width: ${width} !important;`;
-            }
-            if (__classPrivateFieldGet(this, _Player_options, "f").height) {
-                const height = typeof __classPrivateFieldGet(this, _Player_options, "f").height === 'number' ? `${__classPrivateFieldGet(this, _Player_options, "f").height}px` : __classPrivateFieldGet(this, _Player_options, "f").height;
-                style += `height: ${height} !important;`;
-            }
-            if (style) {
-                wrapper.setAttribute('style', style);
-            }
+            this._setDimensions(wrapper);
+        }
+    }
+    _setDimensions(element) {
+        let style = '';
+        if (__classPrivateFieldGet(this, _Player_options, "f").width) {
+            const width = typeof __classPrivateFieldGet(this, _Player_options, "f").width === 'number' ? `${__classPrivateFieldGet(this, _Player_options, "f").width}px` : __classPrivateFieldGet(this, _Player_options, "f").width;
+            style += `width: ${width} !important;`;
+        }
+        if (__classPrivateFieldGet(this, _Player_options, "f").height) {
+            const height = typeof __classPrivateFieldGet(this, _Player_options, "f").height === 'number' ? `${__classPrivateFieldGet(this, _Player_options, "f").height}px` : __classPrivateFieldGet(this, _Player_options, "f").height;
+            style += `height: ${height} !important;`;
+        }
+        if (style) {
+            element.setAttribute('style', style);
         }
     }
     _createControls() {
@@ -616,21 +610,6 @@ class Player {
             __classPrivateFieldGet(this, _Player_events, "f").ended = () => {
                 this.loader.setAttribute('aria-hidden', 'true');
                 this.playBtn.setAttribute('aria-hidden', 'true');
-            };
-            let postRollCalled = false;
-            __classPrivateFieldGet(this, _Player_events, "f").timeupdate = () => {
-                if (__classPrivateFieldGet(this, _Player_element, "f").loop && this.isMedia() && __classPrivateFieldGet(this, _Player_adsInstance, "f")) {
-                    const el = this.getMedia();
-                    const remainingTime = el.duration - el.currentTime;
-                    if (remainingTime > 0 && remainingTime <= 0.25 && !postRollCalled) {
-                        postRollCalled = true;
-                        const e = (0, general_1.addEvent)('ended');
-                        __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
-                    }
-                    else if (remainingTime === 0) {
-                        postRollCalled = false;
-                    }
-                }
             };
         }
         Object.keys(__classPrivateFieldGet(this, _Player_events, "f")).forEach((event) => {

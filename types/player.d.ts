@@ -5,7 +5,6 @@ import Ads from './media/ads';
 interface P {
     loader: HTMLSpanElement;
     playBtn: HTMLButtonElement;
-    proxy: any;
     init(): Promise<void>;
     load(): Promise<void> | void;
     play(): Promise<void>;
@@ -26,7 +25,6 @@ interface P {
     addControl(args: ElementItem): void;
     removeControl(controlName: string): void;
     prepareMedia(): Promise<void>;
-    enableDefaultPlayer(): void;
     loadAd(src: string | string[]): Promise<void>;
     initialized(): boolean;
 }
@@ -40,7 +38,6 @@ declare class Player {
     static addMedia(name: string, mimeType: string, valid: (url: string) => string, media: Source): void;
     loader: HTMLSpanElement;
     playBtn: HTMLButtonElement;
-    proxy: any;
     constructor(element: HTMLMediaElement | string, options?: PlayerOptions);
     init(): Promise<void>;
     load(): Promise<void>;
@@ -65,13 +62,13 @@ declare class Player {
     removeControl(controlName: string): void;
     prepareMedia(): Promise<void>;
     initialized(): boolean;
-    enableDefaultPlayer(): void;
     loadAd(src: string | string[]): Promise<void>;
     set src(media: Source[]);
     get src(): Source[];
     get id(): string;
     private _isValid;
     private _wrapInstance;
+    private _setDimensions;
     private _createControls;
     private _createUID;
     private _createPlayButton;

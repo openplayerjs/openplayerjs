@@ -19,8 +19,6 @@ import { isAutoplaySupported, predictMimeType } from './utils/media';
 interface P {
     loader: HTMLSpanElement;
     playBtn: HTMLButtonElement;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proxy: any;
     init(): Promise<void>;
     load(): Promise<void> | void;
     play(): Promise<void>;
@@ -41,7 +39,6 @@ interface P {
     addControl(args: ElementItem): void;
     removeControl(controlName: string): void;
     prepareMedia(): Promise<void>;
-    enableDefaultPlayer(): void;
     loadAd(src: string | string[]): Promise<void>;
     initialized(): boolean;
 }
@@ -76,9 +73,6 @@ class Player {
     loader: HTMLSpanElement;
 
     playBtn: HTMLButtonElement;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proxy: any = null;
 
     #initialized = false;
 
@@ -124,6 +118,7 @@ class Player {
         defaultLevel: undefined,
         detachMenus: false,
         forceNative: true,
+        minimalist: false,
         height: 0,
         hidePlayBtnTimer: 350,
         labels: {
@@ -196,19 +191,27 @@ class Player {
             this.#volume = this.#element.volume;
         }
         this._autoplay = this._autoplay.bind(this);
+        this._setDimensions = this._setDimensions.bind(this);
         this._enableKeyBindings = this._enableKeyBindings.bind(this);
     }
 
     async init(): Promise<void> {
         if (this._isValid()) {
+            return;
+        }
+
+        this._createUID();
+        await this.prepareMedia();
+        this.#initialized = true;
+        Player.instances[this.id] = this;
+
+        if (this.#options.minimalist) {
             this._wrapInstance();
-            await this.prepareMedia();
             this._createPlayButton();
-            this._createUID();
             this._createControls();
             this._setEvents();
-            this.#initialized = true;
-            Player.instances[this.id] = this;
+        } else {
+            this._setDimensions(this.#element);
         }
     }
 
@@ -437,25 +440,6 @@ class Player {
         return this.#initialized;
     }
 
-    enableDefaultPlayer(): void {
-        let paused = true;
-        let currentTime = 0;
-
-        if (this.proxy && !this.proxy.paused) {
-            paused = false;
-            currentTime = this.proxy.currentTime;
-            this.proxy.pause();
-        }
-
-        this.proxy = this;
-        this.getElement().addEventListener('loadedmetadata', (): void => {
-            this.getMedia().currentTime = currentTime;
-            if (!paused) {
-                this.play();
-            }
-        });
-    }
-
     async loadAd(src: string | string[]): Promise<void> {
         try {
             if (this.isAd()) {
@@ -575,21 +559,24 @@ class Player {
                 container.classList.add('op-player__fit');
             }
         } else {
-            let style = '';
-            if (this.#options.width) {
-                const width =
-                    typeof this.#options.width === 'number' ? `${this.#options.width}px` : this.#options.width;
-                style += `width: ${width} !important;`;
-            }
-            if (this.#options.height) {
-                const height =
-                    typeof this.#options.height === 'number' ? `${this.#options.height}px` : this.#options.height;
-                style += `height: ${height} !important;`;
-            }
+            this._setDimensions(wrapper);
+        }
+    }
 
-            if (style) {
-                wrapper.setAttribute('style', style);
-            }
+    private _setDimensions(element: HTMLElement): void {
+        let style = '';
+        if (this.#options.width) {
+            const width = typeof this.#options.width === 'number' ? `${this.#options.width}px` : this.#options.width;
+            style += `width: ${width} !important;`;
+        }
+        if (this.#options.height) {
+            const height =
+                typeof this.#options.height === 'number' ? `${this.#options.height}px` : this.#options.height;
+            style += `height: ${height} !important;`;
+        }
+
+        if (style) {
+            element.setAttribute('style', style);
         }
     }
 
@@ -724,24 +711,6 @@ class Player {
             this.#events.ended = (): void => {
                 this.loader.setAttribute('aria-hidden', 'true');
                 this.playBtn.setAttribute('aria-hidden', 'true');
-            };
-            // This workflow is needed when media is on a loop and post roll needs to be played.
-            // This happens because, when in loop, media never sends the `ended` event back;
-            // so, when media reaches a quarter of a second left before the end, Ads would be dispatched
-            // @see https://github.com/googleads/videojs-ima/issues/890
-            let postRollCalled = false;
-            this.#events.timeupdate = (): void => {
-                if (this.#element.loop && this.isMedia() && this.#adsInstance) {
-                    const el = this.getMedia();
-                    const remainingTime = el.duration - el.currentTime;
-                    if (remainingTime > 0 && remainingTime <= 0.25 && !postRollCalled) {
-                        postRollCalled = true;
-                        const e = addEvent('ended');
-                        this.#element.dispatchEvent(e);
-                    } else if (remainingTime === 0) {
-                        postRollCalled = false;
-                    }
-                }
             };
         }
 

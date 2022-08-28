@@ -8450,8 +8450,6 @@ var Player = function () {
 
     defineProperty_default()(this, "playBtn", void 0);
 
-    defineProperty_default()(this, "proxy", null);
-
     player_classPrivateFieldInitSpec(this, _initialized, {
       writable: true,
       value: false
@@ -8546,6 +8544,7 @@ var Player = function () {
         defaultLevel: undefined,
         detachMenus: false,
         forceNative: true,
+        minimalist: false,
         height: 0,
         hidePlayBtnTimer: 350,
         labels: {
@@ -8627,6 +8626,7 @@ var Player = function () {
     }
 
     this._autoplay = this._autoplay.bind(this);
+    this._setDimensions = this._setDimensions.bind(this);
     this._enableKeyBindings = this._enableKeyBindings.bind(this);
   }
 
@@ -8639,29 +8639,36 @@ var Player = function () {
             switch (_context.prev = _context.next) {
               case 0:
                 if (!this._isValid()) {
-                  _context.next = 10;
+                  _context.next = 2;
                   break;
                 }
 
-                this._wrapInstance();
+                return _context.abrupt("return");
 
-                _context.next = 4;
-                return this.prepareMedia();
-
-              case 4:
-                this._createPlayButton();
-
+              case 2:
                 this._createUID();
 
-                this._createControls();
+                _context.next = 5;
+                return this.prepareMedia();
 
-                this._setEvents();
-
+              case 5:
                 classPrivateFieldSet_default()(this, _initialized, true);
 
                 Player.instances[this.id] = this;
 
-              case 10:
+                if (classPrivateFieldGet_default()(this, player_options).minimalist) {
+                  this._wrapInstance();
+
+                  this._createPlayButton();
+
+                  this._createControls();
+
+                  this._setEvents();
+                } else {
+                  this._setDimensions(classPrivateFieldGet_default()(this, player_element));
+                }
+
+              case 8:
               case "end":
                 return _context.stop();
             }
@@ -9043,29 +9050,6 @@ var Player = function () {
       return classPrivateFieldGet_default()(this, _initialized);
     }
   }, {
-    key: "enableDefaultPlayer",
-    value: function enableDefaultPlayer() {
-      var _this3 = this;
-
-      var paused = true;
-      var currentTime = 0;
-
-      if (this.proxy && !this.proxy.paused) {
-        paused = false;
-        currentTime = this.proxy.currentTime;
-        this.proxy.pause();
-      }
-
-      this.proxy = this;
-      this.getElement().addEventListener('loadedmetadata', function () {
-        _this3.getMedia().currentTime = currentTime;
-
-        if (!paused) {
-          _this3.play();
-        }
-      });
-    }
-  }, {
     key: "loadAd",
     value: function () {
       var _loadAd = asyncToGenerator_default()(regenerator_default().mark(function _callee5(src) {
@@ -9110,7 +9094,7 @@ var Player = function () {
       return classPrivateFieldGet_default()(this, player_media).src;
     },
     set: function set(media) {
-      var _this4 = this;
+      var _this3 = this;
 
       if (classPrivateFieldGet_default()(this, player_media) instanceof src_media) {
         classPrivateFieldGet_default()(this, player_media).mediaFiles = [];
@@ -9121,9 +9105,9 @@ var Player = function () {
         media.forEach(function (m) {
           var source = document.createElement('source');
           source.src = m.src;
-          source.type = m.type || predictMimeType(m.src, classPrivateFieldGet_default()(_this4, player_element));
+          source.type = m.type || predictMimeType(m.src, classPrivateFieldGet_default()(_this3, player_element));
 
-          classPrivateFieldGet_default()(_this4, player_element).appendChild(source);
+          classPrivateFieldGet_default()(_this3, player_element).appendChild(source);
         });
       } else if (typeof_default()(media) === 'object') {
         classPrivateFieldGet_default()(this, player_element).src = media.src;
@@ -9203,21 +9187,26 @@ var Player = function () {
           container.classList.add('op-player__fit');
         }
       } else {
-        var style = '';
+        this._setDimensions(wrapper);
+      }
+    }
+  }, {
+    key: "_setDimensions",
+    value: function _setDimensions(element) {
+      var style = '';
 
-        if (classPrivateFieldGet_default()(this, player_options).width) {
-          var width = typeof classPrivateFieldGet_default()(this, player_options).width === 'number' ? "".concat(classPrivateFieldGet_default()(this, player_options).width, "px") : classPrivateFieldGet_default()(this, player_options).width;
-          style += "width: ".concat(width, " !important;");
-        }
+      if (classPrivateFieldGet_default()(this, player_options).width) {
+        var width = typeof classPrivateFieldGet_default()(this, player_options).width === 'number' ? "".concat(classPrivateFieldGet_default()(this, player_options).width, "px") : classPrivateFieldGet_default()(this, player_options).width;
+        style += "width: ".concat(width, " !important;");
+      }
 
-        if (classPrivateFieldGet_default()(this, player_options).height) {
-          var height = typeof classPrivateFieldGet_default()(this, player_options).height === 'number' ? "".concat(classPrivateFieldGet_default()(this, player_options).height, "px") : classPrivateFieldGet_default()(this, player_options).height;
-          style += "height: ".concat(height, " !important;");
-        }
+      if (classPrivateFieldGet_default()(this, player_options).height) {
+        var height = typeof classPrivateFieldGet_default()(this, player_options).height === 'number' ? "".concat(classPrivateFieldGet_default()(this, player_options).height, "px") : classPrivateFieldGet_default()(this, player_options).height;
+        style += "height: ".concat(height, " !important;");
+      }
 
-        if (style) {
-          wrapper.setAttribute('style', style);
-        }
+      if (style) {
+        element.setAttribute('style', style);
       }
     }
   }, {
@@ -9254,7 +9243,7 @@ var Player = function () {
     value: function _createPlayButton() {
       var _classPrivateFieldGet5,
           _classPrivateFieldGet6,
-          _this5 = this;
+          _this4 = this;
 
       if (isAudio(classPrivateFieldGet_default()(this, player_element))) {
         return;
@@ -9279,150 +9268,131 @@ var Player = function () {
       }
 
       this.playBtn.addEventListener('click', function () {
-        if (classPrivateFieldGet_default()(_this5, _adsInstance)) {
-          classPrivateFieldGet_default()(_this5, _adsInstance).playRequested = _this5.activeElement().paused;
+        if (classPrivateFieldGet_default()(_this4, _adsInstance)) {
+          classPrivateFieldGet_default()(_this4, _adsInstance).playRequested = _this4.activeElement().paused;
         }
 
-        if (_this5.activeElement().paused) {
-          _this5.activeElement().play();
+        if (_this4.activeElement().paused) {
+          _this4.activeElement().play();
         } else {
-          _this5.activeElement().pause();
+          _this4.activeElement().pause();
         }
       }, EVENT_OPTIONS);
     }
   }, {
     key: "_setEvents",
     value: function _setEvents() {
-      var _this6 = this;
+      var _this5 = this;
 
       if (isVideo(classPrivateFieldGet_default()(this, player_element))) {
         classPrivateFieldGet_default()(this, player_events).loadedmetadata = function () {
-          var el = _this6.activeElement();
+          var el = _this5.activeElement();
 
-          if (classPrivateFieldGet_default()(_this6, player_options).showLoaderOnInit && !IS_IOS && !IS_ANDROID) {
-            _this6.loader.setAttribute('aria-hidden', 'false');
+          if (classPrivateFieldGet_default()(_this5, player_options).showLoaderOnInit && !IS_IOS && !IS_ANDROID) {
+            _this5.loader.setAttribute('aria-hidden', 'false');
 
-            _this6.playBtn.setAttribute('aria-hidden', 'true');
+            _this5.playBtn.setAttribute('aria-hidden', 'true');
           } else {
-            _this6.loader.setAttribute('aria-hidden', 'true');
+            _this5.loader.setAttribute('aria-hidden', 'true');
 
-            _this6.playBtn.setAttribute('aria-hidden', 'false');
+            _this5.playBtn.setAttribute('aria-hidden', 'false');
           }
 
           if (el.paused) {
-            _this6.playBtn.classList.remove('op-player__play--paused');
+            _this5.playBtn.classList.remove('op-player__play--paused');
 
-            _this6.playBtn.setAttribute('aria-pressed', 'false');
+            _this5.playBtn.setAttribute('aria-pressed', 'false');
           }
         };
 
         classPrivateFieldGet_default()(this, player_events).waiting = function () {
-          _this6.playBtn.setAttribute('aria-hidden', 'true');
+          _this5.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this6.loader.setAttribute('aria-hidden', 'false');
+          _this5.loader.setAttribute('aria-hidden', 'false');
         };
 
         classPrivateFieldGet_default()(this, player_events).seeking = function () {
-          var el = _this6.activeElement();
+          var el = _this5.activeElement();
 
-          _this6.playBtn.setAttribute('aria-hidden', 'true');
+          _this5.playBtn.setAttribute('aria-hidden', 'true');
 
-          _this6.loader.setAttribute('aria-hidden', el instanceof src_media ? 'false' : 'true');
+          _this5.loader.setAttribute('aria-hidden', el instanceof src_media ? 'false' : 'true');
         };
 
         classPrivateFieldGet_default()(this, player_events).seeked = function () {
-          var el = _this6.activeElement();
+          var el = _this5.activeElement();
 
           if (Math.round(el.currentTime) === 0) {
-            _this6.playBtn.setAttribute('aria-hidden', 'true');
+            _this5.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this6.loader.setAttribute('aria-hidden', 'false');
+            _this5.loader.setAttribute('aria-hidden', 'false');
           } else {
-            _this6.playBtn.setAttribute('aria-hidden', el instanceof src_media ? 'false' : 'true');
+            _this5.playBtn.setAttribute('aria-hidden', el instanceof src_media ? 'false' : 'true');
 
-            _this6.loader.setAttribute('aria-hidden', 'true');
+            _this5.loader.setAttribute('aria-hidden', 'true');
           }
         };
 
         classPrivateFieldGet_default()(this, player_events).play = function () {
           var _classPrivateFieldGet7;
 
-          _this6.playBtn.classList.add('op-player__play--paused');
+          _this5.playBtn.classList.add('op-player__play--paused');
 
-          _this6.playBtn.title = ((_classPrivateFieldGet7 = classPrivateFieldGet_default()(_this6, player_options).labels) === null || _classPrivateFieldGet7 === void 0 ? void 0 : _classPrivateFieldGet7.pause) || '';
+          _this5.playBtn.title = ((_classPrivateFieldGet7 = classPrivateFieldGet_default()(_this5, player_options).labels) === null || _classPrivateFieldGet7 === void 0 ? void 0 : _classPrivateFieldGet7.pause) || '';
 
-          _this6.loader.setAttribute('aria-hidden', 'true');
+          _this5.loader.setAttribute('aria-hidden', 'true');
 
-          if (classPrivateFieldGet_default()(_this6, player_options).showLoaderOnInit) {
-            _this6.playBtn.setAttribute('aria-hidden', 'true');
+          if (classPrivateFieldGet_default()(_this5, player_options).showLoaderOnInit) {
+            _this5.playBtn.setAttribute('aria-hidden', 'true');
           } else {
             setTimeout(function () {
-              _this6.playBtn.setAttribute('aria-hidden', 'true');
-            }, classPrivateFieldGet_default()(_this6, player_options).hidePlayBtnTimer);
+              _this5.playBtn.setAttribute('aria-hidden', 'true');
+            }, classPrivateFieldGet_default()(_this5, player_options).hidePlayBtnTimer);
           }
         };
 
         classPrivateFieldGet_default()(this, player_events).playing = function () {
-          _this6.loader.setAttribute('aria-hidden', 'true');
+          _this5.loader.setAttribute('aria-hidden', 'true');
 
-          _this6.playBtn.setAttribute('aria-hidden', 'true');
+          _this5.playBtn.setAttribute('aria-hidden', 'true');
         };
 
         classPrivateFieldGet_default()(this, player_events).pause = function () {
           var _classPrivateFieldGet8;
 
-          var el = _this6.activeElement();
+          var el = _this5.activeElement();
 
-          _this6.playBtn.classList.remove('op-player__play--paused');
+          _this5.playBtn.classList.remove('op-player__play--paused');
 
-          _this6.playBtn.title = ((_classPrivateFieldGet8 = classPrivateFieldGet_default()(_this6, player_options).labels) === null || _classPrivateFieldGet8 === void 0 ? void 0 : _classPrivateFieldGet8.play) || '';
+          _this5.playBtn.title = ((_classPrivateFieldGet8 = classPrivateFieldGet_default()(_this5, player_options).labels) === null || _classPrivateFieldGet8 === void 0 ? void 0 : _classPrivateFieldGet8.play) || '';
 
-          if (classPrivateFieldGet_default()(_this6, player_options).showLoaderOnInit && Math.round(el.currentTime) === 0) {
-            _this6.playBtn.setAttribute('aria-hidden', 'true');
+          if (classPrivateFieldGet_default()(_this5, player_options).showLoaderOnInit && Math.round(el.currentTime) === 0) {
+            _this5.playBtn.setAttribute('aria-hidden', 'true');
 
-            _this6.loader.setAttribute('aria-hidden', 'false');
+            _this5.loader.setAttribute('aria-hidden', 'false');
           } else {
-            _this6.playBtn.setAttribute('aria-hidden', 'false');
+            _this5.playBtn.setAttribute('aria-hidden', 'false');
 
-            _this6.loader.setAttribute('aria-hidden', 'true');
+            _this5.loader.setAttribute('aria-hidden', 'true');
           }
         };
 
         classPrivateFieldGet_default()(this, player_events).ended = function () {
-          _this6.loader.setAttribute('aria-hidden', 'true');
+          _this5.loader.setAttribute('aria-hidden', 'true');
 
-          _this6.playBtn.setAttribute('aria-hidden', 'true');
-        };
-
-        var postRollCalled = false;
-
-        classPrivateFieldGet_default()(this, player_events).timeupdate = function () {
-          if (classPrivateFieldGet_default()(_this6, player_element).loop && _this6.isMedia() && classPrivateFieldGet_default()(_this6, _adsInstance)) {
-            var el = _this6.getMedia();
-
-            var remainingTime = el.duration - el.currentTime;
-
-            if (remainingTime > 0 && remainingTime <= 0.25 && !postRollCalled) {
-              postRollCalled = true;
-              var e = addEvent('ended');
-
-              classPrivateFieldGet_default()(_this6, player_element).dispatchEvent(e);
-            } else if (remainingTime === 0) {
-              postRollCalled = false;
-            }
-          }
+          _this5.playBtn.setAttribute('aria-hidden', 'true');
         };
       }
 
       Object.keys(classPrivateFieldGet_default()(this, player_events)).forEach(function (event) {
-        classPrivateFieldGet_default()(_this6, player_element).addEventListener(event, classPrivateFieldGet_default()(_this6, player_events)[event], EVENT_OPTIONS);
+        classPrivateFieldGet_default()(_this5, player_element).addEventListener(event, classPrivateFieldGet_default()(_this5, player_events)[event], EVENT_OPTIONS);
       });
       this.getContainer().addEventListener('keydown', this._enableKeyBindings, EVENT_OPTIONS);
     }
   }, {
     key: "_autoplay",
     value: function _autoplay() {
-      var _this7 = this;
+      var _this6 = this;
 
       if (!classPrivateFieldGet_default()(this, _processedAutoplay)) {
         classPrivateFieldSet_default()(this, _processedAutoplay, true);
@@ -9430,48 +9400,48 @@ var Player = function () {
         classPrivateFieldGet_default()(this, player_element).removeEventListener('canplay', this._autoplay);
 
         isAutoplaySupported(classPrivateFieldGet_default()(this, player_element), classPrivateFieldGet_default()(this, player_volume), function (autoplay) {
-          classPrivateFieldSet_default()(_this7, _canAutoplay, autoplay);
+          classPrivateFieldSet_default()(_this6, _canAutoplay, autoplay);
         }, function (muted) {
-          classPrivateFieldSet_default()(_this7, _canAutoplayMuted, muted);
+          classPrivateFieldSet_default()(_this6, _canAutoplayMuted, muted);
         }, function () {
-          if (classPrivateFieldGet_default()(_this7, _canAutoplayMuted)) {
+          if (classPrivateFieldGet_default()(_this6, _canAutoplayMuted)) {
             var _classPrivateFieldGet9, _classPrivateFieldGet10;
 
-            _this7.activeElement().muted = true;
-            _this7.activeElement().volume = 0;
+            _this6.activeElement().muted = true;
+            _this6.activeElement().volume = 0;
             var e = addEvent('volumechange');
 
-            classPrivateFieldGet_default()(_this7, player_element).dispatchEvent(e);
+            classPrivateFieldGet_default()(_this6, player_element).dispatchEvent(e);
 
             var volumeEl = document.createElement('div');
-            var action = IS_IOS || IS_ANDROID ? (_classPrivateFieldGet9 = classPrivateFieldGet_default()(_this7, player_options).labels) === null || _classPrivateFieldGet9 === void 0 ? void 0 : _classPrivateFieldGet9.tap : (_classPrivateFieldGet10 = classPrivateFieldGet_default()(_this7, player_options).labels) === null || _classPrivateFieldGet10 === void 0 ? void 0 : _classPrivateFieldGet10.click;
+            var action = IS_IOS || IS_ANDROID ? (_classPrivateFieldGet9 = classPrivateFieldGet_default()(_this6, player_options).labels) === null || _classPrivateFieldGet9 === void 0 ? void 0 : _classPrivateFieldGet9.tap : (_classPrivateFieldGet10 = classPrivateFieldGet_default()(_this6, player_options).labels) === null || _classPrivateFieldGet10 === void 0 ? void 0 : _classPrivateFieldGet10.click;
             volumeEl.className = 'op-player__unmute';
             volumeEl.innerHTML = "<span>".concat(action, "</span>");
             volumeEl.tabIndex = 0;
             volumeEl.addEventListener('click', function () {
-              _this7.activeElement().muted = false;
-              _this7.activeElement().volume = classPrivateFieldGet_default()(_this7, player_volume);
+              _this6.activeElement().muted = false;
+              _this6.activeElement().volume = classPrivateFieldGet_default()(_this6, player_volume);
               var event = addEvent('volumechange');
 
-              classPrivateFieldGet_default()(_this7, player_element).dispatchEvent(event);
+              classPrivateFieldGet_default()(_this6, player_element).dispatchEvent(event);
 
               volumeEl.remove();
             }, EVENT_OPTIONS);
 
-            var target = _this7.getContainer();
+            var target = _this6.getContainer();
 
             target.insertBefore(volumeEl, target.firstChild);
           } else {
-            _this7.activeElement().muted = classPrivateFieldGet_default()(_this7, player_element).muted;
-            _this7.activeElement().volume = classPrivateFieldGet_default()(_this7, player_volume);
+            _this6.activeElement().muted = classPrivateFieldGet_default()(_this6, player_element).muted;
+            _this6.activeElement().volume = classPrivateFieldGet_default()(_this6, player_volume);
           }
 
-          if (classPrivateFieldGet_default()(_this7, player_ads)) {
-            var adsOptions = classPrivateFieldGet_default()(_this7, player_options) && classPrivateFieldGet_default()(_this7, player_options).ads ? classPrivateFieldGet_default()(_this7, player_options).ads : undefined;
+          if (classPrivateFieldGet_default()(_this6, player_ads)) {
+            var adsOptions = classPrivateFieldGet_default()(_this6, player_options) && classPrivateFieldGet_default()(_this6, player_options).ads ? classPrivateFieldGet_default()(_this6, player_options).ads : undefined;
 
-            classPrivateFieldSet_default()(_this7, _adsInstance, new ads(_this7, classPrivateFieldGet_default()(_this7, player_ads), classPrivateFieldGet_default()(_this7, _canAutoplay), classPrivateFieldGet_default()(_this7, _canAutoplayMuted), adsOptions));
-          } else if (classPrivateFieldGet_default()(_this7, _canAutoplay) || classPrivateFieldGet_default()(_this7, _canAutoplayMuted)) {
-            _this7.play();
+            classPrivateFieldSet_default()(_this6, _adsInstance, new ads(_this6, classPrivateFieldGet_default()(_this6, player_ads), classPrivateFieldGet_default()(_this6, _canAutoplay), classPrivateFieldGet_default()(_this6, _canAutoplayMuted), adsOptions));
+          } else if (classPrivateFieldGet_default()(_this6, _canAutoplay) || classPrivateFieldGet_default()(_this6, _canAutoplayMuted)) {
+            _this6.play();
           }
         });
       }
@@ -9479,20 +9449,20 @@ var Player = function () {
   }, {
     key: "_mergeOptions",
     value: function _mergeOptions(playerOptions) {
-      var _this8 = this;
+      var _this7 = this;
 
       var opts = player_objectSpread({}, playerOptions || {});
 
       classPrivateFieldSet_default()(this, player_options, player_objectSpread(player_objectSpread({}, classPrivateFieldGet_default()(this, _defaultOptions)), opts));
 
       var complexOptions = Object.keys(classPrivateFieldGet_default()(this, _defaultOptions)).filter(function (key) {
-        return key !== 'labels' && typeof_default()(classPrivateFieldGet_default()(_this8, _defaultOptions)[key]) === 'object';
+        return key !== 'labels' && typeof_default()(classPrivateFieldGet_default()(_this7, _defaultOptions)[key]) === 'object';
       });
       complexOptions.forEach(function (key) {
         var currOption = opts[key] || {};
 
         if (currOption && Object.keys(currOption).length) {
-          classPrivateFieldGet_default()(_this8, player_options)[key] = player_objectSpread(player_objectSpread({}, classPrivateFieldGet_default()(_this8, _defaultOptions)[key]), currOption);
+          classPrivateFieldGet_default()(_this7, player_options)[key] = player_objectSpread(player_objectSpread({}, classPrivateFieldGet_default()(_this7, _defaultOptions)[key]), currOption);
         }
       });
 

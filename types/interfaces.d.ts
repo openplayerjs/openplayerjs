@@ -224,6 +224,7 @@ export interface PlayerOptions {
     height?: number | string;
     hidePlayBtnTimer?: number;
     labels?: PlayerLabels;
+    minimalist?: boolean;
     live?: {
         showLabel?: boolean;
         showProgress?: boolean;
