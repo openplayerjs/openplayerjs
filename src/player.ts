@@ -1,8 +1,8 @@
 import Controls from './controls';
 import Fullscreen from './controls/fullscreen';
 import {
-    ControlItem,
     CustomMedia,
+    ElementItem,
     EventsList,
     Languages,
     PlayerLabels,
@@ -28,7 +28,7 @@ interface P {
     destroy(): void;
     getContainer(): HTMLElement;
     getControls(): Controls;
-    getCustomControls(): ControlItem[];
+    getCustomControls(): ElementItem[];
     getElement(): HTMLMediaElement;
     getEvents(): EventsList;
     getOptions(): PlayerOptions;
@@ -38,7 +38,7 @@ interface P {
     getMedia(): Media;
     getAd(): Ads;
     addCaptions(args: Track): void;
-    addControl(args: ControlItem): void;
+    addControl(args: ElementItem): void;
     removeControl(controlName: string): void;
     prepareMedia(): Promise<void>;
     enableDefaultPlayer(): void;
@@ -108,7 +108,7 @@ class Player {
 
     #options: PlayerOptions;
 
-    #customControlItems: ControlItem[] = [];
+    #customElements: ElementItem[] = [];
 
     #fullscreen: Fullscreen;
 
@@ -212,13 +212,17 @@ class Player {
         }
     }
 
-    load(): Promise<void> | void {
+    async load(): Promise<void> {
+        if (!this.#media) {
+            await this._prepareMedia();
+            return (this.#media as Media).load();
+        }
         this.#media.loaded = false;
         return this.isMedia() ? this.#media.load() : undefined;
     }
 
     async play(): Promise<void> {
-        if (this.#media && !this.#media.loaded) {
+        if (!this.#media.loaded) {
             await this.#media.load();
             this.#media.loaded = true;
         }
@@ -235,6 +239,15 @@ class Player {
             this.#adsInstance.pause();
         } else {
             this.#media.pause();
+        }
+    }
+
+    stop(): void {
+        this.pause();
+
+        if (this.#media) {
+            this.#media.currentTime = 0;
+            this.src = [{ src: '', type: 'video/mp4' }];
         }
     }
 
@@ -304,8 +317,8 @@ class Player {
         return this.#controls;
     }
 
-    getCustomControls(): ControlItem[] {
-        return this.#customControlItems;
+    getCustomControls(): ElementItem[] {
+        return this.#customElements;
     }
 
     getElement(): HTMLMediaElement {
@@ -370,18 +383,26 @@ class Player {
         el.dispatchEvent(e);
     }
 
-    addControl(args: ControlItem): void {
+    addControl(args: ElementItem): void {
         args.custom = true;
-        this.#customControlItems.push(args);
+        args.type = 'button';
+        this.#customElements.push(args);
+        const e = addEvent('controlschanged');
+        this.#element.dispatchEvent(e);
+    }
+
+    addElement(args: ElementItem): void {
+        args.custom = true;
+        this.#customElements.push(args);
         const e = addEvent('controlschanged');
         this.#element.dispatchEvent(e);
     }
 
     removeControl(controlName: string): void {
         // Check custom controls and remove reference there as well
-        this.#customControlItems.forEach((item: ControlItem, idx: number) => {
+        this.#customElements.forEach((item: ElementItem, idx: number) => {
             if (item.id === controlName) {
-                this.#customControlItems.splice(idx, 1);
+                this.#customElements.splice(idx, 1);
             }
         });
         const e = addEvent('controlschanged');

@@ -2,8 +2,6 @@
 
 ![openplayerjs](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
 
-[![NPM](https://nodeico.herokuapp.com/openplayerjs.svg)](https://npmjs.com/package/openplayerjs)
-
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Support%20OpenPlayerJS%20by%20giving%20the%20project%20a%20start%20at%20&url=https://www.openplayerjs.com&hashtags=openplayerjs,mediaplayer,vpaid,opensourcerocks,streaming)
 [![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
@@ -119,11 +117,12 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 -   [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
 -   [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 -   [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
+-   [🆕 - Add a custom element (watermark)](https://codepen.io/rafa8626/pen/JjLQNjo)
 
 ### Advanced
 
--   [🆕 - Updating source and Ads for dynamic content loading](https://codepen.io/rafa8626/pen/gORJWVz)
--   [🆕 - Updating Ads and clickable Ad element](https://codepen.io/rafa8626/pen/OJmEzXw)
+-   [Updating source and Ads for dynamic content loading](https://codepen.io/rafa8626/pen/gORJWVz)
+-   [Updating Ads and clickable Ad element](https://codepen.io/rafa8626/pen/OJmEzXw)
 -   [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
 -   [Fully customized audio player](https://codepen.io/rafa8626/pen/ExPLVRE)
 -   [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)

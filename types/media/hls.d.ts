@@ -8,8 +8,8 @@ declare class HlsMedia extends Native {
     destroy(): void;
     set src(media: Source);
     get levels(): Level[];
-    set level(level: number);
-    get level(): number;
+    set level(level: string);
+    get level(): string;
     private _create;
     private _assign;
     private _play;

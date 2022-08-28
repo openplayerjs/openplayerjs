@@ -105,7 +105,7 @@ class HlsMedia extends Native {
         __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = level;
     }
     get level() {
-        return __classPrivateFieldGet(this, _HlsMedia_player, "f") ? __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : -1;
+        return __classPrivateFieldGet(this, _HlsMedia_player, "f") ? __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : '-1';
     }
     _create() {
         const autoplay = !!(this.element.preload === 'auto' || __classPrivateFieldGet(this, _HlsMedia_autoplay, "f"));

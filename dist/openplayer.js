@@ -2473,7 +2473,7 @@ var Levels = function () {
 
         if (option.closest("#".concat(classPrivateFieldGet_default()(_this, levels_player).id)) && option.classList.contains('op-levels__option')) {
           var levelVal = option.getAttribute('data-value');
-          var level = parseInt(levelVal ? levelVal.replace('levels-', '') : '-1', 10);
+          var level = levelVal ? levelVal.replace('levels-', '') : '-1';
 
           classPrivateFieldSet_default()(_this, _defaultLevel, "".concat(level));
 
@@ -4827,7 +4827,7 @@ var Controls = function () {
       Object.keys(classPrivateFieldGet_default()(this, _items)).forEach(function (position) {
         classPrivateFieldGet_default()(_this2, _items)[position].forEach(function (item) {
           if (item.custom) {
-            _this2._destroyCustomControl(item);
+            _this2._destroyCustomElement(item);
           } else if (typeof item.destroy === 'function') {
             item.destroy();
           }
@@ -5008,7 +5008,7 @@ var Controls = function () {
       Object.keys(classPrivateFieldGet_default()(this, _items)).forEach(function (position) {
         classPrivateFieldGet_default()(_this5, _items)[position].forEach(function (item) {
           if (item.custom) {
-            _this5._createCustomControl(item);
+            _this5._createCustomElement(item);
           } else {
             item.create();
           }
@@ -5064,19 +5064,35 @@ var Controls = function () {
       }
     }
   }, {
-    key: "_createCustomControl",
-    value: function _createCustomControl(item) {
+    key: "_createCustomElement",
+    value: function _createCustomElement(item) {
       var _this6 = this;
 
-      var control = document.createElement('button');
-      var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
-      control.className = "op-controls__".concat(item.id, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
-      control.tabIndex = 0;
-      control.id = item.id;
-      control.title = sanitize(item.title);
-      control.innerHTML = item.content ? sanitize(item.content) : icon;
+      var element = document.createElement(item.type);
+      element.tabIndex = 0;
+      element.id = item.id;
+      element.className = "op-controls__".concat(item.id, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
 
-      if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+      if (item.styles) {
+        Object.assign(element.style, item.styles);
+      }
+
+      if (item.type === 'button' && item.icon) {
+        var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
+        element.innerHTML = icon;
+      } else if (item.content) {
+        element.innerHTML = sanitize(item.content, false);
+      }
+
+      if (item.type === 'button' && item.title) {
+        element.title = item.title;
+      }
+
+      if (item.type !== 'button' && item.click && typeof item.click === 'function') {
+        element.setAttribute('aria-role', 'button');
+      }
+
+      if (item.type === 'button' && item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
         var menu = document.createElement('div');
         menu.className = 'op-settings op-settings__custom';
         menu.id = "".concat(item.id, "-menu");
@@ -5101,7 +5117,7 @@ var Controls = function () {
             menuItem.addEventListener('click', subitem.click, EVENT_OPTIONS);
           }
         });
-        control.addEventListener('click', function (e) {
+        element.addEventListener('click', function (e) {
           return _this6._toggleCustomMenu(e, menu, item);
         }, EVENT_OPTIONS);
 
@@ -5109,34 +5125,38 @@ var Controls = function () {
           return _this6._hideCustomMenu(menu);
         }, EVENT_OPTIONS);
       } else if (item.click && typeof item.click === 'function') {
-        control.addEventListener('click', item.click, EVENT_OPTIONS);
+        element.addEventListener('click', item.click, EVENT_OPTIONS);
       }
 
       if (item.mouseenter && typeof item.mouseenter === 'function') {
-        control.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
+        element.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
       }
 
       if (item.mouseleave && typeof item.mouseleave === 'function') {
-        control.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
+        element.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
       }
 
       if (item.keydown && typeof item.keydown === 'function') {
-        control.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
+        element.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
       }
 
       if (item.blur && typeof item.blur === 'function') {
-        control.addEventListener('blur', item.blur, EVENT_OPTIONS);
+        element.addEventListener('blur', item.blur, EVENT_OPTIONS);
       }
 
       if (item.focus && typeof item.focus === 'function') {
-        control.addEventListener('focus', item.focus, EVENT_OPTIONS);
+        element.addEventListener('focus', item.focus, EVENT_OPTIONS);
       }
 
       if (item.layer) {
         if (item.layer === 'main') {
+<<<<<<< HEAD
           classPrivateFieldGet_default()(this, controls_player).getContainer().appendChild(control);
+=======
+          controls_classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(element);
+>>>>>>> master
         } else {
-          this.getLayer(item.layer).appendChild(control);
+          this.getLayer(item.layer).appendChild(element);
         }
       }
 
@@ -5145,12 +5165,11 @@ var Controls = function () {
       }
     }
   }, {
-    key: "_destroyCustomControl",
-    value: function _destroyCustomControl(item) {
+    key: "_destroyCustomElement",
+    value: function _destroyCustomElement(item) {
       var _this7 = this;
 
-      var key = item.title.toLowerCase().replace(' ', '-');
-      var control = this.getContainer().querySelector(".op-controls__".concat(key));
+      var control = this.getContainer().querySelector(".op-controls__".concat(item.id));
 
       if (control) {
         if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
@@ -5508,11 +5527,19 @@ var DashMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
+<<<<<<< HEAD
       return classPrivateFieldGet_default()(this, dash_player) ? classPrivateFieldGet_default()(this, dash_player).getQualityFor('video') : -1;
     },
     set: function set(level) {
       if (level === 0) {
         classPrivateFieldGet_default()(this, dash_player).setAutoSwitchQuality(true);
+=======
+      return dash_classPrivateFieldGet(this, _DashMedia_player, "f") ? dash_classPrivateFieldGet(this, _DashMedia_player, "f").getQualityFor('video') : '-1';
+    },
+    set: function set(level) {
+      if (level === '0') {
+        dash_classPrivateFieldGet(this, _DashMedia_player, "f").setAutoSwitchQuality(true);
+>>>>>>> master
       } else {
         classPrivateFieldGet_default()(this, dash_player).setAutoSwitchQuality(false);
 
@@ -5722,7 +5749,11 @@ var FlvMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
+<<<<<<< HEAD
       return classPrivateFieldGet_default()(this, flv_player) ? classPrivateFieldGet_default()(this, flv_player).currentLevel : -1;
+=======
+      return flv_classPrivateFieldGet(this, _FlvMedia_player, "f") ? flv_classPrivateFieldGet(this, _FlvMedia_player, "f").currentLevel : '-1';
+>>>>>>> master
     },
     set: function set(level) {
       classPrivateFieldGet_default()(this, flv_player).currentLevel = level;
@@ -6006,7 +6037,11 @@ var HlsMedia = function (_Native) {
   }, {
     key: "level",
     get: function get() {
+<<<<<<< HEAD
       return classPrivateFieldGet_default()(this, hls_player) ? classPrivateFieldGet_default()(this, hls_player).currentLevel : -1;
+=======
+      return hls_classPrivateFieldGet(this, _HlsMedia_player, "f") ? hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : '-1';
+>>>>>>> master
     },
     set: function set(level) {
       classPrivateFieldGet_default()(this, hls_player).currentLevel = level;
@@ -8367,7 +8402,63 @@ var Ads = function () {
 }();
 
 /* harmony default export */ const ads = (Ads);
+<<<<<<< HEAD
 ;// CONCATENATED MODULE: ./src/player.ts
+=======
+;// CONCATENATED MODULE: ./src/js/player.ts
+
+
+
+
+
+
+var player_awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+
+var player_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
+  if (kind === "m") throw new TypeError("Private method is not writable");
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+  return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
+};
+
+var player_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet || function (receiver, state, kind, f) {
+  if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+  if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+  return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+
+var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player_ads, _Player_media, _Player_events, _Player_autoplay, _Player_volume, _Player_canAutoplay, _Player_canAutoplayMuted, _Player_processedAutoplay, _Player_options, _Player_customElements, _Player_fullscreen, _Player_defaultOptions;
+>>>>>>> master
 
 
 
@@ -8438,9 +8529,105 @@ var Player = function () {
 
     defineProperty_default()(this, "proxy", null);
 
+<<<<<<< HEAD
     player_classPrivateFieldInitSpec(this, _initialized, {
       writable: true,
       value: false
+=======
+    _Player_adsInstance.set(this, void 0);
+
+    _Player_uid.set(this, '');
+
+    _Player_element.set(this, void 0);
+
+    _Player_ads.set(this, void 0);
+
+    _Player_media.set(this, void 0);
+
+    _Player_events.set(this, {});
+
+    _Player_autoplay.set(this, false);
+
+    _Player_volume.set(this, void 0);
+
+    _Player_canAutoplay.set(this, false);
+
+    _Player_canAutoplayMuted.set(this, false);
+
+    _Player_processedAutoplay.set(this, false);
+
+    _Player_options.set(this, void 0);
+
+    _Player_customElements.set(this, []);
+
+    _Player_fullscreen.set(this, void 0);
+
+    _Player_defaultOptions.set(this, {
+      controls: {
+        alwaysVisible: false,
+        layers: {
+          left: ['play', 'time', 'volume'],
+          middle: ['progress'],
+          right: ['captions', 'settings', 'fullscreen']
+        }
+      },
+      defaultLevel: undefined,
+      detachMenus: false,
+      forceNative: true,
+      height: 0,
+      hidePlayBtnTimer: 350,
+      labels: {
+        auto: 'Auto',
+        captions: 'CC/Subtitles',
+        click: 'Click to unmute',
+        fullscreen: 'Fullscreen',
+        lang: {
+          en: 'English'
+        },
+        levels: 'Quality Levels',
+        live: 'Live Broadcast',
+        mediaLevels: 'Change Quality',
+        mute: 'Mute',
+        off: 'Off',
+        pause: 'Pause',
+        play: 'Play',
+        progressRail: 'Time Rail',
+        progressSlider: 'Time Slider',
+        settings: 'Player Settings',
+        speed: 'Speed',
+        speedNormal: 'Normal',
+        tap: 'Tap to unmute',
+        toggleCaptions: 'Toggle Captions',
+        unmute: 'Unmute',
+        volume: 'Volume',
+        volumeControl: 'Volume Control',
+        volumeSlider: 'Volume Slider'
+      },
+      live: {
+        showLabel: true,
+        showProgress: false
+      },
+      media: {
+        pauseOnClick: false
+      },
+      mode: 'responsive',
+      onError: function onError(e) {
+        return console.error(e);
+      },
+      pauseOthers: true,
+      progress: {
+        allowRewind: true,
+        allowSkip: true,
+        duration: 0,
+        showCurrentTimeOnly: false
+      },
+      showLoaderOnInit: false,
+      startTime: 0,
+      startVolume: 1,
+      step: 0,
+      useDeviceVolume: true,
+      width: 0
+>>>>>>> master
     });
 
     player_classPrivateFieldInitSpec(this, player_controls, {
@@ -8664,6 +8851,7 @@ var Player = function () {
   }, {
     key: "load",
     value: function load() {
+<<<<<<< HEAD
       classPrivateFieldGet_default()(this, player_media).loaded = false;
       return this.isMedia() ? classPrivateFieldGet_default()(this, player_media).load() : undefined;
     }
@@ -8671,22 +8859,65 @@ var Player = function () {
     key: "play",
     value: function () {
       var _play = asyncToGenerator_default()(regenerator_default().mark(function _callee2() {
+=======
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee2() {
+>>>>>>> master
         return regenerator_default().wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+<<<<<<< HEAD
                 if (!(classPrivateFieldGet_default()(this, player_media) && !classPrivateFieldGet_default()(this, player_media).loaded)) {
+=======
+                if (player_classPrivateFieldGet(this, _Player_media, "f")) {
+>>>>>>> master
                   _context2.next = 4;
                   break;
                 }
 
                 _context2.next = 3;
+<<<<<<< HEAD
                 return classPrivateFieldGet_default()(this, player_media).load();
+=======
+                return this._prepareMedia();
+
+              case 3:
+                return _context2.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").load());
+
+              case 4:
+                player_classPrivateFieldGet(this, _Player_media, "f").loaded = false;
+                return _context2.abrupt("return", this.isMedia() ? player_classPrivateFieldGet(this, _Player_media, "f").load() : undefined);
+
+              case 6:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee3() {
+        return regenerator_default().wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                if (player_classPrivateFieldGet(this, _Player_media, "f").loaded) {
+                  _context3.next = 4;
+                  break;
+                }
+
+                _context3.next = 3;
+                return player_classPrivateFieldGet(this, _Player_media, "f").load();
+>>>>>>> master
 
               case 3:
                 classPrivateFieldGet_default()(this, player_media).loaded = true;
 
               case 4:
+<<<<<<< HEAD
                 if (!classPrivateFieldGet_default()(this, _adsInstance)) {
                   _context2.next = 9;
                   break;
@@ -8701,13 +8932,29 @@ var Player = function () {
 
               case 9:
                 return _context2.abrupt("return", classPrivateFieldGet_default()(this, player_media).play());
+=======
+                if (!player_classPrivateFieldGet(this, _Player_adsInstance, "f")) {
+                  _context3.next = 9;
+                  break;
+                }
+
+                player_classPrivateFieldGet(this, _Player_adsInstance, "f").playRequested = true;
+                _context3.next = 8;
+                return player_classPrivateFieldGet(this, _Player_adsInstance, "f").loadPromise;
+
+              case 8:
+                return _context3.abrupt("return", player_classPrivateFieldGet(this, _Player_adsInstance, "f").play());
+
+              case 9:
+                return _context3.abrupt("return", player_classPrivateFieldGet(this, _Player_media, "f").play());
+>>>>>>> master
 
               case 10:
               case "end":
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee3, this);
       }));
 
       function play() {
@@ -8723,6 +8970,19 @@ var Player = function () {
         classPrivateFieldGet_default()(this, _adsInstance).pause();
       } else {
         classPrivateFieldGet_default()(this, player_media).pause();
+      }
+    }
+  }, {
+    key: "stop",
+    value: function stop() {
+      this.pause();
+
+      if (player_classPrivateFieldGet(this, _Player_media, "f")) {
+        player_classPrivateFieldGet(this, _Player_media, "f").currentTime = 0;
+        this.src = [{
+          src: '',
+          type: 'video/mp4'
+        }];
       }
     }
   }, {
@@ -8803,7 +9063,11 @@ var Player = function () {
   }, {
     key: "getCustomControls",
     value: function getCustomControls() {
+<<<<<<< HEAD
       return classPrivateFieldGet_default()(this, _customControlItems);
+=======
+      return player_classPrivateFieldGet(this, _Player_customElements, "f");
+>>>>>>> master
     }
   }, {
     key: "getElement",
@@ -8881,8 +9145,24 @@ var Player = function () {
     key: "addControl",
     value: function addControl(args) {
       args.custom = true;
+      args.type = 'button';
 
+<<<<<<< HEAD
       classPrivateFieldGet_default()(this, _customControlItems).push(args);
+=======
+      player_classPrivateFieldGet(this, _Player_customElements, "f").push(args);
+
+      var e = addEvent('controlschanged');
+
+      player_classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
+    }
+  }, {
+    key: "addElement",
+    value: function addElement(args) {
+      args.custom = true;
+
+      player_classPrivateFieldGet(this, _Player_customElements, "f").push(args);
+>>>>>>> master
 
       var e = addEvent('controlschanged');
 
@@ -8893,9 +9173,15 @@ var Player = function () {
     value: function removeControl(controlName) {
       var _this2 = this;
 
+<<<<<<< HEAD
       classPrivateFieldGet_default()(this, _customControlItems).forEach(function (item, idx) {
         if (item.id === controlName) {
           classPrivateFieldGet_default()(_this2, _customControlItems).splice(idx, 1);
+=======
+      player_classPrivateFieldGet(this, _Player_customElements, "f").forEach(function (item, idx) {
+        if (item.id === controlName) {
+          player_classPrivateFieldGet(_this2, _Player_customElements, "f").splice(idx, 1);
+>>>>>>> master
         }
       });
 
@@ -8909,11 +9195,17 @@ var Player = function () {
       var _prepareMedia = asyncToGenerator_default()(regenerator_default().mark(function _callee3() {
         var _classPrivateFieldGet4, preload, adsOptions;
 
+<<<<<<< HEAD
         return regenerator_default().wrap(function _callee3$(_context3) {
+=======
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee4() {
+        var preload, adsOptions;
+        return regenerator_default().wrap(function _callee4$(_context4) {
+>>>>>>> master
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
-                _context3.prev = 0;
+                _context4.prev = 0;
 
                 if ((_classPrivateFieldGet4 = classPrivateFieldGet_default()(this, player_options)) !== null && _classPrivateFieldGet4 !== void 0 && _classPrivateFieldGet4.onError) {
                   classPrivateFieldGet_default()(this, player_element).addEventListener('playererror', classPrivateFieldGet_default()(this, player_options).onError, EVENT_OPTIONS);
@@ -8927,6 +9219,7 @@ var Player = function () {
 
                 preload = classPrivateFieldGet_default()(this, player_element).getAttribute('preload');
 
+<<<<<<< HEAD
                 if (!(classPrivateFieldGet_default()(this, player_ads) || !preload || preload !== 'none')) {
                   _context3.next = 9;
                   break;
@@ -8934,6 +9227,15 @@ var Player = function () {
 
                 _context3.next = 8;
                 return classPrivateFieldGet_default()(this, player_media).load();
+=======
+                if (!(player_classPrivateFieldGet(this, _Player_ads, "f") || !preload || preload !== 'none')) {
+                  _context4.next = 9;
+                  break;
+                }
+
+                _context4.next = 8;
+                return player_classPrivateFieldGet(this, _Player_media, "f").load();
+>>>>>>> master
 
               case 8:
                 classPrivateFieldGet_default()(this, player_media).loaded = true;
@@ -8945,20 +9247,20 @@ var Player = function () {
                   classPrivateFieldSet_default()(this, _adsInstance, new ads(this, classPrivateFieldGet_default()(this, player_ads), false, false, adsOptions));
                 }
 
-                _context3.next = 15;
+                _context4.next = 15;
                 break;
 
               case 12:
-                _context3.prev = 12;
-                _context3.t0 = _context3["catch"](0);
-                console.error(_context3.t0);
+                _context4.prev = 12;
+                _context4.t0 = _context4["catch"](0);
+                console.error(_context4.t0);
 
               case 15:
               case "end":
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this, [[0, 12]]);
+        }, _callee4, this, [[0, 12]]);
       }));
 
       function prepareMedia() {
@@ -8997,12 +9299,17 @@ var Player = function () {
     }
   }, {
     key: "loadAd",
+<<<<<<< HEAD
     value: function () {
       var _loadAd = asyncToGenerator_default()(regenerator_default().mark(function _callee4(src) {
+=======
+    value: function loadAd(src) {
+      return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee5() {
+>>>>>>> master
         var adsOptions, autoplay;
-        return regenerator_default().wrap(function _callee4$(_context4) {
+        return regenerator_default().wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 try {
                   if (this.isAd()) {
@@ -9022,10 +9329,10 @@ var Player = function () {
 
               case 1:
               case "end":
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
       function loadAd(_x) {
@@ -9629,9 +9936,15 @@ var Player = function () {
   return Player;
 }();
 
+<<<<<<< HEAD
 defineProperty_default()(Player, "instances", {});
 
 defineProperty_default()(Player, "customMedia", {
+=======
+_Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customElements = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
+Player.instances = {};
+Player.customMedia = {
+>>>>>>> master
   media: {},
   optionsKey: {},
   rules: []

@@ -88,12 +88,12 @@ class FlvMedia extends Native {
         return levels;
     }
 
-    set level(level: number) {
+    set level(level: string) {
         this.#player.currentLevel = level;
     }
 
-    get level(): number {
-        return this.#player ? this.#player.currentLevel : -1;
+    get level(): string {
+        return this.#player ? this.#player.currentLevel : '-1';
     }
 
     private _create(): void {
