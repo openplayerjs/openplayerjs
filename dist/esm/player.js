@@ -154,7 +154,7 @@ class Player {
             yield this.prepareMedia();
             __classPrivateFieldSet(this, _Player_initialized, true, "f");
             Player.instances[this.id] = this;
-            if (__classPrivateFieldGet(this, _Player_options, "f").minimalist) {
+            if (!__classPrivateFieldGet(this, _Player_options, "f").minimalist) {
                 this._wrapInstance();
                 this._createPlayButton();
                 this._createControls();

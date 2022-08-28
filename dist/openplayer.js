@@ -8656,7 +8656,7 @@ var Player = function () {
 
                 Player.instances[this.id] = this;
 
-                if (classPrivateFieldGet_default()(this, player_options).minimalist) {
+                if (!classPrivateFieldGet_default()(this, player_options).minimalist) {
                   this._wrapInstance();
 
                   this._createPlayButton();

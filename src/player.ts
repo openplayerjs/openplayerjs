@@ -205,7 +205,7 @@ class Player {
         this.#initialized = true;
         Player.instances[this.id] = this;
 
-        if (this.#options.minimalist) {
+        if (!this.#options.minimalist) {
             this._wrapInstance();
             this._createPlayButton();
             this._createControls();
