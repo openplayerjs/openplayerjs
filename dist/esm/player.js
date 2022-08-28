@@ -18,7 +18,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player_ads, _Player_media, _Player_events, _Player_autoplay, _Player_volume, _Player_canAutoplay, _Player_canAutoplayMuted, _Player_processedAutoplay, _Player_options, _Player_customControlItems, _Player_fullscreen, _Player_defaultOptions;
+var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player_ads, _Player_media, _Player_events, _Player_autoplay, _Player_volume, _Player_canAutoplay, _Player_canAutoplayMuted, _Player_processedAutoplay, _Player_options, _Player_customElements, _Player_fullscreen, _Player_defaultOptions;
 import Controls from './controls';
 import Fullscreen from './controls/fullscreen';
 import Media from './media';
@@ -43,7 +43,7 @@ class Player {
         _Player_canAutoplayMuted.set(this, false);
         _Player_processedAutoplay.set(this, false);
         _Player_options.set(this, void 0);
-        _Player_customControlItems.set(this, []);
+        _Player_customElements.set(this, []);
         _Player_fullscreen.set(this, void 0);
         _Player_defaultOptions.set(this, {
             controls: {
@@ -241,7 +241,7 @@ class Player {
         return __classPrivateFieldGet(this, _Player_controls, "f");
     }
     getCustomControls() {
-        return __classPrivateFieldGet(this, _Player_customControlItems, "f");
+        return __classPrivateFieldGet(this, _Player_customElements, "f");
     }
     getElement() {
         return __classPrivateFieldGet(this, _Player_element, "f");
@@ -295,14 +295,21 @@ class Player {
     }
     addControl(args) {
         args.custom = true;
-        __classPrivateFieldGet(this, _Player_customControlItems, "f").push(args);
+        args.type = 'button';
+        __classPrivateFieldGet(this, _Player_customElements, "f").push(args);
+        const e = addEvent('controlschanged');
+        __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
+    }
+    addElement(args) {
+        args.custom = true;
+        __classPrivateFieldGet(this, _Player_customElements, "f").push(args);
         const e = addEvent('controlschanged');
         __classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
     }
     removeControl(controlName) {
-        __classPrivateFieldGet(this, _Player_customControlItems, "f").forEach((item, idx) => {
+        __classPrivateFieldGet(this, _Player_customElements, "f").forEach((item, idx) => {
             if (item.id === controlName) {
-                __classPrivateFieldGet(this, _Player_customControlItems, "f").splice(idx, 1);
+                __classPrivateFieldGet(this, _Player_customElements, "f").splice(idx, 1);
             }
         });
         const e = addEvent('controlschanged');
@@ -818,7 +825,7 @@ class Player {
         }
     }
 }
-_Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customControlItems = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
+_Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customElements = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
 Player.instances = {};
 Player.customMedia = {
     media: {},

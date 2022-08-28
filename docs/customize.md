@@ -17,10 +17,37 @@ Do you need to add a new control (or multiple ones) to your player and you are c
 
 ```javascript
 const player = new OpenPlayerJS('[PLAYER ID]');
+player.addElement({
+    id: '[MY ELEMENT ID]',
+    title: '[TOOLTIP LABEL]',
+    type: '[button, div, span, p, etc.]',
+    styles: {}, // Can add custom styles to element using camelCase styles (marginTop, boxShadow, etc.)
+    content: '', // Can override the content generated inside the control, but it won't accept images under the <img> tag for security purposes
+    position: 'right', // Any of the possible positions for a control (top, top-left, middle, bottom-right, etc.)
+    showInAds: false, // or true
+    init: (player) => {}, // Pass an instance of the player for advanced operations
+    click: () => {},
+    mouseenter: () => {},
+    mouseleave: () => {},
+    keydown: () => {},
+    blur: () => {},
+    focus: () => {},
+    destroy: (player) => {}, // Pass an instance of the player for advanced operations
+});
+player.init();
+```
+
+If you pass a different type in the configuration and you set a click callback, the player will add a `button` ARIA role to the element for good accessibility practices.
+
+There's also an `addControl` method that accepts the configuration indicated above, but forces the type `button` to generate clickable controls. The configuration for `addControls` is as follows:
+
+```javascript
+const player = new OpenPlayerJS('[PLAYER ID]');
 player.addControl({
     icon: '/path/to/image',
     id: '[MY CONTROL ID]',
     title: '[TOOLTIP LABEL]',
+    styles: {},
     content: '', // Can override the content generated inside the control
     // Possible values: 'bottom-left', 'bottom-middle', 'bottom-right',
     // 'left', 'middle', 'right', 'top-left', 'top-middle', 'top-right',

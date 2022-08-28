@@ -117,11 +117,12 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 -   [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
 -   [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 -   [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
+-   [🆕 - Add a custom element (watermark)](https://codepen.io/rafa8626/pen/JjLQNjo)
 
 ### Advanced
 
--   [🆕 - Updating source and Ads for dynamic content loading](https://codepen.io/rafa8626/pen/gORJWVz)
--   [🆕 - Updating Ads and clickable Ad element](https://codepen.io/rafa8626/pen/OJmEzXw)
+-   [Updating source and Ads for dynamic content loading](https://codepen.io/rafa8626/pen/gORJWVz)
+-   [Updating Ads and clickable Ad element](https://codepen.io/rafa8626/pen/OJmEzXw)
 -   [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
 -   [Fully customized audio player](https://codepen.io/rafa8626/pen/ExPLVRE)
 -   [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)

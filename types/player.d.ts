@@ -1,5 +1,5 @@
 import Controls from './controls';
-import { ControlItem, CustomMedia, EventsList, PlayerOptions, Source, Track } from './interfaces';
+import { CustomMedia, ElementItem, EventsList, PlayerOptions, Source, Track } from './interfaces';
 import Media from './media';
 import Ads from './media/ads';
 interface P {
@@ -13,7 +13,7 @@ interface P {
     destroy(): void;
     getContainer(): HTMLElement;
     getControls(): Controls;
-    getCustomControls(): ControlItem[];
+    getCustomControls(): ElementItem[];
     getElement(): HTMLMediaElement;
     getEvents(): EventsList;
     getOptions(): PlayerOptions;
@@ -23,7 +23,7 @@ interface P {
     getMedia(): Media;
     getAd(): Ads;
     addCaptions(args: Track): void;
-    addControl(args: ControlItem): void;
+    addControl(args: ElementItem): void;
     removeControl(controlName: string): void;
     _prepareMedia(): Promise<void>;
     enableDefaultPlayer(): void;
@@ -48,7 +48,7 @@ declare class Player {
     destroy(): void;
     getContainer(): HTMLElement;
     getControls(): Controls;
-    getCustomControls(): ControlItem[];
+    getCustomControls(): ElementItem[];
     getElement(): HTMLMediaElement;
     getEvents(): EventsList;
     getOptions(): PlayerOptions;
@@ -58,7 +58,8 @@ declare class Player {
     getMedia(): Media;
     getAd(): Ads;
     addCaptions(args: Track): void;
-    addControl(args: ControlItem): void;
+    addControl(args: ElementItem): void;
+    addElement(args: ElementItem): void;
     removeControl(controlName: string): void;
     _prepareMedia(): Promise<void>;
     enableDefaultPlayer(): void;

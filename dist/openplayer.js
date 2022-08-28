@@ -4339,7 +4339,7 @@ var Controls = function () {
       Object.keys(controls_classPrivateFieldGet(this, _Controls_items, "f")).forEach(function (position) {
         controls_classPrivateFieldGet(_this2, _Controls_items, "f")[position].forEach(function (item) {
           if (item.custom) {
-            _this2._destroyCustomControl(item);
+            _this2._destroyCustomElement(item);
           } else if (typeof item.destroy === 'function') {
             item.destroy();
           }
@@ -4521,7 +4521,7 @@ var Controls = function () {
       Object.keys(controls_classPrivateFieldGet(this, _Controls_items, "f")).forEach(function (position) {
         controls_classPrivateFieldGet(_this5, _Controls_items, "f")[position].forEach(function (item) {
           if (item.custom) {
-            _this5._createCustomControl(item);
+            _this5._createCustomElement(item);
           } else {
             item.create();
           }
@@ -4577,19 +4577,35 @@ var Controls = function () {
       }
     }
   }, {
-    key: "_createCustomControl",
-    value: function _createCustomControl(item) {
+    key: "_createCustomElement",
+    value: function _createCustomElement(item) {
       var _this6 = this;
 
-      var control = document.createElement('button');
-      var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
-      control.className = "op-controls__".concat(item.id, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
-      control.tabIndex = 0;
-      control.id = item.id;
-      control.title = sanitize(item.title);
-      control.innerHTML = item.content ? sanitize(item.content) : icon;
+      var element = document.createElement(item.type);
+      element.tabIndex = 0;
+      element.id = item.id;
+      element.className = "op-controls__".concat(item.id, " op-control__").concat(item.position, " ").concat(item.showInAds ? '' : 'op-control__hide-in-ad');
 
-      if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+      if (item.styles) {
+        Object.assign(element.style, item.styles);
+      }
+
+      if (item.type === 'button' && item.icon) {
+        var icon = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
+        element.innerHTML = icon;
+      } else if (item.content) {
+        element.innerHTML = sanitize(item.content, false);
+      }
+
+      if (item.type === 'button' && item.title) {
+        element.title = item.title;
+      }
+
+      if (item.type !== 'button' && item.click && typeof item.click === 'function') {
+        element.setAttribute('aria-role', 'button');
+      }
+
+      if (item.type === 'button' && item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
         var menu = document.createElement('div');
         menu.className = 'op-settings op-settings__custom';
         menu.id = "".concat(item.id, "-menu");
@@ -4614,7 +4630,7 @@ var Controls = function () {
             menuItem.addEventListener('click', subitem.click, EVENT_OPTIONS);
           }
         });
-        control.addEventListener('click', function (e) {
+        element.addEventListener('click', function (e) {
           return _this6._toggleCustomMenu(e, menu, item);
         }, EVENT_OPTIONS);
 
@@ -4622,34 +4638,34 @@ var Controls = function () {
           return _this6._hideCustomMenu(menu);
         }, EVENT_OPTIONS);
       } else if (item.click && typeof item.click === 'function') {
-        control.addEventListener('click', item.click, EVENT_OPTIONS);
+        element.addEventListener('click', item.click, EVENT_OPTIONS);
       }
 
       if (item.mouseenter && typeof item.mouseenter === 'function') {
-        control.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
+        element.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
       }
 
       if (item.mouseleave && typeof item.mouseleave === 'function') {
-        control.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
+        element.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
       }
 
       if (item.keydown && typeof item.keydown === 'function') {
-        control.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
+        element.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
       }
 
       if (item.blur && typeof item.blur === 'function') {
-        control.addEventListener('blur', item.blur, EVENT_OPTIONS);
+        element.addEventListener('blur', item.blur, EVENT_OPTIONS);
       }
 
       if (item.focus && typeof item.focus === 'function') {
-        control.addEventListener('focus', item.focus, EVENT_OPTIONS);
+        element.addEventListener('focus', item.focus, EVENT_OPTIONS);
       }
 
       if (item.layer) {
         if (item.layer === 'main') {
-          controls_classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(control);
+          controls_classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(element);
         } else {
-          this.getLayer(item.layer).appendChild(control);
+          this.getLayer(item.layer).appendChild(element);
         }
       }
 
@@ -4658,12 +4674,11 @@ var Controls = function () {
       }
     }
   }, {
-    key: "_destroyCustomControl",
-    value: function _destroyCustomControl(item) {
+    key: "_destroyCustomElement",
+    value: function _destroyCustomElement(item) {
       var _this7 = this;
 
-      var key = item.title.toLowerCase().replace(' ', '-');
-      var control = this.getContainer().querySelector(".op-controls__".concat(key));
+      var control = this.getContainer().querySelector(".op-controls__".concat(item.id));
 
       if (control) {
         if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
@@ -7706,7 +7721,7 @@ var player_classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet 
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 
-var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player_ads, _Player_media, _Player_events, _Player_autoplay, _Player_volume, _Player_canAutoplay, _Player_canAutoplayMuted, _Player_processedAutoplay, _Player_options, _Player_customControlItems, _Player_fullscreen, _Player_defaultOptions;
+var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player_ads, _Player_media, _Player_events, _Player_autoplay, _Player_volume, _Player_canAutoplay, _Player_canAutoplayMuted, _Player_processedAutoplay, _Player_options, _Player_customElements, _Player_fullscreen, _Player_defaultOptions;
 
 
 
@@ -7750,7 +7765,7 @@ var Player = function () {
 
     _Player_options.set(this, void 0);
 
-    _Player_customControlItems.set(this, []);
+    _Player_customElements.set(this, []);
 
     _Player_fullscreen.set(this, void 0);
 
@@ -8044,7 +8059,7 @@ var Player = function () {
   }, {
     key: "getCustomControls",
     value: function getCustomControls() {
-      return player_classPrivateFieldGet(this, _Player_customControlItems, "f");
+      return player_classPrivateFieldGet(this, _Player_customElements, "f");
     }
   }, {
     key: "getElement",
@@ -8122,8 +8137,20 @@ var Player = function () {
     key: "addControl",
     value: function addControl(args) {
       args.custom = true;
+      args.type = 'button';
 
-      player_classPrivateFieldGet(this, _Player_customControlItems, "f").push(args);
+      player_classPrivateFieldGet(this, _Player_customElements, "f").push(args);
+
+      var e = addEvent('controlschanged');
+
+      player_classPrivateFieldGet(this, _Player_element, "f").dispatchEvent(e);
+    }
+  }, {
+    key: "addElement",
+    value: function addElement(args) {
+      args.custom = true;
+
+      player_classPrivateFieldGet(this, _Player_customElements, "f").push(args);
 
       var e = addEvent('controlschanged');
 
@@ -8134,9 +8161,9 @@ var Player = function () {
     value: function removeControl(controlName) {
       var _this2 = this;
 
-      player_classPrivateFieldGet(this, _Player_customControlItems, "f").forEach(function (item, idx) {
+      player_classPrivateFieldGet(this, _Player_customElements, "f").forEach(function (item, idx) {
         if (item.id === controlName) {
-          player_classPrivateFieldGet(_this2, _Player_customControlItems, "f").splice(idx, 1);
+          player_classPrivateFieldGet(_this2, _Player_customElements, "f").splice(idx, 1);
         }
       });
 
@@ -8852,7 +8879,7 @@ var Player = function () {
   return Player;
 }();
 
-_Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customControlItems = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
+_Player_controls = new WeakMap(), _Player_adsInstance = new WeakMap(), _Player_uid = new WeakMap(), _Player_element = new WeakMap(), _Player_ads = new WeakMap(), _Player_media = new WeakMap(), _Player_events = new WeakMap(), _Player_autoplay = new WeakMap(), _Player_volume = new WeakMap(), _Player_canAutoplay = new WeakMap(), _Player_canAutoplayMuted = new WeakMap(), _Player_processedAutoplay = new WeakMap(), _Player_options = new WeakMap(), _Player_customElements = new WeakMap(), _Player_fullscreen = new WeakMap(), _Player_defaultOptions = new WeakMap();
 Player.instances = {};
 Player.customMedia = {
   media: {},

@@ -6,7 +6,7 @@ import Progress from './controls/progress';
 import Settings from './controls/settings';
 import Time from './controls/time';
 import Volume from './controls/volume';
-import { ControlItem, EventsList, PlayerComponent, PlayerLayers, SettingsItem } from './interfaces';
+import { ElementItem, EventsList, PlayerComponent, PlayerLayers, SettingsItem } from './interfaces';
 import Player from './player';
 import { EVENT_OPTIONS, IS_ANDROID, IS_IOS } from './utils/constants';
 import { addEvent, isAudio, isVideo, sanitize } from './utils/general';
@@ -163,8 +163,8 @@ class Controls implements PlayerComponent {
 
         Object.keys(this.#items).forEach((position: string) => {
             this.#items[position].forEach((item: unknown) => {
-                if ((item as ControlItem).custom) {
-                    this._destroyCustomControl(item as ControlItem);
+                if ((item as ElementItem).custom) {
+                    this._destroyCustomElement(item as ElementItem);
                 } else if (typeof (item as PlayerComponent).destroy === 'function') {
                     (item as PlayerComponent).destroy();
                 }
@@ -309,8 +309,8 @@ class Controls implements PlayerComponent {
         // Loop controls to build them and register events
         Object.keys(this.#items).forEach((position) => {
             this.#items[position].forEach((item: unknown) => {
-                if ((item as ControlItem).custom) {
-                    this._createCustomControl(item as ControlItem);
+                if ((item as ElementItem).custom) {
+                    this._createCustomElement(item as ElementItem);
                 } else {
                     (item as PlayerComponent).create();
                 }
@@ -353,7 +353,7 @@ class Controls implements PlayerComponent {
         }
     }
 
-    private _toggleCustomMenu(event: Event, menu: HTMLDivElement, item: ControlItem): void {
+    private _toggleCustomMenu(event: Event, menu: HTMLDivElement, item: ElementItem): void {
         const menus = this.#player.getContainer().querySelectorAll('.op-settings');
         menus.forEach((m) => {
             if (m.getAttribute('aria-hidden') === 'false' && m.id !== menu.id) {
@@ -366,25 +366,41 @@ class Controls implements PlayerComponent {
         }
     }
 
-    private _createCustomControl(item: ControlItem): void {
-        const control = document.createElement('button');
-        const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
-            ? `<img src="${sanitize(item.icon)}">`
-            : sanitize(item.icon);
-        control.className = `op-controls__${item.id} op-control__${item.position} ${
+    private _createCustomElement(item: ElementItem): void {
+        const element = document.createElement(item.type);
+        element.tabIndex = 0;
+        element.id = item.id;
+        element.className = `op-controls__${item.id} op-control__${item.position} ${
             item.showInAds ? '' : 'op-control__hide-in-ad'
         }`;
-        control.tabIndex = 0;
-        control.id = item.id;
-        control.title = sanitize(item.title);
-        control.innerHTML = item.content ? sanitize(item.content) : icon;
 
-        // In the event we have subitems for a custom control, create menu and attach events for each item
-        if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+        if (item.styles) {
+            Object.assign(element.style, item.styles);
+        }
+
+        if (item.type === 'button' && item.icon) {
+            const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
+                ? `<img src="${sanitize(item.icon)}">`
+                : sanitize(item.icon);
+
+            element.innerHTML = icon;
+        } else if (item.content) {
+            element.innerHTML = sanitize(item.content, false);
+        }
+        if (item.type === 'button' && item.title) {
+            element.title = item.title;
+        }
+        if (item.type !== 'button' && item.click && typeof item.click === 'function') {
+            element.setAttribute('aria-role', 'button');
+        }
+
+        // In the event we have subitems for a button control, create menu and attach events for each item
+        if (item.type === 'button' && item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
             const menu = document.createElement('div');
             menu.className = 'op-settings op-settings__custom';
             menu.id = `${item.id}-menu`;
             menu.setAttribute('aria-hidden', 'true');
+
             const items = item.subitems.map((s) => {
                 let itemIcon = '';
                 if (s.icon) {
@@ -411,34 +427,34 @@ class Controls implements PlayerComponent {
 
             // Ensure to toggle menu, hide other settings menus and dispatch a general custom
             // click event (if created)
-            control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
+            element.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
 
             this.#player
                 .getElement()
                 .addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         } else if (item.click && typeof item.click === 'function') {
-            control.addEventListener('click', item.click, EVENT_OPTIONS);
+            element.addEventListener('click', item.click, EVENT_OPTIONS);
         }
         if (item.mouseenter && typeof item.mouseenter === 'function') {
-            control.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
+            element.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
         }
         if (item.mouseleave && typeof item.mouseleave === 'function') {
-            control.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
+            element.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
         }
         if (item.keydown && typeof item.keydown === 'function') {
-            control.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
+            element.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
         }
         if (item.blur && typeof item.blur === 'function') {
-            control.addEventListener('blur', item.blur, EVENT_OPTIONS);
+            element.addEventListener('blur', item.blur, EVENT_OPTIONS);
         }
         if (item.focus && typeof item.focus === 'function') {
-            control.addEventListener('focus', item.focus, EVENT_OPTIONS);
+            element.addEventListener('focus', item.focus, EVENT_OPTIONS);
         }
         if (item.layer) {
             if (item.layer === 'main') {
-                this.#player.getContainer().appendChild(control);
+                this.#player.getContainer().appendChild(element);
             } else {
-                this.getLayer(item.layer).appendChild(control);
+                this.getLayer(item.layer).appendChild(element);
             }
         }
 
@@ -449,9 +465,8 @@ class Controls implements PlayerComponent {
         }
     }
 
-    private _destroyCustomControl(item: ControlItem): void {
-        const key = item.title.toLowerCase().replace(' ', '-');
-        const control = this.getContainer().querySelector(`.op-controls__${key}`);
+    private _destroyCustomElement(item: ElementItem): void {
+        const control = this.getContainer().querySelector(`.op-controls__${item.id}`);
         if (control) {
             if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
                 const menu = this.#player.getContainer().querySelector(`#${item.id}-menu`) as HTMLDivElement;

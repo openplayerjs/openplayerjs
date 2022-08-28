@@ -15,7 +15,7 @@ declare class Controls implements PlayerComponent {
     private _buildElements;
     private _hideCustomMenu;
     private _toggleCustomMenu;
-    private _createCustomControl;
-    private _destroyCustomControl;
+    private _createCustomElement;
+    private _destroyCustomElement;
 }
 export default Controls;

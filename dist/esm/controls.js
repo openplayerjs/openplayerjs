@@ -142,7 +142,7 @@ class Controls {
         Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach((position) => {
             __classPrivateFieldGet(this, _Controls_items, "f")[position].forEach((item) => {
                 if (item.custom) {
-                    this._destroyCustomControl(item);
+                    this._destroyCustomElement(item);
                 }
                 else if (typeof item.destroy === 'function') {
                     item.destroy();
@@ -268,7 +268,7 @@ class Controls {
         Object.keys(__classPrivateFieldGet(this, _Controls_items, "f")).forEach((position) => {
             __classPrivateFieldGet(this, _Controls_items, "f")[position].forEach((item) => {
                 if (item.custom) {
-                    this._createCustomControl(item);
+                    this._createCustomElement(item);
                 }
                 else {
                     item.create();
@@ -313,17 +313,30 @@ class Controls {
             item.click(event);
         }
     }
-    _createCustomControl(item) {
-        const control = document.createElement('button');
-        const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
-            ? `<img src="${sanitize(item.icon)}">`
-            : sanitize(item.icon);
-        control.className = `op-controls__${item.id} op-control__${item.position} ${item.showInAds ? '' : 'op-control__hide-in-ad'}`;
-        control.tabIndex = 0;
-        control.id = item.id;
-        control.title = sanitize(item.title);
-        control.innerHTML = item.content ? sanitize(item.content) : icon;
-        if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
+    _createCustomElement(item) {
+        const element = document.createElement(item.type);
+        element.tabIndex = 0;
+        element.id = item.id;
+        element.className = `op-controls__${item.id} op-control__${item.position} ${item.showInAds ? '' : 'op-control__hide-in-ad'}`;
+        if (item.styles) {
+            Object.assign(element.style, item.styles);
+        }
+        if (item.type === 'button' && item.icon) {
+            const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
+                ? `<img src="${sanitize(item.icon)}">`
+                : sanitize(item.icon);
+            element.innerHTML = icon;
+        }
+        else if (item.content) {
+            element.innerHTML = sanitize(item.content, false);
+        }
+        if (item.type === 'button' && item.title) {
+            element.title = item.title;
+        }
+        if (item.type !== 'button' && item.click && typeof item.click === 'function') {
+            element.setAttribute('aria-role', 'button');
+        }
+        if (item.type === 'button' && item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
             const menu = document.createElement('div');
             menu.className = 'op-settings op-settings__custom';
             menu.id = `${item.id}-menu`;
@@ -345,44 +358,43 @@ class Controls {
                     menuItem.addEventListener('click', subitem.click, EVENT_OPTIONS);
                 }
             });
-            control.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
+            element.addEventListener('click', (e) => this._toggleCustomMenu(e, menu, item), EVENT_OPTIONS);
             __classPrivateFieldGet(this, _Controls_player, "f")
                 .getElement()
                 .addEventListener('controlshidden', () => this._hideCustomMenu(menu), EVENT_OPTIONS);
         }
         else if (item.click && typeof item.click === 'function') {
-            control.addEventListener('click', item.click, EVENT_OPTIONS);
+            element.addEventListener('click', item.click, EVENT_OPTIONS);
         }
         if (item.mouseenter && typeof item.mouseenter === 'function') {
-            control.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
+            element.addEventListener('mouseenter', item.mouseenter, EVENT_OPTIONS);
         }
         if (item.mouseleave && typeof item.mouseleave === 'function') {
-            control.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
+            element.addEventListener('mouseleave', item.mouseleave, EVENT_OPTIONS);
         }
         if (item.keydown && typeof item.keydown === 'function') {
-            control.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
+            element.addEventListener('keydown', item.keydown, EVENT_OPTIONS);
         }
         if (item.blur && typeof item.blur === 'function') {
-            control.addEventListener('blur', item.blur, EVENT_OPTIONS);
+            element.addEventListener('blur', item.blur, EVENT_OPTIONS);
         }
         if (item.focus && typeof item.focus === 'function') {
-            control.addEventListener('focus', item.focus, EVENT_OPTIONS);
+            element.addEventListener('focus', item.focus, EVENT_OPTIONS);
         }
         if (item.layer) {
             if (item.layer === 'main') {
-                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(control);
+                __classPrivateFieldGet(this, _Controls_player, "f").getContainer().appendChild(element);
             }
             else {
-                this.getLayer(item.layer).appendChild(control);
+                this.getLayer(item.layer).appendChild(element);
             }
         }
         if (item.init && typeof item.init === 'function') {
             item.init(__classPrivateFieldGet(this, _Controls_player, "f"));
         }
     }
-    _destroyCustomControl(item) {
-        const key = item.title.toLowerCase().replace(' ', '-');
-        const control = this.getContainer().querySelector(`.op-controls__${key}`);
+    _destroyCustomElement(item) {
+        const control = this.getContainer().querySelector(`.op-controls__${item.id}`);
         if (control) {
             if (item.subitems && Array.isArray(item.subitems) && item.subitems.length > 0) {
                 const menu = __classPrivateFieldGet(this, _Controls_player, "f").getContainer().querySelector(`#${item.id}-menu`);
