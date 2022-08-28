@@ -327,10 +327,9 @@ class Controls {
             Object.assign(element.style, item.styles);
         }
         if (item.type === 'button' && item.icon) {
-            const icon = /\.(jpg|png|svg|gif)$/.test(item.icon)
+            element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon)
                 ? `<img src="${(0, general_1.sanitize)(item.icon)}">`
                 : (0, general_1.sanitize)(item.icon);
-            element.innerHTML = icon;
         }
         else if (item.content) {
             element.innerHTML = (0, general_1.sanitize)(item.content, false);
@@ -349,7 +348,9 @@ class Controls {
             const items = item.subitems.map((s) => {
                 let itemIcon = '';
                 if (s.icon) {
-                    itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? `<img src="${s.icon}">` : s.icon;
+                    itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon)
+                        ? `<img src="${(0, general_1.sanitize)(s.icon)}">`
+                        : (0, general_1.sanitize)(s.icon, false);
                 }
                 return `<div class="op-settings__menu-item" tabindex="0" ${s.title ? `title="${s.title}"` : ''} role="menuitemradio">
                     <div class="op-settings__menu-label" id="${s.id}" data-value="${item.id}-${s.id}">${itemIcon} ${s.label}</div>
