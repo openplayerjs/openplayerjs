@@ -8638,7 +8638,7 @@ var Player = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!this._isValid()) {
+                if (this._isValid()) {
                   _context.next = 2;
                   break;
                 }
@@ -8646,29 +8646,33 @@ var Player = function () {
                 return _context.abrupt("return");
 
               case 2:
-                this._createUID();
+                if (classPrivateFieldGet_default()(this, player_options).minimalist) {
+                  this._setDimensions(classPrivateFieldGet_default()(this, player_element));
+                } else {
+                  this._wrapInstance();
+                }
 
                 _context.next = 5;
                 return this.prepareMedia();
 
               case 5:
+                if (!classPrivateFieldGet_default()(this, player_options).minimalist) {
+                  this._createPlayButton();
+                }
+
+                this._createUID();
+
+                if (!classPrivateFieldGet_default()(this, player_options).minimalist) {
+                  this._createControls();
+
+                  this._setEvents();
+                }
+
                 classPrivateFieldSet_default()(this, _initialized, true);
 
                 Player.instances[this.id] = this;
 
-                if (!classPrivateFieldGet_default()(this, player_options).minimalist) {
-                  this._wrapInstance();
-
-                  this._createPlayButton();
-
-                  this._createControls();
-
-                  this._setEvents();
-                } else {
-                  this._setDimensions(classPrivateFieldGet_default()(this, player_element));
-                }
-
-              case 8:
+              case 10:
               case "end":
                 return _context.stop();
             }

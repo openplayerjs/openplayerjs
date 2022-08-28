@@ -195,24 +195,28 @@ class Player {
         this._enableKeyBindings = this._enableKeyBindings.bind(this);
     }
 
+    // @todo: Check sequencing here
     async init(): Promise<void> {
-        if (this._isValid()) {
+        if (!this._isValid()) {
             return;
         }
-
-        this._createUID();
-        await this.prepareMedia();
-        this.#initialized = true;
-        Player.instances[this.id] = this;
-
-        if (!this.#options.minimalist) {
+        if (this.#options.minimalist) {
+            this._setDimensions(this.#element);
+        } else {
             this._wrapInstance();
+        }
+
+        await this.prepareMedia();
+        if (!this.#options.minimalist) {
             this._createPlayButton();
+        }
+        this._createUID();
+        if (!this.#options.minimalist) {
             this._createControls();
             this._setEvents();
-        } else {
-            this._setDimensions(this.#element);
         }
+        this.#initialized = true;
+        Player.instances[this.id] = this;
     }
 
     async load(): Promise<void> {

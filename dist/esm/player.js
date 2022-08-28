@@ -147,22 +147,26 @@ class Player {
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this._isValid()) {
+            if (!this._isValid()) {
                 return;
             }
-            this._createUID();
-            yield this.prepareMedia();
-            __classPrivateFieldSet(this, _Player_initialized, true, "f");
-            Player.instances[this.id] = this;
-            if (!__classPrivateFieldGet(this, _Player_options, "f").minimalist) {
+            if (__classPrivateFieldGet(this, _Player_options, "f").minimalist) {
+                this._setDimensions(__classPrivateFieldGet(this, _Player_element, "f"));
+            }
+            else {
                 this._wrapInstance();
+            }
+            yield this.prepareMedia();
+            if (!__classPrivateFieldGet(this, _Player_options, "f").minimalist) {
                 this._createPlayButton();
+            }
+            this._createUID();
+            if (!__classPrivateFieldGet(this, _Player_options, "f").minimalist) {
                 this._createControls();
                 this._setEvents();
             }
-            else {
-                this._setDimensions(__classPrivateFieldGet(this, _Player_element, "f"));
-            }
+            __classPrivateFieldSet(this, _Player_initialized, true, "f");
+            Player.instances[this.id] = this;
         });
     }
     load() {
