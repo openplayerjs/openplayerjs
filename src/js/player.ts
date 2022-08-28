@@ -238,6 +238,15 @@ class Player {
         }
     }
 
+    stop(): void {
+        this.pause();
+
+        if (this.#media) {
+            this.#media.currentTime = 0;
+            this.src = [{ src: '', type: 'video/mp4' }];
+        }
+    }
+
     destroy(): void {
         if (this.#adsInstance) {
             this.#adsInstance.pause();

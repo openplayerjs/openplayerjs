@@ -7983,6 +7983,19 @@ var Player = function () {
       }
     }
   }, {
+    key: "stop",
+    value: function stop() {
+      this.pause();
+
+      if (player_classPrivateFieldGet(this, _Player_media, "f")) {
+        player_classPrivateFieldGet(this, _Player_media, "f").currentTime = 0;
+        this.src = [{
+          src: '',
+          type: 'video/mp4'
+        }];
+      }
+    }
+  }, {
     key: "destroy",
     value: function destroy() {
       var _this = this;

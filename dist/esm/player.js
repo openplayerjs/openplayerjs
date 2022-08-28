@@ -188,6 +188,13 @@ class Player {
             __classPrivateFieldGet(this, _Player_media, "f").pause();
         }
     }
+    stop() {
+        this.pause();
+        if (__classPrivateFieldGet(this, _Player_media, "f")) {
+            __classPrivateFieldGet(this, _Player_media, "f").currentTime = 0;
+            this.src = [{ src: '', type: 'video/mp4' }];
+        }
+    }
     destroy() {
         var _a;
         if (__classPrivateFieldGet(this, _Player_adsInstance, "f")) {

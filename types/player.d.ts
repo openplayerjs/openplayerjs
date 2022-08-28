@@ -45,6 +45,7 @@ declare class Player {
     load(): Promise<void>;
     play(): Promise<void>;
     pause(): void;
+    stop(): void;
     destroy(): void;
     getContainer(): HTMLElement;
     getControls(): Controls;
