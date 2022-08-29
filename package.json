@@ -69,6 +69,7 @@
         "babel-preset-minify": "^0.5.2",
         "conventional-changelog": "^3.1.25",
         "copy-webpack-plugin": "^11.0.0",
+        "coveralls": "^3.1.1",
         "css-loader": "^6.7.1",
         "css-minimizer-webpack-plugin": "^4.0.0",
         "cssnano": "^5.1.11",
