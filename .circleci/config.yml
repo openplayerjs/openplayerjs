@@ -17,9 +17,6 @@ jobs:
             - run:
                   name: Headless Chrome tests
                   command: npm test
-            - run:
-                  name: Send results to Coverage
-                  command: npm run coveralls
 
 workflows:
     end-to-end-tests:
