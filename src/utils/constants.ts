@@ -13,34 +13,26 @@ declare global {
     }
 }
 
-export const NAV: NavigatorExtended | null = typeof window !== 'undefined' ? window.navigator : null;
+const navigator = (): NavigatorExtended | null => (typeof window !== 'undefined' ? window.navigator : null);
 
-export const UA: string | null = NAV ? NAV.userAgent.toLowerCase() : null;
+const getUserAgent = (): string | null => navigator()?.userAgent?.toLowerCase() || null;
 
-export const IS_IPAD = UA ? /ipad/i.test(UA) && !window.MSStream : false;
+export const isMobile = (): boolean => false;
 
-export const IS_IPHONE = UA ? /iphone/i.test(UA) && !window.MSStream : false;
+export const isIPhone = (): boolean => /iphone/i.test(getUserAgent() || '') && !window.MSStream;
 
-export const IS_IPOD = UA ? /ipod/i.test(UA) && !window.MSStream : false;
+export const isIOS = (): boolean => /ipad|iphone|ipod/i.test(getUserAgent() || '') && !window.MSStream;
 
-export const IS_IOS = UA ? /ipad|iphone|ipod/i.test(UA) && !window.MSStream : false;
+export const isAndroid = (): boolean => /android/i.test(getUserAgent() || '');
 
-export const IS_ANDROID = UA ? /android/i.test(UA) : false;
+const isChrome = (): boolean => /chrome/i.test(getUserAgent() || '');
 
-export const IS_EDGE = NAV ? 'msLaunchUri' in NAV && !('documentMode' in document) : false;
+export const isSafari = (): boolean => /safari/i.test(getUserAgent() || '') && !isChrome();
 
-export const IS_CHROME = UA ? /chrome/i.test(UA) : false;
-
-export const IS_FIREFOX = UA ? /firefox/i.test(UA) : false;
-
-export const IS_SAFARI = UA ? /safari/i.test(UA) && !IS_CHROME : false;
-
-export const IS_STOCK_ANDROID = UA ? /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA) : false;
-
-export const HAS_MSE = typeof window !== 'undefined' ? 'MediaSource' in window : false;
+export const hasMSE = (): boolean => (typeof window !== 'undefined' ? 'MediaSource' in window : false);
 
 // @see https://github.com/video-dev/hls.js/blob/master/src/is-supported.js
-export const SUPPORTS_HLS = (): boolean => {
+export const supportsHLS = (): boolean => {
     if (typeof window === 'undefined') {
         return false;
     }
@@ -59,7 +51,7 @@ export const SUPPORTS_HLS = (): boolean => {
 
     // Safari is still an exception since it has built-in HLS support; currently HLS.js
     // is still in beta to support Safari
-    return !!isTypeSupported && !!sourceBufferValidAPI && !IS_SAFARI;
+    return !!isTypeSupported && !!sourceBufferValidAPI && !isSafari();
 };
 
 export const DVR_THRESHOLD = 120;

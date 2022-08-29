@@ -13,57 +13,40 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _Play_player, _Play_button, _Play_events, _Play_controlPosition, _Play_controlLayer;
+var _Play_player, _Play_button, _Play_position, _Play_layer;
 Object.defineProperty(exports, "__esModule", { value: true });
 const player_1 = __importDefault(require("../player"));
 const constants_1 = require("../utils/constants");
 const general_1 = require("../utils/general");
+const hooks_1 = __importDefault(require("../hooks"));
 class Play {
     constructor(player, position, layer) {
         _Play_player.set(this, void 0);
         _Play_button.set(this, void 0);
-        _Play_events.set(this, {
-            controls: {},
-            media: {},
-        });
-        _Play_controlPosition.set(this, void 0);
-        _Play_controlLayer.set(this, void 0);
+        _Play_position.set(this, void 0);
+        _Play_layer.set(this, void 0);
         __classPrivateFieldSet(this, _Play_player, player, "f");
-        __classPrivateFieldSet(this, _Play_controlPosition, position, "f");
-        __classPrivateFieldSet(this, _Play_controlLayer, layer, "f");
+        __classPrivateFieldSet(this, _Play_position, position, "f");
+        __classPrivateFieldSet(this, _Play_layer, layer, "f");
         this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
+        this._handleClick = this._handleClick.bind(this);
     }
     create() {
-        var _a;
         const { labels } = __classPrivateFieldGet(this, _Play_player, "f").getOptions();
         __classPrivateFieldSet(this, _Play_button, document.createElement('button'), "f");
         __classPrivateFieldGet(this, _Play_button, "f").type = 'button';
-        __classPrivateFieldGet(this, _Play_button, "f").className = `op-controls__playpause op-control__${__classPrivateFieldGet(this, _Play_controlPosition, "f")}`;
+        __classPrivateFieldGet(this, _Play_button, "f").className = `op-controls__playpause op-control__${__classPrivateFieldGet(this, _Play_position, "f")}`;
         __classPrivateFieldGet(this, _Play_button, "f").tabIndex = 0;
         __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
         __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Play_player, "f").id);
         __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-pressed', 'false');
         __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
-        __classPrivateFieldGet(this, _Play_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Play_controlLayer, "f")).appendChild(__classPrivateFieldGet(this, _Play_button, "f"));
-        __classPrivateFieldGet(this, _Play_events, "f").button = (e) => {
-            __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-pressed', 'true');
-            const el = __classPrivateFieldGet(this, _Play_player, "f").activeElement();
-            if (el.paused || el.ended) {
-                if (__classPrivateFieldGet(this, _Play_player, "f").getAd()) {
-                    __classPrivateFieldGet(this, _Play_player, "f").getAd().playRequested = true;
-                }
-                el.play();
-                __classPrivateFieldGet(this, _Play_events, "f").media.play();
-            }
-            else {
-                el.pause();
-                __classPrivateFieldGet(this, _Play_events, "f").media.pause();
-            }
-            e.preventDefault();
-            e.stopPropagation();
-        };
-        const isAudioEl = (0, general_1.isAudio)(__classPrivateFieldGet(this, _Play_player, "f").getElement());
-        __classPrivateFieldGet(this, _Play_events, "f").media.play = () => {
+        __classPrivateFieldGet(this, _Play_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Play_layer, "f")).appendChild(__classPrivateFieldGet(this, _Play_button, "f"));
+    }
+    register() {
+        var _a;
+        const { labels } = __classPrivateFieldGet(this, _Play_player, "f").getOptions();
+        hooks_1.default.register('media.play', () => {
             var _a;
             if (__classPrivateFieldGet(this, _Play_player, "f").activeElement().ended) {
                 if (__classPrivateFieldGet(this, _Play_player, "f").isMedia()) {
@@ -89,29 +72,29 @@ class Play {
                     });
                 }
             }
-        };
-        __classPrivateFieldGet(this, _Play_events, "f").media.loadedmetadata = () => {
+        });
+        hooks_1.default.register('media.loadedmetadata', () => {
             if (__classPrivateFieldGet(this, _Play_button, "f").classList.contains('op-controls__playpause--pause')) {
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
                 __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
                 __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
             }
-        };
-        __classPrivateFieldGet(this, _Play_events, "f").media.playing = () => {
+        });
+        hooks_1.default.register('media.playing', () => {
             if (!__classPrivateFieldGet(this, _Play_button, "f").classList.contains('op-controls__playpause--pause')) {
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
                 __classPrivateFieldGet(this, _Play_button, "f").classList.add('op-controls__playpause--pause');
                 __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
                 __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
             }
-        };
-        __classPrivateFieldGet(this, _Play_events, "f").media.pause = () => {
+        });
+        hooks_1.default.register('media.pause', () => {
             __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
             __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
             __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
-        };
-        __classPrivateFieldGet(this, _Play_events, "f").media.ended = () => {
+        });
+        hooks_1.default.register('media.ended', () => {
             if (__classPrivateFieldGet(this, _Play_player, "f").activeElement().ended && __classPrivateFieldGet(this, _Play_player, "f").isMedia()) {
                 __classPrivateFieldGet(this, _Play_button, "f").classList.add('op-controls__playpause--replay');
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
@@ -127,63 +110,53 @@ class Play {
             }
             __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
             __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.play) || '');
-        };
-        __classPrivateFieldGet(this, _Play_events, "f").media.adsmediaended = () => {
-            __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
-            __classPrivateFieldGet(this, _Play_button, "f").classList.add('op-controls__playpause--pause');
-            __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
-            __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
-        };
-        __classPrivateFieldGet(this, _Play_events, "f").media.playererror = () => {
-            if (isAudioEl) {
+        });
+        hooks_1.default.register('media.playererror', () => {
+            if ((0, general_1.isAudio)(__classPrivateFieldGet(this, _Play_player, "f").getElement())) {
                 const el = __classPrivateFieldGet(this, _Play_player, "f").activeElement();
                 el.pause();
             }
-        };
-        const element = __classPrivateFieldGet(this, _Play_player, "f").getElement();
-        __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged = () => {
+        });
+        if ((_a = __classPrivateFieldGet(this, _Play_player, "f").getOptions().media) === null || _a === void 0 ? void 0 : _a.pauseOnClick) {
+            hooks_1.default.register('media.click', this._handleClick);
+        }
+        hooks_1.default.register('controls.controlschanged', () => {
             if (!__classPrivateFieldGet(this, _Play_player, "f").activeElement().paused) {
                 const event = (0, general_1.addEvent)('playing');
-                element.dispatchEvent(event);
+                __classPrivateFieldGet(this, _Play_player, "f").getElement().dispatchEvent(event);
             }
-        };
-        Object.keys(__classPrivateFieldGet(this, _Play_events, "f").media).forEach((event) => {
-            element.addEventListener(event, __classPrivateFieldGet(this, _Play_events, "f").media[event], constants_1.EVENT_OPTIONS);
         });
-        if ((_a = __classPrivateFieldGet(this, _Play_player, "f").getOptions().media) === null || _a === void 0 ? void 0 : _a.pauseOnClick) {
-            element.addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button, constants_1.EVENT_OPTIONS);
-        }
-        __classPrivateFieldGet(this, _Play_player, "f")
-            .getControls()
-            .getContainer()
-            .addEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged, constants_1.EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Play_player, "f").getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, constants_1.EVENT_OPTIONS);
-        __classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button, constants_1.EVENT_OPTIONS);
+        __classPrivateFieldGet(this, _Play_button, "f").addEventListener('click', this._handleClick, constants_1.EVENT_OPTIONS);
     }
     destroy() {
-        var _a;
-        Object.keys(__classPrivateFieldGet(this, _Play_events, "f").media).forEach((event) => {
-            __classPrivateFieldGet(this, _Play_player, "f").getElement().removeEventListener(event, __classPrivateFieldGet(this, _Play_events, "f").media[event]);
-        });
-        if ((_a = __classPrivateFieldGet(this, _Play_player, "f").getOptions().media) === null || _a === void 0 ? void 0 : _a.pauseOnClick) {
-            __classPrivateFieldGet(this, _Play_player, "f").getElement().removeEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button);
-        }
-        __classPrivateFieldGet(this, _Play_player, "f")
-            .getControls()
-            .getContainer()
-            .removeEventListener('controlschanged', __classPrivateFieldGet(this, _Play_events, "f").controls.controlschanged);
         __classPrivateFieldGet(this, _Play_player, "f").getContainer().removeEventListener('keydown', this._enterSpaceKeyEvent);
-        __classPrivateFieldGet(this, _Play_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Play_events, "f").button);
+        __classPrivateFieldGet(this, _Play_button, "f").removeEventListener('click', this._handleClick);
         __classPrivateFieldGet(this, _Play_button, "f").remove();
+    }
+    _handleClick(e) {
+        __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-pressed', 'true');
+        const el = __classPrivateFieldGet(this, _Play_player, "f").activeElement();
+        if (el.paused || el.ended) {
+            if (__classPrivateFieldGet(this, _Play_player, "f").getAd()) {
+                __classPrivateFieldGet(this, _Play_player, "f").getAd().playRequested = true;
+            }
+            el.play();
+        }
+        else {
+            el.pause();
+        }
+        e.preventDefault();
+        e.stopPropagation();
     }
     _enterSpaceKeyEvent(e) {
         var _a;
         const key = e.which || e.keyCode || 0;
         const playBtnFocused = (_a = document === null || document === void 0 ? void 0 : document.activeElement) === null || _a === void 0 ? void 0 : _a.classList.contains('op-controls__playpause');
         if (playBtnFocused && (key === 13 || key === 32)) {
-            __classPrivateFieldGet(this, _Play_events, "f").button(e);
+            this._handleClick(e);
         }
     }
 }
-_Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_controlPosition = new WeakMap(), _Play_controlLayer = new WeakMap();
+_Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_position = new WeakMap(), _Play_layer = new WeakMap();
 exports.default = Play;

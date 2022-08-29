@@ -10,7 +10,8 @@
         "emitDeclarationOnly": true,
         "skipLibCheck": true,
         "moduleResolution": "node",
-        "outDir": "./types"
+        "outDir": "./types",
+        "baseUrl": "src/"
     },
     "include": ["./src"]
 }
