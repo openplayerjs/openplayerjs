@@ -2,52 +2,41 @@
 import * as general from '../../src/utils/general';
 
 describe('utils/general', () => {
-    it('must return the absolute URL of a relative one', (done) => {
+    it('must return the absolute URL of a relative one', () => {
         expect(general.getAbsoluteUrl('example.pdf')).toEqual(`${window.location.origin}/example.pdf`);
-        done();
     });
 
-    it('must detect if media is a video element', (done) => {
+    it('returns the offset of an element', () => {
+        const container = document.createElement('div') as HTMLDivElement;
+        const offset = general.offset(container);
+        expect(offset.top).toEqual(0);
+        expect(offset.left).toEqual(0);
+    });
+
+    it('must detect if media is a video element', () => {
         const video = document.createElement('video');
         expect(general.isVideo(video)).toBeTrue();
 
         const audio = document.createElement('audio');
         expect(general.isVideo(audio)).toBeFalse();
-        done();
     });
 
-    it('must detect if media is an audio element', (done) => {
+    it('must detect if media is an audio element', () => {
         const video = document.createElement('video');
         expect(general.isAudio(video)).toBeFalse();
 
         const audio = document.createElement('audio');
         expect(general.isAudio(audio)).toBeTrue();
-        done();
     });
 
-    it.skip('should load a script and destroy the script tag on the header', async () => {
-        try {
-            await general.loadScript('https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js');
-            expect((window as any).OpenPlayerJS).not.toEqual(null);
-        } catch (err) {
-            expect(err).toBeEmpty();
-        }
-
-        // try {
-        //     await general.loadScript('https://cdn.jsdelivr.net/npm/openplayerjs@0.0.0/dist/openplayer.min.js');
-        // } catch (err) {
-        //     expect(err.src).toEqual('https://cdn.jsdelivr.net/npm/openplayerjs@0.0.0/dist/openplayer.min.js');
-        // }
-    }, 8000);
-
-    it('sanitizes string from XSS attacks', (done) => {
-        const content = '<div onclick="javascript:alert(\'XSS\')">Test<script>alert("Test");</script></div>';
+    it('sanitizes string from XSS attacks', () => {
+        const content =
+            '<div onclick="javascript:alert(\'XSS\');">Test<script>alert("Test");</script><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Test" /></div>';
         expect(general.sanitize(content)).toEqual('Test');
-        expect(general.sanitize(content, false)).toEqual('<div>Test</div>');
-        done();
+        expect(general.sanitize(content, false)).toEqual('<div>Test<img alt="Test"></div>');
     });
 
-    it('checks if string is a valid XML source', (done) => {
+    it('checks if string is a valid XML source', () => {
         expect(general.isXml('<invalid>')).toBeFalse();
         expect(
             general.isXml(`<note>
@@ -57,10 +46,9 @@ describe('utils/general', () => {
             <body>Don't forget me this weekend!</body>
             </note>`)
         ).toBeTrue();
-        done();
     });
 
-    it('checks if string is a valid JSON source', (done) => {
+    it('checks if string is a valid JSON source', () => {
         expect(general.isJson('abc123')).toBeFalse();
         expect(
             general.isJson(`{
@@ -69,10 +57,9 @@ describe('utils/general', () => {
                 "name": "test"
             }`)
         ).toBeTrue();
-        done();
     });
 
-    it('must return a custom event to be dispatched', (done) => {
+    it('must return a custom event to be dispatched', () => {
         let event = general.addEvent('custom');
         let custom = new CustomEvent('custom');
         expect(event.type).toEqual(custom.type);
@@ -80,6 +67,5 @@ describe('utils/general', () => {
         event = general.addEvent('test', { detail: { data: 'test' } });
         custom = new CustomEvent('test', { detail: { data: 'test' } });
         expect(event.detail.data).toEqual((custom.detail as any).data);
-        done();
     });
 });

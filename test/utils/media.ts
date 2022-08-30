@@ -1,13 +1,13 @@
 import * as media from '../../src/utils/media';
 
 describe('utils/media', () => {
-    it('determines the extension of a source', (done) => {
+    it('determines the extension of a source', () => {
         expect(media.getExtension('https://www.w3schools.com/xml/note.xml')).toEqual('xml');
         expect(media.getExtension('test.pdf')).toEqual('pdf');
         expect(media.getExtension('test')).toEqual('');
-        done();
     });
-    it('determines if media source is an HLS resource', (done) => {
+
+    it('determines if media source is an HLS resource', () => {
         expect(
             media.isHlsSource({
                 src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
@@ -32,8 +32,8 @@ describe('utils/media', () => {
                 type: 'audio/mp3',
             })
         ).toBeFalse();
-        done();
     });
+
     it('determines if media source is an HLS playlist resource', (done) => {
         expect(
             media.isM3USource({
@@ -49,7 +49,8 @@ describe('utils/media', () => {
         ).toBeFalse();
         done();
     });
-    it('determines if media source is an MPEG-DASH resource', (done) => {
+
+    it('determines if media source is an MPEG-DASH resource', () => {
         expect(
             media.isDashSource({
                 src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.mpd',
@@ -68,9 +69,9 @@ describe('utils/media', () => {
                 type: 'audio/mp3',
             })
         ).toBeFalse();
-        done();
     });
-    it('determines if media source is an FLV resource', (done) => {
+
+    it('determines if media source is an FLV resource', () => {
         expect(
             media.isFlvSource({
                 src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.flv',
@@ -101,9 +102,9 @@ describe('utils/media', () => {
                 type: 'audio/mp3',
             })
         ).toBeFalse();
-        done();
     });
-    it('predicts the extension of a media source based on the URL provided', (done) => {
+
+    it('predicts the extension of a media source based on the URL provided', () => {
         const video = document.createElement('video') as HTMLMediaElement;
         const audio = document.createElement('audio') as HTMLMediaElement;
 
@@ -159,35 +160,49 @@ describe('utils/media', () => {
         expect(media.predictMimeType('test.pdf', video)).toEqual('video/mp4');
         expect(media.predictMimeType('test', video)).toEqual('video/mp4');
         expect(media.predictMimeType('test.pdf', audio)).toEqual('audio/mp3');
-        done();
     });
-    // it('checks if browser can autoplay media without being muted', () => {
-    //     const video = document.getElementById('video') as HTMLMediaElement;
-    //     video.muted = false;
-    //     return new Promise<void>((resolve, reject) => {
-    //         media.isAutoplaySupported(video, 1, () => {
-    //             // expect(autoplay).toBeFalse();
-    //         }, muted => {
-    //             expect(muted).toBeFalse();
-    //             video.pause();
-    //             video.currentTime = 0;
-    //             resolve();
-    //         }, () => reject());
-    //         video.muted = true;
-    //     });
-    // });
-    // it('checks if browser can autoplay media being muted', async () => {
-    //     const audio = document.getElementById('audio') as HTMLMediaElement;
 
-    //     return new Promise<void>((resolve, reject) => {
-    //         media.isAutoplaySupported(audio, 1, () => {
-    //             // expect(autoplay).toBeFalse();
-    //         }, muted => {
-    //             expect(muted).toBeTrue();
-    //             audio.pause();
-    //             audio.currentTime = 0;
-    //             resolve();
-    //         }, () => reject());
-    //     });
-    // });
+    it('checks if browser can autoplay media without being muted', () => {
+        const video = document.createElement('video') as HTMLMediaElement;
+        video.muted = false;
+        video.controls = true;
+        video.src = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
+
+        return new Promise<void>((resolve, reject) => {
+            media.isAutoplaySupported(
+                video,
+                1,
+                (autoplay) => {
+                    expect(autoplay).toBeFalse();
+                },
+                (muted) => {
+                    expect(muted).toBeFalse();
+                    resolve();
+                },
+                () => reject()
+            );
+        });
+    });
+
+    it('checks if browser can autoplay media', () => {
+        const audio = document.createElement('audio') as HTMLMediaElement;
+        audio.src = 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp3';
+        audio.controls = true;
+        audio.muted = true;
+
+        return new Promise<void>((resolve, reject) => {
+            media.isAutoplaySupported(
+                audio,
+                1,
+                (canPlay) => {
+                    expect(canPlay).toBeTrue();
+                },
+                (canPlayMuted) => {
+                    expect(canPlayMuted).toBeFalse();
+                    resolve();
+                },
+                () => reject()
+            );
+        });
+    });
 });

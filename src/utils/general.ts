@@ -12,25 +12,6 @@ export function isAudio(element: Element): boolean {
     return element.tagName.toLowerCase() === 'audio';
 }
 
-export function loadScript(url: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        script.onload = (): void => {
-            script.remove();
-            resolve();
-        };
-        script.onerror = (): void => {
-            script.remove();
-            reject(new Error(`${url} could not be loaded`));
-        };
-        if (document.head) {
-            document.head.appendChild(script);
-        }
-    });
-}
-
 export function offset(el: HTMLElement): { left: number; top: number } {
     const rect = el.getBoundingClientRect();
     return {
@@ -55,15 +36,15 @@ export function sanitize(html: string, plainText = true): string {
             const node = nodes[i];
             const { attributes } = node;
             for (let j = 0, t = attributes.length; j < t; j++) {
-                const { name, value } = attributes[j];
-                const val = value.replace(/\s+/g, '').toLowerCase();
-                if (['src', 'href', 'xlink:href'].includes(name)) {
+                const { name, value } = attributes[j] || {};
+                const val = (value || '').replace(/\s+/g, '').toLowerCase();
+                if (name && ['src', 'href', 'xlink:href'].includes(name)) {
                     // eslint-disable-next-line no-script-url
                     if (val.includes('javascript:') || val.includes('data:')) {
                         node.removeAttribute(name);
                     }
                 }
-                if (name.startsWith('on')) {
+                if (name && name.startsWith('on')) {
                     node.removeAttribute(name);
                 }
             }
