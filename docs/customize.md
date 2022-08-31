@@ -4,12 +4,50 @@
 
 OpenPlayerJS now offers the ability to move elements into new DOM layers, in an attempt to achieve more flexibility for you.
 
-In the following diagram, you will see a representation of the areas that the player offers (**main** is only for video, though).
-
 The default controls configuration does NOT encapsulate the elements in layers, but it assigns them a class indicating each control item's position (`left`, `middle` and `center`).
 
-The only way the player generates new layers within the controls' container is when the `top` or `bottom` layers are set in the player's configuration, since the assumption is that the markup will be drastically complex as opposed to the default one, and it will need more than the `middle` layer, as described in the following layout's diagram.
+The only way the player generates new layers within the controls' container is when the `top` or `bottom` layers are set in the player's configuration, since the assumption is that the markup will be drastically complex as opposed to the default one, and it will need more than the `middle` layer, as described in the following layout's diagram (**main** is only for video, though).
 ![Layers' diagram](https://user-images.githubusercontent.com/910829/96354476-24eb9800-10a5-11eb-9ebf-90abc16d6c0d.png)
+
+### ❗❗❗ CSS Matters... a lot ❗❗❗
+
+Before OpenPlayerJS supported layers, the only way to achieve the layout that the player currently has was through pure CSS, giving it the illusion of the progress bar to be above the rest of the elements.
+
+To illustrate this point, if you compare the current layout's configuration of the player
+
+```javascript
+new OpenPlayerJS('id', {
+    controls: {
+        left: ['play', 'time', 'volume'],
+        middle: ['progress'], // Semantically speaking, progress bar is in the middle
+        right: ['levels', 'captions', 'settings', 'fullscreen'],
+    },
+});
+```
+
+![Progress bar in the middle](https://user-images.githubusercontent.com/40804543/187544433-863fc7a0-cce8-4b51-bbd1-4c71b2efb6e1.png)
+
+against
+
+```javascript
+new OpenPlayerJS('id', {
+    controls: {
+        left: ['play', 'volume'],
+        middle: ['time'],
+        right: ['levels', 'captions', 'settings', 'fullscreen'],
+    },
+});
+```
+
+![Time in the middle](https://user-images.githubusercontent.com/40804543/187544517-db57f84a-9a66-49b9-bf90-70bed348e210.png)
+
+you will see why CSS created this UI for the progress bar. If we removed the unique styles that made the progress bar to be on top of all the controls, we would get a faithful representation of the real configuration for the player currently (and in turn, of the layers the player is using by default):
+
+![Progress bar without unique styles](https://user-images.githubusercontent.com/910829/187761436-40a49d25-3778-455f-8034-7ece7b621551.png)
+
+**In the oncoming 3.x.x version, progress bar will be placed in the `top-middle` layer and some of the CSS rules will be deleted/adjusted** to match semantically and visually the player's UI.
+
+But this is important to highlight how CSS can override the semantic correctness of the player in favor of the desired UI. That's why is important to use layers properly to achieve the desired results in terms of positioning, rather than relying on CSS for it (unless you are using a version **older than 2.7.1**).
 
 ## Add Control
 
