@@ -1,13 +1,23 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const matchers = require('jest-extended');
 
 expect.extend(matchers);
 
-window.HTMLMediaElement.prototype.play = () =>
-    new Promise((resolve) => {
-        resolve(true);
-    });
-window.HTMLMediaElement.prototype.pause = () => {
-    /* do nothing */
-};
+Object.defineProperty(window.HTMLMediaElement.prototype, 'play', {
+    value: () =>
+        new Promise((resolve) => {
+            resolve(true);
+        }),
+});
+
+Object.defineProperty(window.HTMLMediaElement.prototype, 'pause', {
+    value: () => null,
+});
+
+Object.defineProperty(window.HTMLMediaElement.prototype, 'load', {
+    value: () => null,
+});
+
+Object.defineProperty(HTMLMediaElement.prototype, 'textTracks', {
+    value: { addEventListener: () => true },
+});

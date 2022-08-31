@@ -1,7 +1,7 @@
 const config = {
     verbose: true,
     collectCoverage: true,
-    collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/interfaces.ts'],
+    collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/interfaces.ts', '!<rootDir>/src/media/native.ts'],
     coverageThreshold: {
         global: {
             lines: 70,
