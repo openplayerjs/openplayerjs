@@ -2,8 +2,6 @@ const config = {
     verbose: true,
     collectCoverage: true,
     collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/interfaces.ts', '!<rootDir>/src/media/native.ts'],
-    coveragePathIgnorePatterns: ['/node_modules/', 'package.json', 'package-lock.json'],
-    coverageReporters: ['lcov', 'html'],
     coverageThreshold: {
         global: {
             lines: 70,
