@@ -48,7 +48,9 @@
         "create:cjs": "tsc --module commonjs --target es6 --outDir dist/cjs",
         "release": "npm run build && release-it",
         "test": "jest --detectOpenHandles --passWithNoTests && tsd",
-        "watch": "jest --watch"
+        "test:changes": "jest --onlyChanged --detectOpenHandles --passWithNoTests",
+        "watch": "jest --watch",
+        "prepare": "husky install"
     },
     "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
     "devDependencies": {
