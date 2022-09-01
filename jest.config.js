@@ -1,7 +1,12 @@
 const config = {
     verbose: true,
     collectCoverage: true,
-    collectCoverageFrom: ['<rootDir>/src/**/*.ts', '!<rootDir>/src/interfaces.ts', '!<rootDir>/src/media/native.ts'],
+    collectCoverageFrom: [
+        '<rootDir>/src/**/*.ts',
+        '!<rootDir>/src/interfaces.ts',
+        '!<rootDir>/src/media/native.ts',
+        '!<rootDir>/src/__tests__',
+    ],
     coverageThreshold: {
         global: {
             lines: 70,
@@ -10,9 +15,13 @@ const config = {
     moduleFileExtensions: ['js', 'ts', 'node'],
     modulePaths: ['<rootDir>/src'],
     testEnvironment: 'jsdom',
-    testMatch: ['<rootDir>/test/**/*.ts'],
-    testPathIgnorePatterns: ['<rootDir>/test/helper.ts', '<rootDir>/test/setupTests.js', '<rootDir>/src/interfaces.ts'],
-    setupFilesAfterEnv: ['<rootDir>/test/setupTests.js'],
+    testMatch: ['<rootDir>/src/__tests__/**/*.ts'],
+    testPathIgnorePatterns: [
+        '<rootDir>/src/__tests__/helper.ts',
+        '<rootDir>/src/__tests__/setupTests.js',
+        '<rootDir>/src/interfaces.ts',
+    ],
+    setupFilesAfterEnv: ['<rootDir>/src/__tests__/setupTests.js'],
     transform: {
         '^.+\\.ts$': 'ts-jest',
     },

@@ -1,4 +1,4 @@
-import * as media from '../../src/utils/media';
+import * as media from '../../utils/media';
 
 describe('utils/media', () => {
     it('determines the extension of a source', () => {

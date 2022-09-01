@@ -1,4 +1,4 @@
-import * as time from '../../src/utils/time';
+import * as time from '../../utils/time';
 
 describe('utils/time', () => {
     it('returns a number of seconds in STMPE format', (done) => {

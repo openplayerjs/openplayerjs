@@ -23,6 +23,6 @@
         "baseUrl": "src/"
     },
     "files": ["./global.d.ts"],
-    "include": ["./src/**/*.ts", "./test"],
-    "exclude": ["node_modules", "ts-dist", "dist", "test", "webpack.config.js"]
+    "include": ["./src/**/*.ts", "_tests_"],
+    "exclude": ["node_modules", "ts-dist", "dist", "_tests_", "webpack.config.js"]
 }

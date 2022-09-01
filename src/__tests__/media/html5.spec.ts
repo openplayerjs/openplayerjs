@@ -1,4 +1,4 @@
-import HTML5Media from '../../src/media/html5';
+import HTML5Media from '../../media/html5';
 
 describe('media/html5', () => {
     let videoPlayer: HTML5Media;

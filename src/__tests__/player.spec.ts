@@ -1,4 +1,4 @@
-import Player from '../src/player';
+import Player from '../player';
 
 describe('player', () => {
     beforeAll(() => {

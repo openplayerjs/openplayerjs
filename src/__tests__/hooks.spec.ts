@@ -1,4 +1,4 @@
-import Hooks from '../src/hooks';
+import Hooks from '../hooks';
 
 describe('hooks', () => {
     const mockFunction = jest.fn();

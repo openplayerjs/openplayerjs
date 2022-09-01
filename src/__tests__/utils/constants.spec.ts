@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as constants from '../../src/utils/constants';
+import * as constants from '../../utils/constants';
 
 describe('utils/constants', () => {
     let userAgent: jest.SpyInstance<string, []>;

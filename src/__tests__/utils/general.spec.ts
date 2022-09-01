@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as general from '../../src/utils/general';
+import * as general from '../../utils/general';
 
 describe('utils/general', () => {
     it('must return the absolute URL of a relative one', () => {
