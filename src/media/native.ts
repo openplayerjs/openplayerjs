@@ -17,6 +17,7 @@ abstract class Native {
         const type = element.src
             ? predictMimeType(element.src, element)
             : element.querySelector('source')?.type || 'video/mp4';
+
         this.media = media || { src, type };
         this.promise = new Promise<void>((resolve) => {
             resolve();

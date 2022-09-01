@@ -48,8 +48,7 @@
         "create:cjs": "tsc --module commonjs --target es6 --outDir dist/cjs",
         "release": "npm run build && release-it",
         "test": "jest --detectOpenHandles --passWithNoTests && tsd",
-        "test:sources": "karma start --single-run --browsers ChromeHeadless --log-level info karma.conf.js",
-        "test:dev": "karma start --watch --browsers Chrome karma.conf.js"
+        "watch": "jest --watch"
     },
     "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
     "devDependencies": {
@@ -83,6 +82,7 @@
         "jest": "^28.1.3",
         "jest-environment-jsdom": "^29.0.1",
         "jest-extended": "^3.0.2",
+        "jest-watch-typeahead": "^2.1.1",
         "lint-staged": "^13.0.0",
         "mini-css-extract-plugin": "^2.6.0",
         "postcss": "^8.4.14",
