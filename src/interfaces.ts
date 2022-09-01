@@ -1,3 +1,7 @@
+export type Layer = 'top' | 'bottom' | 'middle' | 'main';
+
+export type Position = 'left' | 'right' | 'center';
+
 export interface Cue {
     readonly endTime: number;
     readonly identifier: string;
@@ -111,6 +115,8 @@ export interface PlayerComponent {
      * This method must include the removal of its previously set events.
      */
     destroy(): void;
+
+    register?: () => void;
 
     addSettings?: () => SettingsItem | unknown;
 }
@@ -281,4 +287,17 @@ export interface FullscreenElement extends HTMLElement {
     webkitRequestFullscreen?: () => void;
     webkitCancelFullScreen?: () => void;
     webkitEnterFullscreen?: () => void;
+}
+
+export interface MediaMethods {
+    load(): Promise<void> | void;
+    play(): Promise<void>;
+    pause(): void;
+    stop(): void;
+    destroy(): void;
+    addCaptions(args: Track): void;
+    addControl(args: ElementItem): void;
+    removeElement(elementName: string): void;
+    removeControl(controlName: string): void;
+    prepareMedia(): Promise<void>;
 }

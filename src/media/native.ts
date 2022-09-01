@@ -1,4 +1,5 @@
-import { Level, Source } from '../interfaces';
+import { Source } from 'interfaces';
+import { predictMimeType } from 'utils/media';
 
 abstract class Native {
     element: HTMLMediaElement;
@@ -10,9 +11,13 @@ abstract class Native {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #customPlayer: any;
 
-    constructor(element: HTMLMediaElement, media: Source) {
+    constructor(element: HTMLMediaElement, media?: Source) {
         this.element = element;
-        this.media = media;
+        const src = element.src || element.querySelector('source')?.src || '';
+        const type = element.src
+            ? predictMimeType(element.src, element)
+            : element.querySelector('source')?.type || 'video/mp4';
+        this.media = media || { src, type };
         this.promise = new Promise<void>((resolve) => {
             resolve();
         });
@@ -28,11 +33,11 @@ abstract class Native {
 
     abstract get src(): Source;
 
-    abstract set level(value: number | string | Record<string, unknown>);
+    // abstract set level(value: number | string | Record<string, unknown>);
 
-    abstract get level(): number | string;
+    // abstract get level(): number | string;
 
-    abstract get levels(): Level[];
+    // abstract get levels(): Level[];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     set instance(customPlayer: any) {

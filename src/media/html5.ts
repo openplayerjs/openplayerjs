@@ -1,14 +1,10 @@
-import { Level, Source } from '../interfaces';
+import { Source } from '../interfaces';
 import { DVR_THRESHOLD, EVENT_OPTIONS } from '../utils/constants';
 import { addEvent, isAudio, isVideo } from '../utils/general';
 import { isHlsSource } from '../utils/media';
 import Native from './native';
 
 class HTML5Media extends Native {
-    #currentLevel: Level;
-
-    #levelList: Level[] = [];
-
     #isStreaming = false;
 
     #retryCount = 0;
@@ -17,7 +13,7 @@ class HTML5Media extends Native {
 
     #timer: number;
 
-    constructor(element: HTMLMediaElement, mediaFile: Source) {
+    constructor(element: HTMLMediaElement, mediaFile?: Source) {
         super(element, mediaFile);
 
         if (!isAudio(element) && !isVideo(element)) {
@@ -30,7 +26,7 @@ class HTML5Media extends Native {
         this._isDvrEnabled = this._isDvrEnabled.bind(this);
         this._readMediadataInfo = this._readMediadataInfo.bind(this);
 
-        this.#isStreaming = isHlsSource(mediaFile);
+        this.#isStreaming = isHlsSource(this.media);
         this.element.addEventListener('playing', this._clearTimeout, EVENT_OPTIONS);
         this.element.addEventListener('stalled', this._setTimeout, EVENT_OPTIONS);
         this.element.addEventListener('error', this._dispatchError, EVENT_OPTIONS);
@@ -54,41 +50,13 @@ class HTML5Media extends Native {
         this.element.textTracks.removeEventListener('addtrack', this._readMediadataInfo);
     }
 
-    get levels(): Level[] {
-        if (!this.#levelList.length) {
-            const levels = this.element.querySelectorAll('source[title]');
-            for (let i = 0, total = levels.length; i < total; ++i) {
-                const level = {
-                    height: 0,
-                    id: `${i}`,
-                    label: levels[i].getAttribute('title') || '',
-                };
-                this.#levelList.push(level);
-            }
-        }
-        return this.#levelList;
-    }
-
-    set level(level: string) {
-        const idx = this.#levelList.findIndex((item) => item.id === level);
-        if (idx > -1) {
-            this.#currentLevel = this.levels[idx];
-            const levels = this.element.querySelectorAll('source[title]');
-            for (let i = 0, total = levels.length; i < total; ++i) {
-                const source = levels[i].getAttribute('src');
-                if (source && parseInt(this.#currentLevel.id, 10) === i) {
-                    this.element.src = source;
-                }
-            }
-        }
-    }
-
-    get level(): string {
-        return this.#currentLevel?.id || '-1';
-    }
-
     set src(media: Source) {
         this.element.src = media.src;
+        this.media = media;
+    }
+
+    get src(): Source {
+        return this.media;
     }
 
     private _isDvrEnabled(): void {
@@ -124,7 +92,6 @@ class HTML5Media extends Native {
             this.#started = true;
             this.#timer = window.setInterval(() => {
                 if (this.#retryCount >= 30) {
-                    clearInterval(this.#timer);
                     const message = 'Media download failed part-way due to a network error';
                     const details = {
                         detail: {
@@ -135,8 +102,7 @@ class HTML5Media extends Native {
                     };
                     const errorEvent = addEvent('playererror', details);
                     this.element.dispatchEvent(errorEvent);
-                    this.#retryCount = 0;
-                    this.#started = false;
+                    this._clearTimeout();
                 } else {
                     this.#retryCount++;
                 }

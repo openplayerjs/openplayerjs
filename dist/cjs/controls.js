@@ -276,7 +276,11 @@ class Controls {
                     this._createCustomElement(item);
                 }
                 else {
-                    item.create();
+                    const el = item;
+                    el.create();
+                    if (typeof el.register === 'function') {
+                        el.register();
+                    }
                 }
             });
         });
