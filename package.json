@@ -50,6 +50,7 @@
         "test": "jest --detectOpenHandles --passWithNoTests && tsd",
         "test:changes": "jest --onlyChanged --detectOpenHandles --passWithNoTests",
         "watch": "jest --watch",
+        "coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
         "prepare": "husky install"
     },
     "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
@@ -69,6 +70,7 @@
         "babel-loader": "^8.2.5",
         "babel-preset-minify": "^0.5.2",
         "conventional-changelog": "^3.1.25",
+        "coveralls": "^3.1.1",
         "css-loader": "^6.7.1",
         "css-minimizer-webpack-plugin": "^4.0.0",
         "cssnano": "^5.1.11",
