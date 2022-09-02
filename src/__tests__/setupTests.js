@@ -19,5 +19,5 @@ Object.defineProperty(window.HTMLMediaElement.prototype, 'load', {
 });
 
 Object.defineProperty(HTMLMediaElement.prototype, 'textTracks', {
-    value: { addEventListener: () => true },
+    value: { addEventListener: () => true, removeEventListener: () => false },
 });
