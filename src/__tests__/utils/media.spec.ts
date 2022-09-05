@@ -34,7 +34,7 @@ describe('utils/media', () => {
         ).toBeFalse();
     });
 
-    it('determines if media source is an HLS playlist resource', (done) => {
+    it('determines if media source is an HLS playlist resource', () => {
         expect(
             media.isM3USource({
                 src: 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u',
@@ -47,7 +47,6 @@ describe('utils/media', () => {
                 type: 'audio/mp3',
             })
         ).toBeFalse();
-        done();
     });
 
     it('determines if media source is an MPEG-DASH resource', () => {

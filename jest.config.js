@@ -4,7 +4,7 @@ const config = {
     collectCoverageFrom: [
         '<rootDir>/src/**/*.ts',
         '!<rootDir>/src/interfaces.ts',
-        '!<rootDir>/src/media/native.ts',
+        '!<rootDir>/src/media/types/native.ts',
         '!<rootDir>/src/__tests__',
     ],
     coverageThreshold: {

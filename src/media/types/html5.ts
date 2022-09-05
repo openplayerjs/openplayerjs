@@ -1,7 +1,7 @@
-import { Source } from '../interfaces';
-import { DVR_THRESHOLD, EVENT_OPTIONS } from '../utils/constants';
-import { addEvent, isAudio, isVideo } from '../utils/general';
-import { isHlsSource } from '../utils/media';
+import { Source } from '../../interfaces';
+import { DVR_THRESHOLD, EVENT_OPTIONS } from '../../utils/constants';
+import { addEvent, isAudio, isVideo } from '../../utils/general';
+import { isHlsSource } from '../../utils/media';
 import Native from './native';
 
 class HTML5Media extends Native {
@@ -91,7 +91,7 @@ class HTML5Media extends Native {
         if (!this.#started && window !== undefined) {
             this.#started = true;
             this.#timer = window.setInterval(() => {
-                if (this.#retryCount >= 30) {
+                if (this.#retryCount > 30) {
                     const message = 'Media download failed part-way due to a network error';
                     const details = {
                         detail: {
