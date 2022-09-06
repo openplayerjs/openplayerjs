@@ -43,6 +43,7 @@ class HTML5Media extends Native {
     }
 
     destroy(): void {
+        this.element.removeAttribute('op-dvr__enabled');
         this.element.removeEventListener('playing', this._clearTimeout);
         this.element.removeEventListener('stalled', this._setTimeout);
         this.element.removeEventListener('error', this._dispatchError);

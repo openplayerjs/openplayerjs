@@ -59,20 +59,20 @@ describe('media/html5', () => {
 
     it('can set a new source', () => {
         const video = document.createElement('video') as HTMLMediaElement;
-        videoPlayer = new HTML5Media(video, {
+        let media = {
             src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
             type: 'video/mp4',
-        });
-        expect(videoPlayer.src).toEqual({
-            src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-            type: 'video/mp4',
-        });
+        };
+        videoPlayer = new HTML5Media(video, media);
+        expect(videoPlayer.src).toEqual(media);
 
-        videoPlayer.src = { src: 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp3', type: 'audio/mp3' };
-        expect(videoPlayer.src.src).toEqual('https://ccrma.stanford.edu/~jos/mp3/Latin.mp3');
-        expect(videoPlayer.src.type).toEqual('audio/mp3');
+        media = { src: 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp3', type: 'audio/mp3' };
 
-        const loadSpy = jest.spyOn(videoPlayer, 'load');
+        videoPlayer.src = media;
+        expect(videoPlayer.src).toEqual(media);
+        expect(videoPlayer.element.src).toEqual(media.src);
+
+        const loadSpy = jest.spyOn(video, 'load');
         videoPlayer.load();
         expect(loadSpy).toHaveBeenCalled();
         loadSpy.mockReset();
@@ -80,10 +80,11 @@ describe('media/html5', () => {
     });
 
     it('attempts to play a stalled media source for 30 seconds; after that, dispatches error', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const clearSpy = jest.spyOn(HTML5Media.prototype as any, '_clearTimeout');
 
         const video = document.createElement('video') as HTMLMediaElement;
-        video.src = 'https://aaaa.com/video.mp4';
+        video.src = 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
         videoPlayer = new HTML5Media(video);
 
         jest.useFakeTimers();
@@ -91,14 +92,60 @@ describe('media/html5', () => {
         expect(clearSpy).not.toHaveBeenCalled();
         jest.advanceTimersByTime(35000);
         expect(clearSpy).toHaveBeenCalled();
+
+        clearSpy.mockReset();
+        clearSpy.mockRestore();
     });
 
-    it('detects when DVR media is being set (mostly for iOS streaming)', () => {
+    it('detects when DVR media is being set (mobile devices setting HLS source)', () => {
         const video = document.createElement('video') as HTMLMediaElement;
         videoPlayer = new HTML5Media(video, {
             src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
             type: 'application/x-mpegURL',
         });
+
+        expect(video.getAttribute('op-dvr__enabled')).toBeNull();
+
+        const seekableSpy = jest.spyOn(video, 'seekable', 'get').mockReturnValue({
+            length: 150,
+            start: (val: number): number => val,
+            end: (val: number): number => val,
+        } as TimeRanges);
+
+        videoPlayer.element.dispatchEvent(addEvent('loadeddata'));
+        expect(seekableSpy).toHaveBeenCalled();
+        expect(video.getAttribute('op-dvr__enabled')).toEqual('true');
+
+        seekableSpy.mockReset();
+        seekableSpy.mockRestore();
+    });
+
+    it.skip('reads ID3 tags from streaming (mobile devices setting HLS source)', () => {
+        const video = document.createElement('video') as HTMLMediaElement;
+        video.addTextTrack('metadata');
+
+        videoPlayer = new HTML5Media(video, {
+            src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+            type: 'application/x-mpegURL',
+        });
+
+        const addTrackSpy = jest.spyOn(video.textTracks, 'addEventListener');
+        video.textTracks[0].dispatchEvent(addEvent('cuechange'));
+        expect(addTrackSpy).toHaveBeenCalledTimes(1);
+
+        const track = video.addTextTrack('metadata');
+        track.mode = 'showing';
+        track.addCue(new VTTCue(0, 3, 'Test ID3 Tag'));
+
+        const dispatchSpy = jest.spyOn(video, 'dispatchEvent');
+        video.textTracks[1].dispatchEvent(addEvent('cuechange'));
+        expect(addTrackSpy).toHaveBeenCalledTimes(2);
+        expect(dispatchSpy.mock.calls[0][0]).toEqual('metadataready');
+
+        addTrackSpy.mockReset();
+        addTrackSpy.mockRestore();
+        dispatchSpy.mockReset();
+        dispatchSpy.mockRestore();
     });
 
     it('dispatches different errors', () => {
@@ -121,9 +168,13 @@ describe('media/html5', () => {
 
         videoPlayer.destroy();
 
+        expect(video.classList.contains('op-dvr__enabled')).toEqual(false);
         expect(removeEventListenerSpy.mock.calls[0][0]).toEqual('playing');
         expect(removeEventListenerSpy.mock.calls[1][0]).toEqual('stalled');
         expect(removeEventListenerSpy.mock.calls[2][0]).toEqual('error');
         expect(removeEventListenerSpy.mock.calls[3][0]).toEqual('loadeddata');
+
+        removeEventListenerSpy.mockReset();
+        removeEventListenerSpy.mockRestore();
     });
 });
