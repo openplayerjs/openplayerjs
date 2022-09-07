@@ -9,31 +9,26 @@
 
 This is a media player that uses all the goods of HTML5 video/audio elements to play the most popular media in MP4/MP3, HLS and M(PEG)-DASH, and also has the ability to play VMAP, VAST and VPAID ads.
 
-## 🚨 IMPORTANT 🚨
+## 🎉🎉 FINALY: Version 3.0.0 is here!!! 🎉🎉
 
-**Version 3.0** of this player just started to being worked on.
+As part of a continuous effort to improve the player, this new version includes:
 
-As part of a continuous effort to improve the player, this new version will include, among others:
-
--   An increased unit test coverage (aiming to have at least `70%`), including unit tests for all the demos.
--   Refactor of areas of code where creation of buttons for controls occurs, into a consolidated method to generate them.
--   Refactor of the main operations (`load`, `loadAd`, `play`, `pause`) to use Promises in a more clear fashion, and with that, execute more complex operations consistently, specially when dealing with loading dynamic content.
+-   An increased unit test coverage (more than `70%`), including the demos' use cases.
+-   Removal of unnecessary code (particularly, unused constants)
+-   Refactored way to load media to use better design patterns and more readable code.
 -   Better snippets/documentation to help users to configure OpenPlayerJS for their needs.
--   And more...
+-   Complete deprecation of anything related to IE11 in styles and code, following the effort of [ending the IE11 life cycle, scheduled on **June 15, 2022**](https://docs.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge#:~:text=Internet%20Explorer%2011-,Is%20Internet%20Explorer%2011%20the%20last%20version%20of%20Internet%20Explorer,systems%20starting%20June%2015%2C%202022.).
 
-Because of the refactor that will be performed in that version, **support for IE11 will be dropped completely**. Also, to support the effort of [ending the IE11 life cycle, scheduled on **June 15, 2022**](https://docs.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge#:~:text=Internet%20Explorer%2011-,Is%20Internet%20Explorer%2011%20the%20last%20version%20of%20Internet%20Explorer,systems%20starting%20June%2015%2C%202022.).
-
-So, please consider this before upgrading to any of the 3.x.x version going forward.
+For more details on how to use this new version, please check the migration guide for 3.x.x version [here](./migration.md#starting-in-v3xx).
 
 ## Advantages
 
--   Supports **IE11+ (Win8) and all modern browsers**.
+-   Supports **all modern browsers**.
 -   **No dependencies**, since it is written in Typescript.
 -   Runs a simple but yet powerful algorithm to **check the browser's autoplay capabilities** across browsers.
 -   Supports for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 -   **Enhance your player** adding your own buttons. Check [here](./docs/customize.md) for more details.
 -   Provides the ability to use a **single VAST/VPAID** source or a **VAST/VPAID playlist** from several different sources (including URLs and valid XML strings).
--   **Can play ads in infinite loop**, desired for ads that are in a heavy text page.
 -   Always **responsive** by default, for both video/audio tags; for video, **`fill`** and **`fit`** modes are available to either scale and crop media relative to its parent container, or to attempt to make the media fit its parent container (including black bars), respectively.
 
 ## Projects using OpenPlayerJS
@@ -97,7 +92,6 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 
 ### Beginners
 
--   [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB)
 -   [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX)
 -   [Using `fill` mode](https://codepen.io/rafa8626/pen/xxZXQoO)
 -   [Using `fit` mode](https://codepen.io/rafa8626/pen/abmboKV)
