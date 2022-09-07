@@ -4,9 +4,12 @@
 
 **No longer support for IE11.**
 
-Bundles will not support IE11 going forward to reduce the footprint of supporting Promises and other ES6 native functions.
+The main aspect of 3.x.x, is that bundles will not support IE11 going forward to reduce the footprint of supporting Promises and other ES6 native functions.
 
-Also, video player used to pause media when clicking on the main area; it has been disabled by default, and to activate that behavior back, you need to set the `media.pauseOnClick` property as `true`.
+Other changes:
+
+-   Video player used to pause media when clicking on the main area; it has been disabled by default, and to activate that behavior back, you need to set the `media.pauseOnClick` property as `true`.
+-   No longer support for simplified use of the player by setting the `op-player__media` class: you will need to use Javascript to instantiate OpenPlayerJS.
 
 ## From v2.6.1 to v2.7.0
 
