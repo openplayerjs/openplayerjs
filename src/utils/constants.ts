@@ -7,13 +7,13 @@ declare global {
     }
 
     interface NavigatorExtended extends Navigator {
-        connection: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
-        mozConnection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
-        webkitConnection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
+        connection?: { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
+        mozConnection?: { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
+        webkitConnection?: { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
     }
 }
 
-const navigator = (): NavigatorExtended | null => (typeof window !== 'undefined' ? window.navigator : null);
+const navigator = (): NavigatorExtended | null => window?.navigator;
 
 const getUserAgent = (): string | null => navigator()?.userAgent?.toLowerCase() || null;
 
