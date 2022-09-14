@@ -11,6 +11,10 @@ describe('media/html5', () => {
         });
     });
 
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
+
     it('can only accept video/audio tags', () => {
         try {
             const p = new HTML5Media(document.createElement('div') as unknown as HTMLMediaElement);
@@ -75,8 +79,6 @@ describe('media/html5', () => {
         const loadSpy = jest.spyOn(video, 'load');
         videoPlayer.load();
         expect(loadSpy).toHaveBeenCalled();
-        loadSpy.mockReset();
-        loadSpy.mockRestore();
     });
 
     it('attempts to play a stalled media source for 30 seconds; after that, dispatches error', () => {
@@ -92,9 +94,6 @@ describe('media/html5', () => {
         expect(clearSpy).not.toHaveBeenCalled();
         jest.advanceTimersByTime(35000);
         expect(clearSpy).toHaveBeenCalled();
-
-        clearSpy.mockReset();
-        clearSpy.mockRestore();
     });
 
     it('detects when DVR media is being set (mobile devices setting HLS source)', () => {
@@ -115,9 +114,6 @@ describe('media/html5', () => {
         videoPlayer.element.dispatchEvent(addEvent('loadeddata'));
         expect(seekableSpy).toHaveBeenCalled();
         expect(video.getAttribute('op-dvr__enabled')).toEqual('true');
-
-        seekableSpy.mockReset();
-        seekableSpy.mockRestore();
     });
 
     it.skip('reads ID3 tags from streaming (mobile devices setting HLS source)', () => {
@@ -141,20 +137,16 @@ describe('media/html5', () => {
         video.textTracks[1].dispatchEvent(addEvent('cuechange'));
         expect(addTrackSpy).toHaveBeenCalledTimes(2);
         expect(dispatchSpy.mock.calls[0][0]).toEqual('metadataready');
-
-        addTrackSpy.mockReset();
-        addTrackSpy.mockRestore();
-        dispatchSpy.mockReset();
-        dispatchSpy.mockRestore();
     });
 
     it('dispatches different errors', () => {
         const video = document.createElement('video') as HTMLMediaElement;
         videoPlayer = new HTML5Media(video);
+        const errorSpy = jest.spyOn(video, 'dispatchEvent');
+
         videoPlayer.src = { src: 'https://example.com/blahblah.mp4', type: 'video/mp4' };
-        videoPlayer.element.onerror = (): void => {
-            console.error(`Error with media: ${videoPlayer.element?.error?.code}`);
-        };
+        video.dispatchEvent(addEvent('error'));
+        expect(errorSpy.mock.calls[1][0].type).toEqual('playererror');
     });
 
     it('can destroy all events associated with it when calling `destroy`', () => {
@@ -173,8 +165,5 @@ describe('media/html5', () => {
         expect(removeEventListenerSpy.mock.calls[1][0]).toEqual('stalled');
         expect(removeEventListenerSpy.mock.calls[2][0]).toEqual('error');
         expect(removeEventListenerSpy.mock.calls[3][0]).toEqual('loadeddata');
-
-        removeEventListenerSpy.mockReset();
-        removeEventListenerSpy.mockRestore();
     });
 });
