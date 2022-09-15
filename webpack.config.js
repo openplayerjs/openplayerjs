@@ -10,6 +10,7 @@ module.exports = {
         children: true,
     },
     context: __dirname,
+    devtool: 'source-map',
     entry: {
         openplayer: ['./src/js/player.ts', './src/css/player.css'],
     },
