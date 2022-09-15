@@ -25,6 +25,50 @@ describe('media/html5', () => {
         }
     });
 
+    it('contains default HTML5 media implementation items, such as setters and getters', () => {
+        const video = document.createElement('video') as HTMLMediaElement;
+        video.src = 'https://aaaa.com/video.mp4';
+        video.muted = true;
+        video.volume = 0.5;
+        video.playbackRate = 2;
+        video.defaultPlaybackRate = 1;
+        videoPlayer = new HTML5Media(video);
+
+        expect(videoPlayer.volume).toEqual(0.5);
+        expect(videoPlayer.playbackRate).toEqual(2);
+        expect(videoPlayer.defaultPlaybackRate).toEqual(1);
+        expect(videoPlayer.muted).toBeTrue();
+        expect(videoPlayer.ended).toBeFalse();
+        expect(videoPlayer.paused).toBeTrue();
+
+        videoPlayer.currentTime = 3;
+        videoPlayer.muted = false;
+        videoPlayer.volume = 1;
+        videoPlayer.playbackRate = 1.5;
+        videoPlayer.defaultPlaybackRate = 0.5;
+        expect(videoPlayer.currentTime).toEqual(3);
+        expect(videoPlayer.volume).toEqual(1);
+        expect(videoPlayer.muted).toBeFalse();
+        expect(videoPlayer.playbackRate).toEqual(1.5);
+        expect(videoPlayer.defaultPlaybackRate).toEqual(0.5);
+    });
+
+    it('creates a Promise for play operation by default', async () => {
+        const video = document.createElement('video') as HTMLMediaElement;
+        video.src = 'https://aaaa.com/video.mp4';
+        videoPlayer = new HTML5Media(video);
+
+        await expect(videoPlayer.promise).not.toBeUndefined();
+    });
+
+    it('does not set a custom player', () => {
+        const video = document.createElement('video') as HTMLMediaElement;
+        video.src = 'https://aaaa.com/video.mp4';
+        videoPlayer = new HTML5Media(video);
+
+        expect(videoPlayer.instance).toBeUndefined();
+    });
+
     it('prepares event listeners for `playing`, `stalled`, `error` and `loadedata` events', () => {
         const video = document.createElement('video') as HTMLMediaElement;
         video.src = 'https://aaaa.com/video.mp4';

@@ -2,9 +2,9 @@ import { Source } from '../../interfaces';
 import { DVR_THRESHOLD, EVENT_OPTIONS } from '../../utils/constants';
 import { addEvent, isAudio, isVideo } from '../../utils/general';
 import { isHlsSource } from '../../utils/media';
-import Native from './native';
+import Implementation from './implementation';
 
-class HTML5Media extends Native {
+class HTML5Media extends Implementation {
     #isStreaming = false;
 
     #retryCount = 0;
