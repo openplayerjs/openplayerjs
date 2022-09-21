@@ -21,7 +21,10 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: '[name].min.js',
-        publicPath: '/dist/',
+        library: {
+            name: 'openplayerjs',
+            type: 'umd',
+        },
         globalObject: 'this',
     },
     module: {

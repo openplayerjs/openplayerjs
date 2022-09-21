@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["OpenPlayerJS"] = factory();
+		exports["openplayerjs"] = factory();
 	else
-		root["OpenPlayerJS"] = factory();
+		root["openplayerjs"] = factory();
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
