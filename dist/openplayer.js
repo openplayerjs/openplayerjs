@@ -7,226 +7,12 @@
 		exports["openplayerjs"] = factory();
 	else
 		root["openplayerjs"] = factory();
-})(this, () => {
-return /******/ (() => { // webpackBootstrap
+})(this, function() {
+return /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 228:
-/***/ ((module) => {
-
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-
-  return arr2;
-}
-
-module.exports = _arrayLikeToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 858:
-/***/ ((module) => {
-
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
-module.exports = _arrayWithHoles, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 506:
-/***/ ((module) => {
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 575:
-/***/ ((module) => {
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 913:
-/***/ ((module) => {
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
-
-module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 713:
-/***/ ((module) => {
-
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-module.exports = _defineProperty, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 754:
-/***/ ((module) => {
-
-function _getPrototypeOf(o) {
-  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _getPrototypeOf(o);
-}
-
-module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 205:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var setPrototypeOf = __webpack_require__(489);
-
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  Object.defineProperty(subClass, "prototype", {
-    writable: false
-  });
-  if (superClass) setPrototypeOf(subClass, superClass);
-}
-
-module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 884:
-/***/ ((module) => {
-
-function _iterableToArrayLimit(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-
-  if (_i == null) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-
-  var _s, _e;
-
-  try {
-    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-
-module.exports = _iterableToArrayLimit, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 521:
-/***/ ((module) => {
-
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
-module.exports = _nonIterableRest, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 585:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var _typeof = (__webpack_require__(8)["default"]);
-
-var assertThisInitialized = __webpack_require__(506);
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-
-  return assertThisInitialized(self);
-}
-
-module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
 /***/ 591:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 var _typeof = (__webpack_require__(8)["default"]);
 
@@ -585,42 +371,8 @@ module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.e
 
 /***/ }),
 
-/***/ 489:
-/***/ ((module) => {
-
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
-/***/ 38:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var arrayWithHoles = __webpack_require__(858);
-
-var iterableToArrayLimit = __webpack_require__(884);
-
-var unsupportedIterableToArray = __webpack_require__(379);
-
-var nonIterableRest = __webpack_require__(521);
-
-function _slicedToArray(arr, i) {
-  return arrayWithHoles(arr) || iterableToArrayLimit(arr, i) || unsupportedIterableToArray(arr, i) || nonIterableRest();
-}
-
-module.exports = _slicedToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
 /***/ 8:
-/***/ ((module) => {
+/***/ (function(module) {
 
 function _typeof(obj) {
   "@babel/helpers - typeof";
@@ -636,26 +388,8 @@ module.exports = _typeof, module.exports.__esModule = true, module.exports["defa
 
 /***/ }),
 
-/***/ 379:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var arrayLikeToArray = __webpack_require__(228);
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return arrayLikeToArray(o, minLen);
-}
-
-module.exports = _unsupportedIterableToArray, module.exports.__esModule = true, module.exports["default"] = module.exports;
-
-/***/ }),
-
 /***/ 757:
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // TODO(Babel 8): Remove this file.
 
@@ -704,75 +438,177 @@ try {
 /******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
+/******/ 	!function() {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__webpack_require__.n = (module) => {
+/******/ 		__webpack_require__.n = function(module) {
 /******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
 /******/ 			__webpack_require__.d(getter, { a: getter });
 /******/ 			return getter;
 /******/ 		};
-/******/ 	})();
+/******/ 	}();
 /******/ 	
 /******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
+/******/ 	!function() {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 		__webpack_require__.d = function(exports, definition) {
 /******/ 			for(var key in definition) {
 /******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
 /******/ 		};
-/******/ 	})();
+/******/ 	}();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
+/******/ 	!function() {
 /******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
+/******/ 		__webpack_require__.r = function(exports) {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
-/******/ 	})();
+/******/ 	}();
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
+!function() {
 "use strict";
-var __webpack_exports__ = {};
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  "Z": () => (/* binding */ player)
+  "default": function() { return /* binding */ player; }
 });
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
-var defineProperty = __webpack_require__(713);
-var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/typeof.js
-var helpers_typeof = __webpack_require__(8);
-var typeof_default = /*#__PURE__*/__webpack_require__.n(helpers_typeof);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/classCallCheck.js
-var classCallCheck = __webpack_require__(575);
-var classCallCheck_default = /*#__PURE__*/__webpack_require__.n(classCallCheck);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/createClass.js
-var createClass = __webpack_require__(913);
-var createClass_default = /*#__PURE__*/__webpack_require__.n(createClass);
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, _typeof(obj);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {
+    writable: false
+  });
+  return Constructor;
+}
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/regenerator/index.js
 var regenerator = __webpack_require__(757);
 var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
-var slicedToArray = __webpack_require__(38);
-var slicedToArray_default = /*#__PURE__*/__webpack_require__.n(slicedToArray);
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
+function _iterableToArrayLimit(arr, i) {
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+  if (_i == null) return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+
+  var _s, _e;
+
+  try {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+
+  return _arr;
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
+
+
+
+
+function _slicedToArray(arr, i) {
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+}
 ;// CONCATENATED MODULE: ./src/js/utils/constants.ts
 var NAV = typeof window !== 'undefined' ? window.navigator : null;
 var UA = NAV ? NAV.userAgent.toLowerCase() : null;
@@ -917,7 +753,7 @@ function isJson(item) {
     return false;
   }
 
-  if (typeof_default()(item) === 'object' && item !== null) {
+  if (_typeof(item) === 'object' && item !== null) {
     return true;
   }
 
@@ -1000,7 +836,7 @@ var _Captions_player, _Captions_button, _Captions_captions, _Captions_menu, _Cap
 
 var Captions = function () {
   function Captions(player, position, layer) {
-    classCallCheck_default()(this, Captions);
+    _classCallCheck(this, Captions);
 
     _Captions_player.set(this, void 0);
 
@@ -1047,7 +883,7 @@ var Captions = function () {
     this._formatMenuItems = this._formatMenuItems.bind(this);
   }
 
-  createClass_default()(Captions, [{
+  _createClass(Captions, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -1225,7 +1061,7 @@ var Captions = function () {
           } else {
             if (!__classPrivateFieldGet(_this, _Captions_currentTrack, "f")) {
               var _classPrivateFieldGe2 = __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f"),
-                  _classPrivateFieldGe3 = slicedToArray_default()(_classPrivateFieldGe2, 1),
+                  _classPrivateFieldGe3 = _slicedToArray(_classPrivateFieldGe2, 1),
                   track = _classPrivateFieldGe3[0];
 
               __classPrivateFieldSet(_this, _Captions_currentTrack, track, "f");
@@ -1588,7 +1424,7 @@ var Captions = function () {
 }();
 
 _Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_langTracks = new WeakMap(), _Captions_mediaTrackList = new WeakMap(), _Captions_trackUrlList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_currentTrack = new WeakMap(), _Captions_default = new WeakMap(), _Captions_controlPosition = new WeakMap(), _Captions_controlLayer = new WeakMap();
-/* harmony default export */ const captions = (Captions);
+/* harmony default export */ var captions = (Captions);
 ;// CONCATENATED MODULE: ./src/js/controls/fullscreen.ts
 
 
@@ -1614,7 +1450,7 @@ var Fullscreen = function () {
   function Fullscreen(player, position, layer) {
     var _this = this;
 
-    classCallCheck_default()(this, Fullscreen);
+    _classCallCheck(this, Fullscreen);
 
     _Fullscreen_player.set(this, void 0);
 
@@ -1667,7 +1503,7 @@ var Fullscreen = function () {
     }
   }
 
-  createClass_default()(Fullscreen, [{
+  _createClass(Fullscreen, [{
     key: "create",
     value: function create() {
       var _this2 = this;
@@ -1885,7 +1721,7 @@ var Fullscreen = function () {
 }();
 
 _Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _Fullscreen_button = new WeakMap(), _Fullscreen_fullscreenEvents = new WeakMap(), _Fullscreen_fullscreenWidth = new WeakMap(), _Fullscreen_fullscreenHeight = new WeakMap(), _Fullscreen_clickEvent = new WeakMap(), _Fullscreen_controlPosition = new WeakMap(), _Fullscreen_controlLayer = new WeakMap();
-/* harmony default export */ const fullscreen = (Fullscreen);
+/* harmony default export */ var fullscreen = (Fullscreen);
 ;// CONCATENATED MODULE: ./src/js/utils/media.ts
 
 function getExtension(url) {
@@ -2014,7 +1850,7 @@ var _Levels_player, _Levels_button, _Levels_menu, _Levels_events, _Levels_levels
 
 var Levels = function () {
   function Levels(player, position, layer) {
-    classCallCheck_default()(this, Levels);
+    _classCallCheck(this, Levels);
 
     _Levels_player.set(this, void 0);
 
@@ -2043,7 +1879,7 @@ var Levels = function () {
     levels_classPrivateFieldSet(this, _Levels_controlLayer, layer, "f");
   }
 
-  createClass_default()(Levels, [{
+  _createClass(Levels, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -2456,7 +2292,7 @@ var Levels = function () {
 }();
 
 _Levels_player = new WeakMap(), _Levels_button = new WeakMap(), _Levels_menu = new WeakMap(), _Levels_events = new WeakMap(), _Levels_levels = new WeakMap(), _Levels_defaultLevel = new WeakMap(), _Levels_controlPosition = new WeakMap(), _Levels_controlLayer = new WeakMap();
-/* harmony default export */ const levels = (Levels);
+/* harmony default export */ var levels = (Levels);
 ;// CONCATENATED MODULE: ./src/js/controls/play.ts
 
 
@@ -2482,7 +2318,7 @@ var _Play_player, _Play_button, _Play_events, _Play_controlPosition, _Play_contr
 
 var Play = function () {
   function Play(player, position, layer) {
-    classCallCheck_default()(this, Play);
+    _classCallCheck(this, Play);
 
     _Play_player.set(this, void 0);
 
@@ -2506,7 +2342,7 @@ var Play = function () {
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
   }
 
-  createClass_default()(Play, [{
+  _createClass(Play, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -2723,7 +2559,7 @@ var Play = function () {
 }();
 
 _Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_controlPosition = new WeakMap(), _Play_controlLayer = new WeakMap();
-/* harmony default export */ const play = (Play);
+/* harmony default export */ var play = (Play);
 ;// CONCATENATED MODULE: ./src/js/controls/progress.ts
 
 
@@ -2749,7 +2585,7 @@ var _Progress_player, _Progress_progress, _Progress_slider, _Progress_buffer, _P
 
 var Progress = function () {
   function Progress(player, position, layer) {
-    classCallCheck_default()(this, Progress);
+    _classCallCheck(this, Progress);
 
     _Progress_player.set(this, void 0);
 
@@ -2786,7 +2622,7 @@ var Progress = function () {
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
   }
 
-  createClass_default()(Progress, [{
+  _createClass(Progress, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -3240,7 +3076,7 @@ var Progress = function () {
 }();
 
 _Progress_player = new WeakMap(), _Progress_progress = new WeakMap(), _Progress_slider = new WeakMap(), _Progress_buffer = new WeakMap(), _Progress_played = new WeakMap(), _Progress_tooltip = new WeakMap(), _Progress_events = new WeakMap(), _Progress_forcePause = new WeakMap(), _Progress_controlPosition = new WeakMap(), _Progress_controlLayer = new WeakMap();
-/* harmony default export */ const progress = (Progress);
+/* harmony default export */ var progress = (Progress);
 ;// CONCATENATED MODULE: ./src/js/controls/settings.ts
 
 
@@ -3265,7 +3101,7 @@ var _Settings_player, _Settings_submenu, _Settings_button, _Settings_menu, _Sett
 
 var Settings = function () {
   function Settings(player, position, layer) {
-    classCallCheck_default()(this, Settings);
+    _classCallCheck(this, Settings);
 
     _Settings_player.set(this, void 0);
 
@@ -3295,7 +3131,7 @@ var Settings = function () {
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
   }
 
-  createClass_default()(Settings, [{
+  _createClass(Settings, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -3639,7 +3475,7 @@ var Settings = function () {
 }();
 
 _Settings_player = new WeakMap(), _Settings_submenu = new WeakMap(), _Settings_button = new WeakMap(), _Settings_menu = new WeakMap(), _Settings_events = new WeakMap(), _Settings_originalOutput = new WeakMap(), _Settings_controlPosition = new WeakMap(), _Settings_controlLayer = new WeakMap();
-/* harmony default export */ const settings = (Settings);
+/* harmony default export */ var settings = (Settings);
 ;// CONCATENATED MODULE: ./src/js/controls/time.ts
 
 
@@ -3664,7 +3500,7 @@ var _Time_player, _Time_currentTime, _Time_delimiter, _Time_duration, _Time_cont
 
 var Time = function () {
   function Time(player, position, layer) {
-    classCallCheck_default()(this, Time);
+    _classCallCheck(this, Time);
 
     _Time_player.set(this, void 0);
 
@@ -3692,7 +3528,7 @@ var Time = function () {
     time_classPrivateFieldSet(this, _Time_controlLayer, layer, "f");
   }
 
-  createClass_default()(Time, [{
+  _createClass(Time, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -3859,7 +3695,7 @@ var Time = function () {
 }();
 
 _Time_player = new WeakMap(), _Time_currentTime = new WeakMap(), _Time_delimiter = new WeakMap(), _Time_duration = new WeakMap(), _Time_container = new WeakMap(), _Time_events = new WeakMap(), _Time_controlPosition = new WeakMap(), _Time_controlLayer = new WeakMap();
-/* harmony default export */ const time = (Time);
+/* harmony default export */ var time = (Time);
 ;// CONCATENATED MODULE: ./src/js/controls/volume.ts
 
 
@@ -3884,7 +3720,7 @@ var _Volume_player, _Volume_button, _Volume_container, _Volume_display, _Volume_
 
 var Volume = function () {
   function Volume(player, position, layer) {
-    classCallCheck_default()(this, Volume);
+    _classCallCheck(this, Volume);
 
     _Volume_player.set(this, void 0);
 
@@ -3919,7 +3755,7 @@ var Volume = function () {
     this._enterSpaceKeyEvent = this._enterSpaceKeyEvent.bind(this);
   }
 
-  createClass_default()(Volume, [{
+  _createClass(Volume, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -4148,7 +3984,7 @@ var Volume = function () {
 }();
 
 _Volume_player = new WeakMap(), _Volume_button = new WeakMap(), _Volume_container = new WeakMap(), _Volume_display = new WeakMap(), _Volume_slider = new WeakMap(), _Volume_events = new WeakMap(), _Volume_volume = new WeakMap(), _Volume_controlPosition = new WeakMap(), _Volume_controlLayer = new WeakMap();
-/* harmony default export */ const volume = (Volume);
+/* harmony default export */ var volume = (Volume);
 ;// CONCATENATED MODULE: ./src/js/controls.ts
 
 
@@ -4182,7 +4018,7 @@ var _Controls_settings, _Controls_timer, _Controls_controls, _Controls_player, _
 
 var Controls = function () {
   function Controls(player) {
-    classCallCheck_default()(this, Controls);
+    _classCallCheck(this, Controls);
 
     this.events = {
       media: {},
@@ -4215,7 +4051,7 @@ var Controls = function () {
     this._setElements();
   }
 
-  createClass_default()(Controls, [{
+  _createClass(Controls, [{
     key: "create",
     value: function create() {
       var _this = this;
@@ -4457,7 +4293,7 @@ var Controls = function () {
 
       controlPositions.forEach(function (position) {
         var _position$split = position.split('-'),
-            _position$split2 = slicedToArray_default()(_position$split, 2),
+            _position$split2 = _slicedToArray(_position$split, 2),
             layer = _position$split2[0],
             pos = _position$split2[1];
 
@@ -4509,7 +4345,7 @@ var Controls = function () {
 
       controls_classPrivateFieldGet(this, _Controls_player, "f").getCustomControls().forEach(function (item) {
         var _item$position$split = item.position.split('-'),
-            _item$position$split2 = slicedToArray_default()(_item$position$split, 2),
+            _item$position$split2 = _slicedToArray(_item$position$split, 2),
             layer = _item$position$split2[0],
             pos = _item$position$split2[1];
 
@@ -4751,19 +4587,61 @@ var Controls = function () {
 }();
 
 _Controls_settings = new WeakMap(), _Controls_timer = new WeakMap(), _Controls_controls = new WeakMap(), _Controls_player = new WeakMap(), _Controls_items = new WeakMap(), _Controls_controlEls = new WeakMap();
-/* harmony default export */ const controls = (Controls);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/assertThisInitialized.js
-var assertThisInitialized = __webpack_require__(506);
-var assertThisInitialized_default = /*#__PURE__*/__webpack_require__.n(assertThisInitialized);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/inherits.js
-var inherits = __webpack_require__(205);
-var inherits_default = /*#__PURE__*/__webpack_require__.n(inherits);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js
-var possibleConstructorReturn = __webpack_require__(585);
-var possibleConstructorReturn_default = /*#__PURE__*/__webpack_require__.n(possibleConstructorReturn);
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/getPrototypeOf.js
-var getPrototypeOf = __webpack_require__(754);
-var getPrototypeOf_default = /*#__PURE__*/__webpack_require__.n(getPrototypeOf);
+/* harmony default export */ var controls = (Controls);
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+  return _setPrototypeOf(o, p);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/inherits.js
+
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  Object.defineProperty(subClass, "prototype", {
+    writable: false
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js
+
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+
+  return _assertThisInitialized(self);
+}
+;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
+function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
+  return _getPrototypeOf(o);
+}
 ;// CONCATENATED MODULE: ./src/js/media/native.ts
 
 
@@ -4785,7 +4663,7 @@ var _Native_customPlayer;
 
 var Native = function () {
   function Native(element, media) {
-    classCallCheck_default()(this, Native);
+    _classCallCheck(this, Native);
 
     _Native_customPlayer.set(this, void 0);
 
@@ -4796,7 +4674,7 @@ var Native = function () {
     });
   }
 
-  createClass_default()(Native, [{
+  _createClass(Native, [{
     key: "instance",
     get: function get() {
       return native_classPrivateFieldGet(this, _Native_customPlayer, "f");
@@ -4875,7 +4753,7 @@ var Native = function () {
 }();
 
 _Native_customPlayer = new WeakMap();
-/* harmony default export */ const media_native = (Native);
+/* harmony default export */ var media_native = (Native);
 ;// CONCATENATED MODULE: ./src/js/media/dash.ts
 
 
@@ -4884,7 +4762,7 @@ _Native_customPlayer = new WeakMap();
 
 
 
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = getPrototypeOf_default()(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = getPrototypeOf_default()(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return possibleConstructorReturn_default()(this, result); }; }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
@@ -4909,41 +4787,41 @@ var _DashMedia_player, _DashMedia_events, _DashMedia_options;
 
 
 var DashMedia = function (_Native) {
-  inherits_default()(DashMedia, _Native);
+  _inherits(DashMedia, _Native);
 
   var _super = _createSuper(DashMedia);
 
   function DashMedia(element, mediaSource, options) {
     var _this;
 
-    classCallCheck_default()(this, DashMedia);
+    _classCallCheck(this, DashMedia);
 
     _this = _super.call(this, element, mediaSource);
 
-    _DashMedia_player.set(assertThisInitialized_default()(_this), void 0);
+    _DashMedia_player.set(_assertThisInitialized(_this), void 0);
 
-    _DashMedia_events.set(assertThisInitialized_default()(_this), {});
+    _DashMedia_events.set(_assertThisInitialized(_this), {});
 
-    _DashMedia_options.set(assertThisInitialized_default()(_this), {});
+    _DashMedia_options.set(_assertThisInitialized(_this), {});
 
-    dash_classPrivateFieldSet(assertThisInitialized_default()(_this), _DashMedia_options, options, "f");
+    dash_classPrivateFieldSet(_assertThisInitialized(_this), _DashMedia_options, options, "f");
 
-    _this._assign = _this._assign.bind(assertThisInitialized_default()(_this));
-    _this._preparePlayer = _this._preparePlayer.bind(assertThisInitialized_default()(_this));
+    _this._assign = _this._assign.bind(_assertThisInitialized(_this));
+    _this._preparePlayer = _this._preparePlayer.bind(_assertThisInitialized(_this));
     _this.promise = typeof dashjs === 'undefined' ? loadScript('https://cdn.dashjs.org/latest/dash.all.min.js') : new Promise(function (resolve) {
       resolve({});
     });
 
     _this.promise.then(function () {
-      dash_classPrivateFieldSet(assertThisInitialized_default()(_this), _DashMedia_player, dashjs.MediaPlayer().create(), "f");
+      dash_classPrivateFieldSet(_assertThisInitialized(_this), _DashMedia_player, dashjs.MediaPlayer().create(), "f");
 
-      _this.instance = dash_classPrivateFieldGet(assertThisInitialized_default()(_this), _DashMedia_player, "f");
+      _this.instance = dash_classPrivateFieldGet(_assertThisInitialized(_this), _DashMedia_player, "f");
     });
 
     return _this;
   }
 
-  createClass_default()(DashMedia, [{
+  _createClass(DashMedia, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
       return HAS_MSE && mimeType === 'application/dash+xml';
@@ -5089,7 +4967,7 @@ var DashMedia = function (_Native) {
 }(media_native);
 
 _DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia_options = new WeakMap();
-/* harmony default export */ const dash = (DashMedia);
+/* harmony default export */ var dash = (DashMedia);
 ;// CONCATENATED MODULE: ./src/js/media/flv.ts
 
 
@@ -5098,7 +4976,7 @@ _DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia
 
 
 
-function flv_createSuper(Derived) { var hasNativeReflectConstruct = flv_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = getPrototypeOf_default()(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = getPrototypeOf_default()(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return possibleConstructorReturn_default()(this, result); }; }
+function flv_createSuper(Derived) { var hasNativeReflectConstruct = flv_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function flv_isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
@@ -5136,29 +5014,29 @@ var _FlvMedia_player, _FlvMedia_events, _FlvMedia_options;
 
 
 var FlvMedia = function (_Native) {
-  inherits_default()(FlvMedia, _Native);
+  _inherits(FlvMedia, _Native);
 
   var _super = flv_createSuper(FlvMedia);
 
   function FlvMedia(element, mediaSource, options) {
     var _this;
 
-    classCallCheck_default()(this, FlvMedia);
+    _classCallCheck(this, FlvMedia);
 
     _this = _super.call(this, element, mediaSource);
 
-    _FlvMedia_player.set(assertThisInitialized_default()(_this), void 0);
+    _FlvMedia_player.set(_assertThisInitialized(_this), void 0);
 
-    _FlvMedia_events.set(assertThisInitialized_default()(_this), {});
+    _FlvMedia_events.set(_assertThisInitialized(_this), {});
 
-    _FlvMedia_options.set(assertThisInitialized_default()(_this), {});
+    _FlvMedia_options.set(_assertThisInitialized(_this), {});
 
-    flv_classPrivateFieldSet(assertThisInitialized_default()(_this), _FlvMedia_options, options, "f");
+    flv_classPrivateFieldSet(_assertThisInitialized(_this), _FlvMedia_options, options, "f");
 
     _this.element = element;
     _this.media = mediaSource;
-    _this._create = _this._create.bind(assertThisInitialized_default()(_this));
-    _this._assign = _this._assign.bind(assertThisInitialized_default()(_this));
+    _this._create = _this._create.bind(_assertThisInitialized(_this));
+    _this._assign = _this._assign.bind(_assertThisInitialized(_this));
     _this.promise = typeof flvjs === 'undefined' ? loadScript('https://cdn.jsdelivr.net/npm/flv.js@latest/dist/flv.min.js') : new Promise(function (resolve) {
       resolve({});
     });
@@ -5168,7 +5046,7 @@ var FlvMedia = function (_Native) {
     return _this;
   }
 
-  createClass_default()(FlvMedia, [{
+  _createClass(FlvMedia, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
       return HAS_MSE && (mimeType === 'video/x-flv' || mimeType === 'video/flv');
@@ -5313,7 +5191,7 @@ var FlvMedia = function (_Native) {
 }(media_native);
 
 _FlvMedia_player = new WeakMap(), _FlvMedia_events = new WeakMap(), _FlvMedia_options = new WeakMap();
-/* harmony default export */ const flv = (FlvMedia);
+/* harmony default export */ var flv = (FlvMedia);
 ;// CONCATENATED MODULE: ./src/js/media/hls.ts
 
 
@@ -5322,7 +5200,7 @@ _FlvMedia_player = new WeakMap(), _FlvMedia_events = new WeakMap(), _FlvMedia_op
 
 
 
-function hls_createSuper(Derived) { var hasNativeReflectConstruct = hls_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = getPrototypeOf_default()(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = getPrototypeOf_default()(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return possibleConstructorReturn_default()(this, result); }; }
+function hls_createSuper(Derived) { var hasNativeReflectConstruct = hls_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function hls_isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
@@ -5347,40 +5225,40 @@ var _HlsMedia_player, _HlsMedia_events, _HlsMedia_recoverDecodingErrorDate, _Hls
 
 
 var HlsMedia = function (_Native) {
-  inherits_default()(HlsMedia, _Native);
+  _inherits(HlsMedia, _Native);
 
   var _super = hls_createSuper(HlsMedia);
 
   function HlsMedia(element, mediaSource, autoplay, options) {
     var _this;
 
-    classCallCheck_default()(this, HlsMedia);
+    _classCallCheck(this, HlsMedia);
 
     _this = _super.call(this, element, mediaSource);
 
-    _HlsMedia_player.set(assertThisInitialized_default()(_this), void 0);
+    _HlsMedia_player.set(_assertThisInitialized(_this), void 0);
 
-    _HlsMedia_events.set(assertThisInitialized_default()(_this), {});
+    _HlsMedia_events.set(_assertThisInitialized(_this), {});
 
-    _HlsMedia_recoverDecodingErrorDate.set(assertThisInitialized_default()(_this), 0);
+    _HlsMedia_recoverDecodingErrorDate.set(_assertThisInitialized(_this), 0);
 
-    _HlsMedia_recoverSwapAudioCodecDate.set(assertThisInitialized_default()(_this), 0);
+    _HlsMedia_recoverSwapAudioCodecDate.set(_assertThisInitialized(_this), 0);
 
-    _HlsMedia_options.set(assertThisInitialized_default()(_this), void 0);
+    _HlsMedia_options.set(_assertThisInitialized(_this), void 0);
 
-    _HlsMedia_autoplay.set(assertThisInitialized_default()(_this), void 0);
+    _HlsMedia_autoplay.set(_assertThisInitialized(_this), void 0);
 
-    hls_classPrivateFieldSet(assertThisInitialized_default()(_this), _HlsMedia_options, options || {}, "f");
+    hls_classPrivateFieldSet(_assertThisInitialized(_this), _HlsMedia_options, options || {}, "f");
 
     _this.element = element;
     _this.media = mediaSource;
 
-    hls_classPrivateFieldSet(assertThisInitialized_default()(_this), _HlsMedia_autoplay, autoplay, "f");
+    hls_classPrivateFieldSet(_assertThisInitialized(_this), _HlsMedia_autoplay, autoplay, "f");
 
-    _this._create = _this._create.bind(assertThisInitialized_default()(_this));
-    _this._play = _this._play.bind(assertThisInitialized_default()(_this));
-    _this._pause = _this._pause.bind(assertThisInitialized_default()(_this));
-    _this._assign = _this._assign.bind(assertThisInitialized_default()(_this));
+    _this._create = _this._create.bind(_assertThisInitialized(_this));
+    _this._play = _this._play.bind(_assertThisInitialized(_this));
+    _this._pause = _this._pause.bind(_assertThisInitialized(_this));
+    _this._assign = _this._assign.bind(_assertThisInitialized(_this));
     _this.promise = typeof Hls === 'undefined' ? loadScript('https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js') : new Promise(function (resolve) {
       resolve({});
     });
@@ -5390,7 +5268,7 @@ var HlsMedia = function (_Native) {
     return _this;
   }
 
-  createClass_default()(HlsMedia, [{
+  _createClass(HlsMedia, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
       return SUPPORTS_HLS() && mimeType === 'application/x-mpegURL';
@@ -5670,7 +5548,7 @@ var HlsMedia = function (_Native) {
 }(media_native);
 
 _HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_recoverDecodingErrorDate = new WeakMap(), _HlsMedia_recoverSwapAudioCodecDate = new WeakMap(), _HlsMedia_options = new WeakMap(), _HlsMedia_autoplay = new WeakMap();
-/* harmony default export */ const hls = (HlsMedia);
+/* harmony default export */ var hls = (HlsMedia);
 ;// CONCATENATED MODULE: ./src/js/media/html5.ts
 
 
@@ -5679,7 +5557,7 @@ _HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_re
 
 
 
-function html5_createSuper(Derived) { var hasNativeReflectConstruct = html5_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = getPrototypeOf_default()(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = getPrototypeOf_default()(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return possibleConstructorReturn_default()(this, result); }; }
+function html5_createSuper(Derived) { var hasNativeReflectConstruct = html5_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function html5_isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
@@ -5704,40 +5582,40 @@ var _HTML5Media_currentLevel, _HTML5Media_levelList, _HTML5Media_isStreaming, _H
 
 
 var HTML5Media = function (_Native) {
-  inherits_default()(HTML5Media, _Native);
+  _inherits(HTML5Media, _Native);
 
   var _super = html5_createSuper(HTML5Media);
 
   function HTML5Media(element, mediaFile) {
     var _this;
 
-    classCallCheck_default()(this, HTML5Media);
+    _classCallCheck(this, HTML5Media);
 
     _this = _super.call(this, element, mediaFile);
 
-    _HTML5Media_currentLevel.set(assertThisInitialized_default()(_this), void 0);
+    _HTML5Media_currentLevel.set(_assertThisInitialized(_this), void 0);
 
-    _HTML5Media_levelList.set(assertThisInitialized_default()(_this), []);
+    _HTML5Media_levelList.set(_assertThisInitialized(_this), []);
 
-    _HTML5Media_isStreaming.set(assertThisInitialized_default()(_this), false);
+    _HTML5Media_isStreaming.set(_assertThisInitialized(_this), false);
 
-    _HTML5Media_retryCount.set(assertThisInitialized_default()(_this), 0);
+    _HTML5Media_retryCount.set(_assertThisInitialized(_this), 0);
 
-    _HTML5Media_started.set(assertThisInitialized_default()(_this), false);
+    _HTML5Media_started.set(_assertThisInitialized(_this), false);
 
-    _HTML5Media_timer.set(assertThisInitialized_default()(_this), void 0);
+    _HTML5Media_timer.set(_assertThisInitialized(_this), void 0);
 
     if (!isAudio(element) && !isVideo(element)) {
       throw new TypeError('Native method only supports video/audio tags');
     }
 
-    _this._clearTimeout = _this._clearTimeout.bind(assertThisInitialized_default()(_this));
-    _this._setTimeout = _this._setTimeout.bind(assertThisInitialized_default()(_this));
-    _this._dispatchError = _this._dispatchError.bind(assertThisInitialized_default()(_this));
-    _this._isDvrEnabled = _this._isDvrEnabled.bind(assertThisInitialized_default()(_this));
-    _this._readMediadataInfo = _this._readMediadataInfo.bind(assertThisInitialized_default()(_this));
+    _this._clearTimeout = _this._clearTimeout.bind(_assertThisInitialized(_this));
+    _this._setTimeout = _this._setTimeout.bind(_assertThisInitialized(_this));
+    _this._dispatchError = _this._dispatchError.bind(_assertThisInitialized(_this));
+    _this._isDvrEnabled = _this._isDvrEnabled.bind(_assertThisInitialized(_this));
+    _this._readMediadataInfo = _this._readMediadataInfo.bind(_assertThisInitialized(_this));
 
-    html5_classPrivateFieldSet(assertThisInitialized_default()(_this), _HTML5Media_isStreaming, isHlsSource(mediaFile), "f");
+    html5_classPrivateFieldSet(_assertThisInitialized(_this), _HTML5Media_isStreaming, isHlsSource(mediaFile), "f");
 
     _this.element.addEventListener('playing', _this._clearTimeout, EVENT_OPTIONS);
 
@@ -5752,7 +5630,7 @@ var HTML5Media = function (_Native) {
     return _this;
   }
 
-  createClass_default()(HTML5Media, [{
+  _createClass(HTML5Media, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
       return !!this.element.canPlayType(mimeType).replace('no', '');
@@ -5953,7 +5831,7 @@ var HTML5Media = function (_Native) {
 }(media_native);
 
 _HTML5Media_currentLevel = new WeakMap(), _HTML5Media_levelList = new WeakMap(), _HTML5Media_isStreaming = new WeakMap(), _HTML5Media_retryCount = new WeakMap(), _HTML5Media_started = new WeakMap(), _HTML5Media_timer = new WeakMap();
-/* harmony default export */ const html5 = (HTML5Media);
+/* harmony default export */ var html5 = (HTML5Media);
 ;// CONCATENATED MODULE: ./src/js/media.ts
 
 
@@ -6016,7 +5894,7 @@ var _Media_element, _Media_media, _Media_files, _Media_promisePlay, _Media_optio
 
 var Media = function () {
   function Media(element, options, autoplay, customMedia) {
-    classCallCheck_default()(this, Media);
+    _classCallCheck(this, Media);
 
     _Media_element.set(this, void 0);
 
@@ -6051,7 +5929,7 @@ var Media = function () {
     media_classPrivateFieldSet(this, _Media_autoplay, autoplay, "f");
   }
 
-  createClass_default()(Media, [{
+  _createClass(Media, [{
     key: "canPlayType",
     value: function canPlayType(mimeType) {
       return media_classPrivateFieldGet(this, _Media_media, "f").canPlayType(mimeType);
@@ -6228,7 +6106,7 @@ var Media = function () {
         });
       } else if (Array.isArray(media)) {
         media_classPrivateFieldSet(this, _Media_files, media, "f");
-      } else if (typeof_default()(media) === 'object') {
+      } else if (_typeof(media) === 'object') {
         media_classPrivateFieldGet(this, _Media_files, "f").push(media);
       }
 
@@ -6238,7 +6116,7 @@ var Media = function () {
 
       if (media_classPrivateFieldGet(this, _Media_files, "f").length > 0) {
         var _classPrivateFieldGe = media_classPrivateFieldGet(this, _Media_files, "f"),
-            _classPrivateFieldGe2 = slicedToArray_default()(_classPrivateFieldGe, 1),
+            _classPrivateFieldGe2 = _slicedToArray(_classPrivateFieldGe, 1),
             file = _classPrivateFieldGe2[0];
 
         if (media_classPrivateFieldGet(this, _Media_element, "f").src) {
@@ -6487,7 +6365,7 @@ var Media = function () {
 }();
 
 _Media_element = new WeakMap(), _Media_media = new WeakMap(), _Media_files = new WeakMap(), _Media_promisePlay = new WeakMap(), _Media_options = new WeakMap(), _Media_autoplay = new WeakMap(), _Media_mediaLoaded = new WeakMap(), _Media_customMedia = new WeakMap(), _Media_currentSrc = new WeakMap();
-/* harmony default export */ const js_media = (Media);
+/* harmony default export */ var js_media = (Media);
 ;// CONCATENATED MODULE: ./src/js/media/ads.ts
 
 
@@ -6547,7 +6425,7 @@ var Ads = function () {
   function Ads(player, ads, autostart, autostartMuted, options) {
     var _this = this;
 
-    classCallCheck_default()(this, Ads);
+    _classCallCheck(this, Ads);
 
     var _a, _b, _c, _d;
 
@@ -6706,7 +6584,7 @@ var Ads = function () {
     });
   }
 
-  createClass_default()(Ads, [{
+  _createClass(Ads, [{
     key: "load",
     value: function load() {
       var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
@@ -7678,7 +7556,7 @@ var Ads = function () {
 }();
 
 _Ads_ended = new WeakMap(), _Ads_done = new WeakMap(), _Ads_active = new WeakMap(), _Ads_started = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_volume = new WeakMap(), _Ads_muted = new WeakMap(), _Ads_duration = new WeakMap(), _Ads_currentTime = new WeakMap(), _Ads_manager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_loader = new WeakMap(), _Ads_container = new WeakMap(), _Ads_customClickContainer = new WeakMap(), _Ads_skipElement = new WeakMap(), _Ads_displayContainer = new WeakMap(), _Ads_request = new WeakMap(), _Ads_autostart = new WeakMap(), _Ads_autostartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_options = new WeakMap(), _Ads_currentIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap(), _Ads_adEvent = new WeakMap();
-/* harmony default export */ const ads = (Ads);
+/* harmony default export */ var ads = (Ads);
 ;// CONCATENATED MODULE: ./src/js/player.ts
 
 
@@ -7743,7 +7621,7 @@ var _Player_controls, _Player_adsInstance, _Player_uid, _Player_element, _Player
 
 var Player = function () {
   function Player(element, options) {
-    classCallCheck_default()(this, Player);
+    _classCallCheck(this, Player);
 
     var _a;
 
@@ -7872,7 +7750,7 @@ var Player = function () {
     this._enableKeyBindings = this._enableKeyBindings.bind(this);
   }
 
-  createClass_default()(Player, [{
+  _createClass(Player, [{
     key: "init",
     value: function init() {
       return player_awaiter(this, void 0, void 0, regenerator_default().mark(function _callee() {
@@ -8330,7 +8208,7 @@ var Player = function () {
 
           player_classPrivateFieldGet(_this4, _Player_element, "f").appendChild(source);
         });
-      } else if (typeof_default()(media) === 'object') {
+      } else if (_typeof(media) === 'object') {
         player_classPrivateFieldGet(this, _Player_element, "f").src = media.src;
       }
     }
@@ -8691,7 +8569,7 @@ var Player = function () {
       player_classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f")), opts), "f");
 
       var complexOptions = Object.keys(player_classPrivateFieldGet(this, _Player_defaultOptions, "f")).filter(function (key) {
-        return key !== 'labels' && typeof_default()(player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[key]) === 'object';
+        return key !== 'labels' && _typeof(player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[key]) === 'object';
       });
       complexOptions.forEach(function (key) {
         var currOption = opts[key] || {};
@@ -8707,18 +8585,18 @@ var Player = function () {
         keys.forEach(function (key) {
           var current = opts.labels ? opts.labels[key] : null;
 
-          if (current && typeof_default()(current) === 'object' && key === 'lang') {
+          if (current && _typeof(current) === 'object' && key === 'lang') {
             Object.keys(current).forEach(function (k) {
               var lang = current ? current[k] : null;
 
               if (lang) {
                 sanitizedLabels = Object.assign(Object.assign({}, sanitizedLabels), {
-                  lang: Object.assign(Object.assign({}, sanitizedLabels.lang), defineProperty_default()({}, k, sanitize(lang)))
+                  lang: Object.assign(Object.assign({}, sanitizedLabels.lang), _defineProperty({}, k, sanitize(lang)))
                 });
               }
             });
           } else if (current) {
-            sanitizedLabels = Object.assign(Object.assign({}, sanitizedLabels), defineProperty_default()({}, key, sanitize(current)));
+            sanitizedLabels = Object.assign(Object.assign({}, sanitizedLabels), _defineProperty({}, key, sanitize(current)));
           }
         });
         player_classPrivateFieldGet(this, _Player_options, "f").labels = Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f").labels), sanitizedLabels);
@@ -8909,23 +8787,14 @@ Player.customMedia = {
   optionsKey: {},
   rules: []
 };
-/* harmony default export */ const player = (Player);
+/* harmony default export */ var player = (Player);
 
 if (typeof window !== 'undefined') {
   window.OpenPlayer = Player;
   window.OpenPlayerJS = Player;
   Player.init();
 }
-})();
-
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-})();
-
+}();
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;
