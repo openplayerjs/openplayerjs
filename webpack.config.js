@@ -20,6 +20,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, './dist'),
+        publicPath: '/dist/',
         filename: '[name].min.js',
         library: {
             name: 'openplayerjs',
