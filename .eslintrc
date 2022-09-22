@@ -12,7 +12,7 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "ignorePatterns": ["types/**/*.ts", "src/css/*", "dist/**/*.js", "webpack.config.js"],
+  "ignorePatterns": ["types/**/*.ts", "src/css/*", "dist/**/*.js", "webpack.config.js", "postcss.config.js"],
   "env": {
     "es6": true,
     "browser": true

@@ -1,18 +1,11 @@
 const path = require('path');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-    target: 'node',
-    stats: {
-        children: true,
-    },
-    context: __dirname,
     devtool: 'source-map',
     entry: {
-        openplayer: ['./src/js/player.ts', './src/css/player.css'],
+        openplayer: './src/js/player.ts',
     },
     performance: {
         hints: 'error',
@@ -70,37 +63,6 @@ module.exports = {
                     },
                 },
             },
-            {
-                test: /\.svg$/,
-                exclude: /node_modules/,
-                type: 'asset/inline',
-            },
-            {
-                test: /\.css$/,
-                exclude: /node_modules/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            importLoaders: 1,
-                            modules: false,
-                            sourceMap: true,
-                        },
-                    },
-
-                    {
-                        loader: 'postcss-loader',
-                        options: {
-                            postcssOptions: {
-                                plugins: [require('stylelint'), require('postcss-preset-env'), require('autoprefixer')],
-                                minimize: false,
-                            },
-                            sourceMap: true,
-                        },
-                    },
-                ],
-            },
         ],
     },
     resolve: {
@@ -112,16 +74,6 @@ module.exports = {
     optimization: {
         minimize: true,
         minimizer: [
-            new CssMinimizerPlugin({
-                minimizerOptions: {
-                    preset: [
-                        'default',
-                        {
-                            discardComments: { removeAll: true },
-                        },
-                    ],
-                },
-            }),
             new TerserPlugin({
                 parallel: true,
                 terserOptions: {
@@ -135,9 +87,6 @@ module.exports = {
         ],
     },
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: '[name].min.css',
-        }),
         new UnminifiedWebpackPlugin({
             postfix: 'nomin',
         }),
