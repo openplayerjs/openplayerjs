@@ -1,6 +1,6 @@
 {
     "name": "openplayerjs",
-    "version": "2.12.0",
+    "version": "2.13.0",
     "homepage": "https://www.openplayerjs.com/",
     "author": {
         "name": "Rafael Miranda",
@@ -41,8 +41,9 @@
         "ima-sdk"
     ],
     "scripts": {
-        "build": "npm test && npm run build:sources",
+        "build": "npm run build:styles && npm test && npm run build:sources",
         "build:sources": "webpack --mode=production && npm run create:esm && npm run create:types && npm run create:cjs",
+        "build:styles": "npx stylelint './src/css/player.css' && postcss ./src/css/player.css --use autoprefixer > ./dist/openplayer.css && postcss ./dist/openplayer.css > ./dist/openplayer.min.css",
         "create:types": "tsc -p tsconfig-types.json",
         "create:esm": "tsc --module es2015 --target es6 --outDir dist/esm",
         "create:cjs": "tsc --module commonjs --target es6 --outDir dist/cjs",
@@ -72,8 +73,6 @@
         "babel-preset-minify": "^0.5.2",
         "conventional-changelog": "^3.1.25",
         "coveralls": "^3.1.1",
-        "css-loader": "^6.7.1",
-        "css-minimizer-webpack-plugin": "^4.1.0",
         "cssnano": "^5.1.13",
         "eslint": "^8.23.1",
         "eslint-config-airbnb": "^19.0.4",
@@ -89,8 +88,8 @@
         "jest-extended": "^3.1.0",
         "jest-watch-typeahead": "^2.2.0",
         "lint-staged": "^13.0.3",
-        "mini-css-extract-plugin": "^2.6.1",
         "postcss": "^8.4.16",
+        "postcss-cli": "^10.0.0",
         "postcss-import": "^14.1.0",
         "postcss-loader": "^7.0.1",
         "postcss-preset-env": "^7.8.2",
