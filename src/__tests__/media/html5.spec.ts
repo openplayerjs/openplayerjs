@@ -147,7 +147,7 @@ describe('media/html5', () => {
             type: 'application/x-mpegURL',
         });
 
-        expect(video.getAttribute('op-dvr__enabled')).toBeNull();
+        expect(video.getAttribute('data-op-dvr__enabled')).toBeNull();
 
         const seekableSpy = jest.spyOn(video, 'seekable', 'get').mockReturnValue({
             length: 150,
@@ -157,7 +157,7 @@ describe('media/html5', () => {
 
         videoPlayer.element.dispatchEvent(addEvent('loadeddata'));
         expect(seekableSpy).toHaveBeenCalled();
-        expect(video.getAttribute('op-dvr__enabled')).toEqual('true');
+        expect(video.getAttribute('data-op-dvr__enabled')).toEqual('true');
     });
 
     it.skip('reads ID3 tags from streaming (mobile devices setting HLS source)', () => {
@@ -204,7 +204,7 @@ describe('media/html5', () => {
 
         videoPlayer.destroy();
 
-        expect(video.classList.contains('op-dvr__enabled')).toEqual(false);
+        expect(video.classList.contains('data-op-dvr__enabled')).toEqual(false);
         expect(removeEventListenerSpy.mock.calls[0][0]).toEqual('playing');
         expect(removeEventListenerSpy.mock.calls[1][0]).toEqual('stalled');
         expect(removeEventListenerSpy.mock.calls[2][0]).toEqual('error');

@@ -7,8 +7,38 @@ describe('context', () => {
     let ads: Ads;
     let liveAds: LiveAds;
 
-    it('allows to enhance `load` method', async () => {
+    it('allows to enhance `load` method when source is already set', async () => {
         const video = document.createElement('video') as HTMLMediaElement;
+        video.src = 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp4';
+        media = new Media(video);
+        await media.load();
+        expect(media.loaded).toEqual('media');
+        media.destroy();
+        expect(media.loaded).toEqual('');
+
+        video.src = '';
+        video.innerHTML = '<source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp4" type="video/mp4">';
+        media = new Media(video);
+        await media.load();
+        expect(media.loaded).toEqual('media');
+        expect(media.src).toStrictEqual({ src: 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp4', type: 'video/mp4' });
+        media.destroy();
+        expect(media.loaded).toEqual('');
+    });
+
+    it('allows to enhance `load` method when source is empty', async () => {
+        const video = document.createElement('video') as HTMLMediaElement;
+        media = new Media(video);
+        await media.load();
+        expect(media.loaded).toEqual('media');
+
+        media.destroy();
+        expect(media.loaded).toEqual('');
+    });
+
+    it('allows to enhance `load` method by loading ads', async () => {
+        const video = document.createElement('video') as HTMLMediaElement;
+        video.src = 'https://ccrma.stanford.edu/~jos/mp3/Latin.mp4';
         media = new Media(video);
         await media.load();
         expect(media.loaded).toEqual('media');

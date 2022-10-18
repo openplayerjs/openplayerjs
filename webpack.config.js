@@ -5,7 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 module.exports = {
     devtool: 'source-map',
     entry: {
-        openplayer: './src/js/player.ts',
+        openplayer: './src/player.ts',
     },
     performance: {
         hints: 'error',

@@ -1,0 +1,31 @@
+import { Source } from '../../interfaces';
+declare abstract class Implementation {
+    #private;
+    element: HTMLMediaElement;
+    media: Source;
+    promise: Promise<unknown>;
+    constructor(element: HTMLMediaElement, media?: Source);
+    abstract canPlayType(mimeType: string): boolean;
+    abstract load(): void;
+    abstract destroy(): void;
+    abstract set src(media: Source);
+    abstract get src(): Source;
+    set instance(customPlayer: any);
+    get instance(): any;
+    play(): Promise<void>;
+    pause(): void;
+    set volume(value: number);
+    get volume(): number;
+    set muted(value: boolean);
+    get muted(): boolean;
+    set playbackRate(value: number);
+    get playbackRate(): number;
+    set defaultPlaybackRate(value: number);
+    get defaultPlaybackRate(): number;
+    set currentTime(value: number);
+    get currentTime(): number;
+    get duration(): number;
+    get paused(): boolean;
+    get ended(): boolean;
+}
+export default Implementation;

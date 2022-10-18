@@ -19,8 +19,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "esModuleInterop": true,
-        "strictPropertyInitialization": false,
-        "baseUrl": "src/"
+        "strictPropertyInitialization": false
     },
     "files": ["./global.d.ts"],
     "include": ["./src/**/*.ts"],

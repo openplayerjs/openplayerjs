@@ -46,6 +46,19 @@ describe('utils/general', () => {
             <body>Don't forget me this weekend!</body>
             </note>`)
         ).toBeTrue();
+
+        Object.defineProperty(window, 'DOMParser', {
+            value: undefined,
+        });
+
+        expect(
+            general.isXml(`<note>
+        <to>Tove</to>
+        <from>Jani</from>
+        <heading>Reminder</heading>
+        <body>Don't forget me this weekend!</body>
+        </note>`)
+        ).toBeFalse();
     });
 
     it('checks if string is a valid JSON source', () => {

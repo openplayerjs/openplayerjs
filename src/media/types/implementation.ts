@@ -1,5 +1,5 @@
-import { Source } from 'interfaces';
-import { predictMimeType } from 'utils/media';
+import { Source } from '../../interfaces';
+import { predictMimeType } from '../../utils/media';
 
 abstract class Implementation {
     element: HTMLMediaElement;

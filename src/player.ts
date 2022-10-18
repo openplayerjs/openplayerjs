@@ -2,20 +2,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { ElementItem, MediaMethods, Track } from 'interfaces';
+import { ElementItem, MediaMethods, PlayerOptions, Track } from './interfaces';
+import Media from './media/index';
+import { EVENT_OPTIONS } from './utils/constants';
+import { isVideo } from './utils/general';
 
 class Player {
     static instances: { [id: string]: MediaMethods } = {};
 
     #element: HTMLMediaElement;
 
+    #options: PlayerOptions;
+
     #initialized = false;
 
     #uid = '';
 
-    constructor(element: HTMLMediaElement | string) {
+    constructor(element: HTMLMediaElement | string, options: PlayerOptions = {}) {
         this.#element =
             element instanceof HTMLMediaElement ? element : (document.getElementById(element) as HTMLMediaElement);
+        this.#options = options;
     }
 
     async init(): Promise<void> {
@@ -30,7 +36,21 @@ class Player {
 
     async load(): Promise<void> {}
 
-    async prepareMedia(): Promise<void> {}
+    async prepareMedia(): Promise<void> {
+        try {
+            if (this.#options?.onError) {
+                this.#element.removeEventListener('playererror', this.#options.onError);
+                this.#element.addEventListener('playererror', this.#options.onError, EVENT_OPTIONS);
+            }
+            if (this.#element.autoplay && isVideo(this.#element)) {
+                // this.#element.addEventListener('canplay', this._autoplay, EVENT_OPTIONS);
+            }
+            // eslint-disable-next-line no-new
+            new Media(this.#element, this.#options);
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     async play(): Promise<void> {}
 

@@ -1,10 +1,10 @@
-import { ElementItem, MediaMethods, Track } from 'interfaces';
+import { ElementItem, MediaMethods, PlayerOptions, Track } from './interfaces';
 declare class Player {
     #private;
     static instances: {
         [id: string]: MediaMethods;
     };
-    constructor(element: HTMLMediaElement | string);
+    constructor(element: HTMLMediaElement | string, options?: PlayerOptions);
     init(): Promise<void>;
     load(): Promise<void>;
     prepareMedia(): Promise<void>;

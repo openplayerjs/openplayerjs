@@ -98,3 +98,26 @@ export function addEvent(event: string, details?: CustomEventInit): CustomEvent 
     }
     return new CustomEvent(event, detail);
 }
+
+export function loadScript(src: string, async = true): Promise<void> {
+    return new Promise((resolve, reject) => {
+        try {
+            const el = document.createElement('script');
+            const container = document.head || document.body;
+            el.async = async;
+            el.src = src;
+
+            el.addEventListener('load', () => {
+                resolve();
+            });
+
+            el.addEventListener('error', () => {
+                reject(new Error(`Failed to load the script ${src}`));
+            });
+
+            container.appendChild(el);
+        } catch (err) {
+            reject(err);
+        }
+    });
+}

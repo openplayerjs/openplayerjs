@@ -43,7 +43,7 @@ class HTML5Media extends Implementation {
     }
 
     destroy(): void {
-        this.element.removeAttribute('op-dvr__enabled');
+        this.element.removeAttribute('data-op-dvr__enabled');
         this.element.removeEventListener('playing', this._clearTimeout);
         this.element.removeEventListener('stalled', this._setTimeout);
         this.element.removeEventListener('error', this._dispatchError);
@@ -62,8 +62,8 @@ class HTML5Media extends Implementation {
 
     private _isDvrEnabled(): void {
         const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
-        if (this.#isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
-            this.element.setAttribute('op-dvr__enabled', 'true');
+        if (this.#isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('data-op-dvr__enabled')) {
+            this.element.setAttribute('data-op-dvr__enabled', 'true');
             const timeEvent = addEvent('timeupdate');
             this.element.dispatchEvent(timeEvent);
         }
