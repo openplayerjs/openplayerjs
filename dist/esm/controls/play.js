@@ -11,7 +11,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _Play_player, _Play_button, _Play_events, _Play_controlPosition, _Play_controlLayer;
 import Player from '../player';
-import { EVENT_OPTIONS } from '../utils/constants';
+import { EVENT_OPTIONS, IS_IOS } from '../utils/constants';
 import { addEvent, isAudio } from '../utils/general';
 class Play {
     constructor(player, position, layer) {
@@ -75,6 +75,9 @@ class Play {
                 __classPrivateFieldGet(this, _Play_button, "f").classList.add('op-controls__playpause--pause');
                 __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
                 __classPrivateFieldGet(this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
+                if (IS_IOS && isAudio(__classPrivateFieldGet(this, _Play_player, "f").getElement()) && !__classPrivateFieldGet(this, _Play_player, "f").getElement().autoplay) {
+                    __classPrivateFieldGet(this, _Play_player, "f").getElement().autoplay = true;
+                }
                 if ((_a = __classPrivateFieldGet(this, _Play_player, "f").getOptions()) === null || _a === void 0 ? void 0 : _a.pauseOthers) {
                     Object.keys(Player.instances).forEach((key) => {
                         if (key !== __classPrivateFieldGet(this, _Play_player, "f").id) {

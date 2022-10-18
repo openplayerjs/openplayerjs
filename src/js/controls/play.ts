@@ -1,6 +1,6 @@
 import { EventsList, PlayerComponent } from '../interfaces';
 import Player from '../player';
-import { EVENT_OPTIONS } from '../utils/constants';
+import { EVENT_OPTIONS, IS_IOS } from '../utils/constants';
 import { addEvent, isAudio } from '../utils/general';
 
 class Play implements PlayerComponent {
@@ -73,6 +73,12 @@ class Play implements PlayerComponent {
 
                 this.#button.title = labels?.pause || '';
                 this.#button.setAttribute('aria-label', labels?.pause || '');
+
+                // This will force the playback of an audio element in iOS in the event
+                // of a delay less than 1000 ms; otherwise, blocking policies will come in effect
+                if (IS_IOS && isAudio(this.#player.getElement()) && !this.#player.getElement().autoplay) {
+                    this.#player.getElement().autoplay = true;
+                }
 
                 if (this.#player.getOptions()?.pauseOthers) {
                     Object.keys(Player.instances).forEach((key) => {
