@@ -13,16 +13,16 @@
     $("#tab-1").removeClass("tab-content");
     $("#tab-2").removeClass("show");
     $("#tab-2").addClass("tab-content");
-    $("#one").addClass("activo");
-    $("#dos").removeClass("activo");
+    $("#one").addClass("active");
+    $("#two").removeClass("active");
   });
-  $("#dos").click(function(){
+  $("#two").click(function(){
     $("#tab-2").addClass("show");
     $("#tab-2").removeClass("tab-content");
     $("#tab-1").removeClass("show");
     $("#tab-1").addClass("tab-content");
-    $("#dos").addClass("activo");
-    $("#one").removeClass("activo");
+    $("#two").addClass("active");
+    $("#one").removeClass("active");
   });
 
 /*---------------*/

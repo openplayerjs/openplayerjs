@@ -3,7 +3,7 @@
     <title>OpenPlayer JS</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/estilo.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700;900&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
 
   <body>
     <header class="head">
-      <div class="head_tamano">
+      <div class="head_full">
         <a href="#" class="logo"><img src="img/openplayer-clean.png" width="100px"></a>
         <ul>
           <li><a href="#">About OpenPlayer JS</a></li>
@@ -30,30 +30,32 @@
     <div class="container0 ">
       <div class="row0">
         <div class="col0">
-          <div class="logotipo">
-            <img src="img/logo.png">
+          <div class="logo">
+            <img src="img/openplayer-clean.png" width="20%">
+            <span class="logo_color">OPENPLAYERJS</span>
+            <!--<img src="img/logo.png">-->
           </div>
         </div>
       </div>
 
       <div class="row1">
-        <h2 class="tamaño200 peso100">The Lightweight Player for the<br><b class="tamaño200 peso700" >Web</b></h2>
-        <button class="descarga" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip">Download</button>
+        <h2 class="size200 weight100">The Lightweight Player for the<br><b class="size200 wieght700" >Web</b></h2>
+        <button class="download" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip">Download</button>
         <p class="salto"><a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
             data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
         <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
             aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a></p>
       </div>
     </div>
-    <div class="espacio200"></div>
+    <div class="space200"></div>
     <div class="row1">
-      <h1 class="color_blanco" data-aos="fade-up" data-aos-delay="1200">Why another media player? And why <b class="peso700">OpenPlayerJS?</b></h1>
-      <div class="espacio100"></div>
+      <h1 class="color_white" data-aos="fade-up" data-aos-duration="1000">Why another media player? And why <b class="wieght700">OpenPlayerJS?</b></h1>
+      <div class="space100"></div>
 
-      <div class="columna2-1" data-aos="fade-right" data-aos-delay="1200">
+      <div class="column2-1" data-aos="fade-right" data-aos-duration="1000">
         <ul>
-          <li id="tab1"><a class="activo" id="uno" href="#" onclick="return false;">Video</a></li>
-          <li id="tab2"><a id="dos" href="#" onclick="return false;">Audio</a></li>
+          <li id="tab1"><a class="active" id="one" href="#" onclick="return false;">Video</a></li>
+          <li id="tab2"><a id="two" href="#" onclick="return false;">Audio</a></li>
         </ul>
         <div id="tab-1" class="tab-content show">
           <p>
@@ -63,7 +65,7 @@
           </p>
         </div>
         <div id="tab-2" class="tab-content">
-          <div class="espacio50"></div>
+          <div class="space50"></div>
           <audio class="op-player op-player__media" controls>
             <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
           </audio>
@@ -71,41 +73,41 @@
       </div>
 
 
-      <div class="columna2-2" data-aos="fade-left" data-aos-delay="1200">
-        <span class="texto1">Technologies are evolving at a <b>fast pace</b>. Having a player that plays the most popular content in <b>all browsers and devices,</b> keeps itself ever-green, and can be <b>customized easily</b> is a no-brainer for everyone that wants the best.</span>
+      <div class="column2-2" data-aos="fade-left" data-aos-duration="1000">
+        <span class="text1">Technologies are evolving at a <b>fast pace</b>. Having a player that plays the most popular content in <b>all browsers and devices,</b> keeps itself ever-green, and can be <b>customized easily</b> is a no-brainer for everyone that wants the best.</span>
       </div>
     </div>
-    <div class="espacio200"></div>
+    <div class="space200"></div>
     <hr></hr>
 
 
-    <div class="container seccion1">
-      <div style="background-color:#fff;" class="espacio100"></div>
-      <div class="col6-1" data-aos="fade-down" data-aos-delay="1200">
+    <div class="container section1">
+      <div style="background-color:#fff;" class="space100"></div>
+      <div class="col6-1" data-aos="fade-down" data-aos-duration="1000">
         <img src="img/config.png"/>
       </div>
-      <div class="col4-1" data-aos="fade-right" data-aos-delay="1200">
-        <span><h2 class="tamaño200">Easily configured</h2><br>Either setting up the player through the <b>video/audio</b> tags or via Javascript, you just need a pair of class names and a small set of configuration options... and you are all set!</span>
+      <div class="col4-1" data-aos="fade-right" data-aos-duration="1000">
+        <span><h2 class="size200">Easily configured</h2><br>Either setting up the player through the <b>video/audio</b> tags or via Javascript, you just need a pair of class names and a small set of configuration options... and you are all set!</span>
       </div>
-      <div class="col4-2" data-aos="fade-up" data-aos-delay="1200">
-        <span><h2 class="color tamaño200">Cross Browser/Cross Device Support</h2><br>With IE11+ support, OpenPlayerJS is your best choice! Also, giving the constant changes of policies on different browsers, OpenPlayer integrates a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's quirks or workarounds for that.</span>
+      <div class="col4-2" data-aos="fade-up" data-aos-duration="1000">
+        <span><h2 class="color size200">Cross Browser/Cross Device Support</h2><br>With IE11+ support, OpenPlayerJS is your best choice! Also, giving the constant changes of policies on different browsers, OpenPlayer integrates a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's quirks or workarounds for that.</span>
       </div>
-      <div class="col6-2" data-aos="fade-down" data-aos-delay="1500">
+      <div class="col6-2" data-aos="fade-down" data-aos-duration="1000">
         <img src="img/browsers.svg"/>
       </div>
-      <div class="col6-1" data-aos="fade-right" data-aos-delay="1500">
+      <div class="col6-1" data-aos="fade-right" data-aos-duration="1000">
         <img src="img/ads.svg"/>
       </div>
-      <div class="col4-1" data-aos="fade-left" data-aos-delay="1500">
-        <span><h2 class="tamaño200">Media Advertising support</h2><br>OpenPlayerJS integrates Google IMA SDK so users have full support for all the types of specifications for Ads in the current market: VAST/VPAID/VMAP. Just provide a valid Ads URL and let OpenPlayerJS to take care of the rest!</span>
+      <div class="col4-1" data-aos="fade-left" data-aos-duration="1000">
+        <span><h2 class="size200">Media Advertising support</h2><br>OpenPlayerJS integrates Google IMA SDK so users have full support for all the types of specifications for Ads in the current market: VAST/VPAID/VMAP. Just provide a valid Ads URL and let OpenPlayerJS to take care of the rest!</span>
       </div>
     </div>
 
 
-    <div class="container seccion2">
+    <div class="container section2">
       <h1>Try it Now!</h1>
-      <div class="espacio100"></div>
-      <div class="seccion2_cont1" data-aos="fade-left" data-aos-delay="1500">
+      <div class="space100"></div>
+      <div class="section2_cont1" data-aos="fade-left" data-aos-duration="1000">
           <form id="settings" action="#" method="POST">
             <div class="card">
               <h3 class="card-header">Media settings</h3>
@@ -152,9 +154,9 @@
             </div>
           </form>
       </div>
-      <div class="seccion2_cont2" data-aos="fade-right" data-aos-delay="1500">
+      <div class="section2_cont2" data-aos="fade-right" data-aos-duration="1000">
         <iframe title="Inline OpenPlayer" id="media" allowfullscreen scrolling="no" frameborder="0"></iframe>
-        <div class="form-group espacio_blanco">
+        <div class="form-group white_space">
           <button class="btn btn-primary mb-4" id="permalink" type="submit">Copy Permalink</button>
         </div>
       </div>

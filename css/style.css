@@ -6,6 +6,7 @@
 }
 
 header{
+  width:100%;
   position: fixed;
   top:0;
   left:0;
@@ -17,11 +18,11 @@ header{
   overflow: hidden;
 }
 .head_full{
-  width:80%;
-  margin-left:10%;
+  width:100%;
   transition: 0.6s;
   background-color:#1a1a1a;
   padding:30px 0 30px 0;
+  opacity:95%;
 }
 
 header .head_full .logo{
@@ -100,7 +101,7 @@ header .head_full .logo img{
 /*-------------------*/
 
 
-/*--------Secciones-----------*/
+/*--------Sections-----------*/
 .container0{
   height:auto
 }
@@ -124,19 +125,24 @@ audio{
   display: flex;
   overflow: hidden;
 }
-.logotipo{
-  display:flex;
+.logo{
   margin-bottom:auto;
   margin-top:auto;
   text-align: center;
 }
-.logotipo .titulo{
-  color: -webkit-linear-gradient(rgba(255,255,255,.9),rgba(255,255,255,.4));
+.logo_color{
+  font-family: 'Arrival', Times, serif;
+  font-size:70px;
+  position:relative;
+  top:-80px;
+  right:60px;
+}
+span{
+  background: -webkit-linear-gradient(#eee, #333);
   -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-.logotipo img + .titulo{
-  float: right;
-}
+
 hr{
   display:flex;
   height:10px;
@@ -150,8 +156,10 @@ hr{
   text-align: center;
   color:#fff;
   background-color:#1a1a1a;
+  overflow: hidden;
+  margin-top:-100px;
 }
-.descarga{
+.download{
   width:250px;
   height:80px;
   background-color:#d60000;
@@ -163,46 +171,46 @@ hr{
   cursor:pointer;
   transition: 0.2s;
 }
-.descarga:hover{
+.download:hover{
   width:300px;
   background-color:#f02020;
   transition: 0.2s;
 }
-.espacio200{
+.space200{
   display:flex;
   height:200px;
   background-color:#1a1a1a;
 }
-.espacio100{
+.space100{
   display:flex;
   height:100px;
 }
-.espacio50{
+.space50{
   display:flex;
   height:50px;
 }
-.columna2-1{
+.column2-1{
   width:600px;
   float:left;
   text-align: center;
-  margin-left:200px;
+  margin-left:100px;
   background-color: #ababab;
 }
-.columna2-1 ul{
+.column2-1 ul{
   background-color:#1a1a1a;
 }
-.columna2-1 ul li{
+.column2-1 ul li{
   float: left;
   border-radius: 10px;
 }
-.columna2-1 ul li a{
+.column2-1 ul li a{
   float: left;
   border-radius: 10px;
   text-decoration:none;
   color:#fff;
   padding:10px 20px 10px 20px;
 }
-.activo{
+.active{
   background-color: #ababab;
   padding:10px 20px 10px 20px;
   border-radius: 10px;
@@ -214,7 +222,7 @@ hr{
 }
 
 
-/* ---------nuevo agregado------*/
+/* ---------new content------*/
 
 .tab-content {
 	display: none;
@@ -224,17 +232,17 @@ hr{
 	display: block;
   background-color:#1a1a1a;
 }
-.columna2-1 img{
+.column2-1 img{
   display:flex;
 }
-.columna2-2{
+.column2-2{
   width:40%;
   float: right;
   text-align: left;
-  padding-right:150px;
-  margin-top:100px;
+  padding-right:1o0px;
+  margin-top:50px;
 }
-.texto1{
+.text1{
   font-size:170%;
 }
 .col4-1 span h2,
@@ -248,21 +256,21 @@ h2{
 .color{
   color:#e42800;
 }
-.color_blanco{
+.color_white{
   color:#fff;
 }
-.tamaño200{
+.size200{
   font-size:200%;
 }
-.peso100{
+.weight100{
   font-weight:100;
 }
-.peso700{
+.wieght700{
   font-weight:700;
 }
 
-.seccion1{
-  display:flex;
+.section1{
+  /*display:flex;*/
   background-color:#fff;
   height:auto;
 }
@@ -286,8 +294,9 @@ h2{
   margin-right:100px;
 }
 .col6-1 img{
+  width:100%;
   display:flex;
-  float:right;
+  /*float:right;*/
 }
 .col4-1 span h2,
 .col4-1 span{
@@ -327,34 +336,35 @@ h2{
 
 /*-------------------------------*/
 
-.seccion2{
+.section2{
   background-color:#f8f9fa;
   text-align: center;
 }
-.seccion2 h1,
-.seccion2_cont1,
-.seccion2_cont2,
-.seccion2 .espacio100,
-.seccion2 button{
+.section2 h1,
+.section2_cont1,
+.section2_cont2,
+.section2 .space100,
+.section2 button{
   background-color:#f8f9fa;
 }
-.seccion2 h1{
+.section2 h1{
   padding-top:50px;
   font-size:250%;
 }
-.seccion2_cont1{
+.section2_cont1{
   width:50%;
   float:left;
   text-align: right;
   padding:0 0 100px 0;
 }
-.seccion2_cont2{
+.section2_cont2{
   width:40%;
   float:right;
-  text-align: left;
+  text-align: center;
+  margin-right:130px;
   padding:0 0 100px 0;
 }
-.seccion2_cont2 button{
+.section2_cont2 button{
   background-color: #579381;
   color:#fff;
   border:none;
@@ -362,6 +372,7 @@ h2{
   padding:10px 30px 10px 30px;
   cursor:pointer;
   box-shadow: 10px 10px 10px #ccc;
+  margin-top:10px;
 }
 
 /*-------------------*/
@@ -427,6 +438,6 @@ form{
 .text-center{
   text-align: center;
 }
-.espacio_blanco{
+.white_space{
   background-color:#f8f9fa;
 }
