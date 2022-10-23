@@ -41,10 +41,18 @@ class Play implements PlayerComponent {
         this.#events.button = (e: Event): void => {
             this.#button.setAttribute('aria-pressed', 'true');
             const el = this.#player.activeElement();
+
             if (el.paused || el.ended) {
                 if (this.#player.getAd()) {
                     this.#player.getAd().playRequested = true;
                 }
+
+                // This will force the playback of an audio element in iOS in the event
+                // of a delay less than 1000 ms; otherwise, blocking policies will come in effect
+                if (IS_IOS && isAudio(this.#player.getElement()) && !this.#player.getElement().autoplay) {
+                    this.#player.getElement().autoplay = true;
+                }
+
                 el.play();
                 this.#events.media.play();
             } else {
@@ -73,12 +81,6 @@ class Play implements PlayerComponent {
 
                 this.#button.title = labels?.pause || '';
                 this.#button.setAttribute('aria-label', labels?.pause || '');
-
-                // This will force the playback of an audio element in iOS in the event
-                // of a delay less than 1000 ms; otherwise, blocking policies will come in effect
-                if (IS_IOS && isAudio(this.#player.getElement()) && !this.#player.getElement().autoplay) {
-                    this.#player.getElement().autoplay = true;
-                }
 
                 if (this.#player.getOptions()?.pauseOthers) {
                     Object.keys(Player.instances).forEach((key) => {

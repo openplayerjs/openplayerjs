@@ -2377,6 +2377,10 @@ var Play = function () {
             play_classPrivateFieldGet(_this, _Play_player, "f").getAd().playRequested = true;
           }
 
+          if (IS_IOS && isAudio(play_classPrivateFieldGet(_this, _Play_player, "f").getElement()) && !play_classPrivateFieldGet(_this, _Play_player, "f").getElement().autoplay) {
+            play_classPrivateFieldGet(_this, _Play_player, "f").getElement().autoplay = true;
+          }
+
           el.play();
 
           play_classPrivateFieldGet(_this, _Play_events, "f").media.play();
@@ -2413,10 +2417,6 @@ var Play = function () {
           play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.pause) || '';
 
           play_classPrivateFieldGet(_this, _Play_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.pause) || '');
-
-          if (IS_IOS && isAudio(play_classPrivateFieldGet(_this, _Play_player, "f").getElement()) && !play_classPrivateFieldGet(_this, _Play_player, "f").getElement().autoplay) {
-            play_classPrivateFieldGet(_this, _Play_player, "f").getElement().autoplay = true;
-          }
 
           if ((_a = play_classPrivateFieldGet(_this, _Play_player, "f").getOptions()) === null || _a === void 0 ? void 0 : _a.pauseOthers) {
             Object.keys(player.instances).forEach(function (key) {
