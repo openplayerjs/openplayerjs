@@ -11,7 +11,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _Play_player, _Play_button, _Play_events, _Play_controlPosition, _Play_controlLayer;
 import Player from '../player';
-import { EVENT_OPTIONS, IS_IOS } from '../utils/constants';
+import { EVENT_OPTIONS } from '../utils/constants';
 import { addEvent, isAudio } from '../utils/general';
 class Play {
     constructor(player, position, layer) {
@@ -46,9 +46,6 @@ class Play {
             if (el.paused || el.ended) {
                 if (__classPrivateFieldGet(this, _Play_player, "f").getAd()) {
                     __classPrivateFieldGet(this, _Play_player, "f").getAd().playRequested = true;
-                }
-                if (IS_IOS && isAudio(__classPrivateFieldGet(this, _Play_player, "f").getElement()) && !__classPrivateFieldGet(this, _Play_player, "f").getElement().autoplay) {
-                    __classPrivateFieldGet(this, _Play_player, "f").getElement().autoplay = true;
                 }
                 el.play();
                 __classPrivateFieldGet(this, _Play_events, "f").media.play();

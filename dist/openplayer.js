@@ -2377,10 +2377,6 @@ var Play = function () {
             play_classPrivateFieldGet(_this, _Play_player, "f").getAd().playRequested = true;
           }
 
-          if (IS_IOS && isAudio(play_classPrivateFieldGet(_this, _Play_player, "f").getElement()) && !play_classPrivateFieldGet(_this, _Play_player, "f").getElement().autoplay) {
-            play_classPrivateFieldGet(_this, _Play_player, "f").getElement().autoplay = true;
-          }
-
           el.play();
 
           play_classPrivateFieldGet(_this, _Play_events, "f").media.play();
