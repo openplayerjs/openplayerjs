@@ -1,3 +1,5 @@
+import Media from './media';
+import Ads from './media/ads';
 export interface Cue {
     readonly endTime: number;
     readonly identifier: string;
@@ -231,6 +233,7 @@ export interface PlayerOptions {
     media?: {
         pauseOnClick?: boolean;
     };
+    minimalist?: boolean;
     mode?: 'responsive' | 'fill' | 'fit';
     onError?: (e: unknown) => void;
     pauseOthers?: boolean;
@@ -264,4 +267,16 @@ export interface FullscreenElement extends HTMLElement {
     webkitRequestFullscreen?: () => void;
     webkitCancelFullScreen?: () => void;
     webkitEnterFullscreen?: () => void;
+}
+export interface MediaMethods {
+    load(): Promise<void> | void;
+    play(): Promise<void>;
+    pause(): void;
+    stop(): void;
+    destroy(): void;
+    addCaptions(args: Track): void;
+    addControl(args: ElementItem): void;
+    removeControl(controlName: string): void;
+    prepareMedia(): Promise<void>;
+    activeElement(): Media | Ads;
 }

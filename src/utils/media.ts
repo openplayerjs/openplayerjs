@@ -57,49 +57,46 @@ export const predictMimeType = (url: string, element: HTMLMediaElement): string 
 
 // @see https://raw.githubusercontent.com/googleads/googleads-ima-html5/2.11/attempt_to_autoplay/ads.js
 // @see https://github.com/Modernizr/Modernizr/issues/1095#issuecomment-304682473
-export const isAutoplaySupported = (
+export const isAutoplaySupported = async (
     media: HTMLMediaElement,
     defaultVol: number,
     autoplay: (playing: boolean) => void,
     muted: (playing: boolean) => void,
     callback: () => void
-): void => {
-    const playPromise = media.play();
-    if (playPromise !== undefined) {
-        playPromise
-            .then(() => {
-                // Unmuted autoplay works.
-                media.pause();
-                autoplay(true);
-                muted(false);
-                callback();
-            })
-            .catch(() => {
-                // Unmuted autoplay failed. New attempt with muted autoplay.
-                media.volume = 0;
-                media.muted = true;
-                media
-                    .play()
-                    .then(() => {
-                        // Muted autoplay works.
-                        media.pause();
-                        autoplay(true);
-                        muted(true);
-                        callback();
-                    })
-                    .catch(() => {
-                        // Both muted and unmuted autoplay failed. Fallback to click to play.
-                        media.volume = defaultVol;
-                        media.muted = false;
-                        autoplay(false);
-                        muted(false);
-                        callback();
-                    });
-            });
-    } else {
-        autoplay(!media.paused || ('Promise' in window && (playPromise as Promise<void>) instanceof Promise));
-        media.pause();
-        muted(false);
-        callback();
+): Promise<void> => {
+    try {
+        const playPromise = await media.play();
+        if (playPromise !== undefined) {
+            // Unmuted autoplay works.
+            media.pause();
+            autoplay(true);
+            muted(false);
+            callback();
+        } else {
+            autoplay(!media.paused);
+            media.pause();
+            muted(false);
+            callback();
+        }
+    } catch (err) {
+        // Unmuted autoplay failed. New attempt with muted autoplay.
+        media.volume = 0;
+        media.muted = true;
+
+        try {
+            await media.play();
+            // Muted autoplay works.
+            media.pause();
+            autoplay(true);
+            muted(true);
+            callback();
+        } catch (e) {
+            // Both muted and unmuted autoplay failed. Fallback to click to play.
+            media.volume = defaultVol;
+            media.muted = false;
+            autoplay(false);
+            muted(false);
+            callback();
+        }
     }
 };

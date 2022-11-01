@@ -36,9 +36,6 @@ class Player {
 
     playBtn: HTMLButtonElement;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proxy: any = null;
-
     #controls: Controls;
 
     #adsInstance: Ads;
@@ -117,6 +114,7 @@ class Player {
         media: {
             pauseOnClick: false,
         },
+        minimalist: false,
         mode: 'responsive', // or `fill` or `fit`
         onError: (e: unknown) => console.error(e),
         pauseOthers: true,
@@ -152,20 +150,26 @@ class Player {
             }
             this.#volume = this.#element.volume;
         }
+
         this._autoplay = this._autoplay.bind(this);
         this._enableKeyBindings = this._enableKeyBindings.bind(this);
     }
 
     async init(): Promise<void> {
-        if (this._isValid()) {
+        if (!this._isValid()) {
+            return;
+        }
+
+        this._generateID();
+        await this.prepareMedia();
+
+        if (!this.#options.minimalist) {
             this._wrapInstance();
-            await this.prepareMedia();
             this._createPlayButton();
-            this._createUID();
             this._createControls();
             this._setEvents();
-            Player.instances[this.id] = this;
         }
+        Player.instances[this.id] = this;
     }
 
     async load(): Promise<void> {
@@ -388,25 +392,6 @@ class Player {
         }
     }
 
-    enableDefaultPlayer(): void {
-        let paused = true;
-        let currentTime = 0;
-
-        if (this.proxy && !this.proxy.paused) {
-            paused = false;
-            currentTime = this.proxy.currentTime;
-            this.proxy.pause();
-        }
-
-        this.proxy = this;
-        this.getElement().addEventListener('loadedmetadata', (): void => {
-            this.getMedia().currentTime = currentTime;
-            if (!paused) {
-                this.play();
-            }
-        });
-    }
-
     async loadAd(src: string | string[]): Promise<void> {
         try {
             if (this.isAd()) {
@@ -552,7 +537,7 @@ class Player {
         this.#controls.create();
     }
 
-    private _createUID(): void {
+    private _generateID(): void {
         if (this.#element.id) {
             this.#uid = this.#element.id;
             this.#element.removeAttribute('id');
@@ -703,12 +688,12 @@ class Player {
         this.getContainer().addEventListener('keydown', this._enableKeyBindings, EVENT_OPTIONS);
     }
 
-    private _autoplay(): void {
+    private async _autoplay(): Promise<void> {
         if (!this.#processedAutoplay) {
             this.#processedAutoplay = true;
             this.#element.removeEventListener('canplay', this._autoplay);
 
-            isAutoplaySupported(
+            await isAutoplaySupported(
                 this.#element,
                 this.#volume,
                 (autoplay) => {
@@ -808,24 +793,23 @@ class Player {
     }
 
     private _enableKeyBindings(e: KeyboardEvent): void {
-        const key = e.which || e.keyCode || 0;
+        const key = e.key || '';
         const el = this.activeElement();
         const isAd = this.isAd();
         const playerFocused = document?.activeElement?.classList.contains('op-player');
 
         switch (key) {
-            // Toggle play/pause using letter K, Tab or Enter
-            case 13:
-            case 32:
-            case 75:
+            case 'Enter':
+            case 'K':
+            case ' ':
                 // Avoid interference of Enter/Space keys when focused in the player container
-                if (playerFocused && (key === 13 || key === 32)) {
+                if (playerFocused && (key === ' ' || key === 'Enter')) {
                     if (el.paused) {
                         el.play();
                     } else {
                         el.pause();
                     }
-                } else if (key === 75) {
+                } else if (key === 'K') {
                     if (el.paused) {
                         el.play();
                     } else {
@@ -835,38 +819,35 @@ class Player {
                 e.preventDefault();
                 e.stopPropagation();
                 break;
-            // End key ends video
-            case 35:
+            case 'End':
                 if (!isAd && el.duration !== Infinity) {
                     el.currentTime = el.duration;
                     e.preventDefault();
                     e.stopPropagation();
                 }
                 break;
-            // Home key resets progress
-            case 36:
+            case 'Home':
                 if (!isAd) {
                     el.currentTime = 0;
                     e.preventDefault();
                     e.stopPropagation();
                 }
                 break;
-            // Use the left and right arrow keys to manipulate current media time.
-            // Letter J/L will set double of step forward/backward
-            case 37:
-            case 39:
-            case 74:
-            case 76:
+            case 'ArrowLeft':
+            case 'ArrowRight':
+            case 'J':
+            case 'L':
                 if (!isAd && el.duration !== Infinity) {
+                    // Letters L/J will be used to control the step
                     let newStep = 5;
                     const configStep = this.getOptions().step;
                     if (configStep) {
-                        newStep = key === 74 || key === 76 ? configStep * 2 : configStep;
-                    } else if (key === 74 || key === 76) {
+                        newStep = key === 'J' || key === 'L' ? configStep * 2 : configStep;
+                    } else if (key === 'J' || key === 'L') {
                         newStep = 10;
                     }
                     const step = el.duration !== Infinity ? newStep : this.getOptions().progress?.duration || 0;
-                    el.currentTime += key === 37 || key === 74 ? step * -1 : step;
+                    el.currentTime += key === 'ArrowRight' || key === 'J' ? step * -1 : step;
                     if (el.currentTime < 0) {
                         el.currentTime = 0;
                     } else if (el.currentTime >= el.duration) {
@@ -876,17 +857,15 @@ class Player {
                     e.stopPropagation();
                 }
                 break;
-            // Use the up/down arrow keys to manipulate volume.
-            case 38:
-            case 40:
-                const newVol = key === 38 ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
+            case 'ArrowUp':
+            case 'ArrowDown':
+                const newVol = key === 'ArrowUp' ? Math.min(el.volume + 0.1, 1) : Math.max(el.volume - 0.1, 0);
                 el.volume = newVol;
                 el.muted = !(newVol > 0);
                 e.preventDefault();
                 e.stopPropagation();
                 break;
-            // Letter F sets fullscreen (only video)
-            case 70:
+            case 'F':
                 if (isVideo(this.#element) && !e.ctrlKey) {
                     this.#fullscreen = new Fullscreen(this, '', '');
                     if (typeof this.#fullscreen.fullScreenEnabled !== 'undefined') {
@@ -896,8 +875,7 @@ class Player {
                     }
                 }
                 break;
-            // Letter M toggles mute
-            case 77:
+            case 'M':
                 el.muted = !el.muted;
                 if (el.muted) {
                     el.volume = 0;
@@ -907,14 +885,12 @@ class Player {
                 e.preventDefault();
                 e.stopPropagation();
                 break;
-            // < and > will decrease/increase the speed of playback by 0.25
-            // , and . will go to the prev/next frame of the media
-            case 188:
-            case 190:
+            case '<':
+            case '>':
                 if (!isAd && e.shiftKey) {
                     const elem = el as Media;
                     elem.playbackRate =
-                        key === 188 ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
+                        key === '<' ? Math.max(elem.playbackRate - 0.25, 0.25) : Math.min(elem.playbackRate + 0.25, 2);
                     // Show playbackRate and update controls to reflect change in settings
                     const target = this.getContainer().querySelector('.op-status>span');
                     if (target) {
@@ -933,7 +909,7 @@ class Player {
                     e.preventDefault();
                     e.stopPropagation();
                 } else if (!isAd && el.paused) {
-                    el.currentTime += (1 / 25) * (key === 188 ? -1 : 1);
+                    el.currentTime += (1 / 25) * (key === '<' ? -1 : 1);
                     e.preventDefault();
                     e.stopPropagation();
                 }

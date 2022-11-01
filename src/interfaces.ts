@@ -248,6 +248,7 @@ export interface PlayerOptions {
     media?: {
         pauseOnClick?: boolean;
     };
+    minimalist?: boolean;
     mode?: 'responsive' | 'fill' | 'fit';
     onError?: (e: unknown) => void;
     pauseOthers?: boolean;

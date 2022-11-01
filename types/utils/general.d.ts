@@ -1,7 +1,7 @@
 export declare function getAbsoluteUrl(url: string): string;
 export declare function isVideo(element: Element): boolean;
 export declare function isAudio(element: Element): boolean;
-export declare function loadScript(url: string): Promise<void>;
+export declare function loadScript(src: string, async?: boolean): Promise<void>;
 export declare function offset(el: HTMLElement): {
     left: number;
     top: number;

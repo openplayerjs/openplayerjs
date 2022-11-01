@@ -19,8 +19,6 @@ export const navigator = (): NavigatorExtended | null => window?.navigator;
 
 const getUserAgent = (): string | null => navigator()?.userAgent?.toLowerCase() || null;
 
-export const isMobile = (): boolean => false;
-
 export const isIPhone = (): boolean => /iphone/i.test(getUserAgent() || '') && !window.MSStream;
 
 export const isIOS = (): boolean => /ipad|iphone|ipod/i.test(getUserAgent() || '') && !window.MSStream;

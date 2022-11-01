@@ -8,4 +8,4 @@ coverage/
 .nyc_output
 .coveralls.yml
 test/index.html
-dist/
+dist/*

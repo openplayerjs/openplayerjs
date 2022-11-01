@@ -4,7 +4,7 @@ declare abstract class Native {
     element: HTMLMediaElement;
     media: Source;
     promise: Promise<unknown>;
-    constructor(element: HTMLMediaElement, media: Source);
+    constructor(element: HTMLMediaElement, media?: Source);
     abstract canPlayType(mimeType: string): boolean;
     abstract load(): void;
     abstract destroy(): void;

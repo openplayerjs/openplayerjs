@@ -2,7 +2,7 @@ import { Level, Source } from '../interfaces';
 import Native from './native';
 declare class HTML5Media extends Native {
     #private;
-    constructor(element: HTMLMediaElement, mediaFile: Source);
+    constructor(element: HTMLMediaElement, mediaFile?: Source);
     canPlayType(mimeType: string): boolean;
     load(): void;
     destroy(): void;
@@ -10,6 +10,7 @@ declare class HTML5Media extends Native {
     set level(level: string);
     get level(): string;
     set src(media: Source);
+    get src(): Source;
     private _isDvrEnabled;
     private _readMediadataInfo;
     private _setTimeout;
