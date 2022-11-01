@@ -24,15 +24,7 @@
       "esModuleInterop": true,
       "strictPropertyInitialization": false
   },
-  "include": [
-      "./src/js",
-      "./test"
-  ],
-  "exclude": [
-      "node_modules",
-      "ts-dist",
-      "dist",
-      "test",
-      "webpack.config.js"
-  ],
+  "files": ["./global.d.ts"],
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules", "ts-dist", "dist", "webpack.config.js"]
 }

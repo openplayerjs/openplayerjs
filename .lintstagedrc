@@ -2,7 +2,7 @@
     "*.{js,ts}": [
         "prettier --write",
         "eslint --fix",
-        "npm run test:sources",
+        "npm run test:changes",
         "git add --all"
     ],
     "src/js/**/*.json": [
