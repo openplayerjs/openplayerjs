@@ -1,5 +1,5 @@
 import { CustomMedia, Level, PlayerOptions, Source } from './interfaces';
-declare class Media {
+export default class Media {
     #private;
     constructor(element: HTMLMediaElement, options: PlayerOptions, autoplay: boolean, customMedia: CustomMedia);
     canPlayType(mimeType: string): boolean;
@@ -31,7 +31,7 @@ declare class Media {
     get level(): number | string | Level;
     get levels(): Level[];
     get instance(): Media | null;
+    get element(): HTMLMediaElement;
     private _getMediaFiles;
     private _invoke;
 }
-export default Media;

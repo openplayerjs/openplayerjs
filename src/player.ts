@@ -1,23 +1,13 @@
 import Controls from './controls';
 import Fullscreen from './controls/fullscreen';
-import {
-    CustomMedia,
-    ElementItem,
-    EventsList,
-    Languages,
-    MediaMethods,
-    PlayerLabels,
-    PlayerOptions,
-    Source,
-    Track,
-} from './interfaces';
+import { CustomMedia, ElementItem, EventsList, MediaMethods, PlayerOptions, Source, Track } from './interfaces';
 import Media from './media';
 import Ads from './media/ads';
 import { EVENT_OPTIONS, isAndroid, isIOS, isIPhone } from './utils/constants';
-import { addEvent, isAudio, isVideo, sanitize } from './utils/general';
+import { addEvent, isAudio, isVideo } from './utils/general';
 import { isAutoplaySupported, predictMimeType } from './utils/media';
 
-class Player {
+export default class Player {
     static instances: { [id: string]: MediaMethods } = {};
 
     static customMedia: CustomMedia = {
@@ -138,7 +128,19 @@ class Player {
         if (this.#element) {
             this.#autoplay = this.#element.autoplay || false;
             if (typeof options !== 'string' && !Array.isArray(options)) {
-                this._mergeOptions(options);
+                this.#options = { ...this.#defaultOptions, ...options };
+                const complexOptions = Object.keys(this.#defaultOptions).filter(
+                    (key) => typeof this.#defaultOptions[key] === 'object'
+                );
+                complexOptions.forEach((key) => {
+                    const currOption = options ? options[key] || {} : {};
+                    if (Object.keys(currOption).length) {
+                        this.#options[key] = {
+                            ...(this.#defaultOptions[key] as Record<string, unknown>),
+                            ...(currOption as Record<string, unknown>),
+                        };
+                    }
+                });
             }
             this.#element.volume = this.#options.startVolume || 1;
 
@@ -160,11 +162,11 @@ class Player {
             return;
         }
 
+        this._wrapInstance();
         this._generateID();
         await this.prepareMedia();
 
         if (!this.#options.minimalist) {
-            this._wrapInstance();
             this._createPlayButton();
             this._createControls();
             this._setEvents();
@@ -175,10 +177,8 @@ class Player {
     async load(): Promise<void> {
         if (!this.#media) {
             await this.prepareMedia();
-            return (this.#media as Media).load();
+            await (this.#media as Media).load();
         }
-        this.#media.loaded = false;
-        return this.isMedia() ? this.#media.load() : undefined;
     }
 
     async play(): Promise<void> {
@@ -187,8 +187,6 @@ class Player {
             this.#media.loaded = true;
         }
         if (this.#adsInstance) {
-            this.#adsInstance.playRequested = true;
-            await this.#adsInstance.loadPromise;
             return this.#adsInstance.play();
         }
         return this.#media.play();
@@ -385,7 +383,8 @@ class Player {
 
             if (!this.#autoplay && this.#ads) {
                 const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
-                this.#adsInstance = new Ads(this, this.#ads, false, false, adsOptions);
+                this.#adsInstance = new Ads(this.#media, this.#ads, false, false, adsOptions);
+                await this.#adsInstance.load();
             }
         } catch (e) {
             console.error(e);
@@ -397,12 +396,12 @@ class Player {
             if (this.isAd()) {
                 this.getAd().destroy();
                 this.getAd().src = src;
-                this.getAd().loadedAd = false;
-                this.getAd().load();
+                await this.getAd().load();
             } else {
                 const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
                 const autoplay = !this.activeElement().paused || this.#canAutoplay;
-                this.#adsInstance = new Ads(this, src, autoplay, this.#canAutoplayMuted, adsOptions);
+                this.#adsInstance = new Ads(this.#media, src, autoplay, this.#canAutoplayMuted, adsOptions);
+                await this.#adsInstance.load();
             }
         } catch (err) {
             console.error(err);
@@ -533,8 +532,17 @@ class Player {
         if (isIPhone() && isVideo(this.#element)) {
             this.getContainer().classList.add('op-player__ios--iphone');
         }
+
         this.#controls = new Controls(this);
         this.#controls.create();
+
+        if (isAudio(this.#element) && this.#options.ads?.audioSkip?.enabled) {
+            if (!this.#options.ads?.audioSkip?.element) {
+                const skipControl = document.createElement('button');
+                skipControl.className = 'op-ads__skip hidden';
+                this.#controls.getContainer().appendChild(skipControl);
+            }
+        }
     }
 
     private _generateID(): void {
@@ -580,9 +588,6 @@ class Player {
         this.playBtn.addEventListener(
             'click',
             (): void => {
-                if (this.#adsInstance) {
-                    this.#adsInstance.playRequested = this.activeElement().paused;
-                }
                 if (this.activeElement().paused) {
                     this.activeElement().play();
                 } else {
@@ -702,7 +707,7 @@ class Player {
                 (muted) => {
                     this.#canAutoplayMuted = muted;
                 },
-                (): void => {
+                async (): Promise<void> => {
                     if (this.#canAutoplayMuted) {
                         this.activeElement().muted = true;
                         this.activeElement().volume = 0;
@@ -741,54 +746,18 @@ class Player {
                     if (this.#ads) {
                         const adsOptions = this.#options && this.#options.ads ? this.#options.ads : undefined;
                         this.#adsInstance = new Ads(
-                            this,
+                            this.#media,
                             this.#ads,
                             this.#canAutoplay,
                             this.#canAutoplayMuted,
                             adsOptions
                         );
+                        await this.#adsInstance.load();
                     } else if (this.#canAutoplay || this.#canAutoplayMuted) {
-                        this.play();
+                        await this.play();
                     }
                 }
             );
-        }
-    }
-
-    private _mergeOptions(playerOptions?: PlayerOptions): void {
-        const opts = { ...(playerOptions || {}) };
-        this.#options = { ...this.#defaultOptions, ...opts };
-        const complexOptions = Object.keys(this.#defaultOptions).filter(
-            (key) => key !== 'labels' && typeof this.#defaultOptions[key] === 'object'
-        );
-        complexOptions.forEach((key) => {
-            const currOption = (opts[key] as Record<string, unknown>) || {};
-            if (currOption && Object.keys(currOption).length) {
-                this.#options[key] = { ...(this.#defaultOptions[key] as Record<string, unknown>), ...currOption };
-            }
-        });
-        if (opts.labels) {
-            const keys = opts.labels ? Object.keys(opts.labels) : [];
-            let sanitizedLabels: PlayerLabels = {};
-
-            keys.forEach((key) => {
-                const current = opts.labels ? opts.labels[key as keyof PlayerLabels] : null;
-                if (current && typeof current === 'object' && key === 'lang') {
-                    Object.keys(current).forEach((k) => {
-                        const lang = current ? (current as Languages)[k] : null;
-                        if (lang) {
-                            sanitizedLabels = {
-                                ...sanitizedLabels,
-                                lang: { ...sanitizedLabels.lang, [k]: sanitize(lang as string) },
-                            };
-                        }
-                    });
-                } else if (current) {
-                    sanitizedLabels = { ...sanitizedLabels, [key]: sanitize(current as string) };
-                }
-            });
-
-            this.#options.labels = { ...this.#defaultOptions.labels, ...sanitizedLabels };
         }
     }
 
@@ -919,8 +888,6 @@ class Player {
         }
     }
 }
-
-export default Player;
 
 // Expose element globally.
 if (typeof window !== 'undefined') {

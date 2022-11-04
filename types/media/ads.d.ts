@@ -1,21 +1,23 @@
 import { AdsOptions } from '../interfaces';
-import Player from '../player';
-declare class Ads {
+import Media from '../media';
+export default class Ads {
     #private;
-    loadPromise: unknown;
-    loadedAd: boolean;
-    constructor(player: Player, ads: string | string[], autostart?: boolean, autostartMuted?: boolean, options?: AdsOptions);
-    load(force?: boolean): void;
+    constructor(
+        media: Media,
+        ads: string | string[],
+        autostart?: boolean,
+        autostartMuted?: boolean,
+        options?: AdsOptions
+    );
+    load(force?: boolean): Promise<void>;
     play(): Promise<void>;
     pause(): void;
-    destroy(): void;
     resizeAds(width?: number, height?: number): void;
     getAdsManager(): unknown;
     getAdsLoader(): any;
     started(): boolean;
+    destroy(): void;
     set src(source: string | string[]);
-    set isDone(value: boolean);
-    set playRequested(value: boolean);
     set volume(value: number);
     get volume(): number;
     set muted(value: boolean);
@@ -25,28 +27,24 @@ declare class Ads {
     get duration(): number;
     get paused(): boolean;
     get ended(): boolean;
-    private _assign;
-    private _error;
-    private _loaded;
-    private _start;
-    private _initNotDoneAds;
-    private _contentEndedListener;
-    private _onContentPauseRequested;
-    private _onContentResumeRequested;
-    private _loadedMetadataHandler;
-    private _resumeMedia;
-    private _requestAds;
-    /**
-     * Internal callback to request Ads.
-     *
-     * @memberof Ads
-     */
-    private _contentLoadedAction;
-    private _resetAdsAfterManualBreak;
-    private _prepareMedia;
-    private _setMediaVolume;
+    private _loadIMA;
+    private _setAdSettings;
+    private _loadAdsContainer;
+    private _loadAdsLoader;
     private _handleClickInContainer;
+    private _requestAds;
+    private _setMediaVolume;
     private _handleResizeAds;
+    private _createCustomClick;
+    private _createSkipElement;
     private _handleSkipAds;
+    private _onError;
+    private _onAdsManagerLoaded;
+    private _onEvent;
+    private _onPreloadContent;
+    private _onMetadataLoaded;
+    private _loadAds;
+    private _onPlay;
+    private _onPause;
+    private _onEnded;
 }
-export default Ads;

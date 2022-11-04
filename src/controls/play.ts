@@ -1,9 +1,9 @@
 import { EventsList, PlayerComponent } from '../interfaces';
 import Player from '../player';
 import { EVENT_OPTIONS } from '../utils/constants';
-import { addEvent, isAudio } from '../utils/general';
+import { addEvent, isAudio, sanitize } from '../utils/general';
 
-class Play implements PlayerComponent {
+export default class Play implements PlayerComponent {
     #player: Player;
 
     #button: HTMLButtonElement;
@@ -27,14 +27,17 @@ class Play implements PlayerComponent {
 
     create(): void {
         const { labels } = this.#player.getOptions();
+        const playLabel = sanitize(labels?.play || '');
+        const pauseLabel = sanitize(labels?.pause || '');
+
         this.#button = document.createElement('button');
         this.#button.type = 'button';
         this.#button.className = `op-controls__playpause op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
-        this.#button.title = labels?.play || '';
+        this.#button.title = playLabel;
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-pressed', 'false');
-        this.#button.setAttribute('aria-label', labels?.play || '');
+        this.#button.setAttribute('aria-label', playLabel);
 
         this.#player.getControls().getLayer(this.#controlLayer).appendChild(this.#button);
 
@@ -43,10 +46,6 @@ class Play implements PlayerComponent {
             const el = this.#player.activeElement();
 
             if (el.paused || el.ended) {
-                if (this.#player.getAd()) {
-                    this.#player.getAd().playRequested = true;
-                }
-
                 el.play();
                 this.#events.media.play();
             } else {
@@ -67,14 +66,13 @@ class Play implements PlayerComponent {
                 } else {
                     this.#button.classList.add('op-controls__playpause--pause');
                 }
-                this.#button.title = labels?.play || '';
-                this.#button.setAttribute('aria-label', labels?.play || '');
+                this.#button.title = playLabel;
+                this.#button.setAttribute('aria-label', playLabel);
             } else {
                 this.#button.classList.remove('op-controls__playpause--replay');
                 this.#button.classList.add('op-controls__playpause--pause');
-
-                this.#button.title = labels?.pause || '';
-                this.#button.setAttribute('aria-label', labels?.pause || '');
+                this.#button.title = pauseLabel;
+                this.#button.setAttribute('aria-label', pauseLabel);
 
                 if (this.#player.getOptions()?.pauseOthers) {
                     Object.keys(Player.instances).forEach((key) => {
@@ -90,22 +88,22 @@ class Play implements PlayerComponent {
             if (this.#button.classList.contains('op-controls__playpause--pause')) {
                 this.#button.classList.remove('op-controls__playpause--replay');
                 this.#button.classList.remove('op-controls__playpause--pause');
-                this.#button.title = labels?.play || '';
-                this.#button.setAttribute('aria-label', labels?.play || '');
+                this.#button.title = playLabel;
+                this.#button.setAttribute('aria-label', playLabel);
             }
         };
         this.#events.media.playing = (): void => {
             if (!this.#button.classList.contains('op-controls__playpause--pause')) {
                 this.#button.classList.remove('op-controls__playpause--replay');
                 this.#button.classList.add('op-controls__playpause--pause');
-                this.#button.title = labels?.pause || '';
-                this.#button.setAttribute('aria-label', labels?.pause || '');
+                this.#button.title = pauseLabel;
+                this.#button.setAttribute('aria-label', pauseLabel);
             }
         };
         this.#events.media.pause = (): void => {
             this.#button.classList.remove('op-controls__playpause--pause');
-            this.#button.title = labels?.play || '';
-            this.#button.setAttribute('aria-label', labels?.play || '');
+            this.#button.title = playLabel;
+            this.#button.setAttribute('aria-label', playLabel);
         };
         this.#events.media.ended = (): void => {
             if (this.#player.activeElement().ended && this.#player.isMedia()) {
@@ -121,14 +119,14 @@ class Play implements PlayerComponent {
                 this.#button.classList.remove('op-controls__playpause--replay');
                 this.#button.classList.add('op-controls__playpause--pause');
             }
-            this.#button.title = labels?.play || '';
-            this.#button.setAttribute('aria-label', labels?.play || '');
+            this.#button.title = playLabel;
+            this.#button.setAttribute('aria-label', playLabel);
         };
         this.#events.media.adsmediaended = (): void => {
             this.#button.classList.remove('op-controls__playpause--replay');
             this.#button.classList.add('op-controls__playpause--pause');
-            this.#button.title = labels?.pause || '';
-            this.#button.setAttribute('aria-label', labels?.pause || '');
+            this.#button.title = pauseLabel;
+            this.#button.setAttribute('aria-label', pauseLabel);
         };
         this.#events.media.playererror = (): void => {
             if (isAudioEl) {
@@ -189,5 +187,3 @@ class Play implements PlayerComponent {
         }
     }
 }
-
-export default Play;

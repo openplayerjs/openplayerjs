@@ -3,7 +3,7 @@ import HlsMedia from './media/hls';
 import HTML5Media from './media/html5';
 import * as source from './utils/media';
 
-class Media {
+export default class Media {
     #element: HTMLMediaElement;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -253,6 +253,10 @@ class Media {
         return this.#media ? this.#media.instance : null;
     }
 
+    get element(): HTMLMediaElement {
+        return this.#element;
+    }
+
     private _getMediaFiles(): Source[] {
         const mediaFiles = [];
         const sourceTags = this.#element.querySelectorAll('source');
@@ -341,5 +345,3 @@ class Media {
         return new HTML5Media(this.#element, media);
     }
 }
-
-export default Media;

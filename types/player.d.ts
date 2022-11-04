@@ -2,7 +2,7 @@ import Controls from './controls';
 import { CustomMedia, ElementItem, EventsList, MediaMethods, PlayerOptions, Source, Track } from './interfaces';
 import Media from './media';
 import Ads from './media/ads';
-declare class Player {
+export default class Player {
     #private;
     static instances: {
         [id: string]: MediaMethods;
@@ -45,7 +45,5 @@ declare class Player {
     private _createPlayButton;
     private _setEvents;
     private _autoplay;
-    private _mergeOptions;
     private _enableKeyBindings;
 }
-export default Player;

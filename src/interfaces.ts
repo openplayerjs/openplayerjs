@@ -93,7 +93,7 @@ export interface AdsOptions {
     readonly debug?: boolean;
     readonly enablePreloading?: boolean;
     readonly language?: string;
-    readonly loop?: boolean;
+    readonly live?: boolean;
     readonly numRedirects?: number;
     readonly publisherId?: string | number;
     sdkPath?: string;

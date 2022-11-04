@@ -1,420 +1,215 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AdsOptions, Source } from '../interfaces';
+import { AdsOptions } from '../interfaces';
 import Media from '../media';
-import Player from '../player';
 import { EVENT_OPTIONS, isAndroid, isIOS, isIPhone } from '../utils/constants';
-import { addEvent, isAudio, isVideo, isXml, loadScript } from '../utils/general';
+import { addEvent, isAudio, isVideo, isXml, loadScript, sanitize } from '../utils/general';
 
 declare const google: any;
 
-// @see https://developers.google.com/interactive-media-ads/
-class Ads {
-    loadPromise: unknown;
-
-    loadedAd = false;
-
-    #ended = false;
-
-    #done = false;
-
-    #active = false;
-
-    #started = false;
-
-    #intervalTimer = 0;
-
-    #volume: number;
-
-    #muted = false;
-
-    #duration = 0;
-
-    #currentTime = 0;
-
-    // @see https://tinyurl.com/ybjas4ut
-    #manager: any = null;
-
-    #player: Player;
-
-    #media: Media;
-
-    #element: HTMLMediaElement;
-
-    #events: string[] = [];
-
-    #ads: string | string[];
-
-    #promise: Promise<void>;
-
-    // @see https://tinyurl.com/ycwp4ufd
+export default class Ads {
     #loader: any;
-
-    #container?: HTMLDivElement;
-
-    #customClickContainer?: HTMLDivElement;
-
-    #skipElement?: HTMLElement;
-
-    // @see https://tinyurl.com/ya3zksso
-    #displayContainer: any;
-
-    // @see https://tinyurl.com/ya8bxjf4
-    #request: any;
 
     #autostart = false;
 
     #autostartMuted = false;
 
-    #playTriggered = false;
+    #playing = false;
+
+    #ended = false;
+
+    #volume = 1;
+
+    #mediaVolume = 1;
+
+    #duration = 0;
+
+    #currentTime = 0;
+
+    #currentSavedTime = 0;
+
+    #prefetchSeconds = 30;
+
+    #muted = false;
+
+    #events: string[] = [];
+
+    #media: Media;
+
+    #container: HTMLDivElement;
+
+    #clickContainer: HTMLDivElement;
+
+    #displayContainer: any;
+
+    #manager: any;
+
+    #request: any;
+
+    #skipElement?: HTMLElement;
+
+    #index = 0;
+
+    #initialized = false;
+
+    #started = false;
+
+    #ads: string | string[];
 
     #options: AdsOptions;
 
-    #currentIndex = 0;
-
-    #originalVolume: number;
-
-    #preloadContent: any;
-
-    #lastTimePaused = 0;
-
-    #mediaSources: Source[] = [];
-
-    #mediaStarted = false;
-
     #adEvent: any = null;
 
+    #timer = 0;
+
+    #defaultOptions: AdsOptions = {
+        autoPlayAdBreaks: true,
+        customClick: {
+            enabled: false,
+            label: 'Click here for more info',
+        },
+        audioSkip: {
+            enabled: true,
+            label: 'Skip Ad',
+            remainingLabel: 'Skip in [[secs]] seconds',
+        },
+        debug: false,
+        enablePreloading: false,
+        language: 'en',
+        live: false,
+        numRedirects: 4,
+        publisherId: undefined,
+        sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+        sessionId: undefined,
+        src: [],
+        vpaidMode: 'enabled',
+    };
+
     constructor(
-        player: Player,
+        media: Media,
         ads: string | string[],
         autostart?: boolean,
         autostartMuted?: boolean,
         options?: AdsOptions
     ) {
-        const defaultOpts: AdsOptions = {
-            autoPlayAdBreaks: true,
-            customClick: {
-                enabled: false,
-                label: 'Click here for more info',
-            },
-            audioSkip: {
-                enabled: true,
-                label: 'Skip Ad',
-                remainingLabel: 'Skip in [[secs]] seconds',
-            },
-            debug: false,
-            enablePreloading: false,
-            language: 'en',
-            loop: false,
-            numRedirects: 4,
-            publisherId: undefined,
-            sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-            sessionId: undefined,
-            src: [],
-            vpaidMode: 'enabled',
-        };
-        this.#player = player;
         this.#ads = ads;
-        this.#media = player.getMedia();
-        this.#element = player.getElement();
+        this.#media = media;
         this.#autostart = autostart || false;
-        this.#muted = player.getElement().muted;
         this.#autostartMuted = autostartMuted || false;
-        this.#options = { ...defaultOpts, ...options };
-        if (options?.customClick && Object.keys(options.customClick).length) {
-            this.#options.customClick = { ...defaultOpts.customClick, ...options.customClick };
+        this.#mediaVolume = this.#media.element.volume;
+        this.#options = { ...this.#defaultOptions, ...options };
+        if (options?.audioSkip && Object.keys(options.audioSkip).length) {
+            this.#options.audioSkip = { ...this.#defaultOptions.audioSkip, ...options.audioSkip };
         }
-        this.#playTriggered = false;
-        this.#originalVolume = this.#element.volume;
-        this.#volume = this.#originalVolume;
+        if (options?.customClick && Object.keys(options.customClick).length) {
+            this.#options.customClick = { ...this.#defaultOptions.customClick, ...options.customClick };
+        }
 
-        const path = this.#options?.debug
-            ? this.#options?.sdkPath?.replace(/(\.js$)/, '_debug.js')
-            : this.#options?.sdkPath;
-
-        this.load = this.load.bind(this);
-        this.resizeAds = this.resizeAds.bind(this);
+        this._loadAds = this._loadAds.bind(this);
         this._handleClickInContainer = this._handleClickInContainer.bind(this);
-        this._handleSkipAds = this._handleSkipAds.bind(this);
-        this._loaded = this._loaded.bind(this);
-        this._error = this._error.bind(this);
-        this._assign = this._assign.bind(this);
-        this._contentLoadedAction = this._contentLoadedAction.bind(this);
-        this._loadedMetadataHandler = this._loadedMetadataHandler.bind(this);
-        this._contentEndedListener = this._contentEndedListener.bind(this);
         this._handleResizeAds = this._handleResizeAds.bind(this);
-        this._onContentPauseRequested = this._onContentPauseRequested.bind(this);
-        this._onContentResumeRequested = this._onContentResumeRequested.bind(this);
-
-        this.#promise =
-            path && (typeof google === 'undefined' || typeof google.ima === 'undefined')
-                ? loadScript(path)
-                : new Promise((resolve) => {
-                      resolve();
-                  });
-
-        this.#promise
-            .then(() => {
-                this.load();
-            })
-            .catch((error) => {
-                let message = 'Ad script could not be loaded; please check if you have an AdBlock ';
-                message += 'turned on, or if you provided a valid URL is correct';
-                console.error(`Ad error: ${message}.`);
-
-                const details = {
-                    detail: {
-                        data: error,
-                        message,
-                        type: 'Ads',
-                    },
-                };
-                const errorEvent = addEvent('playererror', details);
-                this.#element.dispatchEvent(errorEvent);
-            });
+        this._handleSkipAds = this._handleSkipAds.bind(this);
+        this._onError = this._onError.bind(this);
+        this._onAdsManagerLoaded = this._onAdsManagerLoaded.bind(this);
+        this._onMetadataLoaded = this._onMetadataLoaded.bind(this);
+        this._onEvent = this._onEvent.bind(this);
+        this._onPlay = this._onPlay.bind(this);
+        this._onPause = this._onPause.bind(this);
+        this._onEnded = this._onEnded.bind(this);
     }
 
-    load(force = false): void {
-        if (
-            typeof google === 'undefined' ||
-            !google.ima ||
-            (!force && this.loadedAd && this.#options.autoPlayAdBreaks)
-        ) {
+    async load(force = false): Promise<void> {
+        await this._loadIMA();
+
+        if (!force && !this.#options.autoPlayAdBreaks) {
             return;
-        }
-
-        // If we have set `autoPlayAdBreaks` to false and haven't set the force flag, don't load ads yet
-        if (!this.#options.autoPlayAdBreaks && !force) {
-            return;
-        }
-
-        this.loadedAd = true;
-
-        const existingContainer = this.#player.getContainer().querySelector('.op-ads');
-        if (existingContainer && existingContainer.parentNode) {
-            existingContainer.parentNode.removeChild(existingContainer);
         }
 
         this.#started = true;
-        this.#container = document.createElement('div');
-        this.#container.className = 'op-ads';
-        this.#container.tabIndex = -1;
-        if (this.#element.parentElement) {
-            this.#element.parentElement.insertBefore(this.#container, this.#element.nextSibling);
-        }
-        this.#container.addEventListener('click', this._handleClickInContainer);
 
-        if (this.#options.customClick?.enabled) {
-            this.#customClickContainer = document.createElement('div');
-            this.#customClickContainer.className = 'op-ads__click-container';
-            this.#customClickContainer.innerHTML = `<div class="op-ads__click-label">${
-                this.#options.customClick.label
-            }</div>`;
-            if (this.#element.parentElement) {
-                this.#element.parentElement.insertBefore(this.#customClickContainer, this.#element.nextSibling);
+        this._setAdSettings();
+        this._createCustomClick();
+        this._createSkipElement();
+        this._loadAdsContainer();
+        this._loadAdsLoader();
+
+        if (force) {
+            this._requestAds();
+            if (!this.#options.autoPlayAdBreaks) {
+                this.#initialized = true;
             }
         }
 
-        if (isAudio(this.#element) && this.#options.audioSkip?.enabled) {
-            if (this.#options.audioSkip?.element) {
-                const { element } = this.#options.audioSkip || {};
-                if (typeof element === 'string') {
-                    const target = document.getElementById(element);
-                    if (target) {
-                        this.#skipElement = target;
-                    }
-                } else if (element instanceof HTMLElement) {
-                    this.#skipElement = element;
-                }
-            } else {
-                this.#skipElement = document.createElement('button');
-                this.#skipElement.className = 'op-ads__skip hidden';
-                this.#player.getControls().getContainer().appendChild(this.#skipElement);
-            }
-            if (this.#skipElement) {
-                this.#skipElement.addEventListener('click', this._handleSkipAds, EVENT_OPTIONS);
-            }
-        }
-
-        this.#mediaSources = this.#media.src;
-        const vpaidModeMap: Record<string, unknown> = {
-            disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
-            enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED,
-            insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE,
-        };
-
-        google.ima.settings.setVpaidMode(vpaidModeMap[this.#options.vpaidMode || 'enabled']);
-        google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
-        google.ima.settings.setAutoPlayAdBreaks(this.#options.autoPlayAdBreaks);
-        google.ima.settings.setNumRedirects(this.#options.numRedirects);
-        google.ima.settings.setLocale(this.#options.language);
-        if (this.#options.sessionId) {
-            google.ima.settings.setSessionId(this.#options.sessionId);
-        }
-        if (this.#options.publisherId) {
-            google.ima.settings.setPpid(this.#options.publisherId);
-        }
-        google.ima.settings.setPlayerType('openplayerjs');
-        google.ima.settings.setPlayerVersion('3.0.0');
-
-        this.#displayContainer = new google.ima.AdDisplayContainer(
-            this.#container,
-            this.#element,
-            this.#customClickContainer
-        );
-
-        this.#loader = new google.ima.AdsLoader(this.#displayContainer);
-        this.#loader.addEventListener(
-            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
-            this._loaded,
-            EVENT_OPTIONS
-        );
-
-        this.#loader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error, EVENT_OPTIONS);
-
-        // Create responsive ad
         if (typeof window !== 'undefined') {
             window.addEventListener('resize', this._handleResizeAds, EVENT_OPTIONS);
         }
-        this.#element.addEventListener('loadedmetadata', this._handleResizeAds, EVENT_OPTIONS);
-
-        // Request Ads automatically if `autoplay` was set
-        if (
-            this.#autostart === true ||
-            this.#autostartMuted === true ||
-            force === true ||
-            this.#options.enablePreloading === true ||
-            this.#playTriggered === true
-        ) {
-            if (!this.#done) {
-                this.#done = true;
-                this.#displayContainer.initialize();
-            }
-            this._requestAds();
-        }
+        this.#media.element.addEventListener('loadedmetadata', this._handleResizeAds, EVENT_OPTIONS);
     }
 
     async play(): Promise<void> {
-        if (!this.#done) {
-            this.#playTriggered = true;
-            this._initNotDoneAds();
-            return;
-        }
+        try {
+            if (!this.#initialized) {
+                this.#initialized = true;
 
-        if (this.#manager) {
-            try {
-                // No timer interval and no Ad active means it's a potential initial ad play
-                if (!this.#intervalTimer && this.#active === false) {
+                if (this.#displayContainer) {
+                    this.#displayContainer.initialize();
+                    await this._onPreloadContent();
+                } else {
+                    await this.load();
+                }
+                return;
+            }
+
+            if (this.#manager) {
+                if (!this.#currentTime) {
                     this.#manager.start();
                 } else {
                     this.#manager.resume();
                 }
-                this.#active = true;
-                const e = addEvent('play');
-                this.#element.dispatchEvent(e);
-            } catch (err) {
-                this._resumeMedia();
+                this.#playing = true;
+            } else {
+                await this._onPlay();
             }
+
+            const e = addEvent('play');
+            this.#media.element.dispatchEvent(e);
+        } catch (err) {
+            await this._onPlay();
         }
     }
 
     pause(): void {
         if (this.#manager) {
-            this.#active = false;
+            this.#playing = false;
             this.#manager.pause();
             const e = addEvent('pause');
-            this.#element.dispatchEvent(e);
+            this.#media.element.dispatchEvent(e);
         }
-    }
-
-    destroy(): void {
-        if (this.#manager) {
-            this.#manager.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
-
-            if (this.#events) {
-                this.#events.forEach((event) => {
-                    this.#manager.removeEventListener(event, this._assign);
-                });
-            }
-        }
-
-        this.#events = [];
-
-        const controls = this.#player.getControls();
-        const mouseEvents = controls ? controls.events.mouse : {};
-        Object.keys(mouseEvents).forEach((event: string) => {
-            if (this.#container) {
-                this.#container.removeEventListener(event, mouseEvents[event]);
-            }
-        });
-
-        if (this.#loader) {
-            this.#loader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._error);
-            this.#loader.removeEventListener(google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED, this._loaded);
-        }
-
-        const destroy = !Array.isArray(this.#ads) || this.#currentIndex > this.#ads.length;
-        if (this.#manager && destroy) {
-            this.#manager.destroy();
-        }
-
-        if (this.#options.customClick?.enabled && this.#customClickContainer) {
-            this.#customClickContainer.remove();
-        }
-
-        if (this.#options.audioSkip?.enabled && this.#skipElement) {
-            this.#skipElement.removeEventListener('click', this._handleSkipAds);
-            this.#skipElement.remove();
-        }
-
-        if (isIOS() || isAndroid()) {
-            this.#element.removeEventListener('loadedmetadata', this._contentLoadedAction);
-        }
-        this.#element.removeEventListener('loadedmetadata', this._handleResizeAds);
-        this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler);
-        this.#element.removeEventListener('ended', this._contentEndedListener);
-        if (typeof window !== 'undefined') {
-            window.removeEventListener('resize', this._handleResizeAds);
-        }
-
-        if (this.#container) {
-            this.#container.removeEventListener('click', this._handleClickInContainer);
-            this.#container.remove();
-        }
-        this.loadPromise = null;
-        this.loadedAd = false;
-        this.#done = false;
-        this.#playTriggered = false;
-        this.#duration = 0;
-        this.#currentTime = 0;
-        this.#adEvent = null;
     }
 
     resizeAds(width?: number, height?: number): void {
         if (this.#manager) {
-            const target = this.#element;
+            const target = this.#media.element;
             const mode =
                 target.getAttribute('data-fullscreen') === 'true'
                     ? google.ima.ViewMode.FULLSCREEN
                     : google.ima.ViewMode.NORMAL;
-
             let formattedWidth = width;
             const percentageWidth = width ? width.toString() : '';
             if (width && percentageWidth.indexOf('%') > -1) {
-                if (this.#element.parentElement) {
-                    formattedWidth = this.#element.parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
+                if (this.#media.element.parentElement) {
+                    formattedWidth =
+                        this.#media.element.parentElement.offsetWidth * (parseInt(percentageWidth, 10) / 100);
                 }
             }
-
             let formattedHeight = height;
             const percentageHeight = height ? height.toString() : '';
             if (height && percentageHeight.indexOf('%') > -1) {
-                if (this.#element.parentElement) {
-                    formattedHeight = this.#element.parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
+                if (this.#media.element.parentElement) {
+                    formattedHeight =
+                        this.#media.element.parentElement.offsetHeight * (parseInt(percentageHeight, 10) / 100);
                 }
             }
-
             let timeout;
-
             if (timeout && typeof window !== 'undefined') {
                 window.cancelAnimationFrame(timeout);
             }
@@ -442,16 +237,58 @@ class Ads {
         return this.#started;
     }
 
+    destroy(): void {
+        if (this.#timer) {
+            clearInterval(this.#timer);
+        }
+        if (this.#manager) {
+            this.#manager.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._onError);
+            if (this.#events) {
+                this.#events.forEach((event) => {
+                    this.#manager.removeEventListener(event, this._onEvent);
+                });
+            }
+        }
+        if (this.#loader) {
+            this.#loader.removeEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._onError);
+            this.#loader.removeEventListener(
+                google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+                this._onAdsManagerLoaded
+            );
+        }
+        const destroy = !Array.isArray(this.#ads) || this.#index > this.#ads.length;
+        if (this.#manager && destroy) {
+            this.#manager.destroy();
+        }
+        if (this.#options.customClick?.enabled && this.#clickContainer) {
+            this.#clickContainer.remove();
+        }
+        if (this.#options.audioSkip?.enabled && this.#skipElement) {
+            this.#skipElement.removeEventListener('click', this._handleSkipAds);
+            if (this.#skipElement?.classList.contains('op-ads__skip')) {
+                this.#skipElement.remove();
+            }
+        }
+        if (isIOS() || isAndroid()) {
+            this.#media.element.removeEventListener('loadedmetadata', this._loadAds);
+        }
+        this.#media.element.removeEventListener('loadedmetadata', this._handleResizeAds);
+        this.#media.element.removeEventListener('loadedmetadata', this._onPreloadContent);
+        this.#media.element.removeEventListener('ended', this._onEnded);
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('resize', this._handleResizeAds);
+        }
+        if (this.#container) {
+            this.#container.removeEventListener('click', this._handleClickInContainer);
+            this.#container.remove();
+        }
+        this.#playing = false;
+        this.#duration = 0;
+        this.#currentTime = 0;
+    }
+
     set src(source: string | string[]) {
         this.#ads = source;
-    }
-
-    set isDone(value: boolean) {
-        this.#done = value;
-    }
-
-    set playRequested(value: boolean) {
-        this.#playTriggered = value;
     }
 
     set volume(value: number) {
@@ -464,7 +301,7 @@ class Ads {
     }
 
     get volume(): number {
-        return this.#manager ? this.#manager.getVolume() : this.#originalVolume;
+        return this.#manager ? this.#manager.getVolume() : this.#mediaVolume;
     }
 
     set muted(value: boolean) {
@@ -498,180 +335,193 @@ class Ads {
     }
 
     get paused(): boolean {
-        return !this.#active;
+        return !this.#playing;
     }
 
     get ended(): boolean {
         return this.#ended;
     }
 
-    private _assign(event: any): void {
-        const ad = event.getAd();
-        if (ad) {
-            this.#adEvent = ad;
-        }
-        switch (event.type) {
-            case google.ima.AdEvent.Type.LOADED:
-                if (!ad.isLinear()) {
-                    this._onContentResumeRequested();
-                } else {
-                    if (isIPhone() && isVideo(this.#element)) {
-                        this.#element.controls = false;
-                    }
-                    this.#duration = ad.getDuration();
-                    this.#currentTime = ad.getDuration();
-                    if (!this.#mediaStarted && !isIOS() && !isAndroid()) {
-                        const waitingEvent = addEvent('waiting');
-                        this.#element.dispatchEvent(waitingEvent);
+    private async _loadIMA(): Promise<void> {
+        const path = this.#options?.debug
+            ? this.#options?.sdkPath?.replace(/(\.js$)/, '_debug.js')
+            : this.#options?.sdkPath;
 
-                        const loadedEvent = addEvent('loadedmetadata');
-                        this.#element.dispatchEvent(loadedEvent);
-
-                        this.resizeAds();
-                    }
-                }
-                break;
-            case google.ima.AdEvent.Type.STARTED:
-                if (ad.isLinear()) {
-                    if (
-                        this.#element.parentElement &&
-                        !this.#element.parentElement.classList.contains('op-ads--active')
-                    ) {
-                        this.#element.parentElement.classList.add('op-ads--active');
-                    }
-
-                    if (!this.#media.paused) {
-                        this.#media.pause();
-                    }
-                    this.#active = true;
-                    const playEvent = addEvent('play');
-                    this.#element.dispatchEvent(playEvent);
-                    let resized;
-
-                    if (!resized) {
-                        this.resizeAds();
-                        resized = true;
-                    }
-
-                    if (this.#media.ended) {
-                        this.#ended = false;
-                        const endEvent = addEvent('adsmediaended');
-                        this.#element.dispatchEvent(endEvent);
-                    }
-
-                    if (typeof window !== 'undefined') {
-                        this.#intervalTimer = window.setInterval(() => {
-                            if (this.#active === true) {
-                                this.#currentTime = Math.round(this.#manager.getRemainingTime());
-                                const timeEvent = addEvent('timeupdate');
-                                this.#element.dispatchEvent(timeEvent);
-                            }
-                        }, 350);
-                    }
-                }
-                break;
-            case google.ima.AdEvent.Type.COMPLETE:
-            case google.ima.AdEvent.Type.SKIPPED:
-                if (ad.isLinear()) {
-                    if (event.type === google.ima.AdEvent.Type.SKIPPED) {
-                        const skipEvent = addEvent('adsskipped');
-                        this.#element.dispatchEvent(skipEvent);
-                    }
-
-                    if (this.#element.parentElement) {
-                        this.#element.parentElement.classList.remove('op-ads--active');
-                    }
-                    this.#active = false;
-                    clearInterval(this.#intervalTimer);
-                }
-                break;
-            case google.ima.AdEvent.Type.VOLUME_CHANGED:
-                this._setMediaVolume(this.volume);
-                break;
-            case google.ima.AdEvent.Type.VOLUME_MUTED:
-                if (ad.isLinear()) {
-                    const volumeEvent = addEvent('volumechange');
-                    this.#element.dispatchEvent(volumeEvent);
-                }
-                break;
-            case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
-                if (ad.isLinear()) {
-                    this.#active = false;
-                    this.#ended = true;
-                    this.#intervalTimer = 0;
-                    this.#muted = false;
-                    this.#started = false;
-                    this.#adEvent = null;
-                    if (this.#element.parentElement) {
-                        this.#element.parentElement.classList.remove('op-ads--active');
-                    }
-                    this.destroy();
-                    if (this.#element.currentTime >= this.#element.duration) {
-                        const endedEvent = addEvent('ended');
-                        this.#element.dispatchEvent(endedEvent);
-                    }
-                }
-                break;
-            case google.ima.AdEvent.Type.CLICK:
-                const pauseEvent = addEvent('pause');
-                this.#element.dispatchEvent(pauseEvent);
-                break;
-            case google.ima.AdEvent.Type.AD_BREAK_READY:
-                if (!this.#options.autoPlayAdBreaks) {
-                    this.play();
-                }
-                break;
-            case google.ima.AdEvent.Type.AD_PROGRESS:
-                const progressData = event.getAdData();
-                const offset = this.#adEvent ? this.#adEvent.getSkipTimeOffset() : -1;
-                if (this.#skipElement) {
-                    if (offset !== -1) {
-                        const canSkip = this.#manager.getAdSkippableState();
-                        const remainingTime = Math.ceil(offset - progressData.currentTime);
-                        this.#skipElement.classList.remove('hidden');
-                        if (canSkip) {
-                            this.#skipElement.textContent = this.#options.audioSkip?.label || '';
-                            this.#skipElement.classList.remove('disabled');
-                        } else {
-                            this.#skipElement.textContent =
-                                this.#options.audioSkip?.remainingLabel.replace('[[secs]]', remainingTime.toString()) ||
-                                '';
-                            this.#skipElement.classList.add('disabled');
-                        }
-                    } else {
-                        this.#skipElement.classList.add('hidden');
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-
-        // Assign events prefixed with `ads` to main element so user
-        // can listen to these events, except if the system detects a non-fatal error
-        if (event.type === google.ima.AdEvent.Type.LOG) {
-            const adData = event.getAdData();
-            if (adData.adError) {
-                const message = adData.adError.getMessage();
-                console.warn(`Ad warning: Non-fatal error occurred: ${message}`);
-                const details = {
-                    detail: {
-                        data: adData.adError,
-                        message,
-                        type: 'Ads',
-                    },
-                };
-                const errorEvent = addEvent('playererror', details);
-                this.#element.dispatchEvent(errorEvent);
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if (path && !(window as any).google?.ima) {
+                await loadScript(path);
             }
-        } else {
-            const e = addEvent(`ads${event.type}`);
-            this.#element.dispatchEvent(e);
+        } catch (error) {
+            const message =
+                'Ad script could not be loaded; please check if you have an AdBlock turned on, or if you provided a valid URL';
+            console.error(`Ad error: ${message}.`);
+
+            const details = {
+                detail: {
+                    data: error,
+                    message,
+                    type: 'Ads',
+                },
+            };
+            const errorEvent = addEvent('playererror', details);
+            this.#media.element.dispatchEvent(errorEvent);
         }
     }
 
-    // @see https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdError.ErrorCode
-    private _error(event: any): void {
+    private _setAdSettings(): void {
+        const vpaidModeMap: Record<string, unknown> = {
+            disabled: google.ima.ImaSdkSettings.VpaidMode.DISABLED,
+            enabled: google.ima.ImaSdkSettings.VpaidMode.ENABLED,
+            insecure: google.ima.ImaSdkSettings.VpaidMode.INSECURE,
+        };
+
+        google.ima.settings.setVpaidMode(vpaidModeMap[this.#options.vpaidMode || 'enabled']);
+        google.ima.settings.setDisableCustomPlaybackForIOS10Plus(true);
+        google.ima.settings.setNumRedirects(this.#options.numRedirects);
+        google.ima.settings.setLocale(this.#options.language);
+
+        if (this.#options.sessionId) {
+            google.ima.settings.setSessionId(this.#options.sessionId);
+        }
+        if (this.#options.publisherId) {
+            google.ima.settings.setPpid(this.#options.publisherId);
+        }
+        google.ima.settings.setPlayerType('openplayerjs');
+        google.ima.settings.setPlayerVersion('3.0.0');
+    }
+
+    private _loadAdsContainer(): void {
+        this.#container = document.createElement('div');
+        this.#container.className = 'op-ads';
+        this.#container.tabIndex = -1;
+        if (this.#media.element.parentElement) {
+            this.#media.element.parentElement.insertBefore(this.#container, this.#media.element.nextSibling);
+        }
+        this.#container.addEventListener('click', this._handleClickInContainer, EVENT_OPTIONS);
+
+        this.#displayContainer = new google.ima.AdDisplayContainer(
+            this.#container,
+            this.#media.element,
+            this.#clickContainer
+        );
+
+        if (!this.#options.autoPlayAdBreaks) {
+            this.#displayContainer.initialize();
+        }
+    }
+
+    private async _loadAdsLoader(): Promise<void> {
+        this.#loader = new google.ima.AdsLoader(this.#displayContainer);
+
+        if (!this.#options.autoPlayAdBreaks) {
+            this.#loader.getSettings().setAutoPlayAdBreaks(false);
+        }
+
+        this.#loader.addEventListener(
+            google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
+            this._onAdsManagerLoaded,
+            EVENT_OPTIONS
+        );
+        this.#loader.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._onError, EVENT_OPTIONS);
+        this.#media.element.addEventListener('ended', this._onEnded, EVENT_OPTIONS);
+    }
+
+    private _handleClickInContainer(): void {
+        if (this.#media.paused) {
+            this.#playing = false;
+            const e = addEvent('paused');
+            this.#media.element.dispatchEvent(e);
+            this.pause();
+        }
+    }
+
+    private _requestAds(livePrefetchSeconds = 0): void {
+        const ads = Array.isArray(this.#ads) ? this.#ads[this.#index] : this.#ads;
+        this.#request = new google.ima.AdsRequest();
+
+        if (!this.#options.autoPlayAdBreaks) {
+            this.#loader.getSettings().setAutoPlayAdBreaks(false);
+        }
+
+        if (isXml(ads)) {
+            this.#request.adsResponse = ads;
+        } else {
+            this.#request.adTagUrl = ads;
+        }
+
+        const width = this.#media.element.parentElement ? this.#media.element.parentElement.offsetWidth : 0;
+        const height = this.#media.element.parentElement ? this.#media.element.parentElement.offsetHeight : 0;
+
+        this.#request.linearAdSlotWidth = width;
+        this.#request.linearAdSlotHeight = height;
+        this.#request.nonLinearAdSlotWidth = width;
+        this.#request.nonLinearAdSlotHeight = height / 3;
+
+        if (this.#options.live) {
+            this.#request.liveStreamPrefetchSeconds = livePrefetchSeconds;
+        }
+
+        if (this.#options.autoPlayAdBreaks) {
+            this.#request.setAdWillAutoPlay(this.#autostart);
+            this.#request.setAdWillPlayMuted(this.#autostartMuted);
+        }
+        this.#loader.requestAds(this.#request);
+    }
+
+    private _setMediaVolume(volume: number): void {
+        this.#media.volume = volume;
+        this.#media.muted = volume === 0;
+    }
+
+    private _handleResizeAds(): void {
+        this.resizeAds();
+    }
+
+    private _createCustomClick(): void {
+        if (this.#options.customClick?.enabled) {
+            if (this.#clickContainer) {
+                this.#clickContainer.remove();
+            }
+
+            this.#clickContainer = document.createElement('div');
+            this.#clickContainer.className = 'op-ads__click-container';
+            this.#clickContainer.innerHTML = `<div class="op-ads__click-label">${sanitize(
+                this.#options.customClick.label
+            )}</div>`;
+            if (this.#media.element.parentElement) {
+                this.#media.element.parentElement.insertBefore(this.#clickContainer, this.#media.element.nextSibling);
+            }
+        }
+    }
+
+    private _createSkipElement(): void {
+        if (isAudio(this.#media.element) && this.#options.audioSkip?.enabled) {
+            if (this.#options.audioSkip?.element) {
+                const { element } = this.#options.audioSkip || {};
+                if (typeof element === 'string') {
+                    const target = document.getElementById(element);
+                    if (target) {
+                        this.#skipElement = target;
+                    }
+                } else if (element instanceof HTMLElement) {
+                    this.#skipElement = element;
+                }
+            } else {
+                // Default control created
+                this.#skipElement = this.#media.element.parentElement?.querySelector('.op-ads__skip') || undefined;
+            }
+            if (this.#skipElement) {
+                this.#skipElement.addEventListener('click', this._handleSkipAds, EVENT_OPTIONS);
+            }
+        }
+    }
+
+    private _handleSkipAds(): void {
+        this.#manager.skip();
+    }
+
+    private async _onError(event: any): Promise<void> {
         const error = event.getError();
         const details = {
             detail: {
@@ -681,7 +531,7 @@ class Ads {
             },
         };
         const errorEvent = addEvent('playererror', details);
-        this.#element.dispatchEvent(errorEvent);
+        this.#media.element.dispatchEvent(errorEvent);
 
         // @see https://support.google.com/admanager/answer/4442429?hl=en
         const fatalErrorCodes = [
@@ -689,11 +539,10 @@ class Ads {
             900, 901, 1005,
         ];
 
-        if (Array.isArray(this.#ads) && this.#ads.length > 1 && this.#currentIndex < this.#ads.length - 1) {
-            this.#currentIndex++;
+        if (Array.isArray(this.#ads) && this.#ads.length > 1 && this.#index < this.#ads.length - 1) {
+            this.#index++;
             this.destroy();
             this.#started = true;
-            this.#playTriggered = true;
             this.load(true);
             console.warn(`Ad warning: ${error.toString()}`);
         } else {
@@ -708,41 +557,25 @@ class Ads {
             }
             this.#adEvent = null;
             if (this.#autostart === true || this.#autostartMuted === true || this.#started === true) {
-                this.#active = false;
-                // Sometimes, due to pre-fetch issues, Ads could report an error, but the SDK is able to
-                // play Ads, so check if src was set to determine what action to take
-                this._resumeMedia();
+                this._onPlay();
             }
         }
     }
 
-    private _loaded(managerLoadedEvent: any): void {
+    private async _onAdsManagerLoaded(adsManagerLoadedEvent: any): Promise<void> {
         const adsRenderingSettings = new google.ima.AdsRenderingSettings();
-        adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = false;
-        adsRenderingSettings.enablePreloading = this.#options.enablePreloading;
-        // Get the ads manager.
-        this.#manager = managerLoadedEvent.getAdsManager(this.#element, adsRenderingSettings);
-        this._start(this.#manager);
-        this.loadPromise = new Promise<void>((resolve) => {
-            resolve();
-        });
-    }
+        adsRenderingSettings.restoreCustomPlaybackStateOnAdBreakComplete = true;
 
-    private _start(manager: any): void {
-        if (this.#customClickContainer && manager.isCustomClickTrackingUsed()) {
-            this.#customClickContainer.classList.add('op-ads__click-container--visible');
+        this.#manager = adsManagerLoadedEvent.getAdsManager(this.#media.element, adsRenderingSettings);
+        this.#manager.setVolume(this.#autostart && this.#autostartMuted ? 0 : 1);
+
+        if (this.#clickContainer) {
+            this.#clickContainer.style.display = this.#manager.isCustomClickTrackingUsed() ? 'block' : 'none';
         }
-        // Add listeners to the required events.
-        manager.addEventListener(
-            google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
-            this._onContentPauseRequested,
-            EVENT_OPTIONS
-        );
-        manager.addEventListener(
-            google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
-            this._onContentResumeRequested,
-            EVENT_OPTIONS
-        );
+
+        this.#manager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, this._onError, EVENT_OPTIONS);
+        this.#manager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, this._onPause, EVENT_OPTIONS);
+        this.#manager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, this._onPlay, EVENT_OPTIONS);
 
         this.#events = [
             google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
@@ -774,228 +607,261 @@ class Ads {
         ];
 
         if (!this.#options.autoPlayAdBreaks) {
-            // Add it to the events array so it gets removed onDestroy
             this.#events.push(google.ima.AdEvent.Type.AD_BREAK_READY);
         }
 
-        const controls = this.#player.getControls();
-        const mouseEvents = controls ? controls.events.mouse : {};
-        Object.keys(mouseEvents).forEach((event: string) => {
-            if (this.#container) {
-                this.#container.addEventListener(event, mouseEvents[event], EVENT_OPTIONS);
-            }
-        });
         this.#events.forEach((event) => {
-            manager.addEventListener(event, this._assign, EVENT_OPTIONS);
+            this.#manager.addEventListener(event, this._onEvent, EVENT_OPTIONS);
         });
 
-        if (this.#autostart === true || this.#autostartMuted === true || this.#playTriggered === true) {
-            this.#playTriggered = false;
-            if (!this.#done) {
-                this._initNotDoneAds();
-                return;
-            }
-            manager.init(
-                this.#element.offsetWidth,
-                this.#element.offsetHeight,
-                this.#element.parentElement && this.#element.parentElement.getAttribute('data-fullscreen') === 'true'
+        try {
+            this.#manager.init(
+                this.#media.element.offsetWidth,
+                this.#media.element.offsetHeight,
+                this.#media.element.parentElement?.getAttribute('data-fullscreen') === 'true'
                     ? google.ima.ViewMode.FULLSCREEN
                     : google.ima.ViewMode.NORMAL
             );
-            manager.start();
-            const e = addEvent('play');
-            this.#element.dispatchEvent(e);
-        } else if (this.#options.enablePreloading === true) {
-            manager.init(
-                this.#element.offsetWidth,
-                this.#element.offsetHeight,
-                this.#element.parentElement && this.#element.parentElement.getAttribute('data-fullscreen') === 'true'
-                    ? google.ima.ViewMode.FULLSCREEN
-                    : google.ima.ViewMode.NORMAL
-            );
-        }
-    }
 
-    private _initNotDoneAds(): void {
-        if (this.#displayContainer) {
-            this.#done = true;
-            this.#displayContainer.initialize();
-
-            if (isIOS() || isAndroid()) {
-                this.#preloadContent = this._contentLoadedAction;
-                this.#element.addEventListener('loadedmetadata', this._contentLoadedAction, EVENT_OPTIONS);
-                this.#element.load();
-            } else {
-                this._contentLoadedAction();
+            if (this.#options.autoPlayAdBreaks) {
+                this.#manager.start();
             }
-        } else {
-            this.load();
-            this.loadedAd = false;
+        } catch (err) {
+            await this.play();
         }
     }
 
-    private _contentEndedListener(): void {
-        this.#ended = true;
-        this.#active = false;
-        this.#started = false;
-        this.#loader.contentComplete();
-    }
-
-    private _onContentPauseRequested(): void {
-        this.#element.removeEventListener('ended', this._contentEndedListener);
-        this.#lastTimePaused = this.#media.currentTime;
-
-        if (this.#started) {
-            this.#media.pause();
-        } else {
-            this.#started = true;
+    private async _onEvent(event: any): Promise<void> {
+        const ad = event.getAd();
+        if (ad) {
+            this.#adEvent = ad;
         }
-        const e = addEvent('play');
-        this.#element.dispatchEvent(e);
-    }
 
-    private _onContentResumeRequested(): void {
-        this.#element.addEventListener('ended', this._contentEndedListener, EVENT_OPTIONS);
-        this.#element.addEventListener('loadedmetadata', this._loadedMetadataHandler, EVENT_OPTIONS);
-        if (isIOS() || isAndroid()) {
-            this.#media.src = this.#mediaSources;
-            this.#media.load();
-            this._prepareMedia();
-            if (this.#element.parentElement) {
-                this.#element.parentElement.classList.add('op-ads--active');
-            }
-        } else {
-            const event = addEvent('loadedmetadata');
-            this.#element.dispatchEvent(event);
-        }
-    }
+        switch (event.type) {
+            case google.ima.AdEvent.Type.LOADED:
+                if (!ad.isLinear()) {
+                    this._onPlay();
+                } else {
+                    if (isIPhone() && isVideo(this.#media.element)) {
+                        this.#media.element.controls = false;
+                    }
+                    this.#duration = ad.getDuration();
+                    this.#currentTime = ad.getDuration();
+                    this.resizeAds();
+                }
+                break;
+            case google.ima.AdEvent.Type.STARTED:
+                if (ad.isLinear()) {
+                    if (
+                        this.#media.element.parentElement &&
+                        !this.#media.element.parentElement.classList.contains('op-ads--active')
+                    ) {
+                        this.#media.element.parentElement.classList.add('op-ads--active');
+                    }
 
-    private _loadedMetadataHandler(): void {
-        if (Array.isArray(this.#ads)) {
-            this.#currentIndex++;
-            if (this.#currentIndex <= this.#ads.length - 1) {
+                    if (!this.#media.paused) {
+                        this.#media.pause();
+                    }
+                    this.#playing = true;
+                    const playEvent = addEvent('play');
+                    this.#media.element.dispatchEvent(playEvent);
+                    let resized;
+
+                    if (!resized) {
+                        this.resizeAds();
+                        resized = true;
+                    }
+
+                    if (this.#media.ended) {
+                        this.#ended = false;
+                        const endEvent = addEvent('adsmediaended');
+                        this.#media.element.dispatchEvent(endEvent);
+                    }
+
+                    if (typeof window !== 'undefined') {
+                        this.#timer = window.setInterval(() => {
+                            this.#currentTime = Math.round(this.#manager.getRemainingTime());
+                            const timeEvent = addEvent('timeupdate');
+                            this.#media.element.dispatchEvent(timeEvent);
+                        }, 350);
+                    }
+                }
+                break;
+            case google.ima.AdEvent.Type.COMPLETE:
+            case google.ima.AdEvent.Type.SKIPPED:
+                if (ad.isLinear()) {
+                    if (this.#started) {
+                        this.#started = false;
+                    }
+                    if (event.type === google.ima.AdEvent.Type.SKIPPED) {
+                        const skipEvent = addEvent('adsskipped');
+                        this.#media.element.dispatchEvent(skipEvent);
+                    }
+
+                    if (this.#media.element.parentElement) {
+                        this.#media.element.parentElement.classList.remove('op-ads--active');
+                    }
+
+                    clearInterval(this.#timer);
+                }
+                break;
+            case google.ima.AdEvent.Type.VOLUME_CHANGED:
+                this._setMediaVolume(this.volume);
+                break;
+            case google.ima.AdEvent.Type.VOLUME_MUTED:
+                if (ad.isLinear()) {
+                    const volumeEvent = addEvent('volumechange');
+                    this.#media.element.dispatchEvent(volumeEvent);
+                }
+                break;
+            case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
+                if (this.#options.live) {
+                    this._requestAds(this.#prefetchSeconds - 5);
+                    setTimeout(this.play, this.#prefetchSeconds * 1000);
+                } else if (ad.isLinear() && (typeof this.#ads === 'string' || this.#index < this.#ads.length)) {
+                    this.#ended = true;
+                    this.#started = false;
+                    this.#initialized = false;
+                    this.#timer = 0;
+                    this.#muted = false;
+                    this.#playing = false;
+                    this.#adEvent = null;
+                    this.destroy();
+
+                    if (Array.isArray(this.#ads) && this.#index < this.#ads.length) {
+                        this.#index++;
+                        this.#loader.contentComplete();
+                        this.load(true);
+                    } else {
+                        if (this.#media.element.parentElement) {
+                            this.#media.element.parentElement.classList.remove('op-ads--active');
+                        }
+                        if (this.#media.element.currentTime >= this.#media.element.duration) {
+                            const endedEvent = addEvent('ended');
+                            this.#media.element.dispatchEvent(endedEvent);
+                        }
+                    }
+                }
+                break;
+            case google.ima.AdEvent.Type.AD_BREAK_READY:
                 if (this.#manager) {
-                    this.#manager.destroy();
+                    this.#playing = true;
+                    this.#manager.start();
                 }
-                this.#loader.contentComplete();
-                this.#playTriggered = true;
-                this.#started = true;
-                this.#done = false;
-                this.load(true);
-            } else {
-                if (!this.#options.autoPlayAdBreaks) {
-                    this._resetAdsAfterManualBreak();
+                break;
+            case google.ima.AdEvent.Type.CLICK:
+                this.#playing = false;
+                const pauseEvent = addEvent('pause');
+                this.#media.element.dispatchEvent(pauseEvent);
+                break;
+            case google.ima.AdEvent.Type.AD_PROGRESS:
+                const progressData = event.getAdData();
+                const offset = this.#adEvent ? this.#adEvent.getSkipTimeOffset() : -1;
+                if (this.#skipElement) {
+                    if (offset !== -1) {
+                        const canSkip = this.#manager.getAdSkippableState();
+                        const remainingTime = Math.ceil(offset - progressData.currentTime);
+                        this.#skipElement.classList.remove('hidden');
+                        if (canSkip) {
+                            this.#skipElement.textContent = this.#options.audioSkip?.label || '';
+                            this.#skipElement.classList.remove('disabled');
+                        } else {
+                            this.#skipElement.textContent =
+                                this.#options.audioSkip?.remainingLabel.replace('[[secs]]', remainingTime.toString()) ||
+                                '';
+                            this.#skipElement.classList.add('disabled');
+                        }
+                    } else {
+                        this.#skipElement.classList.add('hidden');
+                    }
                 }
-                this._prepareMedia();
-            }
-        } else if (this.#element.seekable.length) {
-            if (this.#element.seekable.end(0) > this.#lastTimePaused) {
-                if (!this.#options.autoPlayAdBreaks) {
-                    this._resetAdsAfterManualBreak();
-                }
-                this._prepareMedia();
+                break;
+            default:
+                break;
+        }
+
+        if (event.type === google.ima.AdEvent.Type.LOG) {
+            const adData = event.getAdData();
+            if (adData.adError) {
+                const message = adData.adError.getMessage();
+                console.warn(`Ad warning: Non-fatal error occurred: ${message}`);
+                const details = {
+                    detail: {
+                        data: adData.adError,
+                        message,
+                        type: 'Ads',
+                    },
+                };
+                const errorEvent = addEvent('playererror', details);
+                this.#media.element.dispatchEvent(errorEvent);
             }
         } else {
-            setTimeout(this._loadedMetadataHandler, 100);
+            const e = addEvent(`ads${event.type}`);
+            this.#media.element.dispatchEvent(e);
         }
     }
 
-    private _resumeMedia(): void {
-        this.#intervalTimer = 0;
-        this.#muted = false;
-        this.#started = false;
-        this.#duration = 0;
-        this.#currentTime = 0;
-        if (this.#element.parentElement) {
-            this.#element.parentElement.classList.remove('op-ads--active');
-        }
+    private _onPreloadContent(): void {
+        if (isAndroid() || isIOS()) {
+            this.#media.element.addEventListener('loadedmetadata', this._loadAds, EVENT_OPTIONS);
+            this.#media.load();
 
-        if (this.#media.ended) {
-            const e = addEvent('ended');
-            this.#element.dispatchEvent(e);
+            // Since mobile devices require user interaction to download any part of the media file,
+            // programatically dispatch the event
+            const e = addEvent('loadedmetadata');
+            this.#media.element.dispatchEvent(e);
         } else {
-            try {
-                this.#media.play();
-                setTimeout(() => {
-                    const e = addEvent('play');
-                    this.#element.dispatchEvent(e);
-                }, 50);
-            } catch (err) {
-                console.error(err);
+            this._loadAds();
+        }
+    }
+
+    private _onMetadataLoaded(): void {
+        if (this.#media.element.seekable.length) {
+            if (this.#media.element.seekable.end(0) > this.#currentSavedTime) {
+                this._onPlay();
             }
-        }
-    }
-
-    private _requestAds(): void {
-        this.#request = new google.ima.AdsRequest();
-        const ads = Array.isArray(this.#ads) ? this.#ads[this.#currentIndex] : this.#ads;
-
-        if (isXml(ads)) {
-            this.#request.adsResponse = ads;
         } else {
-            this.#request.adTagUrl = ads;
+            setTimeout(this._onMetadataLoaded, 100);
         }
-
-        const width = this.#element.parentElement ? this.#element.parentElement.offsetWidth : 0;
-        const height = this.#element.parentElement ? this.#element.parentElement.offsetHeight : 0;
-        this.#request.linearAdSlotWidth = width;
-        this.#request.linearAdSlotHeight = height;
-        this.#request.nonLinearAdSlotWidth = width;
-        this.#request.nonLinearAdSlotHeight = height / 3;
-        this.#request.setAdWillAutoPlay(this.#autostart);
-        this.#request.setAdWillPlayMuted(this.#autostartMuted);
-        this.#loader.requestAds(this.#request);
     }
 
-    /**
-     * Internal callback to request Ads.
-     *
-     * @memberof Ads
-     */
-    private _contentLoadedAction(): void {
-        if (this.#preloadContent) {
-            this.#element.removeEventListener('loadedmetadata', this.#preloadContent);
-            this.#preloadContent = null;
-        }
+    private _loadAds(): void {
+        this.#media.element.removeEventListener('loadedmetadata', this._loadAds);
         this._requestAds();
     }
 
-    // @see https://developers.google.com/interactive-media-ads/docs/sdks/html5/faq#8
-    private _resetAdsAfterManualBreak(): void {
-        if (this.#manager) {
-            this.#manager.destroy();
+    private async _onPlay(): Promise<void> {
+        this.#media.currentTime = this.#currentSavedTime;
+        this.#media.element.addEventListener('ended', this._onEnded, EVENT_OPTIONS);
+        this.#timer = 0;
+        this.#started = false;
+        this.#muted = false;
+        this.#duration = 0;
+        this.#currentTime = 0;
+        if (this.#media.element.parentElement) {
+            this.#media.element.parentElement.classList.remove('op-ads--active');
         }
-        this.#loader.contentComplete();
-        this.#done = false;
-        this.#playTriggered = true;
-    }
-
-    private _prepareMedia(): void {
-        this.#media.currentTime = this.#lastTimePaused;
-        this.#element.removeEventListener('loadedmetadata', this._loadedMetadataHandler);
-        this._resumeMedia();
-    }
-
-    private _setMediaVolume(volume: number): void {
-        this.#media.volume = volume;
-        this.#media.muted = volume === 0;
-    }
-
-    private _handleClickInContainer(): void {
-        if (this.#media.paused) {
-            const e = addEvent('paused');
-            this.#element.dispatchEvent(e);
-            this.pause();
+        try {
+            await this.#media.play();
+            const e = addEvent('play');
+            this.#media.element.dispatchEvent(e);
+        } catch (err) {
+            console.error(err);
         }
     }
 
-    private _handleResizeAds(): void {
-        this.resizeAds();
+    private _onPause(): void {
+        this.#currentSavedTime = this.#media.currentTime;
+        this.#media.pause();
+        this.#media.element.removeEventListener('ended', this._onEnded);
     }
 
-    private _handleSkipAds(): void {
-        this.#manager.skip();
+    private _onEnded(): void {
+        this.#ended = true;
+        this.#started = false;
+        this.#media.element.removeEventListener('ended', this._onEnded);
+        if (this.#loader) {
+            this.#loader.contentComplete();
+        }
     }
 }
-
-export default Ads;
