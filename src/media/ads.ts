@@ -716,6 +716,7 @@ export default class Ads {
                 break;
             case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
                 if (this.#options.live) {
+                    this.#initialized = false;
                     this._requestAds(this.#prefetchSeconds - 5);
                     setTimeout(this.play, this.#prefetchSeconds * 1000);
                 } else if (ad.isLinear() && (typeof this.#ads === 'string' || this.#index < this.#ads.length)) {
@@ -723,12 +724,15 @@ export default class Ads {
                     this.#started = false;
                     this.#initialized = false;
                     this.#timer = 0;
+                    this.#currentTime = 0;
+                    this.#duration = 0;
                     this.#muted = false;
                     this.#playing = false;
                     this.#adEvent = null;
                     this.destroy();
 
                     if (Array.isArray(this.#ads) && this.#index < this.#ads.length) {
+                        this.#ended = false;
                         this.#index++;
                         this.#loader.contentComplete();
                         this.load(true);
