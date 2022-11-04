@@ -9,3 +9,4 @@ coverage/
 .coveralls.yml
 test/index.html
 dist/*
+!dist/openplayer.min.js
