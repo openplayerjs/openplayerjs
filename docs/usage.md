@@ -4,7 +4,7 @@
 
 The only 3 requirements to invoke the player are:
 
--   A valid media source, such as MP4, MP3, HLS or M(PEG)-DASH.
+-   A valid media source, such as MP4, MP3 or HLS.
 -   The `controls` and `playsinline` attributes to provide cross-browser support.
 -   The `op-player__media` class name to invoke the player. You can add `op-player` class as well, if you don't require any Javascript configuration.
 
@@ -69,18 +69,6 @@ const player = new OpenPlayerJS('[player ID]', {
         showLabel: true,
         showProgress: false,
     }
-    dash: {
-        // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,
-        // HW_SECURE_DECODE, HW_SECURE_ALL
-        robustnessLevel: null,
-        // object containing property names corresponding to key system name strings (e.g. "org.w3.clearkey") and
-        // associated values being instances of ProtectionData
-        // (http://vm2.dashif.org/dash.js/docs/jsdocs/MediaPlayer.vo.protection.ProtectionData.html)
-        drm: null,
-    },
-    flv: {
-        // all FLV options available at https://github.com/bilibili/flv.js/blob/master/docs/api.md#mediadatasource
-    },
     hls: {
         // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
     },
@@ -117,7 +105,7 @@ player.init();
 ### Configuration options
 
 | `Element`                      | Description                                                                                                                                                                                                                                                                                                                                             |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `detachMenus`                  | Allow items that have menu items inside `Settings` to be contained in their own separate menu; generally speaking, the menu will float above the control item it belongs to (by default, false).                                                                                                                                                        |
 | `forceNative`                  | Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js)                                                                                                                                                                                       |
 | `mode`                         | Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)                                                                                                                                                                                                                                                     |
@@ -172,12 +160,10 @@ To see a working example of this option using both scenarios described above, ch
 
 ### About the usage of third-party libraries
 
-OpenPlayerJS loads automatically the latest version of [hls.js](https://github.com/video-dev/hls.js), [dash.js](https://github.com/Dash-Industry-Forum/dash.js) and [flv.js](https://github.com/Bilibili/flv.js/) from [jsDelivr CDN service](https://www.jsdelivr.com/); however, if for any reason you need to use a local version (or using a different URL) of any of these third-party libraries, you can **load them before you load OpenPlayerJS**. For example:
+OpenPlayerJS loads automatically the latest version of [hls.js](https://github.com/video-dev/hls.js) from [jsDelivr CDN service](https://www.jsdelivr.com/); however, if for any reason you need to use a local version (or using a different URL) of any of these third-party libraries, you can **load them before you load OpenPlayerJS**. For example:
 
 ```html
 <script src="/path/to/hls.min.js"></script>
-<script src="/path/to/dash.min.js"></script>
-<script src="/path/to/flv.min.js"></script>
 <script src="/path/to/openplayer.min.js"></script>
 ```
 
@@ -185,8 +171,6 @@ Or if you are using them in a separate file:
 
 ```javascript
 import Hls from 'hls.js';
-import dashjs from 'dashjs';
-import flvJs from 'flv.js';
 
 import OpenPlayerJS from 'openplayerjs';
 ```

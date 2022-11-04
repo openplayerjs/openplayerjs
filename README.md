@@ -7,7 +7,7 @@
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
 [![CircleCI](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master.svg?style=svg)](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master)
 
-This is a media player that uses all the goods of HTML5 video/audio elements to play the most popular media in MP4/MP3, HLS and M(PEG)-DASH, and also has the ability to play VMAP, VAST and VPAID ads.
+This is a media player that uses all the goods of HTML5 video/audio elements to play the most popular media in MP4/MP3 and HLS, and also has the ability to play VMAP, VAST and VPAID ads.
 
 ## 🚨 IMPORTANT 🚨
 
@@ -27,7 +27,7 @@ So, please consider this before upgrading to any of the 3.x.x version going forw
 
 ## Advantages
 
--   Supports **IE11+ (Win8) and all modern browsers**.
+-   Supports **all modern browsers**.
 -   **No dependencies**, since it is written in Typescript.
 -   Runs a simple but yet powerful algorithm to **check the browser's autoplay capabilities** across browsers.
 -   Supports for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
@@ -38,11 +38,11 @@ So, please consider this before upgrading to any of the 3.x.x version going forw
 
 ## Projects using OpenPlayerJS
 
-|                                                                                                                                                  |                                                                                                                                                                               |                                                                                                                                                      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![MedSims](https://img.medscapestatic.com/pi/global/icons/icon-medsims-logo@2x.png)](https://www.medscape.org/simulation)                       | [![Arrow Classic Rock](https://player.arrow.nl/tmp/images/logo.1507670326.jpg)](https://player.arrow.nl/ad.html)                                                              | [![Geração Rádios](https://user-images.githubusercontent.com/910829/168053773-8871dcf9-1f3a-4487-9f6d-95d4d461d945.png)](https://geracaoradios.com)  |
-| [![LectureTube](https://live.video.tuwien.ac.at/room/assets/lecturetube_landscape.svg)](https://live.video.tuwien.ac.at/room/heart0/player.html) | [Servicio Online](https://40152354.servicio-online.net//INDEX.html)                                                                                                           | [![HitRadio Center](https://user-images.githubusercontent.com/910829/155380459-76856a41-5a19-4831-8ef8-6d0ae8d471f0.svg)](https://radiocenter.si)    |
-| [![Rock Radio](https://user-images.githubusercontent.com/910829/155380461-9c74ff57-50a2-419c-b85a-dad8810b42c6.svg)](https://rockradio.si)       | [![Chichester District Council](https://www.chichester.gov.uk/chichesterdotnet/images/cdclogo.jpg)](https://chichester.moderngov.co.uk/ieListDocuments.aspx?CId=134&MId=1620) | [![Clippa](https://user-images.githubusercontent.com/910829/181409803-c9f25333-7c40-48fb-b54f-42f7e6f6537a.svg)](https://www.clippa.tv/bigKnightOut) |
+|                                                                                                                                                  |                                                                                                                                                                               |                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![MedSims](https://img.medscapestatic.com/pi/global/icons/icon-medsims-logo@2x.png)](https://www.medscape.org/simulation)                       | [![Arrow Classic Rock](https://player.arrow.nl/tmp/images/logo.1507670326.jpg)](https://player.arrow.nl/ad.html)                                                              | [![Geração Rádios](https://user-images.githubusercontent.com/910829/168053773-8871dcf9-1f3a-4487-9f6d-95d4d461d945.png)](https://geracaoradios.com) |
+| [![LectureTube](https://live.video.tuwien.ac.at/room/assets/lecturetube_landscape.svg)](https://live.video.tuwien.ac.at/room/heart0/player.html) | [![Clippa](https://user-images.githubusercontent.com/910829/181409803-c9f25333-7c40-48fb-b54f-42f7e6f6537a.svg)](https://www.clippa.tv/bigKnightOut)                          | [![HitRadio Center](https://user-images.githubusercontent.com/910829/155380459-76856a41-5a19-4831-8ef8-6d0ae8d471f0.svg)](https://radiocenter.si)   |
+| [![Rock Radio](https://user-images.githubusercontent.com/910829/155380461-9c74ff57-50a2-419c-b85a-dad8810b42c6.svg)](https://rockradio.si)       | [![Chichester District Council](https://www.chichester.gov.uk/chichesterdotnet/images/cdclogo.jpg)](https://chichester.moderngov.co.uk/ieListDocuments.aspx?CId=134&MId=1620) |                                                                                                                                                     |
 
 ## Migrating from older version to new ones
 
@@ -104,7 +104,6 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 -   [Using Ads (linear and non-linear samples)](https://codepen.io/rafa8626/pen/vVYKav)
 -   [Removing controls and using `preload="none"`](https://codepen.io/rafa8626/pen/OJyMwxX)
 -   [Using `Levels` and setting width/height](https://codepen.io/rafa8626/pen/ExxXvZx)
--   [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ)
 -   [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB)
 -   [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
 -   [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo)
@@ -115,7 +114,6 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 
 -   [Add source after initialization](https://codepen.io/rafa8626/pen/YzzgJrK)
 -   [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
--   [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 -   [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
 -   [🆕 - Add a custom element (watermark)](https://codepen.io/rafa8626/pen/JjLQNjo)
 
