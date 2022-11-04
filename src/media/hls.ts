@@ -8,7 +8,7 @@ import Native from './native';
 declare const Hls: any;
 
 // @see https://github.com/video-dev/hls.js/
-class HlsMedia extends Native {
+export default class HlsMedia extends Native {
     #player: any;
 
     // @see https://github.com/video-dev/hls.js/blob/master/src/events.js
@@ -238,5 +238,3 @@ class HlsMedia extends Native {
         }
     }
 }
-
-export default HlsMedia;

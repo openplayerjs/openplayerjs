@@ -1,6 +1,6 @@
 import { Level, Source } from '../interfaces';
 import Native from './native';
-declare class HTML5Media extends Native {
+export default class HTML5Media extends Native {
     #private;
     constructor(element: HTMLMediaElement, mediaFile?: Source);
     canPlayType(mimeType: string): boolean;
@@ -17,4 +17,3 @@ declare class HTML5Media extends Native {
     private _clearTimeout;
     private _dispatchError;
 }
-export default HTML5Media;

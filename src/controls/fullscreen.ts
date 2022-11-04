@@ -1,8 +1,9 @@
 import { FullscreenDocument, FullscreenElement, PlayerComponent } from '../interfaces';
 import Player from '../player';
 import { EVENT_OPTIONS, isAndroid, isIPhone } from '../utils/constants';
+import { sanitize } from '../utils/general';
 
-class Fullscreen implements PlayerComponent {
+export default class Fullscreen implements PlayerComponent {
     fullScreenEnabled: boolean;
 
     #player: Player;
@@ -70,14 +71,16 @@ class Fullscreen implements PlayerComponent {
 
     create(): void {
         const { labels } = this.#player.getOptions();
+        const btnLabel = sanitize(labels?.fullscreen || '');
+
         this.#button = document.createElement('button');
         this.#button.type = 'button';
         this.#button.className = `op-controls__fullscreen op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
-        this.#button.title = labels?.fullscreen || '';
+        this.#button.title = btnLabel;
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-pressed', 'false');
-        this.#button.setAttribute('aria-label', labels?.fullscreen || '');
+        this.#button.setAttribute('aria-label', btnLabel);
 
         this.#clickEvent = (): void => {
             this.#button.setAttribute('aria-pressed', 'true');
@@ -237,5 +240,3 @@ class Fullscreen implements PlayerComponent {
         document.body.classList.remove('op-fullscreen__on');
     }
 }
-
-export default Fullscreen;

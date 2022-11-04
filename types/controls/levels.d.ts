@@ -1,6 +1,6 @@
 import { PlayerComponent, SettingsItem } from '../interfaces';
 import Player from '../player';
-declare class Levels implements PlayerComponent {
+export default class Levels implements PlayerComponent {
     #private;
     constructor(player: Player, position: string, layer: string);
     create(): void;
@@ -11,4 +11,3 @@ declare class Levels implements PlayerComponent {
     private _gatherLevels;
     private _buildMenu;
 }
-export default Levels;

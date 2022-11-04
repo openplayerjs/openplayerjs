@@ -4,7 +4,7 @@ import { EVENT_OPTIONS, isAndroid, isIOS, navigator } from '../utils/constants';
 import { addEvent, sanitize } from '../utils/general';
 import { isHlsSource } from '../utils/media';
 
-class Levels implements PlayerComponent {
+export default class Levels implements PlayerComponent {
     #player: Player;
 
     #button: HTMLButtonElement;
@@ -37,15 +37,16 @@ class Levels implements PlayerComponent {
         this.#defaultLevel = `${initialLevel}`;
         const menuItems = this._formatMenuItems();
         const defaultLevel = menuItems.length ? menuItems.find((items) => items.key === this.#defaultLevel) : null;
-        const defaultLabel = defaultLevel ? defaultLevel.label : labels?.auto || '';
+        const defaultLabel = defaultLevel ? defaultLevel.label : sanitize(labels?.auto || '');
+        const btnLabel = sanitize(labels?.mediaLevels || '');
         let levelSet = false;
 
         this.#button = document.createElement('button');
         this.#button.className = `op-controls__levels op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
-        this.#button.title = labels?.mediaLevels || '';
+        this.#button.title = btnLabel;
         this.#button.setAttribute('aria-controls', this.#player.id);
-        this.#button.setAttribute('aria-label', labels?.mediaLevels || '');
+        this.#button.setAttribute('aria-label', btnLabel);
         this.#button.setAttribute('data-active-level', this.#defaultLevel);
         this.#button.innerHTML = `<span>${defaultLabel}</span>`;
 
@@ -126,7 +127,7 @@ class Levels implements PlayerComponent {
                 this.#defaultLevel = `${level}`;
                 if (detachMenus) {
                     this.#button.setAttribute('data-active-level', `${level}`);
-                    this.#button.innerHTML = `<span>${sanitize(option.innerText, true)}</span>`;
+                    this.#button.innerHTML = `<span>${sanitize(option.innerText)}</span>`;
                     const levels =
                         option.parentElement && option.parentElement.parentElement
                             ? option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item')
@@ -227,7 +228,7 @@ class Levels implements PlayerComponent {
                   className: 'op-levels__option',
                   default: this.#defaultLevel || '-1',
                   key: 'levels',
-                  name: labels?.levels,
+                  name: sanitize(labels?.levels || ''),
                   subitems,
               }
             : {};
@@ -237,7 +238,7 @@ class Levels implements PlayerComponent {
         const { labels } = this.#player.getOptions();
         const levels = this._gatherLevels();
         const total = levels.length;
-        let items = total ? [{ key: '-1', label: labels?.auto }] : [];
+        let items = total ? [{ key: '-1', label: sanitize(labels?.auto || '') }] : [];
         for (let i = 0; i < total; i++) {
             const level = levels[i];
             items = items.filter((el) => el.key !== level.id);
@@ -286,7 +287,7 @@ class Levels implements PlayerComponent {
         if (height >= 144) {
             return '144p';
         }
-        return labels?.auto || '';
+        return sanitize(labels?.auto || '');
     }
 
     private _gatherLevels(): Level[] {
@@ -333,5 +334,3 @@ class Levels implements PlayerComponent {
         }
     }
 }
-
-export default Levels;

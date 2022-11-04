@@ -3,7 +3,7 @@ import Player from '../player';
 import { EVENT_OPTIONS } from '../utils/constants';
 import { sanitize } from '../utils/general';
 
-class Settings implements PlayerComponent {
+export default class Settings implements PlayerComponent {
     #player: Player;
 
     #submenu: SettingsSubMenu = {};
@@ -38,14 +38,15 @@ class Settings implements PlayerComponent {
 
     create(): void {
         const { labels } = this.#player.getOptions();
+        const btnLabel = sanitize(labels?.settings || '');
 
         this.#button = document.createElement('button');
         this.#button.className = `op-controls__settings op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
-        this.#button.title = labels?.settings || '';
+        this.#button.title = btnLabel;
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-pressed', 'false');
-        this.#button.setAttribute('aria-label', labels?.settings || '');
+        this.#button.setAttribute('aria-label', btnLabel);
 
         this.#menu = document.createElement('div');
         this.#menu.className = 'op-settings';
@@ -153,12 +154,12 @@ class Settings implements PlayerComponent {
             className: 'op-speed__option',
             default: rate.toString(),
             key: 'speed',
-            name: labels?.speed || '',
+            name: sanitize(labels?.speed || ''),
             subitems: [
                 { key: '0.25', label: '0.25' },
                 { key: '0.5', label: '0.5' },
                 { key: '0.75', label: '0.75' },
-                { key: '1', label: labels?.speedNormal || '' },
+                { key: '1', label: sanitize(labels?.speedNormal || '') },
                 { key: '1.25', label: '1.25' },
                 { key: '1.5', label: '1.5' },
                 { key: '2', label: '2' },
@@ -324,5 +325,3 @@ class Settings implements PlayerComponent {
         }
     }
 }
-
-export default Settings;

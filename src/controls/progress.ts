@@ -1,10 +1,10 @@
 import { EventsList, PlayerComponent } from '../interfaces';
 import Player from '../player';
 import { EVENT_OPTIONS, isAndroid, isIOS } from '../utils/constants';
-import { isAudio, offset } from '../utils/general';
+import { isAudio, offset, sanitize } from '../utils/general';
 import { formatTime } from '../utils/time';
 
-class Progress implements PlayerComponent {
+export default class Progress implements PlayerComponent {
     #player: Player;
 
     #progress: HTMLDivElement;
@@ -44,7 +44,7 @@ class Progress implements PlayerComponent {
         this.#progress = document.createElement('div');
         this.#progress.className = `op-controls__progress op-control__${this.#controlPosition}`;
         this.#progress.tabIndex = 0;
-        this.#progress.setAttribute('aria-label', labels?.progressSlider || '');
+        this.#progress.setAttribute('aria-label', sanitize(labels?.progressSlider || ''));
         this.#progress.setAttribute('aria-valuemin', '0');
 
         this.#slider = document.createElement('input');
@@ -55,7 +55,7 @@ class Progress implements PlayerComponent {
         this.#slider.setAttribute('max', '0');
         this.#slider.setAttribute('step', '0.1');
         this.#slider.value = '0';
-        this.#slider.setAttribute('aria-label', labels?.progressRail || '');
+        this.#slider.setAttribute('aria-label', sanitize(labels?.progressRail || ''));
         this.#slider.setAttribute('role', 'slider');
 
         this.#buffer = document.createElement('progress');
@@ -436,5 +436,3 @@ class Progress implements PlayerComponent {
         }
     }
 }
-
-export default Progress;

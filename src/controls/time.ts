@@ -3,7 +3,7 @@ import Player from '../player';
 import { EVENT_OPTIONS } from '../utils/constants';
 import { formatTime } from '../utils/time';
 
-class Time implements PlayerComponent {
+export default class Time implements PlayerComponent {
     #player: Player;
 
     #currentTime: HTMLTimeElement;
@@ -31,6 +31,7 @@ class Time implements PlayerComponent {
 
     create(): void {
         const { labels, progress } = this.#player.getOptions();
+        const liveLabel = labels?.live || '';
 
         this.#currentTime = document.createElement('time');
         this.#currentTime.className = 'op-controls__current';
@@ -97,7 +98,7 @@ class Time implements PlayerComponent {
                     this.#duration.setAttribute('aria-hidden', 'false');
                     this.#delimiter.setAttribute('aria-hidden', 'false');
                 } else if (showOnlyCurrent || duration !== this.#duration.innerText) {
-                    this.#currentTime.innerText = showLiveLabel ? labels?.live || '' : formatTime(el.currentTime);
+                    this.#currentTime.innerText = showLiveLabel ? liveLabel : formatTime(el.currentTime);
                 }
                 this.#currentTime.innerText = formatTime(el.currentTime);
             } else if (this.#player.getElement().getAttribute('data-op-dvr__enabled')) {
@@ -115,9 +116,9 @@ class Time implements PlayerComponent {
                     this.#duration.setAttribute('aria-hidden', 'true');
                     this.#delimiter.setAttribute('aria-hidden', 'true');
                 }
-                this.#currentTime.innerText = showLiveLabel ? labels?.live || '' : formatTime(el.currentTime);
+                this.#currentTime.innerText = showLiveLabel ? liveLabel : formatTime(el.currentTime);
             } else {
-                this.#currentTime.innerText = showLiveLabel ? labels?.live || '' : formatTime(el.currentTime);
+                this.#currentTime.innerText = showLiveLabel ? liveLabel : formatTime(el.currentTime);
             }
         };
         this.#events.media.ended = (): void => {
@@ -159,5 +160,3 @@ class Time implements PlayerComponent {
         this.#container.remove();
     }
 }
-
-export default Time;

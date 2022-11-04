@@ -4,7 +4,7 @@ import { EVENT_OPTIONS, isAndroid, isIOS } from '../utils/constants';
 import { addEvent, getAbsoluteUrl, isJson, sanitize } from '../utils/general';
 import { timeToSeconds } from '../utils/time';
 
-class Captions implements PlayerComponent {
+export default class Captions implements PlayerComponent {
     #player: Player;
 
     #button: HTMLButtonElement;
@@ -78,14 +78,15 @@ class Captions implements PlayerComponent {
         }
 
         const { labels, detachMenus } = this.#player.getOptions();
+        const btnLabel = sanitize(labels?.toggleCaptions || '');
 
         this.#button = document.createElement('button');
         this.#button.className = `op-controls__captions op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
-        this.#button.title = labels?.toggleCaptions || '';
+        this.#button.title = btnLabel;
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-pressed', 'false');
-        this.#button.setAttribute('aria-label', labels?.toggleCaptions || '');
+        this.#button.setAttribute('aria-label', btnLabel);
         this.#button.setAttribute('data-active-captions', 'off');
 
         // Build menu if detachMenu is `true`
@@ -98,9 +99,9 @@ class Captions implements PlayerComponent {
                 <div class="op-settings__submenu-item" tabindex="0" role="menuitemradio" aria-checked="${
                     this.#default === 'off' ? 'true' : 'false'
                 }">
-                    <div class="op-settings__submenu-label op-subtitles__option" data-value="captions-off">${
-                        labels?.off
-                    }</div>
+                    <div class="op-settings__submenu-label op-subtitles__option" data-value="captions-off">${sanitize(
+                        labels?.off || ''
+                    )}</div>
                 </div>
             </div>`;
         }
@@ -350,7 +351,7 @@ class Captions implements PlayerComponent {
                   className: 'op-subtitles__option',
                   default: this.#default || 'off',
                   key: 'captions',
-                  name: labels?.captions || '',
+                  name: sanitize(labels?.captions || ''),
                   subitems,
               }
             : {};
@@ -474,11 +475,11 @@ class Captions implements PlayerComponent {
 
     private _formatMenuItems(): SettingsSubItem[] {
         const { labels } = this.#player.getOptions();
-        let items = [{ key: 'off', label: labels?.off || '' }];
+        let items = [{ key: 'off', label: sanitize(labels?.off || '') }];
         // Build object based on available languages
         for (let i = 0, total = this.#mediaTrackList.length; i < total; i++) {
             const track = this.#mediaTrackList[i];
-            const label = labels?.lang ? labels.lang[track.language] : null;
+            const label = labels?.lang ? sanitize(labels.lang[track.language]) : null;
             // Override language item if duplicated when passing list of items
             items = items.filter((el) => el.key !== track.language);
             items.push({ key: track.language, label: label || this.#mediaTrackList[i].label });
@@ -487,5 +488,3 @@ class Captions implements PlayerComponent {
         return items;
     }
 }
-
-export default Captions;

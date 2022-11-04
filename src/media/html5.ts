@@ -4,7 +4,7 @@ import { addEvent, isAudio, isVideo } from '../utils/general';
 import { isHlsSource } from '../utils/media';
 import Native from './native';
 
-class HTML5Media extends Native {
+export default class HTML5Media extends Native {
     #currentLevel: Level;
 
     #levelList: Level[] = [];
@@ -192,5 +192,3 @@ class HTML5Media extends Native {
         this.element.dispatchEvent(errorEvent);
     }
 }
-
-export default HTML5Media;

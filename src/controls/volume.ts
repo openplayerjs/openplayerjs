@@ -1,9 +1,9 @@
 import { EventsList, PlayerComponent } from '../interfaces';
 import Player from '../player';
 import { EVENT_OPTIONS, isAndroid, isIOS } from '../utils/constants';
-import { addEvent } from '../utils/general';
+import { addEvent, sanitize } from '../utils/general';
 
-class Volume implements PlayerComponent {
+export default class Volume implements PlayerComponent {
     #player: Player;
 
     #button: HTMLButtonElement;
@@ -36,6 +36,8 @@ class Volume implements PlayerComponent {
 
     create(): void {
         const { labels } = this.#player.getOptions();
+        const muteLabel = sanitize(labels?.mute || '');
+        const unmuteLabel = sanitize(labels?.unmute || '');
 
         this.#container = document.createElement('div');
         this.#container.className = `op-controls__volume op-control__${this.#controlPosition}`;
@@ -43,9 +45,12 @@ class Volume implements PlayerComponent {
         this.#container.setAttribute('aria-valuemin', '0');
         this.#container.setAttribute('aria-valuemax', '100');
         this.#container.setAttribute('aria-valuenow', `${this.#volume}`);
-        this.#container.setAttribute('aria-valuetext', `${labels?.volume || ''}: ${this.#volume}`);
+        this.#container.setAttribute(
+            'aria-valuetext',
+            `${sanitize(labels?.volume || this.#volume.toString())}: ${this.#volume}`
+        );
         this.#container.setAttribute('aria-orientation', 'vertical');
-        this.#container.setAttribute('aria-label', labels?.volumeSlider || '');
+        this.#container.setAttribute('aria-label', sanitize(labels?.volumeSlider || ''));
 
         this.#slider = document.createElement('input');
         this.#slider.type = 'range';
@@ -55,7 +60,7 @@ class Volume implements PlayerComponent {
         this.#slider.setAttribute('min', '0');
         this.#slider.setAttribute('max', '1');
         this.#slider.setAttribute('step', '0.1');
-        this.#slider.setAttribute('aria-label', labels?.volumeControl || '');
+        this.#slider.setAttribute('aria-label', sanitize(labels?.volumeControl || ''));
 
         this.#display = document.createElement('progress');
         this.#display.className = 'op-controls__volume--display';
@@ -71,10 +76,10 @@ class Volume implements PlayerComponent {
         this.#button.type = 'button';
         this.#button.className = `op-controls__mute op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
-        this.#button.title = labels?.mute || '';
+        this.#button.title = muteLabel;
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-pressed', 'false');
-        this.#button.setAttribute('aria-label', labels?.mute || '');
+        this.#button.setAttribute('aria-label', muteLabel);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateSlider = (element: any): void => {
@@ -84,7 +89,7 @@ class Volume implements PlayerComponent {
             this.#slider.value = `${element.volume}`;
             this.#display.value = mediaVolume * 10;
             this.#container.setAttribute('aria-valuenow', `${vol}`);
-            this.#container.setAttribute('aria-valuetext', `${labels?.volume}: ${vol}`);
+            this.#container.setAttribute('aria-valuetext', `${sanitize(labels?.volume || vol.toString())}: ${vol}`);
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -139,12 +144,12 @@ class Volume implements PlayerComponent {
 
             if (el.muted) {
                 el.volume = 0;
-                this.#button.title = labels?.unmute || '';
-                this.#button.setAttribute('aria-label', labels?.unmute || '');
+                this.#button.title = unmuteLabel;
+                this.#button.setAttribute('aria-label', unmuteLabel);
             } else {
                 el.volume = this.#volume;
-                this.#button.title = labels?.mute || '';
-                this.#button.setAttribute('aria-label', labels?.mute || '');
+                this.#button.title = muteLabel;
+                this.#button.setAttribute('aria-label', muteLabel);
             }
             const event = addEvent('volumechange');
             this.#player.getElement().dispatchEvent(event);
@@ -199,5 +204,3 @@ class Volume implements PlayerComponent {
         }
     }
 }
-
-export default Volume;

@@ -1,6 +1,6 @@
 import { EventsList, PlayerComponent } from './interfaces';
 import Player from './player';
-declare class Controls implements PlayerComponent {
+export default class Controls implements PlayerComponent {
     #private;
     events: EventsList;
     constructor(player: Player);
@@ -18,4 +18,3 @@ declare class Controls implements PlayerComponent {
     private _createCustomElement;
     private _destroyCustomElement;
 }
-export default Controls;

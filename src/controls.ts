@@ -11,7 +11,7 @@ import Player from './player';
 import { EVENT_OPTIONS, isAndroid, isIOS } from './utils/constants';
 import { addEvent, isAudio, isVideo, sanitize } from './utils/general';
 
-class Controls implements PlayerComponent {
+export default class Controls implements PlayerComponent {
     events: EventsList = {
         media: {},
         mouse: {},
@@ -512,5 +512,3 @@ class Controls implements PlayerComponent {
         }
     }
 }
-
-export default Controls;

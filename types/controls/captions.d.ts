@@ -1,6 +1,6 @@
 import { PlayerComponent, SettingsItem } from '../interfaces';
 import Player from '../player';
-declare class Captions implements PlayerComponent {
+export default class Captions implements PlayerComponent {
     #private;
     constructor(player: Player, position: string, layer: string);
     create(): void;
@@ -14,4 +14,3 @@ declare class Captions implements PlayerComponent {
     private _prepareTrack;
     private _formatMenuItems;
 }
-export default Captions;

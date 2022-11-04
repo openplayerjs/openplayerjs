@@ -1,5 +1,5 @@
 import { Level, Source } from '../interfaces';
-declare abstract class Native {
+export default abstract class Native {
     #private;
     element: HTMLMediaElement;
     media: Source;
@@ -31,4 +31,3 @@ declare abstract class Native {
     get paused(): boolean;
     get ended(): boolean;
 }
-export default Native;

@@ -2,7 +2,7 @@
 import { Level, Source } from '../interfaces';
 import { predictMimeType } from '../utils/media';
 
-abstract class Native {
+export default abstract class Native {
     element: HTMLMediaElement;
 
     media: Source;
@@ -105,5 +105,3 @@ abstract class Native {
         return this.element.ended;
     }
 }
-
-export default Native;

@@ -1,6 +1,6 @@
 import { PlayerComponent, SettingsItem, SettingsSubItem } from '../interfaces';
 import Player from '../player';
-declare class Settings implements PlayerComponent {
+export default class Settings implements PlayerComponent {
     #private;
     private clickEvent;
     private hideEvent;
@@ -13,4 +13,3 @@ declare class Settings implements PlayerComponent {
     removeItem(id: string | number, type: string, minItems?: number): void;
     private _enterSpaceKeyEvent;
 }
-export default Settings;

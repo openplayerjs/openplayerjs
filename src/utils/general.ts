@@ -44,6 +44,9 @@ export function offset(el: HTMLElement): { left: number; top: number } {
 }
 
 export function sanitize(html: string, plainText = true): string {
+    if (!html) {
+        return '';
+    }
     const parser = new DOMParser();
     const content = parser.parseFromString(html, 'text/html');
     const formattedContent = content.body || document.createElement('body');

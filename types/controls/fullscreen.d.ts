@@ -1,6 +1,6 @@
 import { PlayerComponent } from '../interfaces';
 import Player from '../player';
-declare class Fullscreen implements PlayerComponent {
+export default class Fullscreen implements PlayerComponent {
     #private;
     fullScreenEnabled: boolean;
     constructor(player: Player, position: string, layer: string);
@@ -14,4 +14,3 @@ declare class Fullscreen implements PlayerComponent {
     private _setFullscreen;
     private _unsetFullscreen;
 }
-export default Fullscreen;
