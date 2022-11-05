@@ -1,12 +1,27 @@
 # Migration
 
-## Starting in v3.x.x
+## From v2.x.x to v3.x.x
 
-No longer support for IE11.
+### No further support for IE11.
 
-Bundles will not support IE11 going forward to reduce the footprint of supporting Promises and other ES6 native functions.
+Bundles for both CSS and JS will not support IE11 anymore to reduce the footprint of supporting Promises and other ES6 native functions by using polyfills. This is a big consideration to have before migrating to version 3 of this player.
 
-Also, video player used to pause media when clicking on the main area; it has been disabled by default, and to activate that behavior back, you need to set the `media.pauseOnClick` property as `true`.
+### DASH and FLV media removed
+
+In an effort to have a true **native** player, we removed the non-native media, such as DASH and FLV. They will be included in a separate repository, same as the YouTube plugin for this player.
+
+### Dist files completely removed from repository
+
+The dist folders will be released on NPM, but they won't be part of the repositry anymore, to follow some of the modern guidelines about projects.
+
+### Other changes to consider:
+
+-   The video player used to pause media when clicking on the main area, but now it has been disabled by default. To activate that behavior back, et the `media.pauseOnClick` property as `true`.
+-   Replaced Karma with Jest to use more modern approaches for unit tests; current status of unit tests is at 8%, but we will continue aming for 70%
+-   Refactor code for IMA SDK integration to make it easier to understand and adapt to latest changed; also, `loop` feature has been removed from Ads.
+-   Upgraded packages all packages used in the project to keep it up-to-date
+-   Refactor constants in favor of methods to facilitate unit tests on them
+-   Simplified structure of project
 
 ## From v2.6.1 to v2.7.0
 
@@ -53,7 +68,7 @@ const player = new OpenPlayerJS('player', {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
             right: ['captions', 'settings', 'fullscreen'],
-        }
+        },
     },
     live: {
         showLabel: true,
