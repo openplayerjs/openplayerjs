@@ -717,7 +717,10 @@ export default class Player {
 
                         // Insert element to unmute if browser allows autoplay with muted media
                         const volumeEl = document.createElement('div');
-                        const action = isIOS() || isAndroid() ? this.#options.labels?.tap : this.#options.labels?.click;
+                        const action =
+                            isIOS() || isAndroid()
+                                ? this.#options.labels?.tap || ''
+                                : this.#options.labels?.click || '';
                         volumeEl.className = 'op-player__unmute';
                         volumeEl.innerHTML = `<span>${action}</span>`;
                         volumeEl.tabIndex = 0;
