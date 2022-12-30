@@ -304,7 +304,7 @@ export default class Settings implements PlayerComponent {
     }
 
     private _enterSpaceKeyEvent(e: KeyboardEvent): void {
-        const key = e.which || e.keyCode || 0;
+        const key = e.key || '';
         const isAd = this.#player.isAd();
         const settingsBtnFocused = document?.activeElement?.classList.contains('op-controls__settings');
 
@@ -313,11 +313,11 @@ export default class Settings implements PlayerComponent {
             document?.activeElement?.classList.contains('op-settings__back') ||
             document?.activeElement?.classList.contains('op-settings__submenu-label');
         if (!isAd) {
-            if (settingsBtnFocused && (key === 13 || key === 32)) {
+            if (settingsBtnFocused && (key === ' ' || key === 'Enter')) {
                 this.clickEvent();
                 e.preventDefault();
                 e.stopPropagation();
-            } else if (menuFocused && (key === 13 || key === 32)) {
+            } else if (menuFocused && (key === ' ' || key === 'Enter')) {
                 this.#events.global['settings.submenu'](e);
                 e.preventDefault();
                 e.stopPropagation();

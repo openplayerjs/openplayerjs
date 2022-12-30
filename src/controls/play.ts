@@ -180,9 +180,9 @@ export default class Play implements PlayerComponent {
     }
 
     private _enterSpaceKeyEvent(e: KeyboardEvent): void {
-        const key = e.which || e.keyCode || 0;
+        const key = e.key || '';
         const playBtnFocused = document?.activeElement?.classList.contains('op-controls__playpause');
-        if (playBtnFocused && (key === 13 || key === 32)) {
+        if (playBtnFocused && (key === ' ' || key === 'Enter')) {
             this.#events.button(e);
         }
     }

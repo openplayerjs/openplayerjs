@@ -219,9 +219,9 @@ export default class Fullscreen implements PlayerComponent {
     }
 
     private _enterSpaceKeyEvent(e: KeyboardEvent): void {
-        const key = e.which || e.keyCode || 0;
+        const key = e.key || '';
         const fullscreenBtnFocused = document?.activeElement?.classList.contains('op-controls__fullscreen');
-        if (fullscreenBtnFocused && (key === 13 || key === 32)) {
+        if (fullscreenBtnFocused && (key === ' ' || key === 'Enter')) {
             this.toggleFullscreen();
             e.preventDefault();
             e.stopPropagation();

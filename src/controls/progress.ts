@@ -275,9 +275,8 @@ export default class Progress implements PlayerComponent {
             this.#slider.classList.remove('.op-progress--pressed');
         };
 
-        const forcePause = (e: KeyboardEvent): void => {
+        const forcePause = (): void => {
             const el = this.#player.activeElement();
-            const key = e.which || e.keyCode || 0;
             const target = this.#slider;
             const value = Math.round(Number(target.value));
             const current = Math.round(el.currentTime);
@@ -285,7 +284,7 @@ export default class Progress implements PlayerComponent {
                 (value < current && progress?.allowRewind) || (value >= current && progress?.allowSkip);
 
             // If current progress is not related to an Ad, manipulate current time
-            if (isProgressManipulationAllowed && (key === 1 || key === 0) && this.#player.isMedia() && !el.paused) {
+            if (isProgressManipulationAllowed && this.#player.isMedia() && !el.paused) {
                 el.pause();
                 this.#forcePause = true;
             }
@@ -421,11 +420,11 @@ export default class Progress implements PlayerComponent {
     private _enterSpaceKeyEvent(e: KeyboardEvent): void {
         const el = this.#player.activeElement();
         const isAd = this.#player.isAd();
-        const key = e.which || e.keyCode || 0;
+        const key = parseInt(e.key || '0', 10);
         // Use the 0-9 keys to manipulate current media time to set media (not Ads) to the 0% to 90% of duration.
-        if (!isAd && key >= 48 && key <= 57 && el.duration !== Infinity) {
+        if (!isAd && key >= 0 && key <= 9 && el.duration !== Infinity) {
             let step = 0;
-            for (let i = 48, limit = 57; i <= limit; i++) {
+            for (let i = 0, limit = 9; i <= limit; i++) {
                 if (i < key) {
                     step++;
                 }

@@ -166,7 +166,7 @@ export default class Volume implements PlayerComponent {
 
         this.#player.getContainer().addEventListener('keydown', this._enterSpaceKeyEvent, EVENT_OPTIONS);
 
-        if ((!isAndroid() && !isIOS()) || !this.#player.getOptions().useDeviceVolume) {
+        if (!(this.#player.getOptions().useDeviceVolume && (isAndroid() || isIOS()))) {
             const controls = this.#player.getControls().getLayer(this.#controlLayer);
             controls.appendChild(this.#button);
             controls.appendChild(this.#container);
@@ -191,11 +191,11 @@ export default class Volume implements PlayerComponent {
     }
 
     private _enterSpaceKeyEvent(e: KeyboardEvent): void {
-        const key = e.which || e.keyCode || 0;
+        const key = e.key || '';
         const el = this.#player.activeElement();
         const playBtnFocused = document?.activeElement?.classList.contains('op-controls__mute');
 
-        if (playBtnFocused && (key === 13 || key === 32)) {
+        if (playBtnFocused && (key === ' ' || key === 'Enter')) {
             el.muted = !el.muted;
             el.volume = el.muted ? 0 : this.#volume;
             this.#events.button.click();
