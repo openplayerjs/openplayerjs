@@ -221,6 +221,7 @@ Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can 
 ```javascript
 import React, { useEffect } from 'react';
 import OpenPlayerJS from 'openplayerjs';
+import 'openplayerjs/dist/openplayer.css'
 
 export default function Sample() {
     useEffect(() => {
@@ -235,6 +236,7 @@ export default function Sample() {
             </video>
         </div>
     );
+}
 ```
 
 Check the [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB) and [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln) samples for more information. **You can use all the configuration elements listed in the [Configuration options](#configuration-options) listed above**.
