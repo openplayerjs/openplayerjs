@@ -101,7 +101,7 @@
         "prettier": "^2.6.2",
         "release-it": "^15.0.0",
         "standard-version": "^9.5.0",
-        "stylelint": "^14.8.5",
+        "stylelint": "^15.10.1",
         "stylelint-order": "^5.0.0",
         "terser-webpack-plugin": "^5.3.3",
         "ts-loader": "^9.3.0",
