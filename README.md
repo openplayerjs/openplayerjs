@@ -11,10 +11,9 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 
 ## 🚨 IMPORTANT 🚨
 
-**This repository is in maintenance at this point.** 
+### 🔧 This repository is in maintenance at this point. 🔧
 
 No new features or addition will be added, only bugfixes.
-
 
 ## Advantages
 
