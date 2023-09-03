@@ -1,167 +1,243 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>OpenPlayer JS</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/style.css" rel="stylesheet" type="text/css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" rel="stylesheet">
-  </head>
+    <head>
+        <meta charset="utf-8">
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="OpenPlayerJS is an ever-green lightweight media player that supports the most common video/audio files for the web, and also VAST/VPAID/VMAP Ads">
+        <meta name="google-site-verification" content="Desj0WKx8CJ5bVxUndGN6WP9k80dxk7fZg0ChsKmIno" />
+        
+        <title>OpenPlayerJS - The Lighweight Media Player for Web</title>
+        
+        <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
+        <link rel="icon" href="img/favicon.png" type="image/x-icon">
+        <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700;900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+        <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
 
-  <body>
-    <header class="head">
-      <div class="head_full">
-        <a href="#" class="logo"><img src="img/openplayer-clean.png" width="100px"></a>
-        <ul>
-          <li><a href="#">About OpenPlayer JS</a></li>
-          <li><a href="#">Features</a></li>
-          <li><a href="#">Try it Now!</a></li>
-        </ul>
-      </div>
-    </header>
+    <body>
+        <header>
+            <a href="https://github.com/openplayerjs/openplayerjs">
+              <img src="img/openplayer-clean.png" style="max-width: 100px;"/>
+            </a>
+            <a href="#about">About OpenPlayer JS</a>
+            <a href="#features">Features</a>
+            <a href="#configuration">Try it Now!</a>
+            <a class="icon" href="#"><img src="img/menu.svg" /></a>
+        </header>
 
-    <div class="container0 ">
-      <div class="row0">
-        <div class="col0">
-          <div class="logo">
-            <img src="img/openplayer-clean.png" width="20%">
-            <span class="logo_color">OPENPLAYERJS</span>
-            <!--<img src="img/logo.png">-->
-          </div>
-        </div>
-      </div>
-
-      <div class="row1">
-        <h2 class="size200 weight100">The Lightweight Player for the<br><b class="size200 wieght700" >Web</b></h2>
-        <button class="download" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip">Download</button>
-        <p class="salto"><a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
-            data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
-        <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
-            aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a></p>
-      </div>
-    </div>
-    <div class="space200"></div>
-    <div class="row1">
-      <h1 class="color_white" data-aos="fade-up" data-aos-duration="1000">Why another media player? And why <b class="wieght700">OpenPlayerJS?</b></h1>
-      <div class="space100"></div>
-
-      <div class="column2-1" data-aos="fade-right" data-aos-duration="1000">
-        <ul>
-          <li id="tab1"><a class="active" id="one" href="#" onclick="return false;">Video</a></li>
-          <li id="tab2"><a id="two" href="#" onclick="return false;">Audio</a></li>
-        </ul>
-        <div id="tab-1" class="tab-content show">
-          <p>
-            <video class="op-player op-player__media" width="600px" controls playsinline data-op-settings='{"ads": {"src": "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostoptimizedpod&cmsid=496&vid=short_onecue&correlator="}}'>
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
-              </video>
-          </p>
-        </div>
-        <div id="tab-2" class="tab-content">
-          <div class="space50"></div>
-          <audio class="op-player op-player__media" controls>
-            <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
-          </audio>
-        </div>
-      </div>
-
-
-      <div class="column2-2" data-aos="fade-left" data-aos-duration="1000">
-        <span class="text1">Technologies are evolving at a <b>fast pace</b>. Having a player that plays the most popular content in <b>all browsers and devices,</b> keeps itself ever-green, and can be <b>customized easily</b> is a no-brainer for everyone that wants the best.</span>
-      </div>
-    </div>
-    <div class="space200"></div>
-    <hr></hr>
-
-
-    <div class="container section1">
-      <div style="background-color:#fff;" class="space100"></div>
-      <div class="col6-1" data-aos="fade-down" data-aos-duration="1000">
-        <img src="img/config.png"/>
-      </div>
-      <div class="col4-1" data-aos="fade-right" data-aos-duration="1000">
-        <span><h2 class="size200">Easily configured</h2><br>Either setting up the player through the <b>video/audio</b> tags or via Javascript, you just need a pair of class names and a small set of configuration options... and you are all set!</span>
-      </div>
-      <div class="col4-2" data-aos="fade-up" data-aos-duration="1000">
-        <span><h2 class="color size200">Cross Browser/Cross Device Support</h2><br>With IE11+ support, OpenPlayerJS is your best choice! Also, giving the constant changes of policies on different browsers, OpenPlayer integrates a smart algorithm to detect autoplay capabilities so you don't have to worry about each browser's quirks or workarounds for that.</span>
-      </div>
-      <div class="col6-2" data-aos="fade-down" data-aos-duration="1000">
-        <img src="img/browsers.svg"/>
-      </div>
-      <div class="col6-1" data-aos="fade-right" data-aos-duration="1000">
-        <img src="img/ads.svg"/>
-      </div>
-      <div class="col4-1" data-aos="fade-left" data-aos-duration="1000">
-        <span><h2 class="size200">Media Advertising support</h2><br>OpenPlayerJS integrates Google IMA SDK so users have full support for all the types of specifications for Ads in the current market: VAST/VPAID/VMAP. Just provide a valid Ads URL and let OpenPlayerJS to take care of the rest!</span>
-      </div>
-    </div>
-
-
-    <div class="container section2">
-      <h1>Try it Now!</h1>
-      <div class="space100"></div>
-      <div class="section2_cont1" data-aos="fade-left" data-aos-duration="1000">
-          <form id="settings" action="#" method="POST">
-            <div class="card">
-              <h3 class="card-header">Media settings</h3>
-              <div class="panel-body">
-                <div class="form-group">
-                  <label for="url" class="col-form-label">Your media URL</label>
-                  <input type="url" class="form-control" id="url" name="url" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
-                </div>
-                <fieldset class="form-group">
-                  <div class="row">
-                    <legend class="col-form-label col-sm-2 pt-0">Media type</legend>
-                    <div class="col-sm-10" id="types">
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
-                        <label class="form-check-label" for="video-type">
-                          Video
-                        </label>
-                      </div>
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
-                        <label class="form-check-label" for="audio-type">
-                          Audio
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </fieldset>
-                <div class="form-group">
-                  <label for="ads" class="col-form-label">Ads URL</label>
-                  <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
-                </div>
-                <div class="form-group">
-                  <div class="form-check" id="autoplay-check">
-                    <label for="autoplay" class="form-check-label">Autoplay?
-                      <input class="form-check-input" type="checkbox" name="autoplay" id="autoplay" value="1"
-                        aria-label="Autoplay media">
-                    </label>
-                  </div>
-                </div>
-                <div class="text-center">
-                  <button class="btn btn-primary mb-4" id="load" type="submit">Load</button>
-                </div>
-              </div>
+        <main>
+            <div class="title dark-container">
+                <h1>OPENPLAYERJS</h1>
+                <img src="img/openplayer-clean.png" />
             </div>
-          </form>
-      </div>
-      <div class="section2_cont2" data-aos="fade-right" data-aos-duration="1000">
-        <iframe title="Inline OpenPlayer" id="media" allowfullscreen scrolling="no" frameborder="0"></iframe>
-        <div class="form-group white_space">
-          <button class="btn btn-primary mb-4" id="permalink" type="submit">Copy Permalink</button>
-        </div>
-      </div>
-      <footer>OpenPlayerJS was created by Rafael Miranda</footer>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-      <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-      <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-      <script async defer src="https://buttons.github.io/buttons.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
-      <script src="js/script.js"></script>
-  </body>
+            <div class="description dark-container">
+                <h2>The Lightweight Player for the<br><strong>Web</strong></h2>
+                <a class="download" rel="noopener" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip">Download</a>
+                <div class="github">
+                    <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
+                    data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
+                    <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
+                    aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a>
+                </div>
+            </div>
+            <div class="facts dark-container" id="about">
+                <h2 data-aos="fade-up" data-aos-duration="1000">Why another media player? And why <strong>OpenPlayerJS?</strong></h2>
+            </div>
+            <div class="dark-container">
+                <div class="players" data-aos="fade-right" data-aos-duration="1000">
+                    <div>
+                        <ul class="tab-controls">
+                            <li>
+                                <button class="active" id="tab-one-btn" href="#">Video</button>
+                            </li>
+                            <li>
+                                <button id="tab-two-btn">Audio</button>
+                            </li>
+                        </ul>
+                        <div id="tab-one" class="tab-content show">
+                            <video class="op-player__media" id="video" controls playsinline>
+                                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div id="tab-two" class="tab-content">
+                            <audio class="op-player__media" id="audio" controls>
+                            <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3">
+                            </audio>
+                        </div>
+                    </div>
+                    <p>Technologies are evolving at a <strong>fast pace</strong>. Having a player that plays the most popular content in <strong>all browsers and devices,</strong> keeps itself ever-green, and can be <strong>customized easily</strong> is a no-brainer for everyone that wants the best.</p>
+                </div>
+            </div>
+            <div id="features">
+                <h1>Features</h1>
+                <div data-aos="fade-down" data-aos-duration="1000" class="row">
+                    <pre class="column" style="flex: 2;">
+                        <code>
+&lt;<span class="tag">video</span> <span class="attr-name">class</span>="<span class="attr-value">op-player__media</span>" <span class="attr-name">id</span>="<span class="attr-value">video</span>" <span class="attr-name">controls</span>&gt;
+    &lt;<span class="tag">source</span>
+        <span class="attr-name">src</span>="<span class="attr-value">http://myvideo.com/sample.mp4</span>"
+        <span class="attr-name">type</span>="<span class="attr-value">video/mp4</span>"&gt;
+&lt;/<span class="tag">video</span>&gt;
+
+&lt;<span class="tag">script</span>&gt;
+    <span class="keyword">const</span> <span class="constant">player</span> = <span class="keyword">new</span> <span class="class">OpenPlayerJS</span>(<span class="id">'video'</span>);
+
+    // Unleash the power
+    <span class="constant">player</span>.<span class="method">init()</span>;
+&lt;<span class="tag">/script</span>&gt;
+                        </code>
+                    </pre>
+                    <div class="column">
+                        <h2>Easily configurable</h2>
+                        <p>To unleash the power of OpenPlayerJS, use <strong>video/audio</strong> with a <em>op-player__media</em> class name, an ID  attribute for your element and a small set of configuration options... and that's it!</p>
+                    </div>
+                </div>
+                <div data-aos="fade-up" data-aos-duration="1000" class="row">
+                    <div class="browsers column">
+                        <img src="img/devices.svg" />
+                        <div>
+                            <img src="img/browser_chrome.svg" />
+                            <img src="img/browser_mozilla.svg" />
+                            <img src="img/browser_edge.svg" />
+                            <img src="img/browser_safari.svg" />
+                        </div>
+                    </div>
+                    <div class="column">
+                        <h2>Cross Browser/Cross Device Support</h2>
+                        <p>Giving the constant changes of policies on different browsers, OpenPlayerJS integrates a smart algorithm to detect the browser's autoplay capabilities so you don't have to worry about each browser's quirks or workarounds to do that.</p>
+                    </div>
+                </div>
+                <div data-aos="fade-right" data-aos-duration="1000" class="row">
+                    <img src="img/ads.svg" style="max-width: 400px;" class="column"/>
+                    <div class="column">
+                        <h2>Media Advertising support</h2>
+                        <p>OpenPlayerJS integrates <a href="https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side" rel="noopener"> Google's IMA SDK</a> so users have full support for all the types of Ads specifications used nowadays: VAST/VPAID/VMAP.</p>
+                        <p>Just provide a valid Ads URL and let OpenPlayerJS to take care of the rest!</p>
+                    </div>
+                </div>
+            </div>
+            <div id="configuration">
+                <h1>Try it Now!</h1>
+                <div class="row">
+                    <div data-aos="fade-up" data-aos-duration="1000" style="width: 100%;">
+                        <form id="settings" action="#" method="POST">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="url" class="col-form-label">Your media URL</label>
+                                    <input type="url" class="form-control" id="url" name="url" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
+                                </div>
+                                <fieldset class="form-group">
+                                    <div id="types">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
+                                            <label class="form-check-label" for="video-type">
+                                                Video
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
+                                            <label class="form-check-label" for="audio-type">
+                                                Audio
+                                            </label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <div class="form-group">
+                                    <label for="ads" class="col-form-label">Ads URL</label>
+                                    <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
+                                </div>
+                                <div style="margin: 10px 0; display: flex; justify-content: space-evenly;">
+                                    <button id="load" type="submit">Load</button>
+                                    <button id="permalink" type="button">Copy Permalink</button>
+                                </div>
+                            </div>
+                        </form>
+                        <iframe title="Inline OpenPlayer" id="media" allowfullscreen scrolling="no" frameborder="0" style="width: 100%;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer>OpenPlayerJS was created by Rafael Miranda</footer>
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
+        <script>
+            AOS.init();
+            const activateTabs = (e) => {
+                const { id } = e.target;
+                const primaryContainer = id === 'tab-one-btn' ? 'tab-one' : 'tab-two';
+                const secondaryBtnTarget = id === 'tab-one-btn' ? 'tab-two-btn' : 'tab-one-btn';
+                const secondaryContainer = id === 'tab-one-btn' ? 'tab-two' : 'tab-one';
+
+                e.target.classList.add('active');
+                document.getElementById(secondaryBtnTarget).classList.remove('active');
+                document.getElementById(secondaryContainer).classList.remove('show');
+                document.getElementById(primaryContainer).classList.add('show');
+            }
+
+            document.getElementById('tab-one-btn').addEventListener('click', activateTabs);
+            document.getElementById('tab-two-btn').addEventListener('click', activateTabs);
+
+            document.querySelectorAll('.op-player__media').forEach(el => {
+                const p = new OpenPlayerJS(el.id);
+                p.init();
+            });
+
+            const form = document.getElementById('settings');
+
+            const loadMedia = () => {
+            var url = window.location.protocol + '//' + window.location.host + '/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
+            url += form.querySelector('#video-type').checked ? 'video' : 'audio';
+            var ads = form.querySelector('#ads').value;
+            if (ads) {
+                url += '&ads=' + encodeURIComponent(ads.replace(/%/g, '~'));
+            }
+            document.getElementById('media').src = url;
+            }
+
+            document.getElementById('permalink').addEventListener('click', () => {
+                var el = document.createElement('textarea');
+                el.value = document.getElementById('media').src;
+                el.setAttribute('readonly', '');
+                el.style.position = 'absolute';
+                el.style.left = '-9999px';
+                document.body.appendChild(el);
+                const selected = document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                if (selected) {
+                    document.getSelection().removeAllRanges();
+                    document.getSelection().addRange(selected);
+                }
+            });
+            window.addEventListener('load', loadMedia);
+            form.addEventListener('submit', (e) => {
+                loadMedia();
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            document.getElementById('media').addEventListener('load', (e) => {
+                const iframe = e.target;
+                iframe.width  = iframe.contentWindow.document.body.scrollWidth;
+                iframe.height = iframe.contentWindow.document.body.scrollHeight + 20;
+            });
+            document.querySelector('.icon').addEventListener('click', (e) => {
+              const target = e.target.closest('header');
+              if (target.classList.contains('open')) {
+                target.classList.remove('open');
+              } else {
+                target.classList.add('open');
+              }
+              e.preventDefault();
+              e.stopPropagation();
+            });
+        </script>
+    </body>
 </html>
