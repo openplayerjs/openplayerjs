@@ -22,13 +22,22 @@
 
     <body>
         <header>
-            <a href="https://github.com/openplayerjs/openplayerjs">
-              <img src="img/openplayer-clean.png" style="max-width: 100px;"/>
-            </a>
-            <a href="#about">About OpenPlayer JS</a>
-            <a href="#features">Features</a>
-            <a href="#configuration">Try it Now!</a>
-            <a class="icon" href="#"><img src="img/menu.svg" /></a>
+          <div>
+            <div class="menu-item">
+              <a href="https://github.com/openplayerjs/openplayerjs">
+                <img src="img/openplayer-clean.png" style="max-width: 100px;"/>
+              </a>
+            </div>
+            <div class="menu-item"><a href="#about">About OpenPlayer JS</a></div>
+            <div class="menu-item"><a href="#features">Features</a></div>
+            <div class="menu-item"><a href="#configuration">Try it Now!</a></div>
+            <div class="menu-mobile-item">
+              <a class="icon" href="#">
+                <img src="img/menu.svg" />
+                <span style="display: none;">X</span>
+              </a>
+            </div>
+          </div>
         </header>
 
         <main>
@@ -228,9 +237,26 @@
                 iframe.width  = iframe.contentWindow.document.body.scrollWidth;
                 iframe.height = iframe.contentWindow.document.body.scrollHeight + 20;
             });
+            
+            let menuIsClosed = true;
+
             document.querySelector('.icon').addEventListener('click', (e) => {
               const target = e.target.closest('header');
-              if (target.classList.contains('open')) {
+              document.querySelectorAll('.menu-item:not(:first-of-type)').forEach(el => {
+                console.log(e.target)
+                if (target.classList.contains('open')) {
+                  el.classList.remove('show');
+                  e.target.closest('.icon').querySelector('span').style.display = 'none';
+                  e.target.closest('.icon').querySelector('img').style.display = 'block';
+                  menuIsClosed = true;
+                } else {
+                  el.classList.add('show');
+                  e.target.closest('.icon').querySelector('span').style.display = 'block';
+                  e.target.closest('.icon').querySelector('img').style.display = 'none';
+                  menuIsClosed = false;
+                }
+              });
+              if (menuIsClosed) {
                 target.classList.remove('open');
               } else {
                 target.classList.add('open');

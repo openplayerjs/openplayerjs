@@ -28,6 +28,9 @@
       transform: translate3d(0, 40px, 0);
     }
   }
+  html {
+    scroll-behavior: smooth;
+  }
   
   body {
     font-size: 16px;
@@ -49,46 +52,51 @@
   
   header > div {
     display: flex;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0.5em;
   }
 
-  header .icon {
-    float: none;
-    display: block;
-    text-align: left;
+  .menu-item {
+    display: none;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-weight: bold;
+    padding: 0.5rem;
+  }
+  .menu-item:first-of-type {
+    display: inline-flex;
+    justify-content: left;
+    width: 60%;
+    margin-left: 0;
+    margin-right: auto;
+    padding: 0;
+  }
+  .menu-item.show {
+    display: inline-flex;
+  }
+  .menu-item a {
+    color: #fff;
+    text-decoration: none;
+    padding: 0 0.5em;
+    width: 100%;
+  }
+
+  .menu-mobile-item {
     position: absolute;
     right: 20px;
     top: 20px;
-    border: none;
-    background: transparent;
-    padding: 14px 16px;
-    cursor: pointer;
+    width: 32px;
   }
 
-  header a {
-    float: left;
-    display: block;
+  .menu-mobile-item > a {
     color: #fff;
-    text-align: center;
-    padding: 14px 16px;
     text-decoration: none;
-  }
-
-  header a:not(.icon) {
-    float: none;
-    display: none;
-    text-align: left;
-  }
-
-  header a:first-of-type {
-    width: 100px;
-  }
-
-  header a.icon, header a:first-of-type {
-    display: block;
-  }
-
-  header.open a:not(:first-of-type) {
-    display: block;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: center;
   }
   
   h2 {
@@ -106,7 +114,7 @@
     color: #fff;
   }
   .title {
-    flex-direction: row-reverse;
+    flex-direction: column;
     width: 100%;
     align-items: center;
     padding-top: 126px;
@@ -116,9 +124,7 @@
     max-width: 450px;
   }
   .title > h1 {
-    flex: 1;
-    margin-inline-start: -170px;
-    font-size: 3rem;
+    margin: 0;
     font-family: "Arrival", Times, sans-serif;
     background: -webkit-linear-gradient(
       rgba(255, 255, 255, 0.9),
@@ -132,7 +138,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 4px;
-    display: none;
     transition: 0.2s;
   }
   .description > h2 {
@@ -410,25 +415,28 @@
   }
   
   @media (min-width: 768px) {
-    header a.icon {
+    .menu-mobile-item {
       display: none;
     }
-
-    header a, header a:not(.icon) {
-      display: block;
-      float: left;
-      text-align: center;
-      text-decoration: none;
+    header > div {
+      flex-direction: row;
     }
-
-    header a:not(:first-of-type) {
-      float: right;
-      padding: 40px 20px;
+    .menu-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 20px;
+      padding: 0;
     }
-
+    .title {
+      flex-direction: row-reverse;
+    }
     .title > h1 {
       display: block;
       flex: 0 0 60%;
+      font-size: 3rem;
+      margin: 0.67em 0;
+      margin-inline-start: -170px;
     }
     .title > img {
       max-width: 580px;
