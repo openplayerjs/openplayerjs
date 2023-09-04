@@ -12,9 +12,7 @@ jobs:
             - checkout
             - node/install-packages:
                   pkg-manager: npm
-            - browser-tools/install-chrome:
-              chrome-version: 116.0.5845.96
-              replace-existing: true
+            - browser-tools/install-chrome
             - browser-tools/install-chromedriver
             - run:
                   command: |
