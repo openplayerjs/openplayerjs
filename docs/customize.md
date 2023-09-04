@@ -45,8 +45,6 @@ you will see why CSS created this UI for the progress bar. If we removed the uni
 
 ![Progress bar without unique styles](https://user-images.githubusercontent.com/910829/187761436-40a49d25-3778-455f-8034-7ece7b621551.png)
 
-**In the oncoming 3.x.x version, progress bar will be placed in the `top-middle` layer and some of the CSS rules will be deleted/adjusted** to match semantically and visually the player's UI.
-
 But this is important to highlight how CSS can override the semantic correctness of the player in favor of the desired UI. That's why is important to use layers properly to achieve the desired results in terms of positioning, rather than relying on CSS for it (unless you are using a version **older than 2.7.1**).
 
 ## Add Control

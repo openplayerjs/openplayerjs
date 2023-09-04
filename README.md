@@ -2,7 +2,6 @@
 
 ![openplayerjs](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
 
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Support%20OpenPlayerJS%20by%20giving%20the%20project%20a%20start%20at%20&url=https://www.openplayerjs.com&hashtags=openplayerjs,mediaplayer,vpaid,opensourcerocks,streaming)
 [![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
 [![CircleCI](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master.svg?style=svg)](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master)
@@ -17,7 +16,7 @@ No new features or addition will be added, only bugfixes.
 
 ## Advantages
 
--   Supports **IE11+ (Win8) and all modern browsers**.
+-   Supports **all modern browsers**.
 -   **No dependencies**, since it is written in Typescript.
 -   Runs a simple but yet powerful algorithm to **check the browser's autoplay capabilities** across browsers.
 -   Supports for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
@@ -28,11 +27,11 @@ No new features or addition will be added, only bugfixes.
 
 ## Projects using OpenPlayerJS
 
-|                                                                                                                                                  |                                                                                                                                                                               |                                                                                                                                                      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![MedSims](https://img.medscapestatic.com/pi/global/icons/icon-medsims-logo@2x.png)](https://www.medscape.org/simulation)                       | [![Arrow Classic Rock](https://player.arrow.nl/tmp/images/logo.1507670326.jpg)](https://player.arrow.nl/ad.html)                                                              | [![Geração Rádios](https://user-images.githubusercontent.com/910829/168053773-8871dcf9-1f3a-4487-9f6d-95d4d461d945.png)](https://geracaoradios.com)  |
-| [![LectureTube](https://live.video.tuwien.ac.at/room/assets/lecturetube_landscape.svg)](https://live.video.tuwien.ac.at/room/heart0/player.html) | [Servicio Online](https://40152354.servicio-online.net//INDEX.html)                                                                                                           | [![HitRadio Center](https://user-images.githubusercontent.com/910829/155380459-76856a41-5a19-4831-8ef8-6d0ae8d471f0.svg)](https://radiocenter.si)    |
-| [![Rock Radio](https://user-images.githubusercontent.com/910829/155380461-9c74ff57-50a2-419c-b85a-dad8810b42c6.svg)](https://rockradio.si)       | [![Chichester District Council](https://www.chichester.gov.uk/chichesterdotnet/images/cdclogo.jpg)](https://chichester.moderngov.co.uk/ieListDocuments.aspx?CId=134&MId=1620) | [![Clippa](https://user-images.githubusercontent.com/910829/181409803-c9f25333-7c40-48fb-b54f-42f7e6f6537a.svg)](https://www.clippa.tv/bigKnightOut) |
+|                                                                                                                                                  |                                                                                                                                                                                          |                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![MedSims](https://img.medscapestatic.com/pi/global/icons/icon-medsims-logo@2x.png)](https://www.medscape.org/simulation)                       | [![Arrow Classic Rock](https://player.arrow.nl/tmp/images/logo.1507670326.jpg)](https://player.arrow.nl/ad.html)                                                                         | [![Geração Rádios](https://user-images.githubusercontent.com/910829/168053773-8871dcf9-1f3a-4487-9f6d-95d4d461d945.png)](https://geracaoradios.com) |
+| [![LectureTube](https://live.video.tuwien.ac.at/room/assets/lecturetube_landscape.svg)](https://live.video.tuwien.ac.at/room/heart0/player.html) | [![Clippa](https://user-images.githubusercontent.com/910829/181409803-c9f25333-7c40-48fb-b54f-42f7e6f6537a.svg)](https://www.clippa.tv/bigKnightOut)                                     | [![HitRadio Center](https://user-images.githubusercontent.com/910829/155380459-76856a41-5a19-4831-8ef8-6d0ae8d471f0.svg)](https://radiocenter.si)   |
+| [![Rock Radio](https://user-images.githubusercontent.com/910829/155380461-9c74ff57-50a2-419c-b85a-dad8810b42c6.svg)](https://rockradio.si)       | [![Chichester District Council](https://www.chichester.gov.uk/image/36146/Logo/logo.png?m=638182005245530000)](https://chichester.moderngov.co.uk/ieListDocuments.aspx?CId=134&MId=1620) |                                                                                                                                                     |
 
 ## Migrating from older version to new ones
 

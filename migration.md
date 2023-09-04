@@ -1,13 +1,5 @@
 # Migration
 
-## Starting in v3.x.x
-
-No longer support for IE11.
-
-Bundles will not support IE11 going forward to reduce the footprint of supporting Promises and other ES6 native functions.
-
-Also, video player used to pause media when clicking on the main area; it has been disabled by default, and to activate that behavior back, you need to set the `media.pauseOnClick` property as `true`.
-
 ## From v2.6.1 to v2.7.0
 
 After updating Typescript to a newer version, all "private" variables are now truly not accessible at runtime. For more information, check the [Javascript section](./docs/usage.md#javascript).
@@ -53,7 +45,7 @@ const player = new OpenPlayerJS('player', {
             left: ['play', 'time', 'volume'],
             middle: ['progress'],
             right: ['captions', 'settings', 'fullscreen'],
-        }
+        },
     },
     live: {
         showLabel: true,
