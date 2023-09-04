@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
     node: circleci/node@4.7.0
-    browser-tools: circleci/browser-tools@1.4.3
+    browser-tools: circleci/browser-tools@1.4.4
 
 jobs:
     test_player:
@@ -12,13 +12,15 @@ jobs:
             - checkout
             - node/install-packages:
                   pkg-manager: npm
-            - browser-tools/install-chrome
+            - browser-tools/install-chrome:
+              chrome-version: 116.0.5845.96
+              replace-existing: true
             - browser-tools/install-chromedriver
             - run:
-               command: |
-                 google-chrome --version
-                 chromedriver --version
-               name: Check Chrome
+                  command: |
+                      google-chrome --version
+                      chromedriver --version
+                  name: Check Chrome
             - run:
                   name: Headless Chrome tests
                   command: npm test
