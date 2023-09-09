@@ -155,6 +155,10 @@
                                                 Audio
                                             </label>
                                         </div>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-control" name="levels" id="levels">
+                                            <label for="levels" class="col-form-label">If streaming, <a href="https://github.com/openplayerjs/openplayerjs/blob/master/docs/usage.md#about-the-levels-control" target="_blank" rel="noopener">show quality levels.</a></label>
+                                        </div>
                                     </div>
                                 </fieldset>
                                 <div class="form-group">
@@ -200,23 +204,32 @@
 
             const form = document.getElementById('settings');
 
-            const loadMedia = () => {
-            var url = window.location.protocol + '//' + window.location.host + '/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
-            url += form.querySelector('#video-type').checked ? 'video' : 'audio';
-            var ads = form.querySelector('#ads').value;
-            if (ads) {
-                url += '&ads=' + encodeURIComponent(ads.replace(/%/g, '~'));
+            const generateUrl = () => {
+                let url = window.location.protocol + '//' + window.location.host + '/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
+                url += form.querySelector('#video-type').checked ? 'video' : 'audio';
+                const ads = form.querySelector('#ads').value;
+                const levels = form.querySelector('#levels').checked;
+                if (ads) {
+                    url += '&ads=' + encodeURIComponent(ads.replace(/%/g, '~'));
+                }
+                if (levels) {
+                    url += '&levels=true';
+                }
+                return url;
             }
-            document.getElementById('media').src = url;
+
+            const loadMedia = () => {
+                document.getElementById('media').src = generateUrl();
             }
 
             document.getElementById('permalink').addEventListener('click', () => {
-                var el = document.createElement('textarea');
-                el.value = document.getElementById('media').src;
+                const el = document.createElement('textarea');
+                el.value = generateUrl();;
                 el.setAttribute('readonly', '');
                 el.style.position = 'absolute';
                 el.style.left = '-9999px';
                 document.body.appendChild(el);
+
                 const selected = document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
                 el.select();
                 document.execCommand('copy');
@@ -226,12 +239,15 @@
                     document.getSelection().addRange(selected);
                 }
             });
+
             window.addEventListener('load', loadMedia);
+
             form.addEventListener('submit', (e) => {
                 loadMedia();
                 e.preventDefault();
                 e.stopPropagation();
             });
+
             document.getElementById('media').addEventListener('load', (e) => {
                 const iframe = e.target;
                 iframe.width  = iframe.contentWindow.document.body.scrollWidth;

@@ -30,6 +30,7 @@
   }
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
   
   body {
@@ -239,7 +240,7 @@
     font-family: "Roboto Mono";
     background: rgba(26, 26, 26, 0.8);
     color: #fff;
-    font-size: 0.75rem;
+    font-size: 0.5rem;
   }
   pre code {
     line-height: 1.5;
@@ -283,7 +284,7 @@
   }
   
   .browsers > img {
-    max-width: 350px;
+    max-width: 300px;
     margin: 0 auto;
     display: block;
   }
@@ -352,10 +353,10 @@
     display: inline-flex;
     flex-direction: column;
     position: relative;
-    min-width: 0px;
-    padding: 0px;
-    margin: 0px;
-    border: 0px;
+    min-width: 0;
+    padding: 0;
+    margin: 0 0 20px;
+    border: 0;
     vertical-align: top;
   }
   .panel-body {
@@ -442,9 +443,14 @@
       max-width: 580px;
       margin: 0;
     }
-  
+    pre {
+      font-size: 0.75rem;
+    }
     .players {
       display: flex;
+    }
+    .browsers > img {
+      max-width: 350px;
     }
     .row {
       flex-direction: row !important;
