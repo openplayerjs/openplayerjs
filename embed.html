@@ -101,7 +101,11 @@
             src: ads || null,
           },
           controls: {
-            right: rightControls,
+            layers: {
+              left: ['play', 'time', 'volume'],
+              middle: ['progress'],
+              right: rightControls,
+            }
           },
         });
 
