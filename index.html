@@ -206,6 +206,11 @@
                 p.init();
             });
 
+            window.addEventListener('message', (event) => {
+                const iframe = document.getElementById('media');
+                iframe.height = event.data;
+            });
+
             const form = document.getElementById('settings');
 
             const generateUrl = () => {

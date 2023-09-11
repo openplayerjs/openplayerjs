@@ -99,6 +99,9 @@
       media.innerHTML = `<source src="${url}" type="${getMimeType(url)}">`;
       document.getElementById('media').appendChild(media);
 
+      const message = document.getElementById('media1').offsetHeight - 80;
+      window.parent.postMessage(message, "*");
+
       document.addEventListener('DOMContentLoaded', (event) => {
         const player = new OpenPlayerJS('media1', {
           ads: {
@@ -111,6 +114,7 @@
               right: rightControls,
             }
           },
+          forceNative: !/Android/i.test(window.navigator.userAgent),
         });
 
         player.init();
