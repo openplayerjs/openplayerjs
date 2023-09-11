@@ -162,6 +162,10 @@
                                     </div>
                                 </fieldset>
                                 <div class="form-group">
+                                    <label for="poster" class="col-form-label">Poster URL</label>
+                                    <input type="url" class="form-control" id="poster" name="poster" placeholder="(Optional)">
+                                </div>
+                                <div class="form-group">
                                     <label for="ads" class="col-form-label">Ads URL</label>
                                     <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
                                 </div>
@@ -205,12 +209,15 @@
             const form = document.getElementById('settings');
 
             const generateUrl = () => {
-                let url = window.location.protocol + '//' + window.location.host + '/embed.html?file=' + encodeURIComponent(form.querySelector('#url').value || '') + '&type=';
-                url += form.querySelector('#video-type').checked ? 'video' : 'audio';
+                let url = `${window.location.protocol}//${window.location.host}/embed.html?file=${encodeURIComponent(form.querySelector('#url').value || '')}&type=${form.querySelector('#video-type').checked ? 'video' : 'audio'}`;
                 const ads = form.querySelector('#ads').value;
                 const levels = form.querySelector('#levels').checked;
+                const poster = form.querySelector('#poster').value;
                 if (ads) {
-                    url += '&ads=' + encodeURIComponent(ads.replace(/%/g, '~'));
+                    url += `&ads=${encodeURIComponent(ads.replace(/%/g, '~'))}`;
+                }
+                if (poster) {
+                    url += `&poster=${encodeURIComponent(poster.replace(/%/g, '~'))}`;
                 }
                 if (levels) {
                     url += '&levels=true';
@@ -259,7 +266,6 @@
             document.querySelector('.icon').addEventListener('click', (e) => {
               const target = e.target.closest('header');
               document.querySelectorAll('.menu-item:not(:first-of-type)').forEach(el => {
-                console.log(e.target)
                 if (target.classList.contains('open')) {
                   el.classList.remove('show');
                   e.target.closest('.icon').querySelector('span').style.display = 'none';

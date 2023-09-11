@@ -75,6 +75,7 @@
       }
 
       const ads = getUrlParameter('ads').replace(/~/g, '%');
+      const poster = getUrlParameter('poster').replace(/~/g, '%');
 
       const addLevels = !!getUrlParameter('levels');
       const rightControls = ['captions', 'settings', 'fullscreen'];
@@ -89,6 +90,9 @@
       const media = document.createElement(type);
       media.id = 'media1';
       media.setAttribute('playsinline', true);
+      if (poster) {
+        media.setAttribute('poster', poster);
+      }
       media.controls = true;
       media.playsinline = true;
       media.className = 'op-player__media';
