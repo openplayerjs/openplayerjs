@@ -166,6 +166,18 @@
                                     <input type="url" class="form-control" id="poster" name="poster" placeholder="(Optional)">
                                 </div>
                                 <div class="form-group">
+                                    <label for="subtitles" class="col-form-label">Subtitles URL</label>
+                                    <input type="url" class="form-control" id="subtitles" name="subtitles" placeholder="(Optional)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="subtitles-lang" class="col-form-label">Subtitles Language (Country Code)</label>
+                                    <input type="text" class="form-control" id="subtitles-lang" name="subtitles-lang" placeholder="(i.e., en-US, zh-TW, ar)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="subtitles-label" class="col-form-label">Subtitles Label</label>
+                                    <input type="text" class="form-control" id="subtitles-label" name="subtitles-label" placeholder="(Optional if no Subtitles URL)">
+                                </div>
+                                <div class="form-group">
                                     <label for="ads" class="col-form-label">Ads URL</label>
                                     <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
                                 </div>
@@ -218,11 +230,24 @@
                 const ads = form.querySelector('#ads').value;
                 const levels = form.querySelector('#levels').checked;
                 const poster = form.querySelector('#poster').value;
+                const subtitles = form.querySelector('#subtitles').value;
+                const subtitlesLang = form.querySelector('#subtitles-lang').value;
+                const subtitlesLabel = form.querySelector('#subtitles-label').value;
+
                 if (ads) {
                     url += `&ads=${encodeURIComponent(ads.replace(/%/g, '~'))}`;
                 }
                 if (poster) {
                     url += `&poster=${encodeURIComponent(poster.replace(/%/g, '~'))}`;
+                }
+                if (subtitles) {
+                    url += `&subtitles=${encodeURIComponent(subtitles.replace(/%/g, '~'))}`;
+                }
+                if (subtitlesLang) {
+                    url += `&lang=${encodeURIComponent(subtitlesLang.replace(/%/g, '~'))}`;
+                }
+                if (subtitlesLabel) {
+                    url += `&label=${encodeURIComponent(subtitlesLabel.replace(/%/g, '~'))}`;
                 }
                 if (levels) {
                     url += '&levels=true';

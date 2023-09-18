@@ -318,7 +318,7 @@
     -webkit-animation-duration: 0.45s;
   }
   
-  .form-group input[type="url"] {
+  .form-group input[type="url"], .form-group input[type="text"] {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;

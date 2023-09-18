@@ -34,44 +34,41 @@
     <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
     <script>  
       const getUrlParameter = (name) => {
-        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-        const regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
-        const results = regex.exec(location.search);
-        return results === null
-          ? ""
-          : decodeURIComponent(results[1].replace(/\+/g, " "));
+        const search = new URLSearchParams(location.search);
+        const result = search.get(name);
+        return result ? decodeURIComponent(result.replace(/\+/g, ' ')) : '';
       }
 
-      const type = getUrlParameter("type");
+      const type = getUrlParameter('type');
       const getMimeType = (url) => {
         if (/\.m3u8/i.test(url)) {
-          return "application/x-mpegURL";
+          return 'application/x-mpegURL';
         } else if (/\.mpd/i.test(url)) {
-          return "application/dash+xml";
+          return 'application/dash+xml';
         } else if (/\.mp4/i.test(url)) {
-          return type === "audio" ? "audio/mp4" : "video/mp4";
+          return type === 'audio' ? 'audio/mp4' : 'video/mp4';
         } else if (/\.mp3/i.test(url)) {
-          return "audio/mp3";
+          return 'audio/mp3';
         } else if (/\.webm/i.test(url)) {
-          return type === "audio" ? "audio/webm" : "video/webm";
+          return type === 'audio' ? 'audio/webm' : 'video/webm';
         } else if (/\.ogg/i.test(url)) {
-          return type === "audio" ? "audio/ogg" : "video/ogg";
+          return type === 'audio' ? 'audio/ogg' : 'video/ogg';
         } else if (/\.ogv/i.test(url)) {
-          return "video/ogg";
+          return 'video/ogg';
         } else if (/\.oga/i.test(url)) {
-          return "audio/ogg";
+          return 'audio/ogg';
         } else if (/\.3gp/i.test(url)) {
-          return "audio/3gpp";
+          return 'audio/3gpp';
         } else if (/\.wav/i.test(url)) {
-          return "audio/wav";
+          return 'audio/wav';
         } else if (/\.aac/i.test(url)) {
-          return "audio/aac";
+          return 'audio/aac';
         } else if (/\.flac/i.test(url)) {
-          return "audio/flac";
+          return 'audio/flac';
         }
 
         // Let browser figure out if it can play it
-        return "";
+        return '';
       }
 
       const ads = getUrlParameter('ads').replace(/~/g, '%');
@@ -82,6 +79,8 @@
       if (addLevels) {
         rightControls.splice(0, 0, 'levels');
       }
+
+      const subtitles = getUrlParameter('subtitles');
 
       const defaultMedia =
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
@@ -97,10 +96,16 @@
       media.playsinline = true;
       media.className = 'op-player__media';
       media.innerHTML = `<source src="${url}" type="${getMimeType(url)}">`;
+
+      if (subtitles) {
+        const language = getUrlParameter('lang') || '';
+        const label = getUrlParameter('label') || '';
+        media.innerHTML += `<track src="${subtitles}" srclang="${language}" label="${label}" kind="subtitles" default>`
+      }
       document.getElementById('media').appendChild(media);
 
       const message = document.getElementById('media1').offsetHeight - 80;
-      window.parent.postMessage(message, "*");
+      window.parent.postMessage(message, '*');
 
       document.addEventListener('DOMContentLoaded', (event) => {
         const player = new OpenPlayerJS('media1', {
