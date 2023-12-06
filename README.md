@@ -12,7 +12,7 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 
 ### 🔧 This repository is in maintenance at this point. 🔧
 
-No new features or addition will be added, only bugfixes.
+No new features or additions will be added, only bug fixes.
 
 ## Advantages
 
