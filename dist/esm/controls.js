@@ -330,7 +330,10 @@ class Controls {
             element.innerHTML = sanitize(item.content, false);
         }
         if (item.type === 'button' && item.title) {
-            element.title = item.title;
+            element.title = sanitize(item.title);
+        }
+        if (item.type === 'img' && item.alt) {
+            element.alt = sanitize(item.alt);
         }
         if (item.type !== 'button' && item.click && typeof item.click === 'function') {
             element.setAttribute('aria-role', 'button');

@@ -46,6 +46,7 @@ class Volume implements PlayerComponent {
         this.#container.setAttribute('aria-valuetext', `${labels?.volume || ''}: ${this.#volume}`);
         this.#container.setAttribute('aria-orientation', 'vertical');
         this.#container.setAttribute('aria-label', labels?.volumeSlider || '');
+        this.#container.setAttribute('role', 'slider');
 
         this.#slider = document.createElement('input');
         this.#slider.type = 'range';
@@ -60,7 +61,6 @@ class Volume implements PlayerComponent {
         this.#display = document.createElement('progress');
         this.#display.className = 'op-controls__volume--display';
         this.#display.setAttribute('max', '10');
-        this.#display.setAttribute('role', 'presentation');
         this.#display.value = this.#player.getMedia().volume * 10;
 
         this.#container.appendChild(this.#slider);

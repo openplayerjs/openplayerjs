@@ -44,6 +44,7 @@ class Volume {
         __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-valuetext', `${(labels === null || labels === void 0 ? void 0 : labels.volume) || ''}: ${__classPrivateFieldGet(this, _Volume_volume, "f")}`);
         __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-orientation', 'vertical');
         __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.volumeSlider) || '');
+        __classPrivateFieldGet(this, _Volume_container, "f").setAttribute('role', 'slider');
         __classPrivateFieldSet(this, _Volume_slider, document.createElement('input'), "f");
         __classPrivateFieldGet(this, _Volume_slider, "f").type = 'range';
         __classPrivateFieldGet(this, _Volume_slider, "f").className = 'op-controls__volume--input';
@@ -56,7 +57,6 @@ class Volume {
         __classPrivateFieldSet(this, _Volume_display, document.createElement('progress'), "f");
         __classPrivateFieldGet(this, _Volume_display, "f").className = 'op-controls__volume--display';
         __classPrivateFieldGet(this, _Volume_display, "f").setAttribute('max', '10');
-        __classPrivateFieldGet(this, _Volume_display, "f").setAttribute('role', 'presentation');
         __classPrivateFieldGet(this, _Volume_display, "f").value = __classPrivateFieldGet(this, _Volume_player, "f").getMedia().volume * 10;
         __classPrivateFieldGet(this, _Volume_container, "f").appendChild(__classPrivateFieldGet(this, _Volume_slider, "f"));
         __classPrivateFieldGet(this, _Volume_container, "f").appendChild(__classPrivateFieldGet(this, _Volume_display, "f"));

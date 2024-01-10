@@ -1,6 +1,6 @@
 {
     "name": "openplayerjs",
-    "version": "2.13.3",
+    "version": "2.14.0",
     "homepage": "https://www.openplayerjs.com/",
     "author": {
         "name": "Rafael Miranda",
@@ -41,7 +41,7 @@
         "ima-sdk"
     ],
     "scripts": {
-        "build": "npm run build:styles && npm test && npm run build:sources",
+        "build": "npm run build:styles && npm run build:sources && npm test",
         "build:sources": "webpack --mode=production && npm run create-esm && npm run create-d-types",
         "build:styles": "npx stylelint './src/css/player.css' && postcss ./src/css/player.css --use autoprefixer > ./dist/openplayer.css && postcss ./dist/openplayer.css > ./dist/openplayer.min.css",
         "create-d-types": "tsc -p tsconfig-types.json",

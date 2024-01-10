@@ -117,6 +117,7 @@ export interface PlayerComponent {
 
 export interface ElementItem {
     readonly icon?: string;
+    readonly alt?: string;
     readonly title?: string;
     readonly id: string;
     readonly showInAds: boolean;

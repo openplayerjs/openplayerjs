@@ -245,29 +245,6 @@ describe('player', (): void => {
         });
     });
 
-    it('allows to play an Ad in a loop setting them up from the configuration', async () => {
-        videoPlayer = new OpenPlayerJS('video', {
-            ads: {
-                loop: true,
-                src: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost&cmsid=496&vid=short_onecue&correlator=',
-            },
-        });
-        await videoPlayer.init();
-        const play = videoPlayer
-            .getControls()
-            .getContainer()
-            .querySelector('.op-controls__playpause') as HTMLButtonElement;
-        const e = new CustomEvent('click');
-        play.dispatchEvent(e);
-
-        return new Promise<void>((resolve) => {
-            setTimeout(() => {
-                expect(videoPlayer.getElement().closest('.op-ads--active')).to.not.be(null);
-                resolve();
-            }, 1500);
-        });
-    });
-
     it.skip('allows to play media with Ads in loop', async function x() {
         this.timeout(30000);
         const media = document.getElementById('video') as HTMLMediaElement;

@@ -46,6 +46,9 @@ class Progress implements PlayerComponent {
         this.#progress.tabIndex = 0;
         this.#progress.setAttribute('aria-label', labels?.progressSlider || '');
         this.#progress.setAttribute('aria-valuemin', '0');
+        this.#progress.setAttribute('aria-valuenow', '0');
+        this.#progress.setAttribute('aria-valuemax', '0');
+        this.#progress.setAttribute('role', 'slider');
 
         this.#slider = document.createElement('input');
         this.#slider.type = 'range';
@@ -66,7 +69,6 @@ class Progress implements PlayerComponent {
         this.#played = document.createElement('progress');
         this.#played.className = 'op-controls__progress--played';
         this.#played.setAttribute('max', '100');
-        this.#played.setAttribute('role', 'presentation');
         this.#played.value = 0;
 
         this.#progress.appendChild(this.#slider);

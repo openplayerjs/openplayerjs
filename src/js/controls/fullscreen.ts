@@ -146,7 +146,8 @@ class Fullscreen implements PlayerComponent {
         }
 
         if (typeof window !== 'undefined' && (IS_ANDROID || IS_IPHONE)) {
-            const { screen } = window;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { screen } = window as any;
             if (screen.orientation && !this.#isFullscreen) {
                 screen.orientation.lock('landscape');
             }

@@ -44,6 +44,9 @@ class Progress {
         __classPrivateFieldGet(this, _Progress_progress, "f").tabIndex = 0;
         __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.progressSlider) || '');
         __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemin', '0');
+        __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuenow', '0');
+        __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemax', '0');
+        __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('role', 'slider');
         __classPrivateFieldSet(this, _Progress_slider, document.createElement('input'), "f");
         __classPrivateFieldGet(this, _Progress_slider, "f").type = 'range';
         __classPrivateFieldGet(this, _Progress_slider, "f").className = 'op-controls__progress--seek';
@@ -61,7 +64,6 @@ class Progress {
         __classPrivateFieldSet(this, _Progress_played, document.createElement('progress'), "f");
         __classPrivateFieldGet(this, _Progress_played, "f").className = 'op-controls__progress--played';
         __classPrivateFieldGet(this, _Progress_played, "f").setAttribute('max', '100');
-        __classPrivateFieldGet(this, _Progress_played, "f").setAttribute('role', 'presentation');
         __classPrivateFieldGet(this, _Progress_played, "f").value = 0;
         __classPrivateFieldGet(this, _Progress_progress, "f").appendChild(__classPrivateFieldGet(this, _Progress_slider, "f"));
         __classPrivateFieldGet(this, _Progress_progress, "f").appendChild(__classPrivateFieldGet(this, _Progress_played, "f"));

@@ -45,7 +45,6 @@ describe('controls/volume', () => {
             .querySelector('.op-controls__volume--display') as HTMLInputElement;
         expect(progress).to.not.be(null);
         expect(progress.getAttribute('max')).to.equal('10');
-        expect(progress.getAttribute('role')).to.equal('presentation');
         expect(progress.value).to.equal(10);
 
         const button = player.getControls().getContainer().querySelector('.op-controls__mute') as HTMLElement;

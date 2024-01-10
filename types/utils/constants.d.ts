@@ -5,7 +5,7 @@ declare global {
         WebKitSourceBuffer: any;
     }
     interface NavigatorExtended extends Navigator {
-        connection: NetworkInformation & {
+        connection?: NetworkInformation & {
             effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
         };
         mozConnection?: NetworkInformation & {
