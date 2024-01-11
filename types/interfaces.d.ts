@@ -121,6 +121,7 @@ export interface ElementItem {
         label: string;
         title?: string;
         icon?: string;
+        alt?: string;
         click(): void;
     }[];
     click?(event: Event): void;

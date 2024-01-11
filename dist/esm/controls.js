@@ -323,7 +323,7 @@ class Controls {
         }
         if (item.type === 'button' && item.icon) {
             element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon)
-                ? `<img src="${sanitize(item.icon)}">`
+                ? `<img src="${sanitize(item.icon)}"${item.alt ? sanitize(item.alt) : ''}>`
                 : sanitize(item.icon);
         }
         else if (item.content) {
@@ -347,7 +347,7 @@ class Controls {
                 let itemIcon = '';
                 if (s.icon) {
                     itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon)
-                        ? `<img src="${sanitize(s.icon)}">`
+                        ? `<img src="${sanitize(s.icon)}"${s.alt ? sanitize(s.alt) : ''}>`
                         : sanitize(s.icon, false);
                 }
                 return `<div class="op-settings__menu-item" tabindex="0" ${s.title ? `title="${s.title}"` : ''} role="menuitemradio">

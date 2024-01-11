@@ -47,7 +47,6 @@ class Progress implements PlayerComponent {
         this.#progress.setAttribute('aria-label', labels?.progressSlider || '');
         this.#progress.setAttribute('aria-valuemin', '0');
         this.#progress.setAttribute('aria-valuenow', '0');
-        this.#progress.setAttribute('aria-valuemax', '0');
         this.#progress.setAttribute('role', 'slider');
 
         this.#slider = document.createElement('input');
@@ -55,7 +54,6 @@ class Progress implements PlayerComponent {
         this.#slider.className = 'op-controls__progress--seek';
         this.#slider.tabIndex = -1;
         this.#slider.setAttribute('min', '0');
-        this.#slider.setAttribute('max', '0');
         this.#slider.setAttribute('step', '0.1');
         this.#slider.value = '0';
         this.#slider.setAttribute('aria-label', labels?.progressRail || '');
@@ -93,10 +91,12 @@ class Progress implements PlayerComponent {
                 !this.#player.getElement().getAttribute('op-live__enabled') &&
                 !this.#player.getElement().getAttribute('op-dvr__enabled')
             ) {
-                this.#slider.setAttribute('max', `${el.duration}`);
                 const current = this.#player.isMedia() ? el.currentTime : el.duration - el.currentTime;
                 this.#slider.value = current.toString();
-                this.#progress.setAttribute('aria-valuemax', el.duration.toString());
+                if (!Number.isNaN(el.duration)) {
+                    this.#slider.setAttribute('max', `${el.duration}`);
+                    this.#progress.setAttribute('aria-valuemax', el.duration.toString());
+                }
             } else if (this.#player.getElement().getAttribute('op-dvr__enabled')) {
                 this.#slider.setAttribute('max', '1');
                 this.#slider.value = '1';
@@ -194,7 +194,9 @@ class Progress implements PlayerComponent {
                     this.#slider.getAttribute('max') === '0' ||
                     parseFloat(this.#slider.getAttribute('max') || '-1') !== el.duration
                 ) {
-                    this.#slider.setAttribute('max', `${el.duration}`);
+                    if (!Number.isNaN(el.duration)) {
+                        this.#slider.setAttribute('max', `${el.duration}`);
+                    }
                     this.#progress.setAttribute('aria-hidden', 'false');
                 }
 
@@ -227,8 +229,10 @@ class Progress implements PlayerComponent {
         this.#events.media.durationchange = (): void => {
             const el = this.#player.activeElement();
             const current = this.#player.isMedia() ? el.currentTime : el.duration - el.currentTime;
-            this.#slider.setAttribute('max', `${el.duration}`);
-            this.#progress.setAttribute('aria-valuemax', el.duration.toString());
+            if (!Number.isNaN(el.duration)) {
+                this.#slider.setAttribute('max', `${el.duration}`);
+                this.#progress.setAttribute('aria-valuemax', el.duration.toString());
+            }
             this.#played.value =
                 el.duration <= 0 || Number.isNaN(el.duration) || !Number.isFinite(el.duration)
                     ? defaultDuration
@@ -237,7 +241,9 @@ class Progress implements PlayerComponent {
 
         this.#events.media.ended = (): void => {
             this.#slider.style.backgroundSize = '0% 100%';
-            this.#slider.setAttribute('max', '0');
+            if (this.#slider.getAttribute('max')) {
+                this.#slider.setAttribute('max', '0');
+            }
             this.#buffer.value = 0;
             this.#played.value = 0;
         };

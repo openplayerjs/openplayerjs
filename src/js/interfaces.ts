@@ -127,7 +127,7 @@ export interface ElementItem {
     custom: boolean;
     content?: string;
     styles?: Record<string, string | number>;
-    subitems?: { id: string; label: string; title?: string; icon?: string; click(): void }[];
+    subitems?: { id: string; label: string; title?: string; icon?: string; alt?: string; click(): void }[];
     click?(event: Event): void;
     init?(player: unknown): void;
     destroy?(player: unknown): void;

@@ -2155,14 +2155,12 @@ var Progress = function () {
       progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.progressSlider) || '');
       progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemin', '0');
       progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuenow', '0');
-      progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemax', '0');
       progress_classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('role', 'slider');
       progress_classPrivateFieldSet(this, _Progress_slider, document.createElement('input'), "f");
       progress_classPrivateFieldGet(this, _Progress_slider, "f").type = 'range';
       progress_classPrivateFieldGet(this, _Progress_slider, "f").className = 'op-controls__progress--seek';
       progress_classPrivateFieldGet(this, _Progress_slider, "f").tabIndex = -1;
       progress_classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('min', '0');
-      progress_classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', '0');
       progress_classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('step', '0.1');
       progress_classPrivateFieldGet(this, _Progress_slider, "f").value = '0';
       progress_classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.progressRail) || '');
@@ -2192,10 +2190,12 @@ var Progress = function () {
         }
         var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
         if (el.duration !== Infinity && !progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') && !progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
-          progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
           var current = progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime;
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = current.toString();
-          progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+          if (!Number.isNaN(el.duration)) {
+            progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
+            progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+          }
         } else if (progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', '1');
           progress_classPrivateFieldGet(_this, _Progress_slider, "f").value = '1';
@@ -2277,7 +2277,9 @@ var Progress = function () {
         var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
         if (el.duration !== Infinity && (!progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') || progress_classPrivateFieldGet(_this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled'))) {
           if (!progress_classPrivateFieldGet(_this, _Progress_slider, "f").getAttribute('max') || progress_classPrivateFieldGet(_this, _Progress_slider, "f").getAttribute('max') === '0' || parseFloat(progress_classPrivateFieldGet(_this, _Progress_slider, "f").getAttribute('max') || '-1') !== el.duration) {
-            progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
+            if (!Number.isNaN(el.duration)) {
+              progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
+            }
             progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
           }
           var duration = el.duration - el.currentTime + 1 >= 100 ? 100 : el.duration - el.currentTime + 1;
@@ -2298,13 +2300,17 @@ var Progress = function () {
       progress_classPrivateFieldGet(this, _Progress_events, "f").media.durationchange = function () {
         var el = progress_classPrivateFieldGet(_this, _Progress_player, "f").activeElement();
         var current = progress_classPrivateFieldGet(_this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime;
-        progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
-        progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+        if (!Number.isNaN(el.duration)) {
+          progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', "".concat(el.duration));
+          progress_classPrivateFieldGet(_this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+        }
         progress_classPrivateFieldGet(_this, _Progress_played, "f").value = el.duration <= 0 || Number.isNaN(el.duration) || !Number.isFinite(el.duration) ? defaultDuration : current / el.duration * 100;
       };
       progress_classPrivateFieldGet(this, _Progress_events, "f").media.ended = function () {
         progress_classPrivateFieldGet(_this, _Progress_slider, "f").style.backgroundSize = '0% 100%';
-        progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', '0');
+        if (progress_classPrivateFieldGet(_this, _Progress_slider, "f").getAttribute('max')) {
+          progress_classPrivateFieldGet(_this, _Progress_slider, "f").setAttribute('max', '0');
+        }
         progress_classPrivateFieldGet(_this, _Progress_buffer, "f").value = 0;
         progress_classPrivateFieldGet(_this, _Progress_played, "f").value = 0;
       };
@@ -3467,7 +3473,7 @@ var Controls = function () {
         Object.assign(element.style, item.styles);
       }
       if (item.type === 'button' && item.icon) {
-        element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\">") : sanitize(item.icon);
+        element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\"").concat(item.alt ? sanitize(item.alt) : '', ">") : sanitize(item.icon);
       } else if (item.content) {
         element.innerHTML = sanitize(item.content, false);
       }
@@ -3488,7 +3494,7 @@ var Controls = function () {
         var items = item.subitems.map(function (s) {
           var itemIcon = '';
           if (s.icon) {
-            itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? "<img src=\"".concat(sanitize(s.icon), "\">") : sanitize(s.icon, false);
+            itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? "<img src=\"".concat(sanitize(s.icon), "\"").concat(s.alt ? sanitize(s.alt) : '', ">") : sanitize(s.icon, false);
           }
           return "<div class=\"op-settings__menu-item\" tabindex=\"0\" ".concat(s.title ? "title=\"".concat(s.title, "\"") : '', " role=\"menuitemradio\">\n                    <div class=\"op-settings__menu-label\" id=\"").concat(s.id, "\" data-value=\"").concat(item.id, "-").concat(s.id, "\">").concat(itemIcon, " ").concat(s.label, "</div>\n                </div>");
         });

@@ -45,14 +45,12 @@ class Progress {
         __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.progressSlider) || '');
         __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemin', '0');
         __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuenow', '0');
-        __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemax', '0');
         __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('role', 'slider');
         __classPrivateFieldSet(this, _Progress_slider, document.createElement('input'), "f");
         __classPrivateFieldGet(this, _Progress_slider, "f").type = 'range';
         __classPrivateFieldGet(this, _Progress_slider, "f").className = 'op-controls__progress--seek';
         __classPrivateFieldGet(this, _Progress_slider, "f").tabIndex = -1;
         __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('min', '0');
-        __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', '0');
         __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('step', '0.1');
         __classPrivateFieldGet(this, _Progress_slider, "f").value = '0';
         __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.progressRail) || '');
@@ -84,10 +82,12 @@ class Progress {
             if (el.duration !== Infinity &&
                 !__classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-live__enabled') &&
                 !__classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
-                __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', `${el.duration}`);
                 const current = __classPrivateFieldGet(this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime;
                 __classPrivateFieldGet(this, _Progress_slider, "f").value = current.toString();
-                __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+                if (!Number.isNaN(el.duration)) {
+                    __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', `${el.duration}`);
+                    __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+                }
             }
             else if (__classPrivateFieldGet(this, _Progress_player, "f").getElement().getAttribute('op-dvr__enabled')) {
                 __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', '1');
@@ -179,7 +179,9 @@ class Progress {
                 if (!__classPrivateFieldGet(this, _Progress_slider, "f").getAttribute('max') ||
                     __classPrivateFieldGet(this, _Progress_slider, "f").getAttribute('max') === '0' ||
                     parseFloat(__classPrivateFieldGet(this, _Progress_slider, "f").getAttribute('max') || '-1') !== el.duration) {
-                    __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', `${el.duration}`);
+                    if (!Number.isNaN(el.duration)) {
+                        __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', `${el.duration}`);
+                    }
                     __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-hidden', 'false');
                 }
                 const duration = el.duration - el.currentTime + 1 >= 100 ? 100 : el.duration - el.currentTime + 1;
@@ -206,8 +208,10 @@ class Progress {
         __classPrivateFieldGet(this, _Progress_events, "f").media.durationchange = () => {
             const el = __classPrivateFieldGet(this, _Progress_player, "f").activeElement();
             const current = __classPrivateFieldGet(this, _Progress_player, "f").isMedia() ? el.currentTime : el.duration - el.currentTime;
-            __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', `${el.duration}`);
-            __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+            if (!Number.isNaN(el.duration)) {
+                __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', `${el.duration}`);
+                __classPrivateFieldGet(this, _Progress_progress, "f").setAttribute('aria-valuemax', el.duration.toString());
+            }
             __classPrivateFieldGet(this, _Progress_played, "f").value =
                 el.duration <= 0 || Number.isNaN(el.duration) || !Number.isFinite(el.duration)
                     ? defaultDuration
@@ -215,7 +219,9 @@ class Progress {
         };
         __classPrivateFieldGet(this, _Progress_events, "f").media.ended = () => {
             __classPrivateFieldGet(this, _Progress_slider, "f").style.backgroundSize = '0% 100%';
-            __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', '0');
+            if (__classPrivateFieldGet(this, _Progress_slider, "f").getAttribute('max')) {
+                __classPrivateFieldGet(this, _Progress_slider, "f").setAttribute('max', '0');
+            }
             __classPrivateFieldGet(this, _Progress_buffer, "f").value = 0;
             __classPrivateFieldGet(this, _Progress_played, "f").value = 0;
         };
