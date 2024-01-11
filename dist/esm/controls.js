@@ -256,7 +256,10 @@ class Controls {
             const currentLayer = layersExist && !pos ? 'center' : layer;
             item.layer = currentLayer;
             item.position = pos || layer;
-            if (item.position === 'right') {
+            if (typeof item.index === 'number') {
+                __classPrivateFieldGet(this, _Controls_items, "f")[item.position].splice(item.index, 0, item);
+            }
+            else if (item.position === 'right') {
                 __classPrivateFieldGet(this, _Controls_items, "f")[item.position].unshift(item);
             }
             else {

@@ -297,7 +297,9 @@ class Controls implements PlayerComponent {
             item.layer = currentLayer;
             item.position = pos || layer;
 
-            if (item.position === 'right') {
+            if (typeof item.index === 'number') {
+                this.#items[item.position].splice(item.index, 0, item);
+            } else if (item.position === 'right') {
                 this.#items[item.position].unshift(item);
             } else {
                 this.#items[item.position].push(item);

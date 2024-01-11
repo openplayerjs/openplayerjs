@@ -112,6 +112,7 @@ export interface ElementItem {
     readonly showInAds: boolean;
     position: 'right' | 'left' | 'middle' | string;
     layer?: 'top' | 'center' | 'bottom' | 'main' | string;
+    index?: number;
     type: string;
     custom: boolean;
     content?: string;

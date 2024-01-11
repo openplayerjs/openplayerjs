@@ -3399,7 +3399,9 @@ var Controls = function () {
         var currentLayer = layersExist && !pos ? 'center' : layer;
         item.layer = currentLayer;
         item.position = pos || layer;
-        if (item.position === 'right') {
+        if (typeof item.index === 'number') {
+          controls_classPrivateFieldGet(_this4, _Controls_items, "f")[item.position].splice(item.index, 0, item);
+        } else if (item.position === 'right') {
           controls_classPrivateFieldGet(_this4, _Controls_items, "f")[item.position].unshift(item);
         } else {
           controls_classPrivateFieldGet(_this4, _Controls_items, "f")[item.position].push(item);

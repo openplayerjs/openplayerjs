@@ -56,10 +56,12 @@ const player = new OpenPlayerJS('[PLAYER ID]');
 player.addElement({
     id: '[MY ELEMENT ID]',
     title: '[TOOLTIP LABEL]',
+    alt: '[ALT LABEL (mostly for IMG tags)]',
     type: '[button, div, span, p, etc.]',
     styles: {}, // Can add custom styles to element using camelCase styles (marginTop, boxShadow, etc.)
     content: '', // Can override the content generated inside the control, but it won't accept images under the <img> tag for security purposes
     position: 'right', // Any of the possible positions for a control (top, top-left, middle, bottom-right, etc.)
+    index: 0, // Zero-index based position within the specificied place to set the element (useful when appending, prepending an item before an exisiting one)
     showInAds: false, // or true
     init: (player) => {}, // Pass an instance of the player for advanced operations
     click: () => {},
@@ -83,6 +85,8 @@ player.addControl({
     icon: '/path/to/image',
     id: '[MY CONTROL ID]',
     title: '[TOOLTIP LABEL]',
+    alt: '[ALT LABEL (mostly for IMG tags)]',
+    index: 0, // Zero-index based position within the specificied place to set the element (useful when appending, prepending an item before an exisiting one)
     styles: {},
     content: '', // Can override the content generated inside the control
     // Possible values: 'bottom-left', 'bottom-middle', 'bottom-right',
@@ -97,6 +101,7 @@ player.addControl({
             label: '[ITEM LABEL]',
             title: '[TOOLTIP ITEM]', // optional
             icon: '/path/to/item-image', // optional
+            alt: '[ALT LABEL]',
             click: () => {},
         },
     ],
