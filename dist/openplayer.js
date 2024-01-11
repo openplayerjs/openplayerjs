@@ -3473,7 +3473,7 @@ var Controls = function () {
         Object.assign(element.style, item.styles);
       }
       if (item.type === 'button' && item.icon) {
-        element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\"").concat(item.alt ? sanitize(item.alt) : '', ">") : sanitize(item.icon);
+        element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon) ? "<img src=\"".concat(sanitize(item.icon), "\"").concat(item.alt ? "alt=\"".concat(sanitize(item.alt), "\"") : '', ">") : sanitize(item.icon);
       } else if (item.content) {
         element.innerHTML = sanitize(item.content, false);
       }
@@ -3494,7 +3494,7 @@ var Controls = function () {
         var items = item.subitems.map(function (s) {
           var itemIcon = '';
           if (s.icon) {
-            itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? "<img src=\"".concat(sanitize(s.icon), "\"").concat(s.alt ? sanitize(s.alt) : '', ">") : sanitize(s.icon, false);
+            itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon) ? "<img src=\"".concat(sanitize(s.icon), "\"").concat(s.alt ? "alt=\"".concat(sanitize(s.alt), "\"") : '', ">") : sanitize(s.icon, false);
           }
           return "<div class=\"op-settings__menu-item\" tabindex=\"0\" ".concat(s.title ? "title=\"".concat(s.title, "\"") : '', " role=\"menuitemradio\">\n                    <div class=\"op-settings__menu-label\" id=\"").concat(s.id, "\" data-value=\"").concat(item.id, "-").concat(s.id, "\">").concat(itemIcon, " ").concat(s.label, "</div>\n                </div>");
         });

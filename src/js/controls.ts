@@ -380,7 +380,7 @@ class Controls implements PlayerComponent {
 
         if (item.type === 'button' && item.icon) {
             element.innerHTML = /\.(jpg|png|svg|gif)$/.test(item.icon)
-                ? `<img src="${sanitize(item.icon)}"${item.alt ? sanitize(item.alt) : ''}>`
+                ? `<img src="${sanitize(item.icon)}"${item.alt ? `alt="${sanitize(item.alt)}"` : ''}>`
                 : sanitize(item.icon);
         } else if (item.content) {
             element.innerHTML = sanitize(item.content, false);
@@ -406,7 +406,7 @@ class Controls implements PlayerComponent {
                 let itemIcon = '';
                 if (s.icon) {
                     itemIcon = /\.(jpg|png|svg|gif)$/.test(s.icon)
-                        ? `<img src="${sanitize(s.icon)}"${s.alt ? sanitize(s.alt) : ''}>`
+                        ? `<img src="${sanitize(s.icon)}"${s.alt ? `alt="${sanitize(s.alt)}"` : ''}>`
                         : sanitize(s.icon, false);
                 }
                 return `<div class="op-settings__menu-item" tabindex="0" ${
