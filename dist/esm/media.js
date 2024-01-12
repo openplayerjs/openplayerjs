@@ -90,7 +90,6 @@ class Media {
     play() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!__classPrivateFieldGet(this, _Media_mediaLoaded, "f")) {
-                __classPrivateFieldSet(this, _Media_mediaLoaded, true, "f");
                 yield this.load();
                 __classPrivateFieldSet(this, _Media_mediaLoaded, false, "f");
             }

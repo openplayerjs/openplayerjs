@@ -90,7 +90,6 @@ class Media {
     // @see https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
     async play(): Promise<void> {
         if (!this.#mediaLoaded) {
-            this.#mediaLoaded = true;
             await this.load();
             this.#mediaLoaded = false;
         } else {

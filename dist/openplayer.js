@@ -4766,23 +4766,22 @@ var Media = function () {
             switch (_context2.prev = _context2.next) {
               case 0:
                 if (media_classPrivateFieldGet(this, _Media_mediaLoaded, "f")) {
-                  _context2.next = 7;
+                  _context2.next = 6;
                   break;
                 }
-                media_classPrivateFieldSet(this, _Media_mediaLoaded, true, "f");
-                _context2.next = 4;
+                _context2.next = 3;
                 return this.load();
-              case 4:
+              case 3:
                 media_classPrivateFieldSet(this, _Media_mediaLoaded, false, "f");
-                _context2.next = 9;
+                _context2.next = 8;
                 break;
-              case 7:
-                _context2.next = 9;
+              case 6:
+                _context2.next = 8;
                 return media_classPrivateFieldGet(this, _Media_media, "f").promise;
-              case 9:
+              case 8:
                 media_classPrivateFieldSet(this, _Media_promisePlay, media_classPrivateFieldGet(this, _Media_media, "f").play(), "f");
                 return _context2.abrupt("return", media_classPrivateFieldGet(this, _Media_promisePlay, "f"));
-              case 11:
+              case 10:
               case "end":
                 return _context2.stop();
             }
