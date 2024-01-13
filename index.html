@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Test</title>
+        <link rel="stylesheet" href="dist/openplayer.css?=i=82378" />
+    </head>
+    <body>
+        <div style="width: 600px; height: 400px;">
+        <video id="playerw" class="op-player__media aspect-video" preload="none" crossorigin="anonymous" poster="https://img.nashrin.com/h3n4/poster.jpg?format=webp">
+            <source src="https://vfd.nashrin.com/h3n4/playlist.m3u8" type="application/x-mpegURL"/>
+        </video>
+        </div>
+        <script src="dist/openplayer.js?m=8723678324"></script>
+        <script>
+            const options = {
+                mode: "fit",
+                ads: { 
+                    // src: "https://tavoos.net/services/vast/VRTCJo9q-PwnV-Auv4-PjUe-AQE6kQYmnFWk/126?format=VAST",
+                    src: 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sar%3Da0f2&ciu_szs=300x250&ad_rule=1&gdfp_req=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&correlator=',
+                    language: "fa",
+                    debug: true,
+                },
+                showLoaderOnInit: false, 
+                detachMenus: true, 
+                forceNative: false,
+                useDeviceVolume: true,
+                pauseOthers: true,
+                labels: {
+                    auto: "اتوماتیک",
+                    captions: "زیر نویس",
+                    click: `برای صدا کلیک کنید`,
+                    fullscreen: "Fullscreen",
+                    lang: {
+                        fa: "فارسی"
+                    },
+                    levels: "تغییر کیفیت", 
+                    //live: "پخش زنده",
+                    mediaLevels: "تغییر کیفیت",
+                    mute: "بی‌صدا",
+                    off: "خاموش",
+                    pause: "متوقف",
+                    play: "پخش",
+                    progressRail: "Time Rail",
+                    progressSlider: "Time Slider",
+                    settings: "تنظیمات",
+                    speed: "سرعت پخش",
+                    speedNormal: "عادی",
+                    tap: `برای صدا دار کردن کلیک کنید`,
+                    toggleCaptions: "تغییر زیرنویس",
+                    unmute: `برای صدا کلیک کنید`,
+                    volume: "تنظیم صدا",
+                    volumeControl: "کنترل صدا",
+                    volumeSlider: "کنترل صدا",
+                },
+                onError: function onError(e) {
+                    // console.log("error", e);
+                },
+                // hls: {
+                //     startLevel: -1,
+                //     enableWorker: true,
+                //     autoStartLoad: true,
+                //     maxBufferLength: 30,
+                //     maxMaxBufferLength: 30,
+                //     emeEnabled: true,
+                //     smoothQualityChange: true,
+                //     overrideNative: true
+                // },
+                media: {
+                    pauseOnClick: true,
+                },
+            };
+
+            const player = new OpenPlayerJS('playerw', options);
+
+            player.addControl({
+                id: 'next',
+                position: "bottom-right",
+                showInAds: false,
+                type: "img",
+                alt:"بعدی",
+                custom: true,
+                icon: '/img/nexticon.svg',
+                title: "بعدی :",
+                click: (e) => {
+                    e.preventDefault();
+                    //router.push(`/v/${next.uid}`);
+                },
+
+            });
+            player.init();
+        </script>
+    </body>
+</html>
