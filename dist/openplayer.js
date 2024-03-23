@@ -506,14 +506,14 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-function _typeof(obj) {
+function typeof_typeof(obj) {
   "@babel/helpers - typeof";
 
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+  return typeof_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
     return typeof obj;
   } : function (obj) {
     return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
+  }, typeof_typeof(obj);
 }
 ;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
 function _classCallCheck(instance, Constructor) {
@@ -749,43 +749,12 @@ function addEvent(event, details) {
   }
   return new CustomEvent(event, detail);
 }
-;// CONCATENATED MODULE: ./src/js/utils/time.ts
-function formatTime(seconds, frameRate) {
-  var f = Math.floor(seconds % 1 * (frameRate || 0));
-  var s = Math.floor(seconds);
-  var m = Math.floor(s / 60);
-  var h = Math.floor(m / 60);
-  var wrap = function wrap(value) {
-    var formattedVal = value.toString();
-    if (value < 10) {
-      if (value <= 0) {
-        return '00';
-      }
-      return "0".concat(formattedVal);
-    }
-    return formattedVal;
-  };
-  m %= 60;
-  s %= 60;
-  return "".concat(h > 0 ? "".concat(wrap(h), ":") : '').concat(wrap(m), ":").concat(wrap(s)).concat(f ? ":".concat(wrap(f)) : '');
-}
-function timeToSeconds(timeCode) {
-  var time = timeCode.replace(/;/g, ':').split(':');
-  var seconds = 0;
-  if (time.length === 3) {
-    seconds += parseFloat(time[0]) * 60 * 60;
-    seconds += parseFloat(time[1]) * 60;
-    seconds += parseFloat(time[2]);
-  } else {
-    seconds += parseFloat(time[0]) * 60;
-    seconds += parseFloat(time[1]);
-  }
-  return seconds;
-}
 ;// CONCATENATED MODULE: ./src/js/controls/captions.ts
 
 
-
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = captions_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+function captions_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return captions_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return captions_arrayLikeToArray(o, minLen); }
+function captions_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 var __classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
   if (kind === "m") throw new TypeError("Private method is not writable");
   if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -797,8 +766,7 @@ var __classPrivateFieldGet = undefined && undefined.__classPrivateFieldGet || fu
   if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
   return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Captions_player, _Captions_button, _Captions_captions, _Captions_menu, _Captions_events, _Captions_langTracks, _Captions_mediaTrackList, _Captions_trackUrlList, _Captions_hasTracks, _Captions_currentTrack, _Captions_default, _Captions_controlPosition, _Captions_controlLayer;
-
+var _Captions_player, _Captions_button, _Captions_captions, _Captions_menu, _Captions_events, _Captions_mediaTrackList, _Captions_hasTracks, _Captions_currentTrack, _Captions_default, _Captions_controlPosition, _Captions_controlLayer;
 
 
 var Captions = function () {
@@ -813,9 +781,7 @@ var Captions = function () {
       global: {},
       media: {}
     });
-    _Captions_langTracks.set(this, {});
     _Captions_mediaTrackList.set(this, void 0);
-    _Captions_trackUrlList.set(this, {});
     _Captions_hasTracks.set(this, void 0);
     _Captions_currentTrack.set(this, void 0);
     _Captions_default.set(this, 'off');
@@ -824,40 +790,28 @@ var Captions = function () {
     __classPrivateFieldSet(this, _Captions_player, player, "f");
     __classPrivateFieldSet(this, _Captions_controlPosition, position, "f");
     __classPrivateFieldSet(this, _Captions_controlLayer, layer, "f");
-    this._getCuesFromText = this._getCuesFromText.bind(this);
-    this._getNativeCues = this._getNativeCues.bind(this);
-    this._displayCaptions = this._displayCaptions.bind(this);
-    this._hideCaptions = this._hideCaptions.bind(this);
-    this._search = this._search.bind(this);
-    this._prepareTrack = this._prepareTrack.bind(this);
     this._formatMenuItems = this._formatMenuItems.bind(this);
+    this._setDefaultTrack = this._setDefaultTrack.bind(this);
   }
   _createClass(Captions, [{
     key: "create",
     value: function create() {
       var _this = this;
-      var trackList = __classPrivateFieldGet(this, _Captions_player, "f").getElement().textTracks;
-      var tracks = [];
-      for (var i = 0, total = trackList.length; i < total; i++) {
-        var selector = ["track[kind=\"subtitles\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]"), "track[kind=\"captions\"][srclang=\"".concat(trackList[i].language, "\"][label=\"").concat(trackList[i].label, "\"]")];
-        var tag = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelector(selector.join(', '));
-        if (tag) {
-          tracks.push(trackList[i]);
-        }
-      }
-      if (!tracks.length) {
-        for (var _i = 0, _total = trackList.length; _i < _total; _i++) {
-          tracks.push(trackList[_i]);
-        }
-      }
-      __classPrivateFieldSet(this, _Captions_mediaTrackList, tracks, "f");
+      var _a;
+      var _classPrivateFieldGe = __classPrivateFieldGet(this, _Captions_player, "f").getElement(),
+        textTracks = _classPrivateFieldGe.textTracks;
+      var _classPrivateFieldGe2 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+        labels = _classPrivateFieldGe2.labels,
+        detachMenus = _classPrivateFieldGe2.detachMenus;
+      __classPrivateFieldSet(this, _Captions_mediaTrackList, Object.keys(textTracks).map(function (k) {
+        return textTracks[Number(k)];
+      }).filter(function (el) {
+        return ['subtitles', 'captions'].includes(el.kind);
+      }), "f");
       __classPrivateFieldSet(this, _Captions_hasTracks, !!__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length, "f");
-      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
+      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f") && detachMenus) {
         return;
       }
-      var _classPrivateFieldGe = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
-        labels = _classPrivateFieldGe.labels,
-        detachMenus = _classPrivateFieldGe.detachMenus;
       __classPrivateFieldSet(this, _Captions_button, document.createElement('button'), "f");
       __classPrivateFieldGet(this, _Captions_button, "f").className = "op-controls__captions op-control__".concat(__classPrivateFieldGet(this, _Captions_controlPosition, "f"));
       __classPrivateFieldGet(this, _Captions_button, "f").tabIndex = 0;
@@ -866,86 +820,51 @@ var Captions = function () {
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-pressed', 'false');
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.toggleCaptions) || '');
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
+      __classPrivateFieldSet(this, _Captions_captions, document.createElement('div'), "f");
+      __classPrivateFieldGet(this, _Captions_captions, "f").className = 'op-captions';
+      var target = __classPrivateFieldGet(this, _Captions_player, "f").getContainer();
+      target.insertBefore(__classPrivateFieldGet(this, _Captions_captions, "f"), target.firstChild);
       if (detachMenus) {
         __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-control--no-hover');
         __classPrivateFieldSet(this, _Captions_menu, document.createElement('div'), "f");
         __classPrivateFieldGet(this, _Captions_menu, "f").className = 'op-settings op-captions__menu';
         __classPrivateFieldGet(this, _Captions_menu, "f").setAttribute('aria-hidden', 'true');
         __classPrivateFieldGet(this, _Captions_menu, "f").innerHTML = "<div class=\"op-settings__menu\" role=\"menu\" id=\"menu-item-captions\">\n                <div class=\"op-settings__submenu-item\" tabindex=\"0\" role=\"menuitemradio\" aria-checked=\"".concat(__classPrivateFieldGet(this, _Captions_default, "f") === 'off' ? 'true' : 'false', "\">\n                    <div class=\"op-settings__submenu-label op-subtitles__option\" data-value=\"captions-off\">").concat(labels === null || labels === void 0 ? void 0 : labels.off, "</div>\n                </div>\n            </div>");
-      }
-      var _loop = function _loop(i, trackItems, total) {
-        var element = trackItems[i];
-        if (element.kind === 'subtitles' || element.kind === 'captions') {
-          if (element.default) {
-            __classPrivateFieldSet(_this, _Captions_default, element.srclang, "f");
-            __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', element.srclang);
+        var itemContainer = document.createElement('div');
+        itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _Captions_controlPosition, "f"));
+        itemContainer.append(__classPrivateFieldGet(this, _Captions_button, "f"), __classPrivateFieldGet(this, _Captions_menu, "f"));
+        __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_controlLayer, "f")).append(itemContainer);
+        var _iterator = _createForOfIteratorHelper(__classPrivateFieldGet(this, _Captions_mediaTrackList, "f")),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var track = _step.value;
+            var item = document.createElement('div');
+            var label = ((_a = labels === null || labels === void 0 ? void 0 : labels.lang) === null || _a === void 0 ? void 0 : _a[track.language]) || null;
+            item.className = 'op-settings__submenu-item';
+            item.tabIndex = 0;
+            item.setAttribute('role', 'menuitemradio');
+            item.setAttribute('aria-checked', __classPrivateFieldGet(this, _Captions_default, "f") === track.language ? 'true' : 'false');
+            item.innerHTML = "<div class=\"op-settings__submenu-label op-subtitles__option\"\n                    data-value=\"captions-".concat(track.language, "\">\n                    ").concat(label || track.label, "\n                </div>");
+            __classPrivateFieldGet(this, _Captions_menu, "f").append(item);
           }
-          var trackUrl = getAbsoluteUrl(element.src);
-          var currTrack = __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[i];
-          if (currTrack && currTrack.language === element.srclang) {
-            if (currTrack.cues && currTrack.cues.length > 0) {
-              __classPrivateFieldGet(_this, _Captions_langTracks, "f")[element.srclang] = _this._getNativeCues(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[i]);
-              _this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
-            } else {
-              fetch(trackUrl).then(function (response) {
-                if (!response.ok) {
-                  throw new Error('Network response was not ok');
-                }
-                return response.text();
-              }).then(function (d) {
-                __classPrivateFieldGet(_this, _Captions_langTracks, "f")[element.srclang] = _this._getCuesFromText(d);
-                _this._prepareTrack(i, element.srclang, trackUrl, element.default || false);
-                var selector = ".op-subtitles__option[data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[i].language, "\"]");
-                if (__classPrivateFieldGet(_this, _Captions_menu, "f") && !__classPrivateFieldGet(_this, _Captions_menu, "f").querySelector(selector)) {
-                  var item = document.createElement('div');
-                  var label = (labels === null || labels === void 0 ? void 0 : labels.lang) ? labels.lang[__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[i].language] : null;
-                  item.className = 'op-settings__submenu-item';
-                  item.tabIndex = 0;
-                  item.setAttribute('role', 'menuitemradio');
-                  item.setAttribute('aria-checked', __classPrivateFieldGet(_this, _Captions_default, "f") === __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[i].language ? 'true' : 'false');
-                  item.innerHTML = "<div class=\"op-settings__submenu-label op-subtitles__option\"\n                                        data-value=\"captions-".concat(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[i].language, "\">\n                                        ").concat(label || __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")[i].label, "\n                                    </div>");
-                  __classPrivateFieldGet(_this, _Captions_menu, "f").appendChild(item);
-                }
-              });
-            }
-          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
         }
-      };
-      for (var i = 0, trackItems = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelectorAll('track'), total = trackItems.length; i < total; i++) {
-        _loop(i, trackItems, total);
+      } else {
+        __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_controlLayer, "f")).append(__classPrivateFieldGet(this, _Captions_button, "f"));
       }
-      __classPrivateFieldSet(this, _Captions_captions, document.createElement('div'), "f");
-      __classPrivateFieldGet(this, _Captions_captions, "f").className = 'op-captions';
-      __classPrivateFieldGet(this, _Captions_captions, "f").innerHTML = '<span></span>';
-      var container = __classPrivateFieldGet(this, _Captions_captions, "f").querySelector('span');
-      __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate = function () {
-        if (__classPrivateFieldGet(_this, _Captions_player, "f").isMedia()) {
-          if (__classPrivateFieldGet(_this, _Captions_currentTrack, "f")) {
-            var currentCues = __classPrivateFieldGet(_this, _Captions_langTracks, "f")[__classPrivateFieldGet(_this, _Captions_currentTrack, "f").language];
-            if (container && currentCues !== undefined) {
-              var index = _this._search(currentCues, __classPrivateFieldGet(_this, _Captions_player, "f").getMedia().currentTime);
-              container.innerHTML = '';
-              if (index > -1 && __classPrivateFieldGet(_this, _Captions_button, "f").classList.contains('op-controls__captions--on')) {
-                __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
-                container.innerHTML = sanitize(currentCues[index].text, false);
-              } else {
-                _this._hideCaptions();
-              }
-            }
-          } else {
-            _this._hideCaptions();
-          }
-        } else {
-          _this._hideCaptions();
-        }
-      };
       __classPrivateFieldGet(this, _Captions_events, "f").button.click = function (e) {
+        var _a;
         var button = e.target;
         if (detachMenus) {
           var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
-          for (var _i2 = 0, _total2 = menus.length; _i2 < _total2; ++_i2) {
-            if (menus[_i2] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
-              menus[_i2].setAttribute('aria-hidden', 'true');
+          for (var _i = 0, _Array$from = Array.from(menus); _i < _Array$from.length; _i++) {
+            var menuItem = _Array$from[_i];
+            if (menuItem !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
+              menuItem.setAttribute('aria-hidden', 'true');
             }
           }
           if (__classPrivateFieldGet(_this, _Captions_menu, "f").getAttribute('aria-hidden') === 'true') {
@@ -956,28 +875,32 @@ var Captions = function () {
         } else {
           button.setAttribute('aria-pressed', 'true');
           if (button.classList.contains('op-controls__captions--on')) {
-            _this._hideCaptions();
             button.classList.remove('op-controls__captions--on');
             button.setAttribute('data-active-captions', 'off');
           } else {
-            if (!__classPrivateFieldGet(_this, _Captions_currentTrack, "f")) {
-              var _classPrivateFieldGe2 = __classPrivateFieldGet(_this, _Captions_mediaTrackList, "f"),
-                _classPrivateFieldGe3 = _slicedToArray(_classPrivateFieldGe2, 1),
-                track = _classPrivateFieldGe3[0];
-              __classPrivateFieldSet(_this, _Captions_currentTrack, track, "f");
-            }
-            _this._displayCaptions();
             button.classList.add('op-controls__captions--on');
-            button.setAttribute('data-active-captions', __classPrivateFieldGet(_this, _Captions_currentTrack, "f").language);
+            button.setAttribute('data-active-captions', ((_a = __classPrivateFieldGet(_this, _Captions_currentTrack, "f")) === null || _a === void 0 ? void 0 : _a.language) || '');
+          }
+          var _iterator2 = _createForOfIteratorHelper(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")),
+            _step2;
+          try {
+            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+              var _track = _step2.value;
+              _track.mode = button.getAttribute('data-active-captions') === _track.language ? 'showing' : 'hidden';
+            }
+          } catch (err) {
+            _iterator2.e(err);
+          } finally {
+            _iterator2.f();
           }
         }
       };
       __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover = function () {
         if (!IS_IOS && !IS_ANDROID && detachMenus) {
           var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
-          for (var _i3 = 0, _total3 = menus.length; _i3 < _total3; ++_i3) {
-            if (menus[_i3] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
-              menus[_i3].setAttribute('aria-hidden', 'true');
+          for (var i = 0, total = menus.length; i < total; ++i) {
+            if (menus[i] !== __classPrivateFieldGet(_this, _Captions_menu, "f")) {
+              menus[i].setAttribute('aria-hidden', 'true');
             }
           }
           if (__classPrivateFieldGet(_this, _Captions_menu, "f").getAttribute('aria-hidden') === 'true') {
@@ -988,66 +911,84 @@ var Captions = function () {
       __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout = function () {
         if (!IS_IOS && !IS_ANDROID && detachMenus) {
           var menus = __classPrivateFieldGet(_this, _Captions_player, "f").getContainer().querySelectorAll('.op-settings');
-          for (var _i4 = 0, _total4 = menus.length; _i4 < _total4; ++_i4) {
-            menus[_i4].setAttribute('aria-hidden', 'true');
+          for (var i = 0, total = menus.length; i < total; ++i) {
+            menus[i].setAttribute('aria-hidden', 'true');
           }
           if (__classPrivateFieldGet(_this, _Captions_menu, "f").getAttribute('aria-hidden') === 'false') {
             __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'true');
           }
         }
       };
-      if (__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
-        var target = __classPrivateFieldGet(this, _Captions_player, "f").getContainer();
-        target.insertBefore(__classPrivateFieldGet(this, _Captions_captions, "f"), target.firstChild);
-        if (detachMenus) {
-          var itemContainer = document.createElement('div');
-          itemContainer.className = "op-controls__container op-control__".concat(__classPrivateFieldGet(this, _Captions_controlPosition, "f"));
-          itemContainer.appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
-          itemContainer.appendChild(__classPrivateFieldGet(this, _Captions_menu, "f"));
-          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_controlLayer, "f")).appendChild(itemContainer);
-        } else {
-          __classPrivateFieldGet(this, _Captions_player, "f").getControls().getLayer(__classPrivateFieldGet(this, _Captions_controlLayer, "f")).appendChild(__classPrivateFieldGet(this, _Captions_button, "f"));
-        }
-        __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click, EVENT_OPTIONS);
-      }
-      if (__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length <= 1 && !detachMenus || !__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length && detachMenus) {
-        return;
-      }
+      __classPrivateFieldGet(this, _Captions_button, "f").addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click, EVENT_OPTIONS);
       __classPrivateFieldGet(this, _Captions_events, "f").global.click = function (e) {
         var option = e.target;
         if (option.closest("#".concat(__classPrivateFieldGet(_this, _Captions_player, "f").id)) && option.classList.contains('op-subtitles__option')) {
-          var langEl = option.getAttribute('data-value');
-          var language = langEl ? langEl.replace('captions-', '') : '';
-          var currentLang = Array.from(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")).filter(function (item) {
-            return item.language === language;
-          });
-          __classPrivateFieldSet(_this, _Captions_currentTrack, currentLang ? currentLang.pop() : undefined, "f");
+          var language = option.getAttribute('data-value').replace('captions-', '');
+          var _iterator3 = _createForOfIteratorHelper(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")),
+            _step3;
+          try {
+            for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+              var _track2 = _step3.value;
+              _track2.mode = _track2.language === language ? 'showing' : 'hidden';
+              if (_track2.language === language) {
+                __classPrivateFieldSet(_this, _Captions_currentTrack, _track2, "f");
+              }
+            }
+          } catch (err) {
+            _iterator3.e(err);
+          } finally {
+            _iterator3.f();
+          }
           if (detachMenus) {
             if (__classPrivateFieldGet(_this, _Captions_button, "f").classList.contains('op-controls__captions--on')) {
-              _this._hideCaptions();
               __classPrivateFieldGet(_this, _Captions_button, "f").classList.remove('op-controls__captions--on');
               __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
             } else {
-              _this._displayCaptions();
               __classPrivateFieldGet(_this, _Captions_button, "f").classList.add('op-controls__captions--on');
               __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', language);
             }
-            if (option.parentElement && option.parentElement.parentElement) {
-              var captions = option.parentElement.parentElement.querySelectorAll('.op-settings__submenu-item');
-              for (var _i5 = 0, _total5 = captions.length; _i5 < _total5; ++_i5) {
-                captions[_i5].setAttribute('aria-checked', 'false');
-              }
+            var captions = __classPrivateFieldGet(_this, _Captions_menu, "f").querySelectorAll('.op-settings__submenu-item');
+            for (var _i2 = 0, _Array$from2 = Array.from(captions); _i2 < _Array$from2.length; _i2++) {
+              var caption = _Array$from2[_i2];
+              caption.setAttribute('aria-checked', 'false');
             }
-            if (option.parentElement) {
-              option.parentElement.setAttribute('aria-checked', 'true');
-            }
+            option.parentElement.setAttribute('aria-checked', 'true');
             __classPrivateFieldGet(_this, _Captions_menu, "f").setAttribute('aria-hidden', 'false');
           } else {
-            _this._displayCaptions();
             __classPrivateFieldGet(_this, _Captions_button, "f").setAttribute('data-active-captions', language);
           }
           var event = addEvent('captionschanged');
           __classPrivateFieldGet(_this, _Captions_player, "f").getElement().dispatchEvent(event);
+        }
+      };
+      __classPrivateFieldGet(this, _Captions_events, "f").global.cuechange = function (e) {
+        var _a;
+        while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
+          __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
+        }
+        var t = e.target;
+        if (t.mode !== 'showing') {
+          return;
+        }
+        if (t.activeCues && ((_a = t.activeCues) === null || _a === void 0 ? void 0 : _a.length) > 0) {
+          for (var _i3 = 0, _Array$from3 = Array.from(t.activeCues); _i3 < _Array$from3.length; _i3++) {
+            var cue = _Array$from3[_i3];
+            var content = (cue === null || cue === void 0 ? void 0 : cue.text) || '';
+            if (content) {
+              __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
+              var caption = document.createElement('span');
+              caption.innerHTML = content;
+              __classPrivateFieldGet(_this, _Captions_captions, "f").prepend(caption);
+            } else {
+              while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
+                __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
+              }
+            }
+          }
+        } else {
+          while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
+            __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
+          }
         }
       };
       if (detachMenus) {
@@ -1056,38 +997,67 @@ var Captions = function () {
         __classPrivateFieldGet(this, _Captions_menu, "f").addEventListener('mouseout', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, EVENT_OPTIONS);
         __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout, EVENT_OPTIONS);
       }
-      if (typeof __classPrivateFieldGet(this, _Captions_events, "f").global.click !== 'undefined') {
-        document.addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click, EVENT_OPTIONS);
+      document.addEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click, EVENT_OPTIONS);
+      var _iterator4 = _createForOfIteratorHelper(__classPrivateFieldGet(this, _Captions_mediaTrackList, "f")),
+        _step4;
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var _track3 = _step4.value;
+          _track3.mode = _track3.mode !== 'showing' ? 'hidden' : _track3.mode;
+          _track3.addEventListener('cuechange', __classPrivateFieldGet(this, _Captions_events, "f").global.cuechange, EVENT_OPTIONS);
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+      var targetTrack = __classPrivateFieldGet(this, _Captions_player, "f").getElement().querySelector('track:is([kind="subtitles"],[kind="captions"])[default]');
+      if (targetTrack) {
+        var matchTrack = __classPrivateFieldGet(this, _Captions_mediaTrackList, "f").find(function (el) {
+          return el.language === targetTrack.srclang;
+        });
+        if (matchTrack) {
+          this._setDefaultTrack(matchTrack);
+        }
       }
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      var _classPrivateFieldGe4 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
-        detachMenus = _classPrivateFieldGe4.detachMenus;
-      if (typeof __classPrivateFieldGet(this, _Captions_events, "f").global.click !== 'undefined') {
-        document.removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click);
+      var _classPrivateFieldGe3 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+        detachMenus = _classPrivateFieldGe3.detachMenus;
+      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f") && detachMenus) {
+        return;
       }
-      if (__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
-        __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click);
-        if (detachMenus) {
-          __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
-          __classPrivateFieldGet(this, _Captions_menu, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
-          __classPrivateFieldGet(this, _Captions_menu, "f").removeEventListener('mouseout', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout);
-          __classPrivateFieldGet(this, _Captions_player, "f").getElement().removeEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout);
-          __classPrivateFieldGet(this, _Captions_menu, "f").remove();
+      var _iterator5 = _createForOfIteratorHelper(__classPrivateFieldGet(this, _Captions_mediaTrackList, "f")),
+        _step5;
+      try {
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var track = _step5.value;
+          track.removeEventListener('cuechange', __classPrivateFieldGet(this, _Captions_events, "f").global.cuechange);
         }
-        __classPrivateFieldGet(this, _Captions_player, "f").getElement().removeEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate);
-        __classPrivateFieldGet(this, _Captions_button, "f").remove();
-        __classPrivateFieldGet(this, _Captions_captions, "f").remove();
+      } catch (err) {
+        _iterator5.e(err);
+      } finally {
+        _iterator5.f();
       }
+      document.removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").global.click);
+      __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('click', __classPrivateFieldGet(this, _Captions_events, "f").button.click);
+      if (detachMenus) {
+        __classPrivateFieldGet(this, _Captions_button, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
+        __classPrivateFieldGet(this, _Captions_menu, "f").removeEventListener('mouseover', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseover);
+        __classPrivateFieldGet(this, _Captions_menu, "f").removeEventListener('mouseout', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout);
+        __classPrivateFieldGet(this, _Captions_player, "f").getElement().removeEventListener('controlshidden', __classPrivateFieldGet(this, _Captions_events, "f").button.mouseout);
+        __classPrivateFieldGet(this, _Captions_menu, "f").remove();
+      }
+      __classPrivateFieldGet(this, _Captions_button, "f").remove();
     }
   }, {
     key: "addSettings",
     value: function addSettings() {
-      var _classPrivateFieldGe5 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
-        detachMenus = _classPrivateFieldGe5.detachMenus,
-        labels = _classPrivateFieldGe5.labels;
+      var _classPrivateFieldGe4 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+        detachMenus = _classPrivateFieldGe4.detachMenus,
+        labels = _classPrivateFieldGe4.labels;
       if (detachMenus || __classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length <= 1) {
         return {};
       }
@@ -1101,151 +1071,62 @@ var Captions = function () {
       } : {};
     }
   }, {
-    key: "_getCuesFromText",
-    value: function _getCuesFromText(vttText) {
-      var lines = vttText.split(/\r?\n/);
-      var entries = [];
-      var urlRegexp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
-      var timePattern = '^((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{1,3})?) --> ';
-      timePattern += '((?:[0-9]{1,2}:)?[0-9]{2}:[0-9]{2}([,.][0-9]{3})?)(.*?)$';
-      var regexp = new RegExp(timePattern);
-      var identifier;
-      for (var i = 0, total = lines.length; i < total; i++) {
-        var timeCode = regexp.exec(lines[i]);
-        if (timeCode && i < lines.length) {
-          if (i - 1 >= 0 && lines[i - 1] !== '') {
-            identifier = lines[i - 1];
-          }
-          i++;
-          var cue = lines[i];
-          i++;
-          while (lines[i] !== '' && i < lines.length) {
-            cue = "".concat(cue, "\n").concat(lines[i]);
-            i++;
-          }
-          cue = cue.trim().replace(urlRegexp, "<a href='$1' target='_blank'>$1</a>");
-          var initTime = timeToSeconds(timeCode[1]);
-          entries.push({
-            endTime: timeToSeconds(timeCode[3]),
-            identifier: identifier || '',
-            settings: isJson(timeCode[5]) ? JSON.parse(timeCode[5]) : {},
-            startTime: initTime === 0 ? 0.2 : initTime,
-            text: cue
-          });
-        }
-        identifier = '';
-      }
-      return entries;
-    }
-  }, {
-    key: "_getNativeCues",
-    value: function _getNativeCues(track) {
-      var cues = [];
-      var trackCues = track.cues;
-      Object.keys(trackCues).forEach(function (index) {
-        var j = parseInt(index, 10);
-        var current = trackCues[j];
-        cues.push({
-          endTime: current.endTime,
-          identifier: current.id,
-          settings: {},
-          startTime: current.startTime,
-          text: current.text
-        });
-      });
-      return cues;
-    }
-  }, {
-    key: "_displayCaptions",
-    value: function _displayCaptions() {
-      if (!__classPrivateFieldGet(this, _Captions_captions, "f") || !__classPrivateFieldGet(this, _Captions_currentTrack, "f") || __classPrivateFieldGet(this, _Captions_currentTrack, "f").cues === undefined) {
-        return;
-      }
-      var container = __classPrivateFieldGet(this, _Captions_captions, "f").querySelector('span');
-      if (container) {
-        container.innerHTML = '';
-      }
-      __classPrivateFieldGet(this, _Captions_player, "f").getElement().addEventListener('timeupdate', __classPrivateFieldGet(this, _Captions_events, "f").media.timeupdate, EVENT_OPTIONS);
-    }
-  }, {
-    key: "_hideCaptions",
-    value: function _hideCaptions() {
-      __classPrivateFieldGet(this, _Captions_captions, "f").classList.remove('op-captions--on');
-      if (!__classPrivateFieldGet(this, _Captions_currentTrack, "f")) {
-        __classPrivateFieldGet(this, _Captions_button, "f").classList.remove('op-controls__captions--on');
-        __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', 'off');
-      }
-    }
-  }, {
-    key: "_search",
-    value: function _search(tracks, currentTime) {
-      var low = 0;
-      var high = tracks.length - 1;
-      while (low <= high) {
-        var mid = low + high >> 1;
-        var start = tracks[mid].startTime;
-        var stop = tracks[mid].endTime;
-        if (currentTime >= start && currentTime < stop) {
-          return mid;
-        }
-        if (start < currentTime) {
-          low = mid + 1;
-        } else if (start > currentTime) {
-          high = mid - 1;
-        }
-      }
-      return -1;
-    }
-  }, {
-    key: "_prepareTrack",
-    value: function _prepareTrack(index, language, trackUrl) {
-      var _this2 = this;
-      var showTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-      __classPrivateFieldGet(this, _Captions_trackUrlList, "f")[language] = trackUrl;
-      __classPrivateFieldGet(this, _Captions_mediaTrackList, "f")[index].mode = 'disabled';
-      if (showTrack) {
-        __classPrivateFieldSet(this, _Captions_default, language, "f");
-        __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-controls__captions--on');
-        __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', language);
-        __classPrivateFieldSet(this, _Captions_currentTrack, Array.from(__classPrivateFieldGet(this, _Captions_mediaTrackList, "f")).filter(function (item) {
-          return item.language === __classPrivateFieldGet(_this2, _Captions_default, "f");
-        }).pop(), "f");
-        this._displayCaptions();
-        if (!__classPrivateFieldGet(this, _Captions_player, "f").getContainer().classList.contains('op-captions--detected')) {
-          __classPrivateFieldGet(this, _Captions_player, "f").getContainer().classList.add('op-captions--detected');
-        }
-      }
-    }
-  }, {
     key: "_formatMenuItems",
     value: function _formatMenuItems() {
-      var _this3 = this;
-      var _classPrivateFieldGe6 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
-        labels = _classPrivateFieldGe6.labels;
+      var _classPrivateFieldGe5 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
+        labels = _classPrivateFieldGe5.labels,
+        detachMenus = _classPrivateFieldGe5.detachMenus;
+      if (__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length <= 1 && !detachMenus) {
+        return [];
+      }
       var items = [{
         key: 'off',
         label: (labels === null || labels === void 0 ? void 0 : labels.off) || ''
       }];
-      var _loop2 = function _loop2(i, total) {
-        var track = __classPrivateFieldGet(_this3, _Captions_mediaTrackList, "f")[i];
-        var label = (labels === null || labels === void 0 ? void 0 : labels.lang) ? labels.lang[track.language] : null;
-        items = items.filter(function (el) {
-          return el.key !== track.language;
-        });
-        items.push({
-          key: track.language,
-          label: label || __classPrivateFieldGet(_this3, _Captions_mediaTrackList, "f")[i].label
-        });
-      };
-      for (var i = 0, total = __classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length; i < total; i++) {
-        _loop2(i, total);
+      var _iterator6 = _createForOfIteratorHelper(__classPrivateFieldGet(this, _Captions_mediaTrackList, "f")),
+        _step6;
+      try {
+        var _loop = function _loop() {
+          var track = _step6.value;
+          var label = (labels === null || labels === void 0 ? void 0 : labels.lang) ? labels.lang[track.language] : null;
+          items = items.filter(function (el) {
+            return el.key !== track.language;
+          });
+          items.push({
+            key: track.language,
+            label: label || track.label
+          });
+        };
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          _loop();
+        }
+      } catch (err) {
+        _iterator6.e(err);
+      } finally {
+        _iterator6.f();
       }
       return items;
+    }
+  }, {
+    key: "_setDefaultTrack",
+    value: function _setDefaultTrack(track) {
+      var _a, _b;
+      track.mode = 'showing';
+      __classPrivateFieldSet(this, _Captions_default, track.language, "f");
+      __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', __classPrivateFieldGet(this, _Captions_default, "f"));
+      __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-controls__captions--on');
+      __classPrivateFieldSet(this, _Captions_currentTrack, track, "f");
+      var options = document.querySelectorAll('.op-settings__submenu-item') || [];
+      for (var _i4 = 0, _Array$from4 = Array.from(options); _i4 < _Array$from4.length; _i4++) {
+        var option = _Array$from4[_i4];
+        option.setAttribute('aria-checked', 'false');
+      }
+      (_b = (_a = document.querySelector(".op-subtitles__option[data-value=\"captions-".concat(track.language, "\"]"))) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-checked', 'true');
     }
   }]);
   return Captions;
 }();
-_Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_langTracks = new WeakMap(), _Captions_mediaTrackList = new WeakMap(), _Captions_trackUrlList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_currentTrack = new WeakMap(), _Captions_default = new WeakMap(), _Captions_controlPosition = new WeakMap(), _Captions_controlLayer = new WeakMap();
+_Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_mediaTrackList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_currentTrack = new WeakMap(), _Captions_default = new WeakMap(), _Captions_controlPosition = new WeakMap(), _Captions_controlLayer = new WeakMap();
 /* harmony default export */ var captions = (Captions);
 ;// CONCATENATED MODULE: ./src/js/controls/fullscreen.ts
 
@@ -2099,6 +1980,39 @@ var Play = function () {
 }();
 _Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_controlPosition = new WeakMap(), _Play_controlLayer = new WeakMap();
 /* harmony default export */ var play = (Play);
+;// CONCATENATED MODULE: ./src/js/utils/time.ts
+function formatTime(seconds, frameRate) {
+  var f = Math.floor(seconds % 1 * (frameRate || 0));
+  var s = Math.floor(seconds);
+  var m = Math.floor(s / 60);
+  var h = Math.floor(m / 60);
+  var wrap = function wrap(value) {
+    var formattedVal = value.toString();
+    if (value < 10) {
+      if (value <= 0) {
+        return '00';
+      }
+      return "0".concat(formattedVal);
+    }
+    return formattedVal;
+  };
+  m %= 60;
+  s %= 60;
+  return "".concat(h > 0 ? "".concat(wrap(h), ":") : '').concat(wrap(m), ":").concat(wrap(s)).concat(f ? ":".concat(wrap(f)) : '');
+}
+function timeToSeconds(timeCode) {
+  var time = timeCode.replace(/;/g, ':').split(':');
+  var seconds = 0;
+  if (time.length === 3) {
+    seconds += parseFloat(time[0]) * 60 * 60;
+    seconds += parseFloat(time[1]) * 60;
+    seconds += parseFloat(time[2]);
+  } else {
+    seconds += parseFloat(time[0]) * 60;
+    seconds += parseFloat(time[1]);
+  }
+  return seconds;
+}
 ;// CONCATENATED MODULE: ./src/js/controls/progress.ts
 
 
@@ -3635,7 +3549,7 @@ function _inherits(subClass, superClass) {
 
 
 function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof(call) === "object" || typeof call === "function")) {
+  if (call && (typeof_typeof(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
@@ -4833,7 +4747,7 @@ var Media = function () {
         });
       } else if (Array.isArray(media)) {
         media_classPrivateFieldSet(this, _Media_files, media, "f");
-      } else if (_typeof(media) === 'object') {
+      } else if (typeof_typeof(media) === 'object') {
         media_classPrivateFieldGet(this, _Media_files, "f").push(media);
       }
       media_classPrivateFieldSet(this, _Media_files, media_classPrivateFieldGet(this, _Media_files, "f").filter(function (file) {
@@ -6496,7 +6410,7 @@ var Player = function () {
           source.type = m.type || predictMimeType(m.src, player_classPrivateFieldGet(_this4, _Player_element, "f"));
           player_classPrivateFieldGet(_this4, _Player_element, "f").appendChild(source);
         });
-      } else if (_typeof(media) === 'object') {
+      } else if (typeof_typeof(media) === 'object') {
         player_classPrivateFieldGet(this, _Player_element, "f").src = media.src;
       }
     }
@@ -6779,7 +6693,7 @@ var Player = function () {
       var opts = Object.assign({}, playerOptions || {});
       player_classPrivateFieldSet(this, _Player_options, Object.assign(Object.assign({}, player_classPrivateFieldGet(this, _Player_defaultOptions, "f")), opts), "f");
       var complexOptions = Object.keys(player_classPrivateFieldGet(this, _Player_defaultOptions, "f")).filter(function (key) {
-        return key !== 'labels' && _typeof(player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[key]) === 'object';
+        return key !== 'labels' && typeof_typeof(player_classPrivateFieldGet(_this8, _Player_defaultOptions, "f")[key]) === 'object';
       });
       complexOptions.forEach(function (key) {
         var currOption = opts[key] || {};
@@ -6792,7 +6706,7 @@ var Player = function () {
         var sanitizedLabels = {};
         keys.forEach(function (key) {
           var current = opts.labels ? opts.labels[key] : null;
-          if (current && _typeof(current) === 'object' && key === 'lang') {
+          if (current && typeof_typeof(current) === 'object' && key === 'lang') {
             Object.keys(current).forEach(function (k) {
               var lang = current ? current[k] : null;
               if (lang) {

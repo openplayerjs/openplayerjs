@@ -716,8 +716,11 @@
 .op-captions > span {
     background: rgba(0, 0, 0, 0.7);
     box-decoration-break: clone;
+    display: block;
     line-height: 150%;
+    margin: 0 auto 15px;
     padding: 3px 10px;
+    width: fit-content;
 }
 .op-player__audio.op-captions--detected {
     background: transparent;
@@ -916,20 +919,11 @@ video:-webkit-media-text-track-display {
 .op-player__ios--iphone .op-player__play {
     margin-top: -5px;
 }
-.op-player.op-player__ios--iphone video::-webkit-media-controls,
-.op-player.op-player__ios--iphone video::-webkit-media-text-track-container {
+.op-player.op-player__ios--iphone video::-webkit-media-controls {
     display: block !important;
 }
-.op-player.op-player__ios--iphone video::cue {
-    color: transparent;
-    font-size: 0.001px;
-}
-.op-player.op-player__ios--iphone video::-webkit-media-text-track-display-backdrop {
-    background: transparent !important;
-}
-.op-player[data-fullscreen='true'].op-player__ios--iphone video::cue {
-    color: #fff;
-    font-size: initial;
+.op-player[data-fullscreen='true'].op-player.op-player__ios--iphone video::-webkit-media-text-track-container {
+    display: block !important;
 }
 .op-player[data-fullscreen='true'].op-player.op-player__ios--iphone video::-webkit-media-text-track-display-backdrop {
     background: rgba(0, 0, 0, 0.498039) !important;

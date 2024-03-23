@@ -36,6 +36,7 @@
     "no-plusplus": 0,
     "no-case-declarations": 0,
     "no-console": [2, { "allow": ["warn", "error"] }],
+    "no-restricted-syntax": ["off", "ForOfStatement"],
     "class-methods-use-this": 0,
     "import/extensions": [
       2,
@@ -46,12 +47,13 @@
       }
     ],
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": 2,
     "prettier/prettier": 2,
     "semi": 0,
     "newline-per-chained-call": 2,
+    "@typescript-eslint/no-unused-vars": 2,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-extra-semi": 2,
-    "@typescript-eslint/explicit-function-return-type": 2
+    "@typescript-eslint/explicit-function-return-type": 2,
+    "@typescript-eslint/no-non-null-assertion": 0
   }
 }
