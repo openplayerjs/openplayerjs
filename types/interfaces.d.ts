@@ -14,16 +14,6 @@ export interface TrackURL {
 export interface Track {
     readonly srclang: string;
     readonly src: string;
-    /**
-     * Possible values (although, OpenPlayerJS only supports the first one):
-     *  - `subtitles`
-     *  - `captions`
-     *  - `descriptions`
-     *  - `chapters`
-     *  - `metadata`
-     *
-     * @see https://mzl.la/2HyGCbg
-     */
     readonly kind: string;
     readonly default: boolean;
     readonly label: string;
@@ -33,29 +23,10 @@ export interface SettingsSubItem {
     label?: string;
 }
 export interface SettingsItem {
-    /**
-     * Specific class name to be used for:
-     *  - Event listeners and dispatchers
-     *  - Specific styling
-     */
     readonly className: string;
-    /**
-     * Identifier to indicate the initial value of `Settings` element when created.
-     *
-     * This element must exist in the `submenu` attribute (if not empty).
-     */
     readonly default: string;
-    /**
-     * Unique identifier to avoid collisions with other items.
-     */
     readonly key: string;
-    /**
-     * Human-readable name of the item.
-     */
     readonly name: string;
-    /**
-     * List of elements to generate a submenu linked to item.
-     */
     subitems?: SettingsSubItem[];
 }
 export interface SettingsSubMenu {
@@ -90,17 +61,7 @@ export interface AdsOptions {
 }
 export interface PlayerComponent {
     custom?: boolean;
-    /**
-     * Create HTML and insert it into OpenPlayer's DOM.
-     *
-     * This method must include its events setup.
-     */
     create(): void;
-    /**
-     * Remove HTML associated to specific OpenPlayer's element.
-     *
-     * This method must include the removal of its previously set events.
-     */
     destroy(): void;
     addSettings?: () => SettingsItem | unknown;
 }
@@ -135,44 +96,23 @@ export interface ElementItem {
     focus?(event: Event): void;
 }
 export interface CustomMedia {
-    /**
-     * Store all the native methods to play custom media
-     */
     media: {
         [key: string]: any;
     };
-    /**
-     * Store name of media to be used as key for configuration options
-     */
     optionsKey: {
         [key: string]: string;
     };
-    /**
-     * Store callbacks to determine MIME type based on URL
-     */
     rules: ((mediaUrl: string) => string)[];
 }
 export interface EventsList {
     [key: string]: any;
 }
 export interface Level {
-    /**
-     * Media's height to display level based on standards:
-     *  - 8K
-     *  - 4K
-     *  - 1440p
-     *  - 1080p
-     *  - 720p
-     *  - 480p
-     *  - 360p
-     *  - 240p
-     *  - 144p
-     */
     readonly height: number;
     readonly id: string;
     readonly label: string;
 }
-export declare type PlayerLayers = {
+export type PlayerLayers = {
     left?: string[];
     middle?: string[];
     right?: string[];
@@ -184,10 +124,10 @@ export declare type PlayerLayers = {
     'bottom-middle'?: string[];
     'bottom-left'?: string[];
 };
-export declare type Languages = {
+export type Languages = {
     [key: string]: string;
 };
-export declare type PlayerLabels = {
+export type PlayerLabels = {
     auto?: string;
     captions?: string;
     click?: string;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
     interface Window {
@@ -6,19 +5,9 @@ declare global {
         WebKitMediaSource: any;
         WebKitSourceBuffer: any;
     }
-
-    // @ts-ignore
-    interface NavigatorExtended extends Navigator {
-        // @ts-ignore
-        connection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
-        // @ts-ignore
-        mozConnection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
-        // @ts-ignore
-        webkitConnection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
-    }
 }
 
-export const NAV: NavigatorExtended | null = typeof window !== 'undefined' ? window.navigator : null;
+export const NAV: Navigator | null = typeof window !== 'undefined' ? window.navigator : null;
 
 export const UA: string | null = NAV ? NAV.userAgent.toLowerCase() : null;
 

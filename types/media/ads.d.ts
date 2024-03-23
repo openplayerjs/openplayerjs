@@ -36,11 +36,6 @@ declare class Ads {
     private _loadedMetadataHandler;
     private _resumeMedia;
     private _requestAds;
-    /**
-     * Internal callback to request Ads.
-     *
-     * @memberof Ads
-     */
     private _contentLoadedAction;
     private _resetAdsAfterManualBreak;
     private _prepareMedia;
