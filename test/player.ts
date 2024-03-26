@@ -178,7 +178,7 @@ describe('player', (): void => {
     it('allows the user to add captions dynamically', async (): Promise<void> => {
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
-        expect(videoPlayer.getContainer().querySelector('.op-controls__captions')).to.be(null);
+        expect(videoPlayer.getContainer().querySelector('track')).to.be(null);
 
         videoPlayer.addCaptions({
             kind: 'subtitle',
@@ -189,7 +189,7 @@ describe('player', (): void => {
 
         return new Promise<void>((resolve) => {
             videoPlayer.getElement().addEventListener('controlschanged', (): void => {
-                expect(videoPlayer.getContainer().querySelector('.op-controls__captions')).to.not.be(null);
+                expect(videoPlayer.getContainer().querySelector('track')).to.not.be(null);
                 resolve();
             });
             try {

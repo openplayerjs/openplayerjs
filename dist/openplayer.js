@@ -1026,7 +1026,7 @@ var Captions = function () {
     value: function destroy() {
       var _classPrivateFieldGe3 = __classPrivateFieldGet(this, _Captions_player, "f").getOptions(),
         detachMenus = _classPrivateFieldGe3.detachMenus;
-      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f") && detachMenus) {
+      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
         return;
       }
       var _iterator5 = _createForOfIteratorHelper(__classPrivateFieldGet(this, _Captions_mediaTrackList, "f")),

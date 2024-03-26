@@ -233,7 +233,7 @@ class Captions {
     }
     destroy() {
         const { detachMenus } = __classPrivateFieldGet(this, _Captions_player, "f").getOptions();
-        if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f") && detachMenus) {
+        if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
             return;
         }
         for (const track of __classPrivateFieldGet(this, _Captions_mediaTrackList, "f")) {

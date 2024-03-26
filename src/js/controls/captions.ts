@@ -256,6 +256,8 @@ class Captions implements PlayerComponent {
     }
 
     destroy(): void {
+        const { detachMenus } = this.#player.getOptions();
+
         if (!this.#hasTracks) {
             return;
         }
