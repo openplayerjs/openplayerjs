@@ -806,10 +806,10 @@ var Captions = function () {
       __classPrivateFieldSet(this, _Captions_mediaTrackList, Object.keys(textTracks).map(function (k) {
         return textTracks[Number(k)];
       }).filter(function (el) {
-        return ['subtitles', 'captions'].includes(el.kind);
+        return ['subtitles', 'captions'].includes(el.kind) && el.language;
       }), "f");
       __classPrivateFieldSet(this, _Captions_hasTracks, !!__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length, "f");
-      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f") && detachMenus) {
+      if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
         return;
       }
       __classPrivateFieldSet(this, _Captions_button, document.createElement('button'), "f");

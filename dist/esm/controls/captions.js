@@ -41,9 +41,9 @@ class Captions {
         const { labels, detachMenus } = __classPrivateFieldGet(this, _Captions_player, "f").getOptions();
         __classPrivateFieldSet(this, _Captions_mediaTrackList, Object.keys(textTracks)
             .map((k) => textTracks[Number(k)])
-            .filter((el) => ['subtitles', 'captions'].includes(el.kind)), "f");
+            .filter((el) => ['subtitles', 'captions'].includes(el.kind) && el.language), "f");
         __classPrivateFieldSet(this, _Captions_hasTracks, !!__classPrivateFieldGet(this, _Captions_mediaTrackList, "f").length, "f");
-        if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f") && detachMenus) {
+        if (!__classPrivateFieldGet(this, _Captions_hasTracks, "f")) {
             return;
         }
         __classPrivateFieldSet(this, _Captions_button, document.createElement('button'), "f");

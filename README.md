@@ -19,7 +19,6 @@ No new features or additions will be added, only bug fixes.
 -   Supports **all modern browsers**.
 -   **No dependencies**, since it is written in Typescript.
 -   Runs a simple but yet powerful algorithm to **check the browser's autoplay capabilities** across browsers.
--   Supports for **local and remote captions** for **both video and audio**, even without including the `crossorigin` attribute.
 -   **Enhance your player** adding your own buttons. Check [here](./docs/customize.md) for more details.
 -   Provides the ability to use a **single VAST/VPAID** source or a **VAST/VPAID playlist** from several different sources (including URLs and valid XML strings).
 -   **Can play ads in infinite loop**, desired for ads that are in a heavy text page.

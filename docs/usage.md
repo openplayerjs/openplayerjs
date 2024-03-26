@@ -8,7 +8,7 @@ The only 3 requirements to invoke the player are:
 -   The `controls` and `playsinline` attributes to provide cross-browser support.
 -   The `op-player__media` class name to invoke the player. You can add `op-player` class as well, if you don't require any Javascript configuration.
 
-Optionally, if you want to use VTT closed captions, need to add the `track` tag as indicated in the snippet above; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed.
+Optionally, if you want to support closed captions, need to add the `track` tag as indicated in the snippet above; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed. More information about this [here](#about-captions-and-subtitles).
 
 ```html
 <html>
@@ -169,6 +169,38 @@ This is **not** an option activated by default since it requires the following t
 -   If you are using a streaming source, the manifest files MUST be configured to support adaptive streaming; that way, the player will check for the potential resolutions and render them. For a good example of a manifest file that will be rendered properly by the player, download and check the source of [this one](https://diqvirsbuges6.cloudfront.net/cases/3916-2/interview/bank_00.m3u8).
 
 To see a working example of this option using both scenarios described above, check [this sample](https://codepen.io/rafa8626/pen/ExxXvZx).
+
+### About captions and subtitles
+
+Given the changes performed in browser for security purposes, captions and subtitle files will need to have CORS permissions if they come from a different domain in order to be supported by OpenPlayerJS.
+
+OpenPlayerJS supports *Web Video Text Tracks Format* (WebVTT) and *SubRip Subtitle* (SRT) files for captions and subtitles; however, WebVTT files are encouraged since they are fully compatible with iOS devices, specially when using full screen mode in smartphones. The reason behind this is because iOS will default to the native phone media player, and its player doesn't have support for other formats in terms of captions/subtitles.
+
+Also, if you are planning to have full support for captions/subtitles across devices, it is important to note that, for Safari, **at least one track tag needs to be present**. So, if you are looking to add captions/subtitles dynamically, make sure that you have a default track element with an empty.vtt file as source. That way, the empty file won't be displayed at all and the dynamically added ones will be considered. For example:
+
+```html
+<video id="video" class="op-player op-player__media" controls playsinline>
+    <source src="/path/to/video.mp4" type="video/mp4" />
+    <track kind="subtitles" src="/path/to/empty.vtt" />
+</video>
+<script>
+    const player = new OpenPlayerJS('video');
+    player.addCaptions({
+        srclang: 'en',
+        src: '/path/to/english.vtt',
+        kind: 'captions',
+        label: 'English',
+        default: true
+    });
+    player.addCaptions({
+        srclang: 'ja',
+        src: '/path/to/ja.vtt',
+        kind: 'subtitles',
+        label: '日本語'
+    });
+    player.init();
+</script>
+```
 
 ### About the usage of third-party libraries
 

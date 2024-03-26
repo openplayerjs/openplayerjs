@@ -47,11 +47,11 @@ class Captions implements PlayerComponent {
 
         this.#mediaTrackList = Object.keys(textTracks)
             .map((k) => textTracks[Number(k)])
-            .filter((el) => ['subtitles', 'captions'].includes(el.kind));
+            .filter((el) => ['subtitles', 'captions'].includes(el.kind) && el.language);
 
         this.#hasTracks = !!this.#mediaTrackList.length;
 
-        if (!this.#hasTracks && detachMenus) {
+        if (!this.#hasTracks) {
             return;
         }
 
@@ -256,9 +256,7 @@ class Captions implements PlayerComponent {
     }
 
     destroy(): void {
-        const { detachMenus } = this.#player.getOptions();
-
-        if (!this.#hasTracks && detachMenus) {
+        if (!this.#hasTracks) {
             return;
         }
 
