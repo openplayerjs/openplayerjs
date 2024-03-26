@@ -83,7 +83,7 @@ class J {
   }
   create() {
     const { textTracks: t } = this.#t.getElement(), { labels: e, detachMenus: s } = this.#t.getOptions();
-    if (this.#o = Object.keys(t).map((a) => t[Number(a)]).filter((a) => ["subtitles", "captions"].includes(a.kind)), this.#r = !!this.#o.length, !this.#r && s)
+    if (this.#o = Object.keys(t).map((a) => t[Number(a)]).filter((a) => ["subtitles", "captions"].includes(a.kind) && a.language), this.#r = !!this.#o.length, !this.#r)
       return;
     this.#e = document.createElement("button"), this.#e.className = `op-controls__captions op-control__${this.#l}`, this.#e.tabIndex = 0, this.#e.title = e?.toggleCaptions || "", this.#e.setAttribute("aria-controls", this.#t.id), this.#e.setAttribute("aria-pressed", "false"), this.#e.setAttribute("aria-label", e?.toggleCaptions || ""), this.#e.setAttribute("data-active-captions", "off"), this.#i = document.createElement("div"), this.#i.className = "op-captions";
     const i = this.#t.getContainer();
@@ -177,7 +177,7 @@ class J {
   }
   destroy() {
     const { detachMenus: t } = this.#t.getOptions();
-    if (!(!this.#r && t)) {
+    if (this.#r) {
       for (const e of this.#o)
         e.removeEventListener("cuechange", this.#n.global.cuechange);
       document.removeEventListener("click", this.#n.global.click), this.#e.removeEventListener("click", this.#n.button.click), t && (this.#e.removeEventListener("mouseover", this.#n.button.mouseover), this.#s.removeEventListener("mouseover", this.#n.button.mouseover), this.#s.removeEventListener("mouseout", this.#n.button.mouseout), this.#t.getElement().removeEventListener("controlshidden", this.#n.button.mouseout), this.#s.remove()), this.#e.remove();

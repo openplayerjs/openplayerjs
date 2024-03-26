@@ -176,24 +176,20 @@ describe('player', (): void => {
     });
 
     it('allows the user to add captions dynamically', async (): Promise<void> => {
-        const media = document.getElementById('video') as HTMLMediaElement;
-        media.setAttribute('crossorigin', 'anonymous');
-
         videoPlayer = new OpenPlayerJS('video');
         await videoPlayer.init();
-        expect(videoPlayer.getContainer().querySelector('.op-controls__captions')).to.be(null);
+        expect(videoPlayer.getContainer().querySelector('track')).to.be(null);
 
         videoPlayer.addCaptions({
             kind: 'subtitle',
             label: 'Test',
-            src: 'http://www.mediaelementjs.com/dist/mediaelement.vtt',
-            srclang: 'en-UK',
+            src: './captions.vtt',
+            srclang: 'pt-BR',
         });
 
         return new Promise<void>((resolve) => {
             videoPlayer.getElement().addEventListener('controlschanged', (): void => {
-                expect(videoPlayer.getContainer().querySelector('.op-controls__captions')).to.not.be(null);
-                media.removeAttribute('crossorigin');
+                expect(videoPlayer.getContainer().querySelector('track')).to.not.be(null);
                 resolve();
             });
             try {
