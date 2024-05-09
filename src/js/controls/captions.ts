@@ -174,6 +174,9 @@ class Captions implements PlayerComponent {
                     track.mode = track.language === language ? 'showing' : 'hidden';
                     if (track.language === language) {
                         this.#currentTrack = track;
+                        while (this.#captions.lastChild) {
+                            this.#captions.removeChild(this.#captions.lastChild);
+                        }
                     }
                 }
 

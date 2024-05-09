@@ -154,6 +154,9 @@ class Captions {
                     track.mode = track.language === language ? 'showing' : 'hidden';
                     if (track.language === language) {
                         __classPrivateFieldSet(this, _Captions_currentTrack, track, "f");
+                        while (__classPrivateFieldGet(this, _Captions_captions, "f").lastChild) {
+                            __classPrivateFieldGet(this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(this, _Captions_captions, "f").lastChild);
+                        }
                     }
                 }
                 if (detachMenus) {

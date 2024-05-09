@@ -932,6 +932,9 @@ var Captions = function () {
               _track2.mode = _track2.language === language ? 'showing' : 'hidden';
               if (_track2.language === language) {
                 __classPrivateFieldSet(_this, _Captions_currentTrack, _track2, "f");
+                while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
+                  __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
+                }
               }
             }
           } catch (err) {
