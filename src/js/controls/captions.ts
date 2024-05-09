@@ -177,6 +177,15 @@ class Captions implements PlayerComponent {
                         while (this.#captions.lastChild) {
                             this.#captions.removeChild(this.#captions.lastChild);
                         }
+                        for (const cue of Array.from(this.#currentTrack.activeCues || [])) {
+                            const content = (cue as VTTCue)?.text || '';
+                            if (content) {
+                                this.#captions.classList.add('op-captions--on');
+                                const caption = document.createElement('span');
+                                caption.innerHTML = content;
+                                this.#captions.prepend(caption);
+                            }
+                        }
                     }
                 }
 

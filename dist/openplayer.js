@@ -935,6 +935,16 @@ var Captions = function () {
                 while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
                   __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
                 }
+                for (var _i3 = 0, _Array$from3 = Array.from(__classPrivateFieldGet(_this, _Captions_currentTrack, "f").activeCues || []); _i3 < _Array$from3.length; _i3++) {
+                  var cue = _Array$from3[_i3];
+                  var content = (cue === null || cue === void 0 ? void 0 : cue.text) || '';
+                  if (content) {
+                    __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
+                    var _caption = document.createElement('span');
+                    _caption.innerHTML = content;
+                    __classPrivateFieldGet(_this, _Captions_captions, "f").prepend(_caption);
+                  }
+                }
               }
             }
           } catch (err) {
@@ -974,8 +984,8 @@ var Captions = function () {
           return;
         }
         if (t.activeCues && ((_a = t.activeCues) === null || _a === void 0 ? void 0 : _a.length) > 0) {
-          for (var _i3 = 0, _Array$from3 = Array.from(t.activeCues); _i3 < _Array$from3.length; _i3++) {
-            var cue = _Array$from3[_i3];
+          for (var _i4 = 0, _Array$from4 = Array.from(t.activeCues); _i4 < _Array$from4.length; _i4++) {
+            var cue = _Array$from4[_i4];
             var content = (cue === null || cue === void 0 ? void 0 : cue.text) || '';
             if (content) {
               __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
@@ -1120,8 +1130,8 @@ var Captions = function () {
       __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-controls__captions--on');
       __classPrivateFieldSet(this, _Captions_currentTrack, track, "f");
       var options = document.querySelectorAll('.op-settings__submenu-item') || [];
-      for (var _i4 = 0, _Array$from4 = Array.from(options); _i4 < _Array$from4.length; _i4++) {
-        var option = _Array$from4[_i4];
+      for (var _i5 = 0, _Array$from5 = Array.from(options); _i5 < _Array$from5.length; _i5++) {
+        var option = _Array$from5[_i5];
         option.setAttribute('aria-checked', 'false');
       }
       (_b = (_a = document.querySelector(".op-subtitles__option[data-value=\"captions-".concat(track.language, "\"]"))) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-checked', 'true');

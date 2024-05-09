@@ -157,6 +157,15 @@ class Captions {
                         while (__classPrivateFieldGet(this, _Captions_captions, "f").lastChild) {
                             __classPrivateFieldGet(this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(this, _Captions_captions, "f").lastChild);
                         }
+                        for (const cue of Array.from(__classPrivateFieldGet(this, _Captions_currentTrack, "f").activeCues || [])) {
+                            const content = (cue === null || cue === void 0 ? void 0 : cue.text) || '';
+                            if (content) {
+                                __classPrivateFieldGet(this, _Captions_captions, "f").classList.add('op-captions--on');
+                                const caption = document.createElement('span');
+                                caption.innerHTML = content;
+                                __classPrivateFieldGet(this, _Captions_captions, "f").prepend(caption);
+                            }
+                        }
                     }
                 }
                 if (detachMenus) {
