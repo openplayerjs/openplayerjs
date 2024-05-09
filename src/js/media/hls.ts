@@ -122,7 +122,12 @@ class HlsMedia extends Native {
     }
 
     set level(level: string) {
-        this.#player.currentLevel = level;
+        const formattedLevel = Number(level);
+        if (formattedLevel && formattedLevel > -1) {
+            this.#player.loadLevel = formattedLevel;
+        } else {
+            this.#player.currentLevel = formattedLevel;
+        }
     }
 
     get level(): string {

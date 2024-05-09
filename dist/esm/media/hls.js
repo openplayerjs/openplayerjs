@@ -102,7 +102,13 @@ class HlsMedia extends Native {
         return levels;
     }
     set level(level) {
-        __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = level;
+        const formattedLevel = Number(level);
+        if (formattedLevel && formattedLevel > -1) {
+            __classPrivateFieldGet(this, _HlsMedia_player, "f").loadLevel = formattedLevel;
+        }
+        else {
+            __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = formattedLevel;
+        }
     }
     get level() {
         return __classPrivateFieldGet(this, _HlsMedia_player, "f") ? __classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : '-1';

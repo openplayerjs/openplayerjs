@@ -105,7 +105,7 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 -   [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy)
 -   [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra)
 -   [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN)
--   [🆕 - Add a custom element (watermark)](https://codepen.io/rafa8626/pen/JjLQNjo)
+-   [Add a custom element (watermark)](https://codepen.io/rafa8626/pen/JjLQNjo)
 
 ### Advanced
 

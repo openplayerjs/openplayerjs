@@ -4167,7 +4167,12 @@ var HlsMedia = function (_Native) {
       return hls_classPrivateFieldGet(this, _HlsMedia_player, "f") ? hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel : '-1';
     },
     set: function set(level) {
-      hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = level;
+      var formattedLevel = Number(level);
+      if (formattedLevel && formattedLevel > -1) {
+        hls_classPrivateFieldGet(this, _HlsMedia_player, "f").loadLevel = formattedLevel;
+      } else {
+        hls_classPrivateFieldGet(this, _HlsMedia_player, "f").currentLevel = formattedLevel;
+      }
     }
   }, {
     key: "_create",
