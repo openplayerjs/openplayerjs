@@ -8,7 +8,7 @@
         "ESNext"
       ],
       "allowSyntheticDefaultImports": true,
-      "types": ["vite/client", "node"],
+      "types": ["vite/client", "node", "jest", "jest-environment-puppeteer", "expect-puppeteer"],
       "allowJs": false,
       "target": "es6",
       "module": "ESNext",
@@ -30,7 +30,7 @@
   },
   "include": [
       "./src",
-      "./test"
+      "./_tests_"
   ],
   "exclude": [
       "node_modules",
