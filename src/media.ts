@@ -255,7 +255,7 @@ class Media {
     }
 
     private _getMediaFiles(): Source[] {
-        const mediaFiles = [];
+        const mediaFiles: Source[] = [];
         const sourceTags = this.#element.querySelectorAll('source');
         const nodeSource = this.#element.src;
 

@@ -157,6 +157,7 @@ class Levels implements PlayerComponent {
             }
         };
 
+        // @ts-ignore
         const connection = NAV?.connection || NAV?.mozConnection || NAV?.webkitConnection;
         this.#events.global.connection = (): void => {
             // Check connectivity to switch levels (only HTML5 since HLS and Dash can use adaptive streaming)
@@ -195,6 +196,7 @@ class Levels implements PlayerComponent {
 
     destroy(): void {
         const { detachMenus } = this.#player.getOptions();
+        // @ts-ignore
         const connection = NAV?.connection || NAV?.mozConnection || NAV?.webkitConnection;
 
         Object.keys(this.#events.media).forEach((event) => {

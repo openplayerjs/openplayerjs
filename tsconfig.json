@@ -2,14 +2,16 @@
   "buildOnSave": false,
   "compileOnSave": false,
   "compilerOptions": {
-      "allowSyntheticDefaultImports": true,
       "lib": [
-        "dom",
-        "es6"
+        "DOM",
+        "DOM.Iterable",
+        "ESNext"
       ],
-      "declaration": false,
-      "allowJs": true,
+      "allowSyntheticDefaultImports": true,
+      "types": ["vite/client", "node"],
+      "allowJs": false,
       "target": "es6",
+      "module": "ESNext",
       "noImplicitAny": true,
       "noUnusedLocals": true,
       "noUnusedParameters": true,
@@ -18,21 +20,21 @@
       "sourceMap": false,
       "skipLibCheck": true,
       "strict": true,
-      "moduleResolution": "node",
+      "moduleResolution": "Node",
+      "resolveJsonModule": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "esModuleInterop": true,
-      "strictPropertyInitialization": false
+      "isolatedModules": true,
+      "strictPropertyInitialization": false,
   },
   "include": [
-      "./src/js",
+      "./src",
       "./test"
   ],
   "exclude": [
       "node_modules",
-      "ts-dist",
       "dist",
-      "test",
-      "webpack.config.js"
+      "test"
   ],
 }

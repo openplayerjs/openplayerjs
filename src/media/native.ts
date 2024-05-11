@@ -7,7 +7,6 @@ abstract class Native {
 
     promise: Promise<unknown>;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #customPlayer: any;
 
     constructor(element: HTMLMediaElement, media: Source) {

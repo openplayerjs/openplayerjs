@@ -76,7 +76,6 @@ class Volume implements PlayerComponent {
         this.#button.setAttribute('aria-pressed', 'false');
         this.#button.setAttribute('aria-label', labels?.mute || '');
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateSlider = (element: any): void => {
             const mediaVolume = element.volume * 1;
             const vol = Math.floor(mediaVolume * 100);
@@ -87,7 +86,6 @@ class Volume implements PlayerComponent {
             this.#container.setAttribute('aria-valuetext', `${labels?.volume}: ${vol}`);
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const updateButton = (element: any): void => {
             const vol = element.volume;
             if (vol <= 0.5 && vol > 0) {

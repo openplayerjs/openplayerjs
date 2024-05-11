@@ -56,7 +56,7 @@ const player = new OpenPlayerJS('[player ID]', {
         }
     },
     detachMenus: false,
-    forceNative: true,
+    forceNative: false,
     mode: 'responsive',
     hidePlayBtnTimer: 350,
     step: 0,
@@ -119,7 +119,7 @@ player.init();
 | `Element`                      | Description                                                                                                                                                                                                                                                                                                                                             |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `detachMenus`                  | Allow items that have menu items inside `Settings` to be contained in their own separate menu; generally speaking, the menu will float above the control item it belongs to (by default, false).                                                                                                                                                        |
-| `forceNative`                  | Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js)                                                                                                                                                                                       |
+| `forceNative`                  | Player will favor native capabilities rather than third-party plugins (HLS.js will be used by default since now Android and iOS support it, but setting this to `true`, will enable native HLS in iOS.js)                                                                                                                                                                                       |
 | `mode`                         | Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)                                                                                                                                                                                                                                                     |
 | `hidePlayBtnTimer`             | Number of ms that takes the player to hide the Play button once it starts playing (video only). By default, `350`.                                                                                                                                                                                                                                      |
 | `step`                         | Number of seconds to rewind/forward media. By default, player will rewind/forward 5% of the total duration of media.                                                                                                                                                                                                                                    |

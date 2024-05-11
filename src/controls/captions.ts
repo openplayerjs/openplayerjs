@@ -37,6 +37,8 @@ class Captions implements PlayerComponent {
 
         this._formatMenuItems = this._formatMenuItems.bind(this);
         this._setDefaultTrack = this._setDefaultTrack.bind(this);
+        this._showCaptions = this._showCaptions.bind(this);
+        this._hideCaptions = this._hideCaptions.bind(this);
     }
 
     custom?: boolean | undefined;
@@ -127,9 +129,11 @@ class Captions implements PlayerComponent {
                 if (button.classList.contains('op-controls__captions--on')) {
                     button.classList.remove('op-controls__captions--on');
                     button.setAttribute('data-active-captions', 'off');
+                    this._hideCaptions();
                 } else {
                     button.classList.add('op-controls__captions--on');
-                    button.setAttribute('data-active-captions', this.#currentTrack?.language || '');
+                    button.setAttribute('data-active-captions', this.#currentTrack?.language || 'off');
+                    this._showCaptions();
                 }
 
                 for (const track of this.#mediaTrackList) {
@@ -170,22 +174,17 @@ class Captions implements PlayerComponent {
             if (option.closest(`#${this.#player.id}`) && option.classList.contains('op-subtitles__option')) {
                 const language = option.getAttribute('data-value')!.replace('captions-', '');
 
+                this._hideCaptions();
+
+                if (language === 'off') {
+                    this.#currentTrack = undefined;
+                }
+
                 for (const track of this.#mediaTrackList) {
                     track.mode = track.language === language ? 'showing' : 'hidden';
                     if (track.language === language) {
                         this.#currentTrack = track;
-                        while (this.#captions.lastChild) {
-                            this.#captions.removeChild(this.#captions.lastChild);
-                        }
-                        for (const cue of Array.from(this.#currentTrack.activeCues || [])) {
-                            const content = (cue as VTTCue)?.text || '';
-                            if (content) {
-                                this.#captions.classList.add('op-captions--on');
-                                const caption = document.createElement('span');
-                                caption.innerHTML = content;
-                                this.#captions.prepend(caption);
-                            }
-                        }
+                        this._showCaptions();
                     }
                 }
 
@@ -213,32 +212,14 @@ class Captions implements PlayerComponent {
         };
 
         this.#events.global.cuechange = (e: Event): void => {
-            while (this.#captions.lastChild) {
-                this.#captions.removeChild(this.#captions.lastChild);
-            }
+            this._hideCaptions();
             const t = e.target as TextTrack;
-            if (t.mode !== 'showing') {
+            if (t.mode !== 'showing' || this.#button.getAttribute('data-active-captions') === 'off') {
                 return;
             }
 
             if (t.activeCues && t.activeCues?.length > 0) {
-                for (const cue of Array.from(t.activeCues)) {
-                    const content = (cue as VTTCue)?.text || '';
-                    if (content) {
-                        this.#captions.classList.add('op-captions--on');
-                        const caption = document.createElement('span');
-                        caption.innerHTML = content;
-                        this.#captions.prepend(caption);
-                    } else {
-                        while (this.#captions.lastChild) {
-                            this.#captions.removeChild(this.#captions.lastChild);
-                        }
-                    }
-                }
-            } else {
-                while (this.#captions.lastChild) {
-                    this.#captions.removeChild(this.#captions.lastChild);
-                }
+                this._showCaptions();
             }
         };
 
@@ -331,6 +312,7 @@ class Captions implements PlayerComponent {
         this.#default = track.language;
         this.#button.setAttribute('data-active-captions', this.#default);
         this.#button.classList.add('op-controls__captions--on');
+        this.#captions.classList.add('op-captions--on');
         this.#currentTrack = track;
 
         const options = document.querySelectorAll('.op-settings__submenu-item') || [];
@@ -341,6 +323,26 @@ class Captions implements PlayerComponent {
         document
             .querySelector(`.op-subtitles__option[data-value="captions-${track.language}"]`)
             ?.parentElement?.setAttribute('aria-checked', 'true');
+    }
+
+    private _showCaptions() {
+        for (const cue of Array.from(this.#currentTrack?.activeCues || [])) {
+            const content = (cue as VTTCue)?.text || '';
+            if (content && this.#captions) {
+                const caption = document.createElement('span');
+                caption.innerHTML = content;
+                this.#captions.prepend(caption);
+                this.#captions.classList.add('op-captions--on');
+            } else {
+                this._hideCaptions()
+            }
+        }
+    }
+
+    private _hideCaptions() {
+        while (this.#captions?.lastChild) {
+            this.#captions.removeChild(this.#captions.lastChild);
+        }
     }
 }
 

@@ -3,6 +3,7 @@ version: 2.1
 orbs:
     node: circleci/node@4.7.0
     browser-tools: circleci/browser-tools@1.4.4
+    coveralls: coveralls/coveralls@2.2.1
 
 jobs:
     test_player:
@@ -13,9 +14,7 @@ jobs:
             - node/install-packages:
                   pkg-manager: npm
             - run: sudo apt-get update
-            - browser-tools/install-chrome:
-                  chrome-version: 116.0.5845.96 # TODO: remove until: https://github.com/CircleCI-Public/browser-tools-orb/issues/75
-                  replace-existing: true # TODO: remove until: https://github.com/CircleCI-Public/browser-tools-orb/issues/75
+            - browser-tools/install-chrome
             - browser-tools/install-chromedriver
             - run:
                   command: |
@@ -25,9 +24,7 @@ jobs:
             - run:
                   name: Headless Chrome tests
                   command: npm test
-            - run:
-                  name: Send results to Coverage
-                  command: npm run coveralls
+            - coveralls/upload
 
 workflows:
     end-to-end-tests:

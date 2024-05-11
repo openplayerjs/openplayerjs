@@ -9,5 +9,7 @@ declare class Captions implements PlayerComponent {
     addSettings(): SettingsItem | unknown;
     private _formatMenuItems;
     private _setDefaultTrack;
+    private _showCaptions;
+    private _hideCaptions;
 }
 export default Captions;

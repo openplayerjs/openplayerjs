@@ -4,19 +4,8 @@ declare global {
         WebKitMediaSource: any;
         WebKitSourceBuffer: any;
     }
-    interface NavigatorExtended extends Navigator {
-        connection?: NetworkInformation & {
-            effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
-        };
-        mozConnection?: NetworkInformation & {
-            effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
-        };
-        webkitConnection?: NetworkInformation & {
-            effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
-        };
-    }
 }
-export declare const NAV: NavigatorExtended | null;
+export declare const NAV: Navigator | null;
 export declare const UA: string | null;
 export declare const IS_IPAD: boolean;
 export declare const IS_IPHONE: boolean;
