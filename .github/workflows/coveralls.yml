@@ -22,4 +22,4 @@ jobs:
         npm test
 
     - name: Coveralls
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@v2.3.0
