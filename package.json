@@ -53,7 +53,7 @@
         "build:styles": "npx stylelint './styles/player.css' && postcss ./styles/player.css --use autoprefixer > ./dist/openplayer.css && postcss ./dist/openplayer.css > ./dist/openplayer.min.css",
         "create-d-types": "tsc -p tsconfig-types.json",
         "release": "npm run build && release-it",
-        "test": "jest"
+        "test": "jest --coverage"
     },
     "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
     "devDependencies": {
