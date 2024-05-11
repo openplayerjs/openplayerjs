@@ -3,8 +3,7 @@ on: ["push", "pull_request"]
 name: Test Coveralls
 
 jobs:
-
-  build:
+  test:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -22,4 +21,12 @@ jobs:
         npm test
 
     - name: Coveralls
+      uses: coverallsapp/github-action@v2.3.0
+
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
       uses: coverallsapp/github-action@v2.3.0
