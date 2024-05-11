@@ -4,7 +4,6 @@ name: Test Coveralls
 
 jobs:
   test:
-    name: Build
     runs-on: ubuntu-latest
     steps:
 
@@ -22,11 +21,6 @@ jobs:
 
     - name: Coveralls
       uses: coverallsapp/github-action@v2.3.0
-
-  finish:
-    needs: test
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@v2.3.0
+      with:
+          allow-empty: true
+      
