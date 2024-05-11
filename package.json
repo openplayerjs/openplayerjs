@@ -58,6 +58,7 @@
     "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
     "devDependencies": {
         "@release-it/conventional-changelog": "^8.0.1",
+        "@types/expect-puppeteer": "^5.0.6",
         "@types/jest": "^29.5.12",
         "@types/jest-environment-puppeteer": "^5.0.6",
         "@types/node": "^20.12.11",
