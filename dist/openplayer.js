@@ -4401,7 +4401,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
         },
         defaultLevel: void 0,
         detachMenus: false,
-        forceNative: true,
+        forceNative: false,
         height: 0,
         hidePlayBtnTimer: 350,
         labels: {
