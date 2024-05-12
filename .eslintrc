@@ -12,13 +12,13 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "ignorePatterns": ["types/**/*.ts", "src/css/*", "dist/**/*.js", "webpack.config.js", "postcss.config.js"],
+  "ignorePatterns": ["types/**/*.ts", "dist/**/*.js", "postcss.config.cjs"],
   "env": {
     "es6": true,
     "browser": true
   },
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "settings": {
