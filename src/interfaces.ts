@@ -144,7 +144,6 @@ export interface CustomMedia {
      * Store all the native methods to play custom media
      */
     media: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [key: string]: any;
     };
     /**
@@ -160,7 +159,6 @@ export interface CustomMedia {
 }
 
 export interface EventsList {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
 }
 

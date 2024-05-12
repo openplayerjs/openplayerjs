@@ -8,7 +8,6 @@ import * as source from './utils/media';
 class Media {
     #element: HTMLMediaElement;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #media: HTML5Media | HlsMedia | DashMedia | any;
 
     #files: Source[];
@@ -255,7 +254,7 @@ class Media {
     }
 
     private _getMediaFiles(): Source[] {
-        const mediaFiles = [];
+        const mediaFiles: Source[] = [];
         const sourceTags = this.#element.querySelectorAll('source');
         const nodeSource = this.#element.src;
 
@@ -294,7 +293,6 @@ class Media {
         return mediaFiles;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private _invoke(media: Source): HlsMedia | DashMedia | HTML5Media | any {
         const playHLSNatively =
             this.#element.canPlayType('application/vnd.apple.mpegurl') ||
@@ -315,7 +313,6 @@ class Media {
         }
 
         if (Object.keys(this.#customMedia.media).length) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let customRef: any;
             this.#customMedia.rules.forEach((rule) => {
                 const type = rule(media.src);

@@ -4,11 +4,9 @@ import { addEvent, loadScript } from '../utils/general';
 import { isFlvSource } from '../utils/media';
 import Native from './native';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const flvjs: any;
 
 class FlvMedia extends Native {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #player: any;
 
     // @see https://github.com/video-dev/hls.js/blob/master/src/events.js

@@ -19,7 +19,7 @@ import { isAutoplaySupported, predictMimeType } from './utils/media';
 interface P {
     loader: HTMLSpanElement;
     playBtn: HTMLButtonElement;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     proxy: any;
     init(): Promise<void>;
     load(): Promise<void> | void;
@@ -76,7 +76,6 @@ class Player {
 
     playBtn: HTMLButtonElement;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     proxy: any = null;
 
     #controls: Controls;
@@ -597,7 +596,6 @@ class Player {
             this.#uid = this.#element.id;
             this.#element.removeAttribute('id');
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const cryptoLib = crypto as any;
             const encryption =
                 typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
@@ -988,9 +986,8 @@ export default Player;
 
 // Expose element globally.
 if (typeof window !== 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).OpenPlayer = Player;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (window as any).OpenPlayerJS = Player;
     Player.init();
 }

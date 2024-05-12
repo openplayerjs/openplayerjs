@@ -123,7 +123,6 @@ class Fullscreen implements PlayerComponent {
             }
             document.body.classList.remove('op-fullscreen__on');
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const video = this.#player.getElement() as any;
             this.#fullscreenWidth = window.screen.width;
             this.#fullscreenHeight = window.screen.height;
@@ -146,7 +145,6 @@ class Fullscreen implements PlayerComponent {
         }
 
         if (typeof window !== 'undefined' && (IS_ANDROID || IS_IPHONE)) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { screen } = window as any;
             if (screen.orientation && !this.#isFullscreen) {
                 screen.orientation.lock('landscape');

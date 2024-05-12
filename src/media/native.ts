@@ -7,7 +7,6 @@ abstract class Native {
 
     promise: Promise<unknown>;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #customPlayer: any;
 
     constructor(element: HTMLMediaElement, media: Source) {
@@ -34,12 +33,10 @@ abstract class Native {
 
     abstract get levels(): Level[];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     set instance(customPlayer: any) {
         this.#customPlayer = customPlayer;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     get instance(): any {
         return this.#customPlayer;
     }

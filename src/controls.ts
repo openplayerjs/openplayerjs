@@ -25,10 +25,8 @@ class Controls implements PlayerComponent {
 
     #player: Player;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #items: any;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #controlEls: any = {
         Captions,
         Fullscreen,
@@ -415,8 +413,8 @@ class Controls implements PlayerComponent {
                     s.title ? `title="${s.title}"` : ''
                 } role="menuitemradio">
                     <div class="op-settings__menu-label" id="${s.id}" data-value="${item.id}-${s.id}">${itemIcon} ${
-                    s.label
-                }</div>
+                        s.label
+                    }</div>
                 </div>`;
             });
 

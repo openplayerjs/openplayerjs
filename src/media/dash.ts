@@ -4,11 +4,9 @@ import { addEvent, loadScript } from '../utils/general';
 import { isDashSource } from '../utils/media';
 import Native from './native';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const dashjs: any;
 
 class DashMedia extends Native {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     #player: any;
 
     // @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html
