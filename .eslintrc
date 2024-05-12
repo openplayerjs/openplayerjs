@@ -3,18 +3,25 @@
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint",
-    "prettier"
+    "prettier",
+    "jest"
   ],
   "extends": [
     "eslint:recommended",
     "airbnb-base",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:jest/recommended",
     "prettier"
   ],
   "ignorePatterns": ["types/**/*.ts", "dist/**/*.js", "postcss.config.cjs"],
   "env": {
     "es6": true,
+    "browser": true,
+    "jest": true
+  },
+  "globals": {
+    "page": true,
     "browser": true
   },
   "parserOptions": {
