@@ -1,0 +1,23 @@
+on: ['push', 'pull_request']
+
+name: Test Coveralls
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+
+            - name: Use Node.js 20.x
+              uses: actions/setup-node@v4.0.2
+              with:
+                  node-version: 20.x
+
+            - name: npm install, make test-coverage
+              run: |
+                  npm install
+                  npm test
+            - name: Coveralls
+              uses: coverallsapp/github-action@v2.3.0
+              with:
+                  allow-empty: true

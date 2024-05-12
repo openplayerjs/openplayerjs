@@ -120,7 +120,7 @@ class Player {
         },
         defaultLevel: undefined,
         detachMenus: false,
-        forceNative: true,
+        forceNative: false,
         height: 0,
         hidePlayBtnTimer: 350,
         labels: {

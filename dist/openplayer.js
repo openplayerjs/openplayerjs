@@ -792,6 +792,8 @@ var Captions = function () {
     __classPrivateFieldSet(this, _Captions_controlLayer, layer, "f");
     this._formatMenuItems = this._formatMenuItems.bind(this);
     this._setDefaultTrack = this._setDefaultTrack.bind(this);
+    this._showCaptions = this._showCaptions.bind(this);
+    this._hideCaptions = this._hideCaptions.bind(this);
   }
   _createClass(Captions, [{
     key: "create",
@@ -877,9 +879,11 @@ var Captions = function () {
           if (button.classList.contains('op-controls__captions--on')) {
             button.classList.remove('op-controls__captions--on');
             button.setAttribute('data-active-captions', 'off');
+            _this._hideCaptions();
           } else {
             button.classList.add('op-controls__captions--on');
-            button.setAttribute('data-active-captions', ((_a = __classPrivateFieldGet(_this, _Captions_currentTrack, "f")) === null || _a === void 0 ? void 0 : _a.language) || '');
+            button.setAttribute('data-active-captions', ((_a = __classPrivateFieldGet(_this, _Captions_currentTrack, "f")) === null || _a === void 0 ? void 0 : _a.language) || 'off');
+            _this._showCaptions();
           }
           var _iterator2 = _createForOfIteratorHelper(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")),
             _step2;
@@ -924,6 +928,10 @@ var Captions = function () {
         var option = e.target;
         if (option.closest("#".concat(__classPrivateFieldGet(_this, _Captions_player, "f").id)) && option.classList.contains('op-subtitles__option')) {
           var language = option.getAttribute('data-value').replace('captions-', '');
+          _this._hideCaptions();
+          if (language === 'off') {
+            __classPrivateFieldSet(_this, _Captions_currentTrack, undefined, "f");
+          }
           var _iterator3 = _createForOfIteratorHelper(__classPrivateFieldGet(_this, _Captions_mediaTrackList, "f")),
             _step3;
           try {
@@ -932,19 +940,7 @@ var Captions = function () {
               _track2.mode = _track2.language === language ? 'showing' : 'hidden';
               if (_track2.language === language) {
                 __classPrivateFieldSet(_this, _Captions_currentTrack, _track2, "f");
-                while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
-                  __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
-                }
-                for (var _i3 = 0, _Array$from3 = Array.from(__classPrivateFieldGet(_this, _Captions_currentTrack, "f").activeCues || []); _i3 < _Array$from3.length; _i3++) {
-                  var cue = _Array$from3[_i3];
-                  var content = (cue === null || cue === void 0 ? void 0 : cue.text) || '';
-                  if (content) {
-                    __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
-                    var _caption = document.createElement('span');
-                    _caption.innerHTML = content;
-                    __classPrivateFieldGet(_this, _Captions_captions, "f").prepend(_caption);
-                  }
-                }
+                _this._showCaptions();
               }
             }
           } catch (err) {
@@ -976,32 +972,13 @@ var Captions = function () {
       };
       __classPrivateFieldGet(this, _Captions_events, "f").global.cuechange = function (e) {
         var _a;
-        while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
-          __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
-        }
+        _this._hideCaptions();
         var t = e.target;
-        if (t.mode !== 'showing') {
+        if (t.mode !== 'showing' || __classPrivateFieldGet(_this, _Captions_button, "f").getAttribute('data-active-captions') === 'off') {
           return;
         }
         if (t.activeCues && ((_a = t.activeCues) === null || _a === void 0 ? void 0 : _a.length) > 0) {
-          for (var _i4 = 0, _Array$from4 = Array.from(t.activeCues); _i4 < _Array$from4.length; _i4++) {
-            var cue = _Array$from4[_i4];
-            var content = (cue === null || cue === void 0 ? void 0 : cue.text) || '';
-            if (content) {
-              __classPrivateFieldGet(_this, _Captions_captions, "f").classList.add('op-captions--on');
-              var caption = document.createElement('span');
-              caption.innerHTML = content;
-              __classPrivateFieldGet(_this, _Captions_captions, "f").prepend(caption);
-            } else {
-              while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
-                __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
-              }
-            }
-          }
-        } else {
-          while (__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild) {
-            __classPrivateFieldGet(_this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(_this, _Captions_captions, "f").lastChild);
-          }
+          _this._showCaptions();
         }
       };
       if (detachMenus) {
@@ -1128,13 +1105,39 @@ var Captions = function () {
       __classPrivateFieldSet(this, _Captions_default, track.language, "f");
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('data-active-captions', __classPrivateFieldGet(this, _Captions_default, "f"));
       __classPrivateFieldGet(this, _Captions_button, "f").classList.add('op-controls__captions--on');
+      __classPrivateFieldGet(this, _Captions_captions, "f").classList.add('op-captions--on');
       __classPrivateFieldSet(this, _Captions_currentTrack, track, "f");
       var options = document.querySelectorAll('.op-settings__submenu-item') || [];
-      for (var _i5 = 0, _Array$from5 = Array.from(options); _i5 < _Array$from5.length; _i5++) {
-        var option = _Array$from5[_i5];
+      for (var _i3 = 0, _Array$from3 = Array.from(options); _i3 < _Array$from3.length; _i3++) {
+        var option = _Array$from3[_i3];
         option.setAttribute('aria-checked', 'false');
       }
       (_b = (_a = document.querySelector(".op-subtitles__option[data-value=\"captions-".concat(track.language, "\"]"))) === null || _a === void 0 ? void 0 : _a.parentElement) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-checked', 'true');
+    }
+  }, {
+    key: "_showCaptions",
+    value: function _showCaptions() {
+      var _a;
+      for (var _i4 = 0, _Array$from4 = Array.from(((_a = __classPrivateFieldGet(this, _Captions_currentTrack, "f")) === null || _a === void 0 ? void 0 : _a.activeCues) || []); _i4 < _Array$from4.length; _i4++) {
+        var cue = _Array$from4[_i4];
+        var content = (cue === null || cue === void 0 ? void 0 : cue.text) || '';
+        if (content && __classPrivateFieldGet(this, _Captions_captions, "f")) {
+          var caption = document.createElement('span');
+          caption.innerHTML = content;
+          __classPrivateFieldGet(this, _Captions_captions, "f").prepend(caption);
+          __classPrivateFieldGet(this, _Captions_captions, "f").classList.add('op-captions--on');
+        } else {
+          this._hideCaptions();
+        }
+      }
+    }
+  }, {
+    key: "_hideCaptions",
+    value: function _hideCaptions() {
+      var _a;
+      while ((_a = __classPrivateFieldGet(this, _Captions_captions, "f")) === null || _a === void 0 ? void 0 : _a.lastChild) {
+        __classPrivateFieldGet(this, _Captions_captions, "f").removeChild(__classPrivateFieldGet(this, _Captions_captions, "f").lastChild);
+      }
     }
   }]);
   return Captions;
@@ -5967,7 +5970,7 @@ var Player = function () {
       },
       defaultLevel: undefined,
       detachMenus: false,
-      forceNative: true,
+      forceNative: false,
       height: 0,
       hidePlayBtnTimer: 350,
       labels: {

@@ -117,9 +117,9 @@ player.init();
 ### Configuration options
 
 | `Element`                      | Description                                                                                                                                                                                                                                                                                                                                             |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `detachMenus`                  | Allow items that have menu items inside `Settings` to be contained in their own separate menu; generally speaking, the menu will float above the control item it belongs to (by default, false).                                                                                                                                                        |
-| `forceNative`                  | Player will favor native capabilities rather than third-party plugins (HLS can play natively in Android and iOS, but setting this to `false`, will enable hls.js)                                                                                                                                                                                       |
+| `forceNative`                  | Player will favor native capabilities rather than third-party plugins (HLS.js will be used by default since now Android and iOS support it, but setting this to `true`, will enable native HLS in iOS.js)                                                                                                                                               |
 | `mode`                         | Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)                                                                                                                                                                                                                                                     |
 | `hidePlayBtnTimer`             | Number of ms that takes the player to hide the Play button once it starts playing (video only). By default, `350`.                                                                                                                                                                                                                                      |
 | `step`                         | Number of seconds to rewind/forward media. By default, player will rewind/forward 5% of the total duration of media.                                                                                                                                                                                                                                    |
@@ -174,7 +174,7 @@ To see a working example of this option using both scenarios described above, ch
 
 Given the changes performed in browser for security purposes, captions and subtitle files will need to have CORS permissions if they come from a different domain in order to be supported by OpenPlayerJS.
 
-OpenPlayerJS supports *Web Video Text Tracks Format* (WebVTT) and *SubRip Subtitle* (SRT) files for captions and subtitles; however, WebVTT files are encouraged since they are fully compatible with iOS devices, specially when using full screen mode in smartphones. The reason behind this is because iOS will default to the native phone media player, and its player doesn't have support for other formats in terms of captions/subtitles.
+OpenPlayerJS supports _Web Video Text Tracks Format_ (WebVTT) and _SubRip Subtitle_ (SRT) files for captions and subtitles; however, WebVTT files are encouraged since they are fully compatible with iOS devices, specially when using full screen mode in smartphones. The reason behind this is because iOS will default to the native phone media player, and its player doesn't have support for other formats in terms of captions/subtitles.
 
 Also, if you are planning to have full support for captions/subtitles across devices, it is important to note that, for Safari, **at least one track tag needs to be present**. So, if you are looking to add captions/subtitles dynamically, make sure that you have a default track element with an empty.vtt file as source. That way, the empty file won't be displayed at all and the dynamically added ones will be considered. For example:
 
@@ -190,13 +190,13 @@ Also, if you are planning to have full support for captions/subtitles across dev
         src: '/path/to/english.vtt',
         kind: 'captions',
         label: 'English',
-        default: true
+        default: true,
     });
     player.addCaptions({
         srclang: 'ja',
         src: '/path/to/ja.vtt',
         kind: 'subtitles',
-        label: '日本語'
+        label: '日本語',
     });
     player.init();
 </script>
@@ -253,7 +253,7 @@ Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can 
 ```javascript
 import React, { useEffect } from 'react';
 import OpenPlayerJS from 'openplayerjs';
-import 'openplayerjs/dist/openplayer.css'
+import 'openplayerjs/dist/openplayer.css';
 
 export default function Sample() {
     useEffect(() => {
@@ -263,8 +263,8 @@ export default function Sample() {
 
     return (
         <div>
-            <video id='player' className='op-player__media' controls playsInline>
-                <source src='https://my.test.com/video.mp4' type='video/mp4' />
+            <video id="player" className="op-player__media" controls playsInline>
+                <source src="https://my.test.com/video.mp4" type="video/mp4" />
             </video>
         </div>
     );
