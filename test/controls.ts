@@ -1,5 +1,5 @@
-// import Controls from '../src/js/controls';
-// import OpenPlayerJS from '../src/js/player';
+// import Controls from '../src/controls';
+// import OpenPlayerJS from '../src/player';
 // import './helper';
 
 // describe('controls', () => {

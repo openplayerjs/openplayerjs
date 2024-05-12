@@ -25,7 +25,7 @@
       "strictPropertyInitialization": false
   },
   "include": [
-      "./src/js",
+      "./src",
       "./test"
   ],
   "exclude": [

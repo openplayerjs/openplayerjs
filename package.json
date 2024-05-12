@@ -43,7 +43,7 @@
     "scripts": {
         "build": "npm run build:styles && npm run build:sources && npm test",
         "build:sources": "webpack --mode=production && npm run create-esm && npm run create-d-types",
-        "build:styles": "npx stylelint './src/css/player.css' && postcss ./src/css/player.css --use autoprefixer > ./dist/openplayer.css && postcss ./dist/openplayer.css > ./dist/openplayer.min.css",
+        "build:styles": "npx stylelint './styles/player.css' && postcss ./styles/player.css --use autoprefixer > ./dist/openplayer.css && postcss ./dist/openplayer.css > ./dist/openplayer.min.css",
         "create-d-types": "tsc -p tsconfig-types.json",
         "create-esm": "tsc -p tsconfig-esm.json",
         "release": "npm run build && release-it",

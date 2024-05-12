@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import * as media from '../../src/js/utils/media';
+import * as media from '../../src/utils/media';
 import '../helper';
 
 describe('utils/media', () => {

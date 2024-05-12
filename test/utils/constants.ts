@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import * as constants from '../../src/js/utils/constants';
+import * as constants from '../../src/utils/constants';
 import '../helper';
 
 describe('utils/constants', () => {
