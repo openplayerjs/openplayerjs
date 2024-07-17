@@ -113,7 +113,7 @@
     },
     "dependencies": {
         "auto-changelog": "^2.4.0",
-        "core-js": "^3.22.8"
+        "core-js": "^3.37.1"
     },
     "engines": {
         "node": ">=16.0.0"
