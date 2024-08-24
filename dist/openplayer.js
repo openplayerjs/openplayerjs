@@ -6528,9 +6528,7 @@ var Player = function () {
         player_classPrivateFieldSet(this, _Player_uid, player_classPrivateFieldGet(this, _Player_element, "f").id, "f");
         player_classPrivateFieldGet(this, _Player_element, "f").removeAttribute('id');
       } else {
-        var cryptoLib = crypto;
-        var encryption = typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
-        player_classPrivateFieldSet(this, _Player_uid, "op_".concat(encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)), "f");
+        player_classPrivateFieldSet(this, _Player_uid, "op_".concat(crypto.getRandomValues(new Uint32Array(1))[0].toString(36).substring(2, 9)), "f");
       }
       if (player_classPrivateFieldGet(this, _Player_element, "f").parentElement) {
         player_classPrivateFieldGet(this, _Player_element, "f").parentElement.id = player_classPrivateFieldGet(this, _Player_uid, "f");

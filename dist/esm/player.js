@@ -493,9 +493,7 @@ class Player {
             __classPrivateFieldGet(this, _Player_element, "f").removeAttribute('id');
         }
         else {
-            const cryptoLib = crypto;
-            const encryption = typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
-            __classPrivateFieldSet(this, _Player_uid, `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`, "f");
+            __classPrivateFieldSet(this, _Player_uid, `op_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36).substring(2, 9)}`, "f");
         }
         if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
             __classPrivateFieldGet(this, _Player_element, "f").parentElement.id = __classPrivateFieldGet(this, _Player_uid, "f");
