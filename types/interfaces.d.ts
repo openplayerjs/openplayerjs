@@ -172,7 +172,7 @@ export interface Level {
     readonly id: string;
     readonly label: string;
 }
-export declare type PlayerLayers = {
+export type PlayerLayers = {
     left?: string[];
     middle?: string[];
     right?: string[];
@@ -184,10 +184,10 @@ export declare type PlayerLayers = {
     'bottom-middle'?: string[];
     'bottom-left'?: string[];
 };
-export declare type Languages = {
+export type Languages = {
     [key: string]: string;
 };
-export declare type PlayerLabels = {
+export type PlayerLabels = {
     auto?: string;
     captions?: string;
     click?: string;

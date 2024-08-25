@@ -4,15 +4,18 @@ declare global {
         WebKitMediaSource: any;
         WebKitSourceBuffer: any;
     }
+    interface NetworkInfo extends EventTarget {
+        readonly type: 'slow' | '2g' | '3g' | '4g' | 'fast';
+    }
     interface NavigatorExtended extends Navigator {
-        connection?: NetworkInformation & {
-            effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
+        connection?: NetworkInfo & {
+            effectiveType?: 'slow' | '2g' | '3g' | '4g' | 'fast';
         };
-        mozConnection?: NetworkInformation & {
-            effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
+        mozConnection?: NetworkInfo & {
+            effectiveType?: 'slow' | '2g' | '3g' | '4g' | 'fast';
         };
-        webkitConnection?: NetworkInformation & {
-            effectiveType?: 'slow-2g' | '2g' | '3g' | '4g';
+        webkitConnection?: NetworkInfo & {
+            effectiveType?: 'slow' | '2g' | '3g' | '4g' | 'fast';
         };
     }
 }

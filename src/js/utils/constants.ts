@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
     interface Window {
@@ -7,14 +6,14 @@ declare global {
         WebKitSourceBuffer: any;
     }
 
-    // @ts-ignore
+    interface NetworkInfo extends EventTarget {
+        readonly type: 'slow' | '2g' | '3g' | '4g' | 'fast';
+    }
+
     interface NavigatorExtended extends Navigator {
-        // @ts-ignore
-        connection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
-        // @ts-ignore
-        mozConnection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
-        // @ts-ignore
-        webkitConnection?: NetworkInformation & { effectiveType?: 'slow-2g' | '2g' | '3g' | '4g' };
+        connection?: NetworkInfo & { effectiveType?: 'slow' | '2g' | '3g' | '4g' | 'fast' };
+        mozConnection?: NetworkInfo & { effectiveType?: 'slow' | '2g' | '3g' | '4g' | 'fast' };
+        webkitConnection?: NetworkInfo & { effectiveType?: 'slow' | '2g' | '3g' | '4g' | 'fast' };
     }
 }
 
