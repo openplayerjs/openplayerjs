@@ -1,24 +1,13 @@
 (function(global, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, global.openplayerjs = factory());
 })(this, function() {
-  "use strict";var __accessCheck = (obj, member, msg) => {
-  if (!member.has(obj))
-    throw TypeError("Cannot " + msg);
+  "use strict";var __typeError = (msg) => {
+  throw TypeError(msg);
 };
-var __privateGet = (obj, member, getter) => {
-  __accessCheck(obj, member, "read from private field");
-  return getter ? getter.call(obj) : member.get(obj);
-};
-var __privateAdd = (obj, member, value) => {
-  if (member.has(obj))
-    throw TypeError("Cannot add the same private member more than once");
-  member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
-};
-var __privateSet = (obj, member, value, setter) => {
-  __accessCheck(obj, member, "write to private field");
-  setter ? setter.call(obj, value) : member.set(obj, value);
-  return value;
-};
+var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
+var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
+var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 var __privateWrapper = (obj, member, setter, getter) => ({
   set _(value) {
     __privateSet(obj, member, value, setter);
@@ -28,7 +17,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 
-  var _player, _button, _captions, _menu, _events, _mediaTrackList, _hasTracks, _currentTrack, _default, _controlPosition, _controlLayer, _player2, _isFullscreen, _button2, _fullscreenEvents, _fullscreenWidth, _fullscreenHeight, _clickEvent, _controlPosition2, _controlLayer2, _player3, _button3, _menu2, _events2, _levels, _defaultLevel, _controlPosition3, _controlLayer3, _player4, _button4, _events3, _controlPosition4, _controlLayer4, _player5, _progress, _slider, _buffer, _played, _tooltip, _events4, _forcePause, _controlPosition5, _controlLayer5, _player6, _submenu, _button5, _menu3, _events5, _originalOutput, _controlPosition6, _controlLayer6, _player7, _currentTime, _delimiter, _duration, _container, _events6, _controlPosition7, _controlLayer7, _player8, _button6, _container2, _display, _slider2, _events7, _volume, _controlPosition8, _controlLayer8, _settings, _timer, _controls, _player9, _items, _controlEls, _customPlayer, _player10, _events8, _options, _player11, _events9, _options2, _player12, _events10, _recoverDecodingErrorDate, _recoverSwapAudioCodecDate, _options3, _autoplay, _currentLevel, _levelList, _isStreaming, _retryCount, _started, _timer2, _element, _media, _files, _promisePlay, _options4, _autoplay2, _mediaLoaded, _customMedia, _currentSrc, _ended, _done, _active, _started2, _intervalTimer, _volume2, _muted, _duration2, _currentTime2, _manager, _player13, _media2, _element2, _events11, _ads, _promise, _loader, _container3, _customClickContainer, _skipElement, _displayContainer, _request, _autostart, _autostartMuted, _playTriggered, _options5, _currentIndex, _originalVolume, _preloadContent, _lastTimePaused, _mediaSources, _mediaStarted, _adEvent, _controls2, _adsInstance, _uid, _element3, _ads2, _media3, _events12, _autoplay3, _volume3, _canAutoplay, _canAutoplayMuted, _processedAutoplay, _options6, _customElements, _fullscreen, _defaultOptions;
+  var _player, _button, _captions, _menu, _events, _hasTracks, _currentTrack, _default, _controlPosition, _controlLayer, _player2, _isFullscreen, _button2, _fullscreenEvents, _fullscreenWidth, _fullscreenHeight, _clickEvent, _controlPosition2, _controlLayer2, _player3, _button3, _menu2, _events2, _levels, _defaultLevel, _controlPosition3, _controlLayer3, _player4, _button4, _events3, _controlPosition4, _controlLayer4, _player5, _progress, _slider, _buffer, _played, _tooltip, _events4, _forcePause, _controlPosition5, _controlLayer5, _player6, _submenu, _button5, _menu3, _events5, _originalOutput, _controlPosition6, _controlLayer6, _player7, _currentTime, _delimiter, _duration, _container, _events6, _controlPosition7, _controlLayer7, _player8, _button6, _container2, _display, _slider2, _events7, _volume, _controlPosition8, _controlLayer8, _settings, _timer, _controls, _player9, _items, _controlEls, _customPlayer, _player10, _events8, _options, _player11, _events9, _options2, _player12, _events10, _recoverDecodingErrorDate, _recoverSwapAudioCodecDate, _options3, _autoplay, _currentLevel, _levelList, _isStreaming, _retryCount, _started, _timer2, _element, _media, _files, _promisePlay, _options4, _autoplay2, _mediaLoaded, _customMedia, _currentSrc, _ended, _done, _active, _started2, _intervalTimer, _volume2, _muted, _duration2, _currentTime2, _manager, _player13, _media2, _element2, _events11, _ads, _promise, _loader, _container3, _customClickContainer, _skipElement, _displayContainer, _request, _autostart, _autostartMuted, _playTriggered, _options5, _currentIndex, _originalVolume, _preloadContent, _lastTimePaused, _mediaSources, _mediaStarted, _adEvent, _controls2, _adsInstance, _uid, _element3, _ads2, _media3, _events12, _autoplay3, _volume3, _canAutoplay, _canAutoplayMuted, _processedAutoplay, _options6, _customElements, _fullscreen, _defaultOptions;
   const NAV = typeof window !== "undefined" ? window.navigator : null;
   const UA = NAV ? NAV.userAgent.toLowerCase() : null;
   const IS_IPHONE = UA ? /iphone/i.test(UA) && !window.MSStream : false;
@@ -137,21 +126,20 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
   class Captions {
     constructor(player, position, layer) {
-      __privateAdd(this, _player, void 0);
-      __privateAdd(this, _button, void 0);
-      __privateAdd(this, _captions, void 0);
-      __privateAdd(this, _menu, void 0);
+      __privateAdd(this, _player);
+      __privateAdd(this, _button);
+      __privateAdd(this, _captions);
+      __privateAdd(this, _menu);
       __privateAdd(this, _events, {
         button: {},
         global: {},
         media: {}
       });
-      __privateAdd(this, _mediaTrackList, void 0);
-      __privateAdd(this, _hasTracks, void 0);
-      __privateAdd(this, _currentTrack, void 0);
+      __privateAdd(this, _hasTracks);
+      __privateAdd(this, _currentTrack);
       __privateAdd(this, _default, "off");
-      __privateAdd(this, _controlPosition, void 0);
-      __privateAdd(this, _controlLayer, void 0);
+      __privateAdd(this, _controlPosition);
+      __privateAdd(this, _controlLayer);
       __privateSet(this, _player, player);
       __privateSet(this, _controlPosition, position);
       __privateSet(this, _controlLayer, layer);
@@ -162,13 +150,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
     }
     create() {
       var _a;
-      const { textTracks } = __privateGet(this, _player).getElement();
       const { labels, detachMenus } = __privateGet(this, _player).getOptions();
-      __privateSet(this, _mediaTrackList, Object.keys(textTracks).map((k) => textTracks[Number(k)]).filter((el) => ["subtitles", "captions"].includes(el.kind) && el.language));
-      __privateSet(this, _hasTracks, !!__privateGet(this, _mediaTrackList).length);
-      if (!__privateGet(this, _hasTracks)) {
-        return;
-      }
       __privateSet(this, _button, document.createElement("button"));
       __privateGet(this, _button).className = `op-controls__captions op-control__${__privateGet(this, _controlPosition)}`;
       __privateGet(this, _button).tabIndex = 0;
@@ -195,7 +177,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
         itemContainer.className = `op-controls__container op-control__${__privateGet(this, _controlPosition)}`;
         itemContainer.append(__privateGet(this, _button), __privateGet(this, _menu));
         __privateGet(this, _player).getControls().getLayer(__privateGet(this, _controlLayer)).append(itemContainer);
-        for (const track of __privateGet(this, _mediaTrackList)) {
+        for (const track of __privateGet(this, _player).getElement().textTracks) {
           const item = document.createElement("div");
           const label = ((_a = labels == null ? void 0 : labels.lang) == null ? void 0 : _a[track.language]) || null;
           item.className = "op-settings__submenu-item";
@@ -211,134 +193,139 @@ var __privateWrapper = (obj, member, setter, getter) => ({
       } else {
         __privateGet(this, _player).getControls().getLayer(__privateGet(this, _controlLayer)).append(__privateGet(this, _button));
       }
-      __privateGet(this, _events).button.click = (e) => {
-        var _a2;
-        const button = e.target;
-        if (detachMenus) {
-          const menus = __privateGet(this, _player).getContainer().querySelectorAll(".op-settings");
-          for (const menuItem of Array.from(menus)) {
-            if (menuItem !== __privateGet(this, _menu)) {
-              menuItem.setAttribute("aria-hidden", "true");
+      ["play", "loadeddata"].forEach((event) => {
+        __privateGet(this, _events).button.click = (e) => {
+          var _a2;
+          const button = e.target;
+          if (detachMenus) {
+            const menus = __privateGet(this, _player).getContainer().querySelectorAll(".op-settings");
+            for (const menuItem of Array.from(menus)) {
+              if (menuItem !== __privateGet(this, _menu)) {
+                menuItem.setAttribute("aria-hidden", "true");
+              }
             }
-          }
-          if (__privateGet(this, _menu).getAttribute("aria-hidden") === "true") {
-            __privateGet(this, _menu).setAttribute("aria-hidden", "false");
-          } else {
-            __privateGet(this, _menu).setAttribute("aria-hidden", "true");
-          }
-        } else {
-          button.setAttribute("aria-pressed", "true");
-          if (button.classList.contains("op-controls__captions--on")) {
-            button.classList.remove("op-controls__captions--on");
-            button.setAttribute("data-active-captions", "off");
-            this._hideCaptions();
-          } else {
-            button.classList.add("op-controls__captions--on");
-            button.setAttribute("data-active-captions", ((_a2 = __privateGet(this, _currentTrack)) == null ? void 0 : _a2.language) || "off");
-            this._showCaptions();
-          }
-          for (const track of __privateGet(this, _mediaTrackList)) {
-            track.mode = button.getAttribute("data-active-captions") === track.language ? "showing" : "hidden";
-          }
-        }
-      };
-      __privateGet(this, _events).button.mouseover = () => {
-        if (!IS_IOS && !IS_ANDROID && detachMenus) {
-          const menus = __privateGet(this, _player).getContainer().querySelectorAll(".op-settings");
-          for (let i = 0, total = menus.length; i < total; ++i) {
-            if (menus[i] !== __privateGet(this, _menu)) {
-              menus[i].setAttribute("aria-hidden", "true");
+            if (__privateGet(this, _menu).getAttribute("aria-hidden") === "true") {
+              __privateGet(this, _menu).setAttribute("aria-hidden", "false");
+            } else {
+              __privateGet(this, _menu).setAttribute("aria-hidden", "true");
             }
-          }
-          if (__privateGet(this, _menu).getAttribute("aria-hidden") === "true") {
-            __privateGet(this, _menu).setAttribute("aria-hidden", "false");
-          }
-        }
-      };
-      __privateGet(this, _events).button.mouseout = () => {
-        if (!IS_IOS && !IS_ANDROID && detachMenus) {
-          const menus = __privateGet(this, _player).getContainer().querySelectorAll(".op-settings");
-          for (let i = 0, total = menus.length; i < total; ++i) {
-            menus[i].setAttribute("aria-hidden", "true");
-          }
-          if (__privateGet(this, _menu).getAttribute("aria-hidden") === "false") {
-            __privateGet(this, _menu).setAttribute("aria-hidden", "true");
-          }
-        }
-      };
-      __privateGet(this, _button).addEventListener("click", __privateGet(this, _events).button.click, EVENT_OPTIONS);
-      __privateGet(this, _events).global.click = (e) => {
-        const option = e.target;
-        if (option.closest(`#${__privateGet(this, _player).id}`) && option.classList.contains("op-subtitles__option")) {
-          const language = option.getAttribute("data-value").replace("captions-", "");
-          this._hideCaptions();
-          if (language === "off") {
-            __privateSet(this, _currentTrack, void 0);
-          }
-          for (const track of __privateGet(this, _mediaTrackList)) {
-            track.mode = track.language === language ? "showing" : "hidden";
-            if (track.language === language) {
-              __privateSet(this, _currentTrack, track);
+          } else {
+            button.setAttribute("aria-pressed", "true");
+            if (button.classList.contains("op-controls__captions--on")) {
+              button.classList.remove("op-controls__captions--on");
+              button.setAttribute("data-active-captions", "off");
+              this._hideCaptions();
+            } else {
+              button.classList.add("op-controls__captions--on");
+              button.setAttribute("data-active-captions", ((_a2 = __privateGet(this, _currentTrack)) == null ? void 0 : _a2.language) || "off");
               this._showCaptions();
             }
+            for (const track of __privateGet(this, _player).getElement().textTracks) {
+              track.mode = button.getAttribute("data-active-captions") === track.language ? "showing" : "hidden";
+            }
           }
-          if (detachMenus) {
-            if (__privateGet(this, _button).classList.contains("op-controls__captions--on")) {
-              __privateGet(this, _button).classList.remove("op-controls__captions--on");
-              __privateGet(this, _button).setAttribute("data-active-captions", "off");
+        };
+        __privateGet(this, _events).button.mouseover = () => {
+          if (!IS_IOS && !IS_ANDROID && detachMenus) {
+            const menus = __privateGet(this, _player).getContainer().querySelectorAll(".op-settings");
+            for (let i = 0, total = menus.length; i < total; ++i) {
+              if (menus[i] !== __privateGet(this, _menu)) {
+                menus[i].setAttribute("aria-hidden", "true");
+              }
+            }
+            if (__privateGet(this, _menu).getAttribute("aria-hidden") === "true") {
+              __privateGet(this, _menu).setAttribute("aria-hidden", "false");
+            }
+          }
+        };
+        __privateGet(this, _events).button.mouseout = () => {
+          if (!IS_IOS && !IS_ANDROID && detachMenus) {
+            const menus = __privateGet(this, _player).getContainer().querySelectorAll(".op-settings");
+            for (let i = 0, total = menus.length; i < total; ++i) {
+              menus[i].setAttribute("aria-hidden", "true");
+            }
+            if (__privateGet(this, _menu).getAttribute("aria-hidden") === "false") {
+              __privateGet(this, _menu).setAttribute("aria-hidden", "true");
+            }
+          }
+        };
+        __privateGet(this, _button).addEventListener("click", __privateGet(this, _events).button.click, EVENT_OPTIONS);
+        __privateGet(this, _events).global.click = (e) => {
+          const option = e.target;
+          if (option.closest(`#${__privateGet(this, _player).id}`) && option.classList.contains("op-subtitles__option")) {
+            const language = option.getAttribute("data-value").replace("captions-", "");
+            this._hideCaptions();
+            if (language === "off") {
+              __privateSet(this, _currentTrack, void 0);
+            }
+            for (const track of __privateGet(this, _player).getElement().textTracks) {
+              console.log({ language, track });
+              track.mode = track.language === language ? "showing" : "hidden";
+              if (track.language === language) {
+                __privateSet(this, _currentTrack, track);
+                this._showCaptions();
+              }
+            }
+            if (detachMenus) {
+              if (__privateGet(this, _button).classList.contains("op-controls__captions--on")) {
+                __privateGet(this, _button).classList.remove("op-controls__captions--on");
+                __privateGet(this, _button).setAttribute("data-active-captions", "off");
+              } else {
+                __privateGet(this, _button).classList.add("op-controls__captions--on");
+                __privateGet(this, _button).setAttribute("data-active-captions", language);
+              }
+              const captions = __privateGet(this, _menu).querySelectorAll(".op-settings__submenu-item");
+              for (const caption of Array.from(captions)) {
+                caption.setAttribute("aria-checked", "false");
+              }
+              option.parentElement.setAttribute("aria-checked", "true");
+              __privateGet(this, _menu).setAttribute("aria-hidden", "false");
             } else {
-              __privateGet(this, _button).classList.add("op-controls__captions--on");
               __privateGet(this, _button).setAttribute("data-active-captions", language);
             }
-            const captions = __privateGet(this, _menu).querySelectorAll(".op-settings__submenu-item");
-            for (const caption of Array.from(captions)) {
-              caption.setAttribute("aria-checked", "false");
-            }
-            option.parentElement.setAttribute("aria-checked", "true");
-            __privateGet(this, _menu).setAttribute("aria-hidden", "false");
-          } else {
-            __privateGet(this, _button).setAttribute("data-active-captions", language);
+            const event2 = addEvent("captionschanged");
+            __privateGet(this, _player).getElement().dispatchEvent(event2);
           }
-          const event = addEvent("captionschanged");
-          __privateGet(this, _player).getElement().dispatchEvent(event);
+        };
+        __privateGet(this, _events).global.cuechange = (e) => {
+          var _a2;
+          this._hideCaptions();
+          const t = e.target;
+          if (t.mode !== "showing" || __privateGet(this, _button).getAttribute("data-active-captions") === "off") {
+            return;
+          }
+          if (t.activeCues && ((_a2 = t.activeCues) == null ? void 0 : _a2.length) > 0) {
+            this._showCaptions();
+          }
+        };
+        if (detachMenus) {
+          __privateGet(this, _button).addEventListener("mouseover", __privateGet(this, _events).button.mouseover, EVENT_OPTIONS);
+          __privateGet(this, _menu).addEventListener("mouseover", __privateGet(this, _events).button.mouseover, EVENT_OPTIONS);
+          __privateGet(this, _menu).addEventListener("mouseout", __privateGet(this, _events).button.mouseout, EVENT_OPTIONS);
+          __privateGet(this, _player).getElement().addEventListener("controlshidden", __privateGet(this, _events).button.mouseout, EVENT_OPTIONS);
         }
-      };
-      __privateGet(this, _events).global.cuechange = (e) => {
-        var _a2;
-        this._hideCaptions();
-        const t = e.target;
-        if (t.mode !== "showing" || __privateGet(this, _button).getAttribute("data-active-captions") === "off") {
-          return;
+        document.addEventListener("click", __privateGet(this, _events).global.click, EVENT_OPTIONS);
+        __privateGet(this, _player).getElement().addEventListener(event, () => {
+          for (const track of __privateGet(this, _player).getElement().textTracks) {
+            track.mode = track.mode !== "showing" ? "hidden" : track.mode;
+            track.addEventListener("cuechange", __privateGet(this, _events).global.cuechange, EVENT_OPTIONS);
+          }
+        });
+        const targetTrack = __privateGet(this, _player).getElement().querySelector('track:is([kind="subtitles"],[kind="captions"])[default]');
+        if (targetTrack) {
+          const matchTrack = Array.from(__privateGet(this, _player).getElement().textTracks).find((el) => el.language === targetTrack.srclang);
+          if (matchTrack) {
+            this._setDefaultTrack(matchTrack);
+          }
         }
-        if (t.activeCues && ((_a2 = t.activeCues) == null ? void 0 : _a2.length) > 0) {
-          this._showCaptions();
-        }
-      };
-      if (detachMenus) {
-        __privateGet(this, _button).addEventListener("mouseover", __privateGet(this, _events).button.mouseover, EVENT_OPTIONS);
-        __privateGet(this, _menu).addEventListener("mouseover", __privateGet(this, _events).button.mouseover, EVENT_OPTIONS);
-        __privateGet(this, _menu).addEventListener("mouseout", __privateGet(this, _events).button.mouseout, EVENT_OPTIONS);
-        __privateGet(this, _player).getElement().addEventListener("controlshidden", __privateGet(this, _events).button.mouseout, EVENT_OPTIONS);
-      }
-      document.addEventListener("click", __privateGet(this, _events).global.click, EVENT_OPTIONS);
-      for (const track of __privateGet(this, _mediaTrackList)) {
-        track.mode = track.mode !== "showing" ? "hidden" : track.mode;
-        track.addEventListener("cuechange", __privateGet(this, _events).global.cuechange, EVENT_OPTIONS);
-      }
-      const targetTrack = __privateGet(this, _player).getElement().querySelector('track:is([kind="subtitles"],[kind="captions"])[default]');
-      if (targetTrack) {
-        const matchTrack = __privateGet(this, _mediaTrackList).find((el) => el.language === targetTrack.srclang);
-        if (matchTrack) {
-          this._setDefaultTrack(matchTrack);
-        }
-      }
+      });
     }
     destroy() {
       const { detachMenus } = __privateGet(this, _player).getOptions();
       if (!__privateGet(this, _hasTracks)) {
         return;
       }
-      for (const track of __privateGet(this, _mediaTrackList)) {
+      for (const track of __privateGet(this, _player).getElement().textTracks) {
         track.removeEventListener("cuechange", __privateGet(this, _events).global.cuechange);
       }
       document.removeEventListener("click", __privateGet(this, _events).global.click);
@@ -354,7 +341,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
     }
     addSettings() {
       const { detachMenus, labels } = __privateGet(this, _player).getOptions();
-      if (detachMenus || __privateGet(this, _mediaTrackList).length <= 1) {
+      if (detachMenus || __privateGet(this, _player).getElement().textTracks.length <= 1) {
         return {};
       }
       const subitems = this._formatMenuItems();
@@ -368,11 +355,11 @@ var __privateWrapper = (obj, member, setter, getter) => ({
     }
     _formatMenuItems() {
       const { labels, detachMenus } = __privateGet(this, _player).getOptions();
-      if (__privateGet(this, _mediaTrackList).length <= 1 && !detachMenus) {
+      if (__privateGet(this, _player).getElement().textTracks.length <= 1 && !detachMenus) {
         return [];
       }
       let items = [{ key: "off", label: (labels == null ? void 0 : labels.off) || "" }];
-      for (const track of __privateGet(this, _mediaTrackList)) {
+      for (const track of __privateGet(this, _player).getElement().textTracks) {
         const label = (labels == null ? void 0 : labels.lang) ? labels.lang[track.language] : null;
         items = items.filter((el) => el.key !== track.language);
         items.push({ key: track.language, label: label || track.label });
@@ -419,7 +406,6 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _captions = new WeakMap();
   _menu = new WeakMap();
   _events = new WeakMap();
-  _mediaTrackList = new WeakMap();
   _hasTracks = new WeakMap();
   _currentTrack = new WeakMap();
   _default = new WeakMap();
@@ -427,15 +413,15 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _controlLayer = new WeakMap();
   class Fullscreen {
     constructor(player, position, layer) {
-      __privateAdd(this, _player2, void 0);
-      __privateAdd(this, _isFullscreen, void 0);
-      __privateAdd(this, _button2, void 0);
+      __privateAdd(this, _player2);
+      __privateAdd(this, _isFullscreen);
+      __privateAdd(this, _button2);
       __privateAdd(this, _fullscreenEvents, []);
       __privateAdd(this, _fullscreenWidth, 0);
       __privateAdd(this, _fullscreenHeight, 0);
-      __privateAdd(this, _clickEvent, void 0);
-      __privateAdd(this, _controlPosition2, void 0);
-      __privateAdd(this, _controlLayer2, void 0);
+      __privateAdd(this, _clickEvent);
+      __privateAdd(this, _controlPosition2);
+      __privateAdd(this, _controlLayer2);
       __privateSet(this, _player2, player);
       __privateSet(this, _controlPosition2, position);
       __privateSet(this, _controlLayer2, layer);
@@ -705,9 +691,9 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
   class Levels {
     constructor(player, position, layer) {
-      __privateAdd(this, _player3, void 0);
-      __privateAdd(this, _button3, void 0);
-      __privateAdd(this, _menu2, void 0);
+      __privateAdd(this, _player3);
+      __privateAdd(this, _button3);
+      __privateAdd(this, _menu2);
       __privateAdd(this, _events2, {
         button: {},
         global: {},
@@ -715,8 +701,8 @@ var __privateWrapper = (obj, member, setter, getter) => ({
       });
       __privateAdd(this, _levels, []);
       __privateAdd(this, _defaultLevel, "");
-      __privateAdd(this, _controlPosition3, void 0);
-      __privateAdd(this, _controlLayer3, void 0);
+      __privateAdd(this, _controlPosition3);
+      __privateAdd(this, _controlLayer3);
       __privateSet(this, _player3, player);
       __privateSet(this, _controlPosition3, position);
       __privateSet(this, _controlLayer3, layer);
@@ -995,14 +981,14 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _controlLayer3 = new WeakMap();
   class Play {
     constructor(player, position, layer) {
-      __privateAdd(this, _player4, void 0);
-      __privateAdd(this, _button4, void 0);
+      __privateAdd(this, _player4);
+      __privateAdd(this, _button4);
       __privateAdd(this, _events3, {
         controls: {},
         media: {}
       });
-      __privateAdd(this, _controlPosition4, void 0);
-      __privateAdd(this, _controlLayer4, void 0);
+      __privateAdd(this, _controlPosition4);
+      __privateAdd(this, _controlLayer4);
       __privateSet(this, _player4, player);
       __privateSet(this, _controlPosition4, position);
       __privateSet(this, _controlLayer4, layer);
@@ -1174,12 +1160,12 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
   class Progress {
     constructor(player, position, layer) {
-      __privateAdd(this, _player5, void 0);
-      __privateAdd(this, _progress, void 0);
-      __privateAdd(this, _slider, void 0);
-      __privateAdd(this, _buffer, void 0);
-      __privateAdd(this, _played, void 0);
-      __privateAdd(this, _tooltip, void 0);
+      __privateAdd(this, _player5);
+      __privateAdd(this, _progress);
+      __privateAdd(this, _slider);
+      __privateAdd(this, _buffer);
+      __privateAdd(this, _played);
+      __privateAdd(this, _tooltip);
       __privateAdd(this, _events4, {
         container: {},
         controls: {},
@@ -1188,8 +1174,8 @@ var __privateWrapper = (obj, member, setter, getter) => ({
         slider: {}
       });
       __privateAdd(this, _forcePause, false);
-      __privateAdd(this, _controlPosition5, void 0);
-      __privateAdd(this, _controlLayer5, void 0);
+      __privateAdd(this, _controlPosition5);
+      __privateAdd(this, _controlLayer5);
       __privateSet(this, _player5, player);
       __privateSet(this, _controlPosition5, position);
       __privateSet(this, _controlLayer5, layer);
@@ -1525,17 +1511,17 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _controlLayer5 = new WeakMap();
   class Settings {
     constructor(player, position, layer) {
-      __privateAdd(this, _player6, void 0);
+      __privateAdd(this, _player6);
       __privateAdd(this, _submenu, {});
-      __privateAdd(this, _button5, void 0);
-      __privateAdd(this, _menu3, void 0);
+      __privateAdd(this, _button5);
+      __privateAdd(this, _menu3);
       __privateAdd(this, _events5, {
         global: {},
         media: {}
       });
       __privateAdd(this, _originalOutput, "");
-      __privateAdd(this, _controlPosition6, void 0);
-      __privateAdd(this, _controlLayer6, void 0);
+      __privateAdd(this, _controlPosition6);
+      __privateAdd(this, _controlLayer6);
       __privateSet(this, _player6, player);
       __privateSet(this, _controlPosition6, position);
       __privateSet(this, _controlLayer6, layer);
@@ -1791,17 +1777,17 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _controlLayer6 = new WeakMap();
   class Time {
     constructor(player, position, layer) {
-      __privateAdd(this, _player7, void 0);
-      __privateAdd(this, _currentTime, void 0);
-      __privateAdd(this, _delimiter, void 0);
-      __privateAdd(this, _duration, void 0);
-      __privateAdd(this, _container, void 0);
+      __privateAdd(this, _player7);
+      __privateAdd(this, _currentTime);
+      __privateAdd(this, _delimiter);
+      __privateAdd(this, _duration);
+      __privateAdd(this, _container);
       __privateAdd(this, _events6, {
         controls: {},
         media: {}
       });
-      __privateAdd(this, _controlPosition7, void 0);
-      __privateAdd(this, _controlLayer7, void 0);
+      __privateAdd(this, _controlPosition7);
+      __privateAdd(this, _controlLayer7);
       __privateSet(this, _player7, player);
       __privateSet(this, _controlPosition7, position);
       __privateSet(this, _controlLayer7, layer);
@@ -1916,19 +1902,19 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _controlLayer7 = new WeakMap();
   class Volume {
     constructor(player, position, layer) {
-      __privateAdd(this, _player8, void 0);
-      __privateAdd(this, _button6, void 0);
-      __privateAdd(this, _container2, void 0);
-      __privateAdd(this, _display, void 0);
-      __privateAdd(this, _slider2, void 0);
+      __privateAdd(this, _player8);
+      __privateAdd(this, _button6);
+      __privateAdd(this, _container2);
+      __privateAdd(this, _display);
+      __privateAdd(this, _slider2);
       __privateAdd(this, _events7, {
         button: {},
         media: {},
         slider: {}
       });
-      __privateAdd(this, _volume, void 0);
-      __privateAdd(this, _controlPosition8, void 0);
-      __privateAdd(this, _controlLayer8, void 0);
+      __privateAdd(this, _volume);
+      __privateAdd(this, _controlPosition8);
+      __privateAdd(this, _controlLayer8);
       __privateSet(this, _player8, player);
       __privateSet(this, _volume, __privateGet(this, _player8).getMedia().volume);
       __privateSet(this, _controlPosition8, position);
@@ -2087,13 +2073,13 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _controlLayer8 = new WeakMap();
   class Controls {
     constructor(player) {
-      __privateAdd(this, _settings, void 0);
-      __privateAdd(this, _timer, void 0);
-      __privateAdd(this, _controls, void 0);
-      __privateAdd(this, _player9, void 0);
+      __privateAdd(this, _settings);
+      __privateAdd(this, _timer);
+      __privateAdd(this, _controls);
+      __privateAdd(this, _player9);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      __privateAdd(this, _items, void 0);
-      __privateAdd(this, _controlEls, void 0);
+      __privateAdd(this, _items);
+      __privateAdd(this, _controlEls);
       this.events = {
         media: {},
         mouse: {}
@@ -2511,7 +2497,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _controlEls = new WeakMap();
   class Native {
     constructor(element, media) {
-      __privateAdd(this, _customPlayer, void 0);
+      __privateAdd(this, _customPlayer);
       this.element = element;
       this.media = media;
       this.promise = new Promise((resolve) => {
@@ -2577,7 +2563,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
     constructor(element, mediaSource, options) {
       super(element, mediaSource);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      __privateAdd(this, _player10, void 0);
+      __privateAdd(this, _player10);
       // @see http://cdn.dashjs.org/latest/jsdoc/MediaPlayerEvents.html
       __privateAdd(this, _events8, {});
       __privateAdd(this, _options, {});
@@ -2701,7 +2687,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
     constructor(element, mediaSource, options) {
       super(element, mediaSource);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      __privateAdd(this, _player11, void 0);
+      __privateAdd(this, _player11);
       // @see https://github.com/video-dev/hls.js/blob/master/src/events.js
       __privateAdd(this, _events9, {});
       // @see https://github.com/bilibili/flv.js/blob/master/docs/api.md
@@ -2813,14 +2799,14 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   class HlsMedia extends Native {
     constructor(element, mediaSource, autoplay, options) {
       super(element, mediaSource);
-      __privateAdd(this, _player12, void 0);
+      __privateAdd(this, _player12);
       // @see https://github.com/video-dev/hls.js/blob/master/src/events.js
       __privateAdd(this, _events10, {});
       __privateAdd(this, _recoverDecodingErrorDate, 0);
       __privateAdd(this, _recoverSwapAudioCodecDate, 0);
       // @see https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning
-      __privateAdd(this, _options3, void 0);
-      __privateAdd(this, _autoplay, void 0);
+      __privateAdd(this, _options3);
+      __privateAdd(this, _autoplay);
       __privateSet(this, _options3, options || {});
       this.element = element;
       this.media = mediaSource;
@@ -3026,12 +3012,12 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   class HTML5Media extends Native {
     constructor(element, mediaFile) {
       super(element, mediaFile);
-      __privateAdd(this, _currentLevel, void 0);
+      __privateAdd(this, _currentLevel);
       __privateAdd(this, _levelList, []);
       __privateAdd(this, _isStreaming, false);
       __privateAdd(this, _retryCount, 0);
       __privateAdd(this, _started, false);
-      __privateAdd(this, _timer2, void 0);
+      __privateAdd(this, _timer2);
       if (!isAudio(element) && !isVideo(element)) {
         throw new TypeError("Native method only supports video/audio tags");
       }
@@ -3194,20 +3180,20 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _timer2 = new WeakMap();
   class Media {
     constructor(element, options, autoplay, customMedia) {
-      __privateAdd(this, _element, void 0);
+      __privateAdd(this, _element);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      __privateAdd(this, _media, void 0);
-      __privateAdd(this, _files, void 0);
-      __privateAdd(this, _promisePlay, void 0);
-      __privateAdd(this, _options4, void 0);
-      __privateAdd(this, _autoplay2, void 0);
+      __privateAdd(this, _media);
+      __privateAdd(this, _files);
+      __privateAdd(this, _promisePlay);
+      __privateAdd(this, _options4);
+      __privateAdd(this, _autoplay2);
       __privateAdd(this, _mediaLoaded, false);
       __privateAdd(this, _customMedia, {
         media: {},
         optionsKey: {},
         rules: []
       });
-      __privateAdd(this, _currentSrc, void 0);
+      __privateAdd(this, _currentSrc);
       __privateSet(this, _element, element);
       __privateSet(this, _options4, options);
       __privateSet(this, _files, this._getMediaFiles());
@@ -3480,42 +3466,42 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _currentSrc = new WeakMap();
   class Ads {
     constructor(player, ads, autostart, autostartMuted, options) {
-      __privateAdd(this, _ended, void 0);
-      __privateAdd(this, _done, void 0);
-      __privateAdd(this, _active, void 0);
-      __privateAdd(this, _started2, void 0);
-      __privateAdd(this, _intervalTimer, void 0);
-      __privateAdd(this, _volume2, void 0);
-      __privateAdd(this, _muted, void 0);
-      __privateAdd(this, _duration2, void 0);
-      __privateAdd(this, _currentTime2, void 0);
-      __privateAdd(this, _manager, void 0);
-      __privateAdd(this, _player13, void 0);
-      __privateAdd(this, _media2, void 0);
-      __privateAdd(this, _element2, void 0);
-      __privateAdd(this, _events11, void 0);
-      __privateAdd(this, _ads, void 0);
-      __privateAdd(this, _promise, void 0);
+      __privateAdd(this, _ended);
+      __privateAdd(this, _done);
+      __privateAdd(this, _active);
+      __privateAdd(this, _started2);
+      __privateAdd(this, _intervalTimer);
+      __privateAdd(this, _volume2);
+      __privateAdd(this, _muted);
+      __privateAdd(this, _duration2);
+      __privateAdd(this, _currentTime2);
+      __privateAdd(this, _manager);
+      __privateAdd(this, _player13);
+      __privateAdd(this, _media2);
+      __privateAdd(this, _element2);
+      __privateAdd(this, _events11);
+      __privateAdd(this, _ads);
+      __privateAdd(this, _promise);
       // @see https://tinyurl.com/ycwp4ufd
-      __privateAdd(this, _loader, void 0);
-      __privateAdd(this, _container3, void 0);
-      __privateAdd(this, _customClickContainer, void 0);
-      __privateAdd(this, _skipElement, void 0);
+      __privateAdd(this, _loader);
+      __privateAdd(this, _container3);
+      __privateAdd(this, _customClickContainer);
+      __privateAdd(this, _skipElement);
       // @see https://tinyurl.com/ya3zksso
-      __privateAdd(this, _displayContainer, void 0);
+      __privateAdd(this, _displayContainer);
       // @see https://tinyurl.com/ya8bxjf4
-      __privateAdd(this, _request, void 0);
-      __privateAdd(this, _autostart, void 0);
-      __privateAdd(this, _autostartMuted, void 0);
-      __privateAdd(this, _playTriggered, void 0);
-      __privateAdd(this, _options5, void 0);
-      __privateAdd(this, _currentIndex, void 0);
-      __privateAdd(this, _originalVolume, void 0);
-      __privateAdd(this, _preloadContent, void 0);
-      __privateAdd(this, _lastTimePaused, void 0);
-      __privateAdd(this, _mediaSources, void 0);
-      __privateAdd(this, _mediaStarted, void 0);
-      __privateAdd(this, _adEvent, void 0);
+      __privateAdd(this, _request);
+      __privateAdd(this, _autostart);
+      __privateAdd(this, _autostartMuted);
+      __privateAdd(this, _playTriggered);
+      __privateAdd(this, _options5);
+      __privateAdd(this, _currentIndex);
+      __privateAdd(this, _originalVolume);
+      __privateAdd(this, _preloadContent);
+      __privateAdd(this, _lastTimePaused);
+      __privateAdd(this, _mediaSources);
+      __privateAdd(this, _mediaStarted);
+      __privateAdd(this, _adEvent);
       var _a, _b, _c, _d;
       this.loadedAd = false;
       __privateSet(this, _ended, false);
@@ -4368,22 +4354,22 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   _adEvent = new WeakMap();
   const _Player = class _Player {
     constructor(element, options) {
-      __privateAdd(this, _controls2, void 0);
-      __privateAdd(this, _adsInstance, void 0);
-      __privateAdd(this, _uid, void 0);
-      __privateAdd(this, _element3, void 0);
-      __privateAdd(this, _ads2, void 0);
-      __privateAdd(this, _media3, void 0);
-      __privateAdd(this, _events12, void 0);
-      __privateAdd(this, _autoplay3, void 0);
-      __privateAdd(this, _volume3, void 0);
-      __privateAdd(this, _canAutoplay, void 0);
-      __privateAdd(this, _canAutoplayMuted, void 0);
-      __privateAdd(this, _processedAutoplay, void 0);
-      __privateAdd(this, _options6, void 0);
-      __privateAdd(this, _customElements, void 0);
-      __privateAdd(this, _fullscreen, void 0);
-      __privateAdd(this, _defaultOptions, void 0);
+      __privateAdd(this, _controls2);
+      __privateAdd(this, _adsInstance);
+      __privateAdd(this, _uid);
+      __privateAdd(this, _element3);
+      __privateAdd(this, _ads2);
+      __privateAdd(this, _media3);
+      __privateAdd(this, _events12);
+      __privateAdd(this, _autoplay3);
+      __privateAdd(this, _volume3);
+      __privateAdd(this, _canAutoplay);
+      __privateAdd(this, _canAutoplayMuted);
+      __privateAdd(this, _processedAutoplay);
+      __privateAdd(this, _options6);
+      __privateAdd(this, _customElements);
+      __privateAdd(this, _fullscreen);
+      __privateAdd(this, _defaultOptions);
       var _a;
       this.proxy = null;
       __privateSet(this, _uid, "");
@@ -4829,9 +4815,7 @@ var __privateWrapper = (obj, member, setter, getter) => ({
         __privateSet(this, _uid, __privateGet(this, _element3).id);
         __privateGet(this, _element3).removeAttribute("id");
       } else {
-        const cryptoLib = crypto;
-        const encryption = typeof cryptoLib.getRandomBytes === "function" ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
-        __privateSet(this, _uid, `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`);
+        __privateSet(this, _uid, `op_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36).substring(2, 9)}`);
       }
       if (__privateGet(this, _element3).parentElement) {
         __privateGet(this, _element3).parentElement.id = __privateGet(this, _uid);

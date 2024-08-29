@@ -1,0 +1,3 @@
+{
+    "plugins": ["@babel/transform-class-properties", "istanbul"]
+}

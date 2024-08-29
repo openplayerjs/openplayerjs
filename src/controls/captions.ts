@@ -18,8 +18,6 @@ class Captions implements PlayerComponent {
         media: {},
     };
 
-    #mediaTrackList: TextTrack[];
-
     #hasTracks: boolean;
 
     #currentTrack?: TextTrack;
@@ -44,18 +42,7 @@ class Captions implements PlayerComponent {
     custom?: boolean | undefined;
 
     create(): void {
-        const { textTracks } = this.#player.getElement();
         const { labels, detachMenus } = this.#player.getOptions();
-
-        this.#mediaTrackList = Object.keys(textTracks)
-            .map((k) => textTracks[Number(k)])
-            .filter((el) => ['subtitles', 'captions'].includes(el.kind) && el.language);
-
-        this.#hasTracks = !!this.#mediaTrackList.length;
-
-        if (!this.#hasTracks) {
-            return;
-        }
 
         this.#button = document.createElement('button');
         this.#button.className = `op-controls__captions op-control__${this.#controlPosition}`;
@@ -92,7 +79,7 @@ class Captions implements PlayerComponent {
             itemContainer.append(this.#button, this.#menu);
             this.#player.getControls().getLayer(this.#controlLayer).append(itemContainer);
 
-            for (const track of this.#mediaTrackList) {
+            for (const track of this.#player.getElement().textTracks) {
                 const item = document.createElement('div');
                 const label = labels?.lang?.[track.language] || null;
                 item.className = 'op-settings__submenu-item';
@@ -109,6 +96,8 @@ class Captions implements PlayerComponent {
             this.#player.getControls().getLayer(this.#controlLayer).append(this.#button);
         }
 
+        // @todo: Check this to allow proper captions with HLS and DASH
+        ['play', 'loadeddata'].forEach((event: string) => {
         // Show/hide captions
         this.#events.button.click = (e: Event): void => {
             const button = e.target as HTMLDivElement;
@@ -136,7 +125,7 @@ class Captions implements PlayerComponent {
                     this._showCaptions();
                 }
 
-                for (const track of this.#mediaTrackList) {
+                for (const track of this.#player.getElement().textTracks) {
                     track.mode = button.getAttribute('data-active-captions') === track.language ? 'showing' : 'hidden';
                 }
             }
@@ -180,7 +169,8 @@ class Captions implements PlayerComponent {
                     this.#currentTrack = undefined;
                 }
 
-                for (const track of this.#mediaTrackList) {
+                for (const track of this.#player.getElement().textTracks) {
+                    console.log({ language, track})
                     track.mode = track.language === language ? 'showing' : 'hidden';
                     if (track.language === language) {
                         this.#currentTrack = track;
@@ -231,21 +221,26 @@ class Captions implements PlayerComponent {
         }
 
         document.addEventListener('click', this.#events.global.click, EVENT_OPTIONS);
-
-        for (const track of this.#mediaTrackList) {
-            track.mode = track.mode !== 'showing' ? 'hidden' : track.mode;
-            track.addEventListener('cuechange', this.#events.global.cuechange, EVENT_OPTIONS);
-        }
+    
+        
+            this.#player.getElement().addEventListener(event, () => {
+                for (const track of this.#player.getElement().textTracks) {
+                    track.mode = track.mode !== 'showing' ? 'hidden' : track.mode;
+                    track.addEventListener('cuechange', this.#events.global.cuechange, EVENT_OPTIONS);
+                }
+            });
+        
 
         const targetTrack = this.#player
             .getElement()
             .querySelector('track:is([kind="subtitles"],[kind="captions"])[default]') as HTMLTrackElement;
         if (targetTrack) {
-            const matchTrack = this.#mediaTrackList.find((el) => el.language === targetTrack.srclang);
+            const matchTrack = Array.from(this.#player.getElement().textTracks).find((el) => el.language === targetTrack.srclang);
             if (matchTrack) {
                 this._setDefaultTrack(matchTrack);
             }
         }
+    })
     }
 
     destroy(): void {
@@ -255,7 +250,7 @@ class Captions implements PlayerComponent {
             return;
         }
 
-        for (const track of this.#mediaTrackList) {
+        for (const track of this.#player.getElement().textTracks) {
             track.removeEventListener('cuechange', this.#events.global.cuechange);
         }
 
@@ -273,7 +268,7 @@ class Captions implements PlayerComponent {
 
     addSettings(): SettingsItem | unknown {
         const { detachMenus, labels } = this.#player.getOptions();
-        if (detachMenus || this.#mediaTrackList.length <= 1) {
+        if (detachMenus || this.#player.getElement().textTracks.length <= 1) {
             return {};
         }
         const subitems = this._formatMenuItems();
@@ -292,12 +287,12 @@ class Captions implements PlayerComponent {
 
     private _formatMenuItems(): SettingsSubItem[] {
         const { labels, detachMenus } = this.#player.getOptions();
-        if (this.#mediaTrackList.length <= 1 && !detachMenus) {
+        if (this.#player.getElement().textTracks.length <= 1 && !detachMenus) {
             return [];
         }
 
         let items = [{ key: 'off', label: labels?.off || '' }];
-        for (const track of this.#mediaTrackList) {
+        for (const track of this.#player.getElement().textTracks) {
             const label = labels?.lang ? labels.lang[track.language] : null;
             // Override language item if duplicated when passing list of items
             items = items.filter((el) => el.key !== track.language);
@@ -334,7 +329,7 @@ class Captions implements PlayerComponent {
                 this.#captions.prepend(caption);
                 this.#captions.classList.add('op-captions--on');
             } else {
-                this._hideCaptions()
+                this._hideCaptions();
             }
         }
     }

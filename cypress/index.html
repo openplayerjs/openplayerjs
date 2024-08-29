@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../dist/openplayer.min.css" />
+    </head>
+    <body>
+        <video class="op-player__media" id="video" controls playsinline muted>
+            <source src="https://playertest.longtailvideo.com/adaptive/captions/playlist.m3u8" />
+        </video>
+
+        <audio id="audio" class="op-player__media" controls playsinline muted>
+            <source src="https://ccrma.stanford.edu/~jos/mp3/Latin.mp3" type="audio/mp3" />
+        </audio>
+    </body>
+    <script src="../dist/openplayer.js"></script>
+    <script>
+        Array.from(document.getElementsByClassName('op-player__media')).forEach(player => {
+            const pl = new OpenPlayerJS(player.id);
+            pl.init();
+        });
+    </script>
+</html>

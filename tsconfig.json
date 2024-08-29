@@ -27,14 +27,17 @@
       "esModuleInterop": true,
       "isolatedModules": true,
       "strictPropertyInitialization": false,
+      "types": ["cypress", "node"]
   },
   "include": [
-      "./src",
-      "./_tests_"
+    "./src",
+    "./_tests_"
   ],
   "exclude": [
-      "node_modules",
-      "dist",
-      "test"
+    "cypress.config.ts",
+    "cypress",
+    "node_modules",
+    "dist",
+    "test"
   ],
 }

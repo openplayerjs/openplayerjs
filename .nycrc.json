@@ -1,0 +1,18 @@
+{
+    "all": true,
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "include": ["src/**/*.ts"],
+    "extension": [".ts"],
+    "exclude": [
+        "cypress/**/*.*",
+        "**/*.d.ts",
+        "**/*.cy.tsx",
+        "**/*.cy.ts"
+    ],
+    "report-dir": "e2e-coverage",
+    "reporter": [
+        "json",
+        "lcov",
+        "json-summary"
+    ]
+}
