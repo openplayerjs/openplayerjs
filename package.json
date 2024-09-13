@@ -112,7 +112,7 @@
         "webpack-cli": "^4.10.0"
     },
     "dependencies": {
-        "auto-changelog": "^2.4.0",
+        "auto-changelog": "^2.5.0",
         "core-js": "^3.38.1"
     },
     "engines": {
