@@ -943,7 +943,7 @@ class Ads {
         this.#request.nonLinearAdSlotWidth = width;
         this.#request.nonLinearAdSlotHeight = height / 3;
         this.#request.setAdWillAutoPlay(this.#autostart);
-        this.#request.setAdWillPlayMuted(this.#autostartMuted);
+        this.#request.setAdWillPlayMuted(this.#autostartMuted || this.#muted);
         this.#loader.requestAds(this.#request);
     }
 
