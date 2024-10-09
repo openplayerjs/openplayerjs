@@ -806,7 +806,7 @@ class Ads {
         __classPrivateFieldGet(this, _Ads_request, "f").nonLinearAdSlotWidth = width;
         __classPrivateFieldGet(this, _Ads_request, "f").nonLinearAdSlotHeight = height / 3;
         __classPrivateFieldGet(this, _Ads_request, "f").setAdWillAutoPlay(__classPrivateFieldGet(this, _Ads_autostart, "f"));
-        __classPrivateFieldGet(this, _Ads_request, "f").setAdWillPlayMuted(__classPrivateFieldGet(this, _Ads_autostartMuted, "f"));
+        __classPrivateFieldGet(this, _Ads_request, "f").setAdWillPlayMuted(__classPrivateFieldGet(this, _Ads_autostartMuted, "f") || __classPrivateFieldGet(this, _Ads_muted, "f"));
         __classPrivateFieldGet(this, _Ads_loader, "f").requestAds(__classPrivateFieldGet(this, _Ads_request, "f"));
     }
     _contentLoadedAction() {

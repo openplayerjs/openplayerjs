@@ -597,11 +597,7 @@ class Player {
             this.#uid = this.#element.id;
             this.#element.removeAttribute('id');
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const cryptoLib = crypto as any;
-            const encryption =
-                typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
-            this.#uid = `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`;
+            this.#uid = `op_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36).substring(2, 9)}`;
         }
 
         if (this.#element.parentElement) {

@@ -27,6 +27,22 @@ import { EVENT_OPTIONS, IS_ANDROID, IS_IOS, IS_IPHONE } from './utils/constants'
 import { addEvent, isAudio, isVideo, sanitize } from './utils/general';
 import { isAutoplaySupported, predictMimeType } from './utils/media';
 class Player {
+    static init() {
+        Player.instances = {};
+        const targets = document.querySelectorAll('video.op-player, audio.op-player');
+        for (let i = 0, total = targets.length; i < total; i++) {
+            const target = targets[i];
+            const settings = target.getAttribute('data-op-settings');
+            const options = settings ? JSON.parse(settings) : {};
+            const player = new Player(target, options);
+            player.init();
+        }
+    }
+    static addMedia(name, mimeType, valid, media) {
+        Player.customMedia.media[mimeType] = media;
+        Player.customMedia.optionsKey[mimeType] = name;
+        Player.customMedia.rules.push(valid);
+    }
     constructor(element, options) {
         var _a;
         this.proxy = null;
@@ -126,22 +142,6 @@ class Player {
         }
         this._autoplay = this._autoplay.bind(this);
         this._enableKeyBindings = this._enableKeyBindings.bind(this);
-    }
-    static init() {
-        Player.instances = {};
-        const targets = document.querySelectorAll('video.op-player, audio.op-player');
-        for (let i = 0, total = targets.length; i < total; i++) {
-            const target = targets[i];
-            const settings = target.getAttribute('data-op-settings');
-            const options = settings ? JSON.parse(settings) : {};
-            const player = new Player(target, options);
-            player.init();
-        }
-    }
-    static addMedia(name, mimeType, valid, media) {
-        Player.customMedia.media[mimeType] = media;
-        Player.customMedia.optionsKey[mimeType] = name;
-        Player.customMedia.rules.push(valid);
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -493,9 +493,7 @@ class Player {
             __classPrivateFieldGet(this, _Player_element, "f").removeAttribute('id');
         }
         else {
-            const cryptoLib = crypto;
-            const encryption = typeof cryptoLib.getRandomBytes === 'function' ? cryptoLib.getRandomBytes : cryptoLib.getRandomValues;
-            __classPrivateFieldSet(this, _Player_uid, `op_${encryption(new Uint32Array(1))[0].toString(36).substr(2, 9)}`, "f");
+            __classPrivateFieldSet(this, _Player_uid, `op_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36).substring(2, 9)}`, "f");
         }
         if (__classPrivateFieldGet(this, _Player_element, "f").parentElement) {
             __classPrivateFieldGet(this, _Player_element, "f").parentElement.id = __classPrivateFieldGet(this, _Player_uid, "f");
