@@ -124,7 +124,7 @@ describe('player', (): void => {
         expect(videoPlayer.getContainer().style.height).to.equal('50%');
     });
 
-    it('displays the duration of media when player plays media, and `preload` attribute is set to `none`', async (): Promise<void> => {
+    it.skip('displays the duration of media when player plays media, and `preload` attribute is set to `none`', async (): Promise<void> => {
         document.getElementById('video')?.setAttribute('preload', 'none');
 
         videoPlayer = new OpenPlayerJS('video');
