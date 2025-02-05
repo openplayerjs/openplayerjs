@@ -68,7 +68,7 @@ const player = new OpenPlayerJS('[player ID]', {
     live: {
         showLabel: true,
         showProgress: false,
-    }
+    },
     dash: {
         // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,
         // HW_SECURE_DECODE, HW_SECURE_ALL
@@ -97,7 +97,7 @@ const player = new OpenPlayerJS('[player ID]', {
         autoPlayAdBreaks: false,
         debug: false,
         enablePreloading: false,
-        language: 'en,
+        language: 'en',
         loop: false,
         numRedirects: 4,
         sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
@@ -106,7 +106,7 @@ const player = new OpenPlayerJS('[player ID]', {
             label: '',
         },
         sessionId: null,
-        vpaidMode" 'enabled',
+        vpaidMode: 'enabled',
         publisherId: null,
     }
 });
