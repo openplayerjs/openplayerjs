@@ -428,7 +428,7 @@ try {
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 !function() {
 "use strict";
 // ESM COMPAT FLAG
@@ -439,7 +439,7 @@ __webpack_require__.d(__webpack_exports__, {
   "default": function() { return /* binding */ player; }
 });
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
+;// ./node_modules/@babel/runtime/helpers/esm/typeof.js
 function typeof_typeof(o) {
   "@babel/helpers - typeof";
 
@@ -450,7 +450,7 @@ function typeof_typeof(o) {
   }, typeof_typeof(o);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
+;// ./node_modules/@babel/runtime/helpers/esm/toPrimitive.js
 
 function toPrimitive(t, r) {
   if ("object" != typeof_typeof(t) || !t) return t;
@@ -463,7 +463,7 @@ function toPrimitive(t, r) {
   return ("string" === r ? String : Number)(t);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
+;// ./node_modules/@babel/runtime/helpers/esm/toPropertyKey.js
 
 
 function toPropertyKey(t) {
@@ -471,7 +471,7 @@ function toPropertyKey(t) {
   return "symbol" == typeof_typeof(i) ? i : i + "";
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+;// ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
 
 function _defineProperty(e, r, t) {
   return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
@@ -482,12 +482,12 @@ function _defineProperty(e, r, t) {
   }) : e[r] = t, e;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
+;// ./node_modules/@babel/runtime/helpers/esm/classCallCheck.js
 function _classCallCheck(a, n) {
   if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/createClass.js
+;// ./node_modules/@babel/runtime/helpers/esm/createClass.js
 
 function _defineProperties(e, r) {
   for (var t = 0; t < r.length; t++) {
@@ -504,12 +504,12 @@ function _createClass(e, r, t) {
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/regenerator/index.js
 var regenerator = __webpack_require__(756);
 var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
+;// ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
 function _arrayWithHoles(r) {
   if (Array.isArray(r)) return r;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
+;// ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
 function _iterableToArrayLimit(r, l) {
   var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
   if (null != t) {
@@ -538,14 +538,14 @@ function _iterableToArrayLimit(r, l) {
   }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
 function _arrayLikeToArray(r, a) {
   (null == a || a > r.length) && (a = r.length);
   for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
   return n;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
 
 function _unsupportedIterableToArray(r, a) {
   if (r) {
@@ -555,12 +555,12 @@ function _unsupportedIterableToArray(r, a) {
   }
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
+;// ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
+;// ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
 
 
 
@@ -569,7 +569,7 @@ function _slicedToArray(r, e) {
   return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
 }
 
-;// CONCATENATED MODULE: ./src/js/utils/constants.ts
+;// ./src/js/utils/constants.ts
 var NAV = typeof window !== 'undefined' ? window.navigator : null;
 var UA = NAV ? NAV.userAgent.toLowerCase() : null;
 var IS_IPAD = UA ? /ipad/i.test(UA) && !window.MSStream : false;
@@ -597,7 +597,7 @@ var DVR_THRESHOLD = 120;
 var EVENT_OPTIONS = {
   passive: false
 };
-;// CONCATENATED MODULE: ./src/js/utils/general.ts
+;// ./src/js/utils/general.ts
 
 function getAbsoluteUrl(url) {
   var a = document.createElement('a');
@@ -709,7 +709,7 @@ function addEvent(event, details) {
   }
   return new CustomEvent(event, detail);
 }
-;// CONCATENATED MODULE: ./src/js/controls/captions.ts
+;// ./src/js/controls/captions.ts
 
 
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = captions_unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
@@ -1103,7 +1103,7 @@ var Captions = function () {
 }();
 _Captions_player = new WeakMap(), _Captions_button = new WeakMap(), _Captions_captions = new WeakMap(), _Captions_menu = new WeakMap(), _Captions_events = new WeakMap(), _Captions_mediaTrackList = new WeakMap(), _Captions_hasTracks = new WeakMap(), _Captions_currentTrack = new WeakMap(), _Captions_default = new WeakMap(), _Captions_controlPosition = new WeakMap(), _Captions_controlLayer = new WeakMap();
 /* harmony default export */ var captions = (Captions);
-;// CONCATENATED MODULE: ./src/js/controls/fullscreen.ts
+;// ./src/js/controls/fullscreen.ts
 
 
 var fullscreen_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -1327,7 +1327,7 @@ var Fullscreen = function () {
 }();
 _Fullscreen_player = new WeakMap(), _Fullscreen_isFullscreen = new WeakMap(), _Fullscreen_button = new WeakMap(), _Fullscreen_fullscreenEvents = new WeakMap(), _Fullscreen_fullscreenWidth = new WeakMap(), _Fullscreen_fullscreenHeight = new WeakMap(), _Fullscreen_clickEvent = new WeakMap(), _Fullscreen_controlPosition = new WeakMap(), _Fullscreen_controlLayer = new WeakMap();
 /* harmony default export */ var fullscreen = (Fullscreen);
-;// CONCATENATED MODULE: ./src/js/utils/media.ts
+;// ./src/js/utils/media.ts
 
 function getExtension(url) {
   var baseUrl = url.split('?')[0];
@@ -1415,7 +1415,7 @@ function isAutoplaySupported(media, defaultVol, autoplay, muted, callback) {
     callback();
   }
 }
-;// CONCATENATED MODULE: ./src/js/controls/levels.ts
+;// ./src/js/controls/levels.ts
 
 
 var levels_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -1766,7 +1766,7 @@ var Levels = function () {
 }();
 _Levels_player = new WeakMap(), _Levels_button = new WeakMap(), _Levels_menu = new WeakMap(), _Levels_events = new WeakMap(), _Levels_levels = new WeakMap(), _Levels_defaultLevel = new WeakMap(), _Levels_controlPosition = new WeakMap(), _Levels_controlLayer = new WeakMap();
 /* harmony default export */ var levels = (Levels);
-;// CONCATENATED MODULE: ./src/js/controls/play.ts
+;// ./src/js/controls/play.ts
 
 
 var play_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -1952,7 +1952,7 @@ var Play = function () {
 }();
 _Play_player = new WeakMap(), _Play_button = new WeakMap(), _Play_events = new WeakMap(), _Play_controlPosition = new WeakMap(), _Play_controlLayer = new WeakMap();
 /* harmony default export */ var play = (Play);
-;// CONCATENATED MODULE: ./src/js/utils/time.ts
+;// ./src/js/utils/time.ts
 function formatTime(seconds, frameRate) {
   var f = Math.floor(seconds % 1 * (frameRate || 0));
   var s = Math.floor(seconds);
@@ -1985,7 +1985,7 @@ function timeToSeconds(timeCode) {
   }
   return seconds;
 }
-;// CONCATENATED MODULE: ./src/js/controls/progress.ts
+;// ./src/js/controls/progress.ts
 
 
 var progress_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -2358,7 +2358,7 @@ var Progress = function () {
 }();
 _Progress_player = new WeakMap(), _Progress_progress = new WeakMap(), _Progress_slider = new WeakMap(), _Progress_buffer = new WeakMap(), _Progress_played = new WeakMap(), _Progress_tooltip = new WeakMap(), _Progress_events = new WeakMap(), _Progress_forcePause = new WeakMap(), _Progress_controlPosition = new WeakMap(), _Progress_controlLayer = new WeakMap();
 /* harmony default export */ var progress = (Progress);
-;// CONCATENATED MODULE: ./src/js/controls/settings.ts
+;// ./src/js/controls/settings.ts
 
 
 var settings_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -2654,7 +2654,7 @@ var Settings = function () {
 }();
 _Settings_player = new WeakMap(), _Settings_submenu = new WeakMap(), _Settings_button = new WeakMap(), _Settings_menu = new WeakMap(), _Settings_events = new WeakMap(), _Settings_originalOutput = new WeakMap(), _Settings_controlPosition = new WeakMap(), _Settings_controlLayer = new WeakMap();
 /* harmony default export */ var settings = (Settings);
-;// CONCATENATED MODULE: ./src/js/controls/time.ts
+;// ./src/js/controls/time.ts
 
 
 var time_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -2802,7 +2802,7 @@ var Time = function () {
 }();
 _Time_player = new WeakMap(), _Time_currentTime = new WeakMap(), _Time_delimiter = new WeakMap(), _Time_duration = new WeakMap(), _Time_container = new WeakMap(), _Time_events = new WeakMap(), _Time_controlPosition = new WeakMap(), _Time_controlLayer = new WeakMap();
 /* harmony default export */ var time = (Time);
-;// CONCATENATED MODULE: ./src/js/controls/volume.ts
+;// ./src/js/controls/volume.ts
 
 
 var volume_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -2994,7 +2994,7 @@ var Volume = function () {
 }();
 _Volume_player = new WeakMap(), _Volume_button = new WeakMap(), _Volume_container = new WeakMap(), _Volume_display = new WeakMap(), _Volume_slider = new WeakMap(), _Volume_events = new WeakMap(), _Volume_volume = new WeakMap(), _Volume_controlPosition = new WeakMap(), _Volume_controlLayer = new WeakMap();
 /* harmony default export */ var volume = (Volume);
-;// CONCATENATED MODULE: ./src/js/controls.ts
+;// ./src/js/controls.ts
 
 
 
@@ -3477,13 +3477,13 @@ var Controls = function () {
 }();
 _Controls_settings = new WeakMap(), _Controls_timer = new WeakMap(), _Controls_controls = new WeakMap(), _Controls_player = new WeakMap(), _Controls_items = new WeakMap(), _Controls_controlEls = new WeakMap();
 /* harmony default export */ var controls = (Controls);
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
+;// ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
 function _assertThisInitialized(e) {
   if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   return e;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js
+;// ./node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js
 
 
 function _possibleConstructorReturn(t, e) {
@@ -3492,21 +3492,21 @@ function _possibleConstructorReturn(t, e) {
   return _assertThisInitialized(t);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
+;// ./node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
 function _getPrototypeOf(t) {
   return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) {
     return t.__proto__ || Object.getPrototypeOf(t);
   }, _getPrototypeOf(t);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
+;// ./node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
 function _setPrototypeOf(t, e) {
   return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
     return t.__proto__ = e, t;
   }, _setPrototypeOf(t, e);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/inherits.js
+;// ./node_modules/@babel/runtime/helpers/esm/inherits.js
 
 function _inherits(t, e) {
   if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function");
@@ -3521,7 +3521,7 @@ function _inherits(t, e) {
   }), e && _setPrototypeOf(t, e);
 }
 
-;// CONCATENATED MODULE: ./src/js/media/native.ts
+;// ./src/js/media/native.ts
 
 
 var native_classPrivateFieldSet = undefined && undefined.__classPrivateFieldSet || function (receiver, state, value, kind, f) {
@@ -3623,7 +3623,7 @@ var Native = function () {
 }();
 _Native_customPlayer = new WeakMap();
 /* harmony default export */ var media_native = (Native);
-;// CONCATENATED MODULE: ./src/js/media/dash.ts
+;// ./src/js/media/dash.ts
 
 
 
@@ -3791,7 +3791,7 @@ var DashMedia = function (_Native) {
 }(media_native);
 _DashMedia_player = new WeakMap(), _DashMedia_events = new WeakMap(), _DashMedia_options = new WeakMap();
 /* harmony default export */ var dash = (DashMedia);
-;// CONCATENATED MODULE: ./src/js/media/flv.ts
+;// ./src/js/media/flv.ts
 
 
 
@@ -3965,7 +3965,7 @@ var FlvMedia = function (_Native) {
 }(media_native);
 _FlvMedia_player = new WeakMap(), _FlvMedia_events = new WeakMap(), _FlvMedia_options = new WeakMap();
 /* harmony default export */ var flv = (FlvMedia);
-;// CONCATENATED MODULE: ./src/js/media/hls.ts
+;// ./src/js/media/hls.ts
 
 
 
@@ -4253,7 +4253,7 @@ var HlsMedia = function (_Native) {
 }(media_native);
 _HlsMedia_player = new WeakMap(), _HlsMedia_events = new WeakMap(), _HlsMedia_recoverDecodingErrorDate = new WeakMap(), _HlsMedia_recoverSwapAudioCodecDate = new WeakMap(), _HlsMedia_options = new WeakMap(), _HlsMedia_autoplay = new WeakMap();
 /* harmony default export */ var hls = (HlsMedia);
-;// CONCATENATED MODULE: ./src/js/media/html5.ts
+;// ./src/js/media/html5.ts
 
 
 
@@ -4476,7 +4476,7 @@ var HTML5Media = function (_Native) {
 }(media_native);
 _HTML5Media_currentLevel = new WeakMap(), _HTML5Media_levelList = new WeakMap(), _HTML5Media_isStreaming = new WeakMap(), _HTML5Media_retryCount = new WeakMap(), _HTML5Media_started = new WeakMap(), _HTML5Media_timer = new WeakMap();
 /* harmony default export */ var html5 = (HTML5Media);
-;// CONCATENATED MODULE: ./src/js/media.ts
+;// ./src/js/media.ts
 
 
 
@@ -4911,7 +4911,7 @@ var Media = function () {
 }();
 _Media_element = new WeakMap(), _Media_media = new WeakMap(), _Media_files = new WeakMap(), _Media_promisePlay = new WeakMap(), _Media_options = new WeakMap(), _Media_autoplay = new WeakMap(), _Media_mediaLoaded = new WeakMap(), _Media_customMedia = new WeakMap(), _Media_currentSrc = new WeakMap();
 /* harmony default export */ var js_media = (Media);
-;// CONCATENATED MODULE: ./src/js/media/ads.ts
+;// ./src/js/media/ads.ts
 
 
 
@@ -5804,7 +5804,7 @@ var Ads = function () {
 }();
 _Ads_ended = new WeakMap(), _Ads_done = new WeakMap(), _Ads_active = new WeakMap(), _Ads_started = new WeakMap(), _Ads_intervalTimer = new WeakMap(), _Ads_volume = new WeakMap(), _Ads_muted = new WeakMap(), _Ads_duration = new WeakMap(), _Ads_currentTime = new WeakMap(), _Ads_manager = new WeakMap(), _Ads_player = new WeakMap(), _Ads_media = new WeakMap(), _Ads_element = new WeakMap(), _Ads_events = new WeakMap(), _Ads_ads = new WeakMap(), _Ads_promise = new WeakMap(), _Ads_loader = new WeakMap(), _Ads_container = new WeakMap(), _Ads_customClickContainer = new WeakMap(), _Ads_skipElement = new WeakMap(), _Ads_displayContainer = new WeakMap(), _Ads_request = new WeakMap(), _Ads_autostart = new WeakMap(), _Ads_autostartMuted = new WeakMap(), _Ads_playTriggered = new WeakMap(), _Ads_options = new WeakMap(), _Ads_currentIndex = new WeakMap(), _Ads_originalVolume = new WeakMap(), _Ads_preloadContent = new WeakMap(), _Ads_lastTimePaused = new WeakMap(), _Ads_mediaSources = new WeakMap(), _Ads_mediaStarted = new WeakMap(), _Ads_adEvent = new WeakMap();
 /* harmony default export */ var ads = (Ads);
-;// CONCATENATED MODULE: ./src/js/player.ts
+;// ./src/js/player.ts
 
 
 
