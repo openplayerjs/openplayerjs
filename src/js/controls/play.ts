@@ -87,7 +87,10 @@ class Play implements PlayerComponent {
             }
         };
         this.#events.media.loadedmetadata = (): void => {
-            if (this.#button.classList.contains('op-controls__playpause--pause')) {
+            if (
+                this.#button.classList.contains('op-controls__playpause--pause') ||
+                this.#button.classList.contains('op-controls__playpause--replay')
+            ) {
                 this.#button.classList.remove('op-controls__playpause--replay');
                 this.#button.classList.remove('op-controls__playpause--pause');
                 this.#button.title = labels?.play || '';
