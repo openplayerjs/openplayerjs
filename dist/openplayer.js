@@ -1859,7 +1859,7 @@ var Play = function () {
         }
       };
       play_classPrivateFieldGet(this, _Play_events, "f").media.loadedmetadata = function () {
-        if (play_classPrivateFieldGet(_this, _Play_button, "f").classList.contains('op-controls__playpause--pause')) {
+        if (play_classPrivateFieldGet(_this, _Play_button, "f").classList.contains('op-controls__playpause--pause') || play_classPrivateFieldGet(_this, _Play_button, "f").classList.contains('op-controls__playpause--replay')) {
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
           play_classPrivateFieldGet(_this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
           play_classPrivateFieldGet(_this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';

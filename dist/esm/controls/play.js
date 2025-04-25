@@ -86,7 +86,8 @@ class Play {
             }
         };
         __classPrivateFieldGet(this, _Play_events, "f").media.loadedmetadata = () => {
-            if (__classPrivateFieldGet(this, _Play_button, "f").classList.contains('op-controls__playpause--pause')) {
+            if (__classPrivateFieldGet(this, _Play_button, "f").classList.contains('op-controls__playpause--pause') ||
+                __classPrivateFieldGet(this, _Play_button, "f").classList.contains('op-controls__playpause--replay')) {
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--replay');
                 __classPrivateFieldGet(this, _Play_button, "f").classList.remove('op-controls__playpause--pause');
                 __classPrivateFieldGet(this, _Play_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.play) || '';
