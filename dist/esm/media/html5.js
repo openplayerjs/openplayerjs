@@ -86,11 +86,15 @@ class HTML5Media extends Native {
         this.element.src = media.src;
     }
     _isDvrEnabled() {
-        const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
-        if (__classPrivateFieldGet(this, _HTML5Media_isStreaming, "f") && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
-            this.element.setAttribute('op-dvr__enabled', 'true');
-            const timeEvent = addEvent('timeupdate');
-            this.element.dispatchEvent(timeEvent);
+        try {
+            const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
+            if (__classPrivateFieldGet(this, _HTML5Media_isStreaming, "f") && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
+                this.element.setAttribute('op-dvr__enabled', 'true');
+                const timeEvent = addEvent('timeupdate');
+                this.element.dispatchEvent(timeEvent);
+            }
+        }
+        catch (_a) {
         }
     }
     _readMediadataInfo(e) {
