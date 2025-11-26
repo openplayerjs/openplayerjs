@@ -92,11 +92,15 @@ class HTML5Media extends Native {
     }
 
     private _isDvrEnabled(): void {
-        const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
-        if (this.#isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
-            this.element.setAttribute('op-dvr__enabled', 'true');
-            const timeEvent = addEvent('timeupdate');
-            this.element.dispatchEvent(timeEvent);
+        try {
+            const time = this.element.seekable.end(this.element.seekable.length - 1) - this.element.seekable.start(0);
+            if (this.#isStreaming && time > DVR_THRESHOLD && !this.element.getAttribute('op-dvr__enabled')) {
+                this.element.setAttribute('op-dvr__enabled', 'true');
+                const timeEvent = addEvent('timeupdate');
+                this.element.dispatchEvent(timeEvent);
+            }
+        } catch {
+            // no operation dispatched
         }
     }
 

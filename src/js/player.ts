@@ -671,7 +671,7 @@ class Player {
             };
             this.#events.seeked = (): void => {
                 const el = this.activeElement();
-                if (Math.round(el.currentTime) === 0) {
+                if (Math.round(el.currentTime) === 0 && !el.paused) {
                     this.playBtn.setAttribute('aria-hidden', 'true');
                     this.loader.setAttribute('aria-hidden', 'false');
                 } else {
