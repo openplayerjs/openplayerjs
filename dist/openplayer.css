@@ -92,8 +92,7 @@
 .op-player__play,
 .op-settings__back,
 .op-controls button {
-    -webkit-appearance: button;
-            appearance: button;
+    appearance: button;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -149,8 +148,7 @@
 .op-player__play > span {
     border: 0;
     clip: rect(0, 0, 0, 0);
-    -webkit-clip-path: inset(50%);
-            clip-path: inset(50%);
+    clip-path: inset(50%);
     height: 1px;
     overflow: hidden;
     padding: 0;
@@ -356,8 +354,7 @@
 /* === Progress / Volume =================== */
 .op-controls input[type='range'],
 .op-controls progress {
-    -webkit-appearance: none;
-            appearance: none;
+    appearance: none;
     border: 0;
     height: 5px;
     left: 0;
@@ -405,8 +402,7 @@
         user-select: none;
 }
 .op-controls input[type='range']::-webkit-slider-thumb {
-    -webkit-appearance: none;
-            appearance: none;
+    appearance: none;
     background: #fff;
     border: 2px solid transparent;
     border-radius: 100%;
@@ -736,7 +732,6 @@
     line-height: 150%;
     margin: 0 auto 15px;
     padding: 3px 10px;
-    width: -webkit-fit-content;
     width: fit-content;
 }
 .op-player__audio.op-captions--detected {

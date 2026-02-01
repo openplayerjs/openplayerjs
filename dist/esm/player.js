@@ -507,6 +507,7 @@ class Player {
         this.playBtn = document.createElement('button');
         this.playBtn.className = 'op-player__play';
         this.playBtn.tabIndex = 0;
+        this.playBtn.type = 'button';
         this.playBtn.title = ((_a = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _a === void 0 ? void 0 : _a.play) || '';
         this.playBtn.innerHTML = `<span>${((_b = __classPrivateFieldGet(this, _Player_options, "f").labels) === null || _b === void 0 ? void 0 : _b.play) || ''}</span>`;
         this.playBtn.setAttribute('aria-pressed', 'false');

@@ -51,6 +51,7 @@ class Captions {
         __classPrivateFieldSet(this, _Captions_button, document.createElement('button'), "f");
         __classPrivateFieldGet(this, _Captions_button, "f").className = `op-controls__captions op-control__${__classPrivateFieldGet(this, _Captions_controlPosition, "f")}`;
         __classPrivateFieldGet(this, _Captions_button, "f").tabIndex = 0;
+        __classPrivateFieldGet(this, _Captions_button, "f").type = 'button';
         __classPrivateFieldGet(this, _Captions_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.toggleCaptions) || '';
         __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Captions_player, "f").id);
         __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-pressed', 'false');

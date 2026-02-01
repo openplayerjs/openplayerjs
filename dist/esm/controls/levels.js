@@ -42,6 +42,7 @@ class Levels {
         __classPrivateFieldSet(this, _Levels_button, document.createElement('button'), "f");
         __classPrivateFieldGet(this, _Levels_button, "f").className = `op-controls__levels op-control__${__classPrivateFieldGet(this, _Levels_controlPosition, "f")}`;
         __classPrivateFieldGet(this, _Levels_button, "f").tabIndex = 0;
+        __classPrivateFieldGet(this, _Levels_button, "f").type = 'button';
         __classPrivateFieldGet(this, _Levels_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.mediaLevels) || '';
         __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Levels_player, "f").id);
         __classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.mediaLevels) || '');

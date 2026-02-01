@@ -789,6 +789,7 @@ var Captions = function () {
       __classPrivateFieldSet(this, _Captions_button, document.createElement('button'), "f");
       __classPrivateFieldGet(this, _Captions_button, "f").className = "op-controls__captions op-control__".concat(__classPrivateFieldGet(this, _Captions_controlPosition, "f"));
       __classPrivateFieldGet(this, _Captions_button, "f").tabIndex = 0;
+      __classPrivateFieldGet(this, _Captions_button, "f").type = 'button';
       __classPrivateFieldGet(this, _Captions_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.toggleCaptions) || '';
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Captions_player, "f").id);
       __classPrivateFieldGet(this, _Captions_button, "f").setAttribute('aria-pressed', 'false');
@@ -1483,6 +1484,7 @@ var Levels = function () {
       levels_classPrivateFieldSet(this, _Levels_button, document.createElement('button'), "f");
       levels_classPrivateFieldGet(this, _Levels_button, "f").className = "op-controls__levels op-control__".concat(levels_classPrivateFieldGet(this, _Levels_controlPosition, "f"));
       levels_classPrivateFieldGet(this, _Levels_button, "f").tabIndex = 0;
+      levels_classPrivateFieldGet(this, _Levels_button, "f").type = 'button';
       levels_classPrivateFieldGet(this, _Levels_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.mediaLevels) || '';
       levels_classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-controls', levels_classPrivateFieldGet(this, _Levels_player, "f").id);
       levels_classPrivateFieldGet(this, _Levels_button, "f").setAttribute('aria-label', (labels === null || labels === void 0 ? void 0 : labels.mediaLevels) || '');
@@ -2415,6 +2417,7 @@ var Settings = function () {
       settings_classPrivateFieldSet(this, _Settings_button, document.createElement('button'), "f");
       settings_classPrivateFieldGet(this, _Settings_button, "f").className = "op-controls__settings op-control__".concat(settings_classPrivateFieldGet(this, _Settings_controlPosition, "f"));
       settings_classPrivateFieldGet(this, _Settings_button, "f").tabIndex = 0;
+      settings_classPrivateFieldGet(this, _Settings_button, "f").type = 'button';
       settings_classPrivateFieldGet(this, _Settings_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.settings) || '';
       settings_classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-controls', settings_classPrivateFieldGet(this, _Settings_player, "f").id);
       settings_classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-pressed', 'false');
@@ -6466,6 +6469,7 @@ var Player = function () {
       this.playBtn = document.createElement('button');
       this.playBtn.className = 'op-player__play';
       this.playBtn.tabIndex = 0;
+      this.playBtn.type = 'button';
       this.playBtn.title = ((_a = player_classPrivateFieldGet(this, _Player_options, "f").labels) === null || _a === void 0 ? void 0 : _a.play) || '';
       this.playBtn.innerHTML = "<span>".concat(((_b = player_classPrivateFieldGet(this, _Player_options, "f").labels) === null || _b === void 0 ? void 0 : _b.play) || '', "</span>");
       this.playBtn.setAttribute('aria-pressed', 'false');

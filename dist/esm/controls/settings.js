@@ -35,6 +35,7 @@ class Settings {
         __classPrivateFieldSet(this, _Settings_button, document.createElement('button'), "f");
         __classPrivateFieldGet(this, _Settings_button, "f").className = `op-controls__settings op-control__${__classPrivateFieldGet(this, _Settings_controlPosition, "f")}`;
         __classPrivateFieldGet(this, _Settings_button, "f").tabIndex = 0;
+        __classPrivateFieldGet(this, _Settings_button, "f").type = 'button';
         __classPrivateFieldGet(this, _Settings_button, "f").title = (labels === null || labels === void 0 ? void 0 : labels.settings) || '';
         __classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-controls', __classPrivateFieldGet(this, _Settings_player, "f").id);
         __classPrivateFieldGet(this, _Settings_button, "f").setAttribute('aria-pressed', 'false');
