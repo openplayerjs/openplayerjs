@@ -613,6 +613,7 @@ class Player {
         this.playBtn = document.createElement('button');
         this.playBtn.className = 'op-player__play';
         this.playBtn.tabIndex = 0;
+        this.playBtn.type = 'button';
         this.playBtn.title = this.#options.labels?.play || '';
         this.playBtn.innerHTML = `<span>${this.#options.labels?.play || ''}</span>`;
         this.playBtn.setAttribute('aria-pressed', 'false');

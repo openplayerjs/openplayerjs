@@ -43,6 +43,7 @@ class Levels implements PlayerComponent {
         this.#button = document.createElement('button');
         this.#button.className = `op-controls__levels op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
+        this.#button.type = 'button';
         this.#button.title = labels?.mediaLevels || '';
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-label', labels?.mediaLevels || '');

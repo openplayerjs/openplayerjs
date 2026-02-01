@@ -60,6 +60,7 @@ class Captions implements PlayerComponent {
         this.#button = document.createElement('button');
         this.#button.className = `op-controls__captions op-control__${this.#controlPosition}`;
         this.#button.tabIndex = 0;
+        this.#button.type = 'button';
         this.#button.title = labels?.toggleCaptions || '';
         this.#button.setAttribute('aria-controls', this.#player.id);
         this.#button.setAttribute('aria-pressed', 'false');
@@ -324,7 +325,8 @@ class Captions implements PlayerComponent {
             .querySelector(`.op-subtitles__option[data-value="captions-${track.language}"]`)
             ?.parentElement?.setAttribute('aria-checked', 'true');
     }
-    private _showCaptions() {
+
+    private _showCaptions(): void {
         for (const cue of Array.from(this.#currentTrack?.activeCues || [])) {
             const content = (cue as VTTCue)?.text || '';
             if (content && this.#captions) {
@@ -338,7 +340,7 @@ class Captions implements PlayerComponent {
         }
     }
 
-    private _hideCaptions() {
+    private _hideCaptions(): void {
         while (this.#captions?.lastChild) {
             this.#captions.removeChild(this.#captions.lastChild);
         }
