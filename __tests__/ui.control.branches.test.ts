@@ -32,15 +32,10 @@ describe('ui/control branch coverage', () => {
     const controls = buildControls({
       'top-left': ['dummy', 'missing'],
       'bottom-right': 'not-an-array',
-      // parsePlacement: include both top/bottom and left/right branches
       'bottom-left': ['dummy'],
     });
 
-    // top-left should place dummy (missing is ignored)
     expect(controls.some((c) => c.id === 'dummy' && c.placement.v === 'top' && c.placement.h === 'left')).toBe(true);
-    // bottom-left should parse both tokens
-    expect(controls.some((c) => c.id === 'dummy' && c.placement.v === 'bottom' && c.placement.h === 'left')).toBe(
-      true
-    );
+    expect(controls.some((c) => c.id === 'dummy' && c.placement.v === 'bottom' && c.placement.h === 'left')).toBe(true);
   });
 });

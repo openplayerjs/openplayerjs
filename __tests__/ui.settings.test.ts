@@ -4,7 +4,6 @@ import { getOverlayManager } from '../src/core/overlay';
 import { Player } from '../src/core/player';
 import createCaptionsControl from '../src/ui/controls/captions';
 import createSettingsControl from '../src/ui/controls/settings';
-import { getSettingsRegistry } from '../src/ui/settings';
 
 function makePlayer() {
   const v = document.createElement('video');
@@ -46,11 +45,8 @@ function addTextTracks(media: HTMLVideoElement, tracks: { label: string; kind?: 
 describe('Settings control + registry', () => {
   test('SettingsControl hides when no providers are available, shows when providers exist', () => {
     const p = makePlayer();
-    // clear any providers (a new registry per player)
-    const reg = getSettingsRegistry(p);
-
     const settings = createSettingsControl().create(p) as HTMLDivElement;
-    expect(settings.style.display).not.toBe('none'); // Speed provider is built-in and always available.
+    expect(settings.style.display).not.toBe('none');
   });
 
   test('Captions submenu appears in Settings when tracks exist and selecting item enables track', () => {

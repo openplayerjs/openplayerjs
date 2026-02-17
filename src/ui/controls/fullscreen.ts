@@ -29,15 +29,12 @@ function exitFullscreen() {
 export class FullscreenControl extends BaseControl {
   id = 'fullscreen';
   placement: Control['placement'] = { v: 'bottom', h: 'right' };
-
-  private btn!: HTMLButtonElement;
   private isFullscreen = false;
   private screenW = 0;
   private screenH = 0;
 
   protected build(): HTMLElement {
     const btn = document.createElement('button');
-    this.btn = btn;
 
     btn.tabIndex = 0;
     btn.type = 'button';

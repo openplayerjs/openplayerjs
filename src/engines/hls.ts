@@ -48,7 +48,7 @@ export class HlsMediaEngine extends BaseMediaEngine {
     this.adapter.loadSource(ctx.activeSource?.src || '');
     this.adapter.attachMedia(ctx.media);
 
-    for (const e of Object.values(Hls.Events)) {
+    for (const e of Object.values(Hls.Events) as string[]) {
       this.onAdapterEvent(
         e,
         (...args: any[]) => {

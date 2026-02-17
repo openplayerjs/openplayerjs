@@ -78,6 +78,7 @@ describe('core/player branches', () => {
     // try/catch branch: force querySelectorAll to throw
     const media3 = document.createElement('video');
     media3.src = 'https://example.com/c.mp4';
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     media3.querySelectorAll = () => {
       throw new Error('boom');
     };

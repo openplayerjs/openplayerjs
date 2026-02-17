@@ -96,7 +96,7 @@ export class SettingsControl extends BaseControl {
           label: 'Speed',
           items: rates.map((r) => ({
             id: String(r),
-            label: r === 1 ? 'Normal' : `${r}×`,
+            label: r === 1 ? 'Normal' : `${r}x`,
             checked: Math.abs(current - r) < 1e-6,
             onSelect: () => {
               player.playbackRate = r;
@@ -170,7 +170,7 @@ export class SettingsControl extends BaseControl {
     const back = document.createElement('button');
     back.type = 'button';
     back.className = 'op-controls__settings-back';
-    back.textContent = '‹';
+    back.textContent = '<<';
     back.setAttribute('aria-label', 'Back');
     back.addEventListener(
       'click',

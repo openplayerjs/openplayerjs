@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import Hls from 'hls.js';
 import { EventBus } from '../src/core/events';
 import { Lease } from '../src/core/lease';
 import { StateManager } from '../src/core/state';
+import { HlsMediaEngine } from '../src/engines/hls';
 
 // Mock hls.js to drive branch coverage without loading the real library.
 jest.mock('hls.js', () => {
@@ -38,7 +39,9 @@ jest.mock('hls.js', () => {
     public swapAudioCodec = jest.fn();
     public destroy = jest.fn();
 
-    constructor(_cfg: any) {}
+    constructor(_cfg: any) {
+      //
+    }
 
     on(event: string, handler: (...args: any[]) => void) {
       const set = this.handlers.get(event) ?? new Set();
@@ -60,10 +63,7 @@ jest.mock('hls.js', () => {
   return { __esModule: true, default: MockHls };
 });
 
-import Hls from 'hls.js';
-import { HlsMediaEngine } from '../src/engines/hls';
-
-function makeCtx(opts: { autoplay?: boolean; preload?: "" | "none" | "metadata" | "auto"; leaseOwner?: string } = {}) {
+function makeCtx(opts: { autoplay?: boolean; preload?: '' | 'none' | 'metadata' | 'auto'; leaseOwner?: string } = {}) {
   const media = document.createElement('video');
   media.autoplay = Boolean(opts.autoplay);
   media.preload = opts.preload ?? 'metadata';
@@ -92,10 +92,6 @@ describe('HlsMediaEngine branch coverage', () => {
   beforeEach(() => {
     (Hls as any)._supported = true;
     jest.spyOn(console, 'log').mockImplementation(() => undefined);
-  });
-
-  afterEach(() => {
-    (console.log as any).mockRestore?.();
   });
 
   test('canPlay respects Hls.isSupported and .m3u8 suffix', () => {

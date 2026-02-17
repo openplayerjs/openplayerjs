@@ -50,7 +50,6 @@ export class CaptionsControl extends BaseControl {
 
   private button!: HTMLButtonElement;
   private lastSelectedIndex: number | null = null;
-  private detachProvider: (() => void) | null = null;
 
   protected build(): HTMLElement {
     const player = this.player;
@@ -135,7 +134,7 @@ export class CaptionsControl extends BaseControl {
       },
     };
 
-    this.detachProvider = getSettingsRegistry(player).register(provider);
+    getSettingsRegistry(player).register(provider);
 
     // Keep in sync when overlay changes or tracks change
     this.overlayMgr.bus.on('overlay:changed', () => refresh());

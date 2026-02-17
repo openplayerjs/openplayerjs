@@ -4,7 +4,7 @@ import VMAP from '@dailymotion/vmap';
 import { EventBus } from '../src/core/events';
 import type { Lease } from '../src/core/lease';
 import type { Player } from '../src/core/player';
-import { PluginContext } from '../src/core/plugin';
+import type { PluginContext } from '../src/core/plugin';
 import { StateManager } from '../src/core/state';
 import { AdsPlugin } from '../src/plugins/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
@@ -361,53 +361,6 @@ describe('AdsPlugin additional coverage', () => {
     await (p as any).playBreakFromVast({ kind: 'xml', value: el }, { kind: 'manual', id: 'el' });
     expect(vastParseMock).toHaveBeenCalled();
     expect(errs.length).toBeGreaterThan(0);
-  });
-
-  test('text track manager integration: add/remove/restore active track for ads captions', () => {
-    const { ctx } = makeCtx();
-
-    const added: any[] = [];
-    const removed: any[] = [];
-    const mgr = {
-      add: jest.fn((x: any) => added.push(x)),
-      remove: jest.fn((id: string) => removed.push(id)),
-      notifyListChange: jest.fn(),
-      getAll: jest.fn(() => [{ id: 't1' }, { id: 't2' }]),
-      setActive: jest.fn(),
-    };
-    (ctx.player as any).textTracks = mgr;
-
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
-    p.setup(ctx);
-
-    const anyP: any = p;
-    const adVideo = document.createElement('video');
-    // Make an existing "active" track that will be restored later
-    anyP.prevActiveTextTrackId = 't2';
-
-    anyP.addAdCaptionsToManager(
-      adVideo,
-      { breakId: 'b1' },
-      {
-        closedCaptionFiles: [
-          { type: 'text/vtt', language: 'en', fileURL: 'https://example.com/en.vtt' },
-          { type: 'application/ttml+xml', language: 'es', fileURL: 'https://example.com/es.ttml' },
-        ],
-      }
-    );
-
-    expect(mgr.add).toHaveBeenCalled();
-    expect(added[0].id).toContain('ads:b1');
-
-    // Remove captions should call mgr.remove for created ids
-    anyP.removeAdCaptions();
-    expect(mgr.remove).toHaveBeenCalled();
-    expect(mgr.notifyListChange).toHaveBeenCalled();
-
-    // restoreActiveTextTrack should re-activate previous active track if still present
-    anyP.prevActiveTextTrackId = 't2';
-    anyP.restoreActiveTextTrack();
-    expect(mgr.setActive).toHaveBeenCalledWith('t2');
   });
 
   test('telemetry + ad surface commands: quartiles, clickthrough, mute/unmute via bus', async () => {

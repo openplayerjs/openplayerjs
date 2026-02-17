@@ -83,7 +83,7 @@
   ],
   "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "scripts": {
-    "lint": "eslint --cache src",
+    "lint": "eslint --cache src __tests__",
     "build:types": "tsc -p tsconfig.types.json",
     "build:bundles": "rollup -c rollup.config.mjs",
     "watch": "npm run build:bundles -- --watch",
