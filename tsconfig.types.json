@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": true,
+    "outDir": "dist/types"
+  },
+  "include": ["src", "src/umd/index.ts", "types"],
+  "exclude": ["node_modules", "src/umd"]
+}

@@ -1,15 +1,15 @@
 {
-    "hooks": {
-        "after:bump": "npx auto-changelog -p"
-    },
-    "git": {
-        "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs",
-        "requireCleanWorkingDir": false,
-        "addUntrackedFiles": true
-    },
-    "github": {
-        "release": true,
-        "releaseName": "${version}"
-    },
-    "dist": {}
+  "hooks": {
+    "after:bump": "npx auto-changelog -p"
+  },
+  "git": {
+    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs",
+    "requireCleanWorkingDir": false,
+    "addUntrackedFiles": true
+  },
+  "github": {
+    "release": true,
+    "releaseName": "${version}"
+  },
+  "dist": {}
 }

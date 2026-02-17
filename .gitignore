@@ -5,6 +5,6 @@ ts-dist/
 coverage/
 .history/
 .DS_Store
-.nyc_output
 .coveralls.yml
-test/index.html
+index.html
+dist/

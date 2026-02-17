@@ -1,38 +1,13 @@
 {
-  "buildOnSave": false,
-  "compileOnSave": false,
   "compilerOptions": {
-      "allowSyntheticDefaultImports": true,
-      "lib": [
-        "dom",
-        "es6"
-      ],
-      "declaration": false,
-      "allowJs": true,
-      "target": "es6",
-      "noImplicitAny": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "removeComments": true,
-      "preserveConstEnums": true,
-      "sourceMap": false,
-      "skipLibCheck": true,
-      "strict": true,
-      "moduleResolution": "node",
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "esModuleInterop": true,
-      "strictPropertyInitialization": false
+    "target": "esnext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "useDefineForClassFields": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
-  "include": [
-      "./src/js",
-      "./test"
-  ],
-  "exclude": [
-      "node_modules",
-      "ts-dist",
-      "dist",
-      "test",
-      "webpack.config.js"
-  ],
+  "include": ["src", "types"],
+  "exclude": ["node_modules", "dist"]
 }
