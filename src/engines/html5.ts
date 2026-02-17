@@ -1,4 +1,4 @@
-import { MediaEngineContext, MediaSource } from '../core/media';
+import type { MediaEngineContext, MediaSource } from '../core/media';
 import { BaseMediaEngine } from './base';
 
 export class DefaultMediaEngine extends BaseMediaEngine {

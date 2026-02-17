@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS } from '../../core/constants';
-import { Control } from '../control';
+import type { Control } from '../control';
 import { BaseControl } from './base';
 
 function getFullscreenElement(): Element | null {

@@ -1,15 +1,15 @@
 // ui/controls/abstract-control.ts
 import { getOverlayManager, type OverlayState } from '../../core/overlay';
 import type { Player as CorePlayer } from '../../core/player';
-import { Control } from '../control';
+import type { Control } from '../control';
 
 export type ControlPlacementV = 'top' | 'center' | 'bottom';
 export type ControlPlacementH = 'left' | 'center' | 'right';
 
-export interface ControlPlacement {
+export type ControlPlacement = {
   v: ControlPlacementV;
   h: ControlPlacementH;
-}
+};
 
 export abstract class BaseControl implements Control {
   abstract id: string;
@@ -22,7 +22,6 @@ export abstract class BaseControl implements Control {
 
   protected abstract build(): HTMLElement;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected onOverlayChanged(_ov: OverlayState | null): void {
     // ignore
   }

@@ -1,13 +1,13 @@
 import Hls from 'hls.js';
 import { EVENT_OPTIONS } from '../core/constants';
-import { MediaEngineContext, MediaSource } from '../core/media';
+import type { MediaEngineContext, MediaSource } from '../core/media';
 import { BaseMediaEngine } from './base';
 
-interface AdapterListener {
+type AdapterListener = {
   event: string;
   handler: (...args: any[]) => void;
   options?: any;
-}
+};
 
 export class HlsMediaEngine extends BaseMediaEngine {
   name = 'hls-engine';
@@ -24,7 +24,7 @@ export class HlsMediaEngine extends BaseMediaEngine {
   constructor(private config: any = {}) {
     super();
   }
- 
+
   canPlay(source: MediaSource) {
     return (
       Hls.isSupported() && (source.type === 'application/x-mpegURL' || new URL(source.src).pathname.endsWith('.m3u8'))
@@ -196,7 +196,6 @@ export class HlsMediaEngine extends BaseMediaEngine {
           }
         }
 
-        console.log('error', { data });
         ctx.events.emit('playback:error', data);
       },
       EVENT_OPTIONS

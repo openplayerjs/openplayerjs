@@ -1,12 +1,15 @@
 import { DefaultMediaEngine } from '../engines/html5';
-import { EventBus, PlayerEvent } from './events';
+import type { PlayerEvent } from './events';
+import { EventBus } from './events';
 import { Lease } from './lease';
-import { MediaEngineContext, MediaEnginePlugin, MediaSource } from './media';
-import { PlayerPlugin, PluginRegistry } from './plugin';
-import { PlaybackState, StateManager } from './state';
+import type { MediaEngineContext, MediaEnginePlugin, MediaSource } from './media';
+import type { PlayerPlugin } from './plugin';
+import { PluginRegistry } from './plugin';
+import type { PlaybackState } from './state';
+import { StateManager } from './state';
 import { predictMimeType } from './utils';
 
-type PlayerConfig = { debug?: boolean; plugins?: any[], labels?: Record<string, string>, [key: string]: unknown }
+type PlayerConfig = { debug?: boolean; plugins?: any[]; labels?: Record<string, string>; [key: string]: unknown };
 
 const defaultLabels = Object.freeze({
   auto: 'Auto',
@@ -52,10 +55,7 @@ export class Player {
   private activeEngine?: MediaEnginePlugin;
   private playerContext: MediaEngineContext | null = null;
 
-  constructor(
-    media: HTMLMediaElement | string,
-    config: PlayerConfig = {}
-  ) {
+  constructor(media: HTMLMediaElement | string, config: PlayerConfig = {}) {
     this.media = media instanceof HTMLMediaElement ? media : document.querySelector(media)!;
     this.registerPlugin(new DefaultMediaEngine());
     const labels = { ...defaultLabels, ...config.labels };

@@ -155,8 +155,8 @@ export class ProgressControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    player.events.on('media:duration', () => updateUI());
-    player.events.on('media:timeupdate', () => updateUI());
+    player.events.on('media:duration', updateUI);
+    player.events.on('media:timeupdate', updateUI);
 
     player.events.on('playback:waiting', () => {
       if (!slider.classList.contains('loading')) slider.classList.add('loading');

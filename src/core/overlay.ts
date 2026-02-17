@@ -3,7 +3,7 @@ import { EventBus } from './events';
 
 export type OverlayMode = 'normal' | 'countdown';
 
-export interface OverlayState {
+export type OverlayState = {
   /** Unique overlay id, e.g. "ads", "cast" */
   id: string;
   /** Higher wins when multiple overlays are active */
@@ -25,7 +25,7 @@ export interface OverlayState {
   bufferedPct?: number; // 0..100
   fullscreenEl?: HTMLElement;
   fullscreenVideoEl?: HTMLElement;
-}
+};
 
 export type OverlayEvent = 'overlay:changed';
 

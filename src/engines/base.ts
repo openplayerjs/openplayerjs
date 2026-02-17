@@ -1,12 +1,12 @@
 import { EVENT_OPTIONS } from '../core/constants';
-import { Listener } from '../core/events';
-import { MediaEngineContext, MediaSource } from '../core/media';
+import type { Listener } from '../core/events';
+import type { MediaEngineContext, MediaSource } from '../core/media';
 
-interface MediaListener {
+type MediaListener = {
   type: keyof HTMLMediaElementEventMap;
   handler: EventListener;
   options?: boolean | AddEventListenerOptions;
-}
+};
 
 export abstract class BaseMediaEngine {
   protected media: HTMLMediaElement | null = null;

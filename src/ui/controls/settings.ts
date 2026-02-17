@@ -147,7 +147,7 @@ export class SettingsControl extends BaseControl {
     while (this.view.firstChild) this.view.removeChild(this.view.firstChild);
 
     const active = this.activeSubmenuId
-      ? available.find((x) => x.submenu.id === this.activeSubmenuId)?.submenu ?? null
+      ? (available.find((x) => x.submenu.id === this.activeSubmenuId)?.submenu ?? null)
       : null;
 
     if (!active) {
@@ -192,12 +192,17 @@ export class SettingsControl extends BaseControl {
 
     for (const item of active.items) {
       this.view.appendChild(
-        this.makeRow(item.label, () => {
-          if (item.disabled) return;
-          item.onSelect();
-          // Recompute submenu after selection
-          this.render();
-        }, item.checked, item.disabled)
+        this.makeRow(
+          item.label,
+          () => {
+            if (item.disabled) return;
+            item.onSelect();
+            // Recompute submenu after selection
+            this.render();
+          },
+          item.checked,
+          item.disabled
+        )
       );
     }
   }

@@ -1,20 +1,20 @@
 import type { Player } from '../core/player';
 
-export interface SettingsMenuItem {
+export type SettingsMenuItem = {
   id: string;
   label: string;
   checked?: boolean;
   disabled?: boolean;
   onSelect: () => void;
-}
+};
 
-export interface SettingsSubmenu {
+export type SettingsSubmenu = {
   id: string;
   label: string;
   items: SettingsMenuItem[];
-}
+};
 
-export interface SettingsSubmenuProvider {
+export type SettingsSubmenuProvider = {
   /** Stable id for this submenu. */
   id: string;
   /** Label as shown in the root menu. */
@@ -25,7 +25,7 @@ export interface SettingsSubmenuProvider {
    * Called frequently; keep it cheap.
    */
   getSubmenu: (player: Player) => SettingsSubmenu | null;
-}
+};
 
 const SETTINGS_REGISTRY_KEY = '__op::settings::registry';
 

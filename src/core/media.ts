@@ -1,20 +1,20 @@
 import type { EventBus } from './events';
 import type { Player } from './player';
 
-export interface MediaSource {
+export type MediaSource = {
   src: string;
   type?: string;
-}
+};
 
-export interface MediaEngineContext {
+export type MediaEngineContext = {
   media: HTMLMediaElement;
   events: EventBus;
   activeSource?: MediaSource;
   config?: any;
   player: Player;
-}
+};
 
-export interface MediaEnginePlugin {
+export type MediaEnginePlugin = {
   name: string;
   version: string;
   capabilities: ['media-engine'];
@@ -23,4 +23,4 @@ export interface MediaEnginePlugin {
   canPlay(source: MediaSource): boolean;
   attach(ctx: MediaEngineContext): void;
   detach?(ctx: MediaEngineContext): void;
-}
+};

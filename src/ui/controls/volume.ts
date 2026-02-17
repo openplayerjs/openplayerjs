@@ -1,6 +1,6 @@
 import { EVENT_OPTIONS } from '../../core/constants';
 import { isMobile } from '../../core/utils';
-import { Control } from '../control';
+import type { Control } from '../control';
 import { getActiveMedia } from '../playback';
 import { BaseControl } from './base';
 

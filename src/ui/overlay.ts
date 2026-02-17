@@ -1,16 +1,16 @@
 import { EVENT_OPTIONS } from '../core/constants';
-import { Player } from '../core/player';
+import type { Player } from '../core/player';
 import { togglePlayback } from './playback';
 
 export type CenterIcon = 'play' | 'pause';
 
-export interface CenterOverlayBindings {
+export type CenterOverlayBindings = {
   button: HTMLButtonElement;
   loader: HTMLSpanElement;
 
   showButton: (show: boolean) => void;
   showLoader: (show: boolean) => void;
-}
+};
 
 export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
   const button = document.createElement('button');

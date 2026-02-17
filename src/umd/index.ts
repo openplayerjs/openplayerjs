@@ -11,6 +11,7 @@ import createCurrentTimeControl from '../ui/controls/time';
 import createVolumeControl from '../ui/controls/volume';
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
     OpenPlayerPlugins?: Record<string, any>;
   }
@@ -20,11 +21,11 @@ type ControlId = string;
 
 type Unsubscribe = () => void;
 
-interface PendingListener {
+type PendingListener = {
   event: string;
   cb: (...args: any[]) => void;
   off?: Unsubscribe;
-}
+};
 
 function extractControlIds(controlsCfg: any): ControlId[] {
   if (!controlsCfg || typeof controlsCfg !== 'object') return [];
@@ -61,6 +62,26 @@ function registerControlsFromConfig(controlsCfg: any) {
   }
 }
 
+function resolveMedia(target: string | HTMLMediaElement): HTMLMediaElement {
+  if (target instanceof HTMLMediaElement) return target;
+
+  const byId = document.getElementById(target);
+  const el = byId ?? document.querySelector(target);
+
+  if (!el) {
+    throw new Error(
+      `OpenPlayer: target "${target}" not found. ` +
+        `Pass an HTMLMediaElement or a valid id ("video") or selector ("#video").`
+    );
+  }
+
+  if (!(el instanceof HTMLMediaElement)) {
+    throw new Error(`OpenPlayer: target "${target}" is not an HTMLMediaElement.`);
+  }
+
+  return el;
+}
+
 export default class Player {
   private media!: HTMLMediaElement;
   private player!: CorePlayer;
@@ -70,7 +91,7 @@ export default class Player {
     target: string | HTMLMediaElement,
     private config: any = {}
   ) {
-    this.media = typeof target === 'string' ? (document.getElementById(target)! as HTMLMediaElement) : target;
+    this.media = resolveMedia(target);
   }
 
   async init() {
@@ -119,7 +140,6 @@ export default class Player {
   }
 
   private setupUI() {
-    if (!this.config.controls) return;
     const controls = buildControls(this.config.controls);
     createUI(this.player, this.media, controls);
   }

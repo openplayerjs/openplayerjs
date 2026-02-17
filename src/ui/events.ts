@@ -1,6 +1,6 @@
 import { EVENT_OPTIONS } from '../core/constants';
-import { Player } from '../core/player';
-import { CenterOverlayBindings } from './overlay';
+import type { Player } from '../core/player';
+import type { CenterOverlayBindings } from './overlay';
 import { getActiveMedia, togglePlayback } from './playback';
 
 export function bindCenterOverlay(player: Player, bindings: CenterOverlayBindings, keyTarget: HTMLElement) {

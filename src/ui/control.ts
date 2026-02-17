@@ -4,37 +4,39 @@ export type VerticalSlot = 'top' | 'middle' | 'bottom';
 
 export type HorizontalSlot = 'left' | 'center' | 'right';
 
-export interface ControlPlacement {
+export type ControlPlacement = {
   v: VerticalSlot;
   h: HorizontalSlot;
-}
+  region?: 'main';
+};
 
-export interface Control {
+export type Control = {
   id: string;
   placement: ControlPlacement;
 
   create(player: Player): HTMLElement;
   destroy?(): void;
-}
+};
 
 const registry = new Map<string, () => Control>();
 
 function parsePlacement(key: string): ControlPlacement {
-  const parts = key.split('-');
-
-  let v = 'middle';
-  let h = 'center';
-
-  for (const part of parts) {
-    if (part === 'top' || part === 'bottom') {
-      v = part;
-    }
-    if (part === 'left' || part === 'right') {
-      h = part;
-    }
+  if (key === 'main') {
+    return { v: 'middle', h: 'center', region: 'main' };
   }
 
-  return { v: v as VerticalSlot, h: h as HorizontalSlot };
+  const parts = key.split('-');
+
+  let v: VerticalSlot = 'middle';
+  let h: HorizontalSlot = 'center';
+
+  for (const part of parts) {
+    if (part === 'top' || part === 'bottom') v = part;
+    if (part === 'left' || part === 'right') h = part;
+    if (part === 'middle' || part === 'center') h = 'center';
+  }
+
+  return { v, h };
 }
 
 function createSection(name: string) {
@@ -55,15 +57,22 @@ function createSection(name: string) {
   return { section, left, center, right };
 }
 
-export function createControlGrid(root: HTMLElement) {
+export function createControlGrid(controlsRoot: HTMLElement, mainRoot?: HTMLElement) {
   const top = createSection('top');
   const middle = createSection('center');
   const bottom = createSection('bottom');
 
-  root.append(top.section, middle.section, bottom.section);
+  controlsRoot.append(top.section, middle.section, bottom.section);
 
   return {
     place(placement: Control['placement'], el: HTMLElement) {
+      // Special "main" region lives in the media container, not in the controls bar.
+      const region = (placement as any).region;
+      if (region === 'main' && mainRoot) {
+        mainRoot.appendChild(el);
+        return;
+      }
+
       const row = placement.v === 'top' ? top : placement.v === 'middle' ? middle : bottom;
       const col = placement.h === 'left' ? row.left : placement.h === 'center' ? row.center : row.right;
 

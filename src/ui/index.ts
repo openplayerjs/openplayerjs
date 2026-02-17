@@ -6,6 +6,8 @@ import { bindCenterOverlay } from './events';
 import { createCenterOverlayDom } from './overlay';
 
 export function createUI(player: Player, media: HTMLMediaElement, controls: Control[]) {
+  const tmpMedia = media;
+  const isMediaAudio = isAudio(tmpMedia);
   const wrapper = document.createElement('div');
   wrapper.className = 'op-player';
   wrapper.setAttribute('role', 'region');
@@ -14,18 +16,20 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   media.controls = false;
 
-  const tmpMedia = media;
   media.replaceWith(wrapper);
 
   const mediaContainer = document.createElement('div');
   mediaContainer.className = 'op-media';
-  // Allow keyboard focus on the media area (not only the outer wrapper)
   mediaContainer.tabIndex = 0;
   mediaContainer.setAttribute('role', 'group');
   mediaContainer.setAttribute('aria-label', 'Media');
   mediaContainer.appendChild(tmpMedia);
 
-  if (!isAudio(tmpMedia)) {
+  const mainControls = document.createElement('div');
+  mainControls.className = 'op-media__main';
+  mediaContainer.appendChild(mainControls);
+
+  if (!isMediaAudio) {
     const overlay = createCenterOverlayDom(player);
     mediaContainer.appendChild(overlay.button);
     mediaContainer.appendChild(overlay.loader);
@@ -35,6 +39,20 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
   const controlsRoot = document.createElement('div');
   controlsRoot.className = 'op-controls';
   controlsRoot.setAttribute('aria-hidden', 'false');
+
+  if (isMediaAudio) {
+    const grid = createControlGrid(controlsRoot, mainControls);
+
+    wrapper.appendChild(mediaContainer);
+    wrapper.appendChild(controlsRoot);
+
+    controls.forEach((control) => {
+      const el = control.create(player);
+      el.dataset.controlId = control.id;
+      grid.place(control.placement, el);
+    });
+    return;
+  }
 
   const mobile = isMobile();
   const POINTER_SHOW_MS = 3000;
@@ -49,9 +67,6 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     if (hideTimer) window.clearTimeout(hideTimer);
     controlsRoot.classList.add('op-controls--visible');
     controlsRoot.classList.remove('op-controls--hidden');
-    controlsRoot.style.transform = 'translateY(0)';
-    controlsRoot.style.opacity = '1';
-    controlsRoot.style.pointerEvents = '';
     controlsRoot.setAttribute('aria-hidden', 'false');
   };
 
@@ -98,12 +113,16 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     return wrapper.contains(active) && !controlsRoot.contains(active);
   };
 
-  wrapper.addEventListener('focusin', () => {
-    if (isFocusInMediaArea()) {
-      showControls();
-      if (hideTimer) window.clearTimeout(hideTimer);
-    }
-  }, EVENT_OPTIONS);
+  wrapper.addEventListener(
+    'focusin',
+    () => {
+      if (isFocusInMediaArea()) {
+        showControls();
+        if (hideTimer) window.clearTimeout(hideTimer);
+      }
+    },
+    EVENT_OPTIONS
+  );
 
   wrapper.addEventListener(
     'focusout',
@@ -148,7 +167,7 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     controlsRoot.addEventListener('pointerleave', () => scheduleHide(POINTER_SHOW_MS), EVENT_OPTIONS);
   }
 
-  const grid = createControlGrid(controlsRoot);
+  const grid = createControlGrid(controlsRoot, mainControls);
 
   wrapper.appendChild(mediaContainer);
   wrapper.appendChild(controlsRoot);

@@ -1,9 +1,9 @@
 import { VASTClient, VASTTracker } from '@dailymotion/vast-client';
 import VMAP from '@dailymotion/vmap';
 import { EVENT_OPTIONS } from '../core/constants';
-import { EventBus } from '../core/events';
+import type { EventBus } from '../core/events';
 import { getOverlayManager } from '../core/overlay';
-import { PlayerPlugin, PluginContext } from '../core/plugin';
+import type { PlayerPlugin, PluginContext } from '../core/plugin';
 
 export type AdsEvent =
   | 'ads:requested'
@@ -24,30 +24,30 @@ type VastInput = { kind: 'url'; value: string } | { kind: 'xml'; value: string |
 
 type BreakAt = 'preroll' | 'postroll' | number;
 
-interface VastClosedCaption {
+type VastClosedCaption = {
   type?: string;
   language?: string;
   fileURL?: string;
-}
+};
 
-interface CaptionResource {
+type CaptionResource = {
   src: string;
   kind: 'captions' | 'subtitles';
   srclang?: string;
   label?: string;
   type?: string;
-}
+};
 
-export interface AdsBreakConfig {
+export type AdsBreakConfig = {
   id?: string;
   at: BreakAt;
   url?: string;
   xml?: string | XMLDocument | Element;
   /** If true (default), a break fires at most once per content source. */
   once?: boolean;
-}
+};
 
-export interface SimidConfig {
+export type SimidConfig = {
   /** Enable SIMID interactive layer support (best-effort). */
   enabled?: boolean;
   /**
@@ -59,7 +59,7 @@ export interface SimidConfig {
   className?: string;
   /** Optional hook for debugging postMessage traffic. */
   onMessage?: (msg: any) => void;
-}
+};
 
 class PluginBus<E extends string> {
   constructor(private bus: EventBus) {}
@@ -73,7 +73,7 @@ class PluginBus<E extends string> {
   }
 }
 
-export interface AdsPluginConfig {
+export type AdsPluginConfig = {
   /**
    * Back-compat preroll: if `url/xml` are provided and `breaks` is empty, treat as preroll.
    */
@@ -116,18 +116,18 @@ export interface AdsPluginConfig {
   resumeContent?: boolean;
   preferredMediaTypes?: string[];
   debug?: boolean;
-}
+};
 
-interface NormalizedMediaFile {
+type NormalizedMediaFile = {
   type: string;
   fileURL: string;
   bitrate: number;
   width: number;
   height: number;
   raw: any;
-}
+};
 
-interface PodAd {
+type PodAd = {
   ad: any;
   creative: any;
   mediaFile: NormalizedMediaFile;
@@ -138,7 +138,7 @@ interface PodAd {
   companions?: any[];
   /** Non-linear creatives (best-effort). */
   nonLinears?: any[];
-}
+};
 
 export class AdsPlugin implements PlayerPlugin {
   name = 'ads';
@@ -474,6 +474,7 @@ export class AdsPlugin implements PlayerPlugin {
 
   private bindBreakScheduler() {
     const content = this.ctx.player.media;
+    if (!content) return;
 
     const onTime = () => {
       if (this.active || this.startingBreak) return;
@@ -682,54 +683,6 @@ export class AdsPlugin implements PlayerPlugin {
 
     this.adTrackEls = [];
     this.adTextTrackIds = [];
-  }
-
-  private addAdCaptionsToManager(v: HTMLVideoElement, meta: { breakId: string }, mediaFileRaw: any) {
-    const mgr = this.getTextTrackManager();
-    if (!mgr?.add) return;
-
-    this.removeAdCaptions();
-
-    const ccFiles = this.extractClosedCaptions(mediaFileRaw);
-    const vtt = ccFiles.filter((f) => (f.type || '').toLowerCase().includes('vtt'));
-
-    const createdEls: HTMLTrackElement[] = [];
-    const createdIds: string[] = [];
-
-    vtt.forEach((f, i) => {
-      const trackEl = document.createElement('track');
-      trackEl.kind = 'captions';
-      trackEl.src = String(f.fileURL);
-
-      const lang = f.language ? String(f.language) : '';
-      if (lang) trackEl.srclang = lang;
-
-      // Make it clear it's an ad track
-      const labelBase = lang ? lang.toUpperCase() : `Track ${i + 1}`;
-      trackEl.label = `Ad — ${labelBase}`;
-
-      v.appendChild(trackEl);
-      createdEls.push(trackEl);
-
-      const native = trackEl.track;
-      const id = `ads:${meta.breakId}:${trackEl.srclang || ''}:${i}`;
-
-      mgr.add({
-        id,
-        kind: 'captions',
-        label: trackEl.label,
-        language: trackEl.srclang,
-        default: false,
-        enabled: false,
-        enable: () => (native.mode = 'showing'),
-        disable: () => (native.mode = 'disabled'),
-      });
-
-      createdIds.push(id);
-    });
-
-    this.adTrackEls = createdEls;
-    this.adTextTrackIds = createdIds;
   }
 
   private pickBestMediaFile(mediaFiles: any[]): NormalizedMediaFile | null {

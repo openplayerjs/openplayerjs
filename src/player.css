@@ -27,6 +27,7 @@
 
 .op-media {
     cursor: pointer;
+    position: relative;
 }
 
 .op-player__media,

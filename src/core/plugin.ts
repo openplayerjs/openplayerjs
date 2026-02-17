@@ -3,16 +3,16 @@ import type { Lease } from './lease';
 import type { Player } from './player';
 import type { PlaybackState, StateManager } from './state';
 
-export interface PluginContext {
+export type PluginContext = {
   events: EventBus;
   state: StateManager<PlaybackState>;
   leases: Lease;
   player: Player;
-}
+};
 
 export type PluginClass<T extends PlayerPlugin> = new (config?: any) => T;
 
-export interface PlayerPlugin {
+export type PlayerPlugin = {
   name: string;
   version: string;
   capabilities?: string[];
@@ -20,7 +20,7 @@ export interface PlayerPlugin {
   setup?(ctx: PluginContext): void;
   onEvent?(event: PlayerEvent, payload?: any): void;
   destroy?(): void;
-}
+};
 
 export class PluginRegistry {
   private plugins: PlayerPlugin[] = [];
