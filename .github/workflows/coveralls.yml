@@ -15,7 +15,7 @@ jobs:
 
             - name: npm install, make test-coverage
               run: |
-                  npm install
+                  npm ci --cache .npm --prefer-offline
                   npm test
             - name: Coveralls
               uses: coverallsapp/github-action@v2.3.0
