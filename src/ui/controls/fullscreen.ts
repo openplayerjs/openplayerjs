@@ -34,12 +34,13 @@ export class FullscreenControl extends BaseControl {
   private screenH = 0;
 
   protected build(): HTMLElement {
+    const player = this.player;
     const btn = document.createElement('button');
 
     btn.tabIndex = 0;
     btn.type = 'button';
     btn.className = 'op-controls__fullscreen';
-    btn.setAttribute('aria-label', 'Fullscreen');
+    btn.setAttribute('aria-label', player.config.labels?.fullscreen || 'Fullscreen');
     btn.setAttribute('aria-pressed', 'false');
 
     const setFullscreenData = (on: boolean) => {

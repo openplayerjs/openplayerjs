@@ -67,10 +67,10 @@ describe('Settings control + registry', () => {
     // Root menu should include Captions and Speed
     const items = Array.from(settings.querySelectorAll('.op-controls__menu-item')) as HTMLButtonElement[];
     const labels = items.map((b) => (b.textContent || '').trim());
-    expect(labels).toEqual(expect.arrayContaining(['Captions', 'Speed']));
+    expect(labels).toEqual(expect.arrayContaining(['CC/Subtitles', 'Speed']));
 
     // Enter captions submenu
-    const captionsItem = items.find((b) => (b.textContent || '').includes('Captions'))!;
+    const captionsItem = items.find((b) => (b.textContent || '').includes('CC/Subtitles'))!;
     captionsItem.click();
 
     // Select the first track (not Off)

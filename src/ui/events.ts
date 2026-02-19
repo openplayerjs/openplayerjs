@@ -3,32 +3,40 @@ import type { Player } from '../core/player';
 import type { CenterOverlayBindings } from './overlay';
 import { getActiveMedia, togglePlayback } from './playback';
 
-export function bindCenterOverlay(player: Player, bindings: CenterOverlayBindings, keyTarget: HTMLElement) {
-  let usingKeyboard = false;
+export function bindCenterOverlay(player: Player, keyTarget: HTMLElement, bindings?: CenterOverlayBindings) {
   let lastNonZeroVolume = player.volume || 1;
 
-  const onKey = () => {
-    if (!usingKeyboard) {
-      usingKeyboard = true;
+  const onKeyboard = () => {
+    if (keyTarget.classList.contains('op-player__keyboard--inactive')) {
       keyTarget.classList.remove('op-player__keyboard--inactive');
     }
   };
 
   const onPointer = () => {
-    if (usingKeyboard) {
-      usingKeyboard = false;
+    if (!keyTarget.classList.contains('op-player__keyboard--inactive')) {
       keyTarget.classList.add('op-player__keyboard--inactive');
     }
   };
 
-  window.addEventListener('keydown', onKey, EVENT_OPTIONS);
+  // Pointer/touch interaction should switch to "pointer mode" and hide keyboard focus styling.
+  // Bind to the player wrapper (keyTarget) so toggling on the wrapper updates the class.
+  keyTarget.addEventListener('click', onPointer, EVENT_OPTIONS);
+  keyTarget.addEventListener('pointerdown', onPointer, EVENT_OPTIONS);
+  keyTarget.addEventListener('pointerleave', onPointer, EVENT_OPTIONS);
+
+  // Also listen at window-level for interactions that might happen outside the wrapper.
   window.addEventListener('click', onPointer, EVENT_OPTIONS);
-  window.addEventListener('pointerleave', onPointer, EVENT_OPTIONS);
+  window.addEventListener('pointerdown', onPointer, EVENT_OPTIONS);
+
+  // Some tests (and real-world cases) dispatch keyboard events on window.
+  window.addEventListener('keydown', onKeyboard, EVENT_OPTIONS);
 
   keyTarget.addEventListener(
     'keydown',
     async (e) => {
       const key = e.key;
+
+      onKeyboard();
 
       // If a control button is focused, let Space/Enter activate it (native button behavior).
       const activeEl = document.activeElement as HTMLElement | null;
@@ -43,7 +51,7 @@ export function bindCenterOverlay(player: Player, bindings: CenterOverlayBinding
         return;
       }
 
-      const step = 5;
+      const step = player.config.step || 5;
 
       switch (key) {
         // Toggle play/pause
@@ -207,31 +215,31 @@ export function bindCenterOverlay(player: Player, bindings: CenterOverlayBinding
   );
 
   player.events.on('playback:waiting', () => {
-    bindings.showLoader(true);
-    bindings.showButton(false);
+    bindings?.showLoader(true);
+    bindings?.showButton(false);
   });
   player.events.on('playback:seeking', () => {
-    bindings.showLoader(true);
-    bindings.showButton(false);
+    bindings?.showLoader(true);
+    bindings?.showButton(false);
   });
   player.events.on('playback:seeked', () => {
-    bindings.showLoader(false);
-    bindings.showButton(true);
+    bindings?.showLoader(false);
+    bindings?.showButton(true);
   });
   player.events.on('playback:play', () => {
-    bindings.showLoader(false);
-    bindings.showButton(true);
+    bindings?.showLoader(false);
+    bindings?.showButton(true);
   });
   player.events.on('playback:pause', () => {
-    bindings.showLoader(false);
-    bindings.showButton(true);
+    bindings?.showLoader(false);
+    bindings?.showButton(true);
   });
   player.events.on('playback:playing', () => {
-    bindings.showLoader(false);
-    bindings.showButton(false);
+    bindings?.showLoader(false);
+    bindings?.showButton(false);
   });
   player.events.on('playback:ended', () => {
-    bindings.showLoader(false);
-    bindings.showButton(true);
+    bindings?.showLoader(false);
+    bindings?.showButton(true);
   });
 }

@@ -53,11 +53,13 @@ export class CaptionsControl extends BaseControl {
 
   protected build(): HTMLElement {
     const player = this.player;
+    const label = player.config.labels?.captions || 'CC/Subtitles';
+    const buttonLabel = player.config.labels?.toggleCaptions || 'Toggle Captions';
 
     this.button = document.createElement('button');
     this.button.type = 'button';
     this.button.className = 'op-controls__captions';
-    this.button.setAttribute('aria-label', 'Captions');
+    this.button.setAttribute('aria-label', buttonLabel);
     this.button.setAttribute('aria-pressed', 'false');
 
     const refresh = () => {
@@ -95,10 +97,9 @@ export class CaptionsControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    // Register submenu provider in settings
     const provider: SettingsSubmenuProvider = {
       id: 'captions',
-      label: 'Captions',
+      label,
       getSubmenu: () => {
         const media = getActiveMedia(player);
         const tracks = listRelevantTracks(media);
@@ -108,11 +109,11 @@ export class CaptionsControl extends BaseControl {
 
         return {
           id: 'captions',
-          label: 'Captions',
+          label,
           items: [
             {
               id: 'off',
-              label: 'Off',
+              label: player.config.labels?.off || 'Off',
               checked: showing === 'off',
               onSelect: () => {
                 setAllOff(media);
@@ -136,9 +137,8 @@ export class CaptionsControl extends BaseControl {
 
     getSettingsRegistry(player).register(provider);
 
-    // Keep in sync when overlay changes or tracks change
-    this.overlayMgr.bus.on('overlay:changed', () => refresh());
-    player.events.on('playback:ready', () => refresh());
+    this.overlayMgr.bus.on('overlay:changed', refresh);
+    player.events.on('playback:ready', refresh);
 
     refresh();
     return this.button;

@@ -18,6 +18,16 @@ export function formatTime(seconds: number, frameRate?: number): string {
   return `${h > 0 ? `${wrap(h)}:` : ''}${wrap(m)}:${wrap(s)}${f ? `:${wrap(f)}` : ''}`;
 }
 
+export const generateISODateTime = (d: number) => {
+  const duration = Number.isFinite(d) ? Math.max(0, d) : 0;
+  const totalSeconds = Math.floor(duration);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `PT${hours ? `${hours}H` : ''}${minutes ? `${minutes}M` : ''}${seconds}S`;
+};
+
 export function offset(el: HTMLElement): { left: number; top: number } {
   const rect = el.getBoundingClientRect();
   return {

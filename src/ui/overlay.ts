@@ -13,13 +13,17 @@ export type CenterOverlayBindings = {
 };
 
 export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
+  const playLabel = player.config.labels?.play || 'Play';
+  const pauseLabel = player.config.labels?.pause || 'Pause';
+  const loadingLabel = player.config.labels?.loading || 'Loading...';
+
   const button = document.createElement('button');
   button.className = 'op-player__play';
   button.tabIndex = 0;
   button.type = 'button';
   button.setAttribute('aria-pressed', 'false');
   button.setAttribute('aria-hidden', 'false');
-  button.setAttribute('aria-label', 'Play');
+  button.setAttribute('aria-label', playLabel);
   button.setAttribute('aria-keyshortcuts', 'K Enter');
 
   button.addEventListener(
@@ -38,17 +42,14 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
   loader.setAttribute('aria-hidden', 'true');
   loader.setAttribute('role', 'status');
   loader.setAttribute('aria-live', 'polite');
-  loader.setAttribute('aria-label', 'Loading');
-
-  const srText = document.createElement('span');
-  srText.textContent = 'Toggle play/pause';
-  button.appendChild(srText);
+  loader.setAttribute('aria-label', loadingLabel);
 
   const showButton = (show: boolean) => {
     if (show) {
       button.classList.remove('op-player__play--paused');
       button.setAttribute('aria-hidden', 'false');
       button.removeAttribute('inert');
+      button.setAttribute('aria-label', playLabel);
       button.inert = false;
       button.tabIndex = 0;
     } else {
@@ -61,6 +62,7 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
       button.classList.add('op-player__play--paused');
       button.setAttribute('aria-hidden', 'true');
       button.setAttribute('inert', '');
+      button.setAttribute('aria-label', pauseLabel);
       button.inert = true;
       button.tabIndex = -1;
     }

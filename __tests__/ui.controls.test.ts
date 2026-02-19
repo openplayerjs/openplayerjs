@@ -3,11 +3,11 @@
 import { getOverlayManager } from '../src/core/overlay';
 import { Player } from '../src/core/player';
 import createCaptionsControl from '../src/ui/controls/captions';
+import createCurrentTimeControl from '../src/ui/controls/currentTime';
 import createDurationControl from '../src/ui/controls/duration';
 import createFullscreenControl from '../src/ui/controls/fullscreen';
 import createPlayControl from '../src/ui/controls/play';
 import createProgressControl from '../src/ui/controls/progress';
-import createCurrentTimeControl from '../src/ui/controls/time';
 import createVolumeControl from '../src/ui/controls/volume';
 
 jest.useFakeTimers();

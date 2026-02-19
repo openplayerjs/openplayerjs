@@ -47,7 +47,7 @@ describe('ui/events keyboard bindings', () => {
     playBtn.addEventListener('click', playClick);
     muteBtn.addEventListener('click', muteClick);
 
-    bindCenterOverlay(p, bindings, wrapper);
+    bindCenterOverlay(p, wrapper, bindings);
 
     playBtn.focus();
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
@@ -68,7 +68,7 @@ describe('ui/events keyboard bindings', () => {
     wrapper.appendChild(bindings.button);
     wrapper.appendChild(bindings.loader);
 
-    bindCenterOverlay(p, bindings, wrapper);
+    bindCenterOverlay(p, wrapper, bindings);
 
     p.volume = 0.5;
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
@@ -105,7 +105,7 @@ describe('ui/events keyboard bindings', () => {
     wrapper.appendChild(bindings.button);
     wrapper.appendChild(bindings.loader);
 
-    bindCenterOverlay(p, bindings, wrapper);
+    bindCenterOverlay(p, wrapper, bindings);
 
     // duration finite
     p.events.emit('media:duration', 100);
@@ -134,7 +134,7 @@ describe('ui/events keyboard bindings', () => {
     wrapper.appendChild(bindings.button);
     wrapper.appendChild(bindings.loader);
 
-    bindCenterOverlay(p, bindings, wrapper);
+    bindCenterOverlay(p, wrapper, bindings);
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'A' }));
     expect(wrapper.classList.contains('op-player__keyboard--inactive')).toBe(false);

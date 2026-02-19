@@ -8,6 +8,10 @@ type MediaListener = {
   options?: boolean | AddEventListenerOptions;
 };
 
+export type IEngine = {
+  getAdapter?<T = unknown>(): T | undefined;
+};
+
 export abstract class BaseMediaEngine {
   protected media: HTMLMediaElement | null = null;
   protected events: MediaEngineContext['events'] | null = null;

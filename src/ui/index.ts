@@ -6,13 +6,28 @@ import { bindCenterOverlay } from './events';
 import { createCenterOverlayDom } from './overlay';
 
 export function createUI(player: Player, media: HTMLMediaElement, controls: Control[]) {
+  media.tabIndex = -1;
   const tmpMedia = media;
   const isMediaAudio = isAudio(tmpMedia);
   const wrapper = document.createElement('div');
-  wrapper.className = 'op-player';
+  wrapper.className = `op-player op-player__keyboard--inactive ${isMediaAudio ? 'op-player__audio' : 'op-player__video'}`;
   wrapper.setAttribute('role', 'region');
   wrapper.setAttribute('aria-label', 'Media player');
   wrapper.tabIndex = 0;
+
+  let style = '';
+  if (player.config.width) {
+    const width = typeof player.config.width === 'number' ? `${player.config.width}px` : player.config.width;
+    style += `width: ${width} !important;`;
+  }
+  if (player.config.height) {
+    const height = typeof player.config.height === 'number' ? `${player.config.height}px` : player.config.height;
+    style += `height: ${height} !important;`;
+  }
+
+  if (style) {
+    wrapper.setAttribute('style', style);
+  }
 
   media.controls = false;
 
@@ -20,28 +35,29 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   const mediaContainer = document.createElement('div');
   mediaContainer.className = 'op-media';
-  mediaContainer.tabIndex = 0;
+  mediaContainer.tabIndex = -1;
   mediaContainer.setAttribute('role', 'group');
   mediaContainer.setAttribute('aria-label', 'Media');
   mediaContainer.appendChild(tmpMedia);
 
   const mainControls = document.createElement('div');
   mainControls.className = 'op-media__main';
-  mediaContainer.appendChild(mainControls);
 
+  let overlay;
   if (!isMediaAudio) {
-    const overlay = createCenterOverlayDom(player);
+    mediaContainer.appendChild(mainControls);
+
+    overlay = createCenterOverlayDom(player);
     mediaContainer.appendChild(overlay.button);
     mediaContainer.appendChild(overlay.loader);
-    bindCenterOverlay(player, overlay, wrapper);
   }
-
+  bindCenterOverlay(player, wrapper, overlay);
   const controlsRoot = document.createElement('div');
   controlsRoot.className = 'op-controls';
   controlsRoot.setAttribute('aria-hidden', 'false');
 
   if (isMediaAudio) {
-    const grid = createControlGrid(controlsRoot, mainControls);
+    const grid = createControlGrid(controlsRoot);
 
     wrapper.appendChild(mediaContainer);
     wrapper.appendChild(controlsRoot);
@@ -63,10 +79,8 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
   const controlsHaveFocus = (): boolean => controlsRoot.contains(document.activeElement);
 
   const showControls = (): void => {
-    mediaContainer.classList.remove('op-media--controls-hidden');
+    wrapper.classList.remove('op-controls--hidden');
     if (hideTimer) window.clearTimeout(hideTimer);
-    controlsRoot.classList.add('op-controls--visible');
-    controlsRoot.classList.remove('op-controls--hidden');
     controlsRoot.setAttribute('aria-hidden', 'false');
   };
 
@@ -80,8 +94,7 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
         return;
       }
     }
-    mediaContainer.classList.add('op-media--controls-hidden');
-    controlsRoot.classList.add('op-controls--hidden');
+    wrapper.classList.add('op-controls--hidden');
     controlsRoot.setAttribute('aria-hidden', 'true');
   };
 

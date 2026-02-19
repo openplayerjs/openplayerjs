@@ -2,12 +2,13 @@ import { Player as CorePlayer } from '../core/player';
 import { createUI } from '../ui';
 import { buildControls, registerControl } from '../ui/control';
 import createCaptionsControl from '../ui/controls/captions';
+import createCurrentTimeControl from '../ui/controls/currentTime';
 import createDurationControl from '../ui/controls/duration';
 import createFullscreenControl from '../ui/controls/fullscreen';
 import createPlayControl from '../ui/controls/play';
 import createProgressControl from '../ui/controls/progress';
 import createSettingsControl from '../ui/controls/settings';
-import createCurrentTimeControl from '../ui/controls/time';
+import createTimeControl from '../ui/controls/time';
 import createVolumeControl from '../ui/controls/volume';
 
 declare global {
@@ -48,6 +49,7 @@ function getControlFactory(id: string) {
     fullscreen: createFullscreenControl,
     currentTime: createCurrentTimeControl,
     duration: createDurationControl,
+    time: createTimeControl,
     progress: createProgressControl,
     settings: createSettingsControl,
   };

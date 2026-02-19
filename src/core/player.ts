@@ -1,4 +1,5 @@
 import { DefaultMediaEngine } from '../engines/html5';
+import type { PlayerConfig } from './configuration';
 import type { PlayerEvent } from './events';
 import { EventBus } from './events';
 import { Lease } from './lease';
@@ -8,8 +9,6 @@ import { PluginRegistry } from './plugin';
 import type { PlaybackState } from './state';
 import { StateManager } from './state';
 import { predictMimeType } from './utils';
-
-type PlayerConfig = { debug?: boolean; plugins?: any[]; labels?: Record<string, string>; [key: string]: unknown };
 
 const defaultLabels = Object.freeze({
   auto: 'Auto',
@@ -60,6 +59,21 @@ export class Player {
     this.registerPlugin(new DefaultMediaEngine());
     const labels = { ...defaultLabels, ...config.labels };
     this.config = { ...config, labels };
+    if (this.config.width)
+      this.media.style.width = typeof this.config.width === 'number' ? `${this.config.width}px` : this.config.width;
+    if (this.config.height)
+      this.media.style.height = typeof this.config.height === 'number' ? `${this.config.height}px` : this.config.height;
+    this.media.currentTime = this.config.startTime || this.media.currentTime;
+    this._currentTime = this.config.startTime || this.media.currentTime;
+    this._duration = this.config.duration || this.media.duration;
+    const volume = this.config.startVolume || this.media.volume;
+    this.media.volume = volume;
+    this.media.muted = volume <= 0;
+    this._volume = volume;
+    this._muted = volume <= 0;
+    this.media.playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
+    this._playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
+
     (this.config.plugins || []).forEach((p) => this.registerPlugin(p));
     this.bindStateTransitions();
     this.bindMediaSync();

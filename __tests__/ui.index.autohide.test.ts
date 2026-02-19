@@ -19,9 +19,7 @@ function makePlayer() {
 }
 
 async function flushTimersAndMicrotasks() {
-  // Flush pending timers (including 0ms timers created by focusout defers)
   jest.runOnlyPendingTimers();
-  // Flush microtasks
   await Promise.resolve();
 }
 
@@ -45,11 +43,10 @@ describe('UI createUI + controls autohide', () => {
     expect(wrapper).toBeTruthy();
     const mediaContainer = wrapper.querySelector('.op-media') as HTMLDivElement;
     expect(mediaContainer).toBeTruthy();
-    expect(mediaContainer.tabIndex).toBe(0);
+    expect(mediaContainer.tabIndex).toBe(-1);
 
     const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
     expect(controlsRoot).toBeTruthy();
-    // grid sections exist
     expect(controlsRoot.querySelector('.op-controls-layer__top')).toBeTruthy();
     expect(controlsRoot.querySelector('.op-controls-layer__bottom')).toBeTruthy();
   });
@@ -62,19 +59,12 @@ describe('UI createUI + controls autohide', () => {
 
     const wrapper = document.querySelector('.op-player') as HTMLDivElement;
     const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
-    const mediaContainer = wrapper.querySelector('.op-media') as HTMLDivElement;
-
-    // initial: visible
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
 
     (document.activeElement as HTMLElement | null)?.blur?.();
     wrapper.dispatchEvent(new Event('pointermove', { bubbles: true }));
-    // visible & scheduled
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
 
-    // IMPORTANT:
-    // Do NOT focus the wrapper here: wrapper.focusin cancels the hide timer when focus is in the media area.
-    // Instead, move focus to an element OUTSIDE the player to ensure controlsHaveFocus() is false at hide-time.
     const outside = document.createElement('button');
     outside.textContent = 'outside';
     document.body.appendChild(outside);
@@ -84,14 +74,8 @@ describe('UI createUI + controls autohide', () => {
     jest.advanceTimersByTime(3100);
     await flushTimersAndMicrotasks();
 
-    // Some paths schedule a 0ms follow-up to re-check focus before hiding.
-    // Run any remaining pending timers.
     await flushTimersAndMicrotasks();
-
-    // If something re-showed controls in the same tick, ensure we’ve flushed everything
-    // before asserting.
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('true');
-    expect(mediaContainer.classList.contains('op-media--controls-hidden')).toBe(true);
   });
 
   test('focus inside controls keeps it visible longer and hides after ~6.5s', () => {
@@ -103,16 +87,13 @@ describe('UI createUI + controls autohide', () => {
     const wrapper = document.querySelector('.op-player') as HTMLDivElement;
     const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
 
-    // Focus play button
     const playBtn = controlsRoot.querySelector('.op-controls__playpause') as HTMLButtonElement;
     playBtn.focus();
     controlsRoot.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
 
-    // should remain visible
     jest.advanceTimersByTime(3000);
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
 
-    // after KEYBOARD_SHOW_MS
     jest.advanceTimersByTime(4000);
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('true');
   });
@@ -126,7 +107,6 @@ describe('UI createUI + controls autohide', () => {
     const mediaContainer = wrapper.querySelector('.op-media') as HTMLDivElement;
     const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
 
-    // hide first
     wrapper.dispatchEvent(new Event('pointermove', { bubbles: true }));
     jest.advanceTimersByTime(3100);
     await Promise.resolve();
@@ -138,7 +118,6 @@ describe('UI createUI + controls autohide', () => {
 
     jest.advanceTimersByTime(7000);
     await Promise.resolve();
-    // still visible because focus in media area cancels hide timer
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
   });
 });

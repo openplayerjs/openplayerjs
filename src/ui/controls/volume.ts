@@ -10,7 +10,11 @@ export class VolumeControl extends BaseControl {
 
   protected build(): HTMLElement {
     const player = this.player;
-    const { labels = {} } = player.config;
+    const muteLabel = player.config.labels?.mute || 'Mute';
+    const unmuteLabel = player.config.labels?.unmute || 'Unmute';
+    const volumeLabel = player.config.labels?.volume || 'Volume';
+    const volumeControlLabel = player.config.labels?.volumeControl || 'Volume Control';
+    const volumeSliderLabel = player.config.labels?.volumeSlider || 'Volume Slider';
 
     const wrapper = document.createElement('div');
     wrapper.className = 'op-controls__volume';
@@ -18,7 +22,7 @@ export class VolumeControl extends BaseControl {
     wrapper.setAttribute('aria-valuemin', '0');
     wrapper.setAttribute('aria-valuemax', '100');
     wrapper.setAttribute('aria-valuenow', `${player.volume}`);
-    wrapper.setAttribute('aria-label', labels.volume);
+    wrapper.setAttribute('aria-label', volumeControlLabel);
     wrapper.setAttribute('aria-orientation', 'vertical');
     wrapper.setAttribute('role', 'slider');
 
@@ -30,7 +34,7 @@ export class VolumeControl extends BaseControl {
     slider.min = '0';
     slider.max = '1';
     slider.step = '0.1';
-    slider.setAttribute('aria-label', labels.volumeSlider);
+    slider.setAttribute('aria-label', volumeSliderLabel);
 
     const display = document.createElement('progress');
     display.className = 'op-controls__volume--display';
@@ -53,7 +57,7 @@ export class VolumeControl extends BaseControl {
       display.value = v * 10;
       const formattedVol = Math.floor(v * 100);
       container.setAttribute('aria-valuenow', `${formattedVol}`);
-      container.setAttribute('aria-valuetext', `Volume: ${formattedVol}`);
+      container.setAttribute('aria-valuetext', `${volumeLabel}: ${formattedVol}`);
     };
 
     const updateBtn = (vol: number) => {
@@ -106,9 +110,9 @@ export class VolumeControl extends BaseControl {
     const btn = document.createElement('button');
     btn.tabIndex = 0;
     btn.type = 'button';
-    btn.title = 'Mute';
+    btn.title = muteLabel;
     btn.className = 'op-controls__mute';
-    btn.setAttribute('aria-label', 'Muted');
+    btn.setAttribute('aria-label', muteLabel);
     btn.setAttribute('aria-pressed', 'false');
 
     btn.addEventListener(
@@ -125,6 +129,8 @@ export class VolumeControl extends BaseControl {
             try {
               el.volume = 0;
               el.muted = true;
+              btn.title = muteLabel;
+              btn.setAttribute('aria-label', muteLabel);
             } catch {
               // ignore
             }
@@ -138,6 +144,8 @@ export class VolumeControl extends BaseControl {
             try {
               el.volume = restore;
               el.muted = false;
+              btn.title = unmuteLabel;
+              btn.setAttribute('aria-label', unmuteLabel);
             } catch {
               // ignore
             }

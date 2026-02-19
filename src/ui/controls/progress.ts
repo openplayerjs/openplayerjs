@@ -12,11 +12,14 @@ export class ProgressControl extends BaseControl {
   protected build(): HTMLElement {
     const player = this.player;
 
+    const progressLabel = player.config.labels?.progressSlider || 'Time Slider';
+    const railLabel = player.config.labels?.progressRail || 'Time Rail';
+
     const progress = document.createElement('div');
     progress.className = 'op-controls__progress';
     progress.role = 'slider';
     progress.tabIndex = 0;
-    progress.setAttribute('aria-label', 'Progress slider');
+    progress.setAttribute('aria-label', progressLabel);
     progress.setAttribute('aria-valuemin', '0');
     progress.setAttribute('aria-valuenow', '0');
 
@@ -28,7 +31,7 @@ export class ProgressControl extends BaseControl {
     slider.min = '0';
     slider.step = '0.1';
     slider.value = '0';
-    slider.setAttribute('aria-label', 'Progress rail');
+    slider.setAttribute('aria-label', railLabel);
 
     const buffer = document.createElement('progress');
     buffer.className = 'op-controls__progress--buffer';

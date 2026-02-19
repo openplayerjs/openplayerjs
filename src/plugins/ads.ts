@@ -287,7 +287,7 @@ export class AdsPlugin implements PlayerPlugin {
 
     // VMAP breaks (if configured) added on each source:set
     if (this.cfg.vmapUrl || this.cfg.vmapXml) {
-      void this.loadVmapAndMerge(combined);
+      this.loadVmapAndMerge(combined);
     }
 
     this.resolvedBreaks = combined;
@@ -344,6 +344,7 @@ export class AdsPlugin implements PlayerPlugin {
       this.resolvedBreaks = [...existing, ...vmapBreaks];
     } catch (err) {
       this.bus.emit('ads:error', { reason: 'vmap_parse_failed', error: err });
+      this.ctx.events.emit('ads.error', { reason: 'vmap_parse_failed', error: err });
     }
   }
 
@@ -451,7 +452,7 @@ export class AdsPlugin implements PlayerPlugin {
         const pre = this.getPrerollBreak();
         if (pre) {
           this.userPlayIntent = true;
-          void this.startBreak(pre, 'preroll');
+          this.startBreak(pre, 'preroll');
         }
       })
     );
@@ -488,7 +489,13 @@ export class AdsPlugin implements PlayerPlugin {
     const onEnded = () => {
       if (this.active || this.startingBreak) return;
       const post = this.getPostrollBreak();
-      if (post) void this.startBreak(post, 'postroll');
+      if (post) {
+        this.ctx.events.emit('ads.mediaended' as any, {
+          break: { kind: 'postroll', id: this.getBreakId(post) },
+          at: post.at,
+        });
+        this.startBreak(post, 'postroll');
+      }
     };
     content.addEventListener('ended', onEnded);
     this.globalUnsubs.push(() => content.removeEventListener('ended', onEnded));
@@ -1263,14 +1270,12 @@ export class AdsPlugin implements PlayerPlugin {
     const v = () => this.adVideo;
 
     this.sessionUnsubs.push(
-      events.on(
-        'playback:play',
-        () =>
-          void v()
-            ?.play()
-            .catch(() => {
-              //
-            })
+      events.on('playback:play', () =>
+        v()
+          ?.play()
+          .catch(() => {
+            //
+          })
       )
     );
     this.sessionUnsubs.push(events.on('playback:pause', () => v()?.pause()));
@@ -1299,6 +1304,7 @@ export class AdsPlugin implements PlayerPlugin {
       const dur = v.duration;
       if (Number.isFinite(dur) && dur > 0) {
         this.bus.emit('ads:duration', { break: meta, duration: dur });
+        this.ctx.events.emit('ads.durationChange', { duration: dur, break: meta });
       }
     };
 
@@ -1309,6 +1315,10 @@ export class AdsPlugin implements PlayerPlugin {
 
     const emitQuartile = (quartile: 0 | 25 | 50 | 75 | 100) => {
       this.bus.emit('ads:quartile', { break: meta, quartile });
+      if (quartile === 25) this.ctx.events.emit('ads.firstQuartile', { break: meta });
+      if (quartile === 50) this.ctx.events.emit('ads.midpoint', { break: meta });
+      if (quartile === 75) this.ctx.events.emit('ads.thirdQuartile', { break: meta });
+      if (quartile === 100) this.ctx.events.emit('ads.complete', { break: meta });
     };
 
     const onPlaying = () => {
@@ -1316,6 +1326,7 @@ export class AdsPlugin implements PlayerPlugin {
         started = true;
         this.tracker?.trackStart?.();
         this.ctx.events.emit('playback:play');
+        this.ctx.events.emit('ads.start', { break: meta });
         emitQuartile(0);
         emitDuration();
       } else if (lastPaused) {
@@ -1329,6 +1340,7 @@ export class AdsPlugin implements PlayerPlugin {
       if (started) this.tracker?.trackPause?.();
       lastPaused = true;
       this.ctx.events.emit('playback:pause');
+      this.ctx.events.emit('ads.pause', { break: meta });
     };
 
     const onTime = () => {
@@ -1346,6 +1358,7 @@ export class AdsPlugin implements PlayerPlugin {
         duration: dur,
       });
 
+      this.ctx.events.emit('ads.adProgress', { currentTime: cur, duration: dur, break: meta });
       this.tracker?.setDuration?.(dur);
       this.tracker?.setProgress?.(cur);
 
@@ -1379,12 +1392,17 @@ export class AdsPlugin implements PlayerPlugin {
         // Bridge ad volume to core UI controls
         this.ctx.events.emit('media:volume', vol);
       }
+      this.ctx.events.emit('ads.volumeChange', { volume: vol, muted: lastMuted, break: meta });
+
       const muted = v.muted || v.volume === 0;
       if (muted !== lastMuted) {
         lastMuted = muted;
         this.ctx.events.emit('media:muted', muted);
         if (muted) this.tracker?.trackMute?.();
         else this.tracker?.trackUnmute?.();
+
+        this.ctx.events.emit('ads.mute' as any, { muted, break: meta });
+        this.ctx.events.emit('ads.volumeChange' as any, { volume: lastVol, muted, break: meta });
       }
     };
 
@@ -1401,6 +1419,7 @@ export class AdsPlugin implements PlayerPlugin {
       this.tracker?.trackClick?.();
       this.tracker?.trackClickThrough?.();
       this.bus.emit('ads:clickthrough', { break: meta, url: click });
+      this.ctx.events.emit('ads.click' as any, { break: meta, url: click });
     };
 
     v.addEventListener('playing', onPlaying);
@@ -1547,6 +1566,10 @@ export class AdsPlugin implements PlayerPlugin {
           reason: 'playback lease already owned',
           owner: leases.owner('playback'),
         });
+        this.ctx.events.emit('ads.error', {
+          reason: 'playback lease already owned',
+          owner: leases.owner('playback'),
+        });
         return false;
       }
       return true;
@@ -1585,12 +1608,14 @@ export class AdsPlugin implements PlayerPlugin {
         // Non-linear-only VAST: render overlays while content continues (no pause / no playback lease).
         const nonLinearItems = this.collectNonLinearCreatives(parsed);
         if (nonLinearItems.length) {
+          this.ctx.events.emit('ads.loaded', { break: meta, count: nonLinearItems.length });
           await this.playNonLinearOnlyBreak(parsed, meta);
           return;
         }
         throw new Error('No playable ads found in VAST response');
       }
 
+      this.ctx.events.emit('ads.loaded' as any, { break: meta, count: pod.length });
       // Linear break: pause content and acquire playback lease, then start ad video takeover.
       if (!pauseAndAcquireLease()) return;
       this.active = true;
@@ -1631,9 +1656,11 @@ export class AdsPlugin implements PlayerPlugin {
 
       // Finished the whole pod => cleanup + resume behavior
       this.bus.emit('ads:allAdsCompleted', { break: meta });
+      this.ctx.events.emit('ads.allAdsCompleted' as any, { break: meta });
       this.finish({ resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter) });
     } catch (err) {
       this.bus.emit('ads:error', err);
+      this.ctx.events.emit('ads.error', { err });
       this.finish({ resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter) });
     }
   }
@@ -1653,7 +1680,7 @@ export class AdsPlugin implements PlayerPlugin {
       v.addEventListener('error', onError, { once: true });
 
       this.ctx.events.emit('playback:play');
-      void v.play().catch(() => {
+      v.play().catch(() => {
         // Autoplay may be blocked; user can hit play (custom or native controls)
       });
 

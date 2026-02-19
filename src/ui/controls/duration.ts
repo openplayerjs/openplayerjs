@@ -1,4 +1,4 @@
-import { formatTime } from '../../core/utils';
+import { formatTime, generateISODateTime } from '../../core/utils';
 import type { Control } from '../control';
 import { BaseControl } from './base';
 
@@ -12,6 +12,7 @@ export class DurationControl extends BaseControl {
     const el = document.createElement('time');
     el.className = 'op-controls__duration';
     el.setAttribute('aria-hidden', 'false');
+    el.setAttribute('datetime', 'PT0M0S');
 
     const update = () => {
       if (this.activeOverlay) {
@@ -22,18 +23,21 @@ export class DurationControl extends BaseControl {
 
       const d = player.duration;
       if (player.isLive || d === Infinity) {
-        el.setAttribute('aria-hidden', 'true');
+        el.removeAttribute('datetime');
+        el.textContent = player.config.labels?.live || 'Live';
         return;
       }
 
       el.setAttribute('aria-hidden', 'false');
-      el.innerText = formatTime(Number.isFinite(d) ? d : 0);
+      const duration = Number.isFinite(d) ? Math.max(0, d) : player.config?.duration || 0;
+      const formattedDuration = formatTime(duration);
+      el.textContent = formattedDuration;
+      el.setAttribute('datetime', generateISODateTime(duration));
     };
 
-    player.events.on('media:duration', () => update());
-    player.events.on('media:timeupdate', () => update());
-
-    this.overlayMgr.bus.on('overlay:changed', () => update());
+    player.events.on('media:duration', update);
+    player.events.on('media:timeupdate', update);
+    this.overlayMgr.bus.on('overlay:changed', update);
 
     update();
     return el;

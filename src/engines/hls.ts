@@ -1,6 +1,7 @@
 import Hls from 'hls.js';
 import { EVENT_OPTIONS } from '../core/constants';
 import type { MediaEngineContext, MediaSource } from '../core/media';
+import type { IEngine } from './base';
 import { BaseMediaEngine } from './base';
 
 type AdapterListener = {
@@ -9,7 +10,7 @@ type AdapterListener = {
   options?: any;
 };
 
-export class HlsMediaEngine extends BaseMediaEngine {
+export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
   name = 'hls-engine';
   version = '1.0.0';
   capabilities = ['media-engine'];
@@ -23,6 +24,10 @@ export class HlsMediaEngine extends BaseMediaEngine {
 
   constructor(private config: any = {}) {
     super();
+  }
+
+  getAdapter<T = Hls>(): T | undefined {
+    return this.adapter as T;
   }
 
   canPlay(source: MediaSource) {

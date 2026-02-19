@@ -1,8 +1,8 @@
 /** @jest-environment jsdom */
 
 import { Player } from '../src/core/player';
-import { createCenterOverlayDom } from '../src/ui/overlay';
 import { bindCenterOverlay } from '../src/ui/events';
+import { createCenterOverlayDom } from '../src/ui/overlay';
 
 jest.useFakeTimers();
 
@@ -31,7 +31,7 @@ describe('bindCenterOverlay', () => {
     document.body.appendChild(wrapper);
     wrapper.append(overlay.button, overlay.loader);
 
-    bindCenterOverlay(player, overlay, wrapper);
+    bindCenterOverlay(player, wrapper, overlay);
 
     // waiting => loader on, button off
     player.events.emit('playback:waiting');
@@ -67,7 +67,7 @@ describe('bindCenterOverlay', () => {
     const wrapper = document.createElement('div');
     wrapper.className = 'op-player';
     document.body.appendChild(wrapper);
-    bindCenterOverlay(player, overlay, wrapper);
+    bindCenterOverlay(player, wrapper, overlay);
 
     // press K
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'K', bubbles: true }));
@@ -90,7 +90,7 @@ describe('bindCenterOverlay', () => {
     const wrapper = document.createElement('div');
     wrapper.className = 'op-player';
     document.body.appendChild(wrapper);
-    bindCenterOverlay(player, overlay, wrapper);
+    bindCenterOverlay(player, wrapper, overlay);
 
     player.volume = 0.5;
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));

@@ -17,26 +17,22 @@ export class SettingsControl extends BaseControl {
 
   protected build(): HTMLElement {
     this.root = document.createElement('div');
-    this.root.className = 'op-controls__settings--container';
+    this.root.className = 'op-menu--container';
 
     this.button = document.createElement('button');
     this.button.type = 'button';
     this.button.className = 'op-controls__settings';
-    this.button.setAttribute('aria-label', 'Settings');
+    this.button.setAttribute('aria-label', this.player.config.labels?.settings || 'Player Settings');
     this.button.setAttribute('aria-haspopup', 'menu');
     this.button.setAttribute('aria-expanded', 'false');
 
     this.panel = document.createElement('div');
-    this.panel.className = 'op-controls__settings-panel op-controls__menu';
+    this.panel.className = 'op-menu';
     this.panel.setAttribute('role', 'menu');
     this.panel.style.display = 'none';
 
-    // Align panel depending on document direction
-    const isRtl = (document.documentElement.getAttribute('dir') || '').toLowerCase() === 'rtl';
-    this.panel.classList.toggle('op-controls__settings-panel--rtl', isRtl);
-
     this.view = document.createElement('div');
-    this.view.className = 'op-controls__settings-view';
+    this.view.className = 'op-menu__submenu';
     this.panel.appendChild(this.view);
 
     this.root.appendChild(this.button);
@@ -52,18 +48,16 @@ export class SettingsControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    // Close on outside click
     document.addEventListener(
       'click',
       (e) => {
         if (!this.isOpen) return;
         const t = e.target as HTMLElement;
-        if (!t.closest('.op-controls__settings--container')) this.close();
+        if (!t.closest('.op-menu--container')) this.close();
       },
       EVENT_OPTIONS
     );
 
-    // Close on ESC
     document.addEventListener(
       'keydown',
       (e) => {
@@ -73,19 +67,15 @@ export class SettingsControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    // Re-render when overlay changes (active media might differ)
     this.overlayMgr.bus.on('overlay:changed', () => {
       this.activeSubmenuId = null;
       if (this.isOpen) this.render();
     });
 
-    // Built-in "Speed" submenu
     getSettingsRegistry(this.player).register({
       id: 'speed',
-      label: 'Speed',
+      label: this.player.config.labels?.speed || 'Speed',
       getSubmenu: (player) => {
-        // Playback rate must not be adjustable during ads.
-        // The Ads plugin activates an overlay with id "ads".
         const ov = this.overlayMgr.active;
         if (ov?.id === 'ads') return null;
 
@@ -93,10 +83,10 @@ export class SettingsControl extends BaseControl {
         const current = player.playbackRate || 1;
         return {
           id: 'speed',
-          label: 'Speed',
+          label: player.config.labels?.speed || 'Speed',
           items: rates.map((r) => ({
             id: String(r),
-            label: r === 1 ? 'Normal' : `${r}x`,
+            label: r === 1 ? player.config.labels?.speedNormal || 'Normal' : `${r}x`,
             checked: Math.abs(current - r) < 1e-6,
             onSelect: () => {
               player.playbackRate = r;
@@ -163,14 +153,12 @@ export class SettingsControl extends BaseControl {
       return;
     }
 
-    // Submenu view (with back)
     const header = document.createElement('div');
-    header.className = 'op-controls__settings-header';
+    header.className = 'op-menu__header';
 
     const back = document.createElement('button');
     back.type = 'button';
-    back.className = 'op-controls__settings-back';
-    back.textContent = '<<';
+    back.className = 'op-submenu__back';
     back.setAttribute('aria-label', 'Back');
     back.addEventListener(
       'click',
@@ -210,7 +198,7 @@ export class SettingsControl extends BaseControl {
   private makeRow(label: string, onClick: () => void, checked = false, disabled = false): HTMLElement {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'op-controls__menu-item op-controls__menu-item--settings';
+    btn.className = 'op-controls__menu-item';
     btn.setAttribute('role', 'menuitem');
     btn.setAttribute('aria-disabled', disabled ? 'true' : 'false');
     btn.setAttribute('aria-checked', checked ? 'true' : 'false');
@@ -220,9 +208,9 @@ export class SettingsControl extends BaseControl {
     text.textContent = label;
 
     const mark = document.createElement('span');
-    mark.className = 'op-controls__menu-item-check';
+    mark.className = `op-menu__item-check ${checked ? 'checked' : ''}`;
 
-    btn.append(text, mark);
+    btn.append(mark, text);
 
     btn.addEventListener(
       'click',

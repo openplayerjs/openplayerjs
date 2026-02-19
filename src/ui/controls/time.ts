@@ -1,49 +1,33 @@
-import { formatTime } from '../../core/utils';
 import type { Control } from '../control';
 import { BaseControl } from './base';
+import { CurrentTimeControl } from './currentTime';
+import { DurationControl } from './duration';
 
-export class CurrentTimeControl extends BaseControl {
-  id = 'currentTime';
+export class TimeControl extends BaseControl {
+  id = 'time';
   placement: Control['placement'] = { v: 'bottom', h: 'left' };
 
   protected build(): HTMLElement {
     const player = this.player;
 
-    const el = document.createElement('time');
-    el.className = 'op-controls__current';
-    el.setAttribute('role', 'timer');
-    el.setAttribute('aria-live', 'off');
-    el.setAttribute('aria-hidden', 'false');
-    el.innerText = '0:00';
+    const delimiter = document.createElement('span');
+    delimiter.className = 'op-controls__time-delimiter';
+    delimiter.textContent = '/';
 
-    const update = () => {
-      if (this.activeOverlay) {
-        el.setAttribute('aria-hidden', 'false');
-        el.innerText = formatTime(this.activeOverlay.value);
-        return;
-      }
+    const container = document.createElement('span');
+    container.className = 'op-controls-time';
 
-      if (player.isLive) {
-        el.setAttribute('aria-hidden', 'true');
-        return;
-      }
+    const currentTime = new CurrentTimeControl().create(player);
+    const duration = new DurationControl().create(player);
 
-      const t = player.currentTime;
-      el.setAttribute('aria-hidden', 'false');
-      el.innerText = formatTime(Number.isFinite(t) ? t : 0);
-    };
+    container.appendChild(currentTime);
+    container.appendChild(delimiter);
+    container.appendChild(duration);
 
-    player.events.on('media:timeupdate', () => update());
-    player.events.on('playback:seeked', () => update());
-    player.events.on('media:duration', () => update());
-
-    this.overlayMgr.bus.on('overlay:changed', () => update());
-
-    update();
-    return el;
+    return container;
   }
 }
 
-export default function createCurrentTimeControl(): Control {
-  return new CurrentTimeControl();
+export default function createTimeControl(): Control {
+  return new TimeControl();
 }

@@ -9,12 +9,14 @@ export class PlayControl extends BaseControl {
 
   protected build(): HTMLElement {
     const player = this.player;
+    const playLabel = player.config.labels?.play || 'Play';
+    const pauseLabel = player.config.labels?.pause || 'Pause';
 
     const btn = document.createElement('button');
     btn.tabIndex = 0;
     btn.type = 'button';
     btn.className = 'op-controls__playpause';
-    btn.setAttribute('aria-label', 'Play');
+    btn.setAttribute('aria-label', playLabel);
     btn.setAttribute('aria-pressed', 'false');
 
     btn.addEventListener(
@@ -30,7 +32,7 @@ export class PlayControl extends BaseControl {
     const setPlaying = (playing: boolean) => {
       btn.classList.toggle('op-controls__playpause--pause', playing);
       btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
-      btn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      btn.setAttribute('aria-label', playing ? pauseLabel : playLabel);
     };
 
     player.events.on('playback:play', () => setPlaying(true));
