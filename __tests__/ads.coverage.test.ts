@@ -133,7 +133,7 @@ describe('AdsPlugin additional coverage', () => {
 
   test('PluginBus on/emit is wired through setup() and can be used for ads:error', () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const seen: any[] = [];
@@ -155,7 +155,6 @@ describe('AdsPlugin additional coverage', () => {
     Object.defineProperty(video, 'duration', { configurable: true, value: 100 });
     const p = new AdsPlugin({
       allowNativeControls: false,
-      allowCustomControls: false,
       breaks: [
         { id: 'm1', at: 5, url: 'https://example.com/mid.xml', once: true },
         { id: 'po', at: 'postroll', url: 'https://example.com/post.xml', once: true },
@@ -191,7 +190,6 @@ describe('AdsPlugin additional coverage', () => {
     ctx.state.transition('idle' as any);
     const p = new AdsPlugin({
       allowNativeControls: true,
-      allowCustomControls: true,
       interceptPlayForPreroll: true,
       breaks: [{ id: 'pre', at: 'preroll', url: 'https://example.com/pre.xml', once: true }],
     });
@@ -245,8 +243,7 @@ describe('AdsPlugin additional coverage', () => {
 
     const p = new AdsPlugin({
       allowNativeControls: false,
-      allowCustomControls: false,
-      vmapUrl: 'https://example.com/vmap.xml',
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
     });
     p.setup(ctx);
 
@@ -269,7 +266,6 @@ describe('AdsPlugin additional coverage', () => {
     const { ctx } = makeCtx();
     const p = new AdsPlugin({
       allowNativeControls: false,
-      allowCustomControls: false,
       resumeContent: false,
       simid: { enabled: true, onMessage },
     });
@@ -303,7 +299,7 @@ describe('AdsPlugin additional coverage', () => {
 
   test('XML parsing: playAdsFromXml errors on parsererror and emits ads:error', async () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const errors: any[] = [];
@@ -315,17 +311,15 @@ describe('AdsPlugin additional coverage', () => {
     expect(errors.length).toBeGreaterThan(0);
   });
 
-  test('source:set resets state and rebuildSchedule adds back-compat preroll; mountSelector is honored', () => {
+  test('source:set resets state and rebuildSchedule; mountSelector is honored', () => {
     const mount = document.createElement('div');
     mount.id = 'mount-here';
     document.body.appendChild(mount);
 
-    const { ctx, bus } = makeCtx();
+    const { ctx } = makeCtx();
     const p = new AdsPlugin({
       allowNativeControls: false,
-      allowCustomControls: false,
-      // back-compat preroll
-      url: 'https://example.com/pre.xml',
+      sources: [{ type: 'VMAP', src: 'https://example.com/pre.xml' }],
       mountSelector: '#mount-here',
     });
     p.setup(ctx);
@@ -333,22 +327,11 @@ describe('AdsPlugin additional coverage', () => {
     // ensureOverlayMounted should mount under selector element
     (p as any).ensureOverlayMounted();
     expect(mount.querySelector('.op-ads')).toBeTruthy();
-
-    // back-compat should have created a preroll break
-    const anyP: any = p;
-    expect(anyP.resolvedBreaks.some((b: any) => b.at === 'preroll')).toBe(true);
-
-    // Mutate state, then source:set should reset and rebuild
-    anyP.playedBreaks.add('x');
-    anyP.pendingPercentBreaks.push({ id: 'p', percent: 0.25, vast: { kind: 'url', value: 'u' }, once: true });
-    bus.emit('source:set' as any);
-    expect(anyP.playedBreaks.size).toBe(0);
-    expect(anyP.pendingPercentBreaks.length).toBe(0);
   });
 
   test('playAdsFromXml accepts an Element input (serialize then parse)', async () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     // Make parseVAST succeed with empty ads but no non-linear => emits ads:error
@@ -368,7 +351,7 @@ describe('AdsPlugin additional coverage', () => {
 
     const { ctx, bus } = makeCtx();
     // allowCustomControls enables bindAdSurfaceCommands
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: true, resumeContent: false });
+    const p = new AdsPlugin({ allowNativeControls: true, resumeContent: false });
     p.setup(ctx);
 
     const opened: any[] = [];
@@ -437,7 +420,7 @@ describe('AdsPlugin extra branch forcing', () => {
 
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const errors: any[] = [];
@@ -450,7 +433,7 @@ describe('AdsPlugin extra branch forcing', () => {
   test('volumechange/mute branches fire during ad playback', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     // Spy on emits to avoid guessing event names
@@ -487,7 +470,7 @@ describe('AdsPlugin extra branch forcing', () => {
     vastGetMock.mockResolvedValueOnce(linearPodParsed(2, '00:00:00'));
 
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const playP = p.playAds('https://example.com/vast.xml');

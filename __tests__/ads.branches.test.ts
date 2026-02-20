@@ -152,7 +152,7 @@ describe('AdsPlugin branch coverage', () => {
     vastGetMock.mockResolvedValueOnce(vastLinearWithSkip('25%'));
 
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: true, resumeContent: false });
+    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
     p.setup(ctx);
 
     const playP = p.playAds('https://example.com/vast.xml');
@@ -199,7 +199,7 @@ describe('AdsPlugin branch coverage', () => {
   test('skipOffset HH:MM:SS parsing branch works (00:00:05)', async () => {
     vastGetMock.mockResolvedValueOnce(vastLinearWithSkip('00:00:05'));
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false, resumeContent: false });
+    const p = new AdsPlugin({ allowNativeControls: true, resumeContent: false });
     p.setup(ctx);
     const playP = p.playAds('https://example.com/vast.xml');
     await Promise.resolve();
@@ -226,26 +226,20 @@ describe('AdsPlugin branch coverage', () => {
   test('companion creatives render for StaticResource + IFrameResource and are clickable when clickThrough is present', async () => {
     vastGetMock.mockResolvedValueOnce(vastCompanionOnlyInCreative());
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false, resumeContent: false });
+    const p = new AdsPlugin({ allowNativeControls: true, resumeContent: false });
     p.setup(ctx);
 
     const playP = p.playAds('https://example.com/vast.xml');
     await Promise.resolve();
 
-    // Companion DOM can vary. Assert that companion mounting creates additional DOM
-    // and/or injects at least an iframe/img for companion.
-    const before = countDomNodes();
+    // Companion should mount a container with at least an iframe or image.
     const creative = vastCompanionOnlyInCreative().ads[0].creatives[0];
-    // Call the method directly to guarantee we hit the rendering branches even if the
-    // "auto-mount companions" path is gated by config in this build.
     if (typeof (p as any).mountCompanions === 'function') {
-      expect(() => (p as any).mountCompanions(creative)).not.toThrow();
+      (p as any).mountCompanions(creative);
     }
-    const after = countDomNodes();
-    // Some implementations reuse existing containers or mount outside body.
-    // Accept no DOM growth as long as we can observe an embed OR the call didn't throw.
-    const anyEmbed = document.querySelector('iframe, img');
-    expect(after >= before || !!anyEmbed).toBe(true);
+    const companion = document.querySelector('.op-ads__companion') as HTMLElement | null;
+    expect(companion).toBeTruthy();
+    expect(companion?.querySelector('iframe, img')).toBeTruthy();
 
     const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
     adVideo.dispatchEvent(new Event('ended'));
@@ -260,7 +254,7 @@ describe('AdsPlugin branch coverage', () => {
     // Ensure content is "playing" and stays playing (non-linear-only must not pause)
     ctx.state.transition('playing' as any);
 
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false, resumeContent: true });
+    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true });
     p.setup(ctx);
 
     // Don't rely on a single event name; spy on all emits instead.
@@ -278,7 +272,9 @@ describe('AdsPlugin branch coverage', () => {
       (p as any).mountNonLinear(creative);
     }
     const after = countDomNodes();
-    expect(after >= before).toBe(true);
+    if (typeof (p as any).mountNonLinear === 'function') {
+      expect(after).toBeGreaterThan(before);
+    }
 
     // Close button should exist and emit skip path
     // Close button markup varies; try common patterns.
@@ -307,7 +303,9 @@ describe('AdsPlugin branch coverage', () => {
     const hasSkipish = calls.some((e) => e.includes('skip') || e.includes('close') || e.includes('dismiss'));
     // Some builds don't emit skip for non-linear; in that case, just require that we exercised the close path w/o crashing.
     // But if it does emit, assert that we saw the signal.
-    expect(hasSkipish || emitSpy.mock.calls.length >= 0).toBe(true);
+    // Some builds treat non-linear close as a skip-like signal; require that either a skipish signal was emitted OR the overlay was removed cleanly.
+    const overlayGone = !document.querySelector('.op-ads__nonlinear');
+    expect(hasSkipish || overlayGone).toBe(true);
   });
 
   test('VMAP: accepts breakType non-linear / nonlinear and resolves end=>postroll', async () => {
@@ -324,8 +322,7 @@ describe('AdsPlugin branch coverage', () => {
     const { ctx } = makeCtx();
     const p = new AdsPlugin({
       allowNativeControls: false,
-      allowCustomControls: false,
-      vmapUrl: 'https://example.com/vmap.xml',
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
     });
     p.setup(ctx);
 
@@ -337,7 +334,7 @@ describe('AdsPlugin branch coverage', () => {
 
   test('error branches: fetch failing in playAds emits ads:error and returns gracefully', async () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     // force internal fetchVastXml failure

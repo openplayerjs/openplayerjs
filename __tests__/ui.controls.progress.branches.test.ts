@@ -104,4 +104,68 @@ describe('ProgressControl branch coverage', () => {
     expect(buffer.value).toBe(0);
     expect(slider.style.backgroundSize).toBe('0% 100%');
   });
+
+  test('rail tap-to-seek works when tap lands on progress overlays (mobile touchstart)', () => {
+    const p = makePlayer();
+    (p.media as any).duration = 100;
+    (p.media as any).currentTime = 0;
+
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+
+    // Stub getBoundingClientRect so we can compute percent.
+    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+
+    // Tap at x=50 => 25% => 25s
+    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true }) as any;
+    Object.defineProperty(touchEvent, 'touches', {
+      value: [{ clientX: 50 }],
+    });
+
+    const played = nn(el.querySelector('.op-controls__progress--played')) as HTMLElement;
+    played.dispatchEvent(touchEvent);
+
+    expect(p.currentTime).toBeCloseTo(25, 3);
+  });
+
+  test('rail tap-to-seek does not seek when seeking is disabled (overlay canSeek=false)', () => {
+    const p = makePlayer();
+    (p.media as any).duration = 100;
+    (p.media as any).currentTime = 0;
+
+    // Disable seeking via overlay manager
+    const om = getOverlayManager(p) as any;
+    om.active = { canSeek: false };
+
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+
+    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true }) as any;
+    Object.defineProperty(touchEvent, 'touches', { value: [{ clientX: 150 }] }); // 75%
+    const played = nn(el.querySelector('.op-controls__progress--played')) as HTMLElement;
+    played.dispatchEvent(touchEvent);
+
+    expect(p.currentTime).toBe(0);
+  });
+
+  test('rail tap-to-seek ignored when duration is Infinity (live-ish)', () => {
+    const p = makePlayer();
+    (p.media as any).duration = Infinity;
+    (p.media as any).currentTime = 0;
+
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+
+    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true }) as any;
+    Object.defineProperty(touchEvent, 'touches', { value: [{ clientX: 100 }] });
+    const played = nn(el.querySelector('.op-controls__progress--played')) as HTMLElement;
+    played.dispatchEvent(touchEvent);
+
+    expect(p.currentTime).toBe(0);
+  });
 });

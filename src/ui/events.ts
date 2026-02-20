@@ -224,11 +224,15 @@ export function bindCenterOverlay(player: Player, keyTarget: HTMLElement, bindin
   });
   player.events.on('playback:seeked', () => {
     bindings?.showLoader(false);
-    bindings?.showButton(true);
+    // After seeking, only show the center button if we are paused.
+    // When seeking during playback (common on iOS), keeping the play button visible
+    // causes it to linger even after the loader is hidden.
+    bindings?.showButton(player.media?.paused ?? false);
   });
   player.events.on('playback:play', () => {
     bindings?.showLoader(false);
-    bindings?.showButton(true);
+    // Play intent: hide the big play button. It will remain hidden when playback starts.
+    bindings?.showButton(false);
   });
   player.events.on('playback:pause', () => {
     bindings?.showLoader(false);

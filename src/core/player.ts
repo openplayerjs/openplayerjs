@@ -44,6 +44,8 @@ export class Player {
 
   private plugins = new PluginRegistry();
 
+  // UI state is owned by the UI package. Core should not store UI references.
+
   private _src?: string;
   private _volume = 1;
   private _playbackRate = 1;
@@ -180,9 +182,13 @@ export class Player {
 
     this.activeEngine?.detach?.(this.playerContext);
     this.activeEngine = engine;
-    this.activeEngine.attach(this.playerContext);
 
+    // Transition into loading state before attaching the engine.
+    // Some engines may synchronously emit 'playback:ready' during attach.
+    // Emitting 'playback:load' after attach can incorrectly overwrite 'ready'.
     this.emit('playback:load');
+
+    this.activeEngine.attach(this.playerContext);
   }
 
   async play() {
@@ -195,13 +201,79 @@ export class Player {
   }
 
   destroy() {
-    if (this.playerContext) {
-      this.activeEngine?.detach?.(this.playerContext);
-      this.playerContext = null;
-    }
+    // Notify external layers (e.g., UI) to clean up their own resources.
+    // Must fire before clearing the event bus.
+    this.events.emit('player:destroy');
+
+    // Detach engine
+    if (this.playerContext) this.activeEngine?.detach?.(this.playerContext);
+    this.playerContext = null;
+
+    // Destroy plugins (best-effort)
+    this.plugins.all().forEach((p) => {
+      try {
+        p.destroy?.();
+      } catch {
+        // ignore
+      }
+    });
+
+    // Remove all event listeners
+    this.events.clear();
   }
 
-  /* ---------------- Internals ---------------- */
+  addCaptions(args: {
+    src: string;
+    srclang?: string;
+    label?: string;
+    kind?: 'captions' | 'subtitles';
+    default?: boolean;
+  }) {
+    const track = document.createElement('track');
+    track.kind = args.kind || 'captions';
+    track.src = args.src;
+    if (args.srclang) track.srclang = args.srclang;
+    if (args.label) track.label = args.label;
+    if (args.default) track.default = true;
+    this.media.appendChild(track);
+    this.emit('texttrack:add', track);
+    this.emit('texttrack:listchange');
+    return track;
+  }
+
+  /** Retrieve a registered plugin by name. */
+  getPlugin<T = any>(name: string): T | undefined {
+    return this.plugins.all().find((p: any) => p?.name === name) as any;
+  }
+
+  /**
+   * Instance-level extension hook.
+   * This allows UMD bundles/plugins to attach API namespaces (e.g. player.ads, player.controls)
+   * without mutating the Player prototype.
+   *
+   * Extensions are applied shallowly and idempotently: existing keys are preserved.
+   */
+  extend(extension: Record<string, any>) {
+    if (!extension || typeof extension !== 'object') return this;
+    for (const key of Object.keys(extension)) {
+      if ((this as any)[key] === undefined) {
+        (this as any)[key] = extension[key];
+      } else if (
+        (this as any)[key] &&
+        typeof (this as any)[key] === 'object' &&
+        extension[key] &&
+        typeof extension[key] === 'object'
+      ) {
+        // merge namespace objects without overwriting existing keys
+        const target = (this as any)[key];
+        const source = extension[key];
+        for (const k of Object.keys(source)) {
+          if (target[k] === undefined) target[k] = source[k];
+        }
+      }
+    }
+    return this;
+  }
 
   private resolveMediaEngine(sources: MediaSource[]): { engine: MediaEnginePlugin; source: MediaSource } {
     const engines = this.plugins

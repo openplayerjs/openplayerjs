@@ -44,8 +44,7 @@
     justify-content: center;
     position: relative;
 }
-.op-player__media,
-.op-ads video {
+.op-player__media {
     display: inline-block;
     height: auto;
     object-fit: contain;
@@ -545,7 +544,45 @@
 .op-player video::-webkit-media-controls {
     display: none !important;
 }
-
+/* == Ads ============= */
+.op-ads {
+    position: absolute;
+    top: 0;
+}
+.op-ads video {
+    display: inline-block;
+    height: auto;
+    object-fit: contain;
+    position: relative;
+    width: 100% !important;
+}
+.op-ads__skip {
+    bottom: 100px;
+    display: none;
+    pointer-events: auto;
+    position: absolute;
+    right: 12px;
+    z-index: 3;
+}
+.op-ads__skip button {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    background: rgba(0, 0, 0, .8);
+    border: 1px solid rgba(255, 255, 255, .5);
+    border-right: 0;
+    color: #fff;
+    cursor: pointer;
+    direction: ltr;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: normal;
+    min-width: 50px;
+    padding: 10px 7px;
+    text-align: center;
+    width: auto;
+}
+.op-ads__skip button:hover {
+    border-color: rgb(255, 255, 255);
+}
 /* == Menu ============= */
 .op-menu {
     background: rgba(28, 28, 28, 0.7);
@@ -601,4 +638,28 @@
     margin-inline-start: -6px !important;
     margin-top: -8px;
     width: 24px !important;
+}
+
+/* == Captions (WebVTT) ============= */
+/* Style cues for readability and try to keep them above the control bar when controls are visible. */
+.op-player__video video::cue {
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    font-size: 16px;
+    line-height: 1.35;
+}
+
+/* WebKit (iOS/Safari) track container: lift up when custom controls are shown */
+.op-player__video:not(.op-controls--hidden) video::-webkit-media-text-track-display {
+    /* Lift cues above the custom control bar. JS keeps --op-controls-height in sync. */
+    -webkit-transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px))));
+            transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px))));
+}
+
+/* Also attempt to lift individual cues where supported */
+.op-player__video:not(.op-controls--hidden) video::cue {
+    /* Best-effort: not all engines apply transforms to ::cue. */
+    -webkit-transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
+            transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
 }

@@ -35,13 +35,15 @@ class EngineB {
 }
 
 describe('core/player branches', () => {
-  test('load returns early when not idle and selects highest priority compatible engine', () => {
+  test('load returns early when not idle and selects highest priority compatible engine', async () => {
     const media = document.createElement('video');
     media.src = 'https://example.com/a.mp4';
     const p = new Player(media, { plugins: [new EngineB(), new EngineA()] });
 
-    // autoload should have removed src and attempted load
-    expect(p.state.current === 'loading' || p.state.current === 'ready').toBe(true);
+    // autoload may run on a microtask; flush once
+    await Promise.resolve();
+    expect(p.state.current).toBe('ready');
+    expect((p as any).activeEngine?.name).toBe('engine-a');
 
     // load again should early-return (not idle)
     const prevState = p.state.current;

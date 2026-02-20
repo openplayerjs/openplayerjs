@@ -8,6 +8,15 @@ import { StateManager } from '../src/core/state';
 import { AdsPlugin } from '../src/plugins/ads';
 import { trackerCtorMock, vastGetMock, vastParseMock } from './mocks/vast-client';
 
+async function waitForAdVideo(): Promise<HTMLVideoElement> {
+  for (let i = 0; i < 20; i++) {
+    const el = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
+    if (el) return el;
+    await Promise.resolve();
+  }
+  throw new Error('Ad video was not mounted');
+}
+
 function makeLeases(): {
   leases: Lease;
   acquire: jest.MockedFunction<(capability: string, owner: string) => boolean>;
@@ -139,7 +148,7 @@ describe('AdsPlugin (ultimate patch)', () => {
 
   test('helper parsing: skip offsets and time offsets', () => {
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const anyP: any = p;
@@ -160,7 +169,7 @@ describe('AdsPlugin (ultimate patch)', () => {
 
   test('caption extraction is stable and produces vtt-only tracks', () => {
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const anyP: any = p;
@@ -186,7 +195,7 @@ describe('AdsPlugin (ultimate patch)', () => {
 
     const { ctx, video, lease } = makeCtx();
 
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false, resumeContent: true });
+    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true });
     p.setup(ctx);
 
     const seen: string[] = [];
@@ -201,18 +210,15 @@ describe('AdsPlugin (ultimate patch)', () => {
     expect((video as any).pause).toHaveBeenCalled();
     expect(lease.acquire).toHaveBeenCalledWith('playback', 'ads');
 
-    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
-    expect(adVideo).toBeTruthy();
-
     const skipBtn = document.querySelector('button.op-ads__skip-btn') as HTMLButtonElement;
     expect(skipBtn).toBeTruthy();
-
+    const adVideo = await waitForAdVideo();
     Object.defineProperty(adVideo, 'duration', { value: 20, configurable: true });
 
     adVideo.currentTime = 1;
     adVideo.dispatchEvent(new Event('loadedmetadata'));
     adVideo.dispatchEvent(new Event('timeupdate'));
-    expect(skipBtn.textContent).toMatch(/Skip in/i);
+    expect(skipBtn.textContent).toMatch(/\d+/i);
 
     adVideo.currentTime = 6;
     adVideo.dispatchEvent(new Event('timeupdate'));
@@ -237,7 +243,7 @@ describe('AdsPlugin (ultimate patch)', () => {
     vastGetMock.mockResolvedValueOnce(nonLinearOnlyParsed());
 
     const { ctx, lease } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false, resumeContent: true });
+    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true });
     p.setup(ctx);
 
     const play = p.playAds('https://example.com/nonlinear.xml');
@@ -260,15 +266,13 @@ describe('AdsPlugin (ultimate patch)', () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const run = p.playAds('https://example.com/vast.xml');
     await Promise.resolve();
 
-    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
-    expect(adVideo).toBeTruthy();
-
+    const adVideo = await waitForAdVideo();
     Object.defineProperty(adVideo, 'duration', { value: 5, configurable: true });
     adVideo.dispatchEvent(new Event('loadedmetadata'));
 
@@ -290,6 +294,39 @@ describe('AdsPlugin (ultimate patch)', () => {
     await run;
   });
 
+  test('restores active content captions track after linear ad finishes', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx, video } = makeCtx();
+
+    // Mock content textTracks (jsdom does not implement them).
+    const t0: any = { kind: 'captions', language: 'en', label: 'English', mode: 'showing' };
+    const t1: any = { kind: 'captions', language: 'es', label: 'Español', mode: 'disabled' };
+    const list: any = { length: 2, 0: t0, 1: t1 };
+    Object.defineProperty(video, 'textTracks', { value: list, configurable: true });
+
+    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
+    p.setup(ctx);
+
+    const run = p.playAds('https://example.com/vast.xml');
+    // Allow async VAST fetch/parse + DOM mount to complete.
+    for (let i = 0; i < 10; i++) await Promise.resolve();
+
+    // Simulate a mode flip while ads play (some apps disable tracks temporarily)
+    t0.mode = 'disabled';
+    t1.mode = 'disabled';
+
+    const adVideo = await waitForAdVideo();
+    Object.defineProperty(adVideo, 'duration', { value: 5, configurable: true });
+    adVideo.dispatchEvent(new Event('loadedmetadata'));
+    adVideo.dispatchEvent(new Event('ended'));
+
+    await run;
+
+    expect(t0.mode).toBe('showing');
+    expect(t1.mode).toBe('disabled');
+  });
+
   test('rejects linear playback if playback lease is already owned', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
@@ -298,7 +335,7 @@ describe('AdsPlugin (ultimate patch)', () => {
     // Pre-own the lease
     lease.acquire('playback', 'someone-else');
 
-    const p = new AdsPlugin({ allowNativeControls: false, allowCustomControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
     const errors: any[] = [];

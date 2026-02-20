@@ -42,14 +42,14 @@ describe('bindCenterOverlay', () => {
     player.events.emit('playback:seeking');
     expect(overlay.loader.getAttribute('aria-hidden')).toBe('false');
 
-    // seeked => loader off, button on
+    // seeked => loader off; button should only be shown if media is paused.
     player.events.emit('playback:seeked');
     expect(overlay.loader.getAttribute('aria-hidden')).toBe('true');
     expect(overlay.button.getAttribute('aria-hidden')).toBe('false');
 
-    // play => button visible, aria pressed true after playing?
+    // play intent => keep the big play button hidden (it should not flash/linger)
     player.events.emit('playback:play');
-    expect(overlay.button.getAttribute('aria-hidden')).toBe('false');
+    expect(overlay.button.getAttribute('aria-hidden')).toBe('true');
 
     // playing => hide both
     player.events.emit('playback:playing');
@@ -73,13 +73,15 @@ describe('bindCenterOverlay', () => {
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'K', bubbles: true }));
     expect(player.play).toHaveBeenCalled();
 
-    // simulate state as playing, press Enter to pause
+    // simulate media as playing, press Enter to pause
     player.state.transition('playing');
+    Object.defineProperty(player.media, 'paused', { value: false, configurable: true });
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     expect(player.pause).toHaveBeenCalled();
 
     // Space toggles too
     player.state.transition('paused');
+    Object.defineProperty(player.media, 'paused', { value: true, configurable: true });
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
     expect(player.play).toHaveBeenCalledTimes(2);
   });

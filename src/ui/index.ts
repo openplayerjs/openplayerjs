@@ -5,10 +5,23 @@ import { createControlGrid, type Control } from './control';
 import { bindCenterOverlay } from './events';
 import { createCenterOverlayDom } from './overlay';
 
+export type PlayerUIContext = {
+  wrapper: HTMLDivElement;
+  mediaContainer: HTMLDivElement;
+  controlsRoot: HTMLDivElement;
+  placeholder: Comment;
+  grid?: ReturnType<typeof createControlGrid>;
+};
+
 export function createUI(player: Player, media: HTMLMediaElement, controls: Control[]) {
   media.tabIndex = -1;
   const tmpMedia = media;
   const isMediaAudio = isAudio(tmpMedia);
+
+  const placeholder = document.createComment('op-player-placeholder');
+  const parent = tmpMedia.parentNode;
+  if (parent) parent.insertBefore(placeholder, tmpMedia);
+
   const wrapper = document.createElement('div');
   wrapper.className = `op-player op-player__keyboard--inactive ${isMediaAudio ? 'op-player__audio' : 'op-player__video'}`;
   wrapper.setAttribute('role', 'region');
@@ -35,7 +48,7 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   const mediaContainer = document.createElement('div');
   mediaContainer.className = 'op-media';
-  mediaContainer.tabIndex = -1;
+  mediaContainer.tabIndex = 0;
   mediaContainer.setAttribute('role', 'group');
   mediaContainer.setAttribute('aria-label', 'Media');
   mediaContainer.appendChild(tmpMedia);
@@ -67,7 +80,45 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
       el.dataset.controlId = control.id;
       grid.place(control.placement, el);
     });
-    return;
+
+    const ctx: PlayerUIContext = { wrapper, mediaContainer, controlsRoot, placeholder, grid };
+
+    const offDestroy = player.events.on('player:destroy', () => {
+      try {
+        wrapper.replaceWith(media);
+      } catch {
+        // ignore
+      }
+      try {
+        placeholder.remove();
+      } catch {
+        // ignore
+      }
+      try {
+        offAddElement();
+        offAddControl();
+        offDestroy();
+      } catch {
+        // ignore
+      }
+    });
+
+    const offAddElement = player.events.on('ui:addElement', (payload?: any) => {
+      if (!payload?.el) return;
+      const placement = payload.placement || { v: 'bottom', h: 'right' };
+      ctx.grid?.place(placement, payload.el);
+    });
+
+    const offAddControl = player.events.on('ui:addControl', (payload?: any) => {
+      const control = payload?.control as Control | undefined;
+      if (!control) return;
+      const el = control.create(player);
+      el.dataset.controlId = control.id;
+      ctx.grid?.place(control.placement, el);
+      payload.el = el;
+    });
+
+    return ctx;
   }
 
   const mobile = isMobile();
@@ -80,6 +131,7 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   const showControls = (): void => {
     wrapper.classList.remove('op-controls--hidden');
+    mediaContainer.classList.remove('op-media--controls-hidden');
     if (hideTimer) window.clearTimeout(hideTimer);
     controlsRoot.setAttribute('aria-hidden', 'false');
   };
@@ -95,6 +147,7 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
       }
     }
     wrapper.classList.add('op-controls--hidden');
+    mediaContainer.classList.add('op-media--controls-hidden');
     controlsRoot.setAttribute('aria-hidden', 'true');
   };
 
@@ -190,4 +243,46 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     el.dataset.controlId = control.id;
     grid.place(control.placement, el);
   });
+
+  const ctx: PlayerUIContext = { wrapper, mediaContainer, controlsRoot, placeholder, grid };
+
+  // UI is responsible for its own teardown. Core emits `player:destroy`.
+  const offDestroy = player.events.on('player:destroy', () => {
+    try {
+      wrapper.replaceWith(media);
+    } catch {
+      // ignore
+    }
+    try {
+      placeholder.remove();
+    } catch {
+      // ignore
+    }
+    try {
+      offAddElement();
+      offAddControl();
+      offDestroy();
+    } catch {
+      // ignore
+    }
+  });
+
+  // Allow core API methods to delegate UI operations without importing UI internals.
+  const offAddElement = player.events.on('ui:addElement', (payload?: any) => {
+    if (!payload?.el) return;
+    const placement = payload.placement || { v: 'bottom', h: 'right' };
+    ctx.grid?.place(placement, payload.el);
+  });
+
+  const offAddControl = player.events.on('ui:addControl', (payload?: any) => {
+    const control = payload?.control as Control | undefined;
+    if (!control) return;
+    const el = control.create(player);
+    el.dataset.controlId = control.id;
+    ctx.grid?.place(control.placement, el);
+    // Provide the created element back to the caller synchronously.
+    payload.el = el;
+  });
+
+  return ctx;
 }

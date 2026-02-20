@@ -52,7 +52,7 @@ export class ProgressControl extends BaseControl {
       tooltip = document.createElement('span');
       tooltip.className = 'op-controls__tooltip';
       tooltip.tabIndex = -1;
-      tooltip.innerHTML = '00:00';
+      tooltip.textContent = '00:00';
       progress.appendChild(tooltip);
     }
 
@@ -65,6 +65,13 @@ export class ProgressControl extends BaseControl {
     slider.addEventListener('pointerup', () => setPressed(false));
     slider.addEventListener('pointercancel', () => setPressed(false));
     slider.addEventListener('mouseleave', () => setPressed(false));
+
+    // iOS Safari may not reliably fire Pointer Events for <input type="range">.
+    // Ensure tap/drag interactions still mark the slider as "pressed" so seeking commits.
+    slider.addEventListener('touchstart', () => setPressed(true), EVENT_OPTIONS);
+    slider.addEventListener('touchend', () => setPressed(false), EVENT_OPTIONS);
+    slider.addEventListener('mousedown', () => setPressed(true), EVENT_OPTIONS);
+    slider.addEventListener('mouseup', () => setPressed(false), EVENT_OPTIONS);
 
     const clearPressed = () => setPressed(false);
     document.addEventListener('pointerup', clearPressed, EVENT_OPTIONS);
@@ -135,10 +142,68 @@ export class ProgressControl extends BaseControl {
       }
     };
 
+    const seekFromClientX = (clientX: number) => {
+      if (this.activeOverlay && !this.activeOverlay.canSeek) return;
+
+      const duration = getDuration();
+      if ((player.isLive || duration === Infinity) && !this.activeOverlay) return;
+      if (!Number.isFinite(duration) || duration <= 0) return;
+
+      const rect = progress.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const pct = Math.max(0, Math.min(1, x / rect.width));
+      const val = pct * duration;
+      if (Number.isFinite(val)) {
+        slider.value = String(val);
+        player.currentTime = val;
+      }
+    };
+
+    // On iOS/Android, taps may land on the <progress> overlays instead of the range input.
+    // Implement rail tap-to-seek at the container level so seeking is reliable.
+    progress.addEventListener(
+      'click',
+      (e) => {
+        const t = e.target as HTMLElement;
+        if (t && t.closest('input[type="range"]')) return;
+        seekFromClientX((e as MouseEvent).clientX);
+      },
+      EVENT_OPTIONS
+    );
+
+    progress.addEventListener(
+      'touchstart',
+      (e: TouchEvent) => {
+        const t = e.target as HTMLElement;
+        if (t && t.closest('input[type="range"]')) return;
+        const touch = e.touches && e.touches[0];
+        if (!touch) return;
+        // Prevent the synthetic delayed click from fighting our seek.
+        e.preventDefault();
+        seekFromClientX(touch.clientX);
+      },
+      EVENT_OPTIONS
+    );
+
+    slider.addEventListener(
+      'change',
+      (e) => {
+        if (this.activeOverlay && !this.activeOverlay.canSeek) return;
+        const target = e.target as HTMLInputElement;
+        const val = parseFloat(target.value);
+        if (Number.isFinite(val)) player.currentTime = val;
+        // Release pressed state after a tap-to-seek interaction.
+        setPressed(false);
+      },
+      EVENT_OPTIONS
+    );
+
     slider.addEventListener(
       'input',
       (e) => {
-        if (!slider.classList.contains('op-progress--pressed')) return;
+        const pressed = slider.classList.contains('op-progress--pressed');
+        // On iOS Safari a tap can trigger input/change without Pointer Events; allow seek on mobile.
+        if (!pressed && !isMobile()) return;
         if (this.activeOverlay && !this.activeOverlay.canSeek) return;
 
         const target = e.target as HTMLInputElement;
@@ -217,9 +282,9 @@ export class ProgressControl extends BaseControl {
 
         if (Number.isFinite(duration) && duration > 0) {
           const remaining = Math.max(0, duration - time);
-          tooltip.innerHTML = Number.isNaN(remaining) ? '00:00' : formatTime(remaining);
+          tooltip.textContent = Number.isNaN(remaining) ? '00:00' : formatTime(remaining);
         } else {
-          tooltip.innerHTML = Number.isNaN(time) ? '00:00' : formatTime(time);
+          tooltip.textContent = Number.isNaN(time) ? '00:00' : formatTime(time);
         }
       },
       EVENT_OPTIONS

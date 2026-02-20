@@ -48,6 +48,8 @@ describe('UI Controls', () => {
     await el.click();
     expect(p.play).toHaveBeenCalled();
     p.state.transition('playing');
+    // togglePlayback uses underlying media.paused; simulate playing.
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
     await el.click();
     expect(p.pause).toHaveBeenCalled();
   });

@@ -8,8 +8,8 @@ export function getActiveMedia(player: Player): HTMLMediaElement {
 }
 
 export async function togglePlayback(player: Player): Promise<void> {
-  const isPlaying =
-    player.state.current === 'playing' || player.state.current === 'waiting' || player.state.current === 'seeking';
+  const media = getActiveMedia(player);
+  const isPlaying = !media.paused && !media.ended;
 
   if (isPlaying) {
     player.pause();

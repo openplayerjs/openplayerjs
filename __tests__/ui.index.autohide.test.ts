@@ -43,7 +43,7 @@ describe('UI createUI + controls autohide', () => {
     expect(wrapper).toBeTruthy();
     const mediaContainer = wrapper.querySelector('.op-media') as HTMLDivElement;
     expect(mediaContainer).toBeTruthy();
-    expect(mediaContainer.tabIndex).toBe(-1);
+    expect(mediaContainer.tabIndex).toBe(0);
 
     const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
     expect(controlsRoot).toBeTruthy();

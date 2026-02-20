@@ -23,7 +23,8 @@ export type PlayerEvent =
   | 'texttrack:add'
   | 'texttrack:remove'
   | 'texttrack:listchange'
-  | 'texttrack:change';
+  | 'texttrack:change'
+  | 'controls:changed';
 
 export type Listener = (payload?: any) => void;
 
@@ -40,5 +41,14 @@ export class EventBus {
 
   emit(event: PlayerEvent | string, payload?: any) {
     this.listeners.get(event)?.forEach((cb) => cb(payload));
+  }
+
+  listenerCount(event: PlayerEvent | string): number {
+    return this.listeners.get(event)?.size ?? 0;
+  }
+
+  /** Remove all listeners (used by Player.destroy). */
+  clear() {
+    this.listeners.clear();
   }
 }
