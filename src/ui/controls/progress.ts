@@ -17,21 +17,20 @@ export class ProgressControl extends BaseControl {
 
     const progress = document.createElement('div');
     progress.className = 'op-controls__progress';
-    progress.role = 'slider';
-    progress.tabIndex = 0;
+    progress.role = 'group';
     progress.setAttribute('aria-label', progressLabel);
-    progress.setAttribute('aria-valuemin', '0');
-    progress.setAttribute('aria-valuenow', '0');
 
     const slider = document.createElement('input');
     slider.type = 'range';
     slider.role = 'slider';
     slider.className = 'op-controls__progress--seek';
-    slider.tabIndex = -1;
+    slider.tabIndex = 0;
     slider.min = '0';
     slider.step = '0.1';
     slider.value = '0';
     slider.setAttribute('aria-label', railLabel);
+    slider.setAttribute('aria-valuemin', '0');
+    slider.setAttribute('aria-valuenow', '0');
 
     const buffer = document.createElement('progress');
     buffer.className = 'op-controls__progress--buffer';
@@ -111,7 +110,7 @@ export class ProgressControl extends BaseControl {
       if (Number.isFinite(duration) && duration > 0) {
         if (!slider.max || slider.max === '0' || parseFloat(slider.max || '-1') !== duration) {
           slider.max = String(duration);
-          progress.setAttribute('aria-valuemax', String(duration));
+          slider.setAttribute('aria-valuemax', String(duration));
         }
       }
 
@@ -126,6 +125,7 @@ export class ProgressControl extends BaseControl {
       const v = Number.isFinite(value) && value >= 0 ? value : 0;
 
       slider.value = String(v);
+      slider.setAttribute('aria-valuenow', String(v));
 
       const min = parseFloat(slider.min);
       const max = parseFloat(slider.max);

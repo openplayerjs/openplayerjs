@@ -31,9 +31,14 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
   }
 
   canPlay(source: MediaSource) {
-    return (
-      Hls.isSupported() && (source.type === 'application/x-mpegURL' || new URL(source.src).pathname.endsWith('.m3u8'))
-    );
+    if (!Hls.isSupported()) return false;
+    if (source.type === 'application/x-mpegURL' || source.type === 'application/vnd.apple.mpegurl') return true;
+    try {
+      const u = new URL(source.src, window.location.href);
+      return u.pathname.endsWith('.m3u8');
+    } catch {
+      return source.src.split('?')[0].endsWith('.m3u8');
+    }
   }
 
   attach(ctx: MediaEngineContext) {

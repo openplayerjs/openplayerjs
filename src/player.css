@@ -47,6 +47,7 @@
 .op-player__media {
     display: inline-block;
     height: auto;
+    min-height: 260px;
     object-fit: contain;
     position: relative;
     width: 100% !important;
@@ -68,6 +69,26 @@
     top: calc(50% - 20px);
     width: 60px;
     z-index: 2;
+}
+.op-player__unmute {
+    background: rgba(0, 0, 0, .8);
+    border: 1px solid rgba(255, 255, 255, .5);
+    color: #fff;
+    cursor: pointer;
+    direction: ltr;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: normal;
+    min-width: 50px;
+    padding: 10px 7px;
+    pointer-events: auto;
+    position: absolute;
+    right: 12px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    text-align: center;
+    top: 12px;
+    width: auto;
+    z-index: 3;
 }
 
 /* === Focus =================== */
@@ -93,13 +114,13 @@
     display: block;
     font-family: inherit;
     font-size: 100%;
-    line-height: 1.15;
     height: 52px;
+    line-height: 1.15;
     margin: 0;
     margin-inline-start: -18px;
     margin-top: -23px;
-    padding: 0;
     overflow: visible;
+    padding: 0;
     position: absolute;
     text-transform: none;
     transition: 100ms all ease;
@@ -141,7 +162,7 @@
     position: absolute;
     transition: bottom 0.3s ease;
     width: 100%;
-    z-index: 3;
+    z-index: 4;
 }
 
 .op-player__audio .op-controls {
@@ -565,18 +586,17 @@
     z-index: 3;
 }
 .op-ads__skip button {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     background: rgba(0, 0, 0, .8);
     border: 1px solid rgba(255, 255, 255, .5);
-    border-right: 0;
     color: #fff;
     cursor: pointer;
     direction: ltr;
-    font-weight: normal;
     font-size: 14px;
+    font-weight: normal;
     line-height: normal;
     min-width: 50px;
     padding: 10px 7px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     text-align: center;
     width: auto;
 }
@@ -605,9 +625,9 @@
 }
 .op-menu__submenu button,
 .op-menu__header {
+    align-items: center;
     color: #fff;
     display: flex;
-    align-items: center;
 }
 .op-menu__header {
     padding: 4px 0 6px;
@@ -615,10 +635,10 @@
 }
 .op-menu__header:after {
     background-color: #fff;
+    bottom: -4px;
     content: "";
     height: 1px;
     position: absolute;
-    bottom: -4px;
     width: 100%
 }
 .op-menu__header + .op-controls__menu-item:first-of-type {
@@ -626,9 +646,9 @@
 }
 .op-menu__item-check {
     display: block;
+    height: 16px;
     margin-inline-end: 6px;
     width: 16px;
-    height: 16px;
 }
 .op-menu__item-check.checked:before {
     content: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAwJSIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIxMDAlIj48cGF0aCBkPSJNOSAxNi4yTDQuOCAxMmwtMS40IDEuNEw5IDE5IDIxIDdsLTEuNC0xLjRMOSAxNi4yeiIgZmlsbD0iI2ZmZiIgLz48L3N2Zz4=');
@@ -645,9 +665,9 @@
 .op-player__video video::cue {
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
     font-size: 16px;
     line-height: 1.35;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
 }
 
 /* WebKit (iOS/Safari) track container: lift up when custom controls are shown */
@@ -662,4 +682,33 @@
     /* Best-effort: not all engines apply transforms to ::cue. */
     -webkit-transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
             transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
+}
+
+/* -------------------- */
+/* Accessibility helpers */
+/* -------------------- */
+
+/* WCAG 2.2 focus appearance: ensure a visible focus ring. */
+.op-player :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* WCAG 2.2 target size guidance: ensure minimum hit area on interactive controls. */
+.op-player button,
+.op-player [role='button'] {
+    min-height: 24px;
+    min-width: 24px;
+}
+
+/* Respect reduced motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+    .op-player *,
+    .op-player *::before,
+    .op-player *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
 }
