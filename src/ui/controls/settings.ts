@@ -1,6 +1,7 @@
 import { EVENT_OPTIONS } from '../../core/constants';
 import type { Control } from '../control';
 import { getSettingsRegistry, type SettingsSubmenu } from '../settings';
+import { setControlLabel } from '../a11y';
 import { BaseControl } from './base';
 
 export class SettingsControl extends BaseControl {
@@ -22,7 +23,7 @@ export class SettingsControl extends BaseControl {
     this.button = document.createElement('button');
     this.button.type = 'button';
     this.button.className = 'op-controls__settings';
-    this.button.setAttribute('aria-label', this.player.config.labels?.settings || 'Player Settings');
+    setControlLabel(this.button, this.player.config.labels?.settings || 'Player Settings');
     this.button.setAttribute('aria-haspopup', 'menu');
     this.button.setAttribute('aria-expanded', 'false');
 
@@ -38,19 +39,22 @@ export class SettingsControl extends BaseControl {
     this.root.appendChild(this.button);
     this.root.appendChild(this.panel);
 
-    this.button.addEventListener(
+    this.listen(
+      this.button,
       'click',
-      (e) => {
+      (e: Event) => {
+        const me = e as MouseEvent;
         this.toggle();
-        e.preventDefault();
-        e.stopPropagation();
+        me.preventDefault();
+        me.stopPropagation();
       },
       EVENT_OPTIONS
     );
 
-    document.addEventListener(
+    this.listen(
+      document,
       'click',
-      (e) => {
+      (e: Event) => {
         if (!this.isOpen) return;
         const t = e.target as HTMLElement;
         if (!t.closest('.op-menu--container')) this.close();
@@ -58,21 +62,25 @@ export class SettingsControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    document.addEventListener(
+    this.listen(
+      document,
       'keydown',
-      (e) => {
+      (e: Event) => {
         if (!this.isOpen) return;
-        if (e.key === 'Escape') this.close();
+        const ke = e as KeyboardEvent;
+        if (ke.key === 'Escape') this.close();
       },
       EVENT_OPTIONS
     );
 
-    this.overlayMgr.bus.on('overlay:changed', () => {
+    this.dispose.add(
+      this.overlayMgr.bus.on('overlay:changed', () => {
       this.activeSubmenuId = null;
       // Always re-compute availability so the control can hide during ads
       // and re-appear when content resumes, even if the menu isn't open.
-      this.render();
-    });
+        this.render();
+      })
+    );
 
     getSettingsRegistry(this.player).register({
       id: 'speed',
@@ -99,7 +107,7 @@ export class SettingsControl extends BaseControl {
     });
 
     // Re-render on readiness (tracks/rates may appear)
-    this.player.events.on('loadedmetadata', () => {
+    this.onPlayer('loadedmetadata', () => {
       if (this.isOpen) this.render();
     });
 
@@ -161,14 +169,16 @@ export class SettingsControl extends BaseControl {
     const back = document.createElement('button');
     back.type = 'button';
     back.className = 'op-submenu__back';
-    back.setAttribute('aria-label', 'Back');
-    back.addEventListener(
+    setControlLabel(back, 'Back');
+    this.listen(
+      back,
       'click',
-      (e) => {
+      (e: Event) => {
+        const me = e as MouseEvent;
         this.activeSubmenuId = null;
         this.render();
-        e.preventDefault();
-        e.stopPropagation();
+        me.preventDefault();
+        me.stopPropagation();
       },
       EVENT_OPTIONS
     );
@@ -214,12 +224,14 @@ export class SettingsControl extends BaseControl {
 
     btn.append(mark, text);
 
-    btn.addEventListener(
+    this.listen(
+      btn,
       'click',
-      (e) => {
+      (e: Event) => {
+        const me = e as MouseEvent;
         onClick();
-        e.preventDefault();
-        e.stopPropagation();
+        me.preventDefault();
+        me.stopPropagation();
       },
       EVENT_OPTIONS
     );

@@ -1,5 +1,6 @@
 import { EVENT_OPTIONS } from '../core/constants';
 import type { Player } from '../core/player';
+import { setControlLabel } from './a11y';
 import { togglePlayback } from './playback';
 
 export type CenterIcon = 'play' | 'pause';
@@ -23,7 +24,7 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
   button.type = 'button';
   button.setAttribute('aria-pressed', 'false');
   button.setAttribute('aria-hidden', 'false');
-  button.setAttribute('aria-label', playLabel);
+  setControlLabel(button, playLabel);
   button.setAttribute('aria-keyshortcuts', 'K Enter');
 
   button.addEventListener(
@@ -42,14 +43,19 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
   loader.setAttribute('aria-hidden', 'true');
   loader.setAttribute('role', 'status');
   loader.setAttribute('aria-live', 'polite');
-  loader.setAttribute('aria-label', loadingLabel);
+  // Prefer real text in the DOM over aria-label. This also makes the status announcement
+  // more reliable across AT.
+  const loaderText = document.createElement('span');
+  loaderText.className = 'op-player__sr-only';
+  loaderText.textContent = loadingLabel;
+  loader.appendChild(loaderText);
 
   const showButton = (show: boolean) => {
     if (show) {
       button.classList.remove('op-player__play--paused');
       button.setAttribute('aria-hidden', 'false');
       button.removeAttribute('inert');
-      button.setAttribute('aria-label', playLabel);
+      setControlLabel(button, playLabel);
       button.inert = false;
       button.tabIndex = 0;
     } else {
@@ -62,7 +68,7 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
       button.classList.add('op-player__play--paused');
       button.setAttribute('aria-hidden', 'true');
       button.setAttribute('inert', '');
-      button.setAttribute('aria-label', pauseLabel);
+      setControlLabel(button, pauseLabel);
       button.inert = true;
       button.tabIndex = -1;
     }

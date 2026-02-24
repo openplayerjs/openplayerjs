@@ -14,7 +14,7 @@ describe('Player core', () => {
 
   test('emit notifies plugin onEvent (non media-engine)', () => {
     const p = makePlayer();
-    const seen: any[] = [];
+    const seen: [string, unknown][] = [];
     const plugin: PlayerPlugin = {
       name: 't',
       version: '1',
@@ -59,7 +59,7 @@ describe('Player core', () => {
 
   test('lease change re-emits cached media state so plugin-owned surfaces can sync', async () => {
     const p = makePlayer();
-    const seen: any[] = [];
+    const seen: [string, unknown][] = [];
     p.events.on('cmd:setMuted', (m: boolean) => seen.push(['muted', m]));
     p.events.on('cmd:setVolume', (v: number) => seen.push(['volume', v]));
 
@@ -70,8 +70,10 @@ describe('Player core', () => {
     // Acquire playback lease as if an ads plugin took over.
     p.leases.acquire('playback', 'ads');
 
-    // Flush microtasks
-    await Promise.resolve();
+    // bindLeaseSync uses queueMicrotask.
+    await new Promise<void>((resolve) => {
+      queueMicrotask(() => resolve());
+    });
 
     // Last emitted should match cached state.
     expect(seen.slice(-2)).toEqual([
@@ -105,15 +107,18 @@ describe('Player core', () => {
   test('destroy detaches active engine if present', () => {
     const p = makePlayer() as any;
     const detach = jest.fn();
-    p.activeEngine = { detach } as any;
-    p.playerContext = { media: p.media, events: p.events, player: p } as any;
+    p.activeEngine = { detach };
+    p.playerContext = { media: p.media, events: p.events, player: p };
     p.destroy();
     expect(detach).toHaveBeenCalled();
     expect(p.playerContext).toBeNull();
   });
 
   test('determineAutoplaySupport: unmuted autoplay works', async () => {
-    const v = document.createElement('video') as any;
+    const v = document.createElement('video') as HTMLVideoElement & {
+      play: jest.Mock<Promise<void>, []>;
+      pause: jest.Mock<void, []>;
+    };
     v.src = 'https://example.com/video.mp4';
     v.volume = 0.7;
     v.muted = false;
@@ -121,10 +126,10 @@ describe('Player core', () => {
     v.play = jest.fn().mockResolvedValue(undefined);
     document.body.appendChild(v);
     const p = new Player(v, { plugins: [] });
-    // Gate: determineAutoplaySupport awaits readiness.
+    const promise = p.determineAutoplaySupport();
+    // Ensure readiness after listeners are in place.
     p.events.emit('loadedmetadata');
-
-    const res = await p.determineAutoplaySupport();
+    const res = await promise;
     expect(res).toEqual({ autoplay: true, muted: false });
     expect(v.play).toHaveBeenCalledTimes(1);
     expect(v.pause).toHaveBeenCalledTimes(1);
@@ -133,7 +138,10 @@ describe('Player core', () => {
   });
 
   test('determineAutoplaySupport: only muted autoplay works', async () => {
-    const v = document.createElement('video') as any;
+    const v = document.createElement('video') as HTMLVideoElement & {
+      play: jest.Mock<Promise<void>, []>;
+      pause: jest.Mock<void, []>;
+    };
     v.src = 'https://example.com/video.mp4';
     v.volume = 0.6;
     v.muted = false;
@@ -141,9 +149,9 @@ describe('Player core', () => {
     v.play = jest.fn().mockRejectedValueOnce(new Error('blocked')).mockResolvedValueOnce(undefined);
     document.body.appendChild(v);
     const p = new Player(v, { plugins: [] });
+    const promise = p.determineAutoplaySupport();
     p.events.emit('loadedmetadata');
-
-    const res = await p.determineAutoplaySupport();
+    const res = await promise;
     expect(res).toEqual({ autoplay: true, muted: true });
     expect(v.play).toHaveBeenCalledTimes(2);
     expect(v.pause).toHaveBeenCalledTimes(1);
@@ -153,7 +161,10 @@ describe('Player core', () => {
   });
 
   test('determineAutoplaySupport: autoplay blocked', async () => {
-    const v = document.createElement('video') as any;
+    const v = document.createElement('video') as HTMLVideoElement & {
+      play: jest.Mock<Promise<void>, []>;
+      pause: jest.Mock<void, []>;
+    };
     v.src = 'https://example.com/video.mp4';
     v.volume = 0.5;
     v.muted = false;
@@ -161,9 +172,9 @@ describe('Player core', () => {
     v.play = jest.fn().mockRejectedValue(new Error('blocked'));
     document.body.appendChild(v);
     const p = new Player(v, { plugins: [] });
+    const promise = p.determineAutoplaySupport();
     p.events.emit('loadedmetadata');
-
-    const res = await p.determineAutoplaySupport();
+    const res = await promise;
     expect(res).toEqual({ autoplay: false, muted: false });
     expect(v.play).toHaveBeenCalledTimes(2);
     expect(v.pause).toHaveBeenCalledTimes(0);

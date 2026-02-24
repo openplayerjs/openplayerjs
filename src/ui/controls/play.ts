@@ -1,4 +1,5 @@
 import { EVENT_OPTIONS } from '../../core/constants';
+import { setControlLabel } from '../a11y';
 import type { Control } from '../control';
 import { togglePlayback } from '../playback';
 import { BaseControl } from './base';
@@ -16,15 +17,17 @@ export class PlayControl extends BaseControl {
     btn.tabIndex = 0;
     btn.type = 'button';
     btn.className = 'op-controls__playpause';
-    btn.setAttribute('aria-label', playLabel);
+    setControlLabel(btn, playLabel);
     btn.setAttribute('aria-pressed', 'false');
 
-    btn.addEventListener(
+    this.listen(
+      btn,
       'click',
-      async (e) => {
+      async (e: Event) => {
+        const me = e as MouseEvent;
         await togglePlayback(player);
-        e.preventDefault();
-        e.stopPropagation();
+        me.preventDefault();
+        me.stopPropagation();
       },
       EVENT_OPTIONS
     );
@@ -32,14 +35,14 @@ export class PlayControl extends BaseControl {
     const setPlaying = (playing: boolean) => {
       btn.classList.toggle('op-controls__playpause--pause', playing);
       btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
-      btn.setAttribute('aria-label', playing ? pauseLabel : playLabel);
+      setControlLabel(btn, playing ? pauseLabel : playLabel);
     };
 
-    player.events.on('play', () => setPlaying(true));
-    player.events.on('pause', () => setPlaying(false));
-    player.events.on('playing', () => setPlaying(true));
-    player.events.on('pause', () => setPlaying(false));
-    player.events.on('ended', () => setPlaying(false));
+    this.onPlayer('play', () => setPlaying(true));
+    this.onPlayer('pause', () => setPlaying(false));
+    this.onPlayer('playing', () => setPlaying(true));
+    this.onPlayer('pause', () => setPlaying(false));
+    this.onPlayer('ended', () => setPlaying(false));
 
     return btn;
   }

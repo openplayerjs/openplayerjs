@@ -1,24 +1,78 @@
-import { OverlayManager } from '../src/core/overlay';
+import { EventBus } from '../src/core/events';
+import { getOverlayManager, type OverlayState } from '../src/core/overlay';
 
-describe('core/overlay', () => {
-  test('selects highest-priority overlay and emits on changes', () => {
-    const mgr = new OverlayManager();
-    const seen: (string | null)[] = [];
-    mgr.bus.on('overlay:changed', (ov) => seen.push(ov?.id ?? null));
+describe('OverlayManager + getOverlayManager()', () => {
+  test('mirrors overlay changes onto player EventBus and disposes on player:destroy', () => {
+    const player: { events: EventBus } = { events: new EventBus() };
 
-    mgr.activate({ id: 'cast', priority: 1, mode: 'normal', duration: 0, value: 0, canSeek: true });
-    expect(mgr.active?.id).toBe('cast');
+    const mgr1 = getOverlayManager(player);
+    const mgr2 = getOverlayManager(player);
+    expect(mgr2).toBe(mgr1); // cached branch
 
-    mgr.activate({ id: 'ads', priority: 10, mode: 'countdown', duration: 30, value: 30, canSeek: false });
-    expect(mgr.active?.id).toBe('ads');
+    const received: OverlayState[] = [];
+    const off = player.events.on('overlay:changed', (a: OverlayState) => received.push(a));
 
-    // Lower priority overlay updates don't steal focus.
-    mgr.update('cast', { label: 'Casting' });
-    expect(mgr.active?.id).toBe('ads');
+    const overlay: OverlayState = {
+      id: 'ads',
+      priority: 10,
+      mode: 'countdown',
+      duration: 5,
+      value: 5,
+      canSeek: false,
+      label: 'Ad',
+    };
 
-    mgr.deactivate('ads');
-    expect(mgr.active?.id).toBe('cast');
+    mgr1.activate(overlay);
+    expect(received.length).toBe(1);
+    expect(received[0]?.id).toBe('ads');
 
-    expect(seen).toEqual(['cast', 'ads', 'ads', 'cast']);
+    // Destroy should remove the mirroring listener, dispose the manager, and delete the cache key.
+    player.events.emit('player:destroy');
+
+    // After destroy, manager is disposed; activating should not mirror to player bus.
+    mgr1.activate({ ...overlay, value: 4 });
+    expect(received.length).toBe(1);
+
+    // Cache key should have been deleted; a new manager is returned.
+    const mgr3 = getOverlayManager(player);
+    expect(mgr3).not.toBe(mgr1);
+
+    off();
+  });
+
+  test('update/deactivate no-op branches do not emit and priority selection works', () => {
+    const mgr = getOverlayManager({ events: new EventBus() } as { events: EventBus });
+
+    const events: OverlayState[] = [];
+    const off = mgr.bus.on('overlay:changed', (a: OverlayState) => events.push(a));
+
+    // update() missing id branch
+    mgr.update('missing', { value: 1 });
+    expect(events.length).toBe(0);
+
+    // deactivate() missing id branch
+    mgr.deactivate('missing');
+    expect(events.length).toBe(0);
+
+    // pickActive priority branch
+    mgr.activate({
+      id: 'low',
+      priority: 1,
+      mode: 'normal',
+      duration: 10,
+      value: 0,
+      canSeek: true,
+    });
+    mgr.activate({
+      id: 'high',
+      priority: 100,
+      mode: 'normal',
+      duration: 10,
+      value: 0,
+      canSeek: true,
+    });
+    expect(mgr.active?.id).toBe('high');
+
+    off();
   });
 });

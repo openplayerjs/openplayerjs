@@ -1,5 +1,6 @@
 import { DefaultMediaEngine } from '../engines/html5';
 import type { PlayerConfig } from './configuration';
+import { DisposableStore } from './dispose';
 import type { PlayerEvent } from './events';
 import { EventBus } from './events';
 import { Lease } from './lease';
@@ -50,6 +51,7 @@ export class Player {
   private interactionUnsubs: (() => void)[] = [];
 
   private plugins = new PluginRegistry();
+  private pluginDisposables = new WeakMap<PlayerPlugin, DisposableStore>();
 
   private _src?: string;
   private _volume = 1;
@@ -116,7 +118,7 @@ export class Player {
     this.events.emit(event, payload);
     this.plugins
       .all()
-      .filter((p) => !p.capabilities?.includes('media-engine'))
+      .filter((p: any) => !p.capabilities?.includes('media-engine'))
       .forEach((p: PlayerPlugin) => {
         p.onEvent?.(event as PlayerEvent, payload);
       });
@@ -125,12 +127,24 @@ export class Player {
   registerPlugin(plugin: PlayerPlugin) {
     this.plugins.register(plugin);
 
+    const dispose = new DisposableStore();
+    this.pluginDisposables.set(plugin, dispose);
+
     plugin.setup?.({
       player: this,
       media: this.media,
       events: this.events,
       state: this.state,
       leases: this.leases,
+      dispose,
+      add: (d: (() => void) | void | null) => dispose.add(d ?? undefined),
+      on: (event: string, cb: (payload?: any) => void) => dispose.add(this.events.on(event, cb)),
+      listen: (
+        target: EventTarget,
+        type: string,
+        handler: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions
+      ) => dispose.addEventListener(target, type, handler, options),
     });
   }
 
@@ -349,6 +363,13 @@ export class Player {
     this.playerContext = null;
 
     this.plugins.all().forEach((p) => {
+      // Always dispose tracked resources first.
+      try {
+        this.pluginDisposables.get(p)?.dispose();
+      } catch {
+        // ignore
+      }
+
       try {
         p.destroy?.();
       } catch {

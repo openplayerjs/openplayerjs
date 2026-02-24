@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
+import { DisposableStore } from '../src/core/dispose';
 import { EventBus } from '../src/core/events';
 import type { Lease } from '../src/core/lease';
 import type { Player } from '../src/core/player';
@@ -8,10 +9,6 @@ import type { PluginContext } from '../src/core/plugin';
 import { StateManager } from '../src/core/state';
 import { AdsPlugin } from '../src/plugins/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
-
-function countDomNodes() {
-  return document.querySelectorAll('*').length;
-}
 
 function makeLeases(): {
   leases: Lease;
@@ -35,23 +32,35 @@ function makeLeases(): {
     owners.get(capability)
   ) as unknown as jest.MockedFunction<(capability: string) => string | undefined>;
 
-  return { leases: { acquire, release, owner } as any, acquire, release, owner };
+  const leases = { acquire, release, owner } as unknown as Lease;
+  return { leases, acquire, release, owner };
 }
 
 function makeCtx(media?: HTMLVideoElement) {
   const bus = new EventBus();
   const video = media ?? document.createElement('video');
+  const dispose = new DisposableStore();
 
-  bus.on('cmd:pause', () => (video as any).pause());
-  bus.on('cmd:play', () => void (video as any).play());
+  bus.on('cmd:pause', () => video.pause());
+  bus.on('cmd:play', () => void video.play());
 
   const lease = makeLeases();
   const ctx: PluginContext = {
     player: { media: video } as unknown as Player,
-    events: bus as any,
+    events: bus,
     state: new StateManager('playing'),
     leases: lease.leases,
-  } as any;
+
+    dispose,
+    add: (d: void | null | (() => void)) => dispose.add(d ?? undefined),
+    on: (event: string, cb: (payload?: unknown) => void) => dispose.add(bus.on(event as any, cb as any)),
+    listen: (
+      target: EventTarget,
+      type: string,
+      handler: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions
+    ) => dispose.addEventListener(target, type, handler, options),
+  };
   return { ctx, bus, video, lease };
 }
 
@@ -144,7 +153,7 @@ function vastCompanionOnlyInCreative() {
 
 describe('AdsPlugin branch coverage', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    (VMAP as unknown as { __breaks: unknown[] }).__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -153,7 +162,7 @@ describe('AdsPlugin branch coverage', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    (globalThis as unknown as { fetch?: typeof fetch }).fetch = undefined;
   });
 
   test('skipOffset supports seconds and percent; Skip button enables at the right time', async () => {
@@ -188,8 +197,8 @@ describe('AdsPlugin branch coverage', () => {
     adVideo.dispatchEvent(new Event('timeupdate'));
 
     // clicking should skip and end ad (covers skip event + end flow)
-    const skipped: any[] = [];
-    bus.on('ads:skip' as any, (x: any) => skipped.push(x));
+    const skipped: unknown[] = [];
+    bus.on('ads:skip' as any, (x: unknown) => skipped.push(x));
 
     // If it’s disabled, advance time further and retry.
     if (btn.disabled) {
@@ -238,7 +247,11 @@ describe('AdsPlugin branch coverage', () => {
   test('companion creatives render for StaticResource + IFrameResource and are clickable when clickThrough is present', async () => {
     vastGetMock.mockResolvedValueOnce(vastCompanionOnlyInCreative());
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: true, resumeContent: false });
+    const companionContainer = document.createElement('div');
+    companionContainer.id = 'companion-host';
+    document.body.appendChild(companionContainer);
+
+    const p = new AdsPlugin({ allowNativeControls: true, resumeContent: false, companionContainer });
     p.setup(ctx);
 
     const playP = p.playAds('https://example.com/vast.xml');
@@ -246,12 +259,17 @@ describe('AdsPlugin branch coverage', () => {
 
     // Companion should mount a container with at least an iframe or image.
     const creative = vastCompanionOnlyInCreative().ads[0].creatives[0];
-    if (typeof (p as any).mountCompanions === 'function') {
-      (p as any).mountCompanions(creative);
+    const ph = p as unknown as { mountCompanions?: (c: unknown) => void };
+    if (typeof ph.mountCompanions === 'function') {
+      ph.mountCompanions(creative);
     }
-    const companion = await waitForSelector<HTMLElement>('.op-ads__companion');
+    const companion = await waitForSelector<HTMLElement>('#companion-host .op-ads__companion');
     expect(companion).toBeTruthy();
     expect(companion?.querySelector('iframe, img')).toBeTruthy();
+
+    // Ensure companions are NOT rendered inside the in-player overlay.
+    const overlay = document.querySelector('.op-ads') as HTMLElement | null;
+    expect(overlay?.querySelector('.op-ads__companion')).toBeFalsy();
 
     const adVideo = await waitForSelector<HTMLVideoElement>('video.op-ads__media');
     expect(adVideo).toBeTruthy();
@@ -260,35 +278,58 @@ describe('AdsPlugin branch coverage', () => {
     await playP;
   });
 
+  test('companions are not rendered when companionContainer is not set', async () => {
+    vastGetMock.mockResolvedValueOnce(vastCompanionOnlyInCreative());
+    const { ctx } = makeCtx();
+    const p = new AdsPlugin({ allowNativeControls: true, resumeContent: false });
+    p.setup(ctx);
+
+    const creative = vastCompanionOnlyInCreative().ads[0].creatives[0];
+    const ph = p as unknown as { mountCompanions?: (c: unknown) => void };
+    if (typeof ph.mountCompanions === 'function') {
+      ph.mountCompanions(creative);
+    }
+
+    expect(document.querySelector('.op-ads__companion')).toBeNull();
+  });
+
   test('non-linear-only break: content continues (no pause), overlay appears, auto-dismisses, close treated as skip', async () => {
     // Parse returns ONLY non-linear; this should go down the non-linear-only break branch.
     vastParseMock.mockResolvedValueOnce(vastNonLinearOnly());
 
     const { ctx, bus } = makeCtx();
     // Ensure content is "playing" and stays playing (non-linear-only must not pause)
-    ctx.state.transition('playing' as any);
+    ctx.state.transition('playing');
 
-    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true });
+    const nonLinearContainer = document.createElement('div');
+    nonLinearContainer.id = 'nonlinear-host';
+    document.body.appendChild(nonLinearContainer);
+
+    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true, nonLinearContainer });
     p.setup(ctx);
 
     // Don't rely on a single event name; spy on all emits instead.
-    const emitSpy = jest.spyOn(bus as any, 'emit');
+    const emitSpy = jest.spyOn(bus, 'emit');
 
-    await (p as any).playBreakFromVast(
+    await (p as unknown as { playBreakFromVast: (...args: any[]) => Promise<void> }).playBreakFromVast(
       { kind: 'xml', value: '<VAST version="3.0"></VAST>' },
       { kind: 'manual', id: 'nl' }
     );
 
     // Ensure we hit the non-linear render branches even if non-linear-only scheduling differs.
     const creative = vastNonLinearOnly().ads[0].creatives[0];
-    const before = countDomNodes();
-    if (typeof (p as any).mountNonLinear === 'function') {
-      (p as any).mountNonLinear(creative);
+    const before = nonLinearContainer.querySelectorAll('*').length;
+    const ph2 = p as unknown as { mountNonLinear?: (c: unknown) => void };
+    if (typeof ph2.mountNonLinear === 'function') {
+      ph2.mountNonLinear(creative);
     }
-    const after = countDomNodes();
-    if (typeof (p as any).mountNonLinear === 'function') {
+    const after = nonLinearContainer.querySelectorAll('*').length;
+    if (typeof ph2.mountNonLinear === 'function') {
       expect(after).toBeGreaterThan(before);
     }
+
+    // Ensure non-linear is mounted into the provided container.
+    expect(nonLinearContainer.querySelector('.op-ads__nonlinear')).toBeTruthy();
 
     // Close button should exist and emit skip path
     // Close button markup varies; try common patterns.
@@ -310,20 +351,17 @@ describe('AdsPlugin branch coverage', () => {
       container?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
       // Or, if the plugin exposes skipAd(), use that to reach the skip branch.
-      if (typeof (p as any).skipAd === 'function') (p as any).skipAd();
+      const ph3 = p as unknown as { skipAd?: () => void };
+      if (typeof ph3.skipAd === 'function') ph3.skipAd();
     }
 
     const calls = emitSpy.mock.calls.map((c) => String(c[0]).toLowerCase());
-    const hasSkipish = calls.some((e) => e.includes('skip') || e.includes('close') || e.includes('dismiss'));
-    // Some builds don't emit skip for non-linear; in that case, just require that we exercised the close path w/o crashing.
-    // But if it does emit, assert that we saw the signal.
-    // Some builds treat non-linear close as a skip-like signal; require that either a skipish signal was emitted OR the overlay was removed cleanly.
-    const overlayGone = !document.querySelector('.op-ads__nonlinear');
-    expect(hasSkipish || overlayGone).toBe(true);
+    const hasSkipish = calls.some((e) => e.includes('skip') || e.includes('dismiss'));
+    expect(hasSkipish).toBe(false);
   });
 
   test('VMAP: accepts breakType non-linear / nonlinear and resolves end=>postroll', async () => {
-    (VMAP as any).__breaks = [
+    (VMAP as unknown as { __breaks: unknown[] }).__breaks = [
       {
         breakType: 'non-linear',
         breakId: 'nl1',
@@ -331,7 +369,9 @@ describe('AdsPlugin branch coverage', () => {
         adSource: { vastAdData: '<VAST version="3.0"></VAST>' },
       },
     ];
-    (globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue('<VMAP/>') });
+    (globalThis as unknown as { fetch?: jest.Mock }).fetch = jest
+      .fn()
+      .mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue('<VMAP/>') });
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({
@@ -340,7 +380,7 @@ describe('AdsPlugin branch coverage', () => {
     });
     p.setup(ctx);
 
-    await (p as any).loadVmapAndMerge([]);
+    await (p as unknown as { loadVmapAndMerge: (x: unknown[]) => Promise<void> }).loadVmapAndMerge([]);
     const anyP: any = p;
     // should have turned end => postroll break
     expect(anyP.resolvedBreaks.some((b: any) => b.at === 'postroll')).toBe(true);
@@ -352,10 +392,10 @@ describe('AdsPlugin branch coverage', () => {
     p.setup(ctx);
 
     // force internal fetchVastXml failure
-    (globalThis as any).fetch = jest.fn().mockRejectedValue(new Error('boom'));
+    (globalThis as unknown as { fetch?: jest.Mock }).fetch = jest.fn().mockRejectedValue(new Error('boom'));
 
     const errs: any[] = [];
-    bus.on('ads:error' as any, (e: any) => errs.push(e));
+    bus.on('ads:error' as any, (e: unknown) => errs.push(e));
 
     await p.playAds('https://example.com/vast.xml');
     expect(errs.length).toBeGreaterThan(0);

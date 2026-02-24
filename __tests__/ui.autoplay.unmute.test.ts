@@ -14,7 +14,10 @@ async function flushMicrotasks() {
 
 describe('UI autoplay unmute affordance', () => {
   test('renders unmute button when autoplay requires muted and custom UI is used', async () => {
-    const v = document.createElement('video') as any;
+    const v = document.createElement('video') as HTMLVideoElement & {
+      play: jest.Mock<Promise<void>, []>;
+      pause: jest.Mock<void, []>;
+    };
     v.src = 'https://example.com/video.mp4';
     v.autoplay = true;
     v.preload = 'auto';

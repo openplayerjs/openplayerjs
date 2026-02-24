@@ -1,3 +1,4 @@
+import type { PlayerEventPayloadMap } from '../core/events';
 import { Player as CorePlayer } from '../core/player';
 import { createUI } from '../ui';
 import { buildControls, registerControl } from '../ui/control';
@@ -117,7 +118,7 @@ function maybeInstallEntry(entry: UMDPluginEntry) {
   window.__OpenPlayerInstalledPlugins = window.__OpenPlayerInstalledPlugins || {};
   if (window.__OpenPlayerInstalledPlugins[entry.name]) return;
 
-  entry.install(CorePlayer as any);
+  entry.install(CorePlayer);
   window.__OpenPlayerInstalledPlugins[entry.name] = true;
 }
 
@@ -170,9 +171,9 @@ export default class Player {
     return this.player;
   }
 
-  on(event: string, cb: (...args: any[]) => void): Unsubscribe {
-    if (this.player && typeof (this.player as any).on === 'function') {
-      return (this.player as any).on(event, cb);
+  on(event: keyof PlayerEventPayloadMap, cb: (...args: any[]) => void): Unsubscribe {
+    if (this.player && typeof this.player.on === 'function') {
+      return this.player.on(event, cb);
     }
 
     const pending: PendingListener = { event, cb };
@@ -185,11 +186,11 @@ export default class Player {
     };
   }
 
-  emit(event: any, ...args: any[]) {
-    if (!this.player || typeof (this.player as any).emit !== 'function') {
+  emit(event: keyof PlayerEventPayloadMap, ...args: any[]) {
+    if (!this.player || typeof this.player.emit !== 'function') {
       throw new Error('OpenPlayer.emit() called before init()');
     }
-    (this.player as any).emit(event, ...args);
+    this.player.emit(event, ...args);
   }
 
   destroy() {
@@ -205,7 +206,7 @@ export default class Player {
     default?: boolean;
   }) {
     if (!this.player) throw new Error('OpenPlayer.addCaptions() called before init()');
-    return (this.player as any).addCaptions(args);
+    return this.player.addCaptions(args);
   }
 
   private createDetectedPlugins() {

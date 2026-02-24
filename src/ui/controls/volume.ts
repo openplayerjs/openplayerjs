@@ -2,6 +2,7 @@ import { EVENT_OPTIONS } from '../../core/constants';
 import { isMobile } from '../../core/utils';
 import type { Control } from '../control';
 import { getActiveMedia } from '../playback';
+import { setControlLabel } from '../a11y';
 import { BaseControl } from './base';
 
 export class VolumeControl extends BaseControl {
@@ -22,7 +23,7 @@ export class VolumeControl extends BaseControl {
     wrapper.setAttribute('aria-valuemin', '0');
     wrapper.setAttribute('aria-valuemax', '100');
     wrapper.setAttribute('aria-valuenow', `${player.volume}`);
-    wrapper.setAttribute('aria-label', volumeControlLabel);
+    setControlLabel(wrapper, volumeControlLabel);
     wrapper.setAttribute('aria-orientation', 'vertical');
     wrapper.setAttribute('role', 'slider');
 
@@ -34,7 +35,7 @@ export class VolumeControl extends BaseControl {
     slider.min = '0';
     slider.max = '1';
     slider.step = '0.1';
-    slider.setAttribute('aria-label', volumeSliderLabel);
+    setControlLabel(slider, volumeSliderLabel, { container: wrapper });
 
     const display = document.createElement('progress');
     display.className = 'op-controls__volume--display';
@@ -74,7 +75,8 @@ export class VolumeControl extends BaseControl {
       }
     };
 
-    slider.addEventListener(
+    this.listen(
+      slider,
       'input',
       (e: Event) => {
         const vol = Number((e.target as HTMLInputElement).value);
@@ -105,12 +107,14 @@ export class VolumeControl extends BaseControl {
     btn.type = 'button';
     btn.title = muteLabel;
     btn.className = 'op-controls__mute';
-    btn.setAttribute('aria-label', muteLabel);
+    setControlLabel(btn, muteLabel);
     btn.setAttribute('aria-pressed', 'false');
 
-    btn.addEventListener(
+    this.listen(
+      btn,
       'click',
-      (e) => {
+      (e: Event) => {
+        const me = e as MouseEvent;
         const el = getActiveMedia(player);
         // Preserve last non-zero volume when muting, restore it when unmuting.
         if (!player.muted) {
@@ -123,7 +127,7 @@ export class VolumeControl extends BaseControl {
               el.volume = 0;
               el.muted = true;
               btn.title = muteLabel;
-              btn.setAttribute('aria-label', muteLabel);
+              setControlLabel(btn, muteLabel);
             } catch {
               // ignore
             }
@@ -138,20 +142,20 @@ export class VolumeControl extends BaseControl {
               el.volume = restore;
               el.muted = false;
               btn.title = unmuteLabel;
-              btn.setAttribute('aria-label', unmuteLabel);
+              setControlLabel(btn, unmuteLabel);
             } catch {
               // ignore
             }
           }
         }
-        e.preventDefault();
-        e.stopPropagation();
+        me.preventDefault();
+        me.stopPropagation();
       },
       EVENT_OPTIONS
     );
 
     // Keep UI in sync with the player's effective volume/mute state.
-    player.events.on('volumechange', () => {
+    this.onPlayer('volumechange', () => {
       const muted = player.muted || player.volume === 0;
       const vol = formatVolume(player.volume);
 

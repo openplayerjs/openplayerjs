@@ -39,6 +39,10 @@ class OverlayBus<E extends string> {
   emit(event: E, ...data: any[]) {
     this.bus.emit(event as any, ...data);
   }
+
+  clear() {
+    this.bus.clear();
+  }
 }
 
 const OVERLAY_MANAGER_KEY = '__op::overlay::manager';
@@ -51,6 +55,12 @@ export class OverlayManager {
 
   constructor() {
     this.bus = new OverlayBus<OverlayEvent>(new EventBus());
+  }
+
+  dispose() {
+    this.overlays.clear();
+    this.active = null;
+    this.bus.clear();
   }
 
   /** Activate or replace an overlay */
@@ -99,7 +109,25 @@ export function getOverlayManager(player: any): OverlayManager {
   // Mirror overlay changes onto the player's main EventBus for simpler plugin/control wiring.
   try {
     if (player?.events?.on && player?.events?.emit) {
-      mgr.bus.on('overlay:changed', (active: any) => player.events.emit('overlay:changed', active));
+      const off = mgr.bus.on('overlay:changed', (active: any) => player.events.emit('overlay:changed', active));
+      // Ensure we don't leak listeners if the player is destroyed.
+      player.events.on('player:destroy', () => {
+        try {
+          off();
+        } catch {
+          // ignore
+        }
+        try {
+          mgr.dispose();
+        } catch {
+          // ignore
+        }
+        try {
+          delete player[OVERLAY_MANAGER_KEY];
+        } catch {
+          // ignore
+        }
+      });
     }
   } catch {
     // ignore

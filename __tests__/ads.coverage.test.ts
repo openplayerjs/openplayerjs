@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
+import { DisposableStore } from '../src/core/dispose';
 import { EventBus } from '../src/core/events';
 import type { Lease } from '../src/core/lease';
 import type { Player } from '../src/core/player';
@@ -14,10 +15,16 @@ import { vastGetMock, vastParseMock } from './mocks/vast-client';
 // ---------------------------------------------------------------------------
 
 async function waitForAdVideo(retries = 25): Promise<HTMLVideoElement> {
-  for (let i = 0; i < retries; i++) {
+  // Allow for multiple promise turns + 0ms timers.
+  for (let i = 0; i < Math.max(retries, 60); i++) {
     const el = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
     if (el) return el;
     await Promise.resolve();
+    try {
+      jest.advanceTimersByTime?.(0);
+    } catch {
+      // ignore if fake timers are not enabled
+    }
   }
   throw new Error('Ad video was not mounted within expected time');
 }
@@ -67,6 +74,7 @@ function makeCtx(
   const { userInteracted = false, muted = false, volume = 1, preload = '', autoplay = false } = opts;
   const bus = new EventBus();
   const video = media ?? document.createElement('video');
+  const dispose = new DisposableStore();
 
   if (preload) video.setAttribute('preload', preload);
   if (autoplay) video.autoplay = true;
@@ -89,6 +97,12 @@ function makeCtx(
     events: bus as any,
     state: new StateManager('playing'),
     leases: lease.leases,
+
+    dispose,
+    add: (d) => dispose.add(d as any),
+    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
+    listen: (target: any, type: any, handler: any, options?: any) =>
+      dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, video, lease };
@@ -319,7 +333,12 @@ describe('AdsPlugin additional coverage', () => {
     vastGetMock.mockResolvedValueOnce(companionParsed());
 
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false });
+
+    const companionHost = document.createElement('div');
+    companionHost.id = 'companion-host';
+    document.body.appendChild(companionHost);
+
+    const p = new AdsPlugin({ allowNativeControls: false, companionContainer: companionHost });
     p.setup(ctx);
 
     const run = p.playAds('https://example.com/vast.xml');
@@ -327,11 +346,11 @@ describe('AdsPlugin additional coverage', () => {
     Object.defineProperty(adVideo, 'duration', { value: 5, configurable: true });
     adVideo.dispatchEvent(new Event('loadedmetadata'));
 
-    const companion = document.querySelector('.op-ads__companion') as HTMLElement;
+    const companion = companionHost.querySelector('.op-ads__companion') as HTMLElement | null;
     expect(companion).toBeTruthy();
-    const iframe = companion.querySelector('iframe') as HTMLIFrameElement;
+    const iframe = companion!.querySelector('iframe') as HTMLIFrameElement | null;
     expect(iframe).toBeTruthy();
-    expect(iframe.src).toContain('https://example.com/companion.html');
+    expect(iframe!.src).toContain('https://example.com/companion.html');
 
     adVideo.dispatchEvent(new Event('ended'));
     await run;

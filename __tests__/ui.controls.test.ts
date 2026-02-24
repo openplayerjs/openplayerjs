@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { getOverlayManager } from '../src/core/overlay';
+import type { OverlayState } from '../src/core/overlay';
 import { Player } from '../src/core/player';
 import createCaptionsControl from '../src/ui/controls/captions';
 import createCurrentTimeControl from '../src/ui/controls/currentTime';
@@ -22,13 +23,14 @@ function makePlayer() {
   v.src = 'https://example.com/video.mp4';
   document.body.appendChild(v);
   const p = new Player(v, { plugins: [] });
+  // Provide deterministic implementations for tests.
   p.play = jest.fn(async () => {
     p.events.emit('playing');
-  }) as any;
+  }) as unknown as Player['play'];
   p.pause = jest.fn(() => {
     p.emit('cmd:pause');
     p.events.emit('pause');
-  }) as any;
+  }) as unknown as Player['pause'];
   return p;
 }
 
@@ -90,7 +92,8 @@ describe('UI Controls', () => {
 
     // overlay manager affects duration/value
     const ov = getOverlayManager(p);
-    ov.activate({ id: 'x', mode: 'normal', duration: 100, value: 10, canSeek: true, type: 'overlay' } as any);
+    const overlay: OverlayState = { id: 'x', priority: 10, mode: 'normal', duration: 100, value: 10, canSeek: true };
+    ov.activate(overlay);
     p.events.emit('durationchange');
     p.events.emit('timeupdate');
     expect(input.max).toBe('100');
@@ -108,12 +111,13 @@ describe('UI Controls', () => {
     const d = nn(createDurationControl()).create(p) as HTMLElement;
 
     const ov = getOverlayManager(p);
-    ov.activate({ id: 'x', mode: 'normal', duration: 80, value: 6, canSeek: true, type: 'overlay' } as any);
+    const overlay: OverlayState = { id: 'x', priority: 10, mode: 'normal', duration: 80, value: 6, canSeek: true };
+    ov.activate(overlay);
     p.events.emit('timeupdate');
     p.events.emit('durationchange');
 
-    expect((t as any).innerText).toContain('0:06');
-    expect((d as any).innerText).toContain('1:20');
+    expect(t.innerText).toContain('0:06');
+    expect(d.innerText).toContain('1:20');
   });
 
   test('Captions control toggles text tracks', async () => {
@@ -122,11 +126,12 @@ describe('UI Controls', () => {
     const el = c.create(p) as HTMLButtonElement;
 
     // Provide stub tracks
-    const track1 = { mode: 'disabled' } as any;
-    const track2 = { mode: 'showing' } as any;
-    Object.defineProperty(p.media as any, 'textTracks', {
+    const track1 = { mode: 'disabled' as TextTrackMode } as unknown as TextTrack;
+    const track2 = { mode: 'showing' as TextTrackMode } as unknown as TextTrack;
+    const tracks = [track1, track2] as unknown as TextTrackList;
+    Object.defineProperty(p.media, 'textTracks', {
       configurable: true,
-      value: [track1, track2],
+      value: tracks,
     });
 
     el.click();
@@ -141,8 +146,12 @@ describe('UI Controls', () => {
 
     document.body.appendChild(el);
     // Mock requestFullscreen
-    (p.media.parentElement as any).requestFullscreen = jest.fn().mockResolvedValue(undefined);
-    (document as any).exitFullscreen = jest.fn().mockResolvedValue(undefined);
+    const container = p.media.parentElement as HTMLElement & {
+      requestFullscreen: jest.Mock<Promise<void>, []>;
+    };
+    container.requestFullscreen = jest.fn().mockResolvedValue(undefined);
+    const doc = document as Document & { exitFullscreen: jest.Mock<Promise<void>, []> };
+    doc.exitFullscreen = jest.fn().mockResolvedValue(undefined);
 
     // FullscreenControl reacts to document fullscreenchange events.
     Object.defineProperty(document, 'fullscreenElement', {

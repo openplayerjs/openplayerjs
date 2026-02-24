@@ -2,6 +2,7 @@
 
 import { Player } from '../src/core/player';
 import { getOverlayManager } from '../src/core/overlay';
+import type { OverlayState } from '../src/core/overlay';
 
 // Mock isMobile to exercise createVolumeControl returning null vs normal rendering.
 jest.mock('../src/core/utils', () => {
@@ -59,15 +60,16 @@ describe('VolumeControl branch coverage', () => {
 
     // Activate overlay and provide fullscreenVideoEl via overlay state so getActiveMedia() uses it
     const mgr = getOverlayManager(p);
-    mgr.activate({
+    const overlay: OverlayState = {
       id: 'ads',
       priority: 100,
       mode: 'normal',
       duration: 10,
       value: 1,
       canSeek: false,
-      fullscreenVideoEl: badAdMedia as any,
-    } as any);
+      fullscreenVideoEl: badAdMedia,
+    };
+    mgr.activate(overlay);
 
     // Drive to muted branch
     slider.value = '0';
@@ -86,10 +88,10 @@ describe('VolumeControl branch coverage', () => {
     expect(btn.classList.contains('op-controls__mute--half')).toBe(false);
 
     // Toggle mute button restores volume
-    (p.media as any).volume = 1;
+    p.media.volume = 1;
     btn.click();
-    expect((p.media as any).volume).toBe(0);
+    expect(p.media.volume).toBe(0);
     btn.click();
-    expect((p.media as any).volume).toBeGreaterThan(0);
+    expect(p.media.volume).toBeGreaterThan(0);
   });
 });

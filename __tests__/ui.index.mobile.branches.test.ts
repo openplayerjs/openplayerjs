@@ -35,7 +35,7 @@ describe('UI createUI mobile branch coverage', () => {
     wrapper.dispatchEvent(new Event('pointerdown', { bubbles: true }));
 
     // Avoid focusing wrapper/controls; focus-in on wrapper would clear the hide timer.
-    (document.body as any).tabIndex = 0;
+    document.body.tabIndex = 0;
     document.body.focus();
 
     jest.advanceTimersByTime(3100);

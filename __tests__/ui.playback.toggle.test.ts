@@ -19,8 +19,8 @@ describe('togglePlayback', () => {
 
     // Media is paused => should call play(), not pause().
     Object.defineProperty(p.media, 'paused', { value: true, configurable: true });
-    p.play = jest.fn(async () => undefined) as any;
-    p.pause = jest.fn(() => undefined) as any;
+    p.play = jest.fn(async () => undefined) as unknown as Player['play'];
+    p.pause = jest.fn(() => undefined) as unknown as Player['pause'];
 
     await togglePlayback(p);
     expect(p.play).toHaveBeenCalledTimes(1);

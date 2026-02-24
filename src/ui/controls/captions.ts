@@ -2,6 +2,7 @@ import { EVENT_OPTIONS } from '../../core/constants';
 import type { Control } from '../control';
 import { getActiveMedia } from '../playback';
 import { getSettingsRegistry, type SettingsSubmenuProvider } from '../settings';
+import { setControlLabel } from '../a11y';
 import { BaseControl } from './base';
 
 type TrackKind = 'captions' | 'subtitles';
@@ -59,7 +60,7 @@ export class CaptionsControl extends BaseControl {
     this.button = document.createElement('button');
     this.button.type = 'button';
     this.button.className = 'op-controls__captions';
-    this.button.setAttribute('aria-label', buttonLabel);
+    setControlLabel(this.button, buttonLabel);
     this.button.setAttribute('aria-pressed', 'false');
 
     const refresh = () => {
@@ -76,9 +77,11 @@ export class CaptionsControl extends BaseControl {
     };
 
     // Toggle only (on/off)
-    this.button.addEventListener(
+    this.listen(
+      this.button,
       'click',
-      (e) => {
+      (e: Event) => {
+        const me = e as MouseEvent;
         const media = getActiveMedia(player);
         const showing = getShowingIndex(media);
 
@@ -91,8 +94,8 @@ export class CaptionsControl extends BaseControl {
         }
 
         refresh();
-        e.preventDefault();
-        e.stopPropagation();
+        me.preventDefault();
+        me.stopPropagation();
       },
       EVENT_OPTIONS
     );
@@ -137,8 +140,8 @@ export class CaptionsControl extends BaseControl {
 
     getSettingsRegistry(player).register(provider);
 
-    this.overlayMgr.bus.on('overlay:changed', refresh);
-    player.events.on('loadedmetadata', refresh);
+    this.dispose.add(this.overlayMgr.bus.on('overlay:changed', refresh));
+    this.onPlayer('loadedmetadata', refresh);
 
     refresh();
     return this.button;

@@ -13,27 +13,27 @@ function makePlayer() {
   // Avoid jsdom play() errors
   p.play = jest.fn(async () => {
     p.events.emit('playback:playing');
-  }) as any;
+  }) as unknown as Player['play'];
   p.pause = jest.fn(() => {
     p.events.emit('playback:paused');
-  }) as any;
+  }) as unknown as Player['pause'];
   return p;
 }
 
 function addTextTracks(media: HTMLVideoElement, tracks: { label: string; kind?: TextTrackKind; language?: string }[]) {
-  const list: any = {
+  const list = {
     length: tracks.length,
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    item: (i: number) => list[i] ?? null,
-  };
+    item: (i: number) => (list as any)[i] ?? null,
+  } as unknown as TextTrackList & Record<number, TextTrack>;
   tracks.forEach((t, i) => {
-    list[i] = {
+    (list as Record<number, TextTrack>)[i] = {
       kind: t.kind || 'captions',
       label: t.label,
       language: t.language || 'en',
       mode: 'disabled',
-    };
+    } as unknown as TextTrack;
   });
   Object.defineProperty(media, 'textTracks', {
     configurable: true,

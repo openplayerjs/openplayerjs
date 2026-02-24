@@ -37,6 +37,22 @@
 .op-player ::before {
     box-sizing: border-box;
 }
+
+/*
+ * Screen-reader-only text.
+ * Prefer native text (even if visually hidden) over aria-label for icon-only controls.
+ */
+.op-player__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .op-media {
     align-items: center;
     cursor: pointer;

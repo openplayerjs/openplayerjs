@@ -14,10 +14,10 @@ function makePlayer() {
   // Stub play/pause to avoid jsdom play rejection and to drive state
   p.play = jest.fn(async () => {
     p.events.emit('playing');
-  }) as any;
+  }) as unknown as Player['play'];
   p.pause = jest.fn(() => {
     p.events.emit('pause');
-  }) as any;
+  }) as unknown as Player['pause'];
   return p;
 }
 

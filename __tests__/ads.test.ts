@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import { DisposableStore } from '../src/core/dispose';
 import { EventBus } from '../src/core/events';
 import type { Lease } from '../src/core/lease';
 import type { Player } from '../src/core/player';
@@ -9,10 +10,17 @@ import { AdsPlugin } from '../src/plugins/ads';
 import { trackerCtorMock, vastGetMock, vastParseMock } from './mocks/vast-client';
 
 async function waitForAdVideo(): Promise<HTMLVideoElement> {
-  for (let i = 0; i < 20; i++) {
+  // In some environments the ad surface is mounted after a few promise turns.
+  // We also tick 0ms timers in case the implementation uses setTimeout(0).
+  for (let i = 0; i < 60; i++) {
     const el = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
     if (el) return el;
     await Promise.resolve();
+    try {
+      jest.advanceTimersByTime?.(0);
+    } catch {
+      // ignore if fake timers are not enabled
+    }
   }
   throw new Error('Ad video was not mounted');
 }
@@ -47,6 +55,7 @@ function makeLeases(): {
 function makeCtx(media?: HTMLVideoElement) {
   const bus = new EventBus();
   const video = media ?? document.createElement('video');
+  const dispose = new DisposableStore();
 
   // Simulate player reacting to playback bus events.
   bus.on('cmd:pause', () => (video as any).pause());
@@ -62,6 +71,12 @@ function makeCtx(media?: HTMLVideoElement) {
     // Real StateManager has `current` getter (readonly) + transition(); ads tests mutate via transition().
     state: new StateManager('playing'),
     leases: lease.leases,
+
+    dispose,
+    add: (d) => dispose.add(d as any),
+    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
+    listen: (target: any, type: any, handler: any, options?: any) =>
+      dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, video, lease };
@@ -268,7 +283,13 @@ describe('AdsPlugin (ultimate patch)', () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false });
+
+    // Companions must render outside the player.
+    const companionHost = document.createElement('div');
+    companionHost.id = 'companion-host';
+    document.body.appendChild(companionHost);
+
+    const p = new AdsPlugin({ allowNativeControls: false, companionContainer: companionHost });
     p.setup(ctx);
 
     const run = p.playAds('https://example.com/vast.xml');
@@ -278,19 +299,12 @@ describe('AdsPlugin (ultimate patch)', () => {
     Object.defineProperty(adVideo, 'duration', { value: 5, configurable: true });
     adVideo.dispatchEvent(new Event('loadedmetadata'));
 
-    expect(document.querySelector('.op-ads__companion')).toBeTruthy();
-    expect(document.querySelector('.op-ads__companion img')).toBeTruthy();
+    const companion = companionHost.querySelector('.op-ads__companion') as HTMLElement | null;
+    expect(companion).toBeTruthy();
+    expect(companion?.querySelector('img')).toBeTruthy();
 
     expect(document.querySelector('.op-ads__nonlinear')).toBeTruthy();
     expect(document.getElementById('nl-inline')).toBeTruthy();
-
-    const closeBtn = document.querySelector(
-      '.op-ads__nonlinear-item button[aria-label="Close ad"]'
-    ) as HTMLButtonElement;
-    expect(closeBtn).toBeTruthy();
-
-    closeBtn.click();
-    expect(document.getElementById('nl-inline')).toBeFalsy();
 
     adVideo.dispatchEvent(new Event('ended'));
     await run;

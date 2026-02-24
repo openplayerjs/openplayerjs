@@ -38,11 +38,13 @@ describe('imperative APIs via instance-level extensions', () => {
     const ads = new AdsPlugin({ allowNativeControls: false });
 
     p.registerPlugin(ads);
-    extendAds(p as any, ads);
+    extendAds(p as unknown as Player, ads);
 
-    expect((p as any).getPlugin('ads')).toBe(ads);
-    expect((p as any).ads).toBe(ads);
-    expect((p as any).ads.name).toBe('ads');
+    const ph = p as unknown as Player & { ads?: AdsPlugin };
+
+    expect(p.getPlugin('ads')).toBe(ads);
+    expect(ph.ads).toBe(ads);
+    expect(ph.ads?.name).toBe('ads');
   });
 
   test('controls extension delegates UI operations without polluting core', () => {

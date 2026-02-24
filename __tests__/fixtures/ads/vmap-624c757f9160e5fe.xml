@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vmap:VMAP xmlns:vmap="http://www.iab.net/videosuite/vmap" version="1.0">
+ <vmap:AdBreak timeOffset="start" breakType="linear" breakId="preroll">
+  <vmap:AdSource id="preroll-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&useragent=node,gzip(gfe)&vad_type=linear&vpos=preroll&pod=1&ppos=1&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:10.000" breakType="linear" breakId="midroll-1">
+  <vmap:AdSource id="midroll-1-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=10000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=2&mridx=1&rmridx=11&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:10.000" breakType="linear" breakId="midroll-1">
+  <vmap:AdSource id="midroll-1-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=10000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=2&mridx=1&rmridx=11&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:10.000" breakType="linear" breakId="midroll-1">
+  <vmap:AdSource id="midroll-1-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=10000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=2&mridx=1&rmridx=11&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:10.000" breakType="linear" breakId="midroll-1">
+  <vmap:AdSource id="midroll-1-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=10000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=2&mridx=1&rmridx=11&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:10.000" breakType="linear" breakId="midroll-1">
+  <vmap:AdSource id="midroll-1-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=10000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=2&mridx=1&rmridx=11&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:20.000" breakType="linear" breakId="midroll-2">
+  <vmap:AdSource id="midroll-2-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=20000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=3&mridx=2&rmridx=10&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:20.000" breakType="linear" breakId="midroll-2">
+  <vmap:AdSource id="midroll-2-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=20000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=3&mridx=2&rmridx=10&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:20.000" breakType="linear" breakId="midroll-2">
+  <vmap:AdSource id="midroll-2-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=20000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=3&mridx=2&rmridx=10&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:20.000" breakType="linear" breakId="midroll-2">
+  <vmap:AdSource id="midroll-2-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=20000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=3&mridx=2&rmridx=10&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:20.000" breakType="linear" breakId="midroll-2">
+  <vmap:AdSource id="midroll-2-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=20000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=3&mridx=2&rmridx=10&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:30.000" breakType="linear" breakId="midroll-3">
+  <vmap:AdSource id="midroll-3-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=30000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=4&mridx=3&rmridx=9&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:30.000" breakType="linear" breakId="midroll-3">
+  <vmap:AdSource id="midroll-3-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=30000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=4&mridx=3&rmridx=9&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:30.000" breakType="linear" breakId="midroll-3">
+  <vmap:AdSource id="midroll-3-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=30000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=4&mridx=3&rmridx=9&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:30.000" breakType="linear" breakId="midroll-3">
+  <vmap:AdSource id="midroll-3-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=30000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=4&mridx=3&rmridx=9&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:30.000" breakType="linear" breakId="midroll-3">
+  <vmap:AdSource id="midroll-3-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=30000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=4&mridx=3&rmridx=9&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:40.000" breakType="linear" breakId="midroll-4">
+  <vmap:AdSource id="midroll-4-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=40000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=5&mridx=4&rmridx=8&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:40.000" breakType="linear" breakId="midroll-4">
+  <vmap:AdSource id="midroll-4-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=40000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=5&mridx=4&rmridx=8&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:40.000" breakType="linear" breakId="midroll-4">
+  <vmap:AdSource id="midroll-4-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=40000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=5&mridx=4&rmridx=8&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:40.000" breakType="linear" breakId="midroll-4">
+  <vmap:AdSource id="midroll-4-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=40000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=5&mridx=4&rmridx=8&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:40.000" breakType="linear" breakId="midroll-4">
+  <vmap:AdSource id="midroll-4-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=40000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=5&mridx=4&rmridx=8&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:50.000" breakType="linear" breakId="midroll-5">
+  <vmap:AdSource id="midroll-5-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=50000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=6&mridx=5&rmridx=7&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:50.000" breakType="linear" breakId="midroll-5">
+  <vmap:AdSource id="midroll-5-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=50000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=6&mridx=5&rmridx=7&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:50.000" breakType="linear" breakId="midroll-5">
+  <vmap:AdSource id="midroll-5-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=50000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=6&mridx=5&rmridx=7&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:50.000" breakType="linear" breakId="midroll-5">
+  <vmap:AdSource id="midroll-5-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=50000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=6&mridx=5&rmridx=7&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:00:50.000" breakType="linear" breakId="midroll-5">
+  <vmap:AdSource id="midroll-5-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=50000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=6&mridx=5&rmridx=7&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:00.000" breakType="linear" breakId="midroll-6">
+  <vmap:AdSource id="midroll-6-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=60000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=7&mridx=6&rmridx=6&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:00.000" breakType="linear" breakId="midroll-6">
+  <vmap:AdSource id="midroll-6-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=60000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=7&mridx=6&rmridx=6&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:00.000" breakType="linear" breakId="midroll-6">
+  <vmap:AdSource id="midroll-6-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=60000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=7&mridx=6&rmridx=6&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:00.000" breakType="linear" breakId="midroll-6">
+  <vmap:AdSource id="midroll-6-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=60000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=7&mridx=6&rmridx=6&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:00.000" breakType="linear" breakId="midroll-6">
+  <vmap:AdSource id="midroll-6-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=60000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=7&mridx=6&rmridx=6&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:10.000" breakType="linear" breakId="midroll-7">
+  <vmap:AdSource id="midroll-7-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=70000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=8&mridx=7&rmridx=5&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:10.000" breakType="linear" breakId="midroll-7">
+  <vmap:AdSource id="midroll-7-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=70000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=8&mridx=7&rmridx=5&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:10.000" breakType="linear" breakId="midroll-7">
+  <vmap:AdSource id="midroll-7-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=70000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=8&mridx=7&rmridx=5&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:10.000" breakType="linear" breakId="midroll-7">
+  <vmap:AdSource id="midroll-7-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=70000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=8&mridx=7&rmridx=5&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:10.000" breakType="linear" breakId="midroll-7">
+  <vmap:AdSource id="midroll-7-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=70000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=8&mridx=7&rmridx=5&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:20.000" breakType="linear" breakId="midroll-8">
+  <vmap:AdSource id="midroll-8-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=80000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=9&mridx=8&rmridx=4&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:20.000" breakType="linear" breakId="midroll-8">
+  <vmap:AdSource id="midroll-8-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=80000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=9&mridx=8&rmridx=4&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:20.000" breakType="linear" breakId="midroll-8">
+  <vmap:AdSource id="midroll-8-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=80000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=9&mridx=8&rmridx=4&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:20.000" breakType="linear" breakId="midroll-8">
+  <vmap:AdSource id="midroll-8-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=80000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=9&mridx=8&rmridx=4&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:20.000" breakType="linear" breakId="midroll-8">
+  <vmap:AdSource id="midroll-8-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=80000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=9&mridx=8&rmridx=4&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:30.000" breakType="linear" breakId="midroll-9">
+  <vmap:AdSource id="midroll-9-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=90000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=10&mridx=9&rmridx=3&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:30.000" breakType="linear" breakId="midroll-9">
+  <vmap:AdSource id="midroll-9-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=90000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=10&mridx=9&rmridx=3&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:30.000" breakType="linear" breakId="midroll-9">
+  <vmap:AdSource id="midroll-9-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=90000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=10&mridx=9&rmridx=3&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:30.000" breakType="linear" breakId="midroll-9">
+  <vmap:AdSource id="midroll-9-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=90000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=10&mridx=9&rmridx=3&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:30.000" breakType="linear" breakId="midroll-9">
+  <vmap:AdSource id="midroll-9-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=90000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=10&mridx=9&rmridx=3&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:40.000" breakType="linear" breakId="midroll-10">
+  <vmap:AdSource id="midroll-10-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=100000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=11&mridx=10&rmridx=2&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:40.000" breakType="linear" breakId="midroll-10">
+  <vmap:AdSource id="midroll-10-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=100000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=11&mridx=10&rmridx=2&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:40.000" breakType="linear" breakId="midroll-10">
+  <vmap:AdSource id="midroll-10-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=100000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=11&mridx=10&rmridx=2&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:40.000" breakType="linear" breakId="midroll-10">
+  <vmap:AdSource id="midroll-10-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=100000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=11&mridx=10&rmridx=2&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:40.000" breakType="linear" breakId="midroll-10">
+  <vmap:AdSource id="midroll-10-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=100000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=11&mridx=10&rmridx=2&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:50.000" breakType="linear" breakId="midroll-11">
+  <vmap:AdSource id="midroll-11-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=110000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=12&mridx=11&rmridx=1&ppos=1&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:50.000" breakType="linear" breakId="midroll-11">
+  <vmap:AdSource id="midroll-11-ad-2" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=110000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=12&mridx=11&rmridx=1&ppos=2&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:50.000" breakType="linear" breakId="midroll-11">
+  <vmap:AdSource id="midroll-11-ad-3" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=110000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=12&mridx=11&rmridx=1&ppos=3&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:50.000" breakType="linear" breakId="midroll-11">
+  <vmap:AdSource id="midroll-11-ad-4" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=110000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=12&mridx=11&rmridx=1&ppos=4&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="00:01:50.000" breakType="linear" breakId="midroll-11">
+  <vmap:AdSource id="midroll-11-ad-5" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&cue=110000&useragent=node,gzip(gfe)&vad_type=linear&vpos=midroll&pod=12&mridx=11&rmridx=1&ppos=5&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+ <vmap:AdBreak timeOffset="end" breakType="linear" breakId="postroll">
+  <vmap:AdSource id="postroll-ad-1" allowMultipleAds="false" followRedirects="true">
+   <vmap:AdTagURI templateType="vast3"><![CDATA[https://pubads.g.doubleclick.net/gampad/ads?slotname=/21775744923/external/vmap_ad_samples&sz=640x480&ciu_szs=300x250&cust_params=sample_ar%3Dpremidpostlongpod&url=&unviewed_position_start=1&output=xml_vast3&impl=s&env=vp&gdfp_req=1&ad_rule=0&useragent=node,gzip(gfe)&vad_type=linear&vpos=postroll&pod=13&ppos=1&lip=true&min_ad_duration=0&max_ad_duration=30000&vrid=1265381&cmsid=496&video_doc_id=short_onecue&kfa=0&tfcd=0]]></vmap:AdTagURI>
+  </vmap:AdSource>
+ </vmap:AdBreak>
+</vmap:VMAP>

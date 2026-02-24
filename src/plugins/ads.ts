@@ -69,6 +69,12 @@ export type AdsPluginConfig = {
   autoPlayOnReady?: boolean;
   mountEl?: HTMLElement;
   mountSelector?: string;
+  /** Container for non-linear ads. Defaults to the ad media container (in-player). */
+  nonLinearContainer?: HTMLElement;
+  nonLinearSelector?: string;
+  /** Container for companion ads. If not set, companion ads will not be rendered. */
+  companionContainer?: HTMLElement;
+  companionSelector?: string;
   allowNativeControls?: boolean;
   resumeContent?: boolean;
   preferredMediaTypes?: string[];
@@ -115,8 +121,31 @@ export class AdsPlugin implements PlayerPlugin {
   private adEndPromise: Promise<void> | null = null;
   private adTrackEls: HTMLTrackElement[] = [];
 
-  private cfg: Omit<Required<Omit<AdsPluginConfig, 'mountEl' | 'mountSelector'>>, 'sources'> &
-    Pick<AdsPluginConfig, 'mountEl' | 'mountSelector'> & { sources: AdsSource[] };
+  // NOTE: We keep the container/selector options optional. They are intentionally
+  // not forced required, because they may be omitted by integrators.
+  private cfg: Omit<
+    Required<
+      Omit<
+        AdsPluginConfig,
+        | 'mountEl'
+        | 'mountSelector'
+        | 'nonLinearContainer'
+        | 'nonLinearSelector'
+        | 'companionContainer'
+        | 'companionSelector'
+      >
+    >,
+    'sources'
+  > &
+    Pick<
+      AdsPluginConfig,
+      | 'mountEl'
+      | 'mountSelector'
+      | 'nonLinearContainer'
+      | 'nonLinearSelector'
+      | 'companionContainer'
+      | 'companionSelector'
+    > & { sources: AdsSource[] };
 
   private overlay!: HTMLDivElement;
   private adVideo?: HTMLVideoElement;
@@ -128,6 +157,9 @@ export class AdsPlugin implements PlayerPlugin {
 
   private companionWrap?: HTMLDivElement;
   private nonLinearWrap?: HTMLDivElement;
+
+  private resolvedNonLinearContainer?: HTMLElement;
+  private resolvedCompanionContainer?: HTMLElement;
 
   private currentBreakMeta?: { kind: string; breakId: string };
 
@@ -155,6 +187,27 @@ export class AdsPlugin implements PlayerPlugin {
   private syncingVolume = false;
 
   private vmapLoadPromise: Promise<void> | null = null;
+
+  private resolveContainer(el?: HTMLElement, selector?: string): HTMLElement | undefined {
+    if (el && el.nodeType === 1) return el;
+    if (selector) {
+      const found = document.querySelector(selector);
+      if (found instanceof HTMLElement) return found;
+    }
+    return undefined;
+  }
+
+  private getNonLinearContainer(): HTMLElement | undefined {
+    if (this.resolvedNonLinearContainer) return this.resolvedNonLinearContainer;
+    this.resolvedNonLinearContainer = this.resolveContainer(this.cfg.nonLinearContainer, this.cfg.nonLinearSelector);
+    return this.resolvedNonLinearContainer;
+  }
+
+  private getCompanionContainer(): HTMLElement | undefined {
+    if (this.resolvedCompanionContainer) return this.resolvedCompanionContainer;
+    this.resolvedCompanionContainer = this.resolveContainer(this.cfg.companionContainer, this.cfg.companionSelector);
+    return this.resolvedCompanionContainer;
+  }
 
   private getSource(type: AdsSourceType): AdsSource | undefined {
     return (this.cfg.sources || []).find((s) => s.type === type && typeof s.src === 'string' && s.src.trim());
@@ -297,6 +350,10 @@ export class AdsPlugin implements PlayerPlugin {
       autoPlayOnReady: config.autoPlayOnReady || false,
       mountEl: config.mountEl,
       mountSelector: config.mountSelector,
+      nonLinearContainer: config.nonLinearContainer,
+      nonLinearSelector: config.nonLinearSelector,
+      companionContainer: config.companionContainer,
+      companionSelector: config.companionSelector,
     };
   }
 
@@ -1106,19 +1163,57 @@ export class AdsPlugin implements PlayerPlugin {
   private extractSkipOffsetFromCreative(creative: any): string | undefined {
     const linear = creative?.linear || creative?.Linear || creative;
 
+    // Some parsers expose numeric skipDelay instead of a timecode skipOffset.
     const skipDelay = linear?.skipDelay ?? linear?.skipdelay;
     if (typeof skipDelay === 'number' && Number.isFinite(skipDelay) && skipDelay >= 0) {
       return String(skipDelay);
     }
 
-    const raw =
-      linear?.skipOffset ??
-      linear?.skipoffset ??
-      linear?.attributes?.skipOffset ??
-      linear?.attributes?.skipoffset ??
-      undefined;
+    // Best-effort: different parsers map VAST attributes differently.
+    // We try common locations first, then fall back to a shallow key scan.
+    const candidates: unknown[] = [
+      linear?.skipOffset,
+      linear?.skipoffset,
+      linear?.attributes?.skipOffset,
+      linear?.attributes?.skipoffset,
+      linear?.attributes?.skipOffset?.value,
+      linear?.attributes?.skipoffset?.value,
+      linear?.attributes?.skipOffset?.['#text'],
+      linear?.attributes?.skipoffset?.['#text'],
+    ];
 
-    return typeof raw === 'string' && raw.trim() ? raw.trim() : undefined;
+    // Shallow scan for skipOffset-like keys.
+    if (linear && typeof linear === 'object') {
+      for (const k of ['skipOffset', 'skipoffset', 'skipDelay', 'skipdelay']) {
+        candidates.push((linear as any)[k]);
+
+        candidates.push((linear as any)?.attributes?.[k]);
+      }
+    }
+
+    const normalize = (raw: unknown): string | undefined => {
+      if (typeof raw === 'number' && Number.isFinite(raw) && raw >= 0) return String(raw);
+      if (typeof raw === 'string') {
+        const s = raw.trim();
+        return s ? s : undefined;
+      }
+      if (raw && typeof raw === 'object') {
+        const obj = raw as { value?: unknown; '#text'?: unknown; text?: unknown };
+        const v = obj.value ?? obj['#text'] ?? obj.text;
+        if (typeof v === 'string') {
+          const s = v.trim();
+          return s ? s : undefined;
+        }
+      }
+      return undefined;
+    };
+
+    for (const c of candidates) {
+      const v = normalize(c);
+      if (v) return v;
+    }
+
+    return undefined;
   }
 
   private parseTimecodeToSeconds(s: string): number | null {
@@ -1187,14 +1282,14 @@ export class AdsPlugin implements PlayerPlugin {
     this.skipAtSeconds = undefined;
   }
 
-  private setupSkipUIForCreative(creative: any) {
+  private setupSkipUIForPodItem(item: PodAd) {
     this.hideSkipUi();
     const v = this.adVideo;
     if (!v) return;
 
-    const skipOffset = this.extractSkipOffsetFromCreative(creative);
+    const skipOffset = item.skipOffset ?? this.extractSkipOffsetFromCreative(item.creative);
     if (!skipOffset) {
-      this.log('creative not skippable (no skipOffset/skipDelay)');
+      this.log('creative not skippable (no skipOffset/skipDelay)', { sequence: item.sequence });
       return;
     }
     this.log('creative skippable', skipOffset);
@@ -1213,6 +1308,7 @@ export class AdsPlugin implements PlayerPlugin {
       if (this.skipWrap) this.skipWrap.style.display = 'block';
       if (this.skipBtn) {
         this.skipBtn.textContent = remaining <= 0.05 ? 'Skip Ad' : Math.ceil(remaining).toString();
+        this.skipBtn.style.pointerEvents = remaining <= 0.05 ? 'auto' : 'none';
       }
     };
 
@@ -1262,6 +1358,9 @@ export class AdsPlugin implements PlayerPlugin {
 
   private clearAdOverlays() {
     this.hideSkipUi();
+    this.skipWrap?.remove();
+    this.skipWrap = undefined;
+    this.skipBtn = undefined;
     this.companionWrap?.remove();
     this.nonLinearWrap?.remove();
     this.companionWrap = undefined;
@@ -1269,14 +1368,16 @@ export class AdsPlugin implements PlayerPlugin {
   }
 
   private mountCompanions(creative: any) {
+    // Companion ads must render outside the player. If no container is provided,
+    // do not render companions.
+    const container = this.getCompanionContainer();
+    if (!container) return;
+
     const companions = creative?.companionAds?.companions || creative?.companions;
     if (!Array.isArray(companions) || companions.length === 0) return;
 
     const wrap = document.createElement('div');
     wrap.className = 'op-ads__companions';
-    wrap.style.position = 'absolute';
-    wrap.style.right = '12px';
-    wrap.style.bottom = '12px';
     wrap.style.zIndex = '2';
     wrap.style.display = 'flex';
     wrap.style.flexDirection = 'column';
@@ -1290,7 +1391,7 @@ export class AdsPlugin implements PlayerPlugin {
     }
 
     if (!wrap.childElementCount) return;
-    this.overlay.appendChild(wrap);
+    container.appendChild(wrap);
     this.companionWrap = wrap;
 
     this.sessionUnsubs.push(() => wrap.remove());
@@ -1547,7 +1648,10 @@ export class AdsPlugin implements PlayerPlugin {
     wrap.style.justifyContent = 'center';
     wrap.style.pointerEvents = 'auto';
 
-    this.overlay.appendChild(wrap);
+    // Allow non-linear ads to be mounted into a dedicated container. If not set,
+    // default to the in-player ad media container (or the overlay).
+    const parent = this.getNonLinearContainer() || this.adVideo?.parentElement || this.overlay;
+    parent.appendChild(wrap);
     this.nonLinearWrap = wrap;
 
     this.sessionUnsubs.push(() => wrap.remove());
@@ -1565,27 +1669,6 @@ export class AdsPlugin implements PlayerPlugin {
     container.style.position = 'relative';
     container.style.maxWidth = '100%';
     container.style.cursor = click ? 'pointer' : 'default';
-
-    const close = document.createElement('button');
-    close.type = 'button';
-    close.textContent = 'x';
-    close.setAttribute('aria-label', 'Close ad');
-    close.style.position = 'absolute';
-    close.style.right = '0';
-    close.style.top = '0';
-    close.style.zIndex = '3';
-    close.style.cursor = 'pointer';
-
-    const onClose = (e: PointerEvent) => {
-      container.remove();
-      this.requestSkip('close');
-      e.preventDefault();
-      e.stopPropagation();
-    };
-    close.addEventListener('click', onClose);
-
-    container.appendChild(close);
-    this.sessionUnsubs.push(() => close.removeEventListener('click', onClose));
 
     const pickFirst = (v: any) => (Array.isArray(v) ? v[0] : v);
     const staticRes = pickFirst(
@@ -2319,7 +2402,9 @@ export class AdsPlugin implements PlayerPlugin {
         this.mountAdVideo(media, item.mediaFile);
         const endPromise = this.waitForAdEnd();
 
-        this.setupSkipUIForCreative(item.creative);
+        // Important: some VMAP pod samples contain more than one skippable ad.
+        // Skip UI needs to be recomputed for each pod item.
+        this.setupSkipUIForPodItem(item);
         this.log('skip ui', { raw: this.skipOffsetRaw, at: this.skipAtSeconds });
         this.mountCompanions(item.creative);
         this.mountNonLinear(item.creative);

@@ -1,4 +1,5 @@
 // ui/controls/abstract-control.ts
+import { DisposableStore } from '../../core/dispose';
 import { getOverlayManager, type OverlayState } from '../../core/overlay';
 import type { Player as CorePlayer } from '../../core/player';
 import type { Control } from '../control';
@@ -20,6 +21,8 @@ export abstract class BaseControl implements Control {
   protected overlayMgr!: ReturnType<typeof getOverlayManager>;
   protected activeOverlay: OverlayState | null = null;
 
+  protected dispose = new DisposableStore();
+
   protected abstract build(): HTMLElement;
 
   protected onOverlayChanged(_ov: OverlayState | null): void {
@@ -31,12 +34,31 @@ export abstract class BaseControl implements Control {
     this.overlayMgr = getOverlayManager(player);
     this.activeOverlay = this.overlayMgr.active ?? null;
 
-    this.overlayMgr.bus.on('overlay:changed', (ov: OverlayState | null) => {
-      this.activeOverlay = ov;
-      this.onOverlayChanged(ov);
-    });
+    this.dispose.add(
+      this.overlayMgr.bus.on('overlay:changed', (ov: OverlayState | null) => {
+        this.activeOverlay = ov;
+        this.onOverlayChanged(ov);
+      })
+    );
 
     return this.build();
+  }
+
+  destroy(): void {
+    this.dispose.dispose();
+  }
+
+  protected onPlayer(event: any, cb: (...args: any[]) => void) {
+    return this.dispose.add(this.player.events.on(event, cb as any));
+  }
+
+  protected listen(
+    target: EventTarget,
+    type: string,
+    handler: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) {
+    return this.dispose.addEventListener(target, type, handler, options);
   }
 
   protected resolvePlayerRoot(): HTMLElement {

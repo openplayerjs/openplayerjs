@@ -1,6 +1,7 @@
 import { EVENT_OPTIONS } from '../../core/constants';
 import { formatTime, isMobile, offset } from '../../core/utils';
 import type { Control } from '../control';
+import { setControlLabel } from '../a11y';
 import { BaseControl } from './base';
 
 export class ProgressControl extends BaseControl {
@@ -18,7 +19,7 @@ export class ProgressControl extends BaseControl {
     const progress = document.createElement('div');
     progress.className = 'op-controls__progress';
     progress.role = 'group';
-    progress.setAttribute('aria-label', progressLabel);
+    setControlLabel(progress, progressLabel);
 
     const slider = document.createElement('input');
     slider.type = 'range';
@@ -28,7 +29,7 @@ export class ProgressControl extends BaseControl {
     slider.min = '0';
     slider.step = '0.1';
     slider.value = '0';
-    slider.setAttribute('aria-label', railLabel);
+    setControlLabel(slider, railLabel, { container: progress });
     slider.setAttribute('aria-valuemin', '0');
     slider.setAttribute('aria-valuenow', '0');
 
@@ -60,23 +61,23 @@ export class ProgressControl extends BaseControl {
       else slider.classList.remove('op-progress--pressed');
     };
 
-    slider.addEventListener('pointerdown', () => setPressed(true));
-    slider.addEventListener('pointerup', () => setPressed(false));
-    slider.addEventListener('pointercancel', () => setPressed(false));
-    slider.addEventListener('mouseleave', () => setPressed(false));
+    this.listen(slider, 'pointerdown', () => setPressed(true));
+    this.listen(slider, 'pointerup', () => setPressed(false));
+    this.listen(slider, 'pointercancel', () => setPressed(false));
+    this.listen(slider, 'mouseleave', () => setPressed(false));
 
     // iOS Safari may not reliably fire Pointer Events for <input type="range">.
     // Ensure tap/drag interactions still mark the slider as "pressed" so seeking commits.
-    slider.addEventListener('touchstart', () => setPressed(true), EVENT_OPTIONS);
-    slider.addEventListener('touchend', () => setPressed(false), EVENT_OPTIONS);
-    slider.addEventListener('mousedown', () => setPressed(true), EVENT_OPTIONS);
-    slider.addEventListener('mouseup', () => setPressed(false), EVENT_OPTIONS);
+    this.listen(slider, 'touchstart', () => setPressed(true), EVENT_OPTIONS);
+    this.listen(slider, 'touchend', () => setPressed(false), EVENT_OPTIONS);
+    this.listen(slider, 'mousedown', () => setPressed(true), EVENT_OPTIONS);
+    this.listen(slider, 'mouseup', () => setPressed(false), EVENT_OPTIONS);
 
     const clearPressed = () => setPressed(false);
-    document.addEventListener('pointerup', clearPressed, EVENT_OPTIONS);
-    document.addEventListener('pointercancel', clearPressed, EVENT_OPTIONS);
-    document.addEventListener('mouseup', clearPressed, EVENT_OPTIONS);
-    document.addEventListener('touchend', clearPressed, EVENT_OPTIONS);
+    this.listen(document, 'pointerup', clearPressed, EVENT_OPTIONS);
+    this.listen(document, 'pointercancel', clearPressed, EVENT_OPTIONS);
+    this.listen(document, 'mouseup', clearPressed, EVENT_OPTIONS);
+    this.listen(document, 'touchend', clearPressed, EVENT_OPTIONS);
 
     const setSeekEnabled = (enabled: boolean) => {
       slider.disabled = !enabled;
@@ -161,33 +162,38 @@ export class ProgressControl extends BaseControl {
 
     // On iOS/Android, taps may land on the <progress> overlays instead of the range input.
     // Implement rail tap-to-seek at the container level so seeking is reliable.
-    progress.addEventListener(
+    this.listen(
+      progress,
       'click',
-      (e) => {
+      (e: Event) => {
+        const me = e as MouseEvent;
         const t = e.target as HTMLElement;
         if (t && t.closest('input[type="range"]')) return;
-        seekFromClientX((e as MouseEvent).clientX);
+        seekFromClientX(me.clientX);
       },
       EVENT_OPTIONS
     );
 
-    progress.addEventListener(
+    this.listen(
+      progress,
       'touchstart',
-      (e: TouchEvent) => {
+      (e: Event) => {
+        const te = e as TouchEvent;
         const t = e.target as HTMLElement;
         if (t && t.closest('input[type="range"]')) return;
-        const touch = e.touches && e.touches[0];
+        const touch = te.touches && te.touches[0];
         if (!touch) return;
         // Prevent the synthetic delayed click from fighting our seek.
-        e.preventDefault();
+        te.preventDefault();
         seekFromClientX(touch.clientX);
       },
       EVENT_OPTIONS
     );
 
-    slider.addEventListener(
+    this.listen(
+      slider,
       'change',
-      (e) => {
+      (e: Event) => {
         if (this.activeOverlay && !this.activeOverlay.canSeek) return;
         const target = e.target as HTMLInputElement;
         const val = parseFloat(target.value);
@@ -198,9 +204,10 @@ export class ProgressControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    slider.addEventListener(
+    this.listen(
+      slider,
       'input',
-      (e) => {
+      (e: Event) => {
         const pressed = slider.classList.contains('op-progress--pressed');
         // On iOS Safari a tap can trigger input/change without Pointer Events; allow seek on mobile.
         if (!pressed && !isMobile()) return;
@@ -223,15 +230,15 @@ export class ProgressControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    player.events.on('durationchange', updateUI);
-    player.events.on('timeupdate', updateUI);
+    this.onPlayer('durationchange', updateUI);
+    this.onPlayer('timeupdate', updateUI);
 
-    player.events.on('waiting', () => {
+    this.onPlayer('waiting', () => {
       if (!slider.classList.contains('loading')) slider.classList.add('loading');
       if (slider.classList.contains('error')) slider.classList.remove('error');
     });
 
-    player.events.on('play', () => {
+    this.onPlayer('play', () => {
       if (slider.classList.contains('loading')) slider.classList.remove('loading');
       if (slider.classList.contains('error')) slider.classList.remove('error');
 
@@ -241,28 +248,30 @@ export class ProgressControl extends BaseControl {
       }
     });
 
-    player.events.on('playing', () => {
+    this.onPlayer('playing', () => {
       if (slider.classList.contains('loading')) slider.classList.remove('loading');
       if (slider.classList.contains('error')) slider.classList.remove('error');
     });
 
-    player.events.on('ended', () => {
+    this.onPlayer('ended', () => {
       slider.style.backgroundSize = '0% 100%';
       if (slider.max) slider.max = '0';
       buffer.value = 0;
       played.value = 0;
     });
 
-    progress.addEventListener(
+    this.listen(
+      progress,
       'pointermove',
-      (e: MouseEvent): void => {
+      (e: Event): void => {
+        const me = e as MouseEvent;
         if (isMobile()) return;
         if (this.activeOverlay && !this.activeOverlay.canSeek) return;
 
         const duration = getDuration();
         if ((player.isLive || duration === Infinity) && !this.activeOverlay) return;
 
-        const x = e.pageX;
+        const x = me.pageX;
         let pos = x - offset(progress).left;
         const half = tooltip.offsetWidth / 2;
         const percentage = pos / progress.offsetWidth;
@@ -290,10 +299,12 @@ export class ProgressControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    document.addEventListener(
+    this.listen(
+      document,
       'pointermove',
-      (e) => {
-        if (!(e.target as HTMLElement).closest('.op-controls__progress')) {
+      (e: Event) => {
+        const me = e as MouseEvent;
+        if (!(me.target as HTMLElement).closest('.op-controls__progress')) {
           tooltip.classList.remove('op-controls__tooltip--visible');
         }
       },

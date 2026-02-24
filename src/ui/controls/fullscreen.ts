@@ -1,5 +1,6 @@
 import { EVENT_OPTIONS } from '../../core/constants';
 import type { Control } from '../control';
+import { setControlLabel } from '../a11y';
 import { BaseControl } from './base';
 
 function getFullscreenElement(): Element | null {
@@ -40,7 +41,7 @@ export class FullscreenControl extends BaseControl {
     btn.tabIndex = 0;
     btn.type = 'button';
     btn.className = 'op-controls__fullscreen';
-    btn.setAttribute('aria-label', player.config.labels?.fullscreen || 'Fullscreen');
+    setControlLabel(btn, player.config.labels?.fullscreen || 'Fullscreen');
     btn.setAttribute('aria-pressed', 'false');
 
     const setFullscreenData = (on: boolean) => {
@@ -84,20 +85,24 @@ export class FullscreenControl extends BaseControl {
     };
 
     ['fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange', 'msfullscreenchange'].forEach((evt) => {
-      document.addEventListener(evt, sync, EVENT_OPTIONS);
+      this.listen(document, evt, sync, EVENT_OPTIONS);
     });
 
-    document.addEventListener(
+    this.listen(
+      document,
       'keydown',
-      (e) => {
-        if (e.key === 'Escape' && this.isFullscreen) exitFullscreen();
+      (e: Event) => {
+        const ke = e as KeyboardEvent;
+        if (ke.key === 'Escape' && this.isFullscreen) exitFullscreen();
       },
       EVENT_OPTIONS
     );
 
-    btn.addEventListener(
+    this.listen(
+      btn,
       'click',
-      async (e) => {
+      async (e: Event) => {
+        const me = e as MouseEvent;
         this.screenW = window.screen.width;
         this.screenH = window.screen.height;
 
@@ -115,8 +120,8 @@ export class FullscreenControl extends BaseControl {
           // ignore
         }
 
-        e.preventDefault();
-        e.stopPropagation();
+        me.preventDefault();
+        me.stopPropagation();
       },
       EVENT_OPTIONS
     );

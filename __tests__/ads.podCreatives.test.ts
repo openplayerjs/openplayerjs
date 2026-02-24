@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import { DisposableStore } from '../src/core/dispose';
 import { EventBus } from '../src/core/events';
 import type { Lease } from '../src/core/lease';
 import type { Player } from '../src/core/player';
@@ -25,6 +26,7 @@ function makeLeases(): Lease {
 function makeCtx() {
   const bus = new EventBus();
   const video = document.createElement('video');
+  const dispose = new DisposableStore();
   bus.on('playback:pause', () => (video as any).pause());
   bus.on('playback:play', () => void (video as any).play());
 
@@ -33,6 +35,12 @@ function makeCtx() {
     events: bus as any,
     state: new StateManager('playing'),
     leases: makeLeases(),
+
+    dispose,
+    add: (d) => dispose.add(d as any),
+    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
+    listen: (target: any, type: any, handler: any, options?: any) =>
+      dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, video };

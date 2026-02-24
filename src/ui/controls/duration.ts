@@ -35,8 +35,8 @@ export class DurationControl extends BaseControl {
       el.setAttribute('datetime', generateISODateTime(duration));
     };
 
-    player.events.on('durationchange', update);
-    player.events.on('timeupdate', update);
+    this.onPlayer('durationchange', update);
+    this.onPlayer('timeupdate', update);
     this.overlayMgr.bus.on('overlay:changed', update);
 
     update();

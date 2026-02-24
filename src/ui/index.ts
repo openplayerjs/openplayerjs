@@ -5,6 +5,25 @@ import { createControlGrid, type Control } from './control';
 import { bindCenterOverlay } from './events';
 import { createCenterOverlayDom } from './overlay';
 
+let srId = 0;
+
+function labelHost(host: HTMLElement, text: string): void {
+  // For non-control container elements (region/group), prefer native text wired via
+  // aria-labelledby. We keep the label element *inside* the host so it is automatically
+  // removed when the host is removed.
+  const existing = host.querySelector(':scope > span.op-player__sr-only') as HTMLSpanElement | null;
+  const span = existing ?? document.createElement('span');
+  if (!existing) {
+    srId += 1;
+    span.className = 'op-player__sr-only';
+    span.id = `op-player-sr-host-${srId}`;
+    host.insertBefore(span, host.firstChild);
+    host.setAttribute('aria-labelledby', span.id);
+    host.removeAttribute('aria-label');
+  }
+  span.textContent = text;
+}
+
 function maybeAutoplayUnmute(player: Player, wrapper: HTMLDivElement) {
   const media = player.media;
   const wantsAutoplay = !!(media.autoplay || media.preload === 'auto');
@@ -90,7 +109,6 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
   const wrapper = document.createElement('div');
   wrapper.className = `op-player op-player__keyboard--inactive ${isMediaAudio ? 'op-player__audio' : 'op-player__video'}`;
   wrapper.setAttribute('role', 'region');
-  wrapper.setAttribute('aria-label', 'Media player');
   wrapper.tabIndex = 0;
 
   let style = '';
@@ -111,12 +129,15 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   media.replaceWith(wrapper);
 
+  labelHost(wrapper, 'Media player');
+
   const mediaContainer = document.createElement('div');
   mediaContainer.className = 'op-media';
   mediaContainer.tabIndex = 0;
   mediaContainer.setAttribute('role', 'group');
-  mediaContainer.setAttribute('aria-label', 'Media');
   mediaContainer.appendChild(tmpMedia);
+
+  labelHost(mediaContainer, 'Media');
 
   const mainControls = document.createElement('div');
   mainControls.className = 'op-media__main';
@@ -140,15 +161,23 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     wrapper.appendChild(mediaContainer);
     wrapper.appendChild(controlsRoot);
 
+    const createdControls: Control[] = [];
+
     controls.forEach((control) => {
       const el = control.create(player);
       el.dataset.controlId = control.id;
       grid.place(control.placement, el);
+      createdControls.push(control);
     });
 
     const ctx: PlayerUIContext = { wrapper, mediaContainer, controlsRoot, placeholder, grid };
 
     const offDestroy = player.events.on('player:destroy', () => {
+      try {
+        createdControls.forEach((c) => c.destroy?.());
+      } catch {
+        // ignore
+      }
       try {
         wrapper.replaceWith(media);
       } catch {
@@ -181,6 +210,8 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
       el.dataset.controlId = control.id;
       ctx.grid?.place(control.placement, el);
       payload.el = el;
+
+      createdControls.push(control);
     });
 
     maybeAutoplayUnmute(player, wrapper);
@@ -302,10 +333,13 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
   wrapper.appendChild(mediaContainer);
   wrapper.appendChild(controlsRoot);
 
+  const createdControls: Control[] = [];
+
   controls.forEach((control) => {
     const el = control.create(player);
     el.dataset.controlId = control.id;
     grid.place(control.placement, el);
+    createdControls.push(control);
   });
 
   const ctx: PlayerUIContext = { wrapper, mediaContainer, controlsRoot, placeholder, grid };
@@ -313,6 +347,12 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
   maybeAutoplayUnmute(player, wrapper);
 
   const offDestroy = player.events.on('player:destroy', () => {
+    // Ensure controls can clean up DOM/event listeners.
+    try {
+      createdControls.forEach((c) => c.destroy?.());
+    } catch {
+      // ignore
+    }
     try {
       wrapper.replaceWith(media);
     } catch {
@@ -345,6 +385,9 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     el.dataset.controlId = control.id;
     ctx.grid?.place(control.placement, el);
     payload.el = el;
+
+    // If dynamically injected, track for cleanup.
+    createdControls.push(control);
   });
 
   return ctx;

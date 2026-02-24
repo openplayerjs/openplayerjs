@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
+import { DisposableStore } from '../src/core/dispose';
 import { EventBus } from '../src/core/events';
 import type { Player } from '../src/core/player';
 import type { PluginContext } from '../src/core/plugin';
@@ -13,12 +14,20 @@ function makeCtx() {
   const video = document.createElement('video');
   document.body.appendChild(video);
 
+  const dispose = new DisposableStore();
+
   const ctx: PluginContext = {
     player: { media: video } as unknown as Player,
     events: bus,
     // Preroll interception is only enabled in idle/ready/loading.
     state: new StateManager('ready'),
     leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as any,
+
+    dispose,
+    add: (d) => dispose.add(d as any),
+    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
+    listen: (target: any, type: any, handler: any, options?: any) =>
+      dispose.addEventListener(target, type, handler, options),
   };
   return { ctx, bus, video };
 }

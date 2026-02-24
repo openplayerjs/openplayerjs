@@ -9,7 +9,7 @@ jest.useFakeTimers();
 function makePlayer() {
   const v = document.createElement('video');
   document.body.appendChild(v);
-  (v as any).canPlayType = () => 'probably';
+  v.canPlayType = () => 'probably';
   const p = new Player(v, { plugins: [] });
   // spy play/pause
   p.play = jest.fn(async () => {

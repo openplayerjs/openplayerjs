@@ -67,7 +67,7 @@ export function createControlGrid(controlsRoot: HTMLElement, mainRoot?: HTMLElem
   return {
     place(placement: Control['placement'], el: HTMLElement) {
       // Special "main" region lives in the media container, not in the controls bar.
-      const region = (placement as any).region;
+      const region = placement.region;
       if (region === 'main' && mainRoot) {
         mainRoot.appendChild(el);
         return;
