@@ -10,6 +10,8 @@ import type { PlaybackState } from './state';
 import { StateManager } from './state';
 import { predictMimeType } from './utils';
 
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+
 const defaultLabels = Object.freeze({
   auto: 'Auto',
   captions: 'CC/Subtitles',
@@ -41,10 +43,13 @@ export class Player {
   public leases = new Lease();
   public state = new StateManager<PlaybackState>('idle');
   public config: PlayerConfig;
+  public userInteracted = false;
+  public canAutoplay = false;
+  public canAutoplayMuted = false;
+
+  private interactionUnsubs: (() => void)[] = [];
 
   private plugins = new PluginRegistry();
-
-  // UI state is owned by the UI package. Core should not store UI references.
 
   private _src?: string;
   private _volume = 1;
@@ -56,8 +61,26 @@ export class Player {
   private activeEngine?: MediaEnginePlugin;
   private playerContext: MediaEngineContext | null = null;
 
+  private autoplaySupport?: { autoplay: boolean; muted: boolean };
+  private autoplaySupportPromise?: Promise<{ autoplay: boolean; muted: boolean }>;
+
+  private readyPromise?: Promise<void>;
+  private readyResolve?: () => void;
+  private readyReject?: (e?: unknown) => void;
+
+  private pendingPlaybackIntent: 'play' | 'pause' | null = null;
+  private playRequestPromise?: Promise<void>;
+
   constructor(media: HTMLMediaElement | string, config: PlayerConfig = {}) {
-    this.media = media instanceof HTMLMediaElement ? media : document.querySelector(media)!;
+    if (typeof media === 'string') {
+      const el = document.querySelector(media);
+      if (!el || !(el instanceof HTMLMediaElement)) {
+        throw new Error(`OpenPlayer: could not find media element for selector: ${media}`);
+      }
+      this.media = el;
+    } else {
+      this.media = media;
+    }
     this.registerPlugin(new DefaultMediaEngine());
     const labels = { ...defaultLabels, ...config.labels };
     this.config = { ...config, labels };
@@ -68,22 +91,25 @@ export class Player {
     this.media.currentTime = this.config.startTime || this.media.currentTime;
     this._currentTime = this.config.startTime || this.media.currentTime;
     this._duration = this.config.duration || this.media.duration;
-    const volume = this.config.startVolume || this.media.volume;
-    this.media.volume = volume;
-    this.media.muted = volume <= 0;
-    this._volume = volume;
-    this._muted = volume <= 0;
+    const initialVolume = clamp01(this.config.startVolume ?? this.media.volume);
+    this.media.volume = initialVolume;
+    this.media.muted = initialVolume <= 0;
+    this._volume = initialVolume;
+    this._muted = initialVolume <= 0;
     this.media.playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
     this._playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
 
     (this.config.plugins || []).forEach((p) => this.registerPlugin(p));
     this.bindStateTransitions();
     this.bindMediaSync();
+    this.bindLeaseSync();
+    this.bindFirstInteraction();
     this.maybeAutoLoad();
   }
 
-  on(event: PlayerEvent | string, cb: (...args: any[]) => void) {
-    return this.events.on(event as any, cb);
+  on<E extends PlayerEvent>(event: E, cb: (payload?: any) => void) {
+    // Keep the public surface flexible (plugins may emit custom events).
+    return this.events.on(event, cb);
   }
 
   emit(event: PlayerEvent | string, payload?: any) {
@@ -96,9 +122,7 @@ export class Player {
       });
   }
 
-  /* ---------------- Plugin ---------------- */
-
-  registerPlugin(plugin: any) {
+  registerPlugin(plugin: PlayerPlugin) {
     this.plugins.register(plugin);
 
     plugin.setup?.({
@@ -109,8 +133,6 @@ export class Player {
       leases: this.leases,
     });
   }
-
-  /* ---------------- Public API ---------------- */
 
   set src(value: string | undefined) {
     this._src = value;
@@ -130,8 +152,9 @@ export class Player {
   }
 
   set volume(v: number) {
-    this._volume = v;
-    this.emit('media:volume', v);
+    const next = clamp01(v);
+    this._volume = next;
+    this.emit('cmd:setVolume', next);
   }
 
   get muted() {
@@ -140,12 +163,12 @@ export class Player {
 
   set muted(muted: boolean) {
     this._muted = muted;
-    this.emit('media:muted', muted);
+    this.emit('cmd:setMuted', muted);
   }
 
   set playbackRate(rate: number) {
     this._playbackRate = rate;
-    this.emit('media:rate', rate);
+    this.emit('cmd:setRate', rate);
   }
 
   get playbackRate(): number {
@@ -154,7 +177,7 @@ export class Player {
 
   set currentTime(time: number) {
     this._currentTime = time;
-    this.emit('playback:seek', time);
+    this.emit('cmd:seek', time);
   }
 
   get currentTime(): number {
@@ -167,6 +190,8 @@ export class Player {
 
   load() {
     if (this.state.current !== 'idle') return;
+
+    this.createReadyPromise();
 
     const sources = this.detectedSources ?? this.readMediaSources(this.media);
     this.detectedSources = sources;
@@ -183,33 +208,146 @@ export class Player {
     this.activeEngine?.detach?.(this.playerContext);
     this.activeEngine = engine;
 
-    // Transition into loading state before attaching the engine.
-    // Some engines may synchronously emit 'playback:ready' during attach.
-    // Emitting 'playback:load' after attach can incorrectly overwrite 'ready'.
-    this.emit('playback:load');
+    this.emit('loadstart');
+
+    this.emit('cmd:load');
 
     this.activeEngine.attach(this.playerContext);
+
+    this.emit('cmd:setVolume', this._volume);
+    this.emit('cmd:setMuted', this._muted);
+    this.emit('cmd:setRate', this._playbackRate);
+    if (this._currentTime) this.emit('cmd:seek', this._currentTime);
+  }
+
+  async whenReady(): Promise<void> {
+    if (
+      this.state.current === 'ready' ||
+      this.state.current === 'playing' ||
+      this.state.current === 'paused' ||
+      this.state.current === 'waiting' ||
+      this.state.current === 'seeking' ||
+      this.state.current === 'ended'
+    ) {
+      return;
+    }
+
+    if (!this.activeEngine) this.load();
+    this.createReadyPromise();
+    return this.readyPromise ?? Promise.resolve();
   }
 
   async play() {
-    if (!this.activeEngine) this.load();
-    this.emit('playback:play');
+    this.pendingPlaybackIntent = 'play';
+
+    if (this.playRequestPromise) return this.playRequestPromise;
+
+    this.playRequestPromise = (async () => {
+      if (!this.activeEngine) this.load();
+      await this.whenReady();
+
+      if (this.pendingPlaybackIntent === 'play') {
+        this.emit('cmd:play');
+      }
+    })().finally(() => {
+      this.playRequestPromise = undefined;
+    });
+
+    return this.playRequestPromise;
+  }
+
+  async determineAutoplaySupport(): Promise<{ autoplay: boolean; muted: boolean }> {
+    if (this.autoplaySupport) return this.autoplaySupport;
+    if (this.autoplaySupportPromise) return this.autoplaySupportPromise;
+
+    // Gate on readiness, but don't fail detection if readiness never arrives.
+    await this.whenReady().catch(() => {});
+
+    const media = this.media;
+    const defaultVol = media.volume;
+    const defaultMuted = media.muted;
+
+    const restore = () => {
+      try {
+        media.volume = defaultVol;
+      } catch {
+        // ignore
+      }
+      try {
+        media.muted = defaultMuted;
+      } catch {
+        // ignore
+      }
+      // Keep Player state consistent with the underlying element.
+      this._volume = defaultVol;
+      this._muted = defaultMuted;
+    };
+
+    this.autoplaySupportPromise = (async () => {
+      try {
+        // Attempt unmuted autoplay first.
+        try {
+          const playPromise = media.play();
+          if (playPromise !== undefined) await playPromise;
+          try {
+            media.pause();
+          } catch {
+            // ignore
+          }
+          this.canAutoplay = true;
+          this.canAutoplayMuted = false;
+          return { autoplay: true, muted: false };
+        } catch {
+          // Unmuted autoplay failed; retry muted autoplay.
+          try {
+            media.volume = 0;
+            media.muted = true;
+            this._volume = 0;
+            this._muted = true;
+          } catch {
+            // ignore
+          }
+
+          try {
+            const playPromiseMuted = media.play();
+            if (playPromiseMuted !== undefined) await playPromiseMuted;
+            try {
+              media.pause();
+            } catch {
+              // ignore
+            }
+            this.canAutoplay = true;
+            this.canAutoplayMuted = true;
+            return { autoplay: true, muted: true };
+          } catch {
+            // Autoplay is blocked even when muted.
+            this.canAutoplay = false;
+            this.canAutoplayMuted = false;
+            return { autoplay: false, muted: false };
+          }
+        }
+      } finally {
+        restore();
+      }
+    })();
+
+    this.autoplaySupport = await this.autoplaySupportPromise;
+    return this.autoplaySupportPromise;
   }
 
   pause() {
-    this.emit('playback:pause');
+    this.pendingPlaybackIntent = 'pause';
+    if (this.state.current === 'idle' || this.state.current === 'loading') {
+      return;
+    }
+    this.emit('cmd:pause');
   }
 
   destroy() {
-    // Notify external layers (e.g., UI) to clean up their own resources.
-    // Must fire before clearing the event bus.
     this.events.emit('player:destroy');
-
-    // Detach engine
     if (this.playerContext) this.activeEngine?.detach?.(this.playerContext);
     this.playerContext = null;
 
-    // Destroy plugins (best-effort)
     this.plugins.all().forEach((p) => {
       try {
         p.destroy?.();
@@ -218,7 +356,8 @@ export class Player {
       }
     });
 
-    // Remove all event listeners
+    this.interactionUnsubs.forEach((u) => u());
+    this.interactionUnsubs = [];
     this.events.clear();
   }
 
@@ -241,19 +380,11 @@ export class Player {
     return track;
   }
 
-  /** Retrieve a registered plugin by name. */
-  getPlugin<T = any>(name: string): T | undefined {
-    return this.plugins.all().find((p: any) => p?.name === name) as any;
+  getPlugin<T = unknown>(name: string): T | undefined {
+    return this.plugins.all().find((p) => p?.name === name) as T | undefined;
   }
 
-  /**
-   * Instance-level extension hook.
-   * This allows UMD bundles/plugins to attach API namespaces (e.g. player.ads, player.controls)
-   * without mutating the Player prototype.
-   *
-   * Extensions are applied shallowly and idempotently: existing keys are preserved.
-   */
-  extend(extension: Record<string, any>) {
+  extend(extension: Record<string, unknown>) {
     if (!extension || typeof extension !== 'object') return this;
     for (const key of Object.keys(extension)) {
       if ((this as any)[key] === undefined) {
@@ -264,25 +395,54 @@ export class Player {
         extension[key] &&
         typeof extension[key] === 'object'
       ) {
-        // merge namespace objects without overwriting existing keys
         const target = (this as any)[key];
         const source = extension[key];
         for (const k of Object.keys(source)) {
-          if (target[k] === undefined) target[k] = source[k];
+          if (target[k] === undefined) target[k] = (source as any)[k];
         }
       }
     }
     return this;
   }
 
+  private bindFirstInteraction() {
+    const doc = typeof document !== 'undefined' ? document : null;
+    if (!doc) return;
+
+    const mark = () => {
+      if (this.userInteracted) return;
+      this.userInteracted = true;
+      this.emit('player:interacted');
+      this.interactionUnsubs.forEach((u) => u());
+      this.interactionUnsubs = [];
+    };
+
+    const opts: AddEventListenerOptions = { capture: true, passive: true };
+    const removeOpts: AddEventListenerOptions = { capture: true };
+
+    const on = (type: string) => {
+      doc.addEventListener(type, mark, opts);
+      this.interactionUnsubs.push(() => doc.removeEventListener(type, mark, removeOpts));
+    };
+
+    on('pointerdown');
+    on('mousedown');
+    on('touchstart');
+    on('keydown');
+  }
+
   private resolveMediaEngine(sources: MediaSource[]): { engine: MediaEnginePlugin; source: MediaSource } {
     const engines = this.plugins
       .all()
       .filter(
-        (p) => p.capabilities?.includes('media-engine') && typeof (p as MediaEnginePlugin).canPlay === 'function'
-      ) as MediaEnginePlugin[];
+        (p): p is MediaEnginePlugin =>
+          !!(!!p && p.capabilities?.includes('media-engine') && typeof (p as MediaEnginePlugin).canPlay === 'function')
+      );
 
-    const sortedEngines = engines.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.name.localeCompare(b.name));
+    // Don't mutate registry order.
+    const sortedEngines = [...engines].sort(
+      (a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.name.localeCompare(b.name)
+    );
 
     for (const source of sources) {
       for (const engine of sortedEngines) {
@@ -296,25 +456,96 @@ export class Player {
   }
 
   private bindStateTransitions() {
-    this.events.on('playback:load', () => this.state.transition('loading'));
-    this.events.on('playback:ready', () => this.state.transition('ready'));
-    this.events.on('playback:play', () => this.state.transition('playing'));
-    this.events.on('playback:pause', () => this.state.transition('paused'));
-    this.events.on('playback:playing', () => this.state.transition('playing'));
-    this.events.on('playback:paused', () => this.state.transition('paused'));
-    this.events.on('playback:waiting', () => this.state.transition('waiting'));
-    this.events.on('playback:seeking', () => this.state.transition('seeking'));
-    this.events.on('playback:seeked', () => this.state.transition('ready'));
-    this.events.on('playback:ended', () => this.state.transition('ended'));
-    this.events.on('playback:error', () => this.state.transition('error'));
+    // Load lifecycle
+    this.events.on('loadstart', () => this.state.transition('loading'));
+
+    // Resolve "ready" when metadata is available (closest HTML5 analogue to previous playback:ready).
+    this.events.on('loadedmetadata', () => {
+      this.state.transition('ready');
+      if (this.readyResolve) {
+        this.readyResolve();
+        this.readyResolve = undefined;
+        this.readyReject = undefined;
+      }
+    });
+
+    // IMPORTANT: state transitions only on observed playback events (not on commands).
+    this.events.on('playing', () => this.state.transition('playing'));
+    this.events.on('pause', () => this.state.transition('paused'));
+    this.events.on('waiting', () => this.state.transition('waiting'));
+    this.events.on('seeking', () => this.state.transition('seeking'));
+    this.events.on('seeked', () => this.state.transition('ready'));
+    this.events.on('ended', () => this.state.transition('ended'));
+
+    this.events.on('error', (e: MediaError | null) => {
+      this.state.transition('error');
+      if (this.readyReject) {
+        this.readyReject(e);
+        this.readyResolve = undefined;
+        this.readyReject = undefined;
+      }
+    });
   }
 
   private bindMediaSync() {
-    this.events.on('media:timeupdate', (t: number) => (this._currentTime = t));
-    this.events.on('media:duration', (d: number) => (this._duration = d));
-    this.events.on('media:muted', (muted: boolean) => (this._muted = muted));
-    this.events.on('media:volume', (vol: number) => (this._volume = vol));
-    this.events.on('media:rate', (rate: number) => (this._playbackRate = rate));
+    const read = () => {
+      // time + duration
+      try {
+        this._currentTime = this.media.currentTime || 0;
+      } catch {
+        // ignore
+      }
+      try {
+        const d = this.media.duration;
+        this._duration = Number.isFinite(d) ? d : 0;
+      } catch {
+        // ignore
+      }
+
+      // volume + mute
+      try {
+        this._muted = Boolean(this.media.muted);
+        const v = this.media.volume;
+        if (Number.isFinite(v)) this._volume = v;
+      } catch {
+        // ignore
+      }
+
+      // rate
+      try {
+        const r = this.media.playbackRate;
+        if (Number.isFinite(r)) this._playbackRate = r;
+      } catch {
+        // ignore
+      }
+    };
+
+    this.events.on('loadedmetadata', () => read());
+    this.events.on('durationchange', () => read());
+    this.events.on('timeupdate', () => read());
+    this.events.on('volumechange', () => read());
+    this.events.on('ratechange', () => read());
+  }
+
+  private bindLeaseSync() {
+    this.leases.onChange((cap) => {
+      if (cap !== 'playback') return;
+
+      queueMicrotask(() => {
+        this.emit('cmd:setVolume', this._volume);
+        this.emit('cmd:setMuted', this._muted);
+        this.emit('cmd:setRate', this._playbackRate);
+        if (this._currentTime) this.emit('cmd:seek', this._currentTime);
+      });
+    });
+  }
+
+  private createReadyPromise() {
+    if (this.readyPromise) return;
+    this.readyPromise = new Promise<void>((resolve, reject) => {
+      this.readyResolve = resolve;
+      this.readyReject = reject;
+    });
   }
 
   private readMediaSources(media: HTMLMediaElement): MediaSource[] {
@@ -324,8 +555,6 @@ export class Player {
       sources.push({ src: media.src, type: predictMimeType(media, media.src) });
     }
 
-    // Some host environments (tests, embedded contexts) can throw from DOM queries.
-    // Reading sources should be best-effort and must never prevent player construction.
     try {
       media.querySelectorAll('source').forEach((el) => {
         sources.push({ src: el.src, type: el.type || predictMimeType(media, el.src) });

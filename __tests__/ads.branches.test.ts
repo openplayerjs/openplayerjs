@@ -42,8 +42,8 @@ function makeCtx(media?: HTMLVideoElement) {
   const bus = new EventBus();
   const video = media ?? document.createElement('video');
 
-  bus.on('playback:pause', () => (video as any).pause());
-  bus.on('playback:play', () => void (video as any).play());
+  bus.on('cmd:pause', () => (video as any).pause());
+  bus.on('cmd:play', () => void (video as any).play());
 
   const lease = makeLeases();
   const ctx: PluginContext = {
@@ -53,6 +53,15 @@ function makeCtx(media?: HTMLVideoElement) {
     leases: lease.leases,
   } as any;
   return { ctx, bus, video, lease };
+}
+
+async function waitForSelector<T extends Element>(selector: string, tries = 30): Promise<T | null> {
+  for (let i = 0; i < tries; i++) {
+    const el = document.querySelector(selector) as T | null;
+    if (el) return el;
+    await Promise.resolve();
+  }
+  return null;
 }
 
 function vastLinearWithSkip(skipOffset: string) {
@@ -158,8 +167,9 @@ describe('AdsPlugin branch coverage', () => {
     const playP = p.playAds('https://example.com/vast.xml');
     await Promise.resolve();
 
-    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
+    const adVideo = await waitForSelector<HTMLVideoElement>('video.op-ads__media');
     expect(adVideo).toBeTruthy();
+    if (!adVideo) return;
     Object.defineProperty(adVideo, 'duration', { value: 20, configurable: true });
 
     // metadata available => durationchange path
@@ -204,7 +214,9 @@ describe('AdsPlugin branch coverage', () => {
     const playP = p.playAds('https://example.com/vast.xml');
     await Promise.resolve();
 
-    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
+    const adVideo = await waitForSelector<HTMLVideoElement>('video.op-ads__media');
+    expect(adVideo).toBeTruthy();
+    if (!adVideo) return;
     Object.defineProperty(adVideo, 'duration', { value: 20, configurable: true });
     adVideo.dispatchEvent(new Event('loadedmetadata'));
     adVideo.dispatchEvent(new Event('durationchange'));
@@ -237,11 +249,13 @@ describe('AdsPlugin branch coverage', () => {
     if (typeof (p as any).mountCompanions === 'function') {
       (p as any).mountCompanions(creative);
     }
-    const companion = document.querySelector('.op-ads__companion') as HTMLElement | null;
+    const companion = await waitForSelector<HTMLElement>('.op-ads__companion');
     expect(companion).toBeTruthy();
     expect(companion?.querySelector('iframe, img')).toBeTruthy();
 
-    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
+    const adVideo = await waitForSelector<HTMLVideoElement>('video.op-ads__media');
+    expect(adVideo).toBeTruthy();
+    if (!adVideo) return;
     adVideo.dispatchEvent(new Event('ended'));
     await playP;
   });
@@ -317,7 +331,7 @@ describe('AdsPlugin branch coverage', () => {
         adSource: { vastAdData: '<VAST version="3.0"></VAST>' },
       },
     ];
-    (globalThis as any).fetch = jest.fn().mockResolvedValue({ text: jest.fn().mockResolvedValue('<VMAP/>') });
+    (globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue('<VMAP/>') });
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({

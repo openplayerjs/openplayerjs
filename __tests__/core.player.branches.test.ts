@@ -10,8 +10,8 @@ class EngineA {
     return source.type === 'video/mp4';
   }
   attach(ctx: MediaEngineContext) {
-    // emit ready to cover state transitions
-    ctx.events.emit('playback:ready');
+    // emit loadedmetadata to cover state transitions
+    ctx.events.emit('loadedmetadata');
   }
   detach() {
     // no-op

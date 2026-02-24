@@ -148,7 +148,8 @@ export default class Player {
       plugins: this.createdPlugins.map((p) => p.plugin),
     });
 
-    this.setupUI();
+    const controls = buildControls(this.config.controls);
+    createUI(this.player, this.media, controls);
 
     // Attach UI imperative API under player.controls
     extendControls(this.player);
@@ -218,10 +219,5 @@ export default class Player {
         return { entry: { ...entry, name }, plugin, cfg: mergedCfg };
       })
       .filter(Boolean) as { entry: UMDPluginEntry; plugin: any; cfg: any }[];
-  }
-
-  private setupUI() {
-    const controls = buildControls(this.config.controls);
-    createUI(this.player, this.media, controls);
   }
 }

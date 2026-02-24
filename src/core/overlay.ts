@@ -95,5 +95,15 @@ export function getOverlayManager(player: any): OverlayManager {
   if (player[OVERLAY_MANAGER_KEY]) return player[OVERLAY_MANAGER_KEY] as OverlayManager;
   const mgr = new OverlayManager();
   player[OVERLAY_MANAGER_KEY] = mgr;
+
+  // Mirror overlay changes onto the player's main EventBus for simpler plugin/control wiring.
+  try {
+    if (player?.events?.on && player?.events?.emit) {
+      mgr.bus.on('overlay:changed', (active: any) => player.events.emit('overlay:changed', active));
+    }
+  } catch {
+    // ignore
+  }
+
   return mgr;
 }

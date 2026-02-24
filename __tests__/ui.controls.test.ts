@@ -23,11 +23,11 @@ function makePlayer() {
   document.body.appendChild(v);
   const p = new Player(v, { plugins: [] });
   p.play = jest.fn(async () => {
-    p.events.emit('playback:playing');
+    p.events.emit('playing');
   }) as any;
   p.pause = jest.fn(() => {
-    p.emit('playback:pause');
-    p.events.emit('playback:paused');
+    p.emit('cmd:pause');
+    p.events.emit('pause');
   }) as any;
   return p;
 }
@@ -39,9 +39,9 @@ describe('UI Controls', () => {
     const el = c.create(p) as HTMLButtonElement;
 
     expect(el.classList.contains('op-controls__playpause')).toBe(true);
-    p.events.emit('playback:play');
+    p.events.emit('play');
     expect(el.classList.contains('op-controls__playpause--pause')).toBe(true);
-    p.events.emit('playback:pause');
+    p.events.emit('pause');
     expect(el.classList.contains('op-controls__playpause--pause')).toBe(false);
 
     // click calls play/pause
@@ -63,7 +63,9 @@ describe('UI Controls', () => {
     expect(btn).toBeTruthy();
 
     // Volume event updates aria & progress
-    p.events.emit('media:volume', 0.4);
+    Object.defineProperty(p.media, 'volume', { value: 0.4, configurable: true, writable: true });
+    Object.defineProperty(p.media, 'muted', { value: false, configurable: true, writable: true });
+    p.events.emit('volumechange');
     const display = el.querySelector('progress.op-controls__volume--display') as HTMLProgressElement;
     expect(display.value).toBeCloseTo(4, 3);
 
@@ -89,8 +91,8 @@ describe('UI Controls', () => {
     // overlay manager affects duration/value
     const ov = getOverlayManager(p);
     ov.activate({ id: 'x', mode: 'normal', duration: 100, value: 10, canSeek: true, type: 'overlay' } as any);
-    p.events.emit('media:duration', 100);
-    p.events.emit('media:timeupdate', 11);
+    p.events.emit('durationchange');
+    p.events.emit('timeupdate');
     expect(input.max).toBe('100');
 
     input.dispatchEvent(new Event('pointerdown'));
@@ -107,8 +109,8 @@ describe('UI Controls', () => {
 
     const ov = getOverlayManager(p);
     ov.activate({ id: 'x', mode: 'normal', duration: 80, value: 6, canSeek: true, type: 'overlay' } as any);
-    p.events.emit('media:timeupdate', 7);
-    p.events.emit('media:duration', 999);
+    p.events.emit('timeupdate');
+    p.events.emit('durationchange');
 
     expect((t as any).innerText).toContain('0:06');
     expect((d as any).innerText).toContain('1:20');

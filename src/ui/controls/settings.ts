@@ -69,7 +69,9 @@ export class SettingsControl extends BaseControl {
 
     this.overlayMgr.bus.on('overlay:changed', () => {
       this.activeSubmenuId = null;
-      if (this.isOpen) this.render();
+      // Always re-compute availability so the control can hide during ads
+      // and re-appear when content resumes, even if the menu isn't open.
+      this.render();
     });
 
     getSettingsRegistry(this.player).register({
@@ -97,7 +99,7 @@ export class SettingsControl extends BaseControl {
     });
 
     // Re-render on readiness (tracks/rates may appear)
-    this.player.events.on('playback:ready', () => {
+    this.player.events.on('loadedmetadata', () => {
       if (this.isOpen) this.render();
     });
 

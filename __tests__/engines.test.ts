@@ -46,9 +46,9 @@ describe('Media engines', () => {
     const engine = new DefaultMediaEngine();
     const { media, events, player } = makeCtx();
     const seen: string[] = [];
-    events.on('playback:ready', () => seen.push('ready'));
-    events.on('media:timeupdate', () => seen.push('time'));
-    events.on('media:duration', () => seen.push('dur'));
+    events.on('loadedmetadata', () => seen.push('ready'));
+    events.on('timeupdate', () => seen.push('time'));
+    events.on('durationchange', () => seen.push('dur'));
 
     // attach binds listeners + commands
     engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
@@ -62,24 +62,24 @@ describe('Media engines', () => {
     expect(seen).toContain('dur');
 
     // command bindings
-    events.emit('playback:seek', 5);
+    events.emit('cmd:seek', 5);
     expect(media.currentTime).toBe(5);
 
-    events.emit('media:volume', 0.5);
+    events.emit('cmd:setVolume', 0.5);
     expect(media.volume).toBe(0.5);
 
-    events.emit('media:muted', true);
+    events.emit('cmd:setMuted', true);
     expect(media.muted).toBe(true);
 
-    events.emit('media:rate', 1.25);
+    events.emit('cmd:setRate', 1.25);
     expect(media.playbackRate).toBe(1.25);
 
     const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined as any);
     const pauseSpy = jest.spyOn(media, 'pause').mockImplementation(() => {
       //
     });
-    events.emit('playback:play');
-    events.emit('playback:pause');
+    events.emit('cmd:play');
+    events.emit('cmd:pause');
     expect(playSpy).toHaveBeenCalled();
     expect(pauseSpy).toHaveBeenCalled();
 
@@ -91,9 +91,9 @@ describe('Media engines', () => {
     const { media, events, player } = makeCtx();
     engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
 
-    // someone else owns playback -> commands should no-op
+    // someone else owns playback -> seek/rate commands should no-op
     player.leases.acquire('playback', 'other');
-    events.emit('playback:seek', 7);
+    events.emit('cmd:seek', 7);
     expect(media.currentTime).not.toBe(7);
 
     engine.detach();
@@ -112,9 +112,9 @@ describe('Media engines', () => {
     expect(engine.canPlay(src as any)).toBe(true);
 
     engine.attach({ media, events, player, activeSource: src } as any);
-    // Trigger play command to cover playback:play command listener
+    // Trigger play command to cover cmd:play command listener
     const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined as any);
-    events.emit('playback:play');
+    events.emit('cmd:play');
     // playback handlers in HlsMediaEngine schedule work in microtasks
     await Promise.resolve();
     expect(playSpy).toHaveBeenCalled();

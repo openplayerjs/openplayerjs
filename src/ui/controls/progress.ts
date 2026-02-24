@@ -223,15 +223,15 @@ export class ProgressControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    player.events.on('media:duration', updateUI);
-    player.events.on('media:timeupdate', updateUI);
+    player.events.on('durationchange', updateUI);
+    player.events.on('timeupdate', updateUI);
 
-    player.events.on('playback:waiting', () => {
+    player.events.on('waiting', () => {
       if (!slider.classList.contains('loading')) slider.classList.add('loading');
       if (slider.classList.contains('error')) slider.classList.remove('error');
     });
 
-    player.events.on('playback:play', () => {
+    player.events.on('play', () => {
       if (slider.classList.contains('loading')) slider.classList.remove('loading');
       if (slider.classList.contains('error')) slider.classList.remove('error');
 
@@ -241,12 +241,12 @@ export class ProgressControl extends BaseControl {
       }
     });
 
-    player.events.on('playback:playing', () => {
+    player.events.on('playing', () => {
       if (slider.classList.contains('loading')) slider.classList.remove('loading');
       if (slider.classList.contains('error')) slider.classList.remove('error');
     });
 
-    player.events.on('playback:ended', () => {
+    player.events.on('ended', () => {
       slider.style.backgroundSize = '0% 100%';
       if (slider.max) slider.max = '0';
       buffer.value = 0;

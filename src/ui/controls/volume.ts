@@ -56,8 +56,8 @@ export class VolumeControl extends BaseControl {
       const v = formatVolume(vol);
       display.value = v * 10;
       const formattedVol = Math.floor(v * 100);
-      container.setAttribute('aria-valuenow', `${formattedVol}`);
-      container.setAttribute('aria-valuetext', `${volumeLabel}: ${formattedVol}`);
+      wrapper.setAttribute('aria-valuenow', `${formattedVol}`);
+      wrapper.setAttribute('aria-valuetext', `${volumeLabel}: ${formattedVol}`);
     };
 
     const updateBtn = (vol: number) => {
@@ -99,13 +99,6 @@ export class VolumeControl extends BaseControl {
       },
       EVENT_OPTIONS
     );
-
-    player.events.on('media:volume', (vol: number) => {
-      const v = formatVolume(vol);
-      if (v > 0) lastVolume = v;
-      updateBtn(v);
-      updateSlider(v);
-    });
 
     const btn = document.createElement('button');
     btn.tabIndex = 0;
@@ -157,19 +150,26 @@ export class VolumeControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    player.events.on('media:muted', (muted: boolean) => {
-      const restore = lastVolume > 0 ? lastVolume : 1;
-      slider.value = muted ? '0' : restore.toString();
-      const formattedValue = Number(slider.value);
-      updateSlider(formattedValue);
-      updateBtn(formattedValue);
+    // Keep UI in sync with the player's effective volume/mute state.
+    player.events.on('volumechange', () => {
+      const muted = player.muted || player.volume === 0;
+      const vol = formatVolume(player.volume);
+
+      if (vol > 0) lastVolume = vol;
+
+      // Slider reflects 0 when muted, otherwise the current volume.
+      slider.value = (muted ? 0 : vol).toString();
+
+      updateSlider(muted ? 0 : vol);
+      updateBtn(muted ? 0 : vol);
       btn.setAttribute('aria-pressed', muted ? 'true' : 'false');
 
+      // Ensure active ad element follows state changes (e.g., unmute during ad playback).
       const el = getActiveMedia(player);
       if (el && el !== player.media) {
         try {
           el.muted = muted;
-          if (!muted) el.volume = restore;
+          if (!muted) el.volume = vol;
         } catch {
           // ignore
         }

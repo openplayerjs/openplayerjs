@@ -196,15 +196,11 @@ export function bindCenterOverlay(player: Player, keyTarget: HTMLElement, bindin
 
         // Rate
         case '<':
-          player.playbackRate = Math.max(player.playbackRate - 0.25, 0.25);
-          player.events.emit('media:rate', player.playbackRate);
-          e.preventDefault();
+          player.playbackRate = Math.max(player.playbackRate - 0.25, 0.25);e.preventDefault();
           e.stopPropagation();
           break;
         case '>':
-          player.playbackRate = Math.min(player.playbackRate + 0.25, 2);
-          player.events.emit('media:rate', player.playbackRate);
-          e.preventDefault();
+          player.playbackRate = Math.min(player.playbackRate + 0.25, 2);e.preventDefault();
           e.stopPropagation();
           break;
         default:
@@ -214,35 +210,35 @@ export function bindCenterOverlay(player: Player, keyTarget: HTMLElement, bindin
     EVENT_OPTIONS
   );
 
-  player.events.on('playback:waiting', () => {
+  player.events.on('waiting', () => {
     bindings?.showLoader(true);
     bindings?.showButton(false);
   });
-  player.events.on('playback:seeking', () => {
+  player.events.on('seeking', () => {
     bindings?.showLoader(true);
     bindings?.showButton(false);
   });
-  player.events.on('playback:seeked', () => {
+  player.events.on('seeked', () => {
     bindings?.showLoader(false);
     // After seeking, only show the center button if we are paused.
     // When seeking during playback (common on iOS), keeping the play button visible
     // causes it to linger even after the loader is hidden.
     bindings?.showButton(player.media?.paused ?? false);
   });
-  player.events.on('playback:play', () => {
+  player.events.on('play', () => {
     bindings?.showLoader(false);
     // Play intent: hide the big play button. It will remain hidden when playback starts.
     bindings?.showButton(false);
   });
-  player.events.on('playback:pause', () => {
+  player.events.on('pause', () => {
     bindings?.showLoader(false);
     bindings?.showButton(true);
   });
-  player.events.on('playback:playing', () => {
+  player.events.on('playing', () => {
     bindings?.showLoader(false);
     bindings?.showButton(false);
   });
-  player.events.on('playback:ended', () => {
+  player.events.on('ended', () => {
     bindings?.showLoader(false);
     bindings?.showButton(true);
   });

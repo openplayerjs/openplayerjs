@@ -5,6 +5,71 @@ import { createControlGrid, type Control } from './control';
 import { bindCenterOverlay } from './events';
 import { createCenterOverlayDom } from './overlay';
 
+function maybeAutoplayUnmute(player: Player, wrapper: HTMLDivElement) {
+  const media = player.media;
+  const wantsAutoplay = !!(media.autoplay || media.preload === 'auto');
+  if (!wantsAutoplay && !player.canAutoplay && !player.canAutoplayMuted) return;
+  if (player.canAutoplay && !player.canAutoplayMuted) return;
+
+  queueMicrotask(async () => {
+    try {
+      const restoreVolume = player.volume > 0 ? player.volume : 1;
+
+      player.muted = true;
+      player.volume = 0;
+      await player.play();
+
+      const action = isMobile()
+        ? player.config.labels?.tap || 'Tap to unmute'
+        : player.config.labels?.click || 'Click to unmute';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'op-player__unmute';
+      btn.textContent = action;
+      btn.tabIndex = 0;
+
+      const cleanup = () => {
+        try {
+          offMuted?.();
+        } catch {
+          // ignore
+        }
+        try {
+          btn.remove();
+        } catch {
+          // ignore
+        }
+      };
+
+      const offMuted = player.events.on('volumechange', () => {
+        if (!player.muted) cleanup();
+      });
+
+      btn.addEventListener(
+        'click',
+        () => {
+          // Treat explicit unmute as a user interaction so ad plugins can lift forced mute.
+          if (!player.userInteracted) {
+            player.userInteracted = true;
+            player.emit('player:interacted');
+          }
+          player.muted = false;
+          player.volume = restoreVolume;
+          player.play().catch(() => undefined);
+          cleanup();
+        },
+        EVENT_OPTIONS
+      );
+
+      wrapper.insertBefore(btn, wrapper.firstChild);
+      player.events.on('player:destroy', cleanup);
+    } catch {
+      // ignore autoplay failures
+    }
+  });
+}
+
 export type PlayerUIContext = {
   wrapper: HTMLDivElement;
   mediaContainer: HTMLDivElement;
@@ -118,6 +183,7 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
       payload.el = el;
     });
 
+    maybeAutoplayUnmute(player, wrapper);
     return ctx;
   }
 
@@ -138,8 +204,6 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   const hideControls = (): void => {
     if (controlsHaveFocus()) {
-      // If keyboard navigation is currently focused inside the controls, allow hiding after a longer delay,
-      // but move focus back to the player wrapper so focus isn't trapped in a hidden bar.
       if (lastInteraction === 'keyboard') {
         wrapper.focus();
       } else {
@@ -246,7 +310,8 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   const ctx: PlayerUIContext = { wrapper, mediaContainer, controlsRoot, placeholder, grid };
 
-  // UI is responsible for its own teardown. Core emits `player:destroy`.
+  maybeAutoplayUnmute(player, wrapper);
+
   const offDestroy = player.events.on('player:destroy', () => {
     try {
       wrapper.replaceWith(media);
@@ -267,7 +332,6 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     }
   });
 
-  // Allow core API methods to delegate UI operations without importing UI internals.
   const offAddElement = player.events.on('ui:addElement', (payload?: any) => {
     if (!payload?.el) return;
     const placement = payload.placement || { v: 'bottom', h: 'right' };
@@ -280,7 +344,6 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     const el = control.create(player);
     el.dataset.controlId = control.id;
     ctx.grid?.place(control.placement, el);
-    // Provide the created element back to the caller synchronously.
     payload.el = el;
   });
 

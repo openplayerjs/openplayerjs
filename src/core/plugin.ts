@@ -8,6 +8,7 @@ export type PluginContext = {
   state: StateManager<PlaybackState>;
   leases: Lease;
   player: Player;
+  media?: HTMLMediaElement;
 };
 
 export type PluginClass<T extends PlayerPlugin> = new (config?: any) => T;

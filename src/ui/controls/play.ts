@@ -35,11 +35,11 @@ export class PlayControl extends BaseControl {
       btn.setAttribute('aria-label', playing ? pauseLabel : playLabel);
     };
 
-    player.events.on('playback:play', () => setPlaying(true));
-    player.events.on('playback:pause', () => setPlaying(false));
-    player.events.on('playback:playing', () => setPlaying(true));
-    player.events.on('playback:paused', () => setPlaying(false));
-    player.events.on('playback:ended', () => setPlaying(false));
+    player.events.on('play', () => setPlaying(true));
+    player.events.on('pause', () => setPlaying(false));
+    player.events.on('playing', () => setPlaying(true));
+    player.events.on('pause', () => setPlaying(false));
+    player.events.on('ended', () => setPlaying(false));
 
     return btn;
   }

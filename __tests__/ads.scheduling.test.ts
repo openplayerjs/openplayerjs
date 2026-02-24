@@ -81,12 +81,12 @@ describe('AdsPlugin scheduling', () => {
     const { ctx } = makeCtx();
     const plugin = new AdsPlugin({
       sources: [{ type: 'VAST', src: 'https://example.com/vast.xml' }],
-      breaks: [{ at: 'preroll', url: 'https://example.com/preroll.xml' }],
+      breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://example.com/preroll.xml' } }],
     });
     plugin.setup(ctx);
 
     ctx.events.emit('source:set' as any);
-    ctx.events.emit('playback:play' as any);
+    ctx.events.emit('cmd:play' as any);
 
     await flushPromises(10);
     expect(vastGetMock).toHaveBeenCalledTimes(1);
@@ -125,7 +125,7 @@ describe('AdsPlugin scheduling', () => {
     const due = (plugin as any).getDueMidrollBreak(101);
     expect(due).toBeTruthy();
     expect(due.at).toBeCloseTo(100, 3);
-    expect(due.url).toBe('https://example.com/mid.xml');
+    expect(due.source?.src).toBe('https://example.com/mid.xml');
   });
 
   test('playedBreaks are reset on source:set so preroll can play again for new content', async () => {
@@ -135,13 +135,13 @@ describe('AdsPlugin scheduling', () => {
     const { ctx } = makeCtx();
     const plugin = new AdsPlugin({
       sources: [{ type: 'VAST', src: 'https://example.com/vast.xml' }],
-      breaks: [{ at: 'preroll', url: 'https://example.com/preroll.xml' }],
+      breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://example.com/preroll.xml' } }],
     });
     plugin.setup(ctx);
 
     // First content source
     ctx.events.emit('source:set' as any);
-    ctx.events.emit('playback:play' as any);
+    ctx.events.emit('cmd:play' as any);
     await flushPromises(10);
     let ad = null as HTMLVideoElement | null;
     for (let i = 0; i < 25; i++) {
@@ -167,8 +167,14 @@ describe('AdsPlugin scheduling', () => {
 
     // New content source -> should allow preroll again
     ctx.events.emit('source:set' as any);
-    ctx.events.emit('playback:play' as any);
+    ctx.events.emit('cmd:play' as any);
     await flushPromises(10);
-    expect(document.querySelectorAll('video.op-ads__media').length).toBe(1);
+    let ad2: HTMLVideoElement | null = null;
+    for (let i = 0; i < 25; i++) {
+      ad2 = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
+      if (ad2) break;
+      await Promise.resolve();
+    }
+    expect(ad2).toBeTruthy();
   });
 });

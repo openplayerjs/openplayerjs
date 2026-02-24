@@ -13,11 +13,11 @@ function makePlayer() {
   const p = new Player(v, { plugins: [] });
   // spy play/pause
   p.play = jest.fn(async () => {
-    p.events.emit('playback:playing');
+    p.events.emit('playing');
   }) as any;
   p.pause = jest.fn(() => {
-    p.emit('playback:pause');
-    p.events.emit('playback:paused');
+    p.emit('cmd:pause');
+    p.events.emit('pause');
   }) as any;
   return p;
 }
@@ -34,30 +34,30 @@ describe('bindCenterOverlay', () => {
     bindCenterOverlay(player, wrapper, overlay);
 
     // waiting => loader on, button off
-    player.events.emit('playback:waiting');
+    player.events.emit('waiting');
     expect(overlay.loader.getAttribute('aria-hidden')).toBe('false');
     expect(overlay.button.getAttribute('aria-hidden')).toBe('true');
 
     // seeking => loader on
-    player.events.emit('playback:seeking');
+    player.events.emit('seeking');
     expect(overlay.loader.getAttribute('aria-hidden')).toBe('false');
 
     // seeked => loader off; button should only be shown if media is paused.
-    player.events.emit('playback:seeked');
+    player.events.emit('seeked');
     expect(overlay.loader.getAttribute('aria-hidden')).toBe('true');
     expect(overlay.button.getAttribute('aria-hidden')).toBe('false');
 
     // play intent => keep the big play button hidden (it should not flash/linger)
-    player.events.emit('playback:play');
+    player.events.emit('play');
     expect(overlay.button.getAttribute('aria-hidden')).toBe('true');
 
     // playing => hide both
-    player.events.emit('playback:playing');
+    player.events.emit('playing');
     expect(overlay.button.getAttribute('aria-hidden')).toBe('true');
     expect(overlay.loader.getAttribute('aria-hidden')).toBe('true');
 
     // ended => show button again
-    player.events.emit('playback:ended');
+    player.events.emit('ended');
     expect(overlay.button.getAttribute('aria-hidden')).toBe('false');
   });
 

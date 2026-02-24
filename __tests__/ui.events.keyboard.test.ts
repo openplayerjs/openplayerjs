@@ -13,10 +13,10 @@ function makePlayer() {
   const p = new Player(v, { plugins: [] });
   // Stub play/pause to avoid jsdom play rejection and to drive state
   p.play = jest.fn(async () => {
-    p.events.emit('playback:playing');
+    p.events.emit('playing');
   }) as any;
   p.pause = jest.fn(() => {
-    p.events.emit('playback:paused');
+    p.events.emit('pause');
   }) as any;
   return p;
 }
@@ -107,8 +107,9 @@ describe('ui/events keyboard bindings', () => {
 
     bindCenterOverlay(p, wrapper, bindings);
 
-    // duration finite
-    p.events.emit('media:duration', 100);
+    // duration finite — set media.duration so bindMediaSync reads 100
+    Object.defineProperty(p.media, 'duration', { value: 100, configurable: true, writable: true });
+    p.events.emit('durationchange');
     p.currentTime = 50;
 
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));

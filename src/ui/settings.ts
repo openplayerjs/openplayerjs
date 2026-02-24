@@ -27,7 +27,8 @@ export type SettingsSubmenuProvider = {
   getSubmenu: (player: Player) => SettingsSubmenu | null;
 };
 
-const SETTINGS_REGISTRY_KEY = '__op::settings::registry';
+// Use a symbol to avoid collisions with user-land fields.
+const SETTINGS_REGISTRY_KEY: unique symbol = Symbol.for('openplayerjs.settings.registry');
 
 export class SettingsRegistry {
   private providers = new Map<string, SettingsSubmenuProvider>();
@@ -42,9 +43,12 @@ export class SettingsRegistry {
   }
 }
 
-export function getSettingsRegistry(player: any): SettingsRegistry {
-  if (player[SETTINGS_REGISTRY_KEY]) return player[SETTINGS_REGISTRY_KEY] as SettingsRegistry;
+type RegistryHost = Player & { [SETTINGS_REGISTRY_KEY]?: SettingsRegistry };
+
+export function getSettingsRegistry(player: Player): SettingsRegistry {
+  const host = player as RegistryHost;
+  if (host[SETTINGS_REGISTRY_KEY]) return host[SETTINGS_REGISTRY_KEY];
   const reg = new SettingsRegistry();
-  player[SETTINGS_REGISTRY_KEY] = reg;
+  host[SETTINGS_REGISTRY_KEY] = reg;
   return reg;
 }

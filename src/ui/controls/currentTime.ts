@@ -37,9 +37,9 @@ export class CurrentTimeControl extends BaseControl {
       el.setAttribute('datetime', generateISODateTime(currTime));
     };
 
-    player.events.on('media:timeupdate', () => update());
-    player.events.on('playback:seeked', () => update());
-    player.events.on('media:duration', () => update());
+    player.events.on('timeupdate', () => update());
+    player.events.on('seeked', () => update());
+    player.events.on('durationchange', () => update());
 
     this.overlayMgr.bus.on('overlay:changed', () => update());
 

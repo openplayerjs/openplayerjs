@@ -57,11 +57,11 @@ describe('BaseMediaEngine branch coverage', () => {
     const engine = new TestEngine();
     const context = ctx(media);
 
-    // Exercise normal (no owner) path
+    // Exercise normal (no owner) path — volume/muted have no lease gate after Option A fix
     engine.exposeBindCommands(context);
-    context.events.emit('media:volume', 0.5);
-    context.events.emit('media:muted', true);
-    context.events.emit('media:rate', 1.5);
+    context.events.emit('cmd:setVolume', 0.5);
+    context.events.emit('cmd:setMuted', true);
+    context.events.emit('cmd:setRate', 1.5);
     expect(media.volume).toBe(0.5);
     expect(media.muted).toBe(true);
     expect(media.playbackRate).toBe(1.5);
@@ -76,16 +76,17 @@ describe('BaseMediaEngine branch coverage', () => {
       },
       configurable: true,
     });
-    context.events.emit('playback:seek', 10);
+    context.events.emit('cmd:seek', 10);
 
-    // Now deny ownership and ensure early returns execute
+    // Now deny ownership: volume/muted still update (no lease gate), rate stays gated
     context.player.leases.acquire('playback', 'someone-else');
-    context.events.emit('media:volume', 0.1);
-    context.events.emit('media:muted', false);
-    context.events.emit('media:rate', 0.75);
-    // values should remain from earlier successful writes
-    expect(media.volume).toBe(0.5);
-    expect(media.muted).toBe(true);
+    context.events.emit('cmd:setVolume', 0.1);
+    context.events.emit('cmd:setMuted', false);
+    context.events.emit('cmd:setRate', 0.75);
+    // volume and muted update since lease gate removed for them
+    expect(media.volume).toBe(0.1);
+    expect(media.muted).toBe(false);
+    // rate gated — stays at previous value
     expect(media.playbackRate).toBe(1.5);
 
     engine.exposeUnbindCommands();
@@ -102,18 +103,18 @@ describe('BaseMediaEngine branch coverage', () => {
     media.pause = pauseSpy;
 
     engine.exposeBindPlayPauseCommands(context);
-    context.events.emit('playback:play');
+    context.events.emit('cmd:play');
     // playImpl is async fire-and-forget; flush microtasks
     await Promise.resolve();
     expect(playSpy).toHaveBeenCalled();
 
-    context.events.emit('playback:pause');
+    context.events.emit('cmd:pause');
     expect(pauseSpy).toHaveBeenCalled();
 
     // Ownership denied => early-return branches
     context.player.leases.acquire('playback', 'not-test-engine');
-    context.events.emit('playback:play');
-    context.events.emit('playback:pause');
+    context.events.emit('cmd:play');
+    context.events.emit('cmd:pause');
     expect(playSpy).toHaveBeenCalledTimes(1);
     expect(pauseSpy).toHaveBeenCalledTimes(1);
 
@@ -126,11 +127,10 @@ describe('BaseMediaEngine branch coverage', () => {
     const events = new EventBus();
     const seen: string[] = [];
 
-    events.on('media:loadedmetadata', () => seen.push('loadedmetadata'));
-    events.on('playback:ready', () => seen.push('ready'));
-    events.on('playback:ended', () => seen.push('ended'));
-    events.on('playback:paused', () => seen.push('paused'));
-    events.on('playback:playing', () => seen.push('playing'));
+    events.on('loadedmetadata', () => seen.push('loadedmetadata'));
+    events.on('playing', () => seen.push('playing'));
+    events.on('pause', () => seen.push('paused'));
+    events.on('ended', () => seen.push('ended'));
 
     engine.exposeBindMediaEvents(media, events);
 
@@ -138,7 +138,7 @@ describe('BaseMediaEngine branch coverage', () => {
     media.dispatchEvent(new Event('playing'));
     media.dispatchEvent(new Event('pause'));
     media.dispatchEvent(new Event('ended'));
-    expect(seen).toEqual(expect.arrayContaining(['loadedmetadata', 'ready', 'playing', 'paused', 'ended']));
+    expect(seen).toEqual(expect.arrayContaining(['loadedmetadata', 'playing', 'paused', 'ended']));
 
     // ensure unbind branch runs
     engine.exposeUnbindMediaEvents();

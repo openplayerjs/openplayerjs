@@ -38,55 +38,43 @@ type CaptionResource = {
   type?: string;
 };
 
-type AdsSource = { type: 'VAST' | 'VMAP'; src: string };
+export type AdsSourceType = 'VAST' | 'VMAP' | 'NONLINEAR';
+
+export type AdsSource = { type: AdsSourceType; src: string };
 
 export type AdsBreakConfig = {
   id?: string;
   at: BreakAt;
-  url?: string;
-  xml?: string | XMLDocument | Element;
-  /** If true (default), a break fires at most once per content source. */
+  source?: AdsSource;
   once?: boolean;
-};
-
-export type SimidConfig = {
-  /** Enable SIMID interactive layer support (best-effort). */
-  enabled?: boolean;
-  /**
-   * Iframe sandbox attribute; default is strict but allows scripts + same-origin for typical SIMID creatives.
-   * Adjust if your creatives require more.
-   */
-  sandbox?: string;
-  /** Optional className for the SIMID overlay container. */
-  className?: string;
-  /** Optional hook for debugging postMessage traffic. */
-  onMessage?: (msg: any) => void;
+  timeOffset?: string;
 };
 
 class PluginBus<E extends string> {
   constructor(private bus: EventBus) {}
 
   on(event: E, cb: (...args: any[]) => void) {
-    return this.bus.on(event as any, cb);
+    return this.bus.on(event, cb);
   }
 
   emit(event: E, ...data: any[]) {
-    this.bus.emit(event as any, ...data);
+    this.bus.emit(event, ...data);
   }
 }
 
 export type AdsPluginConfig = {
-  sources?: { type: 'VAST' | 'VMAP'; src: string } | { type: 'VAST' | 'VMAP'; src: string }[];
+  sources?: AdsSource | AdsSource[];
   breaks?: AdsBreakConfig[];
   interceptPlayForPreroll?: boolean;
   autoPlayOnReady?: boolean;
-  simid?: SimidConfig;
   mountEl?: HTMLElement;
   mountSelector?: string;
   allowNativeControls?: boolean;
   resumeContent?: boolean;
   preferredMediaTypes?: string[];
   debug?: boolean;
+  /** Seconds tolerance when matching due midroll times (default 0.25s). */
+  breakTolerance?: number;
 };
 
 type NormalizedMediaFile = {
@@ -99,6 +87,7 @@ type NormalizedMediaFile = {
 };
 
 type PodAd = {
+  creativeIndex?: number;
   ad: any;
   creative: any;
   mediaFile: NormalizedMediaFile;
@@ -106,6 +95,11 @@ type PodAd = {
   skipOffset?: string;
   companions?: any[];
   nonLinears?: any[];
+};
+
+type XmlNonLinearItem = {
+  nonLinear: any;
+  companions?: any[];
 };
 
 export class AdsPlugin implements PlayerPlugin {
@@ -121,13 +115,12 @@ export class AdsPlugin implements PlayerPlugin {
   private adEndPromise: Promise<void> | null = null;
   private adTrackEls: HTMLTrackElement[] = [];
 
-  private cfg: Omit<Required<Omit<AdsPluginConfig, 'mountEl' | 'mountSelector' | 'simid'>>, 'sources'> &
-    Pick<AdsPluginConfig, 'mountEl' | 'mountSelector' | 'simid'> & { sources: AdsSource[] };
+  private cfg: Omit<Required<Omit<AdsPluginConfig, 'mountEl' | 'mountSelector'>>, 'sources'> &
+    Pick<AdsPluginConfig, 'mountEl' | 'mountSelector'> & { sources: AdsSource[] };
 
   private overlay!: HTMLDivElement;
   private adVideo?: HTMLVideoElement;
 
-  // Skip / companion / non-linear overlays (best-effort)
   private skipWrap?: HTMLDivElement;
   private skipBtn?: HTMLButtonElement;
   private skipOffsetRaw?: string;
@@ -136,17 +129,11 @@ export class AdsPlugin implements PlayerPlugin {
   private companionWrap?: HTMLDivElement;
   private nonLinearWrap?: HTMLDivElement;
 
-  // Track current break meta for events
   private currentBreakMeta?: { kind: string; breakId: string };
-
-  // SIMID overlay (best-effort)
-  private simidOverlay?: HTMLDivElement;
-  private simidFrame?: HTMLIFrameElement;
 
   private vastClient: any;
   private tracker?: any;
 
-  // Keep global vs per-ad listeners separate
   private globalUnsubs: (() => void)[] = [];
   private sessionUnsubs: (() => void)[] = [];
 
@@ -156,31 +143,72 @@ export class AdsPlugin implements PlayerPlugin {
   private contentMedia?: HTMLMediaElement;
   private contentHadControls = false;
 
-  // guards + scheduling
   private startingBreak = false;
   private playedBreaks = new Set<string>();
   private userPlayIntent = false;
+  private forcedMuteUntilInteraction = false;
   private resolvedBreaks: AdsBreakConfig[] = [];
-  private pendingPercentBreaks: { id: string; percent: number; vast: VastInput; once: boolean }[] = [];
+  private pendingPercentBreaks: { id: string; percent: number; vast: VastInput; once: boolean; source: AdsSource }[] =
+    [];
 
-  private getSource(type: 'VAST' | 'VMAP'): AdsSource | undefined {
+  /** Guard against volume/mute feedback loops between ad media and player media. */
+  private syncingVolume = false;
+
+  private vmapLoadPromise: Promise<void> | null = null;
+
+  private getSource(type: AdsSourceType): AdsSource | undefined {
     return (this.cfg.sources || []).find((s) => s.type === type && typeof s.src === 'string' && s.src.trim());
+  }
+
+  private getPrimaryVastLikeSource(): AdsSource | undefined {
+    return this.getSource('VAST') || this.getSource('NONLINEAR');
   }
 
   private isXmlString(src: string): boolean {
     return src.trim().startsWith('<');
   }
 
-  /**
-   * Best-effort HTML sanitization for ad-provided HTML resources.
-   * Removes scripts/iframes/objects and strips event-handler attributes.
-   * This is not a full sanitizer, but it materially reduces XSS risk.
-   */
+  private async getVastXmlText(input: VastInput): Promise<string> {
+    if (input.kind === 'xml') {
+      if (typeof input.value === 'string') return input.value;
+      try {
+        return new XMLSerializer().serializeToString(input.value);
+      } catch {
+        return String(input.value);
+      }
+    }
+    const res = await fetch(input.value);
+    if (!res.ok) throw new Error(`VAST request failed: ${res.status}`);
+    return await res.text();
+  }
+
+  private buildParsedForNonLinearFromXml(xmlText: string): XMLDocument {
+    return this.toXmlDocument(xmlText);
+  }
+
   private setSafeHTML(el: HTMLElement, html: string) {
     const tpl = document.createElement('template');
     tpl.innerHTML = String(html || '');
 
-    const blockedTags = new Set(['SCRIPT', 'IFRAME', 'OBJECT', 'EMBED', 'LINK', 'STYLE']);
+    // NOTE: Companion ads may include HTML. Keep the surface small and defensive.
+    // Block active/content-injection tags, plus SVG/MathML which have a long history of XSS vectors.
+    const blockedTags = new Set([
+      'SCRIPT',
+      'IFRAME',
+      'OBJECT',
+      'EMBED',
+      'LINK',
+      'STYLE',
+      'SVG',
+      'MATH',
+      'FORM',
+      'INPUT',
+      'TEXTAREA',
+      'SELECT',
+      'OPTION',
+      'META',
+      'BASE',
+    ]);
     const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
     const toRemove: Element[] = [];
 
@@ -191,22 +219,31 @@ export class AdsPlugin implements PlayerPlugin {
         continue;
       }
 
-      // Remove inline event handlers and javascript: URLs
-      [...node.attributes].forEach((attr) => {
+      Array.from(node.attributes).forEach((attr) => {
         const name = attr.name.toLowerCase();
         const value = (attr.value || '').trim();
         if (name.startsWith('on')) {
           node.removeAttribute(attr.name);
         }
-        if ((name === 'href' || name === 'src') && value.toLowerCase().startsWith('javascript:')) {
-          node.removeAttribute(attr.name);
+        // Block javascript: URLs and other risky protocols.
+        if (name === 'href' || name === 'src' || name === 'xlink:href') {
+          const v = value.toLowerCase();
+          const isJs = v.startsWith('javascript:');
+          const isData = v.startsWith('data:');
+          const isHttp = v.startsWith('http://') || v.startsWith('https://') || v.startsWith('/') || v.startsWith('./');
+
+          // Allow data:image/* only (common in companions). Everything else must be http(s) or relative.
+          const isSafeDataImage = isData && /^data:image\/(png|gif|jpe?g|webp|svg\+xml);/i.test(value);
+
+          if (isJs || (!isHttp && !isSafeDataImage)) node.removeAttribute(attr.name);
         }
+
+        // Disallow inline HTML injection attributes.
+        if (name === 'srcdoc') node.removeAttribute(attr.name);
       });
     }
 
     toRemove.forEach((n) => n.remove());
-
-    // Replace children rather than assigning innerHTML directly.
     el.replaceChildren(tpl.content.cloneNode(true));
   }
 
@@ -226,8 +263,12 @@ export class AdsPlugin implements PlayerPlugin {
       const raw = cfg.sources ? (Array.isArray(cfg.sources) ? cfg.sources : [cfg.sources]) : [];
 
       raw.forEach((s) => {
-        if (s && (s.type === 'VAST' || s.type === 'VMAP') && typeof s.src === 'string' && s.src.trim()) {
-          list.push({ type: s.type, src: s.src });
+        if (!s || typeof s.src !== 'string') return;
+        const src = s.src.trim();
+        const type = s.type as AdsSourceType;
+        if (!src) return;
+        if (type === 'VAST' || type === 'VMAP' || type === 'NONLINEAR') {
+          list.push({ type, src });
         }
       });
 
@@ -236,7 +277,9 @@ export class AdsPlugin implements PlayerPlugin {
 
     const sources = normalizeSources(config);
     const breaks = config.breaks || [];
-    const hasExplicitPreroll = breaks.some((b) => b.at === 'preroll' && (b.url || b.xml));
+    const hasExplicitPreroll = breaks.some((b) => b.at === 'preroll' && b.source?.src);
+    const hasSourceVastOrVmap = sources.some((s) => s.type === 'VAST' || s.type === 'VMAP' || s.type === 'NONLINEAR');
+
     this.cfg = {
       allowNativeControls: config.allowNativeControls ?? config.allowNativeControls ?? false,
       resumeContent: config.resumeContent ?? true,
@@ -247,11 +290,11 @@ export class AdsPlugin implements PlayerPlugin {
         'application/x-mpegURL',
       ],
       debug: config.debug ?? false,
+      breakTolerance: config.breakTolerance ?? 0.25,
       sources,
       breaks,
-      interceptPlayForPreroll: config.interceptPlayForPreroll ?? Boolean(hasExplicitPreroll),
+      interceptPlayForPreroll: config.interceptPlayForPreroll ?? (Boolean(hasExplicitPreroll) || hasSourceVastOrVmap),
       autoPlayOnReady: config.autoPlayOnReady || false,
-      simid: config.simid,
       mountEl: config.mountEl,
       mountSelector: config.mountSelector,
     };
@@ -266,12 +309,10 @@ export class AdsPlugin implements PlayerPlugin {
     this.overlay.className = 'op-ads';
     this.overlay.style.display = 'none';
 
-    // Reset state on new content
     this.globalUnsubs.push(
-      ctx.events.on('source:set' as any, () => {
+      ctx.events.on('source:set', () => {
         this.playedBreaks.clear();
         this.startingBreak = false;
-        // New content should reset any active ad session and clean up takeover DOM.
         this.clearSession();
         this.userPlayIntent = false;
         this.pendingPercentBreaks = [];
@@ -279,19 +320,41 @@ export class AdsPlugin implements PlayerPlugin {
       })
     );
 
-    // Also build once at setup time
     this.rebuildSchedule();
-
     this.bindBreakScheduler();
 
-    // Intercept first play for preroll (custom + native)
     if (this.cfg.interceptPlayForPreroll) {
       this.bindPrerollInterceptors();
     }
+
+    this.globalUnsubs.push(
+      ctx.events.on('player:interacted', () => {
+        this.forcedMuteUntilInteraction = false;
+        if (this.active && this.adVideo) {
+          try {
+            this.adVideo.muted = ctx.player.muted;
+            this.adVideo.volume = ctx.player.volume;
+          } catch {
+            // ignore
+          }
+        }
+      })
+    );
   }
 
   async playAds(vastUrl: string) {
-    return this.playBreakFromVast({ kind: 'url', value: vastUrl }, { kind: 'manual', id: 'manual' });
+    const sourceType = this.inferSourceTypeForUrl(vastUrl);
+    return this.playBreakFromVast({ kind: 'url', value: vastUrl }, { kind: 'manual', id: 'manual', sourceType });
+  }
+
+  private inferSourceTypeForUrl(url: string): 'NONLINEAR' | undefined {
+    const sources = this.cfg.sources || [];
+    // Exact match: use the configured source's type
+    const exact = sources.find((s) => s.src === url);
+    if (exact?.type === 'NONLINEAR') return 'NONLINEAR';
+    // All configured sources are NONLINEAR → infer NONLINEAR for any URL
+    if (sources.length > 0 && sources.every((s) => s.type === 'NONLINEAR')) return 'NONLINEAR';
+    return undefined;
   }
 
   async playAdsFromXml(vastXml: string) {
@@ -305,33 +368,52 @@ export class AdsPlugin implements PlayerPlugin {
     this.overlay?.remove();
   }
 
-  // ----------------- scheduling -----------------
-
   private rebuildSchedule() {
     const combined: AdsBreakConfig[] = [...(this.cfg.breaks || [])];
 
-    // Back-compat preroll: VAST source => preroll if no explicit breaks.
-    // `src` may be URL or XML string.
-    const vast = this.getSource('VAST');
-    if (combined.length === 0 && vast?.src) {
-      if (this.isXmlString(vast.src)) combined.push({ at: 'preroll', xml: vast.src, once: true });
-      else combined.push({ at: 'preroll', url: vast.src, once: true });
+    const primary = this.getPrimaryVastLikeSource();
+    if (combined.length === 0 && primary?.src) {
+      combined.push({ at: 'preroll', source: { type: primary.type, src: primary.src }, once: true });
     }
 
-    // VMAP breaks (if configured) added on each source:set.
     const vmap = this.getSource('VMAP');
     if (vmap?.src) {
-      void this.loadVmapAndMerge(combined, vmap.src);
+      this.vmapLoadPromise = this.loadVmapAndMerge(combined, vmap.src);
     }
 
     this.resolvedBreaks = combined;
+  }
+
+  private normalizeVmapAdSource(adSource: any): any | undefined {
+    if (!adSource) return undefined;
+    if (Array.isArray(adSource)) {
+      return adSource.find((s) => s?.adTagURI || s?.vastAdData) || adSource[0];
+    }
+    return adSource;
+  }
+
+  private extractVastTagUri(adTagURI: any): string | undefined {
+    if (!adTagURI) return undefined;
+    if (typeof adTagURI === 'string') return adTagURI.trim() || undefined;
+    if (typeof adTagURI === 'object') {
+      const uri = (adTagURI.uri || adTagURI.URI || adTagURI.value || adTagURI.text || adTagURI['#text']) as
+        | string
+        | undefined;
+      if (typeof uri === 'string' && uri.trim()) return uri.trim();
+    }
+    return undefined;
   }
 
   private async loadVmapAndMerge(existing: AdsBreakConfig[], vmapSrc?: string) {
     try {
       const src = (vmapSrc || this.getSource('VMAP')?.src || '').trim();
       if (!src) return;
-      const xmlText = this.isXmlString(src) ? src : await fetch(src).then((r) => r.text());
+      const xmlText = this.isXmlString(src)
+        ? src
+        : await fetch(src).then((r) => {
+            if (!r.ok) throw new Error(`VMAP request failed: ${r.status}`);
+            return r.text();
+          });
       const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
       const vmap = new VMAP(xmlDoc);
 
@@ -341,20 +423,18 @@ export class AdsPlugin implements PlayerPlugin {
       for (let i = 0; i < breaks.length; i++) {
         const b = breaks[i];
         const breakType = String(b?.breakType || '').toLowerCase();
-        // Allow both linear and non-linear VMAP breaks (non-linear will be rendered as overlay while content continues).
         if (breakType && breakType !== 'linear' && breakType !== 'nonlinear' && breakType !== 'non-linear') continue;
 
-        const id = b?.breakId || `vmap:${i}`;
-        const { at, pendingPercent } = this.parseVmapTimeOffset(b?.timeOffset);
+        const rawOffset = String(b?.timeOffset || '').trim();
+        const id = `${b?.breakId || 'vmap'}:${rawOffset || 'start'}:${i}`;
+        const { at, pendingPercent } = this.parseVmapTimeOffset(rawOffset);
 
-        const adSource = b?.adSource;
+        const adSource = this.normalizeVmapAdSource(b?.adSource);
         const vastInline = adSource?.vastAdData;
         const vastTag = adSource?.adTagURI;
 
-        let url: string | undefined;
+        const url = this.extractVastTagUri(vastTag);
         let xml: string | undefined;
-
-        if (typeof vastTag === 'string' && vastTag) url = vastTag;
 
         if (vastInline) {
           if (typeof vastInline === 'string') xml = vastInline;
@@ -363,22 +443,103 @@ export class AdsPlugin implements PlayerPlugin {
 
         if (!url && !xml) continue;
 
+        // VMAP AdSource points to a VAST tag (or inline VAST data). Convert it into a break `source`
+        // so the scheduler can actually fetch/parse and play it.
+        const isNonLinearBreak = breakType === 'nonlinear' || breakType === 'non-linear';
+        const source: AdsSource = { type: isNonLinearBreak ? 'NONLINEAR' : 'VAST', src: url ? url : xml! };
+
         if (pendingPercent != null) {
-          // Resolve % once duration is known
           this.pendingPercentBreaks.push({
             id,
             percent: pendingPercent,
             vast: url ? { kind: 'url', value: url } : { kind: 'xml', value: xml! },
             once: true,
+            source,
           });
           continue;
         }
 
-        vmapBreaks.push({ id, at, url, xml, once: true });
+        vmapBreaks.push({
+          id,
+          at,
+          once: true,
+          timeOffset: rawOffset || (at === 'postroll' ? 'end' : 'start'),
+          source,
+        });
+      }
+
+      // DOM fallback: when the VMAP library returns no breaks (e.g. namespaced XML the mock can't parse),
+      // walk the XMLDocument directly and extract AdBreak elements.
+      if (vmapBreaks.length === 0 && this.pendingPercentBreaks.length === 0) {
+        const byTag = (root: ParentNode, localName: string): Element[] => {
+          try {
+            const ns = (root as any).getElementsByTagNameNS?.('*', localName) as HTMLCollectionOf<Element> | undefined;
+            if (ns && ns.length) return Array.from(ns);
+          } catch {
+            // ignore
+          }
+          try {
+            return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>);
+          } catch {
+            return [];
+          }
+        };
+
+        const adBreakEls = byTag(xmlDoc, 'AdBreak');
+        for (let i = 0; i < adBreakEls.length; i++) {
+          const el = adBreakEls[i];
+          const breakType = String(el.getAttribute('breakType') || '').toLowerCase();
+          if (breakType && breakType !== 'linear' && breakType !== 'nonlinear' && breakType !== 'non-linear') continue;
+
+          const rawOffset = String(el.getAttribute('timeOffset') || '').trim();
+          const breakId = el.getAttribute('breakId') || el.getAttribute('id') || 'vmap-fb';
+          const id = `${breakId}:${rawOffset || 'start'}:${i}`;
+          const { at, pendingPercent } = this.parseVmapTimeOffset(rawOffset);
+
+          const adSourceEls = byTag(el, 'AdSource');
+          const adSrc = adSourceEls[0];
+
+          let url: string | undefined;
+          let xml: string | undefined;
+
+          if (adSrc) {
+            const uriEls = byTag(adSrc, 'AdTagURI');
+            if (uriEls.length) url = (uriEls[0].textContent || '').trim() || undefined;
+            if (!url) {
+              const dataEls = byTag(adSrc, 'VASTAdData');
+              if (dataEls.length) xml = (dataEls[0].textContent || '').trim() || undefined;
+            }
+          }
+
+          if (!url && !xml) continue;
+
+          const isNonLinearBreak = breakType === 'nonlinear' || breakType === 'non-linear';
+          const source: AdsSource = { type: isNonLinearBreak ? 'NONLINEAR' : 'VAST', src: url ? url : xml! };
+
+          if (pendingPercent != null) {
+            this.pendingPercentBreaks.push({
+              id,
+              percent: pendingPercent,
+              vast: url ? { kind: 'url', value: url } : { kind: 'xml', value: xml! },
+              once: true,
+              source,
+            });
+            continue;
+          }
+
+          vmapBreaks.push({
+            id,
+            at,
+            once: true,
+            timeOffset: rawOffset || (at === 'postroll' ? 'end' : 'start'),
+            source,
+          });
+        }
       }
 
       this.resolvedBreaks = [...existing, ...vmapBreaks];
     } catch (err) {
+      this.warn('VMAP load/parse failed', err);
       this.bus.emit('ads:error', { reason: 'vmap_parse_failed', error: err });
       this.ctx.events.emit('ads.error', { reason: 'vmap_parse_failed', error: err });
     }
@@ -421,55 +582,121 @@ export class AdsPlugin implements PlayerPlugin {
     return { at: 'preroll' };
   }
 
-  private getPostrollBreak(): AdsBreakConfig | undefined {
-    return this.resolvedBreaks.find((b) => b.at === 'postroll' && (b.url || b.xml));
+  private getVastInputFromBreak(b: AdsBreakConfig): { input?: VastInput; sourceType?: AdsSourceType } {
+    if (b.source && typeof b.source.src === 'string' && b.source.src.trim()) {
+      const src = b.source.src.trim();
+      const t = b.source.type as AdsSourceType;
+      return this.isXmlString(src)
+        ? { input: { kind: 'xml', value: src }, sourceType: t }
+        : { input: { kind: 'url', value: src }, sourceType: t };
+    }
+
+    return { input: undefined, sourceType: undefined };
   }
 
-  private getDueMidrollBreak(currentTime: number): AdsBreakConfig | undefined {
+  private getPostrollBreak(): AdsBreakConfig | undefined {
+    for (const b of this.resolvedBreaks) {
+      if (b.at !== 'postroll') continue;
+      if (!this.getVastInputFromBreak(b).input) continue;
+
+      const id = this.getBreakId(b);
+      const once = b.once !== false;
+      if (once && this.playedBreaks.has(id)) continue;
+      return b;
+    }
+
+    return undefined;
+  }
+
+  getDueMidrollBreaks(currentTime: number): AdsBreakConfig[] {
     const media = this.ctx.player.media;
     if (Number.isFinite(media.duration) && media.duration > 0 && this.pendingPercentBreaks.length) {
       const duration = media.duration;
       const toAdd: AdsBreakConfig[] = [];
-
       for (const pb of this.pendingPercentBreaks) {
         const atSec = duration * pb.percent;
         toAdd.push({
           id: pb.id,
           at: atSec,
-          url: pb.vast.kind === 'url' ? pb.vast.value : undefined,
-          xml: pb.vast.kind === 'xml' ? pb.vast.value : undefined,
           once: pb.once,
+          source: pb.source,
         });
       }
-
       this.pendingPercentBreaks = [];
       this.resolvedBreaks.push(...toAdd);
     }
 
+    const due: AdsBreakConfig[] = [];
     for (const b of this.resolvedBreaks) {
       if (typeof b.at !== 'number') continue;
-      if (!b.url && !b.xml) continue;
+      if (!this.getVastInputFromBreak(b).input) continue;
+
       const id = this.getBreakId(b);
-      // Default to "once" unless explicitly set to false.
       const once = b.once !== false;
       if (once && this.playedBreaks.has(id)) continue;
-      if (currentTime >= b.at) return b;
+
+      if (currentTime + (this.cfg.breakTolerance ?? 0.25) >= b.at) {
+        due.push(b);
+      }
     }
-    return undefined;
+    due.sort((a, b) => (a.at as number) - (b.at as number));
+    return due;
+  }
+
+  /** Returns the earliest due midroll break, if any. (Convenience for tests/debugging.) */
+  getDueMidrollBreak(currentTime: number): AdsBreakConfig | undefined {
+    return this.getDueMidrollBreaks(currentTime)[0];
+  }
+
+  private toXmlDocument(xml: string): XMLDocument {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(String(xml || ''), 'text/xml');
+    return doc;
   }
 
   private getBreakId(b: AdsBreakConfig) {
-    return b.id || `${String(b.at)}:${b.url || 'xml'}`;
+    if (b.id) return b.id;
+    const { input, sourceType } = this.getVastInputFromBreak(b);
+    const key = input?.kind === 'url' ? input.value : 'xml';
+    return `${String(b.at)}:${sourceType || 'VAST'}:${key}`;
   }
 
-  private getPrerollBreak() {
-    const b = this.cfg.breaks.find((x) => x.at === 'preroll' && (x.url || x.xml));
-    if (b) return b;
-    const vast = this.getSource('VAST');
-    if (vast?.src) {
-      return this.isXmlString(vast.src)
-        ? ({ at: 'preroll' as const, xml: vast.src, once: true } as AdsBreakConfig)
-        : ({ at: 'preroll' as const, url: vast.src, once: true } as AdsBreakConfig);
+  private getPrerollBreak(): AdsBreakConfig | undefined {
+    for (const b of this.resolvedBreaks) {
+      if (b.at !== 'preroll') continue;
+      if (!this.getVastInputFromBreak(b).input) continue;
+
+      const id = this.getBreakId(b);
+      const once = b.once !== false;
+      if (once && this.playedBreaks.has(id)) continue;
+      return b;
+    }
+
+    for (const b of this.cfg.breaks) {
+      if (b.at !== 'preroll') continue;
+      if (!this.getVastInputFromBreak(b).input) continue;
+
+      const id = this.getBreakId(b);
+      const once = b.once !== false;
+      if (once && this.playedBreaks.has(id)) continue;
+      return b;
+    }
+
+    // Only fall back to the primary source when no explicit preroll breaks are configured.
+    // When cfg.breaks has explicit prerolls, those govern what plays; the primary source
+    // should not be treated as an additional implicit preroll.
+    const hasExplicitPrerolls = this.cfg.breaks.some((b) => b.at === 'preroll');
+    if (!hasExplicitPrerolls) {
+      const primary = this.getPrimaryVastLikeSource();
+      if (primary?.src) {
+        const b: AdsBreakConfig = {
+          at: 'preroll' as BreakAt,
+          source: { type: primary.type, src: primary.src },
+          once: true,
+        };
+        const id = this.getBreakId(b);
+        if (!this.playedBreaks.has(id)) return b;
+      }
     }
     return undefined;
   }
@@ -478,8 +705,18 @@ export class AdsPlugin implements PlayerPlugin {
     const pre = this.getPrerollBreak();
     if (!pre) return false;
     if (this.active || this.startingBreak) return false;
+
+    const media = this.ctx.player.media;
+    const t = media?.currentTime ?? 0;
+    if (t > 0.25) return false;
+
+    const id = this.getBreakId(pre);
+    const once = pre.once !== false;
+    if (once && this.playedBreaks.has(id)) return false;
+
     const s = this.ctx.state.current;
-    return s === 'idle' || s === 'ready' || s === 'loading';
+    if (s === 'ended') return false;
+    return true;
   }
 
   private bindPrerollInterceptors() {
@@ -487,26 +724,45 @@ export class AdsPlugin implements PlayerPlugin {
     const media = player.media;
 
     this.globalUnsubs.push(
-      events.on('playback:play', () => {
-        if (!this.shouldInterceptPreroll()) return;
-        const pre = this.getPrerollBreak();
-        if (pre) {
-          this.userPlayIntent = true;
-          this.startBreak(pre, 'preroll');
-        }
+      events.on('cmd:play', () => {
+        void (async () => {
+          if (this.vmapLoadPromise) await this.vmapLoadPromise.catch(() => undefined);
+          if (!this.shouldInterceptPreroll()) return;
+          this.userPlayIntent = !!player.userInteracted;
+          try {
+            media.pause();
+          } catch {
+            //
+          }
+          if (this.vmapLoadPromise) await this.vmapLoadPromise.catch(() => undefined);
+          let guard = 0;
+          while (guard++ < 10) {
+            const pre = this.getPrerollBreak();
+            if (!pre) break;
+            await this.startBreak(pre, 'preroll');
+          }
+        })();
       })
     );
 
     const onNativePlayCapture = () => {
-      if (!this.shouldInterceptPreroll()) return;
-      this.userPlayIntent = true;
-      try {
-        media.pause();
-      } catch {
-        //
-      }
-      const pre = this.getPrerollBreak();
-      if (pre) void this.startBreak(pre, 'preroll');
+      void (async () => {
+        if (this.vmapLoadPromise) await this.vmapLoadPromise.catch(() => undefined);
+        if (!this.shouldInterceptPreroll()) return;
+        this.userPlayIntent = !!player.userInteracted;
+        try {
+          media.pause();
+        } catch {
+          //
+        }
+        if (this.vmapLoadPromise) await this.vmapLoadPromise.catch(() => undefined);
+        let guard = 0;
+        while (guard++ < 10) {
+          const pre = this.getPrerollBreak();
+          if (!pre) break;
+          await this.startBreak(pre, 'preroll');
+        }
+      })();
     };
 
     media.addEventListener('play', onNativePlayCapture, { capture: true });
@@ -520,22 +776,49 @@ export class AdsPlugin implements PlayerPlugin {
     const onTime = () => {
       if (this.active || this.startingBreak) return;
       const t = content.currentTime || 0;
-      const due = this.getDueMidrollBreak(t);
-      if (due) void this.startBreak(due, 'midroll');
+      const due = this.getDueMidrollBreaks(t);
+      if (!due.length) return;
+      const earliestBreak = due[0];
+      const earliestAt = earliestBreak.at as number;
+
+      const vmapOffset = earliestBreak.timeOffset;
+      const tol = this.cfg.breakTolerance ?? 0.25;
+
+      const group = vmapOffset
+        ? this.resolvedBreaks.filter(
+            (b) =>
+              typeof b.at === 'number' &&
+              !this.playedBreaks.has(this.getBreakId(b)) &&
+              b.timeOffset === vmapOffset &&
+              Math.abs((b.at as number) - earliestAt) <= Math.max(1.0, tol)
+          )
+        : due.filter((b) => Math.abs((b.at as number) - earliestAt) <= tol);
+
+      if (!group.length) return;
+
+      if (group.length === 1) void this.startBreak(group[0], 'midroll');
+      else void this.startBreakGroup(group, 'midroll');
     };
     content.addEventListener('timeupdate', onTime);
     this.globalUnsubs.push(() => content.removeEventListener('timeupdate', onTime));
 
     const onEnded = () => {
       if (this.active || this.startingBreak) return;
-      const post = this.getPostrollBreak();
-      if (post) {
-        this.ctx.events.emit('ads.mediaended' as any, {
-          break: { kind: 'postroll', id: this.getBreakId(post) },
-          at: post.at,
-        });
-        this.startBreak(post, 'postroll');
-      }
+      void (async () => {
+        if (this.vmapLoadPromise) await this.vmapLoadPromise.catch(() => undefined);
+
+        while (!this.active && !this.startingBreak) {
+          const post = this.getPostrollBreak();
+          if (!post) break;
+
+          this.ctx.events.emit('ads.mediaended', {
+            break: { kind: 'postroll', id: this.getBreakId(post) },
+            at: post.at,
+          });
+
+          await this.startBreak(post, 'postroll');
+        }
+      })();
     };
     content.addEventListener('ended', onEnded);
     this.globalUnsubs.push(() => content.removeEventListener('ended', onEnded));
@@ -543,7 +826,8 @@ export class AdsPlugin implements PlayerPlugin {
 
   private async startBreak(b: AdsBreakConfig, kind: 'preroll' | 'midroll' | 'postroll' | 'auto') {
     if (this.active || this.startingBreak) return;
-    if (!b.url && !b.xml) return;
+    const { input, sourceType } = this.getVastInputFromBreak(b);
+    if (!input) return;
 
     const id = this.getBreakId(b);
     const once = b.once !== false;
@@ -553,10 +837,7 @@ export class AdsPlugin implements PlayerPlugin {
     this.bus.emit('ads:break:start', { id, kind, at: b.at });
 
     try {
-      await this.playBreakFromVast(b.url ? { kind: 'url', value: b.url } : { kind: 'xml', value: b.xml! }, {
-        kind,
-        id,
-      });
+      await this.playBreakFromVast(input, { kind, id, sourceType });
       this.playedBreaks.add(id);
     } finally {
       this.startingBreak = false;
@@ -564,45 +845,94 @@ export class AdsPlugin implements PlayerPlugin {
     }
   }
 
-  // ----------------- VAST parsing + AdPod -----------------
+  private async startBreakGroup(breaks: AdsBreakConfig[], kind: 'preroll' | 'midroll' | 'postroll' | 'auto') {
+    let startedMain = false;
+
+    for (const b of breaks) {
+      if (kind === 'midroll') {
+        const { input } = this.getVastInputFromBreak(b);
+        const url = input?.kind === 'url' ? input.value : '';
+        const isBumper = /bumper/i.test(url);
+
+        if (isBumper && startedMain) {
+          this.playedBreaks.add(this.getBreakId(b));
+          continue;
+        }
+        if (!isBumper) startedMain = true;
+      }
+
+      await this.startBreak(b, kind);
+    }
+  }
+
+  private extractAdsFromParsed(parsed: any): any[] {
+    const direct = parsed?.ads || parsed?.vastResponse?.ads;
+    if (Array.isArray(direct) && direct.length) return direct;
+
+    const adPods = parsed?.adPods || parsed?.vastResponse?.adPods || parsed?.vastResponse?.adpods;
+    if (Array.isArray(adPods) && adPods.length) {
+      const flattened: any[] = [];
+      for (const pod of adPods) {
+        const ads = pod?.ads || pod?.Ads;
+        if (Array.isArray(ads)) flattened.push(...ads);
+      }
+      if (flattened.length) return flattened;
+    }
+
+    const singlePod = parsed?.adPod || parsed?.vastResponse?.adPod || parsed?.vastResponse?.adpod;
+    const singleAds = singlePod?.ads || singlePod?.Ads;
+    if (Array.isArray(singleAds) && singleAds.length) return singleAds;
+
+    return [];
+  }
 
   private collectPodAds(parsed: any): PodAd[] {
-    const ads = parsed?.ads || parsed?.vastResponse?.ads || [];
+    const ads = this.extractAdsFromParsed(parsed);
     const out: PodAd[] = [];
 
     for (const ad of ads) {
-      const creatives = ad?.creatives || [];
-      for (const creative of creatives) {
-        const mediaFiles = creative?.mediaFiles || creative?.linear?.mediaFiles || [];
+      const creatives = ad?.creatives || ad?.Creatives || [];
+      const seqRaw = ad?.sequence || ad?.attributes?.sequence || undefined;
+      const seq = seqRaw != null ? Number(seqRaw) : undefined;
+
+      for (let cidx = 0; cidx < creatives.length; cidx++) {
+        const creative = creatives[cidx];
+
+        const mediaFiles =
+          creative?.mediaFiles ||
+          creative?.MediaFiles ||
+          creative?.linear?.mediaFiles ||
+          creative?.Linear?.mediaFiles ||
+          creative?.linear?.MediaFiles ||
+          creative?.linear?.mediafiles ||
+          [];
         const mf = this.pickBestMediaFile(mediaFiles);
         if (!mf) continue;
-
-        const seqRaw = ad?.sequence || ad?.attributes?.sequence || undefined;
-        const seq = seqRaw != null ? Number(seqRaw) : undefined;
 
         const skipOffset = this.extractSkipOffsetFromCreative(creative);
         const companions = creative?.companionAds?.companions || creative?.companions || undefined;
         const nonLinears = creative?.nonLinearAds?.nonLinears || creative?.nonLinears || undefined;
+
         out.push({
           ad,
           creative,
           mediaFile: mf,
           sequence: Number.isFinite(seq) ? seq : undefined,
+          creativeIndex: cidx,
           skipOffset,
           companions: Array.isArray(companions) ? companions : undefined,
           nonLinears: Array.isArray(nonLinears) ? nonLinears : undefined,
         });
-        break;
       }
     }
 
     return out.sort((a, b) => {
-      const as = a.sequence;
-      const bs = b.sequence;
-      if (as == null && bs == null) return 0;
-      if (as == null) return 1;
-      if (bs == null) return -1;
-      return as - bs;
+      const as = a.sequence ?? Number.MAX_SAFE_INTEGER;
+      const bs = b.sequence ?? Number.MAX_SAFE_INTEGER;
+      if (as !== bs) return as - bs;
+      const ac = a.creativeIndex ?? 0;
+      const bc = b.creativeIndex ?? 0;
+      return ac - bc;
     });
   }
 
@@ -614,8 +944,6 @@ export class AdsPlugin implements PlayerPlugin {
   private buildCaptionsFromVastMediaFileRaw(mediaFileRaw: any): CaptionResource[] {
     const ccFiles = this.extractClosedCaptions(mediaFileRaw);
 
-    // Native <track> is reliable for WebVTT. Keep other types in the list if you want,
-    // but only VTT will be attached below unless you add conversion.
     return ccFiles
       .map((f, i) => {
         const lang = f.language ? String(f.language) : '';
@@ -623,7 +951,7 @@ export class AdsPlugin implements PlayerPlugin {
 
         return {
           src: String(f.fileURL),
-          kind: 'captions', // VAST ClosedCaptionFiles -> captions
+          kind: 'captions',
           srclang: lang || undefined,
           label: lang ? lang.toUpperCase() : `CC ${i + 1}`,
           type: type || undefined,
@@ -643,8 +971,6 @@ export class AdsPlugin implements PlayerPlugin {
 
   private attachAdCaptionTracks(adVideo: HTMLVideoElement, mediaFileRaw: any): HTMLTrackElement[] {
     const captions = this.ensureRawCaptions(mediaFileRaw);
-
-    // Attach only WebVTT to native <track> (unless you add conversion for SRT/TTML).
     const vtt = captions.filter(
       (c) => (c.type || '').toLowerCase().includes('vtt') || c.src.toLowerCase().endsWith('.vtt')
     );
@@ -652,13 +978,12 @@ export class AdsPlugin implements PlayerPlugin {
     const created: HTMLTrackElement[] = [];
     for (const c of vtt) {
       const t = document.createElement('track');
-      t.kind = c.kind; // 'captions'
+      t.kind = c.kind;
       t.src = c.src;
 
       if (c.srclang) t.srclang = c.srclang;
       if (c.label) t.label = c.label;
 
-      // Do not set default; user chooses via menu
       t.default = false;
 
       adVideo.appendChild(t);
@@ -677,11 +1002,9 @@ export class AdsPlugin implements PlayerPlugin {
   private listCaptionTracks(media: any): any[] {
     const list = media?.textTracks;
     if (!list || typeof list.length !== 'number') return [];
-    const out: any[] = [];
-    // TextTrackList is array-like but not reliably iterable in jsdom.
-    // Use index-based access to support both real browsers and mocked lists.
+    const out = [];
     for (let i = 0; i < Number(list.length); i++) {
-      const t = (list as any)[i] ?? (typeof (list as any).item === 'function' ? (list as any).item(i) : null);
+      const t = list[i] ?? (typeof list.item === 'function' ? list.item(i) : null);
       if (!t) continue;
       const kind = String(t.kind || '');
       if (kind !== 'captions' && kind !== 'subtitles') continue;
@@ -702,13 +1025,12 @@ export class AdsPlugin implements PlayerPlugin {
     this.prevActiveCaptionSig = null;
     if (!sig) return;
 
-    const media = this.ctx?.player?.media as any;
+    const media = this.ctx?.player?.media;
     if (!media) return;
 
     const tracks = this.listCaptionTracks(media);
     if (!tracks.length) return;
 
-    // Default: disable all, then re-enable the previously active one if it still exists.
     for (const t of tracks) t.mode = 'disabled';
 
     const match = tracks.find((t) => this.captionsSignature(t) === sig);
@@ -781,16 +1103,11 @@ export class AdsPlugin implements PlayerPlugin {
     return normalized.sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
   }
 
-  // ----------------- skip / companions / non-linear (best-effort) -----------------
-
   private extractSkipOffsetFromCreative(creative: any): string | undefined {
-    // vast-client-js represents skippable linear via `skipDelay: number|null` on CreativeLinear
-    // (which comes from VAST <Linear skipoffset="...">).
     const linear = creative?.linear || creative?.Linear || creative;
 
     const skipDelay = linear?.skipDelay ?? linear?.skipdelay;
     if (typeof skipDelay === 'number' && Number.isFinite(skipDelay) && skipDelay >= 0) {
-      // Represent as seconds string for downstream parsing.
       return String(skipDelay);
     }
 
@@ -814,7 +1131,6 @@ export class AdsPlugin implements PlayerPlugin {
     return hh * 3600 + mm * 60 + ss;
   }
 
-  /** Compute skip seconds from VAST skipOffset (timecode, seconds, or percent). */
   private computeSkipAtSeconds(skipOffset: string | undefined, duration: number): number | undefined {
     if (!skipOffset) return undefined;
     const s = skipOffset.trim();
@@ -852,7 +1168,7 @@ export class AdsPlugin implements PlayerPlugin {
     this.overlay.appendChild(wrap);
 
     const onClick = (e: PointerEvent) => {
-      this.requestSkip('button');
+      this.onSkip?.();
       e.preventDefault();
       e.stopPropagation();
     };
@@ -888,7 +1204,6 @@ export class AdsPlugin implements PlayerPlugin {
 
     const update = () => {
       const dur = v.duration;
-      // `skipOffset` may be a timecode/seconds (does not require duration) or percent (requires duration).
       const skipAt = this.computeSkipAtSeconds(skipOffset, dur);
       if (skipAt == null) return;
       this.skipAtSeconds = skipAt;
@@ -909,8 +1224,11 @@ export class AdsPlugin implements PlayerPlugin {
     this.sessionUnsubs.push(() => v.removeEventListener('loadedmetadata', update));
   }
 
+  private onSkip() {
+    this.requestSkip('button');
+  }
+
   private requestSkip(reason: 'button' | 'close' | 'api' = 'api') {
-    // Skip gating for linear: if skip offset exists and we know skipAt, require it.
     if (this.skipOffsetRaw && this.skipAtSeconds != null && this.adVideo) {
       const cur = this.adVideo.currentTime || 0;
       if (cur + 0.01 < this.skipAtSeconds) {
@@ -928,11 +1246,9 @@ export class AdsPlugin implements PlayerPlugin {
     const brk = this.currentBreakMeta ? { kind: this.currentBreakMeta.kind, id: this.currentBreakMeta.breakId } : null;
     this.bus.emit('ads:skip', { break: brk, reason });
 
-    // Player-facing aliases
-    this.ctx.events.emit('ads.skipped' as any, { break: brk, reason });
-    this.ctx.events.emit('adsskipped' as any, { break: brk, reason });
+    this.ctx.events.emit('ads.skipped', { break: brk, reason });
+    this.ctx.events.emit('adsskipped', { break: brk, reason });
 
-    // End linear ad playback best-effort
     const v = this.adVideo;
     if (v) {
       try {
@@ -991,7 +1307,6 @@ export class AdsPlugin implements PlayerPlugin {
     wrap.style.position = 'relative';
     wrap.style.cursor = click ? 'pointer' : 'default';
 
-    // VAST parsers vary: some expose singular *Resource, others expose plural *Resources arrays.
     const staticRes =
       companion?.staticResource ||
       companion?.StaticResource ||
@@ -1034,12 +1349,8 @@ export class AdsPlugin implements PlayerPlugin {
 
     if (click) {
       const onClick = (e: PointerEvent) => {
-        try {
-          const url = typeof click === 'string' ? click : click.url;
-          window.open(url, '_blank', 'noopener,noreferrer');
-        } catch {
-          //
-        }
+        const url = typeof click === 'string' ? click : click.url;
+        this.safeWindowOpen(url);
         try {
           this.tracker?.trackClick?.();
           this.tracker?.trackClickThrough?.();
@@ -1057,14 +1368,22 @@ export class AdsPlugin implements PlayerPlugin {
   }
 
   private collectNonLinearCreatives(parsed: any): { ad: any; creative: any; nonLinear: any; sequence?: number }[] {
-    const ads = parsed?.ads || parsed?.vastResponse?.ads || [];
+    const ads = this.extractAdsFromParsed(parsed);
     const out: { ad: any; creative: any; nonLinear: any; sequence?: number }[] = [];
 
     for (const ad of ads) {
-      const creatives = ad?.creatives || [];
+      const creatives = ad?.creatives || ad?.Creatives || [];
       for (const creative of creatives) {
-        const nonLinears = creative?.nonLinearAds?.nonLinears || creative?.nonLinears;
-        if (!Array.isArray(nonLinears) || nonLinears.length === 0) continue;
+        const raw =
+          creative?.nonLinearAds?.nonLinears ??
+          creative?.nonLinearAds?.nonLinear ??
+          creative?.NonLinearAds?.NonLinear ??
+          creative?.nonLinears ??
+          creative?.NonLinears ??
+          undefined;
+
+        const nonLinears = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        if (nonLinears.length === 0) continue;
 
         const seqRaw = ad?.sequence || ad?.attributes?.sequence || undefined;
         const seq = seqRaw != null ? Number(seqRaw) : undefined;
@@ -1083,6 +1402,135 @@ export class AdsPlugin implements PlayerPlugin {
       if (bs == null) return -1;
       return as - bs;
     });
+  }
+
+  private collectNonLinearFromXml(doc: XMLDocument): XmlNonLinearItem[] {
+    const out: XmlNonLinearItem[] = [];
+    const pickText = (el: Element | null) => (el?.textContent || '').trim();
+
+    // Namespace-agnostic helpers: many VAST/VMAP docs use namespaces/prefixes.
+    const byLocalName = (root: ParentNode, localName: string): Element[] => {
+      try {
+        if ((root as any).getElementsByTagNameNS) {
+          const els = (root as any).getElementsByTagNameNS('*', localName) as HTMLCollectionOf<Element>;
+          const arr = Array.from(els);
+          if (arr.length) return arr;
+        }
+      } catch {
+        // ignore
+      }
+
+      try {
+        return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>);
+      } catch {
+        return [];
+      }
+    };
+
+    const firstChildText = (root: Element, localName: string): string => {
+      const els = byLocalName(root, localName);
+      return pickText(els[0] ?? null);
+    };
+
+    const companions: any[] = [];
+    try {
+      const compEls = byLocalName(doc, 'Companion');
+      for (const c of compEls) {
+        const w = Number(c.getAttribute('width') || 0);
+        const h = Number(c.getAttribute('height') || 0);
+        const staticRes = firstChildText(c, 'StaticResource');
+        const click = firstChildText(c, 'CompanionClickThrough');
+        if (!staticRes) continue;
+        companions.push({
+          width: w || undefined,
+          height: h || undefined,
+          staticResource: { value: staticRes },
+          clickThrough: click || undefined,
+        });
+      }
+    } catch {
+      // ignore
+    }
+
+    const nlEls = byLocalName(doc, 'NonLinear');
+    for (const nl of nlEls) {
+      const w = Number(nl.getAttribute('width') || 0);
+      const h = Number(nl.getAttribute('height') || 0);
+      const minSuggestedDuration = nl.getAttribute('minSuggestedDuration') || undefined;
+      const staticRes = firstChildText(nl, 'StaticResource');
+      const iframeRes = firstChildText(nl, 'IFrameResource');
+      const htmlRes = firstChildText(nl, 'HTMLResource');
+
+      const click = firstChildText(nl, 'NonLinearClickThrough');
+
+      const nonLinear: any = {
+        width: w || undefined,
+        height: h || undefined,
+        minSuggestedDuration,
+        staticResource: staticRes ? { value: staticRes } : undefined,
+        iFrameResource: iframeRes ? { value: iframeRes } : undefined,
+        htmlResource: htmlRes ? { value: htmlRes } : undefined,
+        nonLinearClickThrough: click || undefined,
+      };
+
+      out.push({ nonLinear, companions: companions.length ? companions : undefined });
+    }
+
+    return out;
+  }
+
+  private async playNonLinearOnlyBreakFromXml(
+    items: XmlNonLinearItem[],
+    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string }
+  ) {
+    this.ensureOverlayMounted();
+    this.clearAdOverlays();
+    this.overlay.replaceChildren();
+    this.overlay.style.display = 'block';
+    this.active = true;
+
+    let maxDuration = 0;
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      if (it.companions?.length) {
+        this.mountCompanions({ companions: it.companions, companionAds: { companions: it.companions } });
+      }
+
+      this.ensureNonLinearDom();
+      const el = this.renderNonLinear(it.nonLinear);
+      if (el) this.nonLinearWrap!.appendChild(el);
+
+      maxDuration = Math.max(maxDuration, this.nonLinearSuggestedDurationSeconds(it.nonLinear));
+
+      this.bus.emit('ads:impression', { break: meta, index: i });
+      this.bus.emit('ads:ad:start', { break: meta, index: i });
+    }
+
+    const start = Date.now();
+    const dismiss = async () => {
+      await new Promise<void>((resolve) => {
+        const tick = () => {
+          const elapsed = (Date.now() - start) / 1000;
+          const anyLeft = !!this.nonLinearWrap?.querySelector('.op-ads__nonlinear-item');
+          if (!anyLeft || elapsed >= maxDuration) {
+            resolve();
+            return;
+          }
+          setTimeout(tick, 50);
+        };
+        tick();
+      });
+
+      for (let i = 0; i < items.length; i++) this.bus.emit('ads:ad:end', { break: meta, index: i });
+
+      this.clearSession();
+      this.overlay.style.display = 'none';
+      this.overlay.replaceChildren();
+      this.active = false;
+      this.currentBreakMeta = undefined;
+    };
+
+    void dismiss();
   }
 
   private ensureNonLinearDom() {
@@ -1139,10 +1587,12 @@ export class AdsPlugin implements PlayerPlugin {
     container.appendChild(close);
     this.sessionUnsubs.push(() => close.removeEventListener('click', onClose));
 
-    // VAST parsers vary: some expose singular *Resource, others expose plural *Resources arrays.
-    const staticRes = nl?.staticResource || nl?.StaticResource || nl?.staticResources?.[0] || nl?.StaticResources?.[0];
-    const iframeRes = nl?.iFrameResource || nl?.IFrameResource || nl?.iFrameResources?.[0] || nl?.IFrameResources?.[0];
-    const htmlRes = nl?.htmlResource || nl?.HTMLResource || nl?.htmlResources?.[0] || nl?.HTMLResources?.[0];
+    const pickFirst = (v: any) => (Array.isArray(v) ? v[0] : v);
+    const staticRes = pickFirst(
+      nl?.staticResource ?? nl?.StaticResource ?? nl?.staticResources ?? nl?.StaticResources ?? nl?.StaticResources
+    );
+    const iframeRes = pickFirst(nl?.iFrameResource ?? nl?.IFrameResource ?? nl?.iFrameResources ?? nl?.IFrameResources);
+    const htmlRes = pickFirst(nl?.htmlResource ?? nl?.HTMLResource ?? nl?.htmlResources ?? nl?.HTMLResources);
 
     let node: HTMLElement | null = null;
 
@@ -1171,12 +1621,8 @@ export class AdsPlugin implements PlayerPlugin {
     if (click) {
       const onClick = (e: PointerEvent) => {
         if ((e.target as HTMLElement)?.tagName === 'BUTTON') return;
-        try {
-          const url = typeof click === 'string' ? click : click.url;
-          window.open(url, '_blank', 'noopener,noreferrer');
-        } catch {
-          //
-        }
+        const url = typeof click === 'string' ? click : click.url;
+        this.safeWindowOpen(url);
         try {
           this.tracker?.trackClick?.();
           this.tracker?.trackClickThrough?.();
@@ -1194,8 +1640,15 @@ export class AdsPlugin implements PlayerPlugin {
   }
 
   private mountNonLinear(creative: any) {
-    const nonLinears = creative?.nonLinearAds?.nonLinears || creative?.nonLinears;
-    if (!Array.isArray(nonLinears) || nonLinears.length === 0) return;
+    const raw =
+      creative?.nonLinearAds?.nonLinears ??
+      creative?.nonLinearAds?.nonLinear ??
+      creative?.NonLinearAds?.NonLinear ??
+      creative?.nonLinears ??
+      creative?.NonLinears ??
+      undefined;
+    const nonLinears = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    if (nonLinears.length === 0) return;
 
     this.ensureNonLinearDom();
     for (const nl of nonLinears) {
@@ -1221,12 +1674,10 @@ export class AdsPlugin implements PlayerPlugin {
     parsed: any,
     meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string }
   ) {
-    // Render non-linear creatives as overlays while content continues.
     this.ensureOverlayMounted();
     this.overlay.replaceChildren();
     this.overlay.style.display = 'block';
 
-    // Do NOT pause content or acquire playback lease.
     this.active = true;
 
     const items = this.collectNonLinearCreatives(parsed);
@@ -1244,13 +1695,11 @@ export class AdsPlugin implements PlayerPlugin {
       }
       this._lastCreative = item.creative;
 
-      // Mount overlays (non-linear + companions)
       this.mountCompanions(item.creative);
       this.ensureNonLinearDom();
       const el = this.renderNonLinear(item.nonLinear);
       if (el) this.nonLinearWrap!.appendChild(el);
 
-      // Fire impression + start (best-effort)
       try {
         this.tracker?.trackImpression?.();
         this.tracker?.trackCreativeView?.();
@@ -1263,10 +1712,6 @@ export class AdsPlugin implements PlayerPlugin {
       maxDuration = Math.max(maxDuration, this.nonLinearSuggestedDurationSeconds(item.nonLinear));
     }
 
-    // Auto-clear after max duration or when user closes all non-linear units.
-    // Important: do NOT block the caller waiting for the auto-dismiss timer.
-    // The linear-ads path awaits playback completion, but non-linear-only overlays
-    // are "fire-and-forget" and content should continue immediately.
     const start = Date.now();
     const dismiss = async () => {
       // NOTE: Avoid requestAnimationFrame; in jsdom/Jest it can stall and hang tests.
@@ -1288,7 +1733,6 @@ export class AdsPlugin implements PlayerPlugin {
         this.bus.emit('ads:ad:end', { break: meta, index: i, sequence: item.sequence });
       }
 
-      // Cleanup overlays only; do not affect content playback state.
       this.clearSession();
       this.overlay.style.display = 'none';
       this.overlay.replaceChildren();
@@ -1298,8 +1742,8 @@ export class AdsPlugin implements PlayerPlugin {
 
     void dismiss();
   }
-  // ----------------- playback + tracking -----------------
-  private mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: NormalizedMediaFile) {
+
+  private async mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: NormalizedMediaFile) {
     this.ensureOverlayMounted();
     const root = this.overlay.parentElement as HTMLElement;
 
@@ -1312,17 +1756,38 @@ export class AdsPlugin implements PlayerPlugin {
     const v = document.createElement('video');
     v.className = 'op-ads__media';
     v.playsInline = true;
-    v.preload = 'none';
+    const contentPreload = (contentMedia.getAttribute('preload') || contentMedia.preload || '').toLowerCase();
+    const isAutoplayPath = !!contentMedia.autoplay || contentPreload === 'auto';
+
+    // Always force-mute ads on the autoplay path until the user has explicitly interacted.
+    // Using cached autoplay-support results here is unreliable: the probe runs against the
+    // *content* element (which may carry MEI / prior-session permissions), but a freshly
+    // created ad <video> must respect the same muted-until-interaction policy regardless.
+    // Once the user unmutes (player:interacted + player.muted = false) the ad will follow.
+    const forceMutedForPolicy = isAutoplayPath && !this.ctx.player.userInteracted;
+
+    v.preload = contentPreload === 'none' ? 'metadata' : 'auto';
     v.controls = this.cfg.allowNativeControls;
     v.style.width = '100%';
     v.style.height = '100%';
     v.src = mediaFile.fileURL;
 
+    try {
+      v.load();
+    } catch {
+      /* noop */
+    }
+
+    const desiredMuted = forceMutedForPolicy ? true : this.ctx.player.muted;
+    const desiredVolume = forceMutedForPolicy ? 0 : this.ctx.player.volume;
+    v.muted = desiredMuted;
+    v.defaultMuted = desiredMuted;
+    if (Number.isFinite(desiredVolume)) v.volume = Math.max(0, Math.min(1, desiredVolume));
+
     this.adEndPromise = new Promise((resolve) => {
       const done = () => resolve();
 
       const cleanupTakeover = () => {
-        // Only clean up if this is still the active ad video
         if (this.adVideo === v) {
           try {
             v.pause();
@@ -1332,13 +1797,12 @@ export class AdsPlugin implements PlayerPlugin {
           v.remove();
           this.adVideo = undefined;
         } else {
-          // Still remove the DOM node defensively
           v.remove();
         }
       };
 
       const onEnded = () => {
-        this.ctx.events.emit('playback:ended');
+        this.ctx.events.emit('ended');
         cleanupTakeover();
         done();
       };
@@ -1357,6 +1821,22 @@ export class AdsPlugin implements PlayerPlugin {
 
     this.overlay.appendChild(v);
     this.adVideo = v;
+
+    // Browsers may pause media in background tabs; attempt to resume the active ad when returning to the tab.
+    const onVisibility = () => {
+      if (document.visibilityState !== 'visible') return;
+      const cur = this.adVideo;
+      if (!cur) return;
+      if (!cur.paused || cur.ended) return;
+      try {
+        const p = cur.play?.();
+        if (p && typeof p.catch === 'function') p.catch(() => undefined);
+      } catch {
+        /* noop */
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    this.sessionUnsubs.push(() => document.removeEventListener('visibilitychange', onVisibility));
 
     this.clearAdTracks();
     this.adTrackEls = this.attachAdCaptionTracks(v, mediaFile.raw);
@@ -1403,24 +1883,62 @@ export class AdsPlugin implements PlayerPlugin {
     const v = () => this.adVideo;
 
     this.sessionUnsubs.push(
-      events.on('playback:play', () =>
+      events.on('cmd:play', () => {
+        const wantsAutoplayPath = Boolean(this.contentMedia?.autoplay || this.contentMedia?.preload === 'auto');
+        // Same reasoning as mountAdVideo: force-mute until first user interaction when on
+        // the autoplay path, regardless of cached autoplay-support results.
+        const shouldForceMute = !this.userPlayIntent && wantsAutoplayPath && !this.ctx.player.userInteracted;
+
+        if (shouldForceMute) {
+          this.forcedMuteUntilInteraction = true;
+          try {
+            if (v()) {
+              v()!.muted = true;
+              v()!.volume = 0;
+            }
+          } catch {
+            /* noop */
+          }
+        } else {
+          this.forcedMuteUntilInteraction = false;
+          try {
+            if (v()) {
+              v()!.muted = this.ctx.player.muted;
+              v()!.volume = this.ctx.player.volume;
+            }
+          } catch {
+            /* noop */
+          }
+        }
+
         v()
           ?.play()
           .catch(() => {
             //
-          })
-      )
+          });
+      })
     );
-    this.sessionUnsubs.push(events.on('playback:pause', () => v()?.pause()));
+    this.sessionUnsubs.push(events.on('cmd:pause', () => v()?.pause()));
     this.sessionUnsubs.push(
-      events.on('media:volume', (x: any) => {
+      events.on('cmd:setVolume', (x: any) => {
         const vol = Number(x);
-        if (Number.isFinite(vol) && v()) v()!.volume = vol;
+        if (!Number.isFinite(vol) || !v()) return;
+        if (this.syncingVolume) return;
+        if (this.forcedMuteUntilInteraction) return;
+        v()!.volume = vol;
       })
     );
     this.sessionUnsubs.push(
-      events.on('media:muted', (x: any) => {
-        if (v()) v()!.muted = Boolean(x);
+      events.on('cmd:setMuted', (x: any) => {
+        if (!v()) return;
+        if (this.syncingVolume) return;
+        if (this.forcedMuteUntilInteraction && !this.ctx.player.userInteracted) {
+          // Keep muted until interaction.
+          v()!.muted = true;
+          v()!.volume = 0;
+          return;
+        }
+        v()!.muted = Boolean(x);
       })
     );
   }
@@ -1458,21 +1976,21 @@ export class AdsPlugin implements PlayerPlugin {
       if (!started) {
         started = true;
         this.tracker?.trackStart?.();
-        this.ctx.events.emit('playback:play');
+        this.ctx.events.emit('play');
         this.ctx.events.emit('ads.start', { break: meta });
         emitQuartile(0);
         emitDuration();
       } else if (lastPaused) {
         this.tracker?.trackResume?.();
       }
-      this.ctx.events.emit('playback:playing');
+      this.ctx.events.emit('playing');
       lastPaused = false;
     };
 
     const onPause = () => {
       if (started) this.tracker?.trackPause?.();
       lastPaused = true;
-      this.ctx.events.emit('playback:pause');
+      this.ctx.events.emit('pause');
       this.ctx.events.emit('ads.pause', { break: meta });
     };
 
@@ -1520,22 +2038,31 @@ export class AdsPlugin implements PlayerPlugin {
 
     const onVolume = () => {
       const vol = v.volume;
-      if (Number.isFinite(vol) && vol !== lastVol) {
-        lastVol = vol;
-        // Bridge ad volume to core UI controls
-        this.ctx.events.emit('media:volume', vol);
-      }
+      if (Number.isFinite(vol) && vol !== lastVol) lastVol = vol;
       this.ctx.events.emit('ads.volumeChange', { volume: vol, muted: lastMuted, break: meta });
 
       const muted = v.muted || v.volume === 0;
       if (muted !== lastMuted) {
         lastMuted = muted;
-        this.ctx.events.emit('media:muted', muted);
         if (muted) this.tracker?.trackMute?.();
         else this.tracker?.trackUnmute?.();
 
-        this.ctx.events.emit('ads.mute' as any, { muted, break: meta });
-        this.ctx.events.emit('ads.volumeChange' as any, { volume: lastVol, muted, break: meta });
+        this.ctx.events.emit('ads.volumeChange', { volume: lastVol, muted, break: meta });
+      }
+
+      // If the user changed volume/mute using native controls during ads,
+      // propagate that preference back to the main player so content + future breaks stay in sync.
+      if (this.forcedMuteUntilInteraction && !this.ctx.player.userInteracted) return;
+      if (this.syncingVolume) return;
+
+      try {
+        this.syncingVolume = true;
+        this.ctx.player.muted = muted;
+        if (Number.isFinite(vol)) this.ctx.player.volume = Math.max(0, Math.min(1, vol));
+      } catch {
+        // ignore
+      } finally {
+        this.syncingVolume = false;
       }
     };
 
@@ -1543,16 +2070,12 @@ export class AdsPlugin implements PlayerPlugin {
       if (ev.defaultPrevented) return;
       const click = this.getClickThroughUrl();
       if (!click) return;
-      try {
-        const url = typeof click === 'string' ? click : click.url;
-        window.open(url, '_blank', 'noopener,noreferrer');
-      } catch {
-        //
-      }
+      const url = typeof click === 'string' ? click : click.url;
+      this.safeWindowOpen(url);
       this.tracker?.trackClick?.();
       this.tracker?.trackClickThrough?.();
       this.bus.emit('ads:clickthrough', { break: meta, url: click });
-      this.ctx.events.emit('ads.click' as any, { break: meta, url: click });
+      this.ctx.events.emit('ads.click', { break: meta, url: click });
     };
 
     v.addEventListener('playing', onPlaying);
@@ -1580,107 +2103,94 @@ export class AdsPlugin implements PlayerPlugin {
     );
   }
 
+  private safeWindowOpen(rawUrl: string) {
+    try {
+      const url = new URL(rawUrl, window.location.href);
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+      window.open(url.toString(), '_blank', 'noopener,noreferrer');
+    } catch {
+      // ignore
+    }
+  }
+
   private ensureOverlayMounted() {
     const mount = this.resolveMount();
+
+    if (mount instanceof HTMLElement) {
+      const cs = window.getComputedStyle(mount);
+      if (!cs.position || cs.position === 'static') {
+        mount.style.position = 'relative';
+      }
+    }
+
+    this.overlay.style.position = 'absolute';
+    this.overlay.style.inset = '0';
+    this.overlay.style.width = '100%';
+    this.overlay.style.height = '100%';
+    this.overlay.style.zIndex = this.overlay.style.zIndex || '3';
+    this.overlay.style.pointerEvents = 'auto';
+
     if (this.overlay.parentElement !== mount) mount.appendChild(this.overlay);
   }
 
-  // ----------------- SIMID (best-effort) -----------------
+  /**
+   * Best-effort SIMID mounting helper.
+   * Some ad servers provide multiple SIMID iframe URLs; we mount all of them.
+   * This is intentionally permissive and does not block playback if the creative doesn't contain SIMID data.
+   */
+  tryMountSimidLayer(creative: any): void {
+    const simid = creative?.simid ?? creative?.SIMID ?? creative?.simidLayer;
+    const urlsRaw =
+      simid?.urls ?? simid?.url ?? simid?.resources ?? simid?.iframeResources ?? creative?.simidUrls ?? null;
 
-  private tryMountSimidLayer(creative: any) {
-    if (!this.cfg.simid?.enabled) return;
+    const urls: string[] = Array.isArray(urlsRaw)
+      ? urlsRaw.map((u) => String(u)).filter((u) => u.trim())
+      : typeof urlsRaw === 'string'
+        ? [urlsRaw].filter((u) => u.trim())
+        : [];
 
-    const url = this.findSimidUrl(creative);
-    if (!url) return;
+    if (!urls.length) return;
 
-    const wrap = document.createElement('div');
-    wrap.className = this.cfg.simid.className || 'op-ads__simid';
-    wrap.style.position = 'absolute';
-    wrap.style.inset = '0';
-    wrap.style.zIndex = '2';
+    // Ensure overlay exists in the DOM before mounting.
+    this.ensureOverlayMounted();
 
-    const iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.allow = 'autoplay; fullscreen';
-    iframe.style.border = '0';
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.sandbox = this.cfg.simid.sandbox || 'allow-scripts allow-same-origin allow-popups allow-forms';
-
-    wrap.appendChild(iframe);
-    this.overlay.appendChild(wrap);
-
-    this.simidOverlay = wrap;
-    this.simidFrame = iframe;
-
-    const onMsg = (ev: MessageEvent) => {
-      if (ev.source !== iframe.contentWindow) return;
-      this.cfg.simid?.onMessage?.(ev.data);
-    };
-
-    window.addEventListener('message', onMsg);
-    this.sessionUnsubs.push(() => window.removeEventListener('message', onMsg));
-  }
-
-  private findSimidUrl(creative: any): string | undefined {
-    const seen = new Set<any>();
-
-    const isUrl = (x: any) => typeof x === 'string' && /^https?:\/\//.test(x);
-
-    const walk = (node: any, hintSimid: boolean): string | undefined => {
-      if (!node || typeof node !== 'object') return undefined;
-      if (seen.has(node)) return undefined;
-      seen.add(node);
-
-      for (const [k, v] of Object.entries(node)) {
-        const key = k.toLowerCase();
-        const nextHint =
-          hintSimid ||
-          key.includes('simid') ||
-          key === 'apiframework' ||
-          key.includes('interactive') ||
-          key.includes('adparameters');
-
-        if (typeof v === 'string') {
-          const vLower = v.toLowerCase();
-          const simidMention = vLower === 'simid' || vLower.includes('simid');
-          if (simidMention) continue;
-
-          if (isUrl(v) && nextHint) return v;
-          if (isUrl(v) && (hintSimid || key.includes('resource') || key.includes('uri') || key.includes('url')))
-            return v;
-        } else if (Array.isArray(v)) {
-          for (const item of v) {
-            const found = walk(item, nextHint);
-            if (found) return found;
-          }
-        } else if (typeof v === 'object' && v) {
-          const found = walk(v, nextHint);
-          if (found) return found;
-        }
-      }
-      return undefined;
-    };
-
-    if (String(creative?.apiFramework || '').toLowerCase() === 'simid') {
-      const found = walk(creative, true);
-      if (found) return found;
+    let wrap = this.overlay.querySelector('.op-ads__simid') as HTMLDivElement | null;
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.className = 'op-ads__simid';
+      wrap.style.position = 'absolute';
+      wrap.style.inset = '0';
+      wrap.style.pointerEvents = 'auto';
+      this.overlay.appendChild(wrap);
+    } else {
+      wrap.innerHTML = '';
     }
 
-    return walk(creative, false);
+    for (const url of urls) {
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.setAttribute('title', 'SIMID');
+      iframe.setAttribute('loading', 'lazy');
+      iframe.setAttribute('referrerpolicy', 'no-referrer');
+      // Restrictive sandbox by default; allow-scripts for SIMID, and same-origin for common SIMID patterns.
+      iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = '0';
+      wrap.appendChild(iframe);
+    }
   }
-
-  // ----------------- break runner -----------------
 
   private async playBreakFromVast(
     input: VastInput,
-    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string }
+    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string; sourceType?: AdsSourceType }
   ) {
     if (this.active) return;
 
+    this.ensureOverlayMounted();
+
     const {
       events,
-      state,
       leases,
       player: { media },
     } = this.ctx;
@@ -1688,12 +2198,18 @@ export class AdsPlugin implements PlayerPlugin {
     const requestPayload = input.kind === 'url' ? input.value : '[xml]';
     this.bus.emit('ads:requested', requestPayload);
     this.log('requested', requestPayload, meta);
-
-    // Parse first; for non-linear-only breaks we do NOT pause content or acquire playback lease.
-    this.resumeAfter = this.cfg.resumeContent && (state.current === 'playing' || this.userPlayIntent);
+    this.resumeAfter = this.cfg.resumeContent && meta.kind !== 'postroll';
 
     const pauseAndAcquireLease = () => {
-      events.emit('playback:pause');
+      // Pause the underlying media element as well as emitting the logical event.
+      // Some integrations/tests rely on the element being paused immediately.
+      try {
+        media.pause();
+      } catch {
+        // ignore
+      }
+
+      events.emit('cmd:pause');
 
       if (!leases.acquire('playback', this.name)) {
         this.bus.emit('ads:error', {
@@ -1709,59 +2225,87 @@ export class AdsPlugin implements PlayerPlugin {
       return true;
     };
 
-    function toXmlDocument(v: unknown): XMLDocument {
-      if (v && typeof v === 'object') {
-        // Already an XMLDocument
-        if ((v as XMLDocument).nodeType === 9) return v as XMLDocument;
-        // Element -> serialize then parse
-        if ((v as XMLDocument).nodeType === 1) {
-          const s = new XMLSerializer().serializeToString(v as XMLDocument);
-          return new DOMParser().parseFromString(s, 'text/xml');
+    let rawDoc: XMLDocument | null = null;
+
+    const loadRawDocForNonLinear = async () => {
+      if (meta.sourceType !== 'NONLINEAR') return;
+      try {
+        if (input.kind === 'xml') {
+          const xmlText = await this.getVastXmlText(input);
+          const parsedNonLinear = this.buildParsedForNonLinearFromXml(xmlText);
+          rawDoc = parsedNonLinear;
+          return;
         }
+
+        const xmlText = await this.getVastXmlText(input);
+        const parsedNonLinear = this.buildParsedForNonLinearFromXml(xmlText);
+        rawDoc = parsedNonLinear;
+      } catch {
+        rawDoc = null;
       }
+    };
 
-      const xmlStr = String(v ?? '');
-      const doc = new DOMParser().parseFromString(xmlStr, 'text/xml');
-
-      // Optional but helpful: detect parse errors
-      if (doc.getElementsByTagName('parsererror').length) {
-        throw new Error('VAST XML parse error (parsererror)');
-      }
-
-      return doc;
-    }
+    await loadRawDocForNonLinear();
 
     try {
       const parsed =
         input.kind === 'url'
           ? await this.vastClient.get(input.value)
-          : await this.vastClient.parseVAST(toXmlDocument(input.value));
+          : await this.vastClient.parseVAST(
+              this.toXmlDocument(
+                typeof input.value === 'string' ? input.value : new XMLSerializer().serializeToString(input.value)
+              )
+            );
 
       this.log('vast parsed', { ads: parsed?.ads?.length ?? 0, version: parsed?.version });
-      const pod = this.collectPodAds(parsed);
-      this.log('linear pod items', pod.length);
-      if (!pod.length) {
-        // Non-linear-only VAST: render overlays while content continues (no pause / no playback lease).
+
+      if (meta.sourceType === 'NONLINEAR') {
         const nonLinearItems = this.collectNonLinearCreatives(parsed);
         if (nonLinearItems.length) {
           this.ctx.events.emit('ads.loaded', { break: meta, count: nonLinearItems.length });
           await this.playNonLinearOnlyBreak(parsed, meta);
           return;
         }
+
+        if (rawDoc) {
+          const xmlItems = this.collectNonLinearFromXml(rawDoc);
+          if (xmlItems.length) {
+            this.ctx.events.emit('ads.loaded', { break: meta, count: xmlItems.length });
+            await this.playNonLinearOnlyBreakFromXml(xmlItems, meta);
+            return;
+          }
+        }
+      }
+
+      const pod = this.collectPodAds(parsed);
+      this.log('linear pod items', pod.length);
+      if (!pod.length) {
+        const nonLinearItems = this.collectNonLinearCreatives(parsed);
+        if (nonLinearItems.length) {
+          this.ctx.events.emit('ads.loaded', { break: meta, count: nonLinearItems.length });
+          await this.playNonLinearOnlyBreak(parsed, meta);
+          return;
+        }
+
+        if (rawDoc) {
+          const xmlItems = this.collectNonLinearFromXml(rawDoc);
+          if (xmlItems.length) {
+            this.ctx.events.emit('ads.loaded', { break: meta, count: xmlItems.length });
+            await this.playNonLinearOnlyBreakFromXml(xmlItems, meta);
+            return;
+          }
+        }
         this.warn('no playable ads found in VAST response');
         throw new Error('No playable ads found in VAST response');
       }
 
-      this.ctx.events.emit('ads.loaded' as any, { break: meta, count: pod.length });
-      // Linear break: pause content and acquire playback lease, then start ad video takeover.
+      this.ctx.events.emit('ads.loaded', { break: meta, count: pod.length });
       if (!pauseAndAcquireLease()) return;
       this.active = true;
 
       for (let i = 0; i < pod.length; i++) {
         const item = pod[i];
         this.bus.emit('ads:ad:start', { break: meta, index: i, sequence: item.sequence });
-
-        // fresh session listeners per ad
         this.clearSession();
 
         this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative);
@@ -1773,12 +2317,8 @@ export class AdsPlugin implements PlayerPlugin {
           skipOffset: item.skipOffset,
         });
         this.mountAdVideo(media, item.mediaFile);
-        // Attach ended/error listeners immediately after mounting the takeover surface.
-        // Some test environments (and some user interactions) may dispatch `ended` very soon,
-        // and we don't want to miss it and leak the takeover element.
         const endPromise = this.waitForAdEnd();
 
-        // Skip button + companion + non-linear creatives (best-effort)
         this.setupSkipUIForCreative(item.creative);
         this.log('skip ui', { raw: this.skipOffsetRaw, at: this.skipAtSeconds });
         this.mountCompanions(item.creative);
@@ -1786,25 +2326,18 @@ export class AdsPlugin implements PlayerPlugin {
 
         if (!this.cfg.allowNativeControls) this.bindAdSurfaceCommands();
 
-        // SIMID overlay (best-effort; no-op if not found)
-        this.tryMountSimidLayer(item.creative);
-
-        // Tracking + clickthrough + quartiles
         this.tracker?.trackImpression?.();
         this.bus.emit('ads:impression', { break: meta, index: i });
 
         this.bindTrackerAndTelemetry({ kind: meta.kind, breakId: meta.id });
-
-        // Start playing this ad and wait for it to end
         this.startAdPlayback();
         await endPromise;
 
         this.bus.emit('ads:ad:end', { break: meta, index: i, sequence: item.sequence });
       }
 
-      // Finished the whole pod => cleanup + resume behavior
       this.bus.emit('ads:allAdsCompleted', { break: meta });
-      this.ctx.events.emit('ads.allAdsCompleted' as any, { break: meta });
+      this.ctx.events.emit('ads.allAdsCompleted', { break: meta });
       this.finish({ resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter) });
     } catch (err) {
       this.bus.emit('ads:error', err);
@@ -1819,13 +2352,13 @@ export class AdsPlugin implements PlayerPlugin {
 
   private startAdPlayback() {
     const v = this.adVideo;
-    this.ctx.events.emit('playback:play');
+    this.ctx.events.emit('play');
     if (!v) return;
     // In jsdom/Jest, HTMLMediaElement.play() may throw synchronously (not implemented)
     // or return a non-Promise value. Guard both cases so ads sessions don't immediately
     // abort and clean up DOM before tests can observe the takeover surface.
     try {
-      const maybePromise: any = (v as any).play?.();
+      const maybePromise = v.play?.();
       if (maybePromise && typeof maybePromise.catch === 'function') {
         maybePromise.catch(() => {
           // Autoplay may be blocked; user can hit play (custom or native controls)
@@ -1844,18 +2377,6 @@ export class AdsPlugin implements PlayerPlugin {
     this.clearAdOverlays();
     this.removeAdCaptions();
 
-    if (this.simidFrame) {
-      try {
-        this.simidFrame.src = 'about:blank';
-      } catch {
-        //
-      }
-    }
-    this.simidFrame?.remove();
-    this.simidOverlay?.remove();
-    this.simidFrame = undefined;
-    this.simidOverlay = undefined;
-
     if (this.adVideo) {
       try {
         this.adVideo.pause();
@@ -1868,16 +2389,12 @@ export class AdsPlugin implements PlayerPlugin {
 
     // Defensive cleanup for environments like jsdom where .remove() can be flaky in tests
     try {
-      document
-        .querySelectorAll('video.op-ads__media')
-        .forEach((n) => (n as any)?.parentNode?.removeChild?.(n) ?? (n as any).remove?.());
+      document.querySelectorAll('video.op-ads__media').forEach((n) => n?.parentNode?.removeChild?.(n) ?? n.remove?.());
     } catch {
       // ignore
     }
 
     this.adEndPromise = null;
-
-    // Keep overlay visible across a pod; the next ad will remount.
     this.overlay.replaceChildren();
     this.overlay.style.display = 'block';
   }
@@ -1886,19 +2403,14 @@ export class AdsPlugin implements PlayerPlugin {
     const { events, leases } = this.ctx;
 
     this.clearSession();
-
-    // Restore content native controls if we disabled them
     if (this.contentMedia && this.contentHadControls) {
       this.contentMedia.setAttribute('controls', '');
     }
     this.contentMedia = undefined;
     this.contentHadControls = false;
-
-    // Hide overlay
     this.overlay.style.display = 'none';
     this.overlay.replaceChildren();
 
-    // Release lease
     leases.release('playback', this.name);
 
     this.active = false;
@@ -1908,23 +2420,16 @@ export class AdsPlugin implements PlayerPlugin {
     getOverlayManager(this.ctx.player).deactivate(this.overlayId);
 
     if (shouldResume) {
-      events.emit('playback:play');
+      events.emit('cmd:play');
     } else {
-      events.emit('playback:pause');
+      events.emit('cmd:pause');
     }
   }
 }
 
-/**
- * Optional prototype-level install for UMD bundles.
- * This keeps core generic while allowing opt-in convenience accessors.
- *
- * NOTE: Instance-level `extendAds()` is preferred and does not require prototype mutation.
- */
 export function installAds(PlayerCtor: any) {
   if (!PlayerCtor || !PlayerCtor.prototype) return;
 
-  // Idempotent define (do not overwrite if already defined)
   const desc = Object.getOwnPropertyDescriptor(PlayerCtor.prototype, 'ads');
   if (desc) return;
 
@@ -1932,17 +2437,16 @@ export function installAds(PlayerCtor: any) {
     configurable: true,
     enumerable: false,
     get() {
-      return (this as any).getPlugin?.('ads');
+      return this.getPlugin?.('ads');
     },
   });
 }
 
-/** Instance-level API extension. */
 export function extendAds(player: any, plugin: AdsPlugin) {
   if (!player) return;
   if (typeof player.extend === 'function') {
     player.extend({ ads: plugin });
-  } else if ((player as any).ads === undefined) {
-    (player as any).ads = plugin;
+  } else if (player.ads === undefined) {
+    player.ads = plugin;
   }
 }

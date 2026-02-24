@@ -49,8 +49,8 @@ function makeCtx(media?: HTMLVideoElement) {
   const video = media ?? document.createElement('video');
 
   // Simulate player reacting to playback bus events.
-  bus.on('playback:pause', () => (video as any).pause());
-  bus.on('playback:play', () => void (video as any).play());
+  bus.on('cmd:pause', () => (video as any).pause());
+  bus.on('cmd:play', () => void (video as any).play());
 
   const lease = makeLeases();
 
@@ -204,7 +204,8 @@ describe('AdsPlugin (ultimate patch)', () => {
     (p as any).bus.on('ads:impression', () => seen.push('impression'));
 
     const playPromise = p.playAds('https://example.com/vast.xml');
-    await Promise.resolve();
+    // Flush enough microtasks for: loadRawDocForNonLinear + vastClient.get() + pauseAndAcquireLease
+    for (let i = 0; i < 5; i++) await Promise.resolve();
 
     // Linear breaks pause and acquire lease
     expect((video as any).pause).toHaveBeenCalled();
@@ -247,7 +248,8 @@ describe('AdsPlugin (ultimate patch)', () => {
     p.setup(ctx);
 
     const play = p.playAds('https://example.com/nonlinear.xml');
-    await Promise.resolve();
+    // Flush enough microtasks for: loadRawDocForNonLinear + vastClient.get() + playNonLinearOnlyBreak DOM render
+    for (let i = 0; i < 5; i++) await Promise.resolve();
 
     // Non-linear-only breaks should not acquire the playback lease.
     // (Avoid asserting pause() call counts because HTMLMediaElement.prototype.pause is globally mocked.)

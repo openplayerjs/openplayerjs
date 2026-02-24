@@ -15,8 +15,8 @@ export type IEngine = {
 export abstract class BaseMediaEngine {
   protected media: HTMLMediaElement | null = null;
   protected events: MediaEngineContext['events'] | null = null;
-  protected commands: Listener[] = [];
 
+  protected commands: Listener[] = [];
   private mediaListeners: MediaListener[] = [];
 
   abstract name: string;
@@ -28,26 +28,27 @@ export abstract class BaseMediaEngine {
   abstract attach(ctx: MediaEngineContext): void;
   abstract detach(): void;
 
+  /**
+   * Bridge real HTMLMediaElement events into the player EventBus using
+   * HTML5 event names (no payload; consumers read from player/media).
+   */
   protected bindMediaEvents(media: HTMLMediaElement, events: MediaEngineContext['events']) {
     this.media = media;
     this.events = events;
 
-    const onLoadedMetadata = () => {
-      events.emit('media:loadedmetadata');
-      events.emit('media:duration', media.duration);
-      events.emit('playback:ready');
-    };
-
-    const onDurationChange = () => events.emit('media:duration', media.duration);
-    const onTimeUpdate = () => events.emit('media:timeupdate', media.currentTime);
-    const onWaiting = () => events.emit('playback:waiting');
-    const onSeeking = () => events.emit('playback:seeking');
-    const onSeeked = () => events.emit('playback:seeked');
-    const onEnded = () => events.emit('playback:ended');
-    const onError = () => events.emit('playback:error', media.error);
-    const onPlay = () => events.emit('playback:play');
-    const onPlaying = () => events.emit('playback:playing');
-    const onPause = () => events.emit('playback:paused');
+    const onLoadedMetadata = () => events.emit('loadedmetadata');
+    const onDurationChange = () => events.emit('durationchange');
+    const onTimeUpdate = () => events.emit('timeupdate');
+    const onWaiting = () => events.emit('waiting');
+    const onSeeking = () => events.emit('seeking');
+    const onSeeked = () => events.emit('seeked');
+    const onEnded = () => events.emit('ended');
+    const onError = () => events.emit('error', media.error);
+    const onPlay = () => events.emit('play');
+    const onPlaying = () => events.emit('playing');
+    const onPause = () => events.emit('pause');
+    const onVolumeChange = () => events.emit('volumechange');
+    const onRateChange = () => events.emit('ratechange');
 
     this.addMediaListener(media, 'loadedmetadata', onLoadedMetadata, EVENT_OPTIONS);
     this.addMediaListener(media, 'durationchange', onDurationChange, EVENT_OPTIONS);
@@ -60,6 +61,8 @@ export abstract class BaseMediaEngine {
     this.addMediaListener(media, 'playing', onPlaying, EVENT_OPTIONS);
     this.addMediaListener(media, 'pause', onPause, EVENT_OPTIONS);
     this.addMediaListener(media, 'play', onPlay, EVENT_OPTIONS);
+    this.addMediaListener(media, 'volumechange', onVolumeChange, EVENT_OPTIONS);
+    this.addMediaListener(media, 'ratechange', onRateChange, EVENT_OPTIONS);
   }
 
   protected unbindMediaEvents() {
@@ -85,38 +88,41 @@ export abstract class BaseMediaEngine {
     return !owner || owner === this.name;
   }
 
+  /**
+   * Commands are explicit and separate from notifications.
+   */
   protected bindCommands(ctx: MediaEngineContext) {
     const { media, events } = ctx;
 
     this.commands.push(
-      events.on('playback:seek', (t: number) => {
+      events.on('cmd:seek', (t: number) => {
         if (!this.canHandlePlayback(ctx)) return;
         try {
           media.currentTime = t;
         } catch {
-          // Nothing to do
+          // ignore
         }
       })
     );
 
     this.commands.push(
-      events.on('media:volume', (v: number) => {
-        if (!this.canHandlePlayback(ctx)) return;
+      events.on('cmd:setVolume', (v: number) => {
         media.volume = v;
       })
     );
     this.commands.push(
-      events.on('media:muted', (m: boolean) => {
-        if (!this.canHandlePlayback(ctx)) return;
+      events.on('cmd:setMuted', (m: boolean) => {
         media.muted = m;
       })
     );
     this.commands.push(
-      events.on('media:rate', (r: number) => {
+      events.on('cmd:setRate', (r: number) => {
         if (!this.canHandlePlayback(ctx)) return;
         media.playbackRate = r;
       })
     );
+
+    this.bindPlayPauseCommands(ctx);
   }
 
   protected unbindCommands() {
@@ -126,14 +132,16 @@ export abstract class BaseMediaEngine {
 
   protected bindPlayPauseCommands(ctx: MediaEngineContext) {
     const { media, events } = ctx;
+
     this.commands.push(
-      events.on('playback:play', () => {
+      events.on('cmd:play', () => {
         if (!this.canHandlePlayback(ctx)) return;
         this.playImpl(media);
       })
     );
+
     this.commands.push(
-      events.on('playback:pause', () => {
+      events.on('cmd:pause', () => {
         if (!this.canHandlePlayback(ctx)) return;
         this.pauseImpl(media);
       })
@@ -142,7 +150,7 @@ export abstract class BaseMediaEngine {
 
   private playImpl(media: HTMLMediaElement): void {
     void media.play().catch(() => {
-      //
+      // ignore
     });
   }
 

@@ -28,13 +28,13 @@ describe('ProgressControl branch coverage', () => {
 
     // Live stream path
     (p as any).isLive = true;
-    p.events.emit('media:duration');
+    p.events.emit('durationchange');
     expect(el.getAttribute('aria-hidden')).toBe('true');
 
     // Infinity duration path
     (p as any).isLive = false;
     (p.media as any).duration = Infinity;
-    p.events.emit('media:duration');
+    p.events.emit('durationchange');
     expect(el.getAttribute('aria-hidden')).toBe('true');
   });
 
@@ -61,7 +61,7 @@ describe('ProgressControl branch coverage', () => {
       bufferedPct: 20,
     });
 
-    p.events.emit('media:timeupdate');
+    p.events.emit('timeupdate');
     expect(el.getAttribute('aria-hidden')).toBe('false');
     expect(slider.disabled).toBe(true);
     expect(slider.classList.contains('op-progress--disabled')).toBe(true);
@@ -70,7 +70,7 @@ describe('ProgressControl branch coverage', () => {
     const before = slider.value;
     slider.classList.add('op-progress--pressed');
     (p.media as any).currentTime = 15;
-    p.events.emit('media:timeupdate');
+    p.events.emit('timeupdate');
     // value should not have been overwritten while pressed
     expect(slider.value).toBe(before);
   });
@@ -87,10 +87,10 @@ describe('ProgressControl branch coverage', () => {
     const slider = nn(el.querySelector('input[type="range"]')) as HTMLInputElement;
     const buffer = nn(el.querySelector('progress')) as HTMLProgressElement;
 
-    p.events.emit('playback:waiting');
+    p.events.emit('waiting');
     expect(slider.classList.contains('loading')).toBe(true);
 
-    p.events.emit('playback:play'); // should clear loading/error and remove aria-valuenow/valuetext
+    p.events.emit('play'); // should clear loading/error and remove aria-valuenow/valuetext
     expect(slider.classList.contains('loading')).toBe(false);
     expect(el.hasAttribute('aria-valuenow')).toBe(false);
 
@@ -99,7 +99,7 @@ describe('ProgressControl branch coverage', () => {
     slider.style.backgroundSize = '10% 100%';
     buffer.value = 60;
 
-    p.events.emit('playback:ended');
+    p.events.emit('ended');
     expect(slider.max).toBe('0');
     expect(buffer.value).toBe(0);
     expect(slider.style.backgroundSize).toBe('0% 100%');

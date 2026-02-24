@@ -138,7 +138,7 @@ export class CaptionsControl extends BaseControl {
     getSettingsRegistry(player).register(provider);
 
     this.overlayMgr.bus.on('overlay:changed', refresh);
-    player.events.on('playback:ready', refresh);
+    player.events.on('loadedmetadata', refresh);
 
     refresh();
     return this.button;

@@ -30,6 +30,6 @@ export function extendControls(player: Player) {
     },
   };
 
-  (player as any).extend?.({ controls: api }) ?? Object.assign(player as any, { controls: api });
+  Object.assign(player, { controls: api });
   return api;
 }

@@ -9,6 +9,23 @@ import { StateManager } from '../src/core/state';
 import { AdsPlugin } from '../src/plugins/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+async function waitForAdVideo(retries = 25): Promise<HTMLVideoElement> {
+  for (let i = 0; i < retries; i++) {
+    const el = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
+    if (el) return el;
+    await Promise.resolve();
+  }
+  throw new Error('Ad video was not mounted within expected time');
+}
+
+async function flushPromises(n = 5) {
+  for (let i = 0; i < n; i++) await Promise.resolve();
+}
+
 function makeLeases(): {
   leases: Lease;
   acquire: jest.MockedFunction<(capability: string, owner: string) => boolean>;
@@ -16,47 +33,70 @@ function makeLeases(): {
   owner: jest.MockedFunction<(capability: string) => string | undefined>;
 } {
   const owners = new Map<string, string>();
-
-  // jest.fn typing in Jest expects 0 or 2 generic args; use <Return, ArgsTuple>.
-  const acquire = jest.fn<boolean, [string, string]>((capability, who) => {
-    if (owners.has(capability)) return false;
-    owners.set(capability, who);
+  const acquire = jest.fn<boolean, [string, string]>((cap, who) => {
+    if (owners.has(cap)) return false;
+    owners.set(cap, who);
     return true;
-  }) as unknown as jest.MockedFunction<(capability: string, owner: string) => boolean>;
-
-  const release = jest.fn<void, [string, string]>((capability, who) => {
-    if (owners.get(capability) === who) owners.delete(capability);
-  }) as unknown as jest.MockedFunction<(capability: string, owner: string) => void>;
-
-  // IMPORTANT: Lease.owner returns string | undefined (not null).
-  const owner = jest.fn<string | undefined, [string]>((capability) =>
-    owners.get(capability)
-  ) as unknown as jest.MockedFunction<(capability: string) => string | undefined>;
-
+  }) as unknown as jest.MockedFunction<(c: string, o: string) => boolean>;
+  const release = jest.fn<void, [string, string]>((cap, who) => {
+    if (owners.get(cap) === who) owners.delete(cap);
+  }) as unknown as jest.MockedFunction<(c: string, o: string) => void>;
+  const owner = jest.fn<string | undefined, [string]>((cap) => owners.get(cap)) as unknown as jest.MockedFunction<
+    (c: string) => string | undefined
+  >;
   return { leases: { acquire, release, owner } as any, acquire, release, owner };
 }
 
-function makeCtx(media?: HTMLVideoElement) {
+/**
+ * Build a minimal PluginContext.
+ * @param userInteracted - mirrors Player.userInteracted
+ * @param muted          - mirrors player.muted state
+ * @param volume         - mirrors player.volume state
+ * @param preload        - preload attribute to set on content media
+ */
+function makeCtx(
+  opts: {
+    userInteracted?: boolean;
+    muted?: boolean;
+    volume?: number;
+    preload?: string;
+    autoplay?: boolean;
+  } = {},
+  media?: HTMLVideoElement
+) {
+  const { userInteracted = false, muted = false, volume = 1, preload = '', autoplay = false } = opts;
   const bus = new EventBus();
   const video = media ?? document.createElement('video');
 
-  bus.on('playback:pause', () => (video as any).pause());
-  bus.on('playback:play', () => void (video as any).play());
+  if (preload) video.setAttribute('preload', preload);
+  if (autoplay) video.autoplay = true;
+
+  bus.on('cmd:pause', () => (video as any).pause());
+  bus.on('cmd:play', () => void (video as any).play());
 
   const lease = makeLeases();
 
-  const ctx: PluginContext = {
-    // PluginContext expects a full Player; tests only need `.media`.
-    player: { media: video } as unknown as Player,
-    // EventBus is capable of emitting arbitrary plugin events; PlayerEvent typing is stricter than runtime.
+  const playerMock: Partial<Player> & { userInteracted: boolean; muted: boolean; volume: number } = {
+    media: video,
+    userInteracted,
+    muted,
+    volume,
     events: bus as any,
-    // Real StateManager has `current` getter (readonly) + transition(); ads tests mutate via transition().
+  };
+
+  const ctx: PluginContext = {
+    player: playerMock as unknown as Player,
+    events: bus as any,
     state: new StateManager('playing'),
     leases: lease.leases,
   };
 
   return { ctx, bus, video, lease };
 }
+
+// ---------------------------------------------------------------------------
+// VAST fixtures
+// ---------------------------------------------------------------------------
 
 function linearParsed(skipOffset = '00:00:00') {
   return {
@@ -65,8 +105,6 @@ function linearParsed(skipOffset = '00:00:00') {
         sequence: '1',
         creatives: [
           {
-            apiFramework: 'SIMID',
-            interactiveCreativeFile: 'https://example.com/interactive.html',
             videoClicks: {
               clickThroughURLTemplate: 'https://example.com/clickthrough',
             },
@@ -95,8 +133,6 @@ function linearPodParsed(count: number, skipOffset = '00:00:00') {
       sequence: String(i + 1),
       creatives: [
         {
-          apiFramework: 'SIMID',
-          interactiveCreativeFile: 'https://example.com/interactive.html',
           videoClicks: { clickThroughURLTemplate: 'https://example.com/clickthrough' },
           linear: {
             skipOffset,
@@ -116,6 +152,33 @@ function linearPodParsed(count: number, skipOffset = '00:00:00') {
   };
 }
 
+function companionParsed() {
+  return {
+    ads: [
+      {
+        sequence: '1',
+        creatives: [
+          {
+            linear: {
+              skipOffset: '00:00:00',
+              mediaFiles: [
+                { type: 'video/mp4', fileURL: 'https://example.com/ad.mp4', bitrate: 500, width: 640, height: 360 },
+              ],
+            },
+            companionAds: {
+              companions: [{ iFrameResource: { value: 'https://example.com/companion.html' } }],
+            },
+          },
+        ],
+      },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Core additional-coverage tests (existing, fixed)
+// ---------------------------------------------------------------------------
+
 describe('AdsPlugin additional coverage', () => {
   beforeEach(() => {
     (VMAP as any).__breaks = [];
@@ -127,7 +190,6 @@ describe('AdsPlugin additional coverage', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    // restore fetch if test overwrote it
     (globalThis as any).fetch = undefined;
   });
 
@@ -137,13 +199,10 @@ describe('AdsPlugin additional coverage', () => {
     p.setup(ctx);
 
     const seen: any[] = [];
-    // This hits PluginBus.on (previously uncovered)
     (p as any).bus.on('ads:error', (e: any) => seen.push(e));
-    // This hits PluginBus.emit
     (p as any).bus.emit('ads:error', { hello: 'world' });
-
     expect(seen).toEqual([{ hello: 'world' }]);
-    // also ensure EventBus itself works
+
     const other: any[] = [];
     bus.on('ads:error' as any, (e: any) => other.push(e));
     (p as any).bus.emit('ads:error', { again: true });
@@ -156,28 +215,25 @@ describe('AdsPlugin additional coverage', () => {
     const p = new AdsPlugin({
       allowNativeControls: false,
       breaks: [
-        { id: 'm1', at: 5, url: 'https://example.com/mid.xml', once: true },
-        { id: 'po', at: 'postroll', url: 'https://example.com/post.xml', once: true },
+        { id: 'm1', at: 5, source: { type: 'VAST', src: 'https://example.com/mid.xml' }, once: true },
+        { id: 'po', at: 'postroll', source: { type: 'VAST', src: 'https://example.com/post.xml' }, once: true },
       ],
     });
     p.setup(ctx);
 
     const spy = jest.spyOn(p as any, 'playBreakFromVast').mockResolvedValue(undefined);
 
-    // timeupdate should start midroll once
     (video as any).currentTime = 6;
     video.dispatchEvent(new Event('timeupdate'));
     await Promise.resolve();
     expect(spy).toHaveBeenCalled();
 
-    // second timeupdate should not re-trigger because once=true
     spy.mockClear();
     (video as any).currentTime = 10;
     video.dispatchEvent(new Event('timeupdate'));
     await Promise.resolve();
     expect(spy).not.toHaveBeenCalled();
 
-    // ended should trigger postroll
     spy.mockClear();
     video.dispatchEvent(new Event('ended'));
     await Promise.resolve();
@@ -186,23 +242,20 @@ describe('AdsPlugin additional coverage', () => {
 
   test('preroll interceptors: custom controls via playback:play and native controls via media play capture', async () => {
     const { ctx, bus, video } = makeCtx();
-    // Preroll interception only occurs when player state is idle/ready/loading
     ctx.state.transition('idle' as any);
     const p = new AdsPlugin({
       allowNativeControls: true,
       interceptPlayForPreroll: true,
-      breaks: [{ id: 'pre', at: 'preroll', url: 'https://example.com/pre.xml', once: true }],
+      breaks: [{ id: 'pre', at: 'preroll', source: { type: 'VAST', src: 'https://example.com/pre.xml' }, once: true }],
     });
     p.setup(ctx);
 
     const spy = jest.spyOn(p as any, 'startBreak').mockResolvedValue(undefined);
 
-    // Custom control play intent
-    bus.emit('playback:play');
+    bus.emit('cmd:play');
     await Promise.resolve();
     expect(spy).toHaveBeenCalled();
 
-    // Native play capture should also intercept
     spy.mockClear();
     video.dispatchEvent(new Event('play'));
     await Promise.resolve();
@@ -211,7 +264,6 @@ describe('AdsPlugin additional coverage', () => {
   });
 
   test('VMAP: merge breaks, including percent-based midroll resolved once duration is known', async () => {
-    // VMAP breaks: preroll + 25% midroll + postroll. Use inline VAST for the 25% one.
     (VMAP as any).__breaks = [
       {
         breakType: 'linear',
@@ -233,8 +285,8 @@ describe('AdsPlugin additional coverage', () => {
       },
     ];
 
-    // mock fetch(vmapUrl)
     (globalThis as any).fetch = jest.fn().mockResolvedValue({
+      ok: true,
       text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
     });
 
@@ -247,54 +299,42 @@ describe('AdsPlugin additional coverage', () => {
     });
     p.setup(ctx);
 
-    // Force VMAP merge to complete deterministically
     await (p as any).loadVmapAndMerge([]);
 
-    // pendingPercentBreak should resolve into resolvedBreaks when getDueMidrollBreak is called
     const anyP: any = p;
-    // midroll at 25% of 80 = 20
-    const dueBefore = anyP.getDueMidrollBreak(10);
-    expect(dueBefore?.id).not.toBe('v-mid');
+    // getDueMidrollBreaks returns an array — nothing due before the 25% mark (20s)
+    const dueBefore = anyP.getDueMidrollBreaks(10);
+    const dueBeforeIds = (dueBefore as any[]).map((b: any) => b.id);
+    expect(dueBeforeIds).not.toContain('v-mid');
 
-    const due = anyP.getDueMidrollBreak(21);
-    expect(due?.id).toBe('v-mid');
-    expect(typeof due.at).toBe('number');
+    // At 21s the 25%-of-80 midroll (20s) is due
+    const due = anyP.getDueMidrollBreaks(21);
+    expect(Array.isArray(due)).toBe(true);
+    expect(due.length).toBeGreaterThan(0);
+    expect(due[0].id).toBe('v-mid:25%:1');
+    expect(typeof due[0].at).toBe('number');
   });
 
-  test('SIMID: mounts iframe overlay and relays postMessage through onMessage hook', async () => {
-    const onMessage = jest.fn();
+  test('companion iFrame resource: renders iframe inside companion container', async () => {
+    vastGetMock.mockResolvedValueOnce(companionParsed());
+
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({
-      allowNativeControls: false,
-      resumeContent: false,
-      simid: { enabled: true, onMessage },
-    });
+    const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    // Call SIMID mounting directly (unit-level) to cover findSimidUrl + message bridge.
-    const creative = {
-      apiFramework: 'SIMID',
-      // NOTE: findSimidUrl intentionally ignores strings that *contain* "simid" to avoid false positives.
-      // Use a URL that does not contain that substring.
-      interactiveCreativeFile: 'https://example.com/interactive.html',
-    };
-    (p as any).ensureOverlayMounted();
-    (p as any).tryMountSimidLayer(creative);
+    const run = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+    Object.defineProperty(adVideo, 'duration', { value: 5, configurable: true });
+    adVideo.dispatchEvent(new Event('loadedmetadata'));
 
-    const iframe = document.querySelector('.op-ads__simid iframe') as HTMLIFrameElement;
+    const companion = document.querySelector('.op-ads__companion') as HTMLElement;
+    expect(companion).toBeTruthy();
+    const iframe = companion.querySelector('iframe') as HTMLIFrameElement;
     expect(iframe).toBeTruthy();
-    expect(iframe.src).toContain('https://example.com/interactive.html');
+    expect(iframe.src).toContain('https://example.com/companion.html');
 
-    // Simulate postMessage from iframe
-    const ev = new MessageEvent('message', {
-      data: { type: 'SIMID:Ping' },
-      source: (iframe as any).contentWindow,
-    });
-    window.dispatchEvent(ev);
-    expect(onMessage).toHaveBeenCalledWith({ type: 'SIMID:Ping' });
-
-    // cleanup listeners
-    p.destroy();
+    adVideo.dispatchEvent(new Event('ended'));
+    await run;
   });
 
   test('XML parsing: playAdsFromXml errors on parsererror and emits ads:error', async () => {
@@ -305,9 +345,7 @@ describe('AdsPlugin additional coverage', () => {
     const errors: any[] = [];
     bus.on('ads:error' as any, (e: any) => errors.push(e));
 
-    // invalid XML => DOMParser emits <parsererror>
     await p.playAdsFromXml('<VAST><NotClosed></VAST>');
-
     expect(errors.length).toBeGreaterThan(0);
   });
 
@@ -324,7 +362,6 @@ describe('AdsPlugin additional coverage', () => {
     });
     p.setup(ctx);
 
-    // ensureOverlayMounted should mount under selector element
     (p as any).ensureOverlayMounted();
     expect(mount.querySelector('.op-ads')).toBeTruthy();
   });
@@ -334,7 +371,6 @@ describe('AdsPlugin additional coverage', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    // Make parseVAST succeed with empty ads but no non-linear => emits ads:error
     vastParseMock.mockResolvedValueOnce({ ads: [] });
     const errs: any[] = [];
     bus.on('ads:error' as any, (e: any) => errs.push(e));
@@ -346,65 +382,53 @@ describe('AdsPlugin additional coverage', () => {
     expect(errs.length).toBeGreaterThan(0);
   });
 
-  test('telemetry + ad surface commands: quartiles, clickthrough, mute/unmute via bus', async () => {
+  test('telemetry: quartiles, clickthrough, and mute/unmute tracking', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx, bus } = makeCtx();
-    // allowCustomControls enables bindAdSurfaceCommands
-    const p = new AdsPlugin({ allowNativeControls: true, resumeContent: false });
+    // allowNativeControls: false so playback:play from bus starts ad playback
+    const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
     p.setup(ctx);
 
-    const opened: any[] = [];
     const oldOpen = window.open;
+    const opened: string[] = [];
     (window as any).open = jest.fn((url: string) => {
       opened.push(url);
       return null;
     });
 
     const quartiles: number[] = [];
-    bus.on('ads:quartile' as any, (p: any) => quartiles.push(p.quartile));
+    bus.on('ads:quartile' as any, (payload: any) => quartiles.push(payload.quartile));
     const clicks: any[] = [];
-    bus.on('ads:clickthrough' as any, (p: any) => clicks.push(p));
+    bus.on('ads:clickthrough' as any, (c: any) => clicks.push(c));
 
     const playPromise = p.playAds('https://example.com/vast.xml');
-    await Promise.resolve();
-
-    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
-    expect(adVideo).toBeTruthy();
+    const adVideo = await waitForAdVideo();
     Object.defineProperty(adVideo, 'duration', { value: 20, configurable: true });
 
-    // Start playback via bus
-    bus.emit('playback:play');
-    expect((adVideo as any).play).toBeDefined();
-
-    // "playing" triggers start + duration + quartile(0)
     adVideo.dispatchEvent(new Event('playing'));
 
-    // drive time updates across quartiles
-    adVideo.currentTime = 5; // 25%
+    adVideo.currentTime = 5;
     adVideo.dispatchEvent(new Event('timeupdate'));
-    adVideo.currentTime = 10; // 50%
+    adVideo.currentTime = 10;
     adVideo.dispatchEvent(new Event('timeupdate'));
-    adVideo.currentTime = 15; // 75%
+    adVideo.currentTime = 15;
     adVideo.dispatchEvent(new Event('timeupdate'));
-    adVideo.currentTime = 19.99; // ~100%
+    adVideo.currentTime = 19.99;
     adVideo.dispatchEvent(new Event('timeupdate'));
 
     expect(quartiles).toEqual(expect.arrayContaining([0, 25, 50, 75, 100]));
 
-    // clickthrough opens a tab and emits ads:clickthrough
     adVideo.dispatchEvent(new MouseEvent('click'));
     expect(opened[0]).toBe('https://example.com/clickthrough');
     expect(clicks.length).toBe(1);
 
-    // mute/unmute tracking path via volumechange
     adVideo.muted = true;
     adVideo.dispatchEvent(new Event('volumechange'));
     adVideo.muted = false;
     adVideo.volume = 0.5;
     adVideo.dispatchEvent(new Event('volumechange'));
 
-    // end
     adVideo.dispatchEvent(new Event('ended'));
     await playPromise;
 
@@ -412,12 +436,26 @@ describe('AdsPlugin additional coverage', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Branch-forcing tests (existing, fixed)
+// ---------------------------------------------------------------------------
+
 describe('AdsPlugin extra branch forcing', () => {
+  beforeEach(() => {
+    (VMAP as any).__breaks = [];
+    vastGetMock.mockReset();
+    vastParseMock.mockReset();
+    document.body.innerHTML = '';
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   test('lease contention emits ads:error and does not play linear', async () => {
     const { ctx, lease } = makeCtx();
-    // Pre-own the lease so the plugin can't acquire it
     lease.acquire('playback', 'someone-else');
-
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const p = new AdsPlugin({ allowNativeControls: false });
@@ -436,32 +474,26 @@ describe('AdsPlugin extra branch forcing', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    // Spy on emits to avoid guessing event names
     const emitSpy = jest.spyOn(bus as any, 'emit');
 
     const playP = p.playAds('https://example.com/vast.xml');
-    await Promise.resolve();
-
-    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
+    const adVideo = await waitForAdVideo();
     expect(adVideo).toBeTruthy();
+
     const beforeCalls = emitSpy.mock.calls.length;
 
-    // Trigger volume branch
     (adVideo as any).volume = 0.5;
     (adVideo as any).muted = false;
     adVideo.dispatchEvent(new Event('volumechange'));
-
     const afterFirst = emitSpy.mock.calls.length;
-    // Trigger mute branch
+
     (adVideo as any).muted = true;
     adVideo.dispatchEvent(new Event('volumechange'));
-
     const afterSecond = emitSpy.mock.calls.length;
+
     adVideo.dispatchEvent(new Event('ended'));
     await playP;
 
-    // Some builds do not emit a dedicated volume event; but the handler should still run.
-    // Require that at least one emit happened during volumechange handling.
     expect(afterFirst).toBeGreaterThanOrEqual(beforeCalls);
     expect(afterSecond).toBeGreaterThanOrEqual(afterFirst);
   });
@@ -474,19 +506,250 @@ describe('AdsPlugin extra branch forcing', () => {
     p.setup(ctx);
 
     const playP = p.playAds('https://example.com/vast.xml');
-    await Promise.resolve();
 
-    // End first ad
-    let adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
+    let adVideo = await waitForAdVideo();
     expect(adVideo).toBeTruthy();
     adVideo.dispatchEvent(new Event('ended'));
-    await Promise.resolve();
+    await flushPromises(10);
 
-    // Second ad should play (same element reused or remounted)
-    adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement;
+    adVideo = await waitForAdVideo();
     expect(adVideo).toBeTruthy();
     adVideo.dispatchEvent(new Event('ended'));
 
+    await playP;
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Autoplay / muted-until-interaction fix tests
+// ---------------------------------------------------------------------------
+
+describe('AdsPlugin autoplay mute policy', () => {
+  beforeEach(() => {
+    (VMAP as any).__breaks = [];
+    vastGetMock.mockReset();
+    vastParseMock.mockReset();
+    document.body.innerHTML = '';
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test('ad starts MUTED when content has preload=auto and user has not yet interacted', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    // No user interaction, content preloads automatically
+    const { ctx } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.8 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    // Ad must be muted regardless of player.muted=false because user hasn't interacted
+    expect(adVideo.muted).toBe(true);
+    expect(adVideo.volume).toBe(0);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('ad starts MUTED when content has autoplay attribute and user has not yet interacted', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx } = makeCtx({ autoplay: true, userInteracted: false, muted: false, volume: 1 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    expect(adVideo.muted).toBe(true);
+    expect(adVideo.volume).toBe(0);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('ad starts UNMUTED when user has interacted and player is unmuted (carry-over after unmute)', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    // Simulate: user already clicked unmute → userInteracted=true, muted=false
+    const { ctx } = makeCtx({ preload: 'auto', userInteracted: true, muted: false, volume: 0.8 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    // After user has interacted and unmuted, subsequent ads follow player state
+    expect(adVideo.muted).toBe(false);
+    expect(adVideo.volume).toBeCloseTo(0.8);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('ad starts MUTED when user has interacted but player is still muted', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    // Simulate: user interacted (clicked somewhere) but hasn't unmuted yet
+    const { ctx } = makeCtx({ preload: 'auto', userInteracted: true, muted: true, volume: 0 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    expect(adVideo.muted).toBe(true);
+    expect(adVideo.volume).toBe(0);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('no-autoplay path: ad respects player muted=false without forcing mute', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    // No preload=auto, no autoplay → user explicitly played
+    const { ctx } = makeCtx({ userInteracted: true, muted: false, volume: 1 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    expect(adVideo.muted).toBe(false);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('forcedMuteUntilInteraction keeps ad muted when media:muted=false fires before interaction', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx, bus } = makeCtx({ preload: 'auto', userInteracted: false, muted: true, volume: 0 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    // Ad is muted at start
+    expect(adVideo.muted).toBe(true);
+
+    // Someone fires media:muted=false while user hasn't interacted — should be suppressed
+    bus.emit('media:muted' as any, false);
+    expect(adVideo.muted).toBe(true);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('player:interacted clears forcedMuteUntilInteraction and syncs ad volume from player', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx, bus } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.8 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    // Ad starts muted (no interaction yet)
+    expect(adVideo.muted).toBe(true);
+
+    // Simulate user interaction: mark player as interacted and update muted state
+    (ctx.player as any).userInteracted = true;
+    bus.emit('player:interacted');
+
+    // After interaction, media:muted=false should now propagate
+    bus.emit('media:muted', false);
+    expect(adVideo.muted).toBe(false);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('bindAdSurfaceCommands shouldForceMute: forces muted on autoplay path without interaction', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx, bus } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.9 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    // Manually fire playback:play again (as if retried) — should still re-enforce mute
+    bus.emit('playback:play' as any);
+    expect(adVideo.muted).toBe(true);
+    expect(adVideo.volume).toBe(0);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('regression: cached autoplay-support with muted=false no longer bypasses force-mute', async () => {
+    // Historically the plugin stored autoplaySupport={muted:false} (from a content-media probe)
+    // and used it to skip force-muting ads. With the fix the field was removed; we verify the
+    // behaviour by simulating what the old code would have done: user hasn't interacted but the
+    // player "knows" unmuted autoplay is possible. Ad must still start muted.
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 1 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    // Verify no autoplaySupport field exists on the instance
+    expect((p as any).autoplaySupport).toBeUndefined();
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo = await waitForAdVideo();
+
+    // Must be muted: no user interaction, autoplay path
+    expect(adVideo.muted).toBe(true);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('multi-break carry-over: first ad muted, after unmute second ad is unmuted', async () => {
+    // Simulate two consecutive ads (pod of 2). First plays muted.
+    // After "user" unmutes between them, second should be unmuted.
+    vastGetMock.mockResolvedValueOnce(linearPodParsed(2));
+
+    const { ctx, bus } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.9 });
+    const p = new AdsPlugin({ allowNativeControls: false });
+    p.setup(ctx);
+
+    const playP = p.playAds('https://example.com/vast.xml');
+    const adVideo1 = await waitForAdVideo();
+
+    // First ad must be muted
+    expect(adVideo1.muted).toBe(true);
+
+    // Simulate user clicking unmute during first ad
+    (ctx.player as any).userInteracted = true;
+    (ctx.player as any).muted = false;
+    (ctx.player as any).volume = 0.9;
+    bus.emit('player:interacted' as any);
+    bus.emit('media:muted' as any, false);
+    bus.emit('media:volume' as any, 0.9);
+
+    // End first ad → second ad starts
+    adVideo1.dispatchEvent(new Event('ended'));
+    await flushPromises(15);
+
+    const adVideo2 = await waitForAdVideo();
+    expect(adVideo2).toBeTruthy();
+
+    // Second ad should be unmuted (carry-over)
+    expect(adVideo2.muted).toBe(false);
+
+    adVideo2.dispatchEvent(new Event('ended'));
     await playP;
   });
 });

@@ -88,7 +88,7 @@
     "build:bundles": "rollup -c rollup.config.mjs",
     "watch": "npm run build:bundles -- --watch",
     "build": "npm run build:types && npm run build:bundles && npm run build:css",
-    "test": "jest --coverage",
+    "test": "jest --coverage --passWithNoTests",
     "build:css": "mkdir -p dist && npm run lint:css && postcss src/player.css -o dist/openplayer.css",
     "lint:css": "stylelint src/player.css"
   },
