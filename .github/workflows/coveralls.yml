@@ -1,23 +1,36 @@
-on: ['push', 'pull_request']
+on:
+  push:
+  pull_request:
 
-name: Test Coveralls
+name: Test + Coveralls
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v1
+  test:
+    runs-on: ubuntu-latest
 
-            - name: Use Node.js 24.x
-              uses: actions/setup-node@v6
-              with:
-                  node-version: 24
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            - name: npm install, make test-coverage
-              run: |
-                  npm ci --cache .npm --prefer-offline
-                  npm test
-            - name: Coveralls
-              uses: coverallsapp/github-action@v2.3.0
-              with:
-                  allow-empty: true
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests (with coverage)
+        env:
+          CI: true
+        run: npm test
+
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2.3.0
+        with:
+          allow-empty: true
