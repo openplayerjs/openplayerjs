@@ -60,7 +60,7 @@ export default [
     input: 'src/umd/hls.ts',
     output: {
       ...umdBaseOutput,
-      file: 'dist/openplayer-hls.umd.js',
+      file: 'dist/openplayer-hls.js.umd.js',
       name: 'OpenPlayerHlsEngine',
     },
   },

@@ -11,6 +11,8 @@ export type CenterOverlayBindings = {
 
   showButton: (show: boolean) => void;
   showLoader: (show: boolean) => void;
+  /** Briefly show the pause icon for `ms` milliseconds, then reveal the play icon. */
+  flashPause: (ms: number) => void;
 };
 
 export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
@@ -43,15 +45,29 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
   loader.setAttribute('aria-hidden', 'true');
   loader.setAttribute('role', 'status');
   loader.setAttribute('aria-live', 'polite');
-  // Prefer real text in the DOM over aria-label. This also makes the status announcement
-  // more reliable across AT.
+
   const loaderText = document.createElement('span');
   loaderText.className = 'op-player__sr-only';
   loaderText.textContent = loadingLabel;
   loader.appendChild(loaderText);
 
+  let flashTimer: number | undefined;
+  let isFlashing = false;
+
+  const cancelFlash = () => {
+    if (flashTimer) {
+      window.clearTimeout(flashTimer);
+      flashTimer = undefined;
+    }
+    isFlashing = false;
+    button.classList.remove('op-player__play--flash');
+  };
+
   const showButton = (show: boolean) => {
     if (show) {
+      // If a pause flash is in progress let it finish; the flash timer will call showButton(true).
+      if (isFlashing) return;
+
       button.classList.remove('op-player__play--paused');
       button.setAttribute('aria-hidden', 'false');
       button.removeAttribute('inert');
@@ -59,6 +75,9 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
       button.inert = false;
       button.tabIndex = 0;
     } else {
+      // Playback started — cancel any active flash and hide the button normally.
+      if (isFlashing) cancelFlash();
+
       // Avoid aria-hidden on a focused element (Chrome warning).
       const active = document.activeElement;
       if (active && (active === button || button.contains(active))) {
@@ -74,10 +93,32 @@ export function createCenterOverlayDom(player: Player): CenterOverlayBindings {
     }
   };
 
+  const flashPause = (ms: number): void => {
+    cancelFlash();
+
+    isFlashing = true;
+    button.classList.remove('op-player__play--paused');
+    button.classList.add('op-player__play--flash');
+    button.setAttribute('aria-hidden', 'false');
+    button.removeAttribute('inert');
+    button.inert = false;
+    // Not focusable during the transient flash — it is purely decorative at that point.
+    button.tabIndex = -1;
+    setControlLabel(button, pauseLabel);
+
+    flashTimer = window.setTimeout(() => {
+      button.classList.remove('op-player__play--flash');
+      flashTimer = undefined;
+      isFlashing = false;
+      // Transition to the normal paused (play-icon) state.
+      showButton(true);
+    }, ms);
+  };
+
   const showLoader = (show: boolean) => {
     loader.style.display = show ? '' : 'none';
     loader.setAttribute('aria-hidden', show ? 'false' : 'true');
   };
 
-  return { button, loader, showButton, showLoader };
+  return { button, loader, showButton, showLoader, flashPause };
 }

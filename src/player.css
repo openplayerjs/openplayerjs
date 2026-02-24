@@ -162,6 +162,29 @@
     border-color: transparent transparent transparent #f00;
 }
 
+/* === Pause flash (two-bar icon shown briefly after clicking to pause) =================== */
+.op-player__play.op-player__play--flash {
+    border-width: 0;
+    width: 40px;
+    height: 52px;
+    margin-inline-start: -20px;
+    /* Two vertical bars via background gradient */
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0.9) 30%,
+        transparent 30%, transparent 70%,
+        rgba(255, 255, 255, 0.9) 70%
+    );
+    animation: op-pause-flash-out 350ms ease-out forwards;
+}
+.op-player__play.op-player__play--flash:hover {
+    border-color: transparent;
+}
+@keyframes op-pause-flash-out {
+    0%, 40% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 /* === Controls =================== */
 
 .op-controls {
@@ -618,6 +641,10 @@
 }
 .op-ads__skip button:hover {
     border-color: rgb(255, 255, 255);
+}
+/* Non-linear ads: lift above the control bar when it is visible */
+.op-player__video:not(.op-controls--hidden) .op-ads__nonlinear {
+    bottom: calc(var(--op-controls-height, 48px) + 12px) !important;
 }
 /* == Menu ============= */
 .op-menu {

@@ -1,5 +1,5 @@
 import { DefaultMediaEngine } from '../engines/html5';
-import type { PlayerConfig } from './configuration';
+import { defaultLabels, type PlayerConfig } from './configuration';
 import { DisposableStore } from './dispose';
 import type { PlayerEvent } from './events';
 import { EventBus } from './events';
@@ -12,30 +12,6 @@ import { StateManager } from './state';
 import { predictMimeType } from './utils';
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
-
-const defaultLabels = Object.freeze({
-  auto: 'Auto',
-  captions: 'CC/Subtitles',
-  click: 'Click to unmute',
-  fullscreen: 'Fullscreen',
-  levels: 'Quality Levels',
-  live: 'Live',
-  mute: 'Mute',
-  off: 'Off',
-  pause: 'Pause',
-  play: 'Play',
-  progressRail: 'Time Rail',
-  progressSlider: 'Time Slider',
-  settings: 'Player Settings',
-  speed: 'Speed',
-  speedNormal: 'Normal',
-  tap: 'Tap to unmute',
-  toggleCaptions: 'Toggle Captions',
-  unmute: 'Unmute',
-  volume: 'Volume',
-  volumeControl: 'Volume Control',
-  volumeSlider: 'Volume Slider',
-});
 
 export class Player {
   public media: HTMLMediaElement;

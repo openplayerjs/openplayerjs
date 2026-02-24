@@ -1,4 +1,5 @@
 import { EVENT_OPTIONS } from '../core/constants';
+import { getOverlayManager } from '../core/overlay';
 import type { Player } from '../core/player';
 import { isAudio, isMobile } from '../core/utils';
 import { createControlGrid, type Control } from './control';
@@ -129,7 +130,7 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   media.replaceWith(wrapper);
 
-  labelHost(wrapper, 'Media player');
+  labelHost(wrapper, player.config?.labels?.container || 'Media player');
 
   const mediaContainer = document.createElement('div');
   mediaContainer.className = 'op-media';
@@ -137,12 +138,12 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
   mediaContainer.setAttribute('role', 'group');
   mediaContainer.appendChild(tmpMedia);
 
-  labelHost(mediaContainer, 'Media');
+  labelHost(mediaContainer, player.config?.labels?.media || 'Media');
 
   const mainControls = document.createElement('div');
   mainControls.className = 'op-media__main';
 
-  let overlay;
+  let overlay: ReturnType<typeof createCenterOverlayDom> | undefined;
   if (!isMediaAudio) {
     mediaContainer.appendChild(mainControls);
 
@@ -346,8 +347,31 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
 
   maybeAutoplayUnmute(player, wrapper);
 
+  wrapper.addEventListener(
+    'click',
+    async (e) => {
+      // Linear overlays (e.g. full-screen ads with their own video) own click handling.
+      // Non-linear ads (no fullscreenVideoEl) run alongside the content, so we allow pause.
+      if (getOverlayManager(player).active?.fullscreenVideoEl) return;
+
+      const target = e.target as Element | null;
+      // Clicks inside the controls bar must not toggle playback.
+      if (target && controlsRoot.contains(target)) return;
+      // Clicks on interactive elements (buttons, links) are handled by those elements.
+      if (target && target !== wrapper && target.closest('button, [role="button"], a')) return;
+
+      const isPlaying = !player.media.paused && !player.media.ended;
+      if (isPlaying) {
+        overlay?.flashPause(350);
+        player.pause();
+      } else {
+        await player.play().catch(() => undefined);
+      }
+    },
+    EVENT_OPTIONS
+  );
+
   const offDestroy = player.events.on('player:destroy', () => {
-    // Ensure controls can clean up DOM/event listeners.
     try {
       createdControls.forEach((c) => c.destroy?.());
     } catch {
@@ -386,7 +410,6 @@ export function createUI(player: Player, media: HTMLMediaElement, controls: Cont
     ctx.grid?.place(control.placement, el);
     payload.el = el;
 
-    // If dynamically injected, track for cleanup.
     createdControls.push(control);
   });
 
