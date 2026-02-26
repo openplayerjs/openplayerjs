@@ -219,9 +219,7 @@ describe('AdsPlugin lazy fetch guard', () => {
     vastGetMock.mockResolvedValueOnce({ ads: [] });
 
     // Raw XML has non-linear creatives.
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(nonLinearVastXml) });
+    const fetchMock = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(nonLinearVastXml) });
     (globalThis as any).fetch = fetchMock;
 
     const { ctx } = makeCtx();
@@ -331,9 +329,7 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
   </AdBreak>
 </VMAP>`;
 
-    (globalThis as any).fetch = jest
-      .fn()
-      .mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
+    (globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false });
@@ -379,9 +375,7 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
   </AdBreak>
 </VMAP>`;
 
-    (globalThis as any).fetch = jest
-      .fn()
-      .mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
+    (globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false });
@@ -704,9 +698,7 @@ describe('AdsPlugin NONLINEAR sourceType path', () => {
     // Library returns empty for this URL
     vastGetMock.mockResolvedValueOnce({ ads: [] });
 
-    const fetchMock = jest
-      .fn()
-      .mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(nonLinearVastXml) });
+    const fetchMock = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(nonLinearVastXml) });
     (globalThis as any).fetch = fetchMock;
 
     const { ctx } = makeCtx();

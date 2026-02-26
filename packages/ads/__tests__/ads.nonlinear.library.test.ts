@@ -16,13 +16,15 @@
 import { AdsPlugin } from '../src/ads';
 
 // Build a library-style parsed VAST response for a non-linear-only ad.
-function makeLibraryParsed(opts: {
-  nonlinearClickThrough?: string;
-  companionClickThrough?: string;
-  companionStaticUrl?: string;
-  staticResource?: string;
-  minSuggestedDuration?: number;
-} = {}) {
+function makeLibraryParsed(
+  opts: {
+    nonlinearClickThrough?: string;
+    companionClickThrough?: string;
+    companionStaticUrl?: string;
+    staticResource?: string;
+    minSuggestedDuration?: number;
+  } = {}
+) {
   const nonLinearVariation: any = {
     staticResource: opts.staticResource ?? 'https://example.com/overlay.png',
     nonlinearClickThroughURLTemplate: opts.nonlinearClickThrough ?? 'https://example.com/click',
@@ -30,7 +32,9 @@ function makeLibraryParsed(opts: {
   };
 
   const companionVariation: any = {
-    staticResources: [{ url: opts.companionStaticUrl ?? 'https://example.com/companion.png', creativeType: 'image/png' }],
+    staticResources: [
+      { url: opts.companionStaticUrl ?? 'https://example.com/companion.png', creativeType: 'image/png' },
+    ],
     companionClickThroughURLTemplate: opts.companionClickThrough ?? 'https://example.com/companion-click',
     width: 300,
     height: 250,
@@ -82,7 +86,10 @@ describe('non-linear library path: collectNonLinearCreatives', () => {
 describe('non-linear library path: renderNonLinear', () => {
   test('renders staticResource URL from library NonLinearAd (plain string)', () => {
     const plugin = new AdsPlugin({} as any);
-    const nl = { staticResource: 'https://example.com/overlay.png', nonlinearClickThroughURLTemplate: 'https://example.com/click' };
+    const nl = {
+      staticResource: 'https://example.com/overlay.png',
+      nonlinearClickThroughURLTemplate: 'https://example.com/click',
+    };
 
     const el: HTMLElement | null = (plugin as any).renderNonLinear(nl);
     expect(el).not.toBeNull();
@@ -95,7 +102,10 @@ describe('non-linear library path: renderNonLinear', () => {
     // Simulate attaching so sessionUnsubs exists
     (plugin as any).sessionUnsubs = [];
 
-    const nl = { staticResource: 'https://example.com/overlay.png', nonlinearClickThroughURLTemplate: 'https://example.com/click' };
+    const nl = {
+      staticResource: 'https://example.com/overlay.png',
+      nonlinearClickThroughURLTemplate: 'https://example.com/click',
+    };
 
     const el: HTMLElement | null = (plugin as any).renderNonLinear(nl);
     // cursor = pointer means click was detected
@@ -106,7 +116,10 @@ describe('non-linear library path: renderNonLinear', () => {
     const plugin = new AdsPlugin({} as any);
     (plugin as any).sessionUnsubs = [];
 
-    const nl = { staticResource: { value: 'https://example.com/overlay.png' }, nonLinearClickThrough: 'https://example.com/click' };
+    const nl = {
+      staticResource: { value: 'https://example.com/overlay.png' },
+      nonLinearClickThrough: 'https://example.com/click',
+    };
 
     const el: HTMLElement | null = (plugin as any).renderNonLinear(nl);
     expect(el?.style.cursor).toBe('pointer');
@@ -188,6 +201,8 @@ describe('non-linear library path: mountCompanions', () => {
     (plugin as any).sessionUnsubs = [];
 
     // Should not throw even without a container
-    expect(() => (plugin as any).mountCompanions({ type: 'companion', variations: [{ staticResources: [] }] })).not.toThrow();
+    expect(() =>
+      (plugin as any).mountCompanions({ type: 'companion', variations: [{ staticResources: [] }] })
+    ).not.toThrow();
   });
 });

@@ -62,7 +62,11 @@ describe('extendControls', () => {
     test('throws when no ui:addControl listener is registered', () => {
       const player = makePlayer();
       const api = extendControls(player);
-      const control = { id: 'test', placement: { v: 'bottom' as const, h: 'right' as const }, create: () => document.createElement('div') };
+      const control = {
+        id: 'test',
+        placement: { v: 'bottom' as const, h: 'right' as const },
+        create: () => document.createElement('div'),
+      };
       expect(() => api.addControl(control)).toThrow('UI not initialized; cannot addControl');
     });
 
@@ -70,7 +74,11 @@ describe('extendControls', () => {
       const player = makePlayer();
       const api = extendControls(player);
       const resultEl = document.createElement('span');
-      const control = { id: 'my-control', placement: { v: 'bottom' as const, h: 'left' as const }, create: jest.fn(() => resultEl) };
+      const control = {
+        id: 'my-control',
+        placement: { v: 'bottom' as const, h: 'left' as const },
+        create: jest.fn(() => resultEl),
+      };
 
       player.events.on('ui:addControl', (payload: any) => {
         payload.el = resultEl;
