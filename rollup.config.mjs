@@ -27,7 +27,7 @@ const umdBaseOutput = {
   sourcemap: true,
   inlineDynamicImports: true,
   globals: {
-    '@your-scope/openplayer-core': 'OpenPlayer'
+    '@your-scope/openplayer-core': 'OpenPlayerJS'
   }
 }
 
@@ -51,7 +51,7 @@ export default [
     output: {
       file: 'dist/openplayer.umd.js',
       format: 'umd',
-      name: 'OpenPlayer',
+      name: 'OpenPlayerJS',
       sourcemap: true
     },
   },
@@ -60,7 +60,7 @@ export default [
     input: 'src/umd/hls.ts',
     output: {
       ...umdBaseOutput,
-      file: 'dist/openplayer-hls.js.umd.js',
+      file: 'dist/openplayer-hls.umd.js',
       name: 'OpenPlayerHlsEngine',
     },
   },

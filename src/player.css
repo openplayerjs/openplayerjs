@@ -17,6 +17,11 @@
         transform: rotate(359deg);
     }
 }
+@keyframes op-pause-flash-out {
+    0%, 40% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 
 /* === General =================== */
 .op-player {
@@ -37,21 +42,16 @@
 .op-player ::before {
     box-sizing: border-box;
 }
-
-/*
- * Screen-reader-only text.
- * Prefer native text (even if visually hidden) over aria-label for icon-only controls.
- */
 .op-player__sr-only {
-  position: absolute;
-  width: 1px;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
   height: 1px;
-  padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  padding: 0;
+  position: absolute;
   white-space: nowrap;
-  border: 0;
+  width: 1px;
 }
 .op-media {
     align-items: center;
@@ -161,28 +161,22 @@
 .op-player__play:hover {
     border-color: transparent transparent transparent #f00;
 }
-
-/* === Pause flash (two-bar icon shown briefly after clicking to pause) =================== */
 .op-player__play.op-player__play--flash {
-    border-width: 0;
-    width: 40px;
-    height: 52px;
-    margin-inline-start: -20px;
-    /* Two vertical bars via background gradient */
+    animation: op-pause-flash-out 350ms ease-out forwards;
     background: linear-gradient(
         to right,
         rgba(255, 255, 255, 0.9) 0, rgba(255, 255, 255, 0.9) 30%,
         transparent 30%, transparent 70%,
         rgba(255, 255, 255, 0.9) 70%
     );
-    animation: op-pause-flash-out 350ms ease-out forwards;
+    border-width: 0;
+    height: 52px;
+    margin-inline-start: -20px;
+    width: 40px;
+    
 }
 .op-player__play.op-player__play--flash:hover {
     border-color: transparent;
-}
-@keyframes op-pause-flash-out {
-    0%, 40% { opacity: 1; }
-    100% { opacity: 0; }
 }
 
 /* === Controls =================== */
@@ -715,36 +709,26 @@
 
 /* WebKit (iOS/Safari) track container: lift up when custom controls are shown */
 .op-player__video:not(.op-controls--hidden) video::-webkit-media-text-track-display {
-    /* Lift cues above the custom control bar. JS keeps --op-controls-height in sync. */
     -webkit-transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px))));
             transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px))));
 }
 
-/* Also attempt to lift individual cues where supported */
 .op-player__video:not(.op-controls--hidden) video::cue {
-    /* Best-effort: not all engines apply transforms to ::cue. */
     -webkit-transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
             transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
 }
 
-/* -------------------- */
-/* Accessibility helpers */
-/* -------------------- */
-
-/* WCAG 2.2 focus appearance: ensure a visible focus ring. */
+/* === Accessibility =================== */
 .op-player :focus-visible {
     outline: 2px solid currentColor;
     outline-offset: 2px;
 }
-
-/* WCAG 2.2 target size guidance: ensure minimum hit area on interactive controls. */
 .op-player button,
 .op-player [role='button'] {
     min-height: 24px;
     min-width: 24px;
 }
 
-/* Respect reduced motion preferences. */
 @media (prefers-reduced-motion: reduce) {
     .op-player *,
     .op-player *::before,
