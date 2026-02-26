@@ -1,7 +1,7 @@
 import { EVENT_OPTIONS } from '@openplayer/core';
+import { setControlLabel } from '../a11y';
 import type { Control } from '../control';
 import { getSettingsRegistry, type SettingsSubmenu } from '../settings';
-import { setControlLabel } from '../a11y';
 import { BaseControl } from './base';
 
 export class SettingsControl extends BaseControl {
@@ -75,9 +75,9 @@ export class SettingsControl extends BaseControl {
 
     this.dispose.add(
       this.overlayMgr.bus.on('overlay:changed', () => {
-      this.activeSubmenuId = null;
-      // Always re-compute availability so the control can hide during ads
-      // and re-appear when content resumes, even if the menu isn't open.
+        this.activeSubmenuId = null;
+        // Always re-compute availability so the control can hide during ads
+        // and re-appear when content resumes, even if the menu isn't open.
         this.render();
       })
     );
