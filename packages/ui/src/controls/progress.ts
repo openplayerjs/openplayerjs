@@ -1,6 +1,6 @@
 import { EVENT_OPTIONS, formatTime, isMobile, offset } from '@openplayer/core';
-import type { Control } from '../control';
 import { setControlLabel } from '../a11y';
+import type { Control } from '../control';
 import { BaseControl } from './base';
 
 export class ProgressControl extends BaseControl {
@@ -287,13 +287,7 @@ export class ProgressControl extends BaseControl {
         else tooltip.classList.remove('op-controls__tooltip--visible');
 
         tooltip.style.left = `${pos}px`;
-
-        if (Number.isFinite(duration) && duration > 0) {
-          const remaining = Math.max(0, duration - time);
-          tooltip.textContent = Number.isNaN(remaining) ? '00:00' : formatTime(remaining);
-        } else {
-          tooltip.textContent = Number.isNaN(time) ? '00:00' : formatTime(time);
-        }
+        tooltip.textContent = Number.isNaN(time) ? '00:00' : formatTime(time);
       },
       EVENT_OPTIONS
     );
