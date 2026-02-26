@@ -1,4 +1,5 @@
 /** @jest-environment jsdom */
+
 import { getOverlayManager, Player } from '@openplayer/core';
 import { createUI } from '../src/ui';
 

@@ -409,15 +409,23 @@ describe('AdsPlugin - Google sample URLs are supported', () => {
       .spyOn(g, 'fetch')
       .mockResolvedValue({ ok: true, text: async () => vmapXml } as unknown as Response);
 
-    // Mock VMAP parser output: one midroll break.
+    // Mock VMAP parser output: two midroll breaks at the same timeOffset.
+    // The fixture (vmap-a76bf7ccbc55e7f6.xml) has two <AdBreak breakId="midroll-1"> elements
+    // at 00:00:15.000 — one per ad position (ppos=1 and ppos=2). Providing 2 items here
+    // ensures libBreakCount(2) === rawAdBreakCount(2), so the DOM fallback is not triggered
+    // and both breaks use our controlled VAST URL.
     vmap.__breaks = [
       {
-        timeOffset: '00:00:10',
+        timeOffset: '00:00:15.000',
+        adSource: { adTagURI: { uri: 'https://example.com/pod-vast.xml' } },
+      },
+      {
+        timeOffset: '00:00:15.000',
         adSource: { adTagURI: { uri: 'https://example.com/pod-vast.xml' } },
       },
     ];
 
-    // VAST client returns a pod with 2 ads, both skippable.
+    // Each of the two VMAP breaks fetches its own VAST tag with a single skippable ad.
     vastGetMock.mockResolvedValue({
       ads: [
         {
@@ -428,19 +436,6 @@ describe('AdsPlugin - Google sample URLs are supported', () => {
                 skipOffset: '00:00:01',
                 mediaFiles: [
                   { type: 'video/mp4', fileURL: 'https://example.com/ad1.mp4', bitrate: 500, width: 640, height: 360 },
-                ],
-              },
-            },
-          ],
-        },
-        {
-          sequence: '2',
-          creatives: [
-            {
-              linear: {
-                skipOffset: '00:00:01',
-                mediaFiles: [
-                  { type: 'video/mp4', fileURL: 'https://example.com/ad2.mp4', bitrate: 500, width: 640, height: 360 },
                 ],
               },
             },
@@ -463,7 +458,7 @@ describe('AdsPlugin - Google sample URLs are supported', () => {
     await internals.vmapLoadPromise;
 
     const content = ctx.player.media as HTMLVideoElement;
-    content.currentTime = 10.1;
+    content.currentTime = 15.1;
     content.dispatchEvent(new Event('timeupdate'));
 
     // Provide baseline player fields used during takeover setup.

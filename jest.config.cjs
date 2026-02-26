@@ -20,6 +20,8 @@ module.exports = {
     '/src/umd/',
     '/__tests__/mocks/',
     '/packages/[^/]+/__tests__/mocks/',
+    '/packages/[^/]+/src/types/',
+    '/packages/[^/]+/types/',
   ],
   collectCoverageFrom: [
     'packages/*/src/**/*.ts',

@@ -1,8 +1,5 @@
 /** @jest-environment jsdom */
 
-// UMD add-on bundles (ads/hls) treat '@openplayer/core' as an external and
-// expect it to be available on the global OpenPlayer constructor.
-
 import * as Core from '@openplayer/core';
 import OpenPlayer from '../src/umd';
 

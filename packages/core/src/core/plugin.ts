@@ -1,8 +1,8 @@
+import type { DisposableStore, Disposer } from './dispose';
 import type { EventBus, PlayerEvent } from './events';
 import type { Lease } from './lease';
 import type { Player } from './player';
 import type { PlaybackState, StateManager } from './state';
-import type { DisposableStore, Disposer } from './dispose';
 
 export type PluginContext = {
   events: EventBus;
@@ -10,22 +10,9 @@ export type PluginContext = {
   leases: Lease;
   player: Player;
   media?: HTMLMediaElement;
-
-  /**
-   * A per-plugin disposable bucket.
-   *
-   * Plugins should prefer ctx.on / ctx.listen / ctx.add rather than calling
-   * addEventListener / events.on directly.
-   */
   dispose: DisposableStore;
-
-  /** Track an arbitrary cleanup function. */
   add(disposer?: void | null | Disposer): Disposer;
-
-  /** Track EventBus subscriptions. */
   on<E extends PlayerEvent>(event: E, cb: (payload?: any) => void): Disposer;
-
-  /** Track DOM listeners. */
   listen(
     target: EventTarget,
     type: string,

@@ -1,4 +1,5 @@
 /** @jest-environment jsdom */
+
 import { Player } from '@openplayer/core';
 
 // Drive mobile branch in createUI() (mobile uses pointerdown).

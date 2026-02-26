@@ -9,12 +9,21 @@ export class VASTClient {
 
 export class VASTTracker {
   trackImpression = jest.fn();
+  trackStart = jest.fn();
   trackComplete = jest.fn();
   trackPause = jest.fn();
   trackResume = jest.fn();
+  trackFirstQuartile = jest.fn();
+  trackMidpoint = jest.fn();
+  trackThirdQuartile = jest.fn();
+  trackMute = jest.fn();
+  trackUnmute = jest.fn();
+  trackClick = jest.fn();
   trackClickThrough = jest.fn();
-  trackVolumeChange = jest.fn();
+  trackCreativeView = jest.fn();
   trackSkip = jest.fn();
+  setDuration = jest.fn();
+  setProgress = jest.fn();
   constructor() {
     trackerCtorMock();
   }

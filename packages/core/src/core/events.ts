@@ -67,7 +67,6 @@ export class EventBus {
     return this.listeners.get(event)?.size ?? 0;
   }
 
-  /** Remove all listeners (used by Player.destroy). */
   clear() {
     this.listeners.clear();
   }

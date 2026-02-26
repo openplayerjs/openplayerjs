@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { DisposableStore } from '../src/core/dispose';
 
 describe('DisposableStore', () => {

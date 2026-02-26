@@ -1,9 +1,7 @@
 /** @jest-environment jsdom */
 
-import { EventBus } from '@openplayer/core';
-import { Player } from '@openplayer/core';
-import { HlsMediaEngine } from '../src/engines/hls';
-import { DefaultMediaEngine } from '@openplayer/core';
+import { DefaultMediaEngine, EventBus, Player } from '@openplayer/core';
+import { HlsMediaEngine } from '../src/hls';
 
 // Ensure our Hls.js stub provides the methods HlsMediaEngine expects (attach/detach/destroy etc.)
 jest.mock('hls.js', () => {

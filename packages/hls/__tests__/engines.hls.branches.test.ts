@@ -1,6 +1,8 @@
+/** @jest-environment jsdom */
+
 import { EventBus, Lease, StateManager } from '@openplayer/core';
 import Hls from 'hls.js';
-import { HlsMediaEngine } from '../src/engines/hls';
+import { HlsMediaEngine } from '../src/hls';
 
 // Mock hls.js to drive branch coverage without loading the real library.
 jest.mock('hls.js', () => {

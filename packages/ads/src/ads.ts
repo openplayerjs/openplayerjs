@@ -1621,7 +1621,10 @@ export class AdsPlugin implements PlayerPlugin {
     const container = this.getCompanionContainer();
     if (!container) return;
 
-    const companions = creative?.companionAds?.companions || creative?.companions;
+    const companions =
+      (creative?.type === 'companion' ? creative?.variations : undefined) || // @dailymotion/vast-client library path
+      creative?.companionAds?.companions ||
+      creative?.companions;
     if (!Array.isArray(companions) || companions.length === 0) return;
 
     const wrap = document.createElement('div');
@@ -1649,7 +1652,8 @@ export class AdsPlugin implements PlayerPlugin {
     const click =
       companion?.companionClickThroughURLTemplate ||
       companion?.clickThroughURLTemplate ||
-      companion?.companionClickThrough;
+      companion?.companionClickThrough ||
+      companion?.clickThrough; // XML fallback path
 
     const wrap = document.createElement('div');
     wrap.className = 'op-ads__companion';
@@ -1676,13 +1680,13 @@ export class AdsPlugin implements PlayerPlugin {
 
     if (staticRes) {
       const img = document.createElement('img');
-      img.src = String(staticRes?.uri || staticRes?.value || staticRes);
+      img.src = String(staticRes?.url || staticRes?.uri || staticRes?.value || staticRes);
       img.style.maxWidth = '100%';
       img.style.height = 'auto';
       node = img;
     } else if (iframeRes) {
       const ifr = document.createElement('iframe');
-      ifr.src = String(iframeRes?.uri || iframeRes?.value || iframeRes);
+      ifr.src = String(iframeRes?.url || iframeRes?.uri || iframeRes?.value || iframeRes);
       ifr.style.border = '0';
       ifr.style.width = '100%';
       ifr.style.height = '100%';
@@ -1724,12 +1728,17 @@ export class AdsPlugin implements PlayerPlugin {
       const creatives = ad?.creatives || ad?.Creatives || [];
       for (const creative of creatives) {
         const raw =
+          creative?.variations ?? // @dailymotion/vast-client: creative.type='nonlinear', items in variations[]
           creative?.nonLinearAds?.nonLinears ??
           creative?.nonLinearAds?.nonLinear ??
           creative?.NonLinearAds?.NonLinear ??
           creative?.nonLinears ??
           creative?.NonLinears ??
           undefined;
+
+        // Library creative.type='nonlinear' keeps all non-linear items in variations[].
+        // Don't pick up companion variations (type='companion') by mistake.
+        if (raw === creative?.variations && creative?.type !== 'nonlinear') continue;
 
         const nonLinears = Array.isArray(raw) ? raw : raw ? [raw] : [];
         if (nonLinears.length === 0) continue;
@@ -1907,6 +1916,7 @@ export class AdsPlugin implements PlayerPlugin {
 
   private renderNonLinear(nl: any): HTMLElement | null {
     const click =
+      nl?.nonlinearClickThroughURLTemplate || // @dailymotion/vast-client uses lowercase 'nonlinear'
       nl?.nonLinearClickThroughURLTemplate ||
       nl?.clickThroughURLTemplate ||
       nl?.nonLinearClickThrough ||
@@ -1919,9 +1929,7 @@ export class AdsPlugin implements PlayerPlugin {
     container.style.cursor = click ? 'pointer' : 'default';
 
     const pickFirst = (v: any) => (Array.isArray(v) ? v[0] : v);
-    const staticRes = pickFirst(
-      nl?.staticResource ?? nl?.StaticResource ?? nl?.staticResources ?? nl?.StaticResources ?? nl?.StaticResources
-    );
+    const staticRes = pickFirst(nl?.staticResource ?? nl?.StaticResource ?? nl?.staticResources ?? nl?.StaticResources);
     const iframeRes = pickFirst(nl?.iFrameResource ?? nl?.IFrameResource ?? nl?.iFrameResources ?? nl?.IFrameResources);
     const htmlRes = pickFirst(nl?.htmlResource ?? nl?.HTMLResource ?? nl?.htmlResources ?? nl?.HTMLResources);
 
@@ -1929,13 +1937,13 @@ export class AdsPlugin implements PlayerPlugin {
 
     if (staticRes) {
       const img = document.createElement('img');
-      img.src = String(staticRes?.uri || staticRes?.value || staticRes);
+      img.src = String(staticRes?.url || staticRes?.uri || staticRes?.value || staticRes);
       img.style.maxWidth = '100%';
       img.style.height = 'auto';
       node = img;
     } else if (iframeRes) {
       const ifr = document.createElement('iframe');
-      ifr.src = String(iframeRes?.uri || iframeRes?.value || iframeRes);
+      ifr.src = String(iframeRes?.url || iframeRes?.uri || iframeRes?.value || iframeRes);
       ifr.style.border = '0';
       ifr.style.width = '100%';
       ifr.style.height = '100%';
@@ -1972,6 +1980,7 @@ export class AdsPlugin implements PlayerPlugin {
 
   private mountNonLinear(creative: any) {
     const raw =
+      (creative?.type === 'nonlinear' ? creative?.variations : undefined) ??
       creative?.nonLinearAds?.nonLinears ??
       creative?.nonLinearAds?.nonLinear ??
       creative?.NonLinearAds?.NonLinear ??
@@ -2026,7 +2035,10 @@ export class AdsPlugin implements PlayerPlugin {
       }
       this._lastCreative = item.creative;
 
-      this.mountCompanions(item.creative);
+      // Companions may live in a sibling creative (type='companion') within the same ad.
+      const companionCreative =
+        (item.ad?.creatives as any[] | undefined)?.find((c: any) => c?.type === 'companion') ?? item.creative;
+      this.mountCompanions(companionCreative);
       this.ensureNonLinearDom();
       const el = this.renderNonLinear(item.nonLinear);
       if (el) this.nonLinearWrap!.appendChild(el);
@@ -2642,18 +2654,10 @@ export class AdsPlugin implements PlayerPlugin {
       let pod = this.collectPodAds(parsed);
       this.log('linear pod items', pod.length);
 
-      // Some VAST sources (notably certain GAM samples) may parse with incomplete creative/media mappings.
-      // Fall back to DOM-based extraction from the raw XML. For URL inputs, load it lazily
-      // so we never make a second network request before the first VAST parse succeeds.
       if (!pod.length) {
-        await loadRawDocBestEffort();
-        if (rawDoc) {
-          pod = this.collectPodAdsFromXml(rawDoc);
-          this.log('linear pod items (xml fallback)', pod.length);
-        }
-      }
-
-      if (!pod.length) {
+        // Before touching the network, check whether the parsed response contains
+        // non-linear creatives (overlay ads that play alongside content).
+        // This avoids a second HTTP request for any non-linear VAST URL.
         const nonLinearItems = this.collectNonLinearCreatives(parsed);
         if (nonLinearItems.length) {
           emitLoaded(nonLinearItems.length);
@@ -2661,15 +2665,25 @@ export class AdsPlugin implements PlayerPlugin {
           return true;
         }
 
+        // Parsed gave nothing. Fetch the raw XML as a last resort: some GAM samples
+        // return incomplete creative/media mappings via the library but valid XML.
         await loadRawDocBestEffort();
         if (rawDoc) {
-          const xmlItems = this.collectNonLinearFromXml(rawDoc);
-          if (xmlItems.length) {
-            emitLoaded(xmlItems.length);
-            await this.playNonLinearOnlyBreakFromXml(xmlItems, meta);
-            return true;
+          pod = this.collectPodAdsFromXml(rawDoc);
+          this.log('linear pod items (xml fallback)', pod.length);
+
+          if (!pod.length) {
+            const xmlItems = this.collectNonLinearFromXml(rawDoc);
+            if (xmlItems.length) {
+              emitLoaded(xmlItems.length);
+              await this.playNonLinearOnlyBreakFromXml(xmlItems, meta);
+              return true;
+            }
           }
         }
+      }
+
+      if (!pod.length) {
         this.warn('no playable ads found in VAST response');
         throw new Error('No playable ads found in VAST response');
       }

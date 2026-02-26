@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import type { MediaEngineContext, MediaSource } from '../src/core/media';
 import { Player } from '../src/core/player';
 

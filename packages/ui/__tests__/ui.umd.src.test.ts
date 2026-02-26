@@ -1,17 +1,11 @@
 /** @jest-environment jsdom */
 
-/**
- * Tests for UMD Player delegation methods: set src, play(), load().
- * These are thin wrappers around CorePlayer — the tests verify correct
- * delegation and that each method throws predictably before init().
- */
+import Player from '../src/umd';
 
 // Isolate the UI-creation side-effects so the tests focus on delegation.
 jest.mock('../src/ui', () => ({ createUI: jest.fn() }));
 jest.mock('../src/control', () => ({ buildControls: jest.fn(() => []), registerControl: jest.fn() }));
 jest.mock('../src/extend', () => ({ extendControls: jest.fn() }));
-
-import Player from '../src/umd';
 
 describe('UMD Player — set src', () => {
   let media: HTMLVideoElement;

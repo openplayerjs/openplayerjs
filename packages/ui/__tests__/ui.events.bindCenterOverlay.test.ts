@@ -1,6 +1,4 @@
-/**
- * These tests target keyboard/pointer handling branches in bindCenterOverlay.
- */
+/** @jest-environment jsdom */
 
 import { getOverlayManager, Player } from '@openplayer/core';
 import { bindCenterOverlay } from '../src/events';

@@ -1,6 +1,4 @@
-/**
- * Target uncovered branches in ui/index.ts.
- */
+/** @jest-environment jsdom */
 
 jest.mock('@openplayer/core', () => {
   const actual = jest.requireActual('@openplayer/core');

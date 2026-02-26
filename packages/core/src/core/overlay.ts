@@ -4,25 +4,14 @@ import { EventBus } from './events';
 export type OverlayMode = 'normal' | 'countdown';
 
 export type OverlayState = {
-  /** Unique overlay id, e.g. "ads", "cast" */
   id: string;
-  /** Higher wins when multiple overlays are active */
   priority: number;
-
-  /** 'countdown' means value counts down to 0 (remaining time) */
   mode: OverlayMode;
-
-  /** Seconds */
   duration: number;
-  /** Seconds; for countdown this is remaining time */
   value: number;
-
-  /** Whether UI should allow seeking */
   canSeek: boolean;
-
-  /** Optional UI hints */
   label?: string;
-  bufferedPct?: number; // 0..100
+  bufferedPct?: number;
   fullscreenEl?: HTMLElement;
   fullscreenVideoEl?: HTMLElement;
 };
@@ -63,13 +52,11 @@ export class OverlayManager {
     this.bus.clear();
   }
 
-  /** Activate or replace an overlay */
   activate(state: OverlayState) {
     this.overlays.set(state.id, state);
     this.recomputeAndEmit();
   }
 
-  /** Update an active overlay (no-op if missing) */
   update(id: string, patch: Partial<OverlayState>) {
     const cur = this.overlays.get(id);
     if (!cur) return;
@@ -78,7 +65,6 @@ export class OverlayManager {
     this.recomputeAndEmit();
   }
 
-  /** Deactivate overlay */
   deactivate(id: string) {
     const existed = this.overlays.delete(id);
     if (!existed) return;
@@ -88,7 +74,6 @@ export class OverlayManager {
   private recomputeAndEmit() {
     const next = this.pickActive();
     this.active = next;
-    // Emit on every recompute; UI likes frequent updates.
     this.bus.emit('overlay:changed', this.active);
   }
 
@@ -106,11 +91,9 @@ export function getOverlayManager(player: any): OverlayManager {
   const mgr = new OverlayManager();
   player[OVERLAY_MANAGER_KEY] = mgr;
 
-  // Mirror overlay changes onto the player's main EventBus for simpler plugin/control wiring.
   try {
     if (player?.events?.on && player?.events?.emit) {
       const off = mgr.bus.on('overlay:changed', (active: any) => player.events.emit('overlay:changed', active));
-      // Ensure we don't leak listeners if the player is destroyed.
       player.events.on('player:destroy', () => {
         try {
           off();

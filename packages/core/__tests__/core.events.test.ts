@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { EventBus } from '../src/core/events';
 
 describe('core/events', () => {

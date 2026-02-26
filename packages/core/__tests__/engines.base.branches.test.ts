@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { EventBus } from '../src/core/events';
 import { Lease } from '../src/core/lease';
 import type { MediaEngineContext, MediaSource } from '../src/core/media';

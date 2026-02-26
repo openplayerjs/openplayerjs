@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { Lease } from '../src/core/lease';
 
 describe('core/lease', () => {

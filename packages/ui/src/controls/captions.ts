@@ -1,8 +1,8 @@
 import { EVENT_OPTIONS } from '@openplayer/core';
+import { setControlLabel } from '../a11y';
 import type { Control } from '../control';
 import { getActiveMedia } from '../playback';
 import { getSettingsRegistry, type SettingsSubmenuProvider } from '../settings';
-import { setControlLabel } from '../a11y';
 import { BaseControl } from './base';
 
 type TrackKind = 'captions' | 'subtitles';

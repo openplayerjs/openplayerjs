@@ -1,6 +1,6 @@
 import { EVENT_OPTIONS } from '@openplayer/core';
-import type { Control } from '../control';
 import { setControlLabel } from '../a11y';
+import type { Control } from '../control';
 import { BaseControl } from './base';
 
 function getFullscreenElement(): Element | null {

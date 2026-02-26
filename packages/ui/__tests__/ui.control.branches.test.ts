@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { buildControls, createControlGrid, getControl, registerControl } from '../src/control';
 
 describe('ui/control branch coverage', () => {

@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { AdsPlugin } from '../src/ads';
 
 function makePlugin() {

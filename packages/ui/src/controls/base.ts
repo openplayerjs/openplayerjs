@@ -1,6 +1,5 @@
-// ui/controls/abstract-control.ts
-import { DisposableStore, getOverlayManager, type OverlayState } from '@openplayer/core';
 import type { Player as CorePlayer } from '@openplayer/core';
+import { DisposableStore, getOverlayManager, type OverlayState } from '@openplayer/core';
 import type { Control } from '../control';
 
 export type ControlPlacementV = 'top' | 'center' | 'bottom';

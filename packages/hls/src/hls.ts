@@ -1,10 +1,9 @@
 import type { IEngine, MediaEngineContext, MediaSource } from '@openplayer/core';
 import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayer/core';
-import type { Events, HlsListeners } from 'hls.js';
 import Hls from 'hls.js';
 
 type AdapterListener = {
-  event: keyof HlsListeners;
+  event: string;
   handler: (...args: any[]) => void;
   options?: any;
 };
@@ -57,7 +56,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.adapter.loadSource(ctx.activeSource?.src || '');
     this.adapter.attachMedia(ctx.media);
 
-    for (const e of Object.values(Hls.Events) as Events[]) {
+    for (const e of Object.values(Hls.Events) as string[]) {
       this.onAdapterEvent(
         e,
         (...args: any[]) => {
@@ -194,7 +193,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.startedLoad = false;
   }
 
-  private onAdapterEvent(event: keyof HlsListeners, handler: (...args: any[]) => void, options?: any) {
+  private onAdapterEvent(event: string, handler: (...args: any[]) => void, options?: any) {
     if (!this.adapter) return;
     this.adapter.on(event as any, handler);
     this.adapterListeners.push({ event, handler, options });
@@ -207,7 +206,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     }
 
     for (const l of this.adapterListeners) {
-      this.adapter.off(l.event, l.handler);
+      this.adapter.off(l.event as any, l.handler);
     }
     this.adapterListeners = [];
   }
