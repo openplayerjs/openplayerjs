@@ -1,0 +1,53 @@
+{
+  "name": "@openplayer/ads",
+  "version": "3.0.0",
+  "description": "VAST/VMAP ad-serving plugin for OpenPlayerJS",
+  "author": {
+    "name": "Rafael Miranda",
+    "email": "rafa8626@gmail.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openplayerjs/openplayerjs.git",
+    "directory": "packages/ads"
+  },
+  "bugs": {
+    "url": "https://github.com/openplayerjs/openplayerjs/issues"
+  },
+  "keywords": [
+    "vast",
+    "vmap",
+    "ads",
+    "ad",
+    "advertising",
+    "player",
+    "openplayer"
+  ],
+  "dependencies": {
+    "@dailymotion/vast-client": ">=6.0.0",
+    "@dailymotion/vmap": ">=3.0.0"
+  },
+  "peerDependencies": {
+    "@openplayer/core": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@openplayer/core": {
+      "optional": true
+    }
+  }
+}

@@ -78,9 +78,3 @@ beforeEach(() => {
   (HTMLMediaElement.prototype.load as jest.Mock).mockClear();
   (HTMLMediaElement.prototype.canPlayType as jest.Mock).mockClear();
 });
-
-// Some Jest configs treat any file under __tests__ as a test file.
-// Keep a tiny smoke test here to avoid "Your test suite must contain at least one test".
-test('mediaMocks setup loads', () => {
-  expect(typeof HTMLMediaElement.prototype.play).toBe('function');
-});

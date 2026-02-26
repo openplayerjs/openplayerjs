@@ -4,10 +4,9 @@ We appreciate the time you are spending to contribute to this project! 🙌
 
 In order to have your pull request merged successfully, keep in mind the following key points:
 
-1. Every change you make, **it has to pass in unit tests**; if it's a new feature, new unit tests need to be added.
-2. Once the unit tests are running, we should continue aiming for `70%` and above.
-3. There is **NO NEED TO BUILD THE DIST FILES**. Just make sure you modify the `src` folder.
-4. Prettier and ESLint were set up to create standardized code, so it is important to follow their guidelines.
-5. **No disabling of ESLint rules is allowed**, unless there is a legit reason to do it.
+1. Every change you make **must pass all the available unit tests**; if it's a new feature, new unit tests need to be added.
+2. We should continue having a coverage of `85%` and above.
+3. Prettier and ESLint were set up to standardize code, so it is of vital importance to follow their guidelines and solve any problems. **DO NOT bypass ESLint rules during development**, since any issues will be caught by our pipeline.
+4. To expedite development, we recommend you to use the `npm run watch` command on Terminal, so that way any changes trigger the regeneration of bundles.
 
 That's it! Thanks again for contributing to this awesome project! Hope to review your work soon 🙂

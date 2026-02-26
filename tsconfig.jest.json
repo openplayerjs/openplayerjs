@@ -4,8 +4,10 @@
     "types": ["jest", "node"]
   },
   "include": [
-    "src/**/*.ts",
-    "__tests__/**/*.ts",
+    "packages/*/src/**/*.ts",
+    "packages/*/types/**/*.ts",
+    "packages/*/__tests__/**/*.ts",
+    "__tests__/setup/**/*.ts",
     "types/**/*.d.ts"
   ]
 }

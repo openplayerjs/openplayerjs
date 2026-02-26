@@ -1,7 +1,8 @@
 {
   "name": "openplayerjs",
   "version": "3.0.0",
-  "description": "HTML5 video and audio player",
+  "description": "HTML5 video and audio player — monorepo root",
+  "private": true,
   "author": {
     "name": "Rafael Miranda",
     "email": "rafa8626@gmail.com"
@@ -12,92 +13,21 @@
   },
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
-  "main": "dist/cjs/openplayer.cjs",
-  "module": "dist/esm/openplayer.js",
-  "types": "dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/types/core/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/core.cjs",
-      "default": "./dist/esm/core.js"
-    },
-    "./umd": "./dist/openplayer.umd.js",
-    "./controls/*": {
-      "types": "./dist/types/controls/*.d.ts",
-      "import": "./dist/esm/controls/*.js",
-      "require": "./dist/cjs/controls/*.cjs"
-    },
-    "./media/*": {
-      "types": "./dist/types/media/*.d.ts",
-      "import": "./dist/esm/media/*.js",
-      "require": "./dist/cjs/media/*.cjs"
-    },
-    "./plugins/*": {
-      "types": "./dist/types/plugins/*.d.ts",
-      "import": "./dist/esm/plugins/*.js",
-      "require": "./dist/cjs/plugins/*.cjs"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "controls/*": [
-        "dist/types/controls/*"
-      ],
-      "media/*": [
-        "dist/types/media/*"
-      ],
-      "plugins/*": [
-        "dist/types/plugins/*"
-      ],
-      "*": [
-        "dist/types/*"
-      ]
-    }
-  },
-  "unpkg": "dist/umd/openplayer.js",
-  "jsdelivr": "dist/umd/openplayer.js",
-  "files": [
-    "dist/*",
-    "docs/*",
-    "types/*"
+  "workspaces": [
+    "packages/*"
   ],
-  "keywords": [
-    "media",
-    "video",
-    "audio",
-    "hls",
-    "dash",
-    "mp4",
-    "mp3",
-    "openplayer",
-    "openplayerjs",
-    "vast",
-    "vmap",
-    "player",
-    "video-player",
-    "audio-player",
-    "html5-media",
-    "hlsjs"
-  ],
-  "readme": "https://github.com/openplayerjs/openplayerjs/blob/master/README.md",
   "scripts": {
-    "lint": "eslint --cache src __tests__",
-    "build:types": "tsc -p tsconfig.types.json",
+    "lint": "eslint --cache packages",
+    "build:types": "tsc -p packages/core/tsconfig.json --emitDeclarationOnly && tsc -p packages/ui/tsconfig.declarations.json --emitDeclarationOnly && tsc -p packages/hls/tsconfig.declarations.json --emitDeclarationOnly && tsc -p packages/ads/tsconfig.declarations.json --emitDeclarationOnly",
     "build:bundles": "rollup -c rollup.config.mjs",
     "watch": "npm run build:bundles -- --watch",
     "build": "npm run build:types && npm run build:bundles && npm run build:css",
     "test": "jest --coverage --passWithNoTests",
-    "build:css": "mkdir -p dist && npm run lint:css && postcss src/player.css -o dist/openplayer.css",
-    "lint:css": "stylelint src/player.css"
-  },
-  "dependencies": {
-    "@dailymotion/vast-client": "^6.4.2",
-    "@dailymotion/vmap": "^3.3.3",
-    "hls.js": "^1.6.15"
+    "build:css": "mkdir -p dist && npm run lint:css && postcss packages/ui/src/style.css -o dist/openplayer.css",
+    "lint:css": "stylelint packages/ui/src/style.css"
   },
   "devDependencies": {
+    "hls.js": "^1.6.15",
     "@eslint/js": "^10.0.1",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",

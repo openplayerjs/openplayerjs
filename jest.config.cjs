@@ -1,27 +1,30 @@
 /** @type {import('jest').Config} */
 module.exports = {
   testEnvironment: 'jsdom',
-  roots: ['<rootDir>/__tests__'],
+  roots: ['<rootDir>/packages'],
   transform: {
     '^.+\\.ts$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.jest.json' }],
   },
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup/mediaMocks.ts'],
-  modulePathIgnorePatterns: ['<rootDir>/src/.*/umd/'],
   moduleNameMapper: {
-    '^@dailymotion\\/vmap$': '<rootDir>/__tests__/mocks/vmap.ts',
-    '^@dailymotion\\/vast-client$': '<rootDir>/__tests__/mocks/vast-client.ts',
+    '^@openplayer/core$':  '<rootDir>/packages/core/src/index.ts',
+    '^@openplayer/ui$':    '<rootDir>/packages/ui/src/index.ts',
+    '^@openplayer/hls$':   '<rootDir>/packages/hls/src/index.ts',
+    '^@openplayer/ads$':   '<rootDir>/packages/ads/src/index.ts',
+    '^@dailymotion\\/vmap$': '<rootDir>/packages/ads/__tests__/mocks/vmap.ts',
+    '^@dailymotion\\/vast-client$': '<rootDir>/packages/ads/__tests__/mocks/vast-client.ts',
   },
   testPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
-    '/umd/',
+    '/src/umd/',
     '/__tests__/mocks/',
+    '/packages/[^/]+/__tests__/mocks/',
   ],
   collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/umd/**',
-    '!src/**/*.umd.*',
-    '!src/index.ts',
+    'packages/*/src/**/*.ts',
+    '!packages/*/src/**/umd.ts',
+    '!packages/*/src/index.ts',
   ],
   coverageThreshold: {
     global: {

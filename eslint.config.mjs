@@ -7,7 +7,7 @@ import pluginPrettier from 'eslint-plugin-prettier';
 import pluginImport from 'eslint-plugin-import';
 
 export default defineConfig({
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**', 'packages/**/dist/**'],
   }, {
     files: ['**/*.ts'],
     extends: [eslint.configs.recommended, tseslint.configs.recommended, tseslint.configs.stylistic],

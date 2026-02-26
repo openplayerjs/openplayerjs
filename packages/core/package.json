@@ -1,0 +1,36 @@
+{
+  "name": "@openplayer/core",
+  "version": "3.0.0",
+  "description": "Core player engine, plugin system and public API for OpenPlayerJS",
+  "author": {
+    "name": "Rafael Miranda",
+    "email": "rafa8626@gmail.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openplayerjs/openplayerjs.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "media",
+    "video",
+    "audio",
+    "player",
+    "openplayer"
+  ]
+}
