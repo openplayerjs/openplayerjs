@@ -21,19 +21,19 @@ class TestEngine extends BaseMediaEngine {
     // no-op
   }
 
-  public exposeBindCommands(ctx: MediaEngineContext) {
+  exposeBindCommands(ctx: MediaEngineContext) {
     this.bindCommands(ctx);
   }
-  public exposeBindPlayPauseCommands(ctx: MediaEngineContext) {
+  exposeBindPlayPauseCommands(ctx: MediaEngineContext) {
     this.bindPlayPauseCommands(ctx);
   }
-  public exposeBindMediaEvents(media: HTMLMediaElement, events: EventBus) {
+  exposeBindMediaEvents(media: HTMLMediaElement, events: EventBus) {
     this.bindMediaEvents(media, events);
   }
-  public exposeUnbindMediaEvents() {
+  exposeUnbindMediaEvents() {
     this.unbindMediaEvents();
   }
-  public exposeUnbindCommands() {
+  exposeUnbindCommands() {
     this.unbindCommands();
   }
 }

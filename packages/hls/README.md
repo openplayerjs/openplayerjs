@@ -2,20 +2,26 @@
 
 > HLS streaming engine for [OpenPlayerJS](https://github.com/openplayerjs/openplayerjs), powered by [hls.js](https://github.com/video-dev/hls.js).
 
+---
+
 ## Installation
 
 ```bash
 npm install @openplayer/hls @openplayer/core hls.js
 ```
 
+---
+
 ## How it works
 
-`HlsMediaEngine` implements the `MediaEnginePlugin` interface.  The `Player`
-asks each registered engine whether it `canPlay` the current source.
-`HlsMediaEngine` returns `true` for `.m3u8` URLs and MIME type
-`application/vnd.apple.mpegurl` / `application/x-mpegURL` on browsers that
-do not support HLS natively (e.g. Chrome/Firefox).  Native Safari handles HLS
-through the default `DefaultMediaEngine`.
+`HlsMediaEngine` implements the `IEngine` interface. When `player.load()` is called, the player asks each registered engine whether it `canPlay` the current source.
+
+- **Chrome / Firefox** (and any browser without native HLS): `HlsMediaEngine` handles `.m3u8` sources using hls.js.
+- **Safari / iOS**: HLS is natively supported, so `DefaultMediaEngine` (priority `0`) handles it and hls.js is never loaded.
+
+`HlsMediaEngine` has a priority of `50`, which is higher than `DefaultMediaEngine` (`0`), so it wins on non-Safari browsers for HLS sources.
+
+---
 
 ## ESM usage
 
@@ -24,9 +30,18 @@ import { Player } from '@openplayer/core';
 import { HlsMediaEngine } from '@openplayer/hls';
 
 const player = new Player(video, {
-  plugins: [new HlsMediaEngine({ /* hls.js config */ })],
+  plugins: [
+    new HlsMediaEngine({
+      // Any hls.js config option is accepted here
+      maxBufferLength: 60,
+      lowLatencyMode: true,
+    }),
+  ],
+  duration: Infinity, // set for live streams
 });
 ```
+
+---
 
 ## UMD / CDN usage
 
@@ -36,25 +51,94 @@ Load the bundles in order — core first, then the HLS add-on:
 <script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.umd.js"></script>
 <script>
-  const player = new OpenPlayer('#video');
+  const player = new OpenPlayerJS('player');
   player.init();
 </script>
 ```
 
-The HLS bundle self-registers as `window.OpenPlayerPlugins.hls`.  The main
-`OpenPlayer` UMD discovers it automatically on `init()`.
+The HLS bundle self-registers as `window.OpenPlayerPlugins.hls`. The main UMD bundle discovers and activates it automatically on `init()`.
+
+---
 
 ## hls.js configuration
 
-Pass any [hls.js configuration](https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning)
-directly to the engine constructor:
+Pass any [hls.js configuration option](https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning) directly to the engine constructor:
 
 ```ts
 new HlsMediaEngine({
   maxBufferLength: 60,
   enableWorker: true,
+  startLevel: -1, // -1 = auto quality selection
 })
 ```
+
+---
+
+## Public API
+
+### `getAdapter()`
+
+Returns the underlying hls.js instance when hls.js is active. Use this to access hls.js-specific APIs (quality levels, stats, P2P plugins, etc.):
+
+```ts
+import { HlsMediaEngine } from '@openplayer/hls';
+
+const engine = player.getPlugin<HlsMediaEngine>('hls');
+const hls = engine?.getAdapter(); // raw hls.js Hls instance, or undefined on Safari
+
+hls?.on(Hls.Events.ERROR, (_event, data) => {
+  if (data.fatal) {
+    console.error('Fatal HLS error', data.type, data.details);
+  }
+});
+```
+
+> On Safari, `getAdapter()` returns `undefined` because hls.js is not active — Safari uses its own native HLS implementation.
+
+---
+
+## Listening to HLS events via the player
+
+hls.js events are also forwarded through the player event bus, so you can listen without needing a direct reference to the hls.js instance:
+
+```ts
+import Hls from 'hls.js';
+
+player.on(Hls.Events.MANIFEST_PARSED, () => {
+  console.log('HLS manifest parsed');
+});
+
+player.on(Hls.Events.LEVEL_SWITCHED, (data) => {
+  console.log('quality level switched to', data?.level);
+});
+```
+
+> Use `player.on(...)` when you want HLS events to integrate cleanly with other plugins without importing hls.js directly.
+
+---
+
+## Quality / level switching
+
+The core `levels` / `level` API was removed in v3. To build your own quality picker, access the hls.js instance directly:
+
+```ts
+import { HlsMediaEngine } from '@openplayer/hls';
+
+const engine  = player.getPlugin<HlsMediaEngine>('hls');
+const hls     = engine?.getAdapter();
+
+if (hls) {
+  // List available levels
+  const levels = hls.levels; // array of HLS level objects
+
+  // Switch to a specific level (0-based index, -1 = auto)
+  hls.currentLevel = 2;
+}
+```
+
+You can then use `extendControls` + `addControl` from `@openplayer/ui` to build a custom quality selector button.
+
+---
 
 ## Peer dependencies
 
@@ -62,6 +146,20 @@ new HlsMediaEngine({
 |---------|-----------------|
 | `@openplayer/core` | `>=3.0.0` |
 | `hls.js` | `>=1.0.0` |
+
+---
+
+## Code samples
+
+| Level | Description | Link |
+|-------|-------------|------|
+| 🟢 Beginner | hls.js p2p plugin | https://codepen.io/rafa8626/pen/PoPLMxo |
+| 🟡 Intermediate | HLS with DRM (Encryption) | https://codepen.io/rafa8626/pen/QZWEVy |
+| 🔴 Advanced | Retrieve data from audio streaming | https://codepen.io/rafa8626/pen/abbjrBW |
+
+> ⚠️ **Legacy v2 "Levels" sample** (https://codepen.io/rafa8626/pen/ExxXvZx): the core Levels API was removed in v3. Use `getAdapter()` to access hls.js levels directly and build your own quality UI.
+
+---
 
 ## License
 

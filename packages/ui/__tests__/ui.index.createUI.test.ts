@@ -46,7 +46,7 @@ describe('ui/index - createUI', () => {
       destroy: dynDestroy,
     };
 
-    const payload: any = { control: dynControl };
+    const payload: { control: typeof dynControl; el?: HTMLElement } = { control: dynControl };
     player.emit('ui:addControl', payload);
     expect(payload.el).toBeInstanceOf(HTMLElement);
 
@@ -68,7 +68,7 @@ describe('ui/index - createUI', () => {
     player.canAutoplayMuted = true;
     player.canAutoplay = false;
 
-    jest.spyOn(player, 'play').mockResolvedValue(undefined as any);
+    jest.spyOn(player, 'play').mockResolvedValue(undefined);
 
     const ctx = createUI(player, media, []);
     expect(ctx.wrapper.classList.contains('op-player__video')).toBe(true);
@@ -99,7 +99,7 @@ describe('ui/index - createUI', () => {
     const player = new Player(media, { labels: { tap: 'Tap to unmute!' }, startVolume: 0.2 });
     player.canAutoplayMuted = true;
     player.canAutoplay = false;
-    jest.spyOn(player, 'play').mockResolvedValue(undefined as any);
+    jest.spyOn(player, 'play').mockResolvedValue(undefined);
 
     const ctx = createUI(player, media, []);
     await new Promise<void>((resolve) => queueMicrotask(() => resolve()));

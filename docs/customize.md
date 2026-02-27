@@ -1,202 +1,374 @@
-# NEW! Player Customizations
+# Customisation
 
-## Modify Look
+> **v3 note:** The v2 `addElement` / `addControl` API accepted a large configuration object passed to the player constructor. In v3 that API has been redesigned for two reasons:
+>
+> 1. **Security** — the old API accepted arbitrary HTML strings (`content`, `icon`) that could be used for XSS attacks. The new API works with real DOM elements that you create yourself.
+> 2. **Clarity** — separating UI extensions from the player constructor makes it obvious what is "core player" and what is "visual customisation".
+>
+> See [MIGRATION.v3.md](../MIGRATION.v3.md) for a complete before/after comparison.
 
-OpenPlayerJS now offers the ability to move elements into new DOM layers, in an attempt to achieve more flexibility for you.
+---
 
-The default controls configuration does NOT encapsulate the elements in layers, but it assigns them a class indicating each control item's position (`left`, `middle` and `center`).
+## Table of contents
 
-The only way the player generates new layers within the controls' container is when the `top` or `bottom` layers are set in the player's configuration, since the assumption is that the markup will be drastically complex as opposed to the default one, and it will need more than the `middle` layer, as described in the following layout's diagram (**main** is only for video, though).
-![Layers' diagram](https://user-images.githubusercontent.com/910829/96354476-24eb9800-10a5-11eb-9ebf-90abc16d6c0d.png)
+- [Player layout](#player-layout)
+- [Built-in controls](#built-in-controls)
+- [Adding a custom element (watermark, badge, overlay)](#adding-a-custom-element)
+- [Adding a custom control (button in the control bar)](#adding-a-custom-control)
+- [Writing a reusable control](#writing-a-reusable-control)
+- [Registering a control globally](#registering-a-control-globally)
+- [Writing a custom plugin](#writing-a-custom-plugin)
+- [Writing a custom media engine](#writing-a-custom-media-engine)
+- [CSS customisation](#css-customisation)
 
-### ❗❗❗ CSS Matters... a lot ❗❗❗
+---
 
-Before OpenPlayerJS supported layers, the only way to achieve the layout that the player currently has was through pure CSS, giving it the illusion of the progress bar to be above the rest of the elements.
+## Player layout
 
-To illustrate this point, if you compare the current layout's configuration of the player
+The v3 UI renders the following DOM structure inside the player wrapper:
 
-```javascript
-new OpenPlayerJS('id', {
-    controls: {
-        left: ['play', 'time', 'volume'],
-        middle: ['progress'], // Semantically speaking, progress bar is in the middle
-        right: ['levels', 'captions', 'settings', 'fullscreen'],
-    },
+```
+.op-player                  ← outer wrapper (position: relative)
+├── .op-player__media       ← your original <video> / <audio> element
+├── .op-player__overlay     ← centre overlay (play icon, pause flash, loader)
+└── .op-player__controls    ← control bar
+    ├── [top row]           ← optional, only rendered when you add top controls
+    ├── [main row]          ← holds the progress bar by default
+    └── [bottom row]        ← holds play, volume, time, captions, fullscreen, etc.
+        ├── [left slot]
+        ├── [middle slot]
+        └── [right slot]
+```
+
+Controls are placed into named slots using the `buildControls` configuration:
+
+```ts
+import { buildControls } from '@openplayer/ui';
+
+const controls = buildControls({
+  top: {
+    left:   [],
+    middle: [],
+    right:  [],
+  },
+  main: ['progress'],   // the progress bar spans the full width
+  bottom: {
+    left:   ['play', 'time', 'volume'],
+    right:  ['captions', 'settings', 'fullscreen'],
+  },
 });
 ```
 
-![Progress bar in the middle](https://user-images.githubusercontent.com/40804543/187544433-863fc7a0-cce8-4b51-bbd1-4c71b2efb6e1.png)
+The available slot names for `buildControls` are:
+- `main` — full-width row (typically the progress bar)
+- `bottom.left`, `bottom.middle`, `bottom.right`
+- `top.left`, `top.middle`, `top.right`
 
-against
+---
 
-```javascript
-new OpenPlayerJS('id', {
-    controls: {
-        left: ['play', 'volume'],
-        middle: ['time'],
-        right: ['levels', 'captions', 'settings', 'fullscreen'],
-    },
-});
+## Built-in controls
+
+The following control IDs can be used in `buildControls`:
+
+| ID | Description |
+|----|-------------|
+| `play` | Play / Pause toggle button |
+| `volume` | Volume slider and Mute / Unmute button |
+| `progress` | Seek bar with current-time tooltip |
+| `time` | Combined current time / duration display (e.g. `1:23 / 5:00`) |
+| `currentTime` | Current playback position only (e.g. `1:23`) |
+| `duration` | Total duration only (e.g. `5:00`) |
+| `captions` | Caption / subtitle toggle button |
+| `settings` | Settings menu (speed, captions language) |
+| `fullscreen` | Fullscreen toggle |
+
+> **`time` vs `currentTime` + `duration`:** Use `'time'` for the classic combined display. Use `'currentTime'` and `'duration'` separately if you want to place them in different positions or style them independently.
+
+---
+
+## Adding a custom element
+
+Use `addElement` to place any HTML element you create at a specific position in the player. This is the right approach for watermarks, brand logos, chapter markers, or anything that is not a button in the control bar.
+
+```ts
+import { extendControls } from '@openplayer/ui';
+
+// Call this once, after createUI(...)
+extendControls(player);
+
+// Create your element however you like
+const badge = document.createElement('div');
+badge.className = 'my-live-badge';
+badge.textContent = '● LIVE';
+
+// Place it in the top-right corner
+player.controls.addElement(badge, { v: 'top', h: 'right' });
 ```
 
-![Time in the middle](https://user-images.githubusercontent.com/40804543/187544517-db57f84a-9a66-49b9-bf90-70bed348e210.png)
+The `placement` argument:
 
-you will see why CSS created this UI for the progress bar. If we removed the unique styles that made the progress bar to be on top of all the controls, we would get a faithful representation of the real configuration for the player currently (and in turn, of the layers the player is using by default):
+| Key | Values | Description |
+|-----|--------|-------------|
+| `v` | `'top'` \| `'bottom'` | Vertical position relative to the player |
+| `h` | `'left'` \| `'right'` | Horizontal position within that row |
 
-![Progress bar without unique styles](https://user-images.githubusercontent.com/910829/187761436-40a49d25-3778-455f-8034-7ece7b621551.png)
+> **Security note:** Because you create the DOM element yourself with standard browser APIs (`document.createElement`, `element.textContent`, etc.), there is no risk of XSS. Never set `.innerHTML` or `.outerHTML` from untrusted input on your custom elements.
 
-But this is important to highlight how CSS can override the semantic correctness of the player in favor of the desired UI. That's why is important to use layers properly to achieve the desired results in terms of positioning, rather than relying on CSS for it (unless you are using a version **older than 2.7.1**).
+> **Timing:** `addElement` must be called **after** `createUI(player, media, controls)`. The UI DOM must exist before you can attach elements to it.
 
-## Add Control
+---
 
-Do you need to add a new control (or multiple ones) to your player and you are concerned about the complexity of it? This snippet can help you with your endeavor.
+## Adding a custom control
 
-```javascript
-const player = new OpenPlayerJS('[PLAYER ID]');
-player.addElement({
-    id: '[MY ELEMENT ID]',
-    title: '[TOOLTIP LABEL]',
-    alt: '[ALT LABEL (mostly for IMG tags)]',
-    type: '[button, div, span, p, etc.]',
-    styles: {}, // Can add custom styles to element using camelCase styles (marginTop, boxShadow, etc.)
-    content: '', // Can override the content generated inside the control, but it won't accept images under the <img> tag for security purposes
-    position: 'right', // Any of the possible positions for a control (top, top-left, middle, bottom-right, etc.)
-    index: 0, // Zero-index based position within the specificied place to set the element (useful when appending, prepending an item before an exisiting one)
-    showInAds: false, // or true
-    init: (player) => {}, // Pass an instance of the player for advanced operations
-    click: () => {},
-    mouseenter: () => {},
-    mouseleave: () => {},
-    keydown: () => {},
-    blur: () => {},
-    focus: () => {},
-    destroy: (player) => {}, // Pass an instance of the player for advanced operations
-});
-player.init();
-```
+Use `addControl` to place a typed `Control` object into the control bar. This is the right approach for interactive buttons (skip intro, next episode, quality picker, etc.).
 
-If you pass a different type in the configuration and you set a click callback, the player will add a `button` ARIA role to the element for good accessibility practices.
+```ts
+import { extendControls } from '@openplayer/ui';
+import type { Control } from '@openplayer/ui';
 
-There's also an `addControl` method that accepts the configuration indicated above, but forces the type `button` to generate clickable controls. The configuration for `addControls` is as follows:
+extendControls(player);
 
-```javascript
-const player = new OpenPlayerJS('[PLAYER ID]');
-player.addControl({
-    icon: '/path/to/image',
-    id: '[MY CONTROL ID]',
-    title: '[TOOLTIP LABEL]',
-    alt: '[ALT LABEL (mostly for IMG tags)]',
-    index: 0, // Zero-index based position within the specificied place to set the element (useful when appending, prepending an item before an exisiting one)
-    styles: {},
-    content: '', // Can override the content generated inside the control
-    // Possible values: 'bottom-left', 'bottom-middle', 'bottom-right',
-    // 'left', 'middle', 'right', 'top-left', 'top-middle', 'top-right',
-    // or `main` to add it in the video area
-    position: 'right',
-    showInAds: false, // or true
-    subitems: [
-        {
-            // optional list of items to render a menu
-            id: '[ITEM ID]',
-            label: '[ITEM LABEL]',
-            title: '[TOOLTIP ITEM]', // optional
-            icon: '/path/to/item-image', // optional
-            alt: '[ALT LABEL]',
-            click: () => {},
-        },
-    ],
-    init: (player) => {}, // Pass an instance of the player for advanced operations
-    click: () => {},
-    mouseenter: () => {},
-    mouseleave: () => {},
-    keydown: () => {},
-    blur: () => {},
-    focus: () => {},
-    destroy: (player) => {}, // Pass an instance of the player for advanced operations
-});
-player.init();
-```
-
-## Add External Player API
-
-One of the most attractive parts of OpenPlayerJS is the ability to adapt other players API into its own.
-
-In order to do that, the object must have the following template:
-
-````javascript
-/**
- * @param element The HTML5 media tag (video/audio)
- * @param media An object that contains { src: URL, type: MIME TYPE } to match structures
- *              used for OpenPlayerJS when loading new media
- * @param autoplay Whether we allow the custom player to autoplay
- * @param options Custom options for this player
- */
-const CustomPlayer = (element, media, autoplay = false, options = {}) => {
-  return Object.freeze({
-      // A Promise is needed since OpenPlayerJS expected to load media in an async way,
-      // so by only doing ```const promise = new Promise(resolve => resolve);``` is enough
-      promise,
-      // Set all events linked to default HTML5 events in order to interact with custom // player; also, many of the custom players need an iframe to work, so this
-      // method allows us to do that
-      create,
-      // Unset all events for this custom player and destroy iframe if needed
-      destroy,
-      // The following methods are set to mimic the default HTML5 media ones
-      load,
-      canPlayType,
-      play,
-      pause,
-      // The following getters/setters are set to mimic the default HTML5 media ones
-      set src(source),
-      get src(),
-      set volume(value),
-      get volume(),
-      set muted(value),
-      get muted(),
-      set playbackRate(value),
-      get playbackRate(),
-      set defaultPlaybackRate(value),
-      get defaultPlaybackRate(),
-      set currentTime(value),
-      get currentTime(),
-      get duration(),
-      get paused(),
-      get ended(),
-  });
+const skipIntro: Control = {
+  id: 'skip-intro',           // unique ID, used internally
+  placement: { v: 'bottom', h: 'right' },
+  create(player) {
+    const btn = document.createElement('button');
+    btn.className = 'op-control__skip-intro';
+    btn.textContent = 'Skip Intro';
+    btn.addEventListener('click', () => {
+      player.media.currentTime = 90;
+    });
+    return btn;
+  },
+  destroy() {
+    // Optional: clean up any timers or subscriptions here
+  },
 };
 
-// We need to make sure OpenPlayerJS exists to add this new custom player
-if (OpenPlayerJS) {
-    OpenPlayerJS.addMedia(
-        '[PLAYER ID]', // This is also the keyword to use when setting new options for the custom payer
-        '[PSEUDO MIME TYPE (video/x-[PLAYER ID])]',
-        url => true, // Rules to validate media URL in order to match pseudo MIME type
-        CustomPlayer
-    );
-}
-````
-
-Once the file is ready, we can do something like this (`[PLAYER ID]` is the name we assigned for the custom player):
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-    <body>
-        <video class="op-player__media" id="video" controls playsinline>
-            <source src="https://example-url" type="video/x-[PLAYER ID]" />
-        </video>
-        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
-        <script src="/path/to/custom-player.js"></script>
-        <script>
-            var player = new OpenPlayer('video', {
-                [PLAYER ID]: {
-                    // config
-                }
-            });
-            player.init();
-        </script>
-    </body>
-</html>
+player.controls.addControl(skipIntro);
 ```
 
-For a more robust example, check the [YouTube plugin](https://github.com/openplayerjs/openplayerjs-youtube) created for OpenPlayerJS.
+The `Control` interface:
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier for this control |
+| `placement` | `ControlPlacement` | Yes | Where in the control bar to place it: `{ v: 'bottom' \| 'top', h: 'left' \| 'right' }` |
+| `create` | `(player: Player) => HTMLElement` | Yes | Factory function that returns the rendered DOM element |
+| `destroy` | `() => void` | No | Called when the control is removed or the player is destroyed |
+
+---
+
+## Writing a reusable control
+
+If you want to share a control across multiple player instances, package it as a factory function:
+
+```ts
+import type { Control, ControlPlacement } from '@openplayer/ui';
+
+function createNextEpisodeControl(onNext: () => void): Control {
+  return {
+    id: 'next-episode',
+    placement: { v: 'bottom', h: 'right' } satisfies ControlPlacement,
+    create(player) {
+      const btn = document.createElement('button');
+      btn.className = 'op-control__next-episode';
+      btn.setAttribute('aria-label', 'Next episode');
+      btn.textContent = '⏭';
+      btn.addEventListener('click', () => {
+        player.pause();
+        onNext();
+      });
+      return btn;
+    },
+  };
+}
+
+// Usage:
+player.controls.addControl(createNextEpisodeControl(() => loadNextEpisode()));
+```
+
+---
+
+## Registering a control globally
+
+Use `registerControl` to make a custom control available by string ID in `buildControls`. This is useful in plugin libraries or when you want to decouple the control definition from the layout configuration:
+
+```ts
+import { registerControl, buildControls } from '@openplayer/ui';
+
+registerControl('next-episode', () => ({
+  id: 'next-episode',
+  placement: { v: 'bottom', h: 'right' },
+  create(player) {
+    const btn = document.createElement('button');
+    btn.textContent = '⏭';
+    btn.onclick = () => console.log('next');
+    return btn;
+  },
+}));
+
+// Now you can reference it by ID, just like built-in controls:
+const controls = buildControls({
+  bottom: {
+    left:  ['play', 'volume'],
+    right: ['next-episode', 'fullscreen'], // ← your custom control
+  },
+  main: ['progress'],
+});
+```
+
+---
+
+## Writing a custom plugin
+
+A plugin is a class (or plain object) that implements the `PlayerPlugin` interface. Plugins have access to the player instance, the event bus, the media element, and a disposable store for automatic cleanup.
+
+```ts
+import type { PlayerPlugin, PluginContext } from '@openplayer/core';
+
+export class AnalyticsPlugin implements PlayerPlugin {
+  name = 'analytics';
+  version = '1.0.0';
+
+  setup({ player, events, on }: PluginContext) {
+    // `on` is a shorthand for events.on(...) that cleans up automatically
+    on('playing', () => {
+      sendAnalyticsEvent('video_play', { currentTime: player.media.currentTime });
+    });
+
+    on('ended', () => {
+      sendAnalyticsEvent('video_complete');
+    });
+  }
+}
+
+// Register at construction time:
+const player = new Player(media, {
+  plugins: [new AnalyticsPlugin()],
+});
+```
+
+### PluginContext properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `player` | `Player` | The player instance |
+| `media` | `HTMLMediaElement` | The underlying `<video>` / `<audio>` element |
+| `events` | `EventBus` | The shared event bus |
+| `state` | `StateManager` | Current playback state machine |
+| `leases` | `Lease` | Playback lease management (used by ads) |
+| `dispose` | `DisposableStore` | Tracks cleanup functions; all entries run on `plugin.dispose()` |
+| `add` | `(fn) => void` | Register a teardown function in the disposable store |
+| `on` | `(event, cb) => void` | Subscribe to an event and auto-unsubscribe on dispose |
+| `listen` | `(target, type, handler, opts?) => void` | Add a DOM `addEventListener` that auto-removes on dispose |
+
+### Plugin lifecycle hooks
+
+| Hook | When it runs |
+|------|-------------|
+| `setup(ctx)` | Called once when the plugin is registered, before any media loads |
+| `onEvent(event, payload)` | Called after every event emitted on the player bus (optional) |
+| `dispose()` | Called when the player is destroyed or the plugin is unregistered |
+
+### Plugin capabilities
+
+Set `capabilities: ['media-engine']` on your plugin to mark it as an engine. Engines are excluded from the `onEvent` broadcast loop:
+
+```ts
+export class MyEngine extends BaseMediaEngine implements IEngine {
+  name = 'my-engine';
+  capabilities = ['media-engine'] as const;
+  priority = 10; // higher priority wins over DefaultMediaEngine (priority 0)
+
+  canPlay(source: MediaSource): boolean {
+    return source.type === 'video/x-my-format';
+  }
+
+  attach(ctx: MediaEngineContext): void {
+    // Bind your engine to ctx.media here
+  }
+
+  detach(ctx: MediaEngineContext): void {
+    // Clean up your engine
+  }
+}
+```
+
+---
+
+## Writing a custom media engine
+
+A media engine is a plugin with `capabilities: ['media-engine']` that handles a specific media type. When `player.load()` is called, the player iterates over all registered engines and calls `canPlay(source)` on each. The engine with the highest `priority` that returns `true` wins.
+
+```ts
+import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayer/core';
+import type { IEngine, MediaEngineContext, MediaSource } from '@openplayer/core';
+
+export class MyStreamEngine extends BaseMediaEngine implements IEngine {
+  name = 'my-stream-engine';
+  version = '1.0.0';
+  capabilities = ['media-engine'] as const;
+  priority = 20; // higher than DefaultMediaEngine (0) and HlsMediaEngine (50 default)
+
+  canPlay(source: MediaSource): boolean {
+    // Return true when this engine should handle the given source
+    return source.src.includes('my-stream-server.com');
+  }
+
+  attach(ctx: MediaEngineContext): void {
+    const { media } = ctx;
+
+    // Set up your streaming library against the media element
+    // Example: myLib.attach(media);
+
+    // Emit 'loadedmetadata' when the engine is ready so player.whenReady() resolves
+    // ctx.events.emit('loadedmetadata');
+  }
+
+  detach(ctx: MediaEngineContext): void {
+    // Tear down your library
+    // Example: myLib.detach();
+  }
+}
+```
+
+> **Priority guide:** `DefaultMediaEngine` has priority `0`. `HlsMediaEngine` has priority `50`. Set your engine's `priority` higher than both if you want it to take precedence, or lower if you only want it as a fallback.
+
+---
+
+## CSS customisation
+
+All player elements use the `op-` CSS prefix. Key classes:
+
+| Class | Element |
+|-------|---------|
+| `.op-player` | Outer wrapper |
+| `.op-player__media` | The `<video>` / `<audio>` element |
+| `.op-player__overlay` | Centre overlay area |
+| `.op-player__controls` | Control bar container |
+| `.op-control` | Any single control element |
+| `.op-control__play` | Play button |
+| `.op-control__volume` | Volume control |
+| `.op-control__progress` | Progress / seek bar |
+| `.op-control__time` | Combined time display |
+| `.op-control__currentTime` | Current time only |
+| `.op-control__duration` | Duration only |
+| `.op-control__captions` | Captions toggle |
+| `.op-control__settings` | Settings button |
+| `.op-control__fullscreen` | Fullscreen button |
+| `.op-ads__nonlinear` | Non-linear ad container |
+
+Import the base stylesheet once per app:
+
+```ts
+// Bundler
+import '@openplayer/ui/style.css';
+```
+
+```html
+<!-- CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+```
+
+Then override any variables or classes in your own stylesheet. No `!important` should be needed for most overrides.

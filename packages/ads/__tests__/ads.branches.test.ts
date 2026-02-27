@@ -49,7 +49,7 @@ function makeCtx(media?: HTMLVideoElement) {
 
     dispose,
     add: (d: void | null | (() => void)) => dispose.add(d ?? undefined),
-    on: (event: string, cb: (payload?: unknown) => void) => dispose.add(bus.on(event as any, cb as any)),
+    on: (event: string, cb: (payload?: unknown) => void) => dispose.add(bus.on(event, cb)),
     listen: (
       target: EventTarget,
       type: string,
@@ -194,7 +194,7 @@ describe('AdsPlugin branch coverage', () => {
 
     // clicking should skip and end ad (covers skip event + end flow)
     const skipped: unknown[] = [];
-    bus.on('ads:skip' as any, (x: unknown) => skipped.push(x));
+    bus.on('ads:skip', (x: unknown) => skipped.push(x));
 
     // If it’s disabled, advance time further and retry.
     if (btn.disabled) {
@@ -390,8 +390,8 @@ describe('AdsPlugin branch coverage', () => {
     // force internal fetchVastXml failure
     (globalThis as unknown as { fetch?: jest.Mock }).fetch = jest.fn().mockRejectedValue(new Error('boom'));
 
-    const errs: any[] = [];
-    bus.on('ads:error' as any, (e: unknown) => errs.push(e));
+    const errs = [];
+    bus.on('ads:error', (e: unknown) => errs.push(e));
 
     await p.playAds('https://example.com/vast.xml');
     expect(errs.length).toBeGreaterThan(0);

@@ -30,14 +30,14 @@ jest.mock('hls.js', () => {
 
     private handlers = new Map<string, Set<(...args: any[]) => void>>();
 
-    public loadSource = jest.fn();
-    public attachMedia = jest.fn();
-    public detachMedia = jest.fn();
-    public startLoad = jest.fn();
-    public stopLoad = jest.fn();
-    public recoverMediaError = jest.fn();
-    public swapAudioCodec = jest.fn();
-    public destroy = jest.fn();
+    loadSource = jest.fn();
+    attachMedia = jest.fn();
+    detachMedia = jest.fn();
+    startLoad = jest.fn();
+    stopLoad = jest.fn();
+    recoverMediaError = jest.fn();
+    swapAudioCodec = jest.fn();
+    destroy = jest.fn();
 
     constructor(_cfg: any) {
       //

@@ -1,5 +1,13 @@
 # Migration
 
+## 🚀 v2 → v3
+
+For OpenPlayerJS v3 (major rewrite), see: **[MIGRATION.v3.md](./MIGRATION.v3.md)**
+
+---
+
+# Migration
+
 ## From v2.6.1 to v2.7.0
 
 After updating Typescript to a newer version, all "private" variables are now truly not accessible at runtime. For more information, check the [Javascript section](./docs/usage.md#javascript).

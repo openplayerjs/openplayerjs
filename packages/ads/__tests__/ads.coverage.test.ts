@@ -47,16 +47,9 @@ function makeLeases(): {
   const owner = jest.fn<string | undefined, [string]>((cap) => owners.get(cap)) as unknown as jest.MockedFunction<
     (c: string) => string | undefined
   >;
-  return { leases: { acquire, release, owner } as any, acquire, release, owner };
+  return { leases: { acquire, release, owner } as unknown as Lease, acquire, release, owner };
 }
 
-/**
- * Build a minimal PluginContext.
- * @param userInteracted - mirrors Player.userInteracted
- * @param muted          - mirrors player.muted state
- * @param volume         - mirrors player.volume state
- * @param preload        - preload attribute to set on content media
- */
 function makeCtx(
   opts: {
     userInteracted?: boolean;
@@ -75,8 +68,8 @@ function makeCtx(
   if (preload) video.setAttribute('preload', preload);
   if (autoplay) video.autoplay = true;
 
-  bus.on('cmd:pause', () => (video as any).pause());
-  bus.on('cmd:play', () => void (video as any).play());
+  bus.on('cmd:pause', video.pause);
+  bus.on('cmd:play', video.play);
 
   const lease = makeLeases();
 
@@ -85,20 +78,19 @@ function makeCtx(
     userInteracted,
     muted,
     volume,
-    events: bus as any,
+    events: bus,
   };
 
   const ctx: PluginContext = {
     player: playerMock as unknown as Player,
-    events: bus as any,
+    events: bus,
     state: new StateManager('playing'),
     leases: lease.leases,
 
     dispose,
-    add: (d) => dispose.add(d as any),
-    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
-    listen: (target: any, type: any, handler: any, options?: any) =>
-      dispose.addEventListener(target, type, handler, options),
+    add: (d) => dispose.add(d),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
+    listen: (target, type, handler, options) => dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, video, lease };
@@ -205,17 +197,17 @@ describe('AdsPlugin additional coverage', () => {
 
   test('PluginBus on/emit is wired through setup() and can be used for ads:error', () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false }) as any;
     p.setup(ctx);
 
     const seen: any[] = [];
-    (p as any).bus.on('ads:error', (e: any) => seen.push(e));
-    (p as any).bus.emit('ads:error', { hello: 'world' });
+    p.bus.on('ads:error', (e: any) => seen.push(e));
+    p.bus.emit('ads:error', { hello: 'world' });
     expect(seen).toEqual([{ hello: 'world' }]);
 
     const other: any[] = [];
-    bus.on('ads:error' as any, (e: any) => other.push(e));
-    (p as any).bus.emit('ads:error', { again: true });
+    bus.on('ads:error', (e: any) => other.push(e));
+    p.bus.emit('ads:error', { again: true });
     expect(other.length).toBe(1);
   });
 
@@ -228,18 +220,18 @@ describe('AdsPlugin additional coverage', () => {
         { id: 'm1', at: 5, source: { type: 'VAST', src: 'https://example.com/mid.xml' }, once: true },
         { id: 'po', at: 'postroll', source: { type: 'VAST', src: 'https://example.com/post.xml' }, once: true },
       ],
-    });
+    }) as any;
     p.setup(ctx);
 
-    const spy = jest.spyOn(p as any, 'playBreakFromVast').mockResolvedValue(undefined);
+    const spy = jest.spyOn(p, 'playBreakFromVast').mockResolvedValue(undefined);
 
-    (video as any).currentTime = 6;
+    video.currentTime = 6;
     video.dispatchEvent(new Event('timeupdate'));
     await Promise.resolve();
     expect(spy).toHaveBeenCalled();
 
     spy.mockClear();
-    (video as any).currentTime = 10;
+    video.currentTime = 10;
     video.dispatchEvent(new Event('timeupdate'));
     await Promise.resolve();
     expect(spy).not.toHaveBeenCalled();
@@ -252,15 +244,15 @@ describe('AdsPlugin additional coverage', () => {
 
   test('preroll interceptors: custom controls via playback:play and native controls via media play capture', async () => {
     const { ctx, bus, video } = makeCtx();
-    ctx.state.transition('idle' as any);
+    ctx.state.transition('idle');
     const p = new AdsPlugin({
       allowNativeControls: true,
       interceptPlayForPreroll: true,
       breaks: [{ id: 'pre', at: 'preroll', source: { type: 'VAST', src: 'https://example.com/pre.xml' }, once: true }],
-    });
+    }) as any;
     p.setup(ctx);
 
-    const spy = jest.spyOn(p as any, 'startBreak').mockResolvedValue(undefined);
+    const spy = jest.spyOn(p, 'startBreak').mockResolvedValue(undefined);
 
     bus.emit('cmd:play');
     await Promise.resolve();
@@ -269,7 +261,7 @@ describe('AdsPlugin additional coverage', () => {
     spy.mockClear();
     video.dispatchEvent(new Event('play'));
     await Promise.resolve();
-    expect((video as any).pause).toHaveBeenCalled();
+    expect(video.pause).toHaveBeenCalled();
     expect(spy).toHaveBeenCalled();
   });
 
@@ -306,15 +298,15 @@ describe('AdsPlugin additional coverage', () => {
     const p = new AdsPlugin({
       allowNativeControls: false,
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
-    });
+    }) as any;
     p.setup(ctx);
 
-    await (p as any).loadVmapAndMerge([]);
+    await p.loadVmapAndMerge([]);
 
     const anyP: any = p;
     // getDueMidrollBreaks returns an array — nothing due before the 25% mark (20s)
     const dueBefore = anyP.getDueMidrollBreaks(10);
-    const dueBeforeIds = (dueBefore as any[]).map((b: any) => b.id);
+    const dueBeforeIds = dueBefore.map((b: any) => b.id);
     expect(dueBeforeIds).not.toContain('v-mid');
 
     // At 21s the 25%-of-80 midroll (20s) is due
@@ -357,8 +349,8 @@ describe('AdsPlugin additional coverage', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    const errors: any[] = [];
-    bus.on('ads:error' as any, (e: any) => errors.push(e));
+    const errors = [];
+    bus.on('ads:error', (e) => errors.push(e));
 
     await p.playAdsFromXml('<VAST><NotClosed></VAST>');
     expect(errors.length).toBeGreaterThan(0);
@@ -374,25 +366,25 @@ describe('AdsPlugin additional coverage', () => {
       allowNativeControls: false,
       sources: [{ type: 'VMAP', src: 'https://example.com/pre.xml' }],
       mountSelector: '#mount-here',
-    });
+    }) as any;
     p.setup(ctx);
 
-    (p as any).ensureOverlayMounted();
+    p.ensureOverlayMounted();
     expect(mount.querySelector('.op-ads')).toBeTruthy();
   });
 
   test('playAdsFromXml accepts an Element input (serialize then parse)', async () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false }) as any;
     p.setup(ctx);
 
     vastParseMock.mockResolvedValueOnce({ ads: [] });
     const errs: any[] = [];
-    bus.on('ads:error' as any, (e: any) => errs.push(e));
+    bus.on('ads:error', (e: any) => errs.push(e));
 
     const doc = new DOMParser().parseFromString('<VAST version="3.0"></VAST>', 'text/xml');
     const el = doc.documentElement;
-    await (p as any).playBreakFromVast({ kind: 'xml', value: el }, { kind: 'manual', id: 'el' });
+    await p.playBreakFromVast({ kind: 'xml', value: el }, { kind: 'manual', id: 'el' });
     expect(vastParseMock).toHaveBeenCalled();
     expect(errs.length).toBeGreaterThan(0);
   });
@@ -413,9 +405,9 @@ describe('AdsPlugin additional coverage', () => {
     });
 
     const quartiles: number[] = [];
-    bus.on('ads:quartile' as any, (payload: any) => quartiles.push(payload.quartile));
-    const clicks: any[] = [];
-    bus.on('ads:clickthrough' as any, (c: any) => clicks.push(c));
+    bus.on('ads:quartile', (payload: any) => quartiles.push(payload.quartile));
+    const clicks = [];
+    bus.on('ads:clickthrough', (c: any) => clicks.push(c));
 
     const playPromise = p.playAds('https://example.com/vast.xml');
     const adVideo = await waitForAdVideo();
@@ -477,7 +469,7 @@ describe('AdsPlugin extra branch forcing', () => {
     p.setup(ctx);
 
     const errors: any[] = [];
-    (ctx.events as any).on('ads:error', (e: any) => errors.push(e));
+    ctx.events.on('ads:error', (e) => errors.push(e));
 
     await p.playAds('https://example.com/vast.xml');
     expect(errors.length).toBeGreaterThan(0);
@@ -489,7 +481,7 @@ describe('AdsPlugin extra branch forcing', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    const emitSpy = jest.spyOn(bus as any, 'emit');
+    const emitSpy = jest.spyOn(bus, 'emit');
 
     const playP = p.playAds('https://example.com/vast.xml');
     const adVideo = await waitForAdVideo();
@@ -497,12 +489,12 @@ describe('AdsPlugin extra branch forcing', () => {
 
     const beforeCalls = emitSpy.mock.calls.length;
 
-    (adVideo as any).volume = 0.5;
-    (adVideo as any).muted = false;
+    adVideo.volume = 0.5;
+    adVideo.muted = false;
     adVideo.dispatchEvent(new Event('volumechange'));
     const afterFirst = emitSpy.mock.calls.length;
 
-    (adVideo as any).muted = true;
+    adVideo.muted = true;
     adVideo.dispatchEvent(new Event('volumechange'));
     const afterSecond = emitSpy.mock.calls.length;
 
@@ -656,7 +648,7 @@ describe('AdsPlugin autoplay mute policy', () => {
     expect(adVideo.muted).toBe(true);
 
     // Someone fires media:muted=false while user hasn't interacted — should be suppressed
-    bus.emit('media:muted' as any, false);
+    bus.emit('media:muted', false);
     expect(adVideo.muted).toBe(true);
 
     adVideo.dispatchEvent(new Event('ended'));
@@ -677,7 +669,7 @@ describe('AdsPlugin autoplay mute policy', () => {
     expect(adVideo.muted).toBe(true);
 
     // Simulate user interaction: mark player as interacted and update muted state
-    (ctx.player as any).userInteracted = true;
+    ctx.player.userInteracted = true;
     bus.emit('player:interacted');
 
     // After interaction, media:muted=false should now propagate
@@ -699,7 +691,7 @@ describe('AdsPlugin autoplay mute policy', () => {
     const adVideo = await waitForAdVideo();
 
     // Manually fire playback:play again (as if retried) — should still re-enforce mute
-    bus.emit('playback:play' as any);
+    bus.emit('playback:play');
     expect(adVideo.muted).toBe(true);
     expect(adVideo.volume).toBe(0);
 
@@ -715,11 +707,11 @@ describe('AdsPlugin autoplay mute policy', () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 1 });
-    const p = new AdsPlugin({ allowNativeControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false }) as any;
     p.setup(ctx);
 
     // Verify no autoplaySupport field exists on the instance
-    expect((p as any).autoplaySupport).toBeUndefined();
+    expect(p.autoplaySupport).toBeUndefined();
 
     const playP = p.playAds('https://example.com/vast.xml');
     const adVideo = await waitForAdVideo();
@@ -747,12 +739,12 @@ describe('AdsPlugin autoplay mute policy', () => {
     expect(adVideo1.muted).toBe(true);
 
     // Simulate user clicking unmute during first ad
-    (ctx.player as any).userInteracted = true;
-    (ctx.player as any).muted = false;
-    (ctx.player as any).volume = 0.9;
-    bus.emit('player:interacted' as any);
-    bus.emit('media:muted' as any, false);
-    bus.emit('media:volume' as any, 0.9);
+    ctx.player.userInteracted = true;
+    ctx.player.muted = false;
+    ctx.player.volume = 0.9;
+    bus.emit('player:interacted');
+    bus.emit('media:muted', false);
+    bus.emit('media:volume', 0.9);
 
     // End first ad → second ad starts
     adVideo1.dispatchEvent(new Event('ended'));

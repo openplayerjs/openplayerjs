@@ -45,7 +45,7 @@ type ControlId = string;
 type Unsubscribe = () => void;
 
 type PendingListener = {
-  event: string;
+  event: keyof PlayerEventPayloadMap;
   cb: (...args: any[]) => void;
   off?: Unsubscribe;
 };
@@ -55,7 +55,7 @@ function extractControlIds(controlsCfg: any): ControlId[] {
   const ids = new Set<string>();
 
   for (const key of Object.keys(controlsCfg)) {
-    const list = (controlsCfg as any)[key];
+    const list = controlsCfg[key];
     if (!Array.isArray(list)) continue;
     for (const id of list) if (typeof id === 'string') ids.add(id);
   }
@@ -136,6 +136,10 @@ export default class Player {
     private config: any = {}
   ) {
     this.media = resolveMedia(target);
+  }
+
+  getPlayer() {
+    return this.player;
   }
 
   async init() {
@@ -257,7 +261,7 @@ export default class Player {
 
 // --- UMD interop -------------------------------------------------------------
 // In UMD builds, add-on bundles (ads/hls) are configured with
-// globals: { '@openplayer/core': 'OpenPlayer' }
+// globals: { '@openplayer/core': 'OpenPlayerJS' }
 // which means they expect core exports (e.g. getOverlayManager, EVENT_OPTIONS)
 // to be available on the global OpenPlayer object.
 //

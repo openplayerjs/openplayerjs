@@ -14,15 +14,15 @@ import { predictMimeType } from './utils';
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 
 export class Player {
-  public media: HTMLMediaElement;
-  public isLive = false;
-  public events = new EventBus();
-  public leases = new Lease();
-  public state = new StateManager<PlaybackState>('idle');
-  public config: PlayerConfig;
-  public userInteracted = false;
-  public canAutoplay = false;
-  public canAutoplayMuted = false;
+  media: HTMLMediaElement;
+  isLive = false;
+  events = new EventBus();
+  leases = new Lease();
+  state = new StateManager<PlaybackState>('idle');
+  config: PlayerConfig;
+  userInteracted = false;
+  canAutoplay = false;
+  canAutoplayMuted = false;
 
   private interactionUnsubs: (() => void)[] = [];
 
@@ -85,7 +85,7 @@ export class Player {
   }
 
   on<E extends PlayerEvent>(event: E, cb: (payload?: any) => void) {
-    // Keep the public surface flexible (plugins may emit custom events).
+    // Keep the surface flexible (plugins may emit custom events).
     return this.events.on(event, cb);
   }
 

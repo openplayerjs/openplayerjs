@@ -1,20 +1,27 @@
 /** @jest-environment jsdom */
 
+import type { Player } from '@openplayer/core';
 import { EventBus } from '@openplayer/core';
 import { extendControls } from '../src/extend';
 
-function makePlayer() {
+type AddElementPayload = { el: HTMLElement; placement?: { v: string; h: string } };
+type AddControlPayload = { el?: HTMLElement; control: unknown };
+
+/** Minimal player stub that satisfies the shape extendControls needs. */
+type MockPlayer = Pick<Player, 'events' | 'emit'> & { controls?: ReturnType<typeof extendControls> };
+
+function makePlayer(): MockPlayer {
   const events = new EventBus();
   return {
     events,
-    emit: jest.fn(),
-  } as any;
+    emit: jest.fn() as Player['emit'],
+  };
 }
 
 describe('extendControls', () => {
   test('returns api and attaches it to player.controls', () => {
     const player = makePlayer();
-    const api = extendControls(player);
+    const api = extendControls(player as unknown as Player);
     expect(player.controls).toBe(api);
     expect(typeof api.addElement).toBe('function');
     expect(typeof api.addControl).toBe('function');
@@ -23,18 +30,18 @@ describe('extendControls', () => {
   describe('addElement', () => {
     test('throws when no ui:addElement listener is registered', () => {
       const player = makePlayer();
-      const api = extendControls(player);
+      const api = extendControls(player as unknown as Player);
       const el = document.createElement('div');
       expect(() => api.addElement(el)).toThrow('UI not initialized; cannot addElement');
     });
 
     test('emits ui:addElement with default placement and controls:changed', () => {
       const player = makePlayer();
-      const api = extendControls(player);
+      const api = extendControls(player as unknown as Player);
       const el = document.createElement('div');
 
-      const received: any[] = [];
-      player.events.on('ui:addElement', (payload: any) => received.push(payload));
+      const received: AddElementPayload[] = [];
+      player.events.on('ui:addElement', (payload) => received.push(payload as AddElementPayload));
 
       const result = api.addElement(el);
 
@@ -46,11 +53,11 @@ describe('extendControls', () => {
 
     test('emits ui:addElement with custom placement', () => {
       const player = makePlayer();
-      const api = extendControls(player);
+      const api = extendControls(player as unknown as Player);
       const el = document.createElement('div');
 
-      const received: any[] = [];
-      player.events.on('ui:addElement', (payload: any) => received.push(payload));
+      const received: AddElementPayload[] = [];
+      player.events.on('ui:addElement', (payload) => received.push(payload as AddElementPayload));
 
       api.addElement(el, { v: 'top', h: 'left' });
 
@@ -61,7 +68,7 @@ describe('extendControls', () => {
   describe('addControl', () => {
     test('throws when no ui:addControl listener is registered', () => {
       const player = makePlayer();
-      const api = extendControls(player);
+      const api = extendControls(player as unknown as Player);
       const control = {
         id: 'test',
         placement: { v: 'bottom' as const, h: 'right' as const },
@@ -72,7 +79,7 @@ describe('extendControls', () => {
 
     test('emits ui:addControl and returns payload.el set by listener', () => {
       const player = makePlayer();
-      const api = extendControls(player);
+      const api = extendControls(player as unknown as Player);
       const resultEl = document.createElement('span');
       const control = {
         id: 'my-control',
@@ -80,8 +87,8 @@ describe('extendControls', () => {
         create: jest.fn(() => resultEl),
       };
 
-      player.events.on('ui:addControl', (payload: any) => {
-        payload.el = resultEl;
+      player.events.on('ui:addControl', (payload) => {
+        (payload as AddControlPayload).el = resultEl;
       });
 
       const result = api.addControl(control);
@@ -92,10 +99,10 @@ describe('extendControls', () => {
 
     test('returns undefined when listener does not set payload.el', () => {
       const player = makePlayer();
-      const api = extendControls(player);
+      const api = extendControls(player as unknown as Player);
       const control = { id: 'my-control', placement: { v: 'bottom' as const, h: 'left' as const }, create: jest.fn() };
 
-      player.events.on('ui:addControl', (_: any) => {
+      player.events.on('ui:addControl', (_: unknown) => {
         // listener registered but does not set payload.el
       });
 

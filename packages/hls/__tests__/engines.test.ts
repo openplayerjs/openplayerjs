@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { MediaSource } from '@openplayer/core';
 import { DefaultMediaEngine, EventBus, Player } from '@openplayer/core';
 import { HlsMediaEngine } from '../src/hls';
 
@@ -11,7 +12,7 @@ jest.mock('hls.js', () => {
       static isSupported() {
         return true;
       }
-      static Events: any = {
+      static Events: Record<string, string> = {
         MEDIA_ATTACHED: 'MEDIA_ATTACHED',
         MANIFEST_PARSED: 'MANIFEST_PARSED',
         ERROR: 'ERROR',
@@ -49,7 +50,7 @@ describe('Media engines', () => {
     events.on('durationchange', () => seen.push('dur'));
 
     // attach binds listeners + commands
-    engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
+    engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<typeof engine.attach>[0]);
 
     media.currentTime = 1;
     media.dispatchEvent(new Event('timeupdate'));
@@ -87,7 +88,7 @@ describe('Media engines', () => {
   test('BaseMediaEngine respects playback lease owner (cannot handle when owned by another)', () => {
     const engine = new DefaultMediaEngine();
     const { media, events, player } = makeCtx();
-    engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
+    engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<typeof engine.attach>[0]);
 
     // someone else owns playback -> seek/rate commands should no-op
     player.leases.acquire('playback', 'other');

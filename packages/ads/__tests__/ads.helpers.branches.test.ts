@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import type { Player, PluginContext } from '@openplayer/core';
+import type { Lease, Player, PluginContext } from '@openplayer/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayer/core';
 import { AdsPlugin } from '../src/ads';
 
@@ -12,12 +12,12 @@ function makeCtx() {
   const dispose = new DisposableStore();
   const ctx: PluginContext = {
     player: { media: video } as unknown as Player,
-    events: bus as any,
+    events: bus,
     state: new StateManager('playing'),
-    leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as any,
+    leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as unknown as Lease,
 
     dispose,
-    add: (d) => dispose.add(d as any),
+    add: (d) => dispose.add(d),
     on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
     listen: (target: any, type: any, handler: any, options?: any) =>
       dispose.addEventListener(target, type, handler, options),

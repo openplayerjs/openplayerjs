@@ -1,7 +1,7 @@
 {
   "name": "@openplayer/ads",
   "version": "3.0.0",
-  "description": "VAST/VMAP ad-serving plugin for OpenPlayerJS",
+  "description": "VAST/VMAP/Non-linear/companions ad-serving plugin for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
     "email": "rafa8626@gmail.com"
@@ -18,8 +18,7 @@
     }
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "repository": {
     "type": "git",
@@ -44,10 +43,5 @@
   },
   "peerDependencies": {
     "@openplayer/core": ">=3.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@openplayer/core": {
-      "optional": true
-    }
   }
 }

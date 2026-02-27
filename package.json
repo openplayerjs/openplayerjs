@@ -1,7 +1,7 @@
 {
   "name": "openplayerjs",
   "version": "3.0.0",
-  "description": "HTML5 video and audio player — monorepo root",
+  "description": "HTML5 video and audio player \u2014 monorepo root",
   "private": true,
   "author": {
     "name": "Rafael Miranda",
@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "lint": "eslint --cache packages",
-    "build:types": "tsc -p packages/core/tsconfig.json --emitDeclarationOnly && tsc -p packages/ui/tsconfig.declarations.json --emitDeclarationOnly && tsc -p packages/hls/tsconfig.declarations.json --emitDeclarationOnly && tsc -p packages/ads/tsconfig.declarations.json --emitDeclarationOnly",
+    "build:types": "tsc -p packages/core/tsconfig.declarations.json && tsc -p packages/ui/tsconfig.declarations.json && tsc -p packages/hls/tsconfig.declarations.json && tsc -p packages/ads/tsconfig.declarations.json",
     "build:bundles": "rollup -c rollup.config.mjs",
     "watch": "npm run build:bundles -- --watch",
     "build": "npm run build:types && npm run build:bundles && npm run build:css",

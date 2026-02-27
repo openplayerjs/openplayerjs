@@ -46,7 +46,7 @@ describe('AdsPlugin manual-play sourceType inference', () => {
     });
     plugin.setup(ctx);
 
-    const spy = jest.spyOn(plugin as any, 'playBreakFromVast').mockResolvedValue(undefined);
+    const spy = jest.spyOn(plugin, 'playBreakFromVast').mockResolvedValue(undefined);
 
     await plugin.playAds('https://example.com/nl.xml');
     expect(spy).toHaveBeenCalled();

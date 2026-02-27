@@ -18,8 +18,7 @@
     }
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "repository": {
     "type": "git",
@@ -31,6 +30,7 @@
     "video",
     "audio",
     "player",
-    "openplayer"
+    "openplayer",
+    "headless"
   ]
 }

@@ -58,7 +58,7 @@ function makeLeases(): {
   const owner = jest.fn<string | undefined, [string]>((cap) => owners.get(cap)) as unknown as jest.MockedFunction<
     (c: string) => string | undefined
   >;
-  return { leases: { acquire, release, owner } as any, acquire, release, owner };
+  return { leases: { acquire, release, owner } as unknown as Lease, acquire, release, owner };
 }
 
 function makeCtx(media?: HTMLVideoElement) {
@@ -66,19 +66,19 @@ function makeCtx(media?: HTMLVideoElement) {
   const video = media ?? document.createElement('video');
   const dispose = new DisposableStore();
 
-  bus.on('cmd:pause', () => (video as any).pause());
-  bus.on('cmd:play', () => void (video as any).play());
+  bus.on('cmd:pause', video.pause);
+  bus.on('cmd:play', video.play);
 
   const lease = makeLeases();
 
   const ctx: PluginContext = {
     player: { media: video } as unknown as Player,
-    events: bus as any,
+    events: bus,
     state: new StateManager('playing'),
     leases: lease.leases,
 
     dispose,
-    add: (d) => dispose.add(d as any),
+    add: (d) => dispose.add(d),
     on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
     listen: (target: any, type: any, handler: any, options?: any) =>
       dispose.addEventListener(target, type, handler, options),
@@ -332,12 +332,12 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
     (globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
 
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false });
+    const p = new AdsPlugin({ allowNativeControls: false }) as any;
     p.setup(ctx);
 
-    await (p as any).loadVmapAndMerge([], 'https://example.com/vmap.xml');
+    await p.loadVmapAndMerge([], 'https://example.com/vmap.xml');
 
-    const resolvedBreaks = (p as any).resolvedBreaks as any[];
+    const resolvedBreaks = p.resolvedBreaks as any[];
 
     // Both midroll breaks must be scheduled (DOM fallback generates unique IDs via loop index).
     const midrolls = resolvedBreaks.filter((b) => typeof b.at === 'number' && b.at === 15);

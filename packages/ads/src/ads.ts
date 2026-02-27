@@ -75,23 +75,15 @@ export type AdsPluginConfig = {
   autoPlayOnReady?: boolean;
   mountEl?: HTMLElement;
   mountSelector?: string;
-  /** Container for non-linear ads. Defaults to the ad media container (in-player). */
   nonLinearContainer?: HTMLElement;
   nonLinearSelector?: string;
-  /** Container for companion ads. If not set, companion ads will not be rendered. */
   companionContainer?: HTMLElement;
   companionSelector?: string;
   allowNativeControls?: boolean;
   resumeContent?: boolean;
   preferredMediaTypes?: string[];
   debug?: boolean;
-  /** Seconds tolerance when matching due midroll times (default 0.25s). */
   breakTolerance?: number;
-  /**
-   * Controls how multiple VAST/NONLINEAR sources are scheduled.
-   * - `'waterfall'` (default): try sources in order, playing the first one that returns valid ads.
-   * - `'playlist'`: play each source's ads sequentially as individual preroll breaks.
-   */
   adSourcesMode?: 'waterfall' | 'playlist';
 };
 
@@ -194,16 +186,180 @@ export class AdsPlugin implements PlayerPlugin {
   private resolvedBreaks: AdsBreakConfig[] = [];
   private pendingPercentBreaks: { id: string; percent: number; vast: VastInput; once: boolean; source: AdsSource }[] =
     [];
-
-  /** Guard against volume/mute feedback loops between ad media and player media. */
   private syncingVolume = false;
-
   private vmapLoadPromise: Promise<void> | null = null;
-  /** True while the VMAP is being fetched/parsed. Used to eagerly pause content so that
-   *  the preroll intercept window isn't missed by the time the VMAP resolves. */
   private vmapPending = false;
-  /** VMAP URL deferred when preload="none" — fetch starts on the first play intent. */
   private pendingVmapSrc?: string;
+
+  constructor(config: AdsPluginConfig = {}) {
+    const normalizeSources = (cfg: AdsPluginConfig): AdsSource[] => {
+      const list: AdsSource[] = [];
+      const raw = cfg.sources ? (Array.isArray(cfg.sources) ? cfg.sources : [cfg.sources]) : [];
+
+      raw.forEach((s) => {
+        if (!s || typeof s.src !== 'string') return;
+        const src = s.src.trim();
+        const type = s.type as AdsSourceType;
+        if (!src) return;
+        if (type === 'VAST' || type === 'VMAP' || type === 'NONLINEAR') {
+          list.push({ type, src });
+        }
+      });
+
+      return list;
+    };
+
+    const sources = normalizeSources(config);
+    const breaks = config.breaks || [];
+    const hasExplicitPreroll = breaks.some((b) => b.at === 'preroll' && b.source?.src);
+    const hasSourceVastOrVmap = sources.some((s) => s.type === 'VAST' || s.type === 'VMAP' || s.type === 'NONLINEAR');
+
+    this.cfg = {
+      allowNativeControls: config.allowNativeControls ?? false,
+      resumeContent: config.resumeContent ?? true,
+      preferredMediaTypes: config.preferredMediaTypes || [
+        'video/mp4',
+        'video/webm',
+        'application/vnd.apple.mpegurl',
+        'application/x-mpegURL',
+      ],
+      debug: config.debug ?? false,
+      breakTolerance: config.breakTolerance ?? 0.25,
+      sources,
+      breaks,
+      interceptPlayForPreroll: config.interceptPlayForPreroll ?? (Boolean(hasExplicitPreroll) || hasSourceVastOrVmap),
+      autoPlayOnReady: config.autoPlayOnReady || false,
+      mountEl: config.mountEl,
+      mountSelector: config.mountSelector,
+      nonLinearContainer: config.nonLinearContainer,
+      nonLinearSelector: config.nonLinearSelector,
+      companionContainer: config.companionContainer,
+      companionSelector: config.companionSelector,
+      adSourcesMode: config.adSourcesMode ?? 'waterfall',
+    };
+  }
+
+  setup(ctx: PluginContext) {
+    this.ctx = ctx;
+    this.bus = new PluginBus<AdsEvent>(ctx.events);
+    this.vastClient = new VASTClient();
+
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'op-ads';
+    this.overlay.style.display = 'none';
+
+    this.globalUnsubs.push(
+      ctx.events.on('source:set', () => {
+        this.playedBreaks.clear();
+        this.startingBreak = false;
+        this.clearSession();
+        // Reset ad-session state so the next play attempt starts fresh.
+        // Without these resets, shouldInterceptPreroll() stays blocked if
+        // a source switch happened while an ad was playing (active remains true).
+        this.active = false;
+        this.contentMedia = undefined;
+        this.contentHadControls = false;
+        this.overlay.style.display = 'none';
+        this.ctx.leases.release('playback', this.name);
+        try {
+          getOverlayManager(this.ctx.player).deactivate(this.overlayId);
+        } catch {
+          /* ignore */
+        }
+        this.userPlayIntent = false;
+        this.pendingPercentBreaks = [];
+        this.vmapLoadPromise = null;
+        this.vmapPending = false;
+        this.pendingVmapSrc = undefined;
+        this.rebuildSchedule();
+      })
+    );
+
+    this.rebuildSchedule();
+    this.bindBreakScheduler();
+
+    if (this.cfg.interceptPlayForPreroll) {
+      this.bindPrerollInterceptors();
+    }
+
+    this.globalUnsubs.push(
+      ctx.events.on('player:interacted', () => {
+        this.forcedMuteUntilInteraction = false;
+        if (this.active && this.adVideo) {
+          try {
+            this.adVideo.muted = ctx.player.muted;
+            this.adVideo.volume = ctx.player.volume;
+          } catch {
+            // ignore
+          }
+        }
+      })
+    );
+  }
+
+  async playAds(vastUrl: string) {
+    const sourceType = this.inferSourceTypeForUrl(vastUrl);
+    return this.playBreakFromVast({ kind: 'url', value: vastUrl }, { kind: 'manual', id: 'manual', sourceType });
+  }
+
+  async playAdsFromXml(vastXml: string) {
+    return this.playBreakFromVast({ kind: 'xml', value: vastXml }, { kind: 'manual', id: 'manual' });
+  }
+
+  getDueMidrollBreaks(currentTime: number): AdsBreakConfig[] {
+    const media = this.ctx.player.media;
+    if (Number.isFinite(media.duration) && media.duration > 0 && this.pendingPercentBreaks.length) {
+      const duration = media.duration;
+      const toAdd: AdsBreakConfig[] = [];
+      for (const pb of this.pendingPercentBreaks) {
+        const atSec = duration * pb.percent;
+        toAdd.push({
+          id: pb.id,
+          at: atSec,
+          once: pb.once,
+          source: pb.source,
+        });
+      }
+      this.pendingPercentBreaks = [];
+      this.resolvedBreaks.push(...toAdd);
+    }
+
+    const due: AdsBreakConfig[] = [];
+    for (const b of this.resolvedBreaks) {
+      if (typeof b.at !== 'number') continue;
+      if (!this.getVastInputFromBreak(b).input) continue;
+
+      const id = this.getBreakId(b);
+      const once = b.once !== false;
+      if (once && this.playedBreaks.has(id)) continue;
+
+      if (currentTime + (this.cfg.breakTolerance ?? 0.25) >= b.at) {
+        due.push(b);
+      }
+    }
+    due.sort((a, b) => (a.at as number) - (b.at as number));
+    return due;
+  }
+
+  /** Returns the earliest due midroll break, if any. (Convenience for tests/debugging.) */
+  getDueMidrollBreak(currentTime: number): AdsBreakConfig | undefined {
+    return this.getDueMidrollBreaks(currentTime)[0];
+  }
+
+  destroy() {
+    this.finish({ resume: false });
+    for (const off of this.globalUnsubs) off();
+    this.globalUnsubs = [];
+    this.overlay?.remove();
+  }
+
+  private inferSourceTypeForUrl(url: string): 'NONLINEAR' | undefined {
+    const sources = this.cfg.sources || [];
+    const exact = sources.find((s) => s.src === url);
+    if (exact?.type === 'NONLINEAR') return 'NONLINEAR';
+    if (sources.length > 0 && sources.every((s) => s.type === 'NONLINEAR')) return 'NONLINEAR';
+    return undefined;
+  }
 
   private resolveContainer(el?: HTMLElement, selector?: string): HTMLElement | undefined {
     if (el && el.nodeType === 1) return el;
@@ -325,139 +481,6 @@ export class AdsPlugin implements PlayerPlugin {
   private warn(...args: any[]) {
     // eslint-disable-next-line no-console
     if (this.cfg?.debug) console.warn('[player][ads]', ...args);
-  }
-
-  constructor(config: AdsPluginConfig = {}) {
-    const normalizeSources = (cfg: AdsPluginConfig): AdsSource[] => {
-      const list: AdsSource[] = [];
-      const raw = cfg.sources ? (Array.isArray(cfg.sources) ? cfg.sources : [cfg.sources]) : [];
-
-      raw.forEach((s) => {
-        if (!s || typeof s.src !== 'string') return;
-        const src = s.src.trim();
-        const type = s.type as AdsSourceType;
-        if (!src) return;
-        if (type === 'VAST' || type === 'VMAP' || type === 'NONLINEAR') {
-          list.push({ type, src });
-        }
-      });
-
-      return list;
-    };
-
-    const sources = normalizeSources(config);
-    const breaks = config.breaks || [];
-    const hasExplicitPreroll = breaks.some((b) => b.at === 'preroll' && b.source?.src);
-    const hasSourceVastOrVmap = sources.some((s) => s.type === 'VAST' || s.type === 'VMAP' || s.type === 'NONLINEAR');
-
-    this.cfg = {
-      allowNativeControls: config.allowNativeControls ?? false,
-      resumeContent: config.resumeContent ?? true,
-      preferredMediaTypes: config.preferredMediaTypes || [
-        'video/mp4',
-        'video/webm',
-        'application/vnd.apple.mpegurl',
-        'application/x-mpegURL',
-      ],
-      debug: config.debug ?? false,
-      breakTolerance: config.breakTolerance ?? 0.25,
-      sources,
-      breaks,
-      interceptPlayForPreroll: config.interceptPlayForPreroll ?? (Boolean(hasExplicitPreroll) || hasSourceVastOrVmap),
-      autoPlayOnReady: config.autoPlayOnReady || false,
-      mountEl: config.mountEl,
-      mountSelector: config.mountSelector,
-      nonLinearContainer: config.nonLinearContainer,
-      nonLinearSelector: config.nonLinearSelector,
-      companionContainer: config.companionContainer,
-      companionSelector: config.companionSelector,
-      adSourcesMode: config.adSourcesMode ?? 'waterfall',
-    };
-  }
-
-  setup(ctx: PluginContext) {
-    this.ctx = ctx;
-    this.bus = new PluginBus<AdsEvent>(ctx.events);
-    this.vastClient = new VASTClient();
-
-    this.overlay = document.createElement('div');
-    this.overlay.className = 'op-ads';
-    this.overlay.style.display = 'none';
-
-    this.globalUnsubs.push(
-      ctx.events.on('source:set', () => {
-        this.playedBreaks.clear();
-        this.startingBreak = false;
-        this.clearSession();
-        // Reset ad-session state so the next play attempt starts fresh.
-        // Without these resets, shouldInterceptPreroll() stays blocked if
-        // a source switch happened while an ad was playing (active remains true).
-        this.active = false;
-        this.contentMedia = undefined;
-        this.contentHadControls = false;
-        this.overlay.style.display = 'none';
-        this.ctx.leases.release('playback', this.name);
-        try {
-          getOverlayManager(this.ctx.player).deactivate(this.overlayId);
-        } catch {
-          /* ignore */
-        }
-        this.userPlayIntent = false;
-        this.pendingPercentBreaks = [];
-        // Cancel any in-flight or deferred VMAP so rebuildSchedule starts fresh.
-        this.vmapLoadPromise = null;
-        this.vmapPending = false;
-        this.pendingVmapSrc = undefined;
-        this.rebuildSchedule();
-      })
-    );
-
-    this.rebuildSchedule();
-    this.bindBreakScheduler();
-
-    if (this.cfg.interceptPlayForPreroll) {
-      this.bindPrerollInterceptors();
-    }
-
-    this.globalUnsubs.push(
-      ctx.events.on('player:interacted', () => {
-        this.forcedMuteUntilInteraction = false;
-        if (this.active && this.adVideo) {
-          try {
-            this.adVideo.muted = ctx.player.muted;
-            this.adVideo.volume = ctx.player.volume;
-          } catch {
-            // ignore
-          }
-        }
-      })
-    );
-  }
-
-  async playAds(vastUrl: string) {
-    const sourceType = this.inferSourceTypeForUrl(vastUrl);
-    return this.playBreakFromVast({ kind: 'url', value: vastUrl }, { kind: 'manual', id: 'manual', sourceType });
-  }
-
-  private inferSourceTypeForUrl(url: string): 'NONLINEAR' | undefined {
-    const sources = this.cfg.sources || [];
-    // Exact match: use the configured source's type
-    const exact = sources.find((s) => s.src === url);
-    if (exact?.type === 'NONLINEAR') return 'NONLINEAR';
-    // All configured sources are NONLINEAR → infer NONLINEAR for any URL
-    if (sources.length > 0 && sources.every((s) => s.type === 'NONLINEAR')) return 'NONLINEAR';
-    return undefined;
-  }
-
-  async playAdsFromXml(vastXml: string) {
-    return this.playBreakFromVast({ kind: 'xml', value: vastXml }, { kind: 'manual', id: 'manual' });
-  }
-
-  destroy() {
-    this.finish({ resume: false });
-    for (const off of this.globalUnsubs) off();
-    this.globalUnsubs = [];
-    this.overlay?.remove();
   }
 
   private rebuildSchedule() {
@@ -585,9 +608,6 @@ export class AdsPlugin implements PlayerPlugin {
         }
 
         if (!url && !xml) continue;
-
-        // VMAP AdSource points to a VAST tag (or inline VAST data). Convert it into a break `source`
-        // so the scheduler can actually fetch/parse and play it.
         const isNonLinearBreak = breakType === 'nonlinear' || breakType === 'non-linear';
         const source: AdsSource = { type: isNonLinearBreak ? 'NONLINEAR' : 'VAST', src: url ? url : xml! };
 
@@ -760,46 +780,6 @@ export class AdsPlugin implements PlayerPlugin {
     }
 
     return undefined;
-  }
-
-  getDueMidrollBreaks(currentTime: number): AdsBreakConfig[] {
-    const media = this.ctx.player.media;
-    if (Number.isFinite(media.duration) && media.duration > 0 && this.pendingPercentBreaks.length) {
-      const duration = media.duration;
-      const toAdd: AdsBreakConfig[] = [];
-      for (const pb of this.pendingPercentBreaks) {
-        const atSec = duration * pb.percent;
-        toAdd.push({
-          id: pb.id,
-          at: atSec,
-          once: pb.once,
-          source: pb.source,
-        });
-      }
-      this.pendingPercentBreaks = [];
-      this.resolvedBreaks.push(...toAdd);
-    }
-
-    const due: AdsBreakConfig[] = [];
-    for (const b of this.resolvedBreaks) {
-      if (typeof b.at !== 'number') continue;
-      if (!this.getVastInputFromBreak(b).input) continue;
-
-      const id = this.getBreakId(b);
-      const once = b.once !== false;
-      if (once && this.playedBreaks.has(id)) continue;
-
-      if (currentTime + (this.cfg.breakTolerance ?? 0.25) >= b.at) {
-        due.push(b);
-      }
-    }
-    due.sort((a, b) => (a.at as number) - (b.at as number));
-    return due;
-  }
-
-  /** Returns the earliest due midroll break, if any. (Convenience for tests/debugging.) */
-  getDueMidrollBreak(currentTime: number): AdsBreakConfig | undefined {
-    return this.getDueMidrollBreaks(currentTime)[0];
   }
 
   private toXmlDocument(xml: string): XMLDocument {
@@ -2211,7 +2191,7 @@ export class AdsPlugin implements PlayerPlugin {
 
       overlayMgr.update(this.overlayId, {
         duration: dur,
-        value: Math.max(0, dur - cur + 1),
+        value: Math.max(0, dur - cur),
         mode: 'countdown',
         canSeek: false,
         fullscreenEl: root,
@@ -2853,16 +2833,44 @@ export class AdsPlugin implements PlayerPlugin {
 export function installAds(PlayerCtor: any) {
   if (!PlayerCtor || !PlayerCtor.prototype) return;
 
-  const desc = Object.getOwnPropertyDescriptor(PlayerCtor.prototype, 'ads');
-  if (desc) return;
+  // Add `player.ads` getter (if not already installed)
+  const adsDesc = Object.getOwnPropertyDescriptor(PlayerCtor.prototype, 'ads');
+  if (!adsDesc) {
+    Object.defineProperty(PlayerCtor.prototype, 'ads', {
+      configurable: true,
+      enumerable: false,
+      get() {
+        return this.getPlugin?.('ads');
+      },
+    });
+  }
 
-  Object.defineProperty(PlayerCtor.prototype, 'ads', {
-    configurable: true,
-    enumerable: false,
-    get() {
-      return this.getPlugin?.('ads');
-    },
-  });
+  // Add `player.playAds(input)` helper (URL or VAST XML string)
+  if (typeof PlayerCtor.prototype.playAds !== 'function') {
+    Object.defineProperty(PlayerCtor.prototype, 'playAds', {
+      configurable: true,
+      enumerable: false,
+      value: function playAds(input: string) {
+        const plugin = (this.getPlugin?.('ads') || this.ads) as AdsPlugin;
+        if (!plugin) {
+          throw new Error('Ads plugin not installed; cannot playAds()');
+        }
+
+        const s = String(input ?? '').trim();
+        if (!s) throw new Error('playAds(input) requires a non-empty URL or VAST XML string');
+
+        // Heuristic: XML strings usually start with "<"
+        if (s.startsWith('<')) {
+          if (typeof plugin.playAdsFromXml !== 'function') {
+            throw new Error('Ads plugin does not support XML input (playAdsFromXml missing)');
+          }
+          return plugin.playAdsFromXml(s);
+        }
+
+        return plugin.playAds(s);
+      },
+    });
+  }
 }
 
 export function extendAds(player: any, plugin: AdsPlugin) {

@@ -4,103 +4,158 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
-[![CircleCI](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master.svg?style=svg)](https://circleci.com/gh/openplayerjs/openplayerjs/tree/master)
 
-This is a media player that uses all the goods of HTML5 video/audio elements to play the most popular media in MP4/MP3, HLS and M(PEG)-DASH, and also has the ability to play VMAP and VAST ads.
+# 🎬 OpenPlayerJS — modular, plugin-first, easier to extend
 
-## Advantages
+This is a media player that uses all the goods of HTML5 video/audio elements to play the most popular media in MP4/MP3, HLS and also has the ability to play VMAP / VAST / non linear / companion ads
 
-- Supports **all modern browsers**.
-- **No dependencies**, since it is written in Typescript.
-- Runs a simple but yet powerful algorithm to **check the browser's autoplay capabilities** across browsers.
-- **Enhance your player** adding your own buttons. Check [here](./docs/customize.md) for more details.
-- Provides the ability to use a **single VAST/VPAID** source or a **VAST/VPAID playlist** from several different sources (including URLs and valid XML strings).
-- Always **responsive** by default, for both video/audio tags; for video, **`fill`** and **`fit`** modes are available to either scale and crop media relative to its parent container, or to attempt to make the media fit its parent container (including black bars), respectively.
+> **🎉🎉🎉 OpenPlayerJS v3 is finally here!! 🎉🎉🎉**
+>
+> `v3` is a radical internal rebuild that keeps the player familiar to use, but makes it **much easier to extend** (controls, plugins, engines) and **much easier to maintain**.
+>
+> ✅ If you use **UMD/CDN** today, you can keep the classic `new OpenPlayerJS('id', options); player.init();` flow — see **UMD compatibility** below.
 
-## Migrating from older version to new ones
+---
 
-To learn more details about how to migrate from 1.x.x version to 2.x.x, or any breaking changes in newer versions, visit the [Migration document](./migration.md).
+## ✨ What’s new in v3
 
-## Getting Started
+- 🧩 **Modular packages** (install only what you need)
+- 🔌 **Plugin-first architecture** (UI, Ads, Engines are plugins)
+- 🎛️ **Imperative UI extensions** (`addElement`, `addControl` via `extendControls`)
+- 📝 **Programmatic captions** (`player.addCaptions(...)`)
+- 🧱 Cleaner separation of concerns (core vs UI vs engines)
 
-The standard template to start using OpenPlayerJS is show in the following snippet.
+---
 
-```html
-<html>
-  <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" />
-  </head>
-  <body>
-    <video class="op-player__media" id="player" controls playsinline>
-      <source src="/path/to/video.mp4" type="video/mp4" />
-      <track kind="subtitles" src="/path/to/video.vtt" srclang="en" label="English" />
-    </video>
-    <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
-    <script>
-      // Check the `API and events` link below for more options
-      const player = new OpenPlayerJS('player');
-      player.init();
-    </script>
-  </body>
-</html>
+## ❌ Breaking Changes
+
+- ❌ **M(PEG)-DASH / FLV support** in favor of just what the browser natively supports; if they are needed in the future, they can be added as separate bundles.
+- ❌ Core **quality/levels** API (`levels`, `level`) — quality is now engine-specific.
+- ❌ Several v2 “mega-config” options (moved to the right package: UI vs engine vs plugin); this approach can work when using UMD files, depending on what plugins are enabled.
+
+> 🧭 Migration guide: **[MIGRATION.v3.md](./MIGRATION.v3.md)**
+
+---
+
+## 📦 Packages
+
+| Package            | Purpose                                            | Docs                                                 |
+| ------------------ | -------------------------------------------------- | ---------------------------------------------------- |
+| `@openplayer/core` | Player lifecycle, plugin system, engines, events   | [packages/core/README.md](./packages/core/README.md) |
+| `@openplayer/ui`   | Default UI + built-in controls + UI extension APIs | [packages/ui/README.md](./packages/ui/README.md)     |
+| `@openplayer/hls`  | HLS engine (powered by `hls.js`)                   | [packages/hls/README.md](./packages/hls/README.md)   |
+| `@openplayer/ads`  | VAST/VMAP/non-linear/companion ads plugin          | [packages/ads/README.md](./packages/ads/README.md)   |
+
+---
+
+## 🚀 Quick start (ESM / bundlers)
+
+```bash
+npm install @openplayer/core @openplayer/ui
 ```
 
-## Usage and API Guides
+```ts
+import { Player } from '@openplayer/core';
+import { createUI, buildControls } from '@openplayer/ui';
+import '@openplayer/ui/style.css';
 
-If you want to unleash the power of OpenPlayerJS, learn more about OpenPlayerJS by checking the following links.
+const media = document.querySelector('video')!;
+const player = new Player(media, {
+  plugins: [],
+});
 
-- [How to use OpenPlayerJS](./docs/usage.md)
-- [HTML](./docs/usage.md#html)
-- [Javascript](./docs/usage.md#javascript)
-  - [About the `levels` control](./docs/usage.md#about-the-levels-control)
-  - [About the usage of third-party libraries](./docs/usage.md#about-the-usage-of-third-party-libraries)
-- [React/Next.js](./docs/usage.md#reactnextjs)
-- [API and events](./docs/api.md)
-  - [API](./docs/api.md#api)
-  - [Events](./docs/api.md#events)
-  - [Keyboard Shortcuts](./docs/api.md#keyboard-shortcuts)
-- [NEW! Player Customizations](./docs/customize.md)
-  - [Modify Look](./docs/customize.md#modify-look)
-  - [Add Control](./docs/customize.md#add-control)
-  - [Add External Player API](./docs/customize.md#add-external-player-api)
+const controls = buildControls({
+  bottom: { left: ['play', 'volume'], right: ['fullscreen'] },
+  main: ['progress'],
+});
 
-## Code Samples
+createUI(player, media, controls);
+```
 
-If you need a reference on how to use OpenPlayerJS in some of the most common scenarios, check the following links:
+### 📡 Add HLS
 
-### Beginners
+```bash
+npm install @openplayer/hls hls.js
+```
 
-- [No configuration (only DOM classes)](https://codepen.io/rafa8626/pen/WaNxNB) NOT NEEDED
-- [Minimal configuration](https://codepen.io/rafa8626/pen/BqazxX) ✅
-- [Using `fill` mode](https://codepen.io/rafa8626/pen/xxZXQoO) NOT SUPPORTED
-- [Using `fit` mode](https://codepen.io/rafa8626/pen/abmboKV) NOT SUPPORTED
-- [Using Ads (linear and non-linear samples)](https://codepen.io/rafa8626/pen/vVYKav) ✅
-- [Removing controls and using `preload="none"`](https://codepen.io/rafa8626/pen/OJyMwxX) ✅
-- [Using `Levels` and setting width/height](https://codepen.io/rafa8626/pen/ExxXvZx) NOT SUPPORTED
-- [Use FLV source (only modern browsers and Android, not iOS)](https://codepen.io/rafa8626/pen/QWEZPaZ) NOT SUPPORTED
-- [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB)
-- [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln)
-- [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo)
-- [YouTube video (using plugin)](https://codepen.io/rafa8626/pen/wvvOYpg) NOT SUPPORTED
-- [Using hls.js p2p plugin](https://codepen.io/rafa8626/pen/PoPLMxo) NOT SUPPORTED
+```ts
+import { HlsMediaEngine } from '@openplayer/hls';
+player.registerPlugin(new HlsMediaEngine());
+```
 
-### Intermediate
+### 💰 Add Ads
 
-- [Add source after initialization](https://codepen.io/rafa8626/pen/YzzgJrK) ✅ NOT WORKING ANYMORE; SHOULD BE DONE AFTER INIT
-- [Playing HLS streaming with DRM (Encryption)](https://codepen.io/rafa8626/pen/QZWEVy) ✅
-- [M(PEG)-DASH with Ads](https://codepen.io/rafa8626/pen/Xxjmra) NOT SUPPORTED
-- [Ads playlist (multiple URLs)](https://codepen.io/rafa8626/pen/wvvxbMN) CHANGE THIS TO WATERFALL APPROACH
-- [Add a custom element (watermark)](https://codepen.io/rafa8626/pen/JjLQNjo)✅
+```bash
+npm install @openplayer/ads
+```
 
-### Advanced
+```ts
+import { AdsPlugin } from '@openplayer/ads';
+player.registerPlugin(
+  new AdsPlugin({
+    breaks: [{ at: 'preroll', url: 'https://example.com/vast.xml', once: true }],
+  })
+);
+```
 
-- [Updating source and Ads for dynamic content loading](https://codepen.io/rafa8626/pen/gORJWVz)
-- [Updating Ads and clickable Ad element](https://codepen.io/rafa8626/pen/OJmEzXw)
-- [Trigger Ad manually](https://codepen.io/rafa8626/pen/abZNgoY)
-- [Fully customized audio player](https://codepen.io/rafa8626/pen/ExPLVRE) ✅ ONLY ONE WORKS IN ORIGINAL PEN
-- [Basic playlist (video and audio)](https://codepen.io/rafa8626/pen/GRREQpX)
-- [Retrieve data from audio streaming (HLS)](https://codepen.io/rafa8626/pen/abbjrBW) ✅
-- [Seamless transitions between media using custom control](https://codepen.io/rafa8626/pen/oNXmEza) ✅
+---
+
+## 🌍 UMD compatibility (the “v2 way” still works)
+
+If you load the UMD bundle from a CDN, you can keep the classic API shape:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+
+<video class="op-player__media" id="player" controls playsinline>
+  <source src="/video.mp4" type="video/mp4" />
+</video>
+
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.umd.js"></script>
+<script>
+  const player = new OpenPlayerJS('player', {
+    startTime: 0,
+    startVolume: 1,
+
+    // ✅ Live streams: set Infinity when you know it’s live
+    duration: Infinity,
+  });
+
+  player.init();
+</script>
+```
+
+### Optional UMD add-ons
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.umd.js"></script>
+```
+
+The add-ons self-register under `window.OpenPlayerPlugins`, and `init()` discovers them automatically.
+
+> ✅ Most UMD users only need to adjust for removals (DASH/FLV/levels). See **[MIGRATION.v3.md](./MIGRATION.v3.md)**.
+
+---
+
+## 🎯 Live streams tip (important)
+
+If you know ahead of time you will play a live stream, the best choice is:
+
+```js
+duration: Infinity;
+```
+
+This allows the UI and seeking logic to behave consistently.
+
+---
+
+## 📚 Legacy docs & changelog
+
+- Old changelog: **[CHANGELOG.old.md](./CHANGELOG.old.md)**
+- Legacy docs folder (v2 style): **[docs/](./docs/)**
+
+---
 
 ## Built With
 
@@ -112,6 +167,10 @@ If you need a reference on how to use OpenPlayerJS in some of the most common sc
 
 See also the list of [contributors](https://github.com/openplayerjs/openplayerjs/contributors) who participated in this project.
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) for details.

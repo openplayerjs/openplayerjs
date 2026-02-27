@@ -1,390 +1,402 @@
 # Usage
 
-## HTML
+> **v3 note:** This document covers OpenPlayerJS **v3**. The v2 config object shape (DASH, FLV, IMA SDK, `mode`, `detachMenus`, etc.) is no longer supported. See [MIGRATION.v3.md](../MIGRATION.v3.md) for the full list of changes.
 
-The only 3 requirements to invoke the player are:
+---
 
-- A valid media source, such as MP4, MP3, HLS or M(PEG)-DASH.
-- The `controls` and `playsinline` attributes to provide cross-browser support.
-- The `op-player__media` class name to invoke the player. You can add `op-player` class as well, if you don't require any Javascript configuration.
+## HTML setup
 
-Optionally, if you want to support closed captions, need to add the `track` tag as indicated in the snippet above; you can also use the `default` attribute in the tag, but as a rule of thumb, all the attributes displayed below in the `track` tag **MUST** be there; otherwise, closed captions won't be displayed. More information about this [here](#about-captions-and-subtitles).
+All you need in your markup is a standard `<video>` or `<audio>` element. Add the `controls` and `playsinline` attributes for cross-browser compatibility, and optionally include `<source>` and `<track>` children:
 
 ```html
 <html>
-    <head>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" />
-    </head>
-    <body>
-        <video class="op-player op-player__media" controls playsinline>
-            <source src="/path/to/video.mp4" type="video/mp4" />
-            <track kind="subtitles" src="/path/to/video.vtt" srclang="en" label="English" />
-        </video>
-        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
-    </body>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+  </head>
+  <body>
+    <video id="player" class="op-player__media" controls playsinline>
+      <source src="/path/to/video.mp4" type="video/mp4" />
+      <track kind="subtitles" src="/path/to/video.vtt" srclang="en" label="English" />
+    </video>
+
+    <script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.umd.js"></script>
+    <script>
+      const player = new OpenPlayerJS('player');
+      player.init();
+    </script>
+  </body>
 </html>
 ```
 
-If you are planning to use OpenPlayerJS in a Node project, you need to install the package via:
+> The `op-player__media` class applies the base player styles. The player's wrapper and controls are injected into the DOM automatically when `init()` is called.
 
-```node
-npm install openplayerjs
+---
+
+## JavaScript / TypeScript (ESM — recommended)
+
+Install the packages you need:
+
+```bash
+# Core + UI (covers MP4, MP3, OGG, and any other natively-supported format)
+npm install @openplayer/core @openplayer/ui
+
+# Add HLS support (powered by hls.js)
+npm install @openplayer/hls hls.js
+
+# Add ads support (VAST / VMAP)
+npm install @openplayer/ads
 ```
 
-and then:
+Then wire everything up:
 
-```javascript
-// Using as module
-var OpenPlayerJS = require('/path/to/openplayerjs');
+```ts
+import { Player } from '@openplayer/core';
+import { createUI, buildControls } from '@openplayer/ui';
+import '@openplayer/ui/style.css';
 
-// or importing the library (ES6)
-import OpenPlayerJS from 'openplayerjs';
-```
+const media = document.querySelector<HTMLVideoElement>('#player')!;
 
-## Javascript
-
-Sometimes you need more flexibility instantiating the player; for example, adding cache busting to the VAST/VPAID URL, having a list of Ads URLs, adding new controls, etc. So, for that case, remove the `op-player` class from the video/audio tag (leaving `op-player__media` to preserve styles), and, with Javascript, use the following options (the ones presented are the default values):
-
-```javascript
-const player = new OpenPlayerJS('[player ID]', {
-    controls: {
-        alwaysVisible: false,
-        layers: {
-            left: ['play', 'time', 'volume'],
-            middle: ['progress'],
-            right: ['captions', 'settings', 'fullscreen'],
-        }
-    },
-    detachMenus: false,
-    forceNative: true,
-    mode: 'responsive',
-    hidePlayBtnTimer: 350,
-    step: 0,
-    startVolume: 1,
-    startTime: 0,
-    showLoaderOnInit: false,
-    onError: (e) => console.error(e),
-    defaultLevel: null,
-    live: {
-        showLabel: true,
-        showProgress: false,
-    },
-    dash: {
-        // Possible values are SW_SECURE_CRYPTO, SW_SECURE_DECODE, HW_SECURE_CRYPTO, HW_SECURE_CRYPTO,
-        // HW_SECURE_DECODE, HW_SECURE_ALL
-        robustnessLevel: null,
-        // object containing property names corresponding to key system name strings (e.g. "org.w3.clearkey") and
-        // associated values being instances of ProtectionData
-        // (http://vm2.dashif.org/dash.js/docs/jsdocs/MediaPlayer.vo.protection.ProtectionData.html)
-        drm: null,
-    },
-    flv: {
-        // all FLV options available at https://github.com/bilibili/flv.js/blob/master/docs/api.md#mediadatasource
-    },
-    hls: {
-        // all HLS options available at https://github.com/video-dev/hls.js/blob/master/docs/API.md#fine-tuning.
-    },
-    progress: {
-        duration: 0,
-        showCurrentTimeOnly: false
-    },
-    width: 0,
-    height: 0,
-    pauseOthers: true,
-    // If you need Ads support use the following
-    ads: {
-        src,
-        autoPlayAdBreaks: false,
-        debug: false,
-        enablePreloading: false,
-        language: 'en',
-        loop: false,
-        numRedirects: 4,
-        sdkPath: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-        customClick: {
-            enabled: false,
-            label: '',
-        },
-        sessionId: null,
-        vpaidMode: 'enabled',
-        publisherId: null,
-    }
+const player = new Player(media, {
+  startTime: 0,
+  startVolume: 1,
+  startPlaybackRate: 1,
 });
-// Don't forget to start the player
-player.init();
+
+const controls = buildControls({
+  bottom: {
+    left:  ['play', 'time', 'volume'],
+    right: ['captions', 'settings', 'fullscreen'],
+  },
+  main: ['progress'],
+});
+
+createUI(player, media, controls);
 ```
 
-### Configuration options
+---
 
-| Element                        | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `detachMenus`                  | Allow items that have menu items inside `Settings` to be contained in their own separate menu; generally speaking, the menu will float above the control item it belongs to (by default, false).                                                                                                                                                                                                                                                                                                                                                |
-| `forceNative`                  | Player will favor native capabilities rather than third-party plugins (HLS.js will be used by default since now Android and iOS support it, but setting this to `true`, will enable native HLS in iOS.js)                                                                                                                                                                                                                                                                                                                                       |
-| `mode`                         | Player stretching mode: `responsive` (default), `fit` (to obtain black bars) or `fill` (crop image)                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `hidePlayBtnTimer`             | Number of ms that takes the player to hide the Play button once it starts playing (video only). By default, `350`.                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `step`                         | Number of seconds to rewind/forward media. By default, player will rewind/forward 5 secs from the total duration of media.                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `startVolume`                  | Initial volume of media in decimal numbers. By default, `1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `startTime`                    | Initial play time of media in seconds. By default, `0`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `showLoaderOnInit`             | Allow loader to be displayed when loading video. By default, `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `onError`                      | Callback to be executed once an error is found. By default, `console.error`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `defaultLevel`                 | If `levels` configuration is added in the controls settings, set programmatically the default level to start media with (`-1` for auto, default: `null`). The value could must be string, even if it's a number what you are trying to set (`"1"`, `"2"`, etc.) since in a streaming we could have different ID setup within the streaming resolutions.                                                                                                                                                                                         |
-| `width/height`                 | Force the player to have a specific width/height (default for both: 0). They can accept a string with the number and unit (`100%`, `350px`) or just a number of pixels.                                                                                                                                                                                                                                                                                                                                                                         |
-| `pauseOthers`                  | Flag to allow multiple instances of the player to play at the same time. By default, `true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `controls`                     | The configuration related to the player's controls; by default, the available controls are: 'play', 'time', 'volume', 'progress', 'captions', 'settings' and 'fullscreen'. There's an optional 'levels' control to display different quality levels.                                                                                                                                                                                                                                                                                            |
-| `controls.alwaysVisible`       | By default, the player will display the controls for a number of seconds before they are hidden; this option will allow the user to permanently show the controls if they need fully customize them. By default, `false`.                                                                                                                                                                                                                                                                                                                       |
-| `controls.layers`              | Controls positioning in the player. Each one of the control items can be enclosed in a specific layer, and it will have in its class name the `op-control__[left/middle/right]` according to the controls' structure. By default, the layers are 'left', 'middle' and 'right'. Also available: 'main', 'top-left', 'top-middle', 'top-right', 'bottom-left', 'bottom-middle' and 'bottom-right'. If you use the layer 'main' (**ONLY available for video elements**), whatever control is in it will be appended to the media's main container. |
-| `live`                         | Configuration related to the live streams and what to show in the controls.                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `live.showLabel`               | Allow `Live Broadcast` label to be displayed in live streamings. By default, `true`.                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `live.showProgress`            | Allow to show progress bar in live streamings without showing constant updates. By default, `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `media.pauseOnClick`           | Allow the user to pause media (video) when clicking on the video area. By default, `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `ads`                          | Configuration related to Ads.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `ads.src`                      | The Ad URL(s) to be processed. It accepts also a valid XML string or a list of them.                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `ads.autoPlayAdBreaks`         | If set to `false`, allows the user to overwrite the default mechanism to skip Ads.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `ads.debug`                    | If set to `true`, load `ima3_debug.js` file for debugging purposes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `ads.enablePreloading`         | If set to `true`, the Ads will preload so other actions can be executed with `adsloaded` event.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `ads.language`                 | Language to localize ads (for more details, check: https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization).                                                                                                                                                                                                                                                                                                                                                                                               |
-| `ads.loop`                     | If set to `true`, it will play infinitely an Ad.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `ads.numRedirects`             | Maximum number of redirects before the subsequent redirects will be denied. By default, `4`.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `ads.sdkPath`                  | Custom path/URL to IMA SDK. By default, `https://imasdk.googleapis.com/js/sdkloader/ima3.js`.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `ads.customClick`              | Options to allow IMA SDK to use a custom clickable element for mobile devices; otherwise, IMA SDK will show a `Learn more` layer.                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `ads.customClick.enabled`      | By default, `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `ads.customClick.label`        | The message to display in the custom click element.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `ads.sessionId`                | A temporary UUID used for frequency capping.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `ads.vpaidMode`                | Enable/disable VPAID capabilities (default: 'enabled'). Possible values: 'enabled', 'disabled' and 'insecure'.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `ads.publisherId`              | The Publisher provider ID                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `progress`                     | Configuration related to the progress bar.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `progress.duration`            | The default duration in seconds to show while loading the media (default: `0`). This is to improve some of the UX when the player hasn't detected the metadata of the media yet, but you don't want to show a 00:00 duration.                                                                                                                                                                                                                                                                                                                   |
-| `progress.showCurrentTimeOnly` | Flag to show only current time, or show both time and duration. By default, `false`.                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `useDeviceVolume`              | When this option is `false`, the Volume/Mute elements will be displayed in mobile devices                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+## Configuration options
 
-**NOTE**: In order to use this setup, the video/audio tag(s) **must** have a unique ID.
+Pass these as properties of the second argument to `new Player(...)` (ESM) or `new OpenPlayerJS(id, ...)` (UMD):
 
-### About the `levels` control
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `startTime` | `number` | `0` | Start playback from this position (seconds) |
+| `startVolume` | `number` | `1` | Initial volume level, from `0` (silent) to `1` (full) |
+| `startPlaybackRate` | `number` | `1` | Initial playback speed. `1` is normal speed, `2` is double speed, `0.5` is half speed |
+| `step` | `number` | `0` | How many seconds to seek when using arrow keys or the seek API. Defaults to 5 s when `0` |
+| `duration` | `number` | `0` | Override the detected media duration. Set to `Infinity` for live streams |
+| `width` | `number \| string` | `0` | Force a specific player width (`350`, `"100%"`, etc.) |
+| `height` | `number \| string` | `0` | Force a specific player height |
+| `plugins` | `PlayerPlugin[]` | `[]` | List of plugins to activate at startup |
+| `labels` | `Record<string, string>` | — | Override any built-in UI label string. See the [API reference](api.md#default-labels) for the full list |
+| `debug` | `boolean` | `false` | Enable verbose logging |
 
-The `levels` option refers to the capability of the player to play video media in different quality levels (for example, `144p`, `480p`, `720p`, etc.) under the Settings menu or a separate menu (if `detachMenus` is set as `true`).
+### Removed options (v2 → v3)
 
-This is **not** an option activated by default since it requires the following to make it work accordingly:
+The following configuration options **no longer exist** in v3. See [MIGRATION.v3.md](../MIGRATION.v3.md) for alternatives:
 
-- For HTML5 elements, you MUST have at least two different sources inside the video/audio tag and each MUST include a unique `title`.
-- If you are using a streaming source, the manifest files MUST be configured to support adaptive streaming; that way, the player will check for the potential resolutions and render them. For a good example of a manifest file that will be rendered properly by the player, download and check the source of [this one](https://diqvirsbuges6.cloudfront.net/cases/3916-2/interview/bank_00.m3u8).
+| Removed option | Why it was removed |
+|----------------|--------------------|
+| `mode` | Sizing mode (`responsive` / `fit` / `fill`) is now handled through CSS classes |
+| `detachMenus` | Menu layout is now determined by the UI package |
+| `forceNative` | Native vs hls.js is now determined by the HLS engine's `canPlay()` logic |
+| `hidePlayBtnTimer` | Centre overlay visibility is managed internally by the UI package |
+| `defaultLevel` | Quality levels are engine-specific; use `HlsMediaEngine.getAdapter()` |
+| `allowSkip` | The skip button is automatically shown based on VAST `skipoffset` |
+| `allowRewind` | Removed — no direct replacement |
+| `live.showProgress` | Progress bar is always shown; hide it via CSS if needed |
+| `live.showLive` | The live label is controlled by the UI package |
+| `ads` (as a top-level object with IMA options) | Ads are now a separate plugin: `new AdsPlugin(config)` |
+| `dash` | DASH support was removed |
+| `flv` | FLV support was removed |
+| `hls` (top-level key) | Pass hls.js options directly to `new HlsMediaEngine({ ... })` |
+| `progress.showCurrentTimeOnly` | Use `buildControls` to omit or include the `duration` control |
+| `progress.duration` | Use the top-level `duration` config option instead |
 
-To see a working example of this option using both scenarios described above, check [this sample](https://codepen.io/rafa8626/pen/ExxXvZx).
+---
 
-### About captions and subtitles
+## UMD / CDN usage
 
-Given the changes performed in browser for security purposes, captions and subtitle files will need to have CORS permissions if they come from a different domain in order to be supported by OpenPlayerJS.
-
-OpenPlayerJS supports _Web Video Text Tracks Format_ (WebVTT) and _SubRip Subtitle_ (SRT) files for captions and subtitles; however, WebVTT files are encouraged since they are fully compatible with iOS devices, specially when using full screen mode in smartphones. The reason behind this is because iOS will default to the native phone media player, and its player doesn't have support for other formats in terms of captions/subtitles.
-
-Also, if you are planning to have full support for captions/subtitles across devices, it is important to note that, for Safari, **at least one track tag needs to be present**. So, if you are looking to add captions/subtitles dynamically, make sure that you have a default track element with an empty.vtt file as source. That way, the empty file won't be displayed at all and the dynamically added ones will be considered. For example:
+If you prefer loading scripts from a CDN without a build step:
 
 ```html
-<video id="video" class="op-player op-player__media" controls playsinline>
-    <source src="/path/to/video.mp4" type="video/mp4" />
-    <track kind="subtitles" src="/path/to/empty.vtt" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+
+<video id="player" class="op-player__media" controls playsinline>
+  <source src="/path/to/video.mp4" type="video/mp4" />
 </video>
+
+<!-- Core + UI -->
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.umd.js"></script>
+<!-- Optional: HLS support -->
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.umd.js"></script>
+<!-- Optional: Ads support -->
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.umd.js"></script>
+
 <script>
-    const player = new OpenPlayerJS('video');
-    player.addCaptions({
-        srclang: 'en',
-        src: '/path/to/english.vtt',
-        kind: 'captions',
-        label: 'English',
-        default: true,
-    });
-    player.addCaptions({
-        srclang: 'ja',
-        src: '/path/to/ja.vtt',
-        kind: 'subtitles',
-        label: '日本語',
-    });
-    player.init();
+  const player = new OpenPlayerJS('player', {
+    startTime: 0,
+    startVolume: 1,
+    duration: Infinity, // Set for live streams
+    ads: {
+      breaks: [
+        { at: 'preroll', url: 'https://example.com/vast.xml', once: true },
+      ],
+    },
+  });
+
+  player.init();
 </script>
 ```
 
-### About the usage of third-party libraries
+> When the HLS and Ads UMD bundles are loaded **before** `player.init()`, they self-register under `window.OpenPlayerPlugins` and are discovered automatically.
 
-OpenPlayerJS loads automatically the latest version of [hls.js](https://github.com/video-dev/hls.js), [dash.js](https://github.com/Dash-Industry-Forum/dash.js) and [flv.js](https://github.com/Bilibili/flv.js/) from [jsDelivr CDN service](https://www.jsdelivr.com/); however, if for any reason you need to use a local version (or using a different URL) of any of these third-party libraries, you can **load them before you load OpenPlayerJS**. For example:
+> **Important:** When using UMD, `addElement` and `addControl` can only be called **after** `player.init()` has been called. Calling them before initialization will throw an error, because the UI DOM does not exist yet.
 
-```html
-<script src="/path/to/hls.min.js"></script>
-<script src="/path/to/dash.min.js"></script>
-<script src="/path/to/flv.min.js"></script>
-<script src="/path/to/openplayer.min.js"></script>
-```
+---
 
-Or if you are using them in a separate file:
+## Live streams
 
-```javascript
-import Hls from 'hls.js';
-import dashjs from 'dashjs';
-import flvJs from 'flv.js';
+Set `duration: Infinity` whenever you know the source is a live stream. This tells the player and UI to skip progress-bar seeking and show the live indicator correctly:
 
-import OpenPlayerJS from 'openplayerjs';
-```
-
-If you need to use any custom methods that any of these libraries offer, you can invoke `getMedia().instance` to do so.
-
-**IMPORTANT**: Just make sure these libraries are fully loaded, so either **use this within an event, after waiting for `init()`, or after waiting for `load()`**
-
-```javascript
-const player = new OpenPlayerJS('[player ID]', {
-    hls: {
-        // all configuration for HLS.js
-    },
-});
-await player.init();
-
-player.getElement().addEventListener('hlsManifestParsed', () => {
-    player.getMedia().instance.startLoad(3);
-});
-
-player.getElement().addEventListener('ended', async () => {
-    player.src = 'https://example.com/test.mpd';
-    await player.load();
-    player.getMedia().instance.attachTTMLRenderingDiv(document.querySelector('#ttml-rendering-div'));
+```ts
+const player = new Player(media, {
+  duration: Infinity,
+  plugins: [new HlsMediaEngine()],
 });
 ```
 
-## React/Next.js
+In UMD:
 
-Using OpenPlayerJS with React and Next.js is pretty straightforward, as you can see in the example below.
-
-```javascript
-import React, { useEffect } from 'react';
-import OpenPlayerJS from 'openplayerjs';
-import 'openplayerjs/dist/openplayer.css';
-
-export default function Sample() {
-    useEffect(() => {
-        const player = new OpenPlayerJS('player');
-        player.init();
-    }, []);
-
-    return (
-        <div>
-            <video id="player" className="op-player__media" controls playsInline>
-                <source src="https://my.test.com/video.mp4" type="video/mp4" />
-            </video>
-        </div>
-    );
-}
-```
-
-Check the [OpenPlayerJS with React](https://codepen.io/rafa8626/pen/GRrVLMB) and [OpenPlayerJS with Next.js](https://codesandbox.io/s/vigorous-almeida-71gln) samples for more information. **You can use all the configuration elements listed in the [Configuration options](#configuration-options) listed above**.
-
-## Vue.js
-
-Using OpenPlayerJS with Vue.js is not as different as the example above; however, since Vue 3.x allows the user to use variables with reactivity, the variable that OpenPlayerJS must be assigned to **MUST NOT be reactive**; otherwise, due the changes introduced in 2.7.2 version, the main methods such as `play()`, `pause()`, `init()`, etc., will be attempted to be called via a Vue observer proxy variable, instead of an OpenPlayerJS instance.
-
-A valid example of how to use OpenPlayerJS with Vue is as follows:
-
-```javascript
-const app = Vue.createApp({
-    mounted() {
-        this.$player = new OpenPlayerJS('player', {
-            showLoaderOnInit: false,
-            pauseOthers: false,
-        });
-        this.$player.init();
-    },
-});
-app.mount('#app');
-```
-
-Check the [OpenPlayerJS with Vue.js](https://codepen.io/rafa8626/pen/JjWPLeo) sample for more information. **You can use all the configuration elements listed in the [Configuration options](#configuration-options) listed above**.
-
-## Special user-case scenarios
-
-Since OpenPlayerJS uses the native Media API, there are certain considerations to be taken when configuring the HTML tag with the player's configuration.
-
-### Save bandwidth
-
-OpenPlayerJS has configured the third-party libraries within the code to be as optimized in its use as possible, but when using HTML5 sources (MP3, MP4, OGG, etc.), the best way to save bandwidth is to
-set the `preload` attribute as `none` in the video/audio tag.
-
-The only side-effect of using this, is that the duration reflected in the control bar will always be zero until the user starts playing the media.
-
-If you want to set the duration to improve the UI experience (knowing it ahead of time, in seconds), you can use the `duration` configuration under the `progress` element.
-
-```javascript
-const player = new OpenPlayerJS('video', {
-    progress: {
-        duration: 315, // Around 12:14 minutes of duration
-    },
-});
+```js
+const player = new OpenPlayerJS('player', { duration: Infinity });
 player.init();
 ```
 
-### CORS (Cross-Origin Resource Sharing)
+---
 
-Specially when using Ads and closed captioning, this is a common issue that has a very easy solution.
+## Captions and subtitles
 
-Generally speaking, the error will look like this:
+### Static captions (markup)
 
-`Access to XMLHttpRequest at '[WEBSITE DOMAIN]' from origin '[OTHER DOMAIN]' has been blocked by CORS policy`
+Add a `<track>` element inside your `<video>` tag before the player is initialized:
 
-And this can be solved by setting in the server side the proper permission headers (specially if you are using `localhost` for it):
+```html
+<video id="player" class="op-player__media" controls playsinline>
+  <source src="/video.mp4" type="video/mp4" />
+  <track kind="subtitles" src="/captions/en.vtt" srclang="en" label="English" default />
+  <track kind="subtitles" src="/captions/es.vtt" srclang="es" label="Español" />
+</video>
+```
 
-```text
-Access-Control-Allow-Origin: [origin header value, or * to allow all sites]
+### Dynamic captions (JavaScript)
+
+Use `player.addCaptions(...)` to inject tracks at runtime — this is the preferred approach for single-page applications:
+
+```ts
+player.addCaptions({
+  src: '/captions/en.vtt',
+  srclang: 'en',
+  kind: 'subtitles',
+  label: 'English',
+  default: true,
+});
+
+player.addCaptions({
+  src: '/captions/ja.vtt',
+  srclang: 'ja',
+  kind: 'subtitles',
+  label: '日本語',
+});
+```
+
+> **Safari note:** Safari requires at least one `<track>` element in the markup (even an empty one) for the programmatic captions API to work. Add this placeholder to your HTML when all captions are loaded dynamically:
+>
+> ```html
+> <track kind="subtitles" src="/captions/empty.vtt" />
+> ```
+
+OpenPlayerJS supports **WebVTT** (`.vtt`) and **SubRip** (`.srt`) files. WebVTT is recommended for full compatibility, especially in iOS fullscreen mode where the native player takes over.
+
+---
+
+## Bandwidth optimisation
+
+To avoid downloading media before the user presses play, set `preload="none"` on the media element:
+
+```html
+<video id="player" class="op-player__media" controls playsinline preload="none">
+  <source src="/video.mp4" type="video/mp4" />
+</video>
+```
+
+> **Side effect:** With `preload="none"` the player cannot read the media's duration until playback starts. Provide the `duration` option if you want the UI to show the correct total time before the user presses play:
+>
+> ```ts
+> new Player(media, { duration: 315 }); // 5 min 15 s
+> ```
+
+---
+
+## HLS streaming
+
+```ts
+import { HlsMediaEngine } from '@openplayer/hls';
+
+const player = new Player(media, {
+  duration: Infinity, // if live
+  plugins: [
+    new HlsMediaEngine({
+      // Any hls.js config option is accepted here
+      maxBufferLength: 60,
+      lowLatencyMode: true,
+    }),
+  ],
+});
+```
+
+- On browsers that **do not** support HLS natively (Chrome, Firefox), `HlsMediaEngine` intercepts `.m3u8` sources and uses hls.js.
+- On **Safari** (and iOS), HLS is supported natively, so `DefaultMediaEngine` handles it and hls.js is not loaded.
+
+### Accessing hls.js APIs
+
+```ts
+const engine = player.getPlugin<HlsMediaEngine>('hls');
+const hls = engine?.getAdapter(); // raw hls.js instance
+
+hls?.on(Hls.Events.ERROR, (_event, data) => {
+  if (data.fatal) console.error('Fatal HLS error', data);
+});
+```
+
+---
+
+## Ads (VAST / VMAP)
+
+```ts
+import { AdsPlugin } from '@openplayer/ads';
+
+const player = new Player(media, {
+  plugins: [
+    new AdsPlugin({
+      breaks: [
+        { at: 'preroll',  url: 'https://example.com/preroll.xml',  once: true },
+        { at: 60,         url: 'https://example.com/midroll.xml',  once: true },
+        { at: 'postroll', url: 'https://example.com/postroll.xml', once: true },
+      ],
+    }),
+  ],
+});
+```
+
+See [packages/ads/README.md](../packages/ads/README.md) and [API reference — Ads events](api.md#ads-events) for the full configuration and event list.
+
+---
+
+## CORS
+
+When ads, captions, or streaming manifests are loaded from a different domain, the server must allow cross-origin requests. The typical error message looks like:
+
+```
+Access to fetch at 'https://cdn.example.com/video.m3u8' from origin 'https://myapp.com'
+has been blocked by CORS policy.
+```
+
+To fix this on your server, add the following response headers:
+
+```
+Access-Control-Allow-Origin: https://myapp.com
 Access-Control-Allow-Credentials: true
 ```
 
-### Ads: a "complex" setup
+Or, for public assets, allow all origins:
 
-Given that Ads can vary from VAST, VPAID and VMAP, each one has its own unique requirements.
-
-For this sake, OpenPlayerJS integrated IMA SDK to help with this titanic task, but this means that you need to know how to configure IMA for your own scenario. Below are some of the most complex scenarios that we have encountered using Ads (aside from the known CORS issue described above).
-
-#### Translate the UI
-
-Given that the IMA SDK library does not allow for a lot of UI customizations, the only way to translate the UI elements within the Ad (Skip button, custom click button, counters, etc.), is to setting up the language of the Ads being played.
-
-This is achieved by using the `language` configuration, setting the desired country code. The available country codes are listed [here](https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization?hl=en).
-
-```javascript
-const player = new OpenPlayerJS('video', {
-    ads: {
-        src: [YOUR AD SOURCE(S)]
-        language: 'en-US
-    }
-});
-player.init();
+```
+Access-Control-Allow-Origin: *
 ```
 
-#### Personalize the Custom Click button
+---
 
-When personalizing the custom click button, this is sometimes desired since, by default, it has a Learn More legend and a specific color. When its needed a different label, we can leverage the `customClick` configuration set:
+## React / Next.js
 
-```javascript
-const player = new OpenPlayerJS('video', {
-    ads: {
-        src: [YOUR AD SOURCE(S)]
-        customClick: {
-            enabled: true,
-            label: [YOUR LABEL],
-        }
-    }
-});
-player.init();
+```tsx
+import { useEffect, useRef } from 'react';
+import { Player } from '@openplayer/core';
+import { createUI, buildControls } from '@openplayer/ui';
+import '@openplayer/ui/style.css';
+
+export default function VideoPlayer() {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const player = new Player(ref.current, { plugins: [] });
+    const controls = buildControls({
+      bottom: { left: ['play', 'volume'], right: ['fullscreen'] },
+      main: ['progress'],
+    });
+    createUI(player, ref.current, controls);
+
+    return () => player.destroy();
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      className="op-player__media"
+      controls
+      playsInline
+    >
+      <source src="https://example.com/video.mp4" type="video/mp4" />
+    </video>
+  );
+}
 ```
 
-Just keep in mind that, whatever label you set there, it will be used as is with no possibility of translation.
+---
 
-#### VPAID not playing due to 901 error
+## Vue.js
 
-VPAID Ads are known for using iframes that sometimes represent a security concern. IMA SDK has 2 different modes to deal with them. OpenPlayerJS always enables them in a secure way, but that
-sometimes lead to 901 errors. The way to solve this is by using the `vpaidMode` configuration and setting it as `insecure`.
+```js
+import { onMounted, onUnmounted, ref } from 'vue';
+import { Player } from '@openplayer/core';
+import { createUI, buildControls } from '@openplayer/ui';
+import '@openplayer/ui/style.css';
 
-```javascript
-const player = new OpenPlayerJS('video', {
-    ads: {
-        src: [YOUR AD SOURCE(S)]
-        vpaidMode: 'insecure',
-    }
-});
-player.init();
+export default {
+  setup() {
+    const videoRef = ref(null);
+    let player;
+
+    onMounted(() => {
+      player = new Player(videoRef.value, { plugins: [] });
+      const controls = buildControls({
+        bottom: { left: ['play', 'volume'], right: ['fullscreen'] },
+        main: ['progress'],
+      });
+      createUI(player, videoRef.value, controls);
+    });
+
+    onUnmounted(() => player?.destroy());
+
+    return { videoRef };
+  },
+};
 ```
 
-For more information about this topic, read [here](https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/vpaid2js).
+> **Vue 3 note:** Do **not** store the `Player` instance in a reactive variable (e.g. `ref(player)` or `reactive({ player })`). Vue's reactivity system wraps objects in a Proxy, which breaks methods like `play()`, `pause()`, and `destroy()`. Store it in a plain local variable or use `shallowRef`.
+
+---
+
+## Changing the source at runtime
+
+To switch to a different video after the player is already running:
+
+```ts
+player.src = 'https://example.com/new-video.mp4';
+player.load(); // re-detects the engine and begins loading the new source
+```
+
+For HLS sources, the `HlsMediaEngine` will detach from the old stream and attach to the new one automatically.

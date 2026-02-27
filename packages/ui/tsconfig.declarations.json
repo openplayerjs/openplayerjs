@@ -1,12 +1,27 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
     "rootDir": "./src",
     "declarationDir": "./dist/types",
-    "declaration": true,
-    "declarationMap": true,
-    "paths": {}
+    "baseUrl": ".",
+    "paths": {
+      "@openplayer/core": [
+        "../core/dist/types/index.d.ts"
+      ],
+      "@openplayer/core/*": [
+        "../core/dist/types/*"
+      ]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

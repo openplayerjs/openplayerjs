@@ -37,8 +37,8 @@ class OverlayBus<E extends string> {
 const OVERLAY_MANAGER_KEY = '__op::overlay::manager';
 
 export class OverlayManager {
-  public readonly bus: OverlayBus<OverlayEvent>;
-  public active: OverlayState | null = null;
+  readonly bus: OverlayBus<OverlayEvent>;
+  active: OverlayState | null = null;
 
   private overlays = new Map<string, OverlayState>();
 

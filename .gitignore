@@ -26,6 +26,8 @@ dist-ssr
 .env.*
 .eslintcache
 dev-dist
+# TypeScript Build Cache
+*.tsbuildinfo
 
 coverage
 index.html

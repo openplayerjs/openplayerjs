@@ -4,7 +4,7 @@ import { AdsPlugin } from '../src/ads';
 
 describe('AdsPlugin non-linear XML fallback', () => {
   it('extracts NonLinearAds from raw VAST XML', () => {
-    const p = new AdsPlugin({ debug: false } as any);
+    const p = new AdsPlugin({ debug: false });
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <VAST version="3.0">

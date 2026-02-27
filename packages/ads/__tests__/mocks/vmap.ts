@@ -1,6 +1,6 @@
 export default class VMAP {
-  static __breaks: any[] = [];
-  adBreaks: any[];
+  static __breaks: unknown[] = [];
+  adBreaks: unknown[];
   constructor() {
     this.adBreaks = VMAP.__breaks;
   }
