@@ -12,7 +12,12 @@ export default defineConfig({
     files: ['**/*.ts'],
     extends: [eslint.configs.recommended, tseslint.configs.recommended, tseslint.configs.stylistic],
     plugins: { prettier: pluginPrettier, import: pluginImport },
-    languageOptions: { parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname } },
+    languageOptions: {
+      parserOptions: {
+        project: ["./tsconfig.eslint.json"],
+        tsconfigRootDir: import.meta.dirname
+      }
+    },
     settings: {
       'import/resolver': {
         typescript: {
