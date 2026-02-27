@@ -17,11 +17,12 @@
     "packages/*"
   ],
   "scripts": {
+    "clean": "node -e \"const fs=require('fs'); const p=require('path'); const rm=(x)=>fs.rmSync(x,{recursive:true,force:true}); rm('dist'); if(fs.existsSync('packages')) for(const d of fs.readdirSync('packages',{withFileTypes:true})) if(d.isDirectory()) rm(p.join('packages',d.name,'dist'));\"",
     "lint": "eslint --cache packages",
-    "build:types": "tsc -p packages/core/tsconfig.declarations.json && tsc -p packages/ui/tsconfig.declarations.json && tsc -p packages/hls/tsconfig.declarations.json && tsc -p packages/ads/tsconfig.declarations.json",
+    "build:types": "tsc -b",
     "build:bundles": "rollup -c rollup.config.mjs",
     "watch": "npm run build:bundles -- --watch",
-    "build": "npm run build:types && npm run build:bundles && npm run build:css",
+    "build": "npm run clean && npm run build:types && npm run build:bundles && npm run build:css",
     "test": "jest --coverage --passWithNoTests",
     "build:css": "mkdir -p dist && npm run lint:css && postcss packages/ui/src/style.css -o dist/openplayer.css",
     "lint:css": "stylelint packages/ui/src/style.css"

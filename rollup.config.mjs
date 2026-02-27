@@ -1,30 +1,16 @@
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-function workspaceAlias() {
-  const map = {
-    '@openplayer/core': path.resolve(__dirname, 'packages/core/src/index.ts'),
-    '@openplayer/ui':   path.resolve(__dirname, 'packages/ui/src/index.ts'),
-    '@openplayer/hls':  path.resolve(__dirname, 'packages/hls/src/index.ts'),
-    '@openplayer/ads':  path.resolve(__dirname, 'packages/ads/src/index.ts'),
-  };
-  return {
-    name: 'workspace-alias',
-    resolveId(id) { return map[id] ?? null; },
-  };
-}
-
 const sharedPlugins = [
-  workspaceAlias(),
-  resolve({ browser: true, extensions: ['.ts', '.js'] }),
+  resolve({ browser: true, extensions: ['.mjs', '.js', '.ts', '.json'] }),
+  typescript({ tsconfig: './tsconfig.rollup.json' }),
   commonjs(),
-  typescript({ tsconfig: './tsconfig.json' }),
+];
+
+const sharedPluginsMinified = [
+  ...sharedPlugins,
   terser(),
 ];
 
@@ -62,7 +48,7 @@ export default [
   {
     input: 'packages/ui/src/umd.ts',
     treeshake,
-    plugins: sharedPlugins,
+    plugins: sharedPluginsMinified,
     output: {
       file: 'dist/openplayer.umd.js',
       format: 'umd',
@@ -74,7 +60,7 @@ export default [
     input: 'packages/hls/src/umd.ts',
     external: CORE_EXTERNAL,
     treeshake,
-    plugins: sharedPlugins,
+    plugins: sharedPluginsMinified,
     output: {
       file: 'dist/openplayer-hls.umd.js',
       format: 'umd',
@@ -88,7 +74,7 @@ export default [
     input: 'packages/ads/src/umd.ts',
     external: CORE_EXTERNAL,
     treeshake,
-    plugins: sharedPlugins,
+    plugins: sharedPluginsMinified,
     output: {
       file: 'dist/openplayer-ads.umd.js',
       format: 'umd',

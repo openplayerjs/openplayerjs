@@ -2191,7 +2191,7 @@ export class AdsPlugin implements PlayerPlugin {
 
       overlayMgr.update(this.overlayId, {
         duration: dur,
-        value: Math.max(0, dur - cur),
+        value: Math.max(0, dur - cur) + 1,
         mode: 'countdown',
         canSeek: false,
         fullscreenEl: root,

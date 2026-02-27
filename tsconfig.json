@@ -1,23 +1,9 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "useDefineForClassFields": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "paths": {
-      "@openplayer/core":   ["./packages/core/src/index.ts"],
-      "@openplayer/core/*": ["./packages/core/src/*"],
-      "@openplayer/ui":     ["./packages/ui/src/index.ts"],
-      "@openplayer/ui/*":   ["./packages/ui/src/*"],
-      "@openplayer/hls":    ["./packages/hls/src/index.ts"],
-      "@openplayer/hls/*":  ["./packages/hls/src/*"],
-      "@openplayer/ads":    ["./packages/ads/src/index.ts"],
-      "@openplayer/ads/*":  ["./packages/ads/src/*"]
-    }
-  },
-  "include": ["packages/*/src", "packages/*/__tests__", "types"],
-  "exclude": ["node_modules", "dist", "packages/*/dist"]
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/hls" },
+    { "path": "./packages/ads" }
+  ]
 }
