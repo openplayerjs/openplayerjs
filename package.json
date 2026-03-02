@@ -24,7 +24,7 @@
     "lint:css": "stylelint packages/player/src/style.css",
     "release": "dotenv release-it --config .release-it.cjs",
     "release:alpha": "dotenv release-it --config .release-it.cjs --preRelease=alpha",
-    "release:beta": "dotenv -o release-it --config .release-it.cjs --preRelease=beta",
+    "release:beta": "dotenv -o -- release-it --config .release-it.cjs --preRelease=beta",
     "release:pack": "pnpm --filter @openplayer/core --filter @openplayer/player --filter @openplayer/hls --filter @openplayer/ads -r pack --pack-destination ./packed",
     "release:publish": "dotenv release-it --config .release-it.cjs --ci",
     "release:publish:dry-run": "dotenv release-it --config .release-it.cjs --ci --dry-run",
