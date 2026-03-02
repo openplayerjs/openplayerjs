@@ -43,6 +43,6 @@
   },
   "scripts": {
     "prepack": "mkdir -p dist && postcss src/style.css -o dist/openplayer.css",
-    "test": "jest --coverage --passWithNoTests"
+    "test": "jest --passWithNoTests --config ../../jest.config.cjs"
   }
 }
