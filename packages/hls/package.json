@@ -33,6 +33,9 @@
     "openplayer",
     "hls.js"
   ],
+  "scripts": {
+    "test": "jest --coverage --passWithNoTests"
+  },
   "peerDependencies": {
     "@openplayer/core": "workspace:^",
     "hls.js": ">=1.0.0"

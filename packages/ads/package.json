@@ -38,6 +38,9 @@
     "player",
     "openplayer"
   ],
+  "scripts": {
+    "test": "jest --coverage --passWithNoTests"
+  },
   "dependencies": {
     "@dailymotion/vast-client": "^6.4.2",
     "@dailymotion/vmap": ">=3.0.0"
