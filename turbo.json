@@ -1,34 +1,15 @@
 {
   "$schema": "https://turborepo.org/schema.json",
   "tasks": {
-    "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "packages/*/dist/**",
-        "packages/*/umd/**"
-      ]
-    },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": []
-    },
-    "test:ci": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
-    },
-    "typecheck": {
       "outputs": []
     },
     "lint": {
       "outputs": []
     },
-    "release": {
-      "dependsOn": [
-        "^build"
-      ],
-      "cache": false
+    "typecheck": {
+      "outputs": []
     }
   }
 }
