@@ -43,7 +43,7 @@ module.exports = {
 
   hooks: {
     // Create dist and validate before releasing
-    'before:init': ['pnpm turbo run test', 'pnpm turbo run build'],
+    'before:init': ['pnpm test', 'pnpm run build'],
 
     // Create generated notes + per-package changelogs from the updated root changelog
     'after:changelog': [
