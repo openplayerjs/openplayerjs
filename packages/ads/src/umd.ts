@@ -5,7 +5,7 @@ import { AdsPlugin, extendAds, installAds } from './ads';
   global.OpenPlayerPlugins.ads = {
     name: 'ads',
     kind: 'plugin',
-    factory: (config?: any) => new AdsPlugin(config || {}),
+    factory: (config?: any) => new AdsPlugin({ ...(config || {}), allowNativeControls: false }),
     install: (PlayerCtor: any) => installAds(PlayerCtor),
     extend: (player: any, plugin: any) => extendAds(player, plugin),
   };

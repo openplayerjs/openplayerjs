@@ -10,7 +10,7 @@ describe('NONLINEAR raw-XML fallback helpers', () => {
 
     const events = new EventBus();
     const ctx: any = {
-      player: { media: video, muted: false, volume: 1 },
+      core: { media: video, muted: false, volume: 1 },
       events,
       state: { current: 'ready' },
       leases: { acquire: jest.fn(() => true), release: jest.fn(), owner: jest.fn(() => null) },

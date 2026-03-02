@@ -122,7 +122,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.onAdapterEvent(
       Hls.Events.LEVEL_UPDATED,
       (_, { details }) => {
-        ctx.player.isLive = details.live;
+        ctx.core.isLive = details.live;
         ctx.events.emit('media:duration', details.totalduration);
       },
       EVENT_OPTIONS
@@ -130,7 +130,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.onAdapterEvent(
       Hls.Events.LEVEL_LOADED,
       (_, { details }) => {
-        ctx.player.isLive = details.live;
+        ctx.core.isLive = details.live;
         ctx.events.emit('media:duration', details.totalduration);
       },
       EVENT_OPTIONS

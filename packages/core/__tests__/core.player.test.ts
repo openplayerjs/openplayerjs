@@ -1,19 +1,19 @@
 /** @jest-environment jsdom */
 
-import { Player } from '../src/core/player';
+import { Core } from '../src/core';
 import type { PlayerPlugin } from '../src/core/plugin';
 
 describe('Player core', () => {
-  function makePlayer() {
+  function makeCore() {
     const v = document.createElement('video');
     // Provide a source so Player.load() can resolve a media engine
     v.src = 'https://example.com/video.mp4';
     document.body.appendChild(v);
-    return new Player(v, { plugins: [] });
+    return new Core(v, { plugins: [] });
   }
 
   test('emit notifies plugin onEvent (non media-engine)', () => {
-    const p = makePlayer();
+    const p = makeCore();
     const seen: [string, unknown][] = [];
     const plugin: PlayerPlugin = {
       name: 't',
@@ -31,7 +31,7 @@ describe('Player core', () => {
   });
 
   test('play emits cmd:play immediately (user-gesture context) and does not double-fire; pause emits cmd:pause', async () => {
-    const p = makePlayer();
+    const p = makeCore();
     const calls: string[] = [];
     p.events.on('cmd:play', () => calls.push('play'));
     p.events.on('cmd:pause', () => calls.push('pause'));
@@ -59,7 +59,7 @@ describe('Player core', () => {
   });
 
   test('lease change re-emits cached media state so plugin-owned surfaces can sync', async () => {
-    const p = makePlayer();
+    const p = makeCore();
     const seen: [string, unknown][] = [];
     p.events.on('cmd:setMuted', (m: boolean) => seen.push(['muted', m]));
     p.events.on('cmd:setVolume', (v: number) => seen.push(['volume', v]));
@@ -84,7 +84,7 @@ describe('Player core', () => {
   });
 
   test('media sync updates cached fields from events', () => {
-    const p = makePlayer();
+    const p = makeCore();
 
     // Set values on media element so bindMediaSync reads them correctly
     Object.defineProperty(p.media, 'currentTime', { value: 12, writable: true, configurable: true });
@@ -106,7 +106,7 @@ describe('Player core', () => {
   });
 
   test('destroy detaches active engine if present', () => {
-    const p = makePlayer() as any;
+    const p = makeCore() as any;
     const detach = jest.fn();
     p.activeEngine = { detach };
     p.playerContext = { media: p.media, events: p.events, player: p };
@@ -126,7 +126,7 @@ describe('Player core', () => {
     v.pause = jest.fn();
     v.play = jest.fn().mockResolvedValue(undefined);
     document.body.appendChild(v);
-    const p = new Player(v, { plugins: [] });
+    const p = new Core(v, { plugins: [] });
     const promise = p.determineAutoplaySupport();
     // Ensure readiness after listeners are in place.
     p.events.emit('loadedmetadata');
@@ -149,7 +149,7 @@ describe('Player core', () => {
     v.pause = jest.fn();
     v.play = jest.fn().mockRejectedValueOnce(new Error('blocked')).mockResolvedValueOnce(undefined);
     document.body.appendChild(v);
-    const p = new Player(v, { plugins: [] });
+    const p = new Core(v, { plugins: [] });
     const promise = p.determineAutoplaySupport();
     p.events.emit('loadedmetadata');
     const res = await promise;
@@ -172,7 +172,7 @@ describe('Player core', () => {
     v.pause = jest.fn();
     v.play = jest.fn().mockRejectedValue(new Error('blocked'));
     document.body.appendChild(v);
-    const p = new Player(v, { plugins: [] });
+    const p = new Core(v, { plugins: [] });
     const promise = p.determineAutoplaySupport();
     p.events.emit('loadedmetadata');
     const res = await promise;

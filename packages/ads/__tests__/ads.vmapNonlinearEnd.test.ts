@@ -10,7 +10,7 @@ describe('AdsPlugin VMAP parsing', () => {
     document.body.appendChild(video);
     return {
       ctx: {
-        player: { media: video, muted: false, volume: 1 } as any,
+        core: { media: video, muted: false, volume: 1 } as any,
         events: bus,
         state: { current: 'ready' },
         leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as any,

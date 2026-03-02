@@ -1,18 +1,18 @@
 /** @jest-environment jsdom */
 
-import { Player } from '../src/core/player';
+import { Core } from '../src/core';
 import type { PlayerPlugin } from '../src/core/plugin';
 
 describe('Player plugin disposal helpers', () => {
-  function makePlayer() {
+  function makeCore() {
     const v = document.createElement('video');
     v.src = 'https://example.com/video.mp4';
     document.body.appendChild(v);
-    return new Player(v, { plugins: [] });
+    return new Core(v, { plugins: [] });
   }
 
   test('ctx.listen + ctx.on are automatically cleaned on destroy', () => {
-    const p = makePlayer();
+    const p = makeCore();
     const winRemove = jest.spyOn(window, 'removeEventListener');
 
     const plugin: PlayerPlugin = {

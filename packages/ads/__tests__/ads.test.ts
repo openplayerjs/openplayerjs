@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import type { Lease, Player, PluginContext } from '@openplayer/core';
+import type { Core, Lease, PluginContext } from '@openplayer/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayer/core';
 import { AdsPlugin } from '../src/ads';
 import { trackerCtorMock, vastGetMock, vastParseMock } from './mocks/vast-client';
@@ -60,11 +60,8 @@ function makeCtx(media?: HTMLVideoElement) {
   const lease = makeLeases();
 
   const ctx: PluginContext = {
-    // PluginContext expects a full Player; tests only need `.media`.
-    player: { media: video } as unknown as Player,
-    // EventBus is capable of emitting arbitrary plugin events; PlayerEvent typing is stricter than runtime.
+    core: { media: video } as unknown as Core,
     events: bus as any,
-    // Real StateManager has `current` getter (readonly) + transition(); ads tests mutate via transition().
     state: new StateManager('playing'),
     leases: lease.leases,
 

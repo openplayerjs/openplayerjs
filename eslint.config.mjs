@@ -7,7 +7,7 @@ import pluginPrettier from 'eslint-plugin-prettier';
 import pluginImport from 'eslint-plugin-import';
 
 export default defineConfig({
-    ignores: ['dist/**', 'node_modules/**', 'packages/**/dist/**'],
+    ignores: ['dist/**', 'node_modules/**', 'packages/**/dist/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'],
   }, {
     files: ['**/*.ts'],
     extends: [eslint.configs.recommended, tseslint.configs.recommended, tseslint.configs.stylistic],

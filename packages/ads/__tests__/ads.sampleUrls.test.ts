@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
-import type { Player, PluginContext } from '@openplayer/core';
+import type { Core, PluginContext } from '@openplayer/core';
 import {
   DisposableStore,
   EventBus,
@@ -179,7 +179,7 @@ function makeCtx() {
     events: EventBus;
   };
 
-  const playerSurface: TestPlayerSurface = {
+  const coreSurface: TestPlayerSurface = {
     media: video,
     muted: true,
     volume: 0,
@@ -188,7 +188,7 @@ function makeCtx() {
   };
 
   const ctx: PluginContext = {
-    player: playerSurface as unknown as Player,
+    core: coreSurface as unknown as Core,
     events: bus,
     state,
     leases,
@@ -457,14 +457,14 @@ describe('AdsPlugin - Google sample URLs are supported', () => {
     const internals = ads as unknown as { vmapLoadPromise?: Promise<void> };
     await internals.vmapLoadPromise;
 
-    const content = ctx.player.media as HTMLVideoElement;
+    const content = ctx.core.media as HTMLVideoElement;
     content.currentTime = 15.1;
     content.dispatchEvent(new Event('timeupdate'));
 
     // Provide baseline player fields used during takeover setup.
-    (ctx.player as unknown as { muted: boolean }).muted = false;
-    (ctx.player as unknown as { volume: number }).volume = 1;
-    (ctx.player as unknown as { userInteracted: boolean }).userInteracted = true;
+    ctx.core.muted = false;
+    ctx.core.volume = 1;
+    ctx.core.userInteracted = true;
 
     // VMAP playback is driven by the scheduler (timeupdate), not manual playAds().
     const run = new Promise<void>((resolve) => {

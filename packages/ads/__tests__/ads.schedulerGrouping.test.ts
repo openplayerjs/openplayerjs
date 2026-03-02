@@ -9,7 +9,7 @@ describe('midroll scheduler grouping', () => {
     const events = new EventBus();
 
     const ctx: any = {
-      player: { media: video },
+      core: { media: video },
       events,
       state: { current: 'ready' },
       leases: { acquire: jest.fn(() => true), release: jest.fn(), owner: jest.fn(() => null) },

@@ -37,23 +37,24 @@ function pkgBuilds(pkg, input, external = []) {
 }
 
 const NAME = 'OpenPlayerJS'
+const ONLY_PKG = process.env.PKG || '';
 const CORE_EXTERNAL = ['@openplayer/core'];
 const CORE_GLOBAL   = { '@openplayer/core': NAME };
 
-export default [
+const builds = [
   ...pkgBuilds('core', 'packages/core/src/index.ts'),
-  ...pkgBuilds('ui',  'packages/ui/src/index.ts',  CORE_EXTERNAL),
+  ...pkgBuilds('player',  'packages/player/src/index.ts',  CORE_EXTERNAL),
   ...pkgBuilds('hls', 'packages/hls/src/index.ts', CORE_EXTERNAL),
   ...pkgBuilds('ads', 'packages/ads/src/index.ts', CORE_EXTERNAL),
   {
-    input: 'packages/ui/src/umd.ts',
-    treeshake,
+    input: 'packages/player/src/umd.ts',
+    treeshake: false,
     plugins: sharedPluginsMinified,
     output: {
-      file: 'dist/openplayer.umd.js',
+      file: 'packages/player/dist/openplayer.umd.js',
       format: 'umd',
       name: NAME,
-      sourcemap: true
+      sourcemap: true,
     },
   },
   {
@@ -62,7 +63,7 @@ export default [
     treeshake,
     plugins: sharedPluginsMinified,
     output: {
-      file: 'dist/openplayer-hls.umd.js',
+      file: 'packages/hls/dist/openplayer-hls.umd.js',
       format: 'umd',
       name: 'OpenPlayerJSHls',
       sourcemap: true,
@@ -76,7 +77,7 @@ export default [
     treeshake,
     plugins: sharedPluginsMinified,
     output: {
-      file: 'dist/openplayer-ads.umd.js',
+      file: 'packages/ads/dist/openplayer-ads.umd.js',
       format: 'umd',
       name: 'OpenPlayerJSAds',
       sourcemap: true,
@@ -85,3 +86,9 @@ export default [
     },
   },
 ];
+
+export default ONLY_PKG ? builds.filter((b) => {
+  const input = typeof b.input === 'string' ? b.input : '';
+  const file = (b.output && b.output.file) ? b.output.file : '';
+  return input.includes(`packages/${ONLY_PKG}/`) || file.includes(`packages/${ONLY_PKG}/`);
+}) : builds;

@@ -1,5 +1,5 @@
 import type { EventBus } from './events';
-import type { Player } from './player';
+import type { Core } from './index';
 
 export type MediaSource = {
   src: string;
@@ -11,7 +11,7 @@ export type MediaEngineContext = {
   events: EventBus;
   activeSource?: MediaSource;
   config?: any;
-  player: Player;
+  core: Core;
 };
 
 export type MediaEnginePlugin = {

@@ -46,7 +46,7 @@ function ctx(media: HTMLMediaElement) {
     state: new StateManager('idle'),
     config: {},
     activeSource: { src: 'https://example.com/a.mp4', type: 'video/mp4' },
-    player: {
+    core: {
       leases: new Lease(),
       state: new StateManager('idle'),
     } as any,
@@ -81,7 +81,7 @@ describe('BaseMediaEngine branch coverage', () => {
     context.events.emit('cmd:seek', 10);
 
     // Now deny ownership: volume/muted still update (no lease gate), rate stays gated
-    context.player.leases.acquire('playback', 'someone-else');
+    context.core.leases.acquire('playback', 'someone-else');
     context.events.emit('cmd:setVolume', 0.1);
     context.events.emit('cmd:setMuted', false);
     context.events.emit('cmd:setRate', 0.75);
@@ -114,7 +114,7 @@ describe('BaseMediaEngine branch coverage', () => {
     expect(pauseSpy).toHaveBeenCalled();
 
     // Ownership denied => early-return branches
-    context.player.leases.acquire('playback', 'not-test-engine');
+    context.core.leases.acquire('playback', 'not-test-engine');
     context.events.emit('cmd:play');
     context.events.emit('cmd:pause');
     expect(playSpy).toHaveBeenCalledTimes(1);

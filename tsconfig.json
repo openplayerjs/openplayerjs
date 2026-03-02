@@ -2,7 +2,7 @@
   "files": [],
   "references": [
     { "path": "./packages/core" },
-    { "path": "./packages/ui" },
+    { "path": "./packages/player" },
     { "path": "./packages/hls" },
     { "path": "./packages/ads" }
   ]

@@ -7,7 +7,7 @@
  *  3. adSourcesMode: 'playlist'  — plays each source's ads as a separate preroll break
  */
 
-import type { Lease, Player, PluginContext } from '@openplayer/core';
+import type { Core, Lease, PluginContext } from '@openplayer/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayer/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
@@ -46,7 +46,7 @@ function makeCtx(video?: HTMLVideoElement) {
   bus.on('cmd:play', () => void media.play());
 
   const ctx: PluginContext = {
-    player: { media } as unknown as Player,
+    core: { media } as unknown as Core,
     events: bus as any,
     state: new StateManager('playing'),
     leases: lease.leases,

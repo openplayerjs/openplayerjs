@@ -31,7 +31,7 @@ function makeLibraryParsed(
     minSuggestedDuration: opts.minSuggestedDuration ?? 5,
   };
 
-  const companionVariation: any = {
+  const companionVariation = {
     staticResources: [
       { url: opts.companionStaticUrl ?? 'https://example.com/companion.png', creativeType: 'image/png' },
     ],
@@ -40,7 +40,7 @@ function makeLibraryParsed(
     height: 250,
   };
 
-  const ad: any = {
+  const ad = {
     sequence: '1',
     creatives: [
       { type: 'nonlinear', variations: [nonLinearVariation] },

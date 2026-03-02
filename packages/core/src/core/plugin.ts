@@ -1,14 +1,14 @@
 import type { DisposableStore, Disposer } from './dispose';
 import type { EventBus, PlayerEvent } from './events';
+import type { Core } from './index';
 import type { Lease } from './lease';
-import type { Player } from './player';
 import type { PlaybackState, StateManager } from './state';
 
 export type PluginContext = {
   events: EventBus;
   state: StateManager<PlaybackState>;
   leases: Lease;
-  player: Player;
+  core: Core;
   media?: HTMLMediaElement;
   dispose: DisposableStore;
   add(disposer?: void | null | Disposer): Disposer;

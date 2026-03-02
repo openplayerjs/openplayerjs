@@ -5,15 +5,15 @@
 [![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
 
-# 🎬 OpenPlayerJS — modular, plugin-first, easier to extend
+# OpenPlayerJS — modular, plugin-first, easier to extend
 
 This is a media player that uses all the goods of HTML5 video/audio elements to play the most popular media in MP4/MP3, HLS and also has the ability to play VMAP / VAST / non linear / companion ads
 
 > **🎉🎉🎉 OpenPlayerJS v3 is finally here!! 🎉🎉🎉**
 >
-> `v3` is a radical internal rebuild that keeps the player familiar to use, but makes it **much easier to extend** (controls, plugins, engines) and **much easier to maintain**.
+> `v3` is a radical internal rebuild that keeps most of the player familiar to use, but makes it **much easier to extend** (controls, plugins, engines) and **much easier to maintain**.
 >
-> ✅ If you use **UMD/CDN** today, you can keep the classic `new OpenPlayerJS('id', options); player.init();` flow — see **UMD compatibility** below.
+> ✅ If you use **UMD/CDN** today, you can keep the classic `new OpenPlayerJS('id', options); player.init();` flow with some minor changes — see [**UMD compatibility** section](#-umd-compatibility-the-v2-way-still-works) below.
 
 ---
 
@@ -22,138 +22,178 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 - 🧩 **Modular packages** (install only what you need)
 - 🔌 **Plugin-first architecture** (UI, Ads, Engines are plugins)
 - 🎛️ **Imperative UI extensions** (`addElement`, `addControl` via `extendControls`)
-- 📝 **Programmatic captions** (`player.addCaptions(...)`)
-- 🧱 Cleaner separation of concerns (core vs UI vs engines)
+- 🧱 Cleaner separation of concerns (core vs UI vs engines/plugins)
+- 🔥 Ads are **no longer using Google IMA SDK**: we have built our own with the support using Dailymotion's open source libraries. This was to support ads all around the world and avoid geoblocking
 
 ---
 
 ## ❌ Breaking Changes
 
-- ❌ **M(PEG)-DASH / FLV support** in favor of just what the browser natively supports; if they are needed in the future, they can be added as separate bundles.
-- ❌ Core **quality/levels** API (`levels`, `level`) — quality is now engine-specific.
-- ❌ Several v2 “mega-config” options (moved to the right package: UI vs engine vs plugin); this approach can work when using UMD files, depending on what plugins are enabled.
+- ❌ **M(PEG)-DASH / FLV support dropped** in favor of just supporting what browsers natively supports; if there is a need for them in the future, they can be added as separate bundles (like the [hls one](./packages/hls/README.md)).
+- ❌ Core **quality/levels support dropped**: API (`levels`, `level`) — quality is now engine-specific, and will require to be built inside each one of them.
+- ❌ Several v2 "mega-config" options (moved to the right package: UI vs engine vs plugin); this approach can work when using UMD files, depending on what plugins are enabled.
 
-> 🧭 Migration guide: **[MIGRATION.v3.md](./MIGRATION.v3.md)**
+> To learn more about these changes, read **[MIGRATION.v3.md](./MIGRATION.v3.md)**
 
 ---
 
 ## 📦 Packages
 
-| Package            | Purpose                                            | Docs                                                 |
-| ------------------ | -------------------------------------------------- | ---------------------------------------------------- |
-| `@openplayer/core` | Player lifecycle, plugin system, engines, events   | [packages/core/README.md](./packages/core/README.md) |
-| `@openplayer/ui`   | Default UI + built-in controls + UI extension APIs | [packages/ui/README.md](./packages/ui/README.md)     |
-| `@openplayer/hls`  | HLS engine (powered by `hls.js`)                   | [packages/hls/README.md](./packages/hls/README.md)   |
-| `@openplayer/ads`  | VAST/VMAP/non-linear/companion ads plugin          | [packages/ads/README.md](./packages/ads/README.md)   |
+| Package              | Purpose                                                                 | Docs                                                     |
+| -------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------- |
+| `@openplayer/core`   | Player lifecycle, plugin system, engines, events                        | [packages/core/README.md](./packages/core/README.md)     |
+| `@openplayer/player` | Default UI + built-in controls + UI extension APIs                      | [packages/player/README.md](./packages/player/README.md) |
+| `@openplayer/hls`    | HLS engine (powered by [`hls.js`](https://github.com/video-dev/hls.js)) | [packages/hls/README.md](./packages/hls/README.md)       |
+| `@openplayer/ads`    | VAST/VMAP/non-linear/companion ads plugin + extension APIs              | [packages/ads/README.md](./packages/ads/README.md)       |
 
 ---
 
-## 🚀 Quick start (ESM / bundlers)
+## How to use it?
 
-```bash
-npm install @openplayer/core @openplayer/ui
+### Verify Cross-Origin Resource Sharing (CORS)
+
+When ads, captions, or streaming manifests are loaded from a different domain, the server must allow cross-origin requests. The typical error message looks like:
+
+```
+Access to fetch at 'https://cdn.example.com/video.m3u8' from origin 'https://myapp.com'
+has been blocked by CORS policy.
 ```
 
-```ts
-import { Player } from '@openplayer/core';
-import { createUI, buildControls } from '@openplayer/ui';
-import '@openplayer/ui/style.css';
+To fix this on your server, add the following response headers:
 
-const media = document.querySelector('video')!;
-const player = new Player(media, {
-  plugins: [],
+```
+Access-Control-Allow-Origin: https://myapp.com
+Access-Control-Allow-Credentials: true
+```
+
+Or, for public assets, allow all origins:
+
+```
+Access-Control-Allow-Origin: *
+```
+
+---
+
+### HTML setup
+
+All you need in your markup is a standard `<video>` or `<audio>` element with a `src` attached to it. Add the `controls` and `playsinline` attributes for cross-browser compatibility, and optionally include `<source>` and `<track>` children:
+
+```html
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+  </head>
+  <body>
+    <video id="player" class="op-player__media" controls playsinline>
+      <source src="/path/to/video.mp4" type="video/mp4" />
+      <track kind="subtitles" src="/path/to/video.vtt" srclang="en" label="English" />
+    </video>
+  </body>
+</html>
+```
+
+> The `op-player__media` class applies the base player styles. The player's wrapper and controls are injected into the DOM automatically when `init()` is called.
+
+#### Bandwidth optimization
+
+To avoid downloading media before the user presses play, set `preload="none"` on the media element:
+
+```html
+<video id="player" class="op-player__media" controls playsinline preload="none">
+  <source src="/video.mp4" type="video/mp4" />
+</video>
+```
+
+> **Side effect:** With `preload="none"` the player cannot read the media's duration until playback starts. Provide the `duration` option if you want the UI to show the correct total time before the user presses play:
+>
+> ```ts
+> new Core(media, { duration: 315 }); // 5 min 15 s or Infinity for live streamings
+> ```
+
+---
+
+### JavaScript / TypeScript (ESM — recommended)
+
+Install the packages you need:
+
+```bash
+# Core + UI (covers MP4, MP3, OGG, and any other natively-supported format)
+npm install @openplayer/core @openplayer/player
+
+# Add HLS support (powered by hls.js)
+npm install @openplayer/hls hls.js
+
+# Add ads support (VAST / VMAP)
+npm install @openplayer/ads
+```
+
+Then wire everything up:
+
+```ts
+import { Core } from '@openplayer/core';
+import { createUI, buildControls } from '@openplayer/player';
+import '@openplayer/player/style.css';
+
+const media = document.querySelector<HTMLVideoElement>('#player')!;
+
+const player = new Core(media, {
+  startTime: 0,
+  startVolume: 1,
+  startPlaybackRate: 1,
 });
 
 const controls = buildControls({
-  bottom: { left: ['play', 'volume'], right: ['fullscreen'] },
-  main: ['progress'],
+  controls: {
+    top: ['progress'],
+    'center-left': ['play', 'duration', 'volume'],
+    'center-right': ['captions', 'fullscreen', 'settings'],
+  },
 });
 
 createUI(player, media, controls);
 ```
 
-### 📡 Add HLS
-
-```bash
-npm install @openplayer/hls hls.js
-```
-
-```ts
-import { HlsMediaEngine } from '@openplayer/hls';
-player.registerPlugin(new HlsMediaEngine());
-```
-
-### 💰 Add Ads
-
-```bash
-npm install @openplayer/ads
-```
-
-```ts
-import { AdsPlugin } from '@openplayer/ads';
-player.registerPlugin(
-  new AdsPlugin({
-    breaks: [{ at: 'preroll', url: 'https://example.com/vast.xml', once: true }],
-  })
-);
-```
-
 ---
 
-## 🌍 UMD compatibility (the “v2 way” still works)
+### 🌍 UMD compatibility (the “v2 way” still works)
 
-If you load the UMD bundle from a CDN, you can keep the classic API shape:
+If you prefer loading scripts from a CDN without a build step:
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
 
-<video class="op-player__media" id="player" controls playsinline>
-  <source src="/video.mp4" type="video/mp4" />
+<video id="player" class="op-player__media" controls playsinline>
+  <source src="/path/to/video.mp4" type="video/mp4" />
 </video>
 
+<!-- Core + UI -->
 <script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.umd.js"></script>
+<!-- Optional: HLS support -->
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.umd.js"></script>
+<!-- Optional: Ads support -->
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.umd.js"></script>
+
 <script>
   const player = new OpenPlayerJS('player', {
     startTime: 0,
     startVolume: 1,
-
-    // ✅ Live streams: set Infinity when you know it’s live
-    duration: Infinity,
+    controls: {
+      top: ['progress'],
+      'center-left': ['play', 'duration', 'volume'],
+      'center-right': ['captions', 'fullscreen', 'settings'],
+    },
   });
 
   player.init();
 </script>
 ```
 
-### Optional UMD add-ons
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.umd.js"></script>
-```
-
-The add-ons self-register under `window.OpenPlayerPlugins`, and `init()` discovers them automatically.
-
-> ✅ Most UMD users only need to adjust for removals (DASH/FLV/levels). See **[MIGRATION.v3.md](./MIGRATION.v3.md)**.
-
----
-
-## 🎯 Live streams tip (important)
-
-If you know ahead of time you will play a live stream, the best choice is:
-
-```js
-duration: Infinity;
-```
-
-This allows the UI and seeking logic to behave consistently.
-
 ---
 
 ## 📚 Legacy docs & changelog
 
 - Old changelog: **[CHANGELOG.old.md](./CHANGELOG.old.md)**
-- Legacy docs folder (v2 style): **[docs/](./docs/)**
+- Legacy docs folder (v2 style): **[docs/](https://github.com/openplayerjs/openplayerjs/tree/v2.14.12/docs)**
 
 ---
 

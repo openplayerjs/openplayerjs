@@ -5,7 +5,7 @@ import { AdsPlugin } from '../src/ads';
 function makePlugin() {
   const ctx: any = {
     name: 'player',
-    player: { media: document.createElement('video') },
+    core: { media: document.createElement('video') },
     events: { emit: jest.fn() },
     leases: { acquire: jest.fn(() => true), release: jest.fn(), owner: jest.fn(() => null) },
     bus: { emit: jest.fn() },

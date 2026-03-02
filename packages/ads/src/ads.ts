@@ -50,7 +50,6 @@ export type AdsBreakConfig = {
   id?: string;
   at: BreakAt;
   source?: AdsSource;
-  /** Waterfall fallback sources. When present and adSourcesMode is 'waterfall', sources are tried in order. */
   sources?: AdsSource[];
   once?: boolean;
   timeOffset?: string;
@@ -262,7 +261,7 @@ export class AdsPlugin implements PlayerPlugin {
         this.overlay.style.display = 'none';
         this.ctx.leases.release('playback', this.name);
         try {
-          getOverlayManager(this.ctx.player).deactivate(this.overlayId);
+          getOverlayManager(this.ctx.core).deactivate(this.overlayId);
         } catch {
           /* ignore */
         }
@@ -287,8 +286,8 @@ export class AdsPlugin implements PlayerPlugin {
         this.forcedMuteUntilInteraction = false;
         if (this.active && this.adVideo) {
           try {
-            this.adVideo.muted = ctx.player.muted;
-            this.adVideo.volume = ctx.player.volume;
+            this.adVideo.muted = ctx.core.muted;
+            this.adVideo.volume = ctx.core.volume;
           } catch {
             // ignore
           }
@@ -307,7 +306,7 @@ export class AdsPlugin implements PlayerPlugin {
   }
 
   getDueMidrollBreaks(currentTime: number): AdsBreakConfig[] {
-    const media = this.ctx.player.media;
+    const media = this.ctx.core.media;
     if (Number.isFinite(media.duration) && media.duration > 0 && this.pendingPercentBreaks.length) {
       const duration = media.duration;
       const toAdd: AdsBreakConfig[] = [];
@@ -514,7 +513,7 @@ export class AdsPlugin implements PlayerPlugin {
 
     const vmap = this.getSource('VMAP');
     if (vmap?.src) {
-      const media = this.ctx?.player?.media;
+      const media = this.ctx?.core?.media;
       const preload = media ? (media.getAttribute('preload') || media.preload || '').toLowerCase() : '';
       if (preload === 'none') {
         // preload="none": defer the network fetch until the user actually initiates playback.
@@ -726,7 +725,7 @@ export class AdsPlugin implements PlayerPlugin {
       if (el) return el;
     }
 
-    const media = this.ctx.player.media;
+    const media = this.ctx.core.media;
     return media.closest('.op-player') || media.parentElement || document.body;
   }
 
@@ -840,7 +839,7 @@ export class AdsPlugin implements PlayerPlugin {
     if (!pre) return false;
     if (this.active || this.startingBreak) return false;
 
-    const media = this.ctx.player.media;
+    const media = this.ctx.core.media;
     const t = media?.currentTime ?? 0;
     if (t > 0.25) return false;
 
@@ -854,8 +853,8 @@ export class AdsPlugin implements PlayerPlugin {
   }
 
   private bindPrerollInterceptors() {
-    const { events, player } = this.ctx;
-    const media = player.media;
+    const { events, core } = this.ctx;
+    const media = core.media;
 
     /** Starts the deferred VMAP fetch (preload="none" path) on the first play intent.
      *  Must be called synchronously so vmapPending is true before we read it below. */
@@ -898,7 +897,7 @@ export class AdsPlugin implements PlayerPlugin {
             }
             return;
           }
-          this.userPlayIntent = !!player.userInteracted;
+          this.userPlayIntent = !!core.userInteracted;
           let guard = 0;
           while (guard++ < 10) {
             const pre = this.getPrerollBreak();
@@ -936,7 +935,7 @@ export class AdsPlugin implements PlayerPlugin {
           }
           return;
         }
-        this.userPlayIntent = !!player.userInteracted;
+        this.userPlayIntent = !!core.userInteracted;
         let guard = 0;
         while (guard++ < 10) {
           const pre = this.getPrerollBreak();
@@ -951,7 +950,7 @@ export class AdsPlugin implements PlayerPlugin {
   }
 
   private bindBreakScheduler() {
-    const content = this.ctx.player.media;
+    const content = this.ctx.core.media;
     if (!content) return;
 
     const onTime = () => {
@@ -1310,7 +1309,7 @@ export class AdsPlugin implements PlayerPlugin {
     this.prevActiveCaptionSig = null;
     if (!sig) return;
 
-    const media = this.ctx?.player?.media;
+    const media = this.ctx?.core?.media;
     if (!media) return;
 
     const tracks = this.listCaptionTracks(media);
@@ -2087,7 +2086,7 @@ export class AdsPlugin implements PlayerPlugin {
     // *content* element (which may carry MEI / prior-session permissions), but a freshly
     // created ad <video> must respect the same muted-until-interaction policy regardless.
     // Once the user unmutes (player:interacted + player.muted = false) the ad will follow.
-    const forceMutedForPolicy = isAutoplayPath && !this.ctx.player.userInteracted;
+    const forceMutedForPolicy = isAutoplayPath && !this.ctx.core.userInteracted;
 
     v.preload = contentPreload === 'none' ? 'metadata' : 'auto';
     v.controls = this.cfg.allowNativeControls;
@@ -2101,8 +2100,8 @@ export class AdsPlugin implements PlayerPlugin {
       // ignore
     }
 
-    const desiredMuted = forceMutedForPolicy ? true : this.ctx.player.muted;
-    const desiredVolume = forceMutedForPolicy ? 0 : this.ctx.player.volume;
+    const desiredMuted = forceMutedForPolicy ? true : this.ctx.core.muted;
+    const desiredVolume = forceMutedForPolicy ? 0 : this.ctx.core.volume;
     v.muted = desiredMuted;
     v.defaultMuted = desiredMuted;
     if (Number.isFinite(desiredVolume)) v.volume = Math.max(0, Math.min(1, desiredVolume));
@@ -2167,7 +2166,7 @@ export class AdsPlugin implements PlayerPlugin {
 
     let overlayMgr: ReturnType<typeof getOverlayManager> | null = null;
     try {
-      overlayMgr = getOverlayManager(this.ctx.player);
+      overlayMgr = getOverlayManager(this.ctx.core);
       overlayMgr.activate({
         id: 'ads',
         priority: 100,
@@ -2216,7 +2215,7 @@ export class AdsPlugin implements PlayerPlugin {
         const wantsAutoplayPath = Boolean(this.contentMedia?.autoplay || this.contentMedia?.preload === 'auto');
         // Same reasoning as mountAdVideo: force-mute until first user interaction when on
         // the autoplay path, regardless of cached autoplay-support results.
-        const shouldForceMute = !this.userPlayIntent && wantsAutoplayPath && !this.ctx.player.userInteracted;
+        const shouldForceMute = !this.userPlayIntent && wantsAutoplayPath && !this.ctx.core.userInteracted;
 
         if (shouldForceMute) {
           this.forcedMuteUntilInteraction = true;
@@ -2232,8 +2231,8 @@ export class AdsPlugin implements PlayerPlugin {
           this.forcedMuteUntilInteraction = false;
           try {
             if (v()) {
-              v()!.muted = this.ctx.player.muted;
-              v()!.volume = this.ctx.player.volume;
+              v()!.muted = this.ctx.core.muted;
+              v()!.volume = this.ctx.core.volume;
             }
           } catch {
             // ignore
@@ -2261,7 +2260,7 @@ export class AdsPlugin implements PlayerPlugin {
       events.on('cmd:setMuted', (x: any) => {
         if (!v()) return;
         if (this.syncingVolume) return;
-        if (this.forcedMuteUntilInteraction && !this.ctx.player.userInteracted) {
+        if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) {
           // Keep muted until interaction.
           v()!.muted = true;
           v()!.volume = 0;
@@ -2389,13 +2388,13 @@ export class AdsPlugin implements PlayerPlugin {
 
       // If the user changed volume/mute using native controls during ads,
       // propagate that preference back to the main player so content + future breaks stay in sync.
-      if (this.forcedMuteUntilInteraction && !this.ctx.player.userInteracted) return;
+      if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) return;
       if (this.syncingVolume) return;
 
       try {
         this.syncingVolume = true;
-        this.ctx.player.muted = muted;
-        if (Number.isFinite(vol)) this.ctx.player.volume = Math.max(0, Math.min(1, vol));
+        this.ctx.core.muted = muted;
+        if (Number.isFinite(vol)) this.ctx.core.volume = Math.max(0, Math.min(1, vol));
       } catch {
         // ignore
       } finally {
@@ -2530,7 +2529,7 @@ export class AdsPlugin implements PlayerPlugin {
     const {
       events,
       leases,
-      player: { media },
+      core: { media },
     } = this.ctx;
 
     const requestPayload = input.kind === 'url' ? input.value : '[xml]';
@@ -2815,7 +2814,7 @@ export class AdsPlugin implements PlayerPlugin {
     this.userPlayIntent = false;
     this.restoreActiveTextTrack();
     try {
-      getOverlayManager(this.ctx.player).deactivate(this.overlayId);
+      getOverlayManager(this.ctx.core).deactivate(this.overlayId);
     } catch {
       /* ignore – overlay manager may be unavailable in UMD setups */
     }

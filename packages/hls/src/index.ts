@@ -6,7 +6,7 @@
  *
  * ESM usage:
  *   import { HlsMediaEngine } from '@openplayer/hls';
- *   new Player(el, { plugins: [new HlsMediaEngine()] });
+ *   new Core(el, { plugins: [new HlsMediaEngine()] });
  *
  * UMD / CDN usage: load openplayer-hls.umd.js after the main OpenPlayer bundle.
  * It auto-registers itself under window.OpenPlayerPlugins.hls.

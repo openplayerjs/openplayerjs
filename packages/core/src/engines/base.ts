@@ -84,7 +84,7 @@ export abstract class BaseMediaEngine {
   }
 
   protected canHandlePlayback(ctx: MediaEngineContext): boolean {
-    const owner = ctx.player.leases.owner('playback');
+    const owner = ctx.core.leases.owner('playback');
     return !owner || owner === this.name;
   }
 

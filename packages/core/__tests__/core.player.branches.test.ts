@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
+import { Core } from '../src/core';
 import type { MediaEngineContext, MediaSource } from '../src/core/media';
-import { Player } from '../src/core/player';
 
 class EngineA {
   name = 'engine-a';
@@ -40,7 +40,7 @@ describe('core/player branches', () => {
   test('load returns early when not idle and selects highest priority compatible engine', async () => {
     const media = document.createElement('video');
     media.src = 'https://example.com/a.mp4';
-    const p = new Player(media, { plugins: [new EngineB(), new EngineA()] });
+    const p = new Core(media, { plugins: [new EngineB(), new EngineA()] });
 
     // autoload may run on a microtask; flush once
     await Promise.resolve();
@@ -55,7 +55,7 @@ describe('core/player branches', () => {
 
   test('src setter schedules load and emit source:set', async () => {
     const media = document.createElement('video');
-    const p = new Player(media, { plugins: [new EngineB()] });
+    const p = new Core(media, { plugins: [new EngineB()] });
 
     const seen: string[] = [];
     p.on('source:set', () => seen.push('source:set'));
@@ -70,7 +70,7 @@ describe('core/player branches', () => {
     const media = document.createElement('video');
     media.src = 'https://example.com/a.mp4';
     // EngineA emits loadedmetadata synchronously in attach(), so state becomes ready immediately.
-    const p = new Player(media, { plugins: [new EngineA()] });
+    const p = new Core(media, { plugins: [new EngineA()] });
 
     await Promise.resolve();
     expect(p.state.current).toBe('ready');
@@ -91,13 +91,13 @@ describe('core/player branches', () => {
     // no engines: create via selector path and then remove the default engine by overriding registerPlugin
     const media1 = document.createElement('video');
     // Make it have no sources
-    const p1 = new Player(media1, { plugins: [] });
+    const p1 = new Core(media1, { plugins: [] });
     // Ensure it does not crash
     expect(p1).toBeTruthy();
 
     // sources length 0 branch
     const media2 = document.createElement('video');
-    const p2 = new Player(media2, { plugins: [new EngineB()] });
+    const p2 = new Core(media2, { plugins: [new EngineB()] });
     expect(p2).toBeTruthy();
 
     // try/catch branch: force querySelectorAll to throw
@@ -107,7 +107,7 @@ describe('core/player branches', () => {
     media3.querySelectorAll = () => {
       throw new Error('boom');
     };
-    const p3 = new Player(media3, { plugins: [new EngineB()] });
+    const p3 = new Core(media3, { plugins: [new EngineB()] });
     expect(p3).toBeTruthy();
   });
 
@@ -117,7 +117,7 @@ describe('core/player branches', () => {
     const detachSpy = jest.fn();
     const engine = new EngineB();
     engine.detach = detachSpy;
-    const p = new Player(media, { plugins: [engine] });
+    const p = new Core(media, { plugins: [engine] });
     p.destroy();
     expect(detachSpy).toHaveBeenCalled();
   });

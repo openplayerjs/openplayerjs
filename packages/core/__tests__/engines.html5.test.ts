@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Player } from '../src/core/player';
+import { Core } from '../src/core';
 
 describe('DefaultMediaEngine — preload="none"', () => {
   beforeEach(() => {
@@ -16,7 +16,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     const loadMock = HTMLMediaElement.prototype.load as jest.Mock;
     const callsBefore = loadMock.mock.calls.length;
 
-    const player = new Player(media);
+    const player = new Core(media);
 
     // attach() must call media.load() unconditionally — even with preload="none"
     expect(loadMock.mock.calls.length).toBeGreaterThan(callsBefore);
@@ -32,7 +32,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
 
-    const player = new Player(media);
+    const player = new Core(media);
 
     const cmdPlay = jest.fn();
     player.events.on('cmd:play', cmdPlay);
@@ -53,7 +53,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
 
-    const player = new Player(media);
+    const player = new Core(media);
 
     const loadMock = HTMLMediaElement.prototype.load as jest.Mock;
     const callsAfterInit = loadMock.mock.calls.length;
@@ -73,7 +73,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
 
-    const player = new Player(media);
+    const player = new Core(media);
 
     // Simulate metadata arriving → player becomes ready
     player.events.emit('loadedmetadata');
@@ -99,7 +99,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     const loadMock = HTMLMediaElement.prototype.load as jest.Mock;
     const callsBefore = loadMock.mock.calls.length;
 
-    const player = new Player(media);
+    const player = new Core(media);
 
     expect(loadMock.mock.calls.length).toBeGreaterThan(callsBefore);
     expect(player.state.current).toBe('loading');

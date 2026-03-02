@@ -1,6 +1,6 @@
 {
   "name": "openplayerjs",
-  "version": "3.0.0",
+  "version": "0.0.0",
   "description": "HTML5 video and audio player — monorepo root",
   "private": true,
   "author": {
@@ -13,9 +13,6 @@
   },
   "license": "MIT",
   "type": "module",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
     "clean": "node -e \"const fs=require('fs'); const p=require('path'); const rm=(x)=>fs.rmSync(x,{recursive:true,force:true}); rm('dist'); if(fs.existsSync('packages')) for(const d of fs.readdirSync('packages',{withFileTypes:true})) if(d.isDirectory()) rm(p.join('packages',d.name,'dist'));\"",
     "lint": "eslint --cache packages",
@@ -24,19 +21,38 @@
     "watch": "npm run build:bundles -- --watch",
     "build": "npm run clean && npm run build:types && npm run build:bundles && npm run build:css",
     "test": "jest --coverage --passWithNoTests",
-    "build:css": "mkdir -p dist && npm run lint:css && postcss packages/ui/src/style.css -o dist/openplayer.css",
-    "lint:css": "stylelint packages/ui/src/style.css"
-  },
+    "build:css": "mkdir -p packages/player/dist && npm run lint:css && postcss packages/player/src/style.css -o packages/player/dist/openplayer.css",
+    "lint:css": "stylelint packages/player/src/style.css",
+    "turbo:build": "turbo run build",
+    "turbo:test": "turbo run test",
+    "turbo:typecheck": "turbo run typecheck",
+    "release:core": "turbo run release --filter=@openplayer/core",
+    "release:player": "turbo run release --filter=@openplayer/player",
+    "release:hls": "turbo run release --filter=@openplayer/hls",
+    "release:ads": "turbo run release --filter=@openplayer/ads",
+    "release:affected": "turbo run release --affected",
+    "release": "release-it --config .release-it.cjs",
+    "release:alpha": "release-it --config .release-it.cjs --preRelease=alpha",
+    "release:beta": "release-it --config .release-it.cjs --preRelease=beta",
+    "release:pack": "pnpm --filter @openplayer/core --filter @openplayer/player --filter @openplayer/hls --filter @openplayer/ads -r pack --pack-destination ./packed",
+    "release:prep": "pnpm turbo run test && pnpm turbo run build",
+    "release:publish": "release-it --ci",
+    "release:publish:dry-run": "release-it --ci --dry-run",
+    "release:notes:init": "node scripts/init-release-notes.mjs"
+ },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@release-it/conventional-changelog": "^10.0.5",
+    "@release-it-plugins/workspaces": "^5.0.0",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^24.10.15",
-    "@typescript-eslint/eslint-plugin": "^8.56.0",
-    "@typescript-eslint/parser": "^8.56.0",
+    "@types/node": "^24.11.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.1",
+    "@typescript-eslint/parser": "^8.56.1",
+    "cross-env": "^7.0.3",
     "cssnano": "^6.1.2",
     "eslint": "^10.0.2",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -51,6 +67,7 @@
     "postcss-cli": "^11.0.1",
     "postcss-preset-env": "^10.6.1",
     "prettier": "^3.8.1",
+    "release-it": "^18.1.2",
     "rollup": "^4.59.0",
     "rollup-plugin-dts": "^6.3.0",
     "stylelint": "^16.26.1",
@@ -58,10 +75,13 @@
     "stylelint-order": "^7.0.1",
     "ts-jest": "^29.4.6",
     "tslib": "^2.8.1",
+    "turbo": "^2.8.12",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1"
   },
   "engines": {
-    "node": ">=24.0.0"
-  }
+    "pnpm": "10.30.1",
+    "node": ">=22.18.0"
+  },
+  "packageManager": "pnpm@10.30.1"
 }

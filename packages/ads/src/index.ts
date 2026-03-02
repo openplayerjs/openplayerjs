@@ -6,7 +6,7 @@
  *
  * ESM usage:
  *   import { AdsPlugin } from '@openplayer/ads';
- *   new Player(el, { plugins: [new AdsPlugin({ breaks: [...] })] });
+ *   new Core(el, { plugins: [new AdsPlugin({ breaks: [...] })] });
  *
  * UMD / CDN usage: load openplayer-ads.umd.js after the main OpenPlayer bundle.
  * It auto-registers itself under window.OpenPlayerPlugins.ads.

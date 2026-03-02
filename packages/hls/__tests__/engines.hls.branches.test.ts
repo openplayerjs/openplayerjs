@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { Core } from '@openplayer/core';
 import { EventBus, Lease, StateManager } from '@openplayer/core';
 import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
@@ -71,21 +72,21 @@ function makeCtx(opts: { autoplay?: boolean; preload?: '' | 'none' | 'metadata' 
   media.pause = jest.fn();
 
   const events = new EventBus();
-  const player = {
+  const core = {
     isLive: false,
     leases: new Lease(),
     state: new StateManager('idle'),
-  } as any;
+  } as Core;
 
-  if (opts.leaseOwner) player.leases.acquire('playback', opts.leaseOwner);
+  if (opts.leaseOwner) core.leases.acquire('playback', opts.leaseOwner);
 
   return {
     media,
     events,
     config: {},
     activeSource: { src: 'https://example.com/stream.m3u8', type: 'application/x-mpegURL' },
-    player,
-  } as any;
+    core,
+  };
 }
 
 describe('HlsMediaEngine branch coverage', () => {

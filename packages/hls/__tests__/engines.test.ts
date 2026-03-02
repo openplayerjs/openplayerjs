@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { DefaultMediaEngine, EventBus, Player } from '@openplayer/core';
+import { Core, DefaultMediaEngine, EventBus } from '@openplayer/core';
 import { HlsMediaEngine } from '../src/hls';
 
 // Ensure our Hls.js stub provides the methods HlsMediaEngine expects (attach/detach/destroy etc.)
@@ -35,21 +35,21 @@ function makeCtx() {
   // jsdom: define duration as writable for tests
   Object.defineProperty(media, 'duration', { value: 10, writable: true, configurable: true });
   const events = new EventBus();
-  const player = new Player(media, { plugins: [] });
-  return { media, events, player };
+  const core = new Core(media, { plugins: [] });
+  return { media, events, core };
 }
 
 describe('Media engines', () => {
   test('BaseMediaEngine binds media events and commands (seek/volume/rate/play/pause)', () => {
     const engine = new DefaultMediaEngine();
-    const { media, events, player } = makeCtx();
+    const { media, events, core } = makeCtx();
     const seen: string[] = [];
     events.on('loadedmetadata', () => seen.push('ready'));
     events.on('timeupdate', () => seen.push('time'));
     events.on('durationchange', () => seen.push('dur'));
 
     // attach binds listeners + commands
-    engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<
+    engine.attach({ media, events, core, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<
       typeof engine.attach
     >[0]);
 
@@ -89,13 +89,13 @@ describe('Media engines', () => {
   test('BaseMediaEngine respects playback lease owner (cannot handle when owned by another)', () => {
     const engine = new DefaultMediaEngine();
 
-    const { media, events, player } = makeCtx();
-    engine.attach({ media, events, player, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<
+    const { media, events, core } = makeCtx();
+    engine.attach({ media, events, core, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<
       typeof engine.attach
     >[0]);
 
     // someone else owns playback -> seek/rate commands should no-op
-    player.leases.acquire('playback', 'other');
+    core.leases.acquire('playback', 'other');
     events.emit('cmd:seek', 7);
     expect(media.currentTime).not.toBe(7);
 
@@ -110,11 +110,11 @@ describe('Media engines', () => {
 
   test('HlsMediaEngine canPlay and attaches adapter', async () => {
     const engine = new HlsMediaEngine({ debug: true });
-    const { media, events, player } = makeCtx();
+    const { media, events, core } = makeCtx();
     const src = { src: 'https://x/y.m3u8', type: 'application/x-mpegURL' };
     expect(engine.canPlay(src as any)).toBe(true);
 
-    engine.attach({ media, events, player, activeSource: src } as any);
+    engine.attach({ media, events, core, activeSource: src } as any);
     // Trigger play command to cover cmd:play command listener
     const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined as any);
     events.emit('cmd:play');

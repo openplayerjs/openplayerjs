@@ -9,7 +9,7 @@ describe('AdsPlugin VMAP DOM fallback parser', () => {
     document.body.appendChild(video);
 
     const ctx: any = {
-      player: { media: video, muted: false, volume: 1 },
+      core: { media: video, muted: false, volume: 1 },
       events: new EventBus(),
       state: { current: 'ready' },
       leases: { acquire: () => true, release: () => undefined, owner: () => undefined },

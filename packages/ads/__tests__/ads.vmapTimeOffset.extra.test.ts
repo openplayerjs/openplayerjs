@@ -9,7 +9,7 @@ describe('AdsPlugin VMAP timeOffset parsing extra branches', () => {
     Object.defineProperty(video, 'duration', { value: 200, configurable: true, writable: true });
     document.body.appendChild(video);
     return {
-      player: { media: video, muted: false, volume: 1 },
+      core: { media: video, muted: false, volume: 1 },
       events: new EventBus(),
       state: { current: 'ready' },
       leases: { acquire: () => true, release: () => undefined, owner: () => undefined },

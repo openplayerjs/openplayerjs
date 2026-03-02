@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
-import type { Lease, Player, PluginContext } from '@openplayer/core';
+import type { Core, Lease, PluginContext } from '@openplayer/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayer/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
@@ -73,7 +73,7 @@ function makeCtx(
 
   const lease = makeLeases();
 
-  const playerMock: Partial<Player> & { userInteracted: boolean; muted: boolean; volume: number } = {
+  const playerMock: Partial<Core> & { userInteracted: boolean; muted: boolean; volume: number } = {
     media: video,
     userInteracted,
     muted,
@@ -82,7 +82,7 @@ function makeCtx(
   };
 
   const ctx: PluginContext = {
-    player: playerMock as unknown as Player,
+    core: playerMock as unknown as Core,
     events: bus,
     state: new StateManager('playing'),
     leases: lease.leases,
@@ -669,7 +669,7 @@ describe('AdsPlugin autoplay mute policy', () => {
     expect(adVideo.muted).toBe(true);
 
     // Simulate user interaction: mark player as interacted and update muted state
-    ctx.player.userInteracted = true;
+    ctx.core.userInteracted = true;
     bus.emit('player:interacted');
 
     // After interaction, media:muted=false should now propagate
@@ -739,9 +739,9 @@ describe('AdsPlugin autoplay mute policy', () => {
     expect(adVideo1.muted).toBe(true);
 
     // Simulate user clicking unmute during first ad
-    ctx.player.userInteracted = true;
-    ctx.player.muted = false;
-    ctx.player.volume = 0.9;
+    ctx.core.userInteracted = true;
+    ctx.core.muted = false;
+    ctx.core.volume = 0.9;
     bus.emit('player:interacted');
     bus.emit('media:muted', false);
     bus.emit('media:volume', 0.9);

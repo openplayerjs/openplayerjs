@@ -28,7 +28,7 @@ export class DefaultMediaEngine extends BaseMediaEngine {
     // will actually fetch resource metadata and fire loadedmetadata.
     this.commands.push(
       ctx.events.on('cmd:startLoad', () => {
-        const s = ctx.player.state.current;
+        const s = ctx.core.state.current;
         if (['ready', 'playing', 'paused', 'waiting', 'seeking', 'ended'].includes(s)) return;
         if (ctx.media.preload !== 'none') return;
         ctx.media.preload = 'metadata';

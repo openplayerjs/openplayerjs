@@ -1,4 +1,3 @@
-// core/overlay.ts
 import { EventBus } from './events';
 
 export type OverlayMode = 'normal' | 'countdown';

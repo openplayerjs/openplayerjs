@@ -11,8 +11,8 @@
     "paths": {
       "@openplayer/core":   ["./packages/core/src/index.ts"],
       "@openplayer/core/*": ["./packages/core/src/*"],
-      "@openplayer/ui":     ["./packages/ui/src/index.ts"],
-      "@openplayer/ui/*":   ["./packages/ui/src/*"],
+      "@openplayer/player":     ["./packages/player/src/index.ts"],
+      "@openplayer/player/*":   ["./packages/player/src/*"],
       "@openplayer/hls":    ["./packages/hls/src/index.ts"],
       "@openplayer/hls/*":  ["./packages/hls/src/*"],
       "@openplayer/ads":    ["./packages/ads/src/index.ts"],

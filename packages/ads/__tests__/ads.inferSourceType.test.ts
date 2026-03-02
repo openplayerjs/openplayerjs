@@ -11,7 +11,7 @@ describe('AdsPlugin manual-play sourceType inference', () => {
     const video = document.createElement('video');
     document.body.appendChild(video);
     return {
-      player: { media: video, muted: false, volume: 1 },
+      core: { media: video, muted: false, volume: 1 },
       events: new EventBus(),
       state: { current: 'ready' },
       leases: { acquire: () => true, release: () => undefined, owner: () => undefined },

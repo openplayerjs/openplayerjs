@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
-import type { Lease, Player, PluginContext } from '@openplayer/core';
+import type { Core, Lease, PluginContext } from '@openplayer/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayer/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
@@ -42,7 +42,7 @@ function makeCtx(media?: HTMLVideoElement) {
 
   const lease = makeLeases();
   const ctx: PluginContext = {
-    player: { media: video } as unknown as Player,
+    core: { media: video } as unknown as Core,
     events: bus,
     state: new StateManager('playing'),
     leases: lease.leases,

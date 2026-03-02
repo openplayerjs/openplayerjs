@@ -28,6 +28,7 @@ dist-ssr
 dev-dist
 # TypeScript Build Cache
 *.tsbuildinfo
+packed
 
 coverage
 index.html

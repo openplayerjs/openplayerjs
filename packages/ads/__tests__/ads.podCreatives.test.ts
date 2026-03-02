@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import type { Lease, Player, PluginContext } from '@openplayer/core';
+import type { Core, Lease, PluginContext } from '@openplayer/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayer/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock } from './mocks/vast-client';
@@ -27,7 +27,7 @@ function makeCtx() {
   bus.on('playback:play', () => void (video as any).play());
 
   const ctx: PluginContext = {
-    player: { media: video } as unknown as Player,
+    core: { media: video } as unknown as Core,
     events: bus as any,
     state: new StateManager('playing'),
     leases: makeLeases(),
