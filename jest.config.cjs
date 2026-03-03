@@ -8,7 +8,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup/mediaMocks.ts'],
   moduleNameMapper: {
     '^@openplayerjs/core$':  '<rootDir>/packages/core/src/index.ts',
-    '^@openplayerjs/ui$':    '<rootDir>/packages/ui/src/index.ts',
+    '^@openplayerjs/player$': '<rootDir>/packages/player/src/index.ts',
     '^@openplayerjs/hls$':   '<rootDir>/packages/hls/src/index.ts',
     '^@openplayerjs/ads$':   '<rootDir>/packages/ads/src/index.ts',
     '^@dailymotion\\/vmap$': '<rootDir>/packages/ads/__tests__/mocks/vmap.ts',

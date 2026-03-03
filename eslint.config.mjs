@@ -21,7 +21,7 @@ export default defineConfig({
     settings: {
       'import/resolver': {
         typescript: {
-          project: ['./tsconfig.json', './tsconfig.types.json'],
+          project: ['./tsconfig.json'],
           tsconfigRootDir: import.meta.dirname,
           alwaysTryTypes: true,
           noWarnOnMultipleProjects: true,
@@ -48,18 +48,5 @@ export default defineConfig({
       'no-empty': 'off',
       'import/no-cycle': ['error', { maxDepth: 10 }],
       'import/no-extraneous-dependencies': ['error', { devDependencies: false, peerDependencies: true }],
-      'prettier/prettier': ['error', {
-          'printWidth': 120,
-          'singleQuote': true,
-          'arrowParens': 'always',
-          'bracketSpacing': true,
-          'endOfLine': 'lf',
-          'jsxSingleQuote': false,
-          'proseWrap': 'preserve',
-          'quoteProps': 'preserve',
-          'semi': true,
-          'trailingComma': 'es5',
-          'useTabs': false
-      }],
   },
 });

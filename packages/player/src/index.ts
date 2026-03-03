@@ -5,7 +5,7 @@
  * Peer dependency: @openplayerjs/core
  *
  * Stylesheet: import the CSS separately –
- *   import '@openplayerjs/ui/style.css';          // bundler
+ *   import '@openplayerjs/player/style.css';          // bundler
  *   <link rel="stylesheet" href="openplayer.css"> // CDN / <link>
  */
 

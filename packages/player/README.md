@@ -1,4 +1,4 @@
-# @openplayer/ui
+# @openplayerjs/player
 
 > UI layer, built-in controls, and extension APIs for [OpenPlayerJS](https://github.com/openplayerjs/openplayerjs)
 
@@ -18,15 +18,15 @@ This is the ESM equivalent to the v2 old `OpenPlayerJS` constructor
 ## Installation
 
 ```bash
-npm install @openplayer/player @openplayer/core
+npm install @openplayerjs/player @openplayerjs/core
 ```
 
 ## Quick start (ESM / bundlers)
 
 ```ts
-import { Core } from '@openplayer/core';
-import { createUI, buildControls } from '@openplayer/player';
-import '@openplayer/ui/style.css';
+import { Core } from '@openplayerjs/core';
+import { createUI, buildControls } from '@openplayerjs/player';
+import '@openplayerjs/player/style.css';
 
 const video = document.querySelector<HTMLVideoElement>('#player')!;
 const core = new Core(video, { plugins: [] });
@@ -44,13 +44,13 @@ createUI(core, video, controls);
 
 ## Configuration
 
-`@openplayer/ui` owns UI-specific configuration (labels, sizing, keyboard seek step, and progress-bar interaction flags), but it **augments** the `PlayerConfig` type from `@openplayer/core`.
+`@openplayerjs/player` owns UI-specific configuration (labels, sizing, keyboard seek step, and progress-bar interaction flags), but it **augments** the `PlayerConfig` type from `@openplayerjs/core`.
 
 That means you can pass both core and UI options to the `Player` constructor:
 
 ```ts
-import { Player } from '@openplayer/core';
-import { createUI } from '@openplayer/ui';
+import { Player } from '@openplayerjs/core';
+import { createUI } from '@openplayerjs/player';
 
 const core = new Core(video, {
   // core
@@ -83,7 +83,7 @@ createUI(core, video, controls);
 | `allowRewind` | `boolean`                | `true`  | Allow seeking backward via the progress bar                                      |
 | `labels`      | `Record<string, string>` | —       | Override built-in UI label strings (e.g. `play`, `pause`, `fullscreen`, etc.)    |
 
-> For engine/plugins and initial playback state options like `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, and `duration`, see `@openplayer/core`.
+> For engine/plugins and initial playback state options like `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, and `duration`, see `@openplayerjs/core`.
 
 ---
 
@@ -116,14 +116,14 @@ The UI ships a standalone CSS file. Import it once per application:
 
 ```ts
 // Bundler (Vite / webpack / esbuild)
-import '@openplayer/ui/style.css';
+import '@openplayerjs/player/style.css';
 ```
 
 ### UMD
 
 ```html
 <!-- CDN / plain HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayer/player@latest/dist/openplayer.umd.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.umd.css" />
 ```
 
 > All player elements use the `op-` CSS prefix. You can override any variables or classes in your own stylesheet. No `!important` should be needed for most overrides.
@@ -234,7 +234,7 @@ Converts a layout config object into an array of `Control` instances that `creat
 Registers a custom control globally so it can be referenced by string ID in `buildControls`:
 
 ```ts
-import { registerControl } from '@openplayer/ui';
+import { registerControl } from '@openplayerjs/player';
 
 registerControl('my-button', () => ({
   id: 'my-button',
@@ -256,7 +256,7 @@ buildControls({ bottom: { right: ['my-button', 'fullscreen'] }, main: ['progress
 Adds the `.controls` imperative API to a player instance. Call this once, **after** `createUI`:
 
 ```ts
-import { extendControls } from '@openplayer/ui';
+import { extendControls } from '@openplayerjs/player';
 
 extendControls(player);
 
@@ -289,7 +289,7 @@ player.controls.addElement(badge, { v: 'top', h: 'right' });
 Register and mount a typed `Control` object in the control bar. This is the right approach for interactive buttons (skip intro, next episode, quality picker, etc.):
 
 ```ts
-import type { Control } from '@openplayer/ui';
+import type { Control } from '@openplayerjs/player';
 
 const skipIntro: Control = {
   id: 'skip-intro',
@@ -314,7 +314,7 @@ Use `addElement` to place any HTML element you create at a specific position in 
 > **Recommendation:** As best practice, when adding a custom control, to make it compliant with the WCAG 2.2 standards, use the `setA11yLabel` method to properly set ARIA-\* elements
 
 ```ts
-import { extendControls } from '@openplayer/ui';
+import { extendControls } from '@openplayerjs/player';
 
 // Call this once, after createUI(...)
 extendControls(player);
@@ -347,9 +347,9 @@ The `placement` argument:
 A `Control` is a plain object (or class instance) with this shape:
 
 ```ts
-import type { Control, ControlPlacement } from '@openplayer/ui';
-import type { Player } from '@openplayer/core';
-import { setA11yLabel } from '@openplayer/ui';
+import type { Control, ControlPlacement } from '@openplayerjs/player';
+import type { Player } from '@openplayerjs/core';
+import { setA11yLabel } from '@openplayerjs/player';
 
 function createMyControl(): Control {
   return {
@@ -375,7 +375,7 @@ function createMyControl(): Control {
 If you want to share a control across multiple player instances, package it as a factory function:
 
 ```ts
-import type { Control, ControlPlacement } from '@openplayer/ui';
+import type { Control, ControlPlacement } from '@openplayerjs/player';
 
 function createNextEpisodeControl(onNext: () => void): Control {
   return {
@@ -417,7 +417,7 @@ The `Control` interface:
 Use `registerControl` to make a custom control available by string ID in `buildControls`. This is useful in plugin libraries or when you want to decouple the control definition from the layout configuration:
 
 ```ts
-import { registerControl, buildControls } from '@openplayer/ui';
+import { registerControl, buildControls } from '@openplayerjs/player';
 
 registerControl('next-episode', () => ({
   id: 'next-episode',
