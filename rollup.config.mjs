@@ -51,7 +51,7 @@ const builds = [
     treeshake: false,
     plugins: sharedPluginsMinified,
     output: {
-      file: 'packages/player/dist/openplayer.umd.js',
+      file: 'packages/player/dist/openplayer.js',
       format: 'umd',
       name: NAME,
       sourcemap: true,
@@ -63,7 +63,7 @@ const builds = [
     treeshake,
     plugins: sharedPluginsMinified,
     output: {
-      file: 'packages/hls/dist/openplayer-hls.umd.js',
+      file: 'packages/hls/dist/openplayer-hls.js',
       format: 'umd',
       name: 'OpenPlayerJSHls',
       sourcemap: true,
@@ -77,7 +77,7 @@ const builds = [
     treeshake,
     plugins: sharedPluginsMinified,
     output: {
-      file: 'packages/ads/dist/openplayer-ads.umd.js',
+      file: 'packages/ads/dist/openplayer-ads.js',
       format: 'umd',
       name: 'OpenPlayerJSAds',
       sourcemap: true,

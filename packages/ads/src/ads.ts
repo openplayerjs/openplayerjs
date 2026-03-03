@@ -1843,6 +1843,11 @@ export class AdsPlugin implements PlayerPlugin {
       this.bus.emit('ads:ad:start', { break: meta, index: i });
     }
 
+    // Non-linear ads are overlay ads — content must play simultaneously.
+    // Release the active lock and resume content immediately after rendering.
+    this.active = false;
+    this.ctx.events.emit('cmd:play');
+
     const start = Date.now();
     const dismiss = async () => {
       await new Promise<void>((resolve) => {
@@ -1863,7 +1868,6 @@ export class AdsPlugin implements PlayerPlugin {
       this.clearSession();
       this.overlay.style.display = 'none';
       this.overlay.replaceChildren();
-      this.active = false;
       this.currentBreakMeta = undefined;
     };
 
@@ -2034,6 +2038,11 @@ export class AdsPlugin implements PlayerPlugin {
       maxDuration = Math.max(maxDuration, this.nonLinearSuggestedDurationSeconds(item.nonLinear));
     }
 
+    // Non-linear ads are overlay ads — content must play simultaneously.
+    // Release the active lock and resume content immediately after rendering.
+    this.active = false;
+    this.ctx.events.emit('cmd:play');
+
     const start = Date.now();
     const dismiss = async () => {
       // NOTE: Avoid requestAnimationFrame; in jsdom/Jest it can stall and hang tests.
@@ -2058,7 +2067,6 @@ export class AdsPlugin implements PlayerPlugin {
       this.clearSession();
       this.overlay.style.display = 'none';
       this.overlay.replaceChildren();
-      this.active = false;
       this.currentBreakMeta = undefined;
     };
 

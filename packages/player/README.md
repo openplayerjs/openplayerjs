@@ -26,7 +26,7 @@ npm install @openplayerjs/player @openplayerjs/core
 ```ts
 import { Core } from '@openplayerjs/core';
 import { createUI, buildControls } from '@openplayerjs/player';
-import '@openplayerjs/player/style.css';
+import '@openplayerjs/player/openplayer.css';
 
 const video = document.querySelector<HTMLVideoElement>('#player')!;
 const core = new Core(video, { plugins: [] });
@@ -116,14 +116,14 @@ The UI ships a standalone CSS file. Import it once per application:
 
 ```ts
 // Bundler (Vite / webpack / esbuild)
-import '@openplayerjs/player/style.css';
+import '@openplayerjs/player/openplayer.css';
 ```
 
 ### UMD
 
 ```html
 <!-- CDN / plain HTML -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.umd.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
 ```
 
 > All player elements use the `op-` CSS prefix. You can override any variables or classes in your own stylesheet. No `!important` should be needed for most overrides.
@@ -228,6 +228,43 @@ After `createUI` runs, the original media element is wrapped inside `.op-player`
 ### `buildControls(layout)`
 
 Converts a layout config object into an array of `Control` instances that `createUI` can render.
+
+The keys are position strings composed of a vertical slot (`top`, `center`/`middle`, `bottom`) and an optional horizontal slot (`left`, `center`, `right`) joined by a hyphen. Each key maps to an array of built-in control IDs or IDs registered via `registerControl`.
+
+```ts
+import { buildControls, createUI } from '@openplayerjs/player';
+
+const controls = buildControls({
+  // Seek bar spanning the full width above the bottom bar
+  'top-left': ['progress'],
+
+  // Bottom-left: play button, combined time display, volume
+  'bottom-left': ['play', 'time', 'volume'],
+
+  // Bottom-right: captions toggle, settings menu, fullscreen
+  'bottom-right': ['captions', 'settings', 'fullscreen'],
+});
+
+createUI(core, video, controls);
+```
+
+Valid vertical slots: `top`, `center` (alias `middle`), `bottom`.
+Valid horizontal slots: `left`, `center` (alias `middle`), `right`.
+Omit the horizontal part to default to center (e.g. `'top'` = `'top-center'`).
+
+> **ESM + manual placement:** If you build the controls array yourself (instead of using `buildControls`), pass each control's `placement` directly on the object:
+>
+> ```ts
+> import { createPlayControl, createProgressControl, createFullscreenControl } from '@openplayerjs/player';
+>
+> const controls = [
+>   createPlayControl({ v: 'bottom', h: 'left' }),
+>   createProgressControl({ v: 'top', h: 'left' }),
+>   createFullscreenControl({ v: 'bottom', h: 'right' }),
+> ];
+>
+> createUI(core, video, controls);
+> ```
 
 ### `registerControl(id, factory)`
 
@@ -432,11 +469,9 @@ registerControl('next-episode', () => ({
 
 // Now you can reference it by ID, just like built-in controls:
 const controls = buildControls({
-  bottom: {
-    left: ['play', 'volume'],
-    right: ['next-episode', 'fullscreen'], // ← your custom control
-  },
-  main: ['progress'],
+  'top-left': ['progress'],
+  'bottom-left': ['play', 'volume'],
+  'bottom-right': ['next-episode', 'fullscreen'], // ← your custom control
 });
 ```
 
@@ -444,7 +479,7 @@ const controls = buildControls({
 
 ## Code samples
 
-Coming soon...
+CodePen Collection: [https://codepen.io/collection/KwqaKQ](https://codepen.io/collection/KwqaKQ)
 
 ---
 

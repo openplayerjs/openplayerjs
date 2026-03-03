@@ -49,8 +49,9 @@ const player = new Core(video, {
 Load the bundles in order — core first, then the HLS add-on:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@openplayer/player@latest/dist/openplayer.umd.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@openplayer/player@latest/dist/openplayer.umd-hls.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/hls@latest/dist/openplayer-hls.js"></script>
 <script>
   const player = new OpenPlayerJS('player');
   player.init();
@@ -135,7 +136,7 @@ if (hls) {
 }
 ```
 
-You can then use `extendControls` + `addControl` from `@openplayer/ui` to build a custom quality selector button.
+You can then use `extendControls` + `addControl` from `@openplayer/player` to build a custom quality selector button.
 
 ---
 
@@ -150,7 +151,7 @@ You can then use `extendControls` + `addControl` from `@openplayer/ui` to build 
 
 ## Code samples
 
-Coming soon...
+CodePen Collection: [https://codepen.io/collection/pjwRvL](https://codepen.io/collection/pjwRvL)
 
 ---
 

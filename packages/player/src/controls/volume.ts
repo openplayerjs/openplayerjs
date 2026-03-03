@@ -184,6 +184,9 @@ export class VolumeControl extends BaseControl {
   }
 }
 
-export default function createVolumeControl(): Control | null {
-  return isMobile() ? null : new VolumeControl();
+export default function createVolumeControl(placement?: Control['placement']): Control | null {
+  if (isMobile()) return null;
+  const ctrl = new VolumeControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

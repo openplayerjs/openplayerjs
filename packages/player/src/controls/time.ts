@@ -28,6 +28,8 @@ export class TimeControl extends BaseControl {
   }
 }
 
-export default function createTimeControl(): Control {
-  return new TimeControl();
+export default function createTimeControl(placement?: Control['placement']): Control {
+  const ctrl = new TimeControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

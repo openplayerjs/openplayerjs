@@ -148,7 +148,7 @@ importers:
         version: 1.6.15
 
   packages/player:
-    dependencies:
+    devDependencies:
       '@openplayerjs/core':
         specifier: workspace:^
         version: link:../core

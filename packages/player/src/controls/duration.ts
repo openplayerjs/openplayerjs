@@ -5,7 +5,7 @@ import { BaseControl } from './base';
 
 export class DurationControl extends BaseControl {
   id = 'duration';
-  placement: Control['placement'] = { v: 'bottom', h: 'right' };
+  placement: Control['placement'] = { v: 'top', h: 'right' };
 
   protected build(): HTMLElement {
     const core = this.core;
@@ -45,6 +45,8 @@ export class DurationControl extends BaseControl {
   }
 }
 
-export default function createDurationControl(): Control {
-  return new DurationControl();
+export default function createDurationControl(placement?: Control['placement']): Control {
+  const ctrl = new DurationControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

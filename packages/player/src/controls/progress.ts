@@ -322,6 +322,8 @@ export class ProgressControl extends BaseControl {
   }
 }
 
-export default function createProgressControl(): Control {
-  return new ProgressControl();
+export default function createProgressControl(placement?: Control['placement']): Control {
+  const ctrl = new ProgressControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

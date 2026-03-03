@@ -53,8 +53,9 @@ const core = new Core(video, {
 ## UMD / CDN usage
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@openplayer/player@latest/dist/openplayer.umd.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@openplayer/player@latest/dist/openplayer.umd-ads.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/ads@latest/dist/openplayer-ads.js"></script>
 <script>
   const player = new OpenPlayerJS('player', {
     ads: {
@@ -205,7 +206,7 @@ core.on('ads:error', ({ reason, error }) => {
 
 ## Code samples
 
-Coming soon...
+CodePen Collection: [https://codepen.io/collection/kkwgWj](https://codepen.io/collection/kkwgWj)
 
 ---
 

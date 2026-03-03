@@ -599,11 +599,11 @@
 }
 /* == Ads ============= */
 .op-ads {
-    background: #000;
     position: absolute;
     top: 0;
 }
 .op-ads video {
+    background: #000;
     display: inline-block;
     height: auto;
     object-fit: contain;

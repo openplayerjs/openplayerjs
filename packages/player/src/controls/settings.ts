@@ -243,6 +243,8 @@ export class SettingsControl extends BaseControl {
   }
 }
 
-export default function createSettingsControl(): Control {
-  return new SettingsControl();
+export default function createSettingsControl(placement?: Control['placement']): Control {
+  const ctrl = new SettingsControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

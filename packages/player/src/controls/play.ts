@@ -50,6 +50,8 @@ export class PlayControl extends BaseControl {
   }
 }
 
-export default function createPlayControl(): Control {
-  return new PlayControl();
+export default function createPlayControl(placement?: Control['placement']): Control {
+  const ctrl = new PlayControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

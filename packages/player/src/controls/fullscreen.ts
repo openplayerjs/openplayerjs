@@ -142,6 +142,8 @@ export class FullscreenControl extends BaseControl {
   }
 }
 
-export default function createFullscreenControl(): Control {
-  return new FullscreenControl();
+export default function createFullscreenControl(placement?: Control['placement']): Control {
+  const ctrl = new FullscreenControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

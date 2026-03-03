@@ -4,7 +4,7 @@ import { BaseControl } from './base';
 
 export class CurrentTimeControl extends BaseControl {
   id = 'currentTime';
-  placement: Control['placement'] = { v: 'bottom', h: 'left' };
+  placement: Control['placement'] = { v: 'top', h: 'left' };
 
   protected build(): HTMLElement {
     const core = this.core;
@@ -48,6 +48,8 @@ export class CurrentTimeControl extends BaseControl {
   }
 }
 
-export default function createCurrentTimeControl(): Control {
-  return new CurrentTimeControl();
+export default function createCurrentTimeControl(placement?: Control['placement']): Control {
+  const ctrl = new CurrentTimeControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

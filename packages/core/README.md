@@ -274,7 +274,7 @@ export class MyStreamEngine extends BaseMediaEngine implements IEngine {
 
 ## Code samples
 
-Coming soon...
+CodePen Collection: [https://codepen.io/collection/WQORze](https://codepen.io/collection/WQORze)
 
 ---
 

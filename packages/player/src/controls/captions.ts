@@ -150,6 +150,8 @@ export class CaptionsControl extends BaseControl {
   }
 }
 
-export default function createCaptionsControl(): Control {
-  return new CaptionsControl();
+export default function createCaptionsControl(placement?: Control['placement']): Control {
+  const ctrl = new CaptionsControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
 }

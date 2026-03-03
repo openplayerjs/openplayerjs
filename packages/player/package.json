@@ -17,7 +17,7 @@
       "import": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./style.css": "./dist/openplayer.css"
+    "./openplayer.css": "./dist/openplayer.css"
   },
   "files": [
     "dist",
@@ -38,6 +38,9 @@
     "ui",
     "controls"
   ],
+  "devDependencies": {
+    "@openplayerjs/core": "workspace:^"
+  },
   "peerDependencies": {
     "@openplayerjs/core": "workspace:^"
   },
