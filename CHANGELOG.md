@@ -1,5 +1,12 @@
 # Changelog
 
+# [3.0.0-beta.1](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0-beta.0...v3.0.0-beta.1) (2026-03-03)
+
+
+### Bug Fixes
+
+* bundles name, non-linear ads not playing along with media, optional parameter for controls factories and better documentation ([a03660c](https://github.com/openplayerjs/openplayerjs/commit/a03660c011062f2bb5de8a5714c8caf470246bd4))
+
 # [3.0.0-beta.0](https://github.com/openplayerjs/openplayerjs/compare/v2.14.12...v3.0.0-beta.0) (2026-03-02)
 
 
