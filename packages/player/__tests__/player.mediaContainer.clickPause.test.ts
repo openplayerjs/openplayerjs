@@ -1,10 +1,10 @@
 /** @jest-environment jsdom */
 
-import { Core, getOverlayManager } from '@openplayer/core';
+import { Core, getOverlayManager } from '@openplayerjs/core';
 import { createUI } from '../src/ui';
 
-jest.mock('@openplayer/core', () => ({
-  ...jest.requireActual('@openplayer/core'),
+jest.mock('@openplayerjs/core', () => ({
+  ...jest.requireActual('@openplayerjs/core'),
   isMobile: jest.fn(() => false),
 }));
 

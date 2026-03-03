@@ -9,14 +9,14 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@openplayer/core":   ["./packages/core/src/index.ts"],
-      "@openplayer/core/*": ["./packages/core/src/*"],
-      "@openplayer/player":     ["./packages/player/src/index.ts"],
-      "@openplayer/player/*":   ["./packages/player/src/*"],
-      "@openplayer/hls":    ["./packages/hls/src/index.ts"],
-      "@openplayer/hls/*":  ["./packages/hls/src/*"],
-      "@openplayer/ads":    ["./packages/ads/src/index.ts"],
-      "@openplayer/ads/*":  ["./packages/ads/src/*"]
+      "@openplayerjs/core":   ["./packages/core/src/index.ts"],
+      "@openplayerjs/core/*": ["./packages/core/src/*"],
+      "@openplayerjs/player":     ["./packages/player/src/index.ts"],
+      "@openplayerjs/player/*":   ["./packages/player/src/*"],
+      "@openplayerjs/hls":    ["./packages/hls/src/index.ts"],
+      "@openplayerjs/hls/*":  ["./packages/hls/src/*"],
+      "@openplayerjs/ads":    ["./packages/ads/src/index.ts"],
+      "@openplayerjs/ads/*":  ["./packages/ads/src/*"]
     }
   },
   "include": ["packages/*/src", "types"],

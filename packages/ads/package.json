@@ -1,6 +1,6 @@
 {
-  "name": "@openplayer/ads",
-  "version": "3.0.0",
+  "name": "@openplayerjs/ads",
+  "version": "3.0.0-beta.0",
   "description": "VAST/VMAP/Non-linear/companions ad-serving plugin for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
@@ -46,9 +46,12 @@
     "@dailymotion/vmap": ">=3.0.0"
   },
   "peerDependencies": {
-    "@openplayer/core": "workspace:^"
+    "@openplayerjs/core": "workspace:^"
   },
   "devDependencies": {
     "@types/dailymotion__vast-client": "^6.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

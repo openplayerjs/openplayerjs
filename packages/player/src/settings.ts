@@ -1,4 +1,4 @@
-import type { Core } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
 
 export type SettingsMenuItem = {
   id: string;

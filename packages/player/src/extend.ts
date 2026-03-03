@@ -1,4 +1,4 @@
-import type { Core } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
 import type { Control, ControlPlacement } from './control';
 
 export function extendControls(core: Core) {

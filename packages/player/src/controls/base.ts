@@ -1,5 +1,5 @@
-import type { Core } from '@openplayer/core';
-import { DisposableStore, getOverlayManager, type OverlayState } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
+import { DisposableStore, getOverlayManager, type OverlayState } from '@openplayerjs/core';
 import type { Control } from '../control';
 
 export type ControlPlacementV = 'top' | 'center' | 'bottom';

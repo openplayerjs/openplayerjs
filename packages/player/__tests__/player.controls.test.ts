@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
-import type { OverlayState } from '@openplayer/core';
-import { Core, getOverlayManager } from '@openplayer/core';
+import type { OverlayState } from '@openplayerjs/core';
+import { Core, getOverlayManager } from '@openplayerjs/core';
 import createCaptionsControl from '../src/controls/captions';
 import createCurrentTimeControl from '../src/controls/currentTime';
 import createDurationControl from '../src/controls/duration';

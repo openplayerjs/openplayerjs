@@ -1,7 +1,7 @@
 import { VASTClient, VASTTracker } from '@dailymotion/vast-client';
 import VMAP from '@dailymotion/vmap';
-import type { EventBus, PlayerPlugin, PluginContext } from '@openplayer/core';
-import { EVENT_OPTIONS, getOverlayManager } from '@openplayer/core';
+import type { EventBus, PlayerPlugin, PluginContext } from '@openplayerjs/core';
+import { EVENT_OPTIONS, getOverlayManager } from '@openplayerjs/core';
 
 export type AdsEvent =
   | 'ads:requested'

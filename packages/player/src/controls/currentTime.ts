@@ -1,4 +1,4 @@
-import { formatTime, generateISODateTime } from '@openplayer/core';
+import { formatTime, generateISODateTime } from '@openplayerjs/core';
 import type { Control } from '../control';
 import { BaseControl } from './base';
 

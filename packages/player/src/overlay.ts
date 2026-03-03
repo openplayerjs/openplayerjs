@@ -1,5 +1,5 @@
-import type { Core } from '@openplayer/core';
-import { EVENT_OPTIONS } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
+import { EVENT_OPTIONS } from '@openplayerjs/core';
 import { setA11yLabel } from './a11y';
 import { resolveUIConfig } from './configuration';
 import { togglePlayback } from './playback';

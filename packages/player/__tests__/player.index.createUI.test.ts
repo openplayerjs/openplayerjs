@@ -1,14 +1,14 @@
 /** @jest-environment jsdom */
 
-jest.mock('@openplayer/core', () => {
-  const actual = jest.requireActual('@openplayer/core');
+jest.mock('@openplayerjs/core', () => {
+  const actual = jest.requireActual('@openplayerjs/core');
   return {
     ...actual,
     isMobile: jest.fn(() => false),
   };
 });
 
-import { Core, isMobile } from '@openplayer/core';
+import { Core, isMobile } from '@openplayerjs/core';
 import type { PlayerUIConfig } from '../src/configuration';
 import type { Control } from '../src/control';
 import { createUI } from '../src/ui';

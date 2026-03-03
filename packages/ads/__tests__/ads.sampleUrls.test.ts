@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
-import type { Core, PluginContext } from '@openplayer/core';
+import type { Core, PluginContext } from '@openplayerjs/core';
 import {
   DisposableStore,
   EventBus,
@@ -9,7 +9,7 @@ import {
   StateManager,
   type Listener,
   type PlayerEventPayloadMap,
-} from '@openplayer/core';
+} from '@openplayerjs/core';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';

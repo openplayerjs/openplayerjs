@@ -1,14 +1,14 @@
 /** @jest-environment jsdom */
 
-import { Core } from '@openplayer/core';
+import { Core } from '@openplayerjs/core';
 
 // Drive mobile branch in createUI() (mobile uses pointerdown).
-jest.mock('@openplayer/core', () => {
-  const actual = jest.requireActual('@openplayer/core');
+jest.mock('@openplayerjs/core', () => {
+  const actual = jest.requireActual('@openplayerjs/core');
   return { ...actual, isMobile: jest.fn() };
 });
 
-import { isMobile } from '@openplayer/core';
+import { isMobile } from '@openplayerjs/core';
 import { createUI } from '../src/ui';
 
 jest.useFakeTimers();

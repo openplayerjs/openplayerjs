@@ -1,5 +1,5 @@
-import type { IEngine, MediaEngineContext, MediaSource } from '@openplayer/core';
-import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayer/core';
+import type { IEngine, MediaEngineContext, MediaSource } from '@openplayerjs/core';
+import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayerjs/core';
 import Hls from 'hls.js';
 
 type AdapterListener = {

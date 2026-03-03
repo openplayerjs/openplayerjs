@@ -1,11 +1,11 @@
 /**
- * @openplayer/ui
+ * @openplayerjs/ui
  *
  * UI layer: player wrapper, center overlay, controls grid, and all built-in controls.
- * Peer dependency: @openplayer/core
+ * Peer dependency: @openplayerjs/core
  *
  * Stylesheet: import the CSS separately –
- *   import '@openplayer/ui/style.css';          // bundler
+ *   import '@openplayerjs/ui/style.css';          // bundler
  *   <link rel="stylesheet" href="openplayer.css"> // CDN / <link>
  */
 

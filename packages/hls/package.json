@@ -1,6 +1,6 @@
 {
-  "name": "@openplayer/hls",
-  "version": "3.0.0",
+  "name": "@openplayerjs/hls",
+  "version": "3.0.0-beta.0",
   "description": "HLS streaming engine for OpenPlayerJS, powered by hls.js",
   "author": {
     "name": "Rafael Miranda",
@@ -37,7 +37,10 @@
     "test": "jest --passWithNoTests  --config ../../jest.config.cjs"
   },
   "peerDependencies": {
-    "@openplayer/core": "workspace:^",
+    "@openplayerjs/core": "workspace:^",
     "hls.js": ">=1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

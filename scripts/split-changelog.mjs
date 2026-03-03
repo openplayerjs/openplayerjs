@@ -9,10 +9,10 @@ const GENERATED_NOTES = path.join(ROOT, "RELEASE_NOTES.generated.md");
 // Map conventional-commit scope -> package folder + display name.
 // Adjust if your scopes differ.
 const SCOPE_TO_PACKAGE = {
-  core: { dir: "packages/core", name: "@openplayer/core" },
-  player: { dir: "packages/player", name: "@openplayer/player" },
-  hls: { dir: "packages/hls", name: "@openplayer/hls" },
-  ads: { dir: "packages/ads", name: "@openplayer/ads" },
+  core: { dir: "packages/core", name: "@openplayerjs/core" },
+  player: { dir: "packages/player", name: "@openplayerjs/player" },
+  hls: { dir: "packages/hls", name: "@openplayerjs/hls" },
+  ads: { dir: "packages/ads", name: "@openplayerjs/ads" },
 };
 
 // Matches typical angular preset bullets:

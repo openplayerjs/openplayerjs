@@ -1,5 +1,5 @@
-import type { Core } from '@openplayer/core';
-import { EVENT_OPTIONS, getOverlayManager, isAudio, isMobile } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
+import { EVENT_OPTIONS, getOverlayManager, isAudio, isMobile } from '@openplayerjs/core';
 import { resolveUIConfig } from './configuration';
 import { createControlGrid, type Control } from './control';
 import { bindCenterOverlay } from './events';

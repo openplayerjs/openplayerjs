@@ -1,6 +1,6 @@
 {
-  "name": "@openplayer/player",
-  "version": "3.0.0",
+  "name": "@openplayerjs/player",
+  "version": "3.0.0-beta.0",
   "description": "UI layer, built-in controls, and accessibility for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
@@ -39,10 +39,13 @@
     "controls"
   ],
   "peerDependencies": {
-    "@openplayer/core": "workspace:^"
+    "@openplayerjs/core": "workspace:^"
   },
   "scripts": {
     "prepack": "mkdir -p dist && postcss src/style.css -o dist/openplayer.css",
     "test": "jest --passWithNoTests --config ../../jest.config.cjs"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

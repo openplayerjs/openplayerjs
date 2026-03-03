@@ -1,9 +1,9 @@
 /** @jest-environment jsdom */
 
-import * as Core from '@openplayer/core';
+import * as Core from '@openplayerjs/core';
 import OpenPlayerJS from '../src/umd';
 
-describe('UMD interop: OpenPlayer exposes @openplayer/core statics', () => {
+describe('UMD interop: OpenPlayer exposes @openplayerjs/core statics', () => {
   test('exposes getOverlayManager and EVENT_OPTIONS for add-on UMD bundles', () => {
     const ctor = OpenPlayerJS as unknown as Record<string, unknown>;
     expect(typeof ctor).toBe('function');

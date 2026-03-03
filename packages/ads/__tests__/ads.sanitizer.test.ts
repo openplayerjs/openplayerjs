@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { EventBus } from '@openplayer/core';
+import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 
 describe('AdsPlugin HTML sanitizer', () => {

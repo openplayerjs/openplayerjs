@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core } from '@openplayer/core';
+import { Core } from '@openplayerjs/core';
 import { togglePlayback } from '../src/playback';
 
 function makeCore() {

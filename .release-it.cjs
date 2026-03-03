@@ -49,7 +49,11 @@ module.exports = {
       infile: 'CHANGELOG.md',
       header: '# Changelog',
     },
-    '@release-it-plugins/workspaces': true,
+    '@release-it-plugins/workspaces': {
+      // --no-git-checks prevents pnpm from prompting when not on the
+      // default publish-branch (e.g. when releasing from version-3.0).
+      publishCommand: 'node scripts/publish-workspace.cjs',
+    },
   },
 
   hooks: {

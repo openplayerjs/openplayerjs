@@ -1,11 +1,11 @@
 /**
- * @openplayer/ads
+ * @openplayerjs/ads
  *
  * VAST / VMAP / VPAID ad-serving plugin for OpenPlayerJS.
- * Peer dependencies: @openplayer/core, @dailymotion/vast-client, @dailymotion/vmap
+ * Peer dependencies: @openplayerjs/core, @dailymotion/vast-client, @dailymotion/vmap
  *
  * ESM usage:
- *   import { AdsPlugin } from '@openplayer/ads';
+ *   import { AdsPlugin } from '@openplayerjs/ads';
  *   new Core(el, { plugins: [new AdsPlugin({ breaks: [...] })] });
  *
  * UMD / CDN usage: load openplayer-ads.umd.js after the main OpenPlayer bundle.

@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
-import type { Core } from '@openplayer/core';
-import { EventBus, Lease, StateManager } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
+import { EventBus, Lease, StateManager } from '@openplayerjs/core';
 import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
 

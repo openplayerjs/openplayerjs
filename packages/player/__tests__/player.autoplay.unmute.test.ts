@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core } from '@openplayer/core';
+import { Core } from '@openplayerjs/core';
 import type { Control } from '../src/control';
 import createPlayControl from '../src/controls/play';
 import { createUI } from '../src/ui';

@@ -1,5 +1,5 @@
-import type { Core } from '@openplayer/core';
-import { getOverlayManager } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
+import { getOverlayManager } from '@openplayerjs/core';
 
 export function getActiveMedia(core: Core): HTMLMediaElement {
   try {

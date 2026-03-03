@@ -1,6 +1,6 @@
 {
-  "name": "@openplayer/core",
-  "version": "3.0.0",
+  "name": "@openplayerjs/core",
+  "version": "3.0.0-beta.0",
   "description": "Core player engine, plugin system and public API for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
@@ -36,5 +36,8 @@
   ],
   "scripts": {
     "test": "jest --passWithNoTests  --config ../../jest.config.cjs"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

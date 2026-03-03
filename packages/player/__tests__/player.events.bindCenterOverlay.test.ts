@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core, getOverlayManager } from '@openplayer/core';
+import { Core, getOverlayManager } from '@openplayerjs/core';
 import { bindCenterOverlay } from '../src/events';
 
 function keydown(target: EventTarget, key: string, extra?: Partial<KeyboardEventInit>) {

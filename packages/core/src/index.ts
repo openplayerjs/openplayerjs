@@ -1,5 +1,5 @@
 /**
- * @openplayer/core
+ * @openplayerjs/core
  *
  * Public API for the OpenPlayerJS core package.
  * Re-exports everything plugin and engine authors need to build on top of the player.

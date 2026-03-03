@@ -1,9 +1,9 @@
-import type { Core, PlayerConfig } from '@openplayer/core';
+import type { Core, PlayerConfig } from '@openplayerjs/core';
 
 /**
- * UI configuration augments `@openplayer/core`'s `PlayerConfig` when `@openplayer/ui` is installed.
+ * UI configuration augments `@openplayerjs/core`'s `PlayerConfig` when `@openplayerjs/ui` is installed.
  *
- * This keeps `@openplayer/core` focused on runtime / engine concerns, while UI packages own
+ * This keeps `@openplayerjs/core` focused on runtime / engine concerns, while UI packages own
  * sizing, label strings, keyboard seek step and progress interaction flags.
  */
 

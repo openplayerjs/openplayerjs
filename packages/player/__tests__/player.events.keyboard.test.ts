@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core } from '@openplayer/core';
+import { Core } from '@openplayerjs/core';
 import { bindCenterOverlay } from '../src/events';
 import { createCenterOverlayDom } from '../src/overlay';
 

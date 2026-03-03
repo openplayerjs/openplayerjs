@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core, getOverlayManager } from '@openplayer/core';
+import { Core, getOverlayManager } from '@openplayerjs/core';
 import createProgressControl from '../src/controls/progress';
 
 jest.useFakeTimers();

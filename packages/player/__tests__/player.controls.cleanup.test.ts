@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core } from '@openplayer/core';
+import { Core } from '@openplayerjs/core';
 import createProgressControl from '../src/controls/progress';
 import { createUI } from '../src/ui';
 

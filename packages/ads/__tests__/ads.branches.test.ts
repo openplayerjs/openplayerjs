@@ -1,8 +1,8 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
-import type { Core, Lease, PluginContext } from '@openplayer/core';
-import { DisposableStore, EventBus, StateManager } from '@openplayer/core';
+import type { Core, Lease, PluginContext } from '@openplayerjs/core';
+import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
 

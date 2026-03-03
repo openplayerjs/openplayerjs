@@ -1,15 +1,15 @@
 /** @jest-environment jsdom */
 
-import type { OverlayState } from '@openplayer/core';
-import { Core, getOverlayManager } from '@openplayer/core';
+import type { OverlayState } from '@openplayerjs/core';
+import { Core, getOverlayManager } from '@openplayerjs/core';
 
 // Mock isMobile to exercise createVolumeControl returning null vs normal rendering.
-jest.mock('@openplayer/core', () => {
-  const actual = jest.requireActual('@openplayer/core');
+jest.mock('@openplayerjs/core', () => {
+  const actual = jest.requireActual('@openplayerjs/core');
   return { ...actual, isMobile: jest.fn() };
 });
 
-import { isMobile } from '@openplayer/core';
+import { isMobile } from '@openplayerjs/core';
 import createVolumeControl from '../src/controls/volume';
 
 jest.useFakeTimers();

@@ -38,8 +38,8 @@ function pkgBuilds(pkg, input, external = []) {
 
 const NAME = 'OpenPlayerJS'
 const ONLY_PKG = process.env.PKG || '';
-const CORE_EXTERNAL = ['@openplayer/core'];
-const CORE_GLOBAL   = { '@openplayer/core': NAME };
+const CORE_EXTERNAL = ['@openplayerjs/core'];
+const CORE_GLOBAL   = { '@openplayerjs/core': NAME };
 
 const builds = [
   ...pkgBuilds('core', 'packages/core/src/index.ts'),

@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core, DefaultMediaEngine, EventBus } from '@openplayer/core';
+import { Core, DefaultMediaEngine, EventBus } from '@openplayerjs/core';
 import { HlsMediaEngine } from '../src/hls';
 
 // Ensure our Hls.js stub provides the methods HlsMediaEngine expects (attach/detach/destroy etc.)

@@ -1,5 +1,5 @@
-import type { PlayerEventPayloadMap } from '@openplayer/core';
-import * as CoreExports from '@openplayer/core';
+import type { PlayerEventPayloadMap } from '@openplayerjs/core';
+import * as CoreExports from '@openplayerjs/core';
 import type { Control } from './control';
 import { buildControls, registerControl } from './control';
 import type { ControlPlacement } from './controls/base';
@@ -260,7 +260,7 @@ export default class Player {
 
 // --- UMD interop -------------------------------------------------------------
 // In UMD builds, add-on bundles (ads/hls) are configured with
-// globals: { '@openplayer/core': 'OpenPlayerJS' }
+// globals: { '@openplayerjs/core': 'OpenPlayerJS' }
 // which means they expect core exports (e.g. getOverlayManager, EVENT_OPTIONS)
 // to be available on the global OpenPlayer object.
 //

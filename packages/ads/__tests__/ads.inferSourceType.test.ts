@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { EventBus } from '@openplayer/core';
+import { EventBus } from '@openplayerjs/core';
 import type { AdsSourceType } from '../src/ads';
 import { AdsPlugin } from '../src/ads';
 

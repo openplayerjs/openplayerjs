@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
-import type { Core } from '@openplayer/core';
-import { EventBus } from '@openplayer/core';
+import type { Core } from '@openplayerjs/core';
+import { EventBus } from '@openplayerjs/core';
 import { extendControls } from '../src/extend';
 
 type AddElementPayload = { el: HTMLElement; placement?: { v: string; h: string } };

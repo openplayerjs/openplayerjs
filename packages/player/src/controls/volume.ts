@@ -1,4 +1,4 @@
-import { EVENT_OPTIONS, isMobile } from '@openplayer/core';
+import { EVENT_OPTIONS, isMobile } from '@openplayerjs/core';
 import { setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';

@@ -1,6 +1,6 @@
 {
   "name": "openplayerjs",
-  "version": "0.0.0",
+  "version": "3.0.0-beta.0",
   "description": "HTML5 video and audio player — monorepo root",
   "private": true,
   "author": {
@@ -25,7 +25,7 @@
     "release": "dotenv -o -- release-it --config .release-it.cjs",
     "release:alpha": "dotenv -o -- release-it --config .release-it.cjs --preRelease=alpha",
     "release:beta": "dotenv -o -- release-it --config .release-it.cjs --preRelease=beta",
-    "release:pack": "pnpm --filter @openplayer/core --filter @openplayer/player --filter @openplayer/hls --filter @openplayer/ads -r pack --pack-destination ./packed",
+    "release:pack": "pnpm --filter @openplayerjs/core --filter @openplayerjs/player --filter @openplayerjs/hls --filter @openplayerjs/ads -r pack --pack-destination ./packed",
     "release:publish": "dotenv -o -- release-it --config .release-it.cjs --ci",
     "release:publish:dry-run": "dotenv -o -- release-it --config .release-it.cjs --ci --dry-run",
     "test": "jest --coverage --passWithNoTests",
