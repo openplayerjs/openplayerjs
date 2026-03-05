@@ -1,6 +1,6 @@
 {
   "name": "openplayerjs",
-  "version": "3.0.0-beta.2",
+  "version": "3.0.0-alpha.0",
   "description": "HTML5 video and audio player — monorepo root",
   "private": true,
   "author": {
