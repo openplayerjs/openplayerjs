@@ -82,8 +82,68 @@ createUI(core, video, controls);
 | `allowSkip`   | `boolean`                | `true`  | Allow seeking forward via the progress bar                                       |
 | `allowRewind` | `boolean`                | `true`  | Allow seeking backward via the progress bar                                      |
 | `labels`      | `Record<string, string>` | —       | Override built-in UI label strings (e.g. `play`, `pause`, `fullscreen`, etc.)    |
+| `controls`    | `ControlsConfig`         | see below | Layout of the built-in controls and auto-hide behaviour                        |
 
 > For engine/plugins and initial playback state options like `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, and `duration`, see `@openplayerjs/core`.
+
+---
+
+### Controls configuration
+
+When using the `Player` class (UMD / script tag), a default controls layout is applied automatically when `controls` is not provided:
+
+```js
+controls: {
+  top: ['progress'],
+  'bottom-left': ['play', 'time', 'volume'],
+  'bottom-right': ['captions', 'settings', 'fullscreen'],
+}
+```
+
+You can fully override the layout using the **flat format** (same keys accepted by `buildControls`):
+
+```js
+const player = new Player('video', {
+  controls: {
+    top: ['progress'],
+    'bottom-left': ['play', 'time', 'volume'],
+    'bottom-right': ['captions', 'settings', 'fullscreen'],
+  },
+});
+```
+
+#### Legacy `layers` format
+
+The previous `layers`-based configuration is also supported for backwards compatibility. The keys `left`, `middle`, and `right` map to `bottom-left`, `top`, and `bottom-right` respectively:
+
+```js
+const player = new Player('video', {
+  controls: {
+    layers: {
+      left: ['play', 'time', 'volume'],
+      middle: ['progress'],
+      right: ['captions', 'settings', 'fullscreen'],
+    },
+  },
+});
+```
+
+#### `alwaysVisible`
+
+By default the control bar auto-hides after 3 seconds of inactivity during playback. Set `alwaysVisible: true` to keep the controls permanently visible:
+
+```js
+const player = new Player('video', {
+  controls: {
+    alwaysVisible: true,
+    top: ['progress'],
+    'bottom-left': ['play', 'time', 'volume'],
+    'bottom-right': ['captions', 'settings', 'fullscreen'],
+  },
+});
+```
+
+`alwaysVisible` can be combined with both the flat format and the `layers` format.
 
 ---
 
@@ -478,6 +538,8 @@ const controls = buildControls({
 ---
 
 ## Code samples
+
+A wide collection of ready-to-run examples — from basic setup to advanced controls customisation, plugins, and accessibility patterns — is available as a living cookbook in the CodePen collection below.
 
 CodePen Collection: [https://codepen.io/collection/KwqaKQ](https://codepen.io/collection/KwqaKQ)
 

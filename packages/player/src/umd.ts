@@ -49,16 +49,51 @@ type PendingListener = {
   off?: Unsubscribe;
 };
 
-function extractControlIds(controlsCfg: any): ControlId[] {
-  if (!controlsCfg || typeof controlsCfg !== 'object') return [];
-  const ids = new Set<string>();
+const DEFAULT_CONTROLS: Record<string, string[]> = {
+  top: ['progress'],
+  'bottom-left': ['play', 'time', 'volume'],
+  'bottom-right': ['captions', 'settings', 'fullscreen'],
+};
 
-  for (const key of Object.keys(controlsCfg)) {
-    const list = controlsCfg[key];
-    if (!Array.isArray(list)) continue;
-    for (const id of list) if (typeof id === 'string') ids.add(id);
+/**
+ * Normalizes the controls configuration to a flat layout object.
+ *
+ * Supports two formats:
+ * - **Flat** (default): `{ top: [...], 'bottom-left': [...], 'bottom-right': [...] }`
+ * - **Layers** (legacy): `{ layers: { left: [...], middle: [...], right: [...] } }`
+ *
+ * Non-array properties (e.g. `alwaysVisible`) are ignored during normalization.
+ * When no layout keys are found, the default controls layout is returned.
+ */
+function normalizeControlsConfig(cfg: any): Record<string, string[]> {
+  if (!cfg || typeof cfg !== 'object') return { ...DEFAULT_CONTROLS };
+
+  // Legacy layers format: { layers: { left, middle, right } }
+  if (cfg.layers && typeof cfg.layers === 'object') {
+    const result: Record<string, string[]> = {};
+    const { left, middle, right } = cfg.layers;
+    if (Array.isArray(left)) result['bottom-left'] = left;
+    if (Array.isArray(middle)) result['top'] = middle;
+    if (Array.isArray(right)) result['bottom-right'] = right;
+    return result;
   }
 
+  // Flat format — collect only array-valued keys (skip flags like alwaysVisible)
+  const result: Record<string, string[]> = {};
+  for (const [key, val] of Object.entries(cfg)) {
+    if (Array.isArray(val)) result[key] = val as string[];
+  }
+
+  // If no layout keys were provided (e.g. only flags like alwaysVisible), use defaults
+  return Object.keys(result).length > 0 ? result : { ...DEFAULT_CONTROLS };
+}
+
+function extractControlIds(controlsCfg: any): ControlId[] {
+  const normalized = normalizeControlsConfig(controlsCfg);
+  const ids = new Set<string>();
+  for (const names of Object.values(normalized)) {
+    for (const id of names) if (typeof id === 'string') ids.add(id);
+  }
   return [...ids];
 }
 
@@ -142,7 +177,11 @@ export default class Player {
   }
 
   init() {
-    if (this.config.controls) registerControlsFromConfig(this.config.controls);
+    const rawControls = this.config.controls;
+    const normalizedControls = normalizeControlsConfig(rawControls);
+    const alwaysVisible = rawControls?.alwaysVisible === true;
+
+    registerControlsFromConfig(normalizedControls);
 
     this.createdPlugins = this.createDetectedPlugins();
 
@@ -155,8 +194,8 @@ export default class Player {
       plugins: this.createdPlugins.map((p) => p.plugin),
     });
 
-    const controls = buildControls(this.config.controls);
-    createUI(this.core, this.media, controls);
+    const controls = buildControls(normalizedControls);
+    createUI(this.core, this.media, controls, { alwaysVisible });
 
     // Attach UI imperative API under player.controls
     extendControls(this.core);

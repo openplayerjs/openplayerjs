@@ -1,6 +1,8 @@
 /** @jest-environment jsdom */
 
 import Player from '../src/umd';
+import { buildControls, registerControl } from '../src/control';
+import { createUI } from '../src/ui';
 
 // Isolate the UI-creation side-effects so the tests focus on delegation.
 jest.mock('../src/ui', () => ({ createUI: jest.fn() }));
@@ -132,5 +134,103 @@ describe('UMD Player — load()', () => {
     umdPlayer.src = 'https://example.com/video.mp4';
 
     expect(seen).toContain('source:set');
+  });
+});
+
+describe('UMD Player — controls configuration', () => {
+  const buildControlsMock = buildControls as jest.Mock;
+  const createUIMock = createUI as jest.Mock;
+  let media: HTMLVideoElement;
+
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    media = document.createElement('video');
+    document.body.appendChild(media);
+    delete (window as any).OpenPlayerPlugins;
+    buildControlsMock.mockClear();
+    (registerControl as jest.Mock).mockClear();
+    createUIMock.mockClear();
+  });
+
+  test('uses default controls layout when no controls config is provided', async () => {
+    const player = new Player(media);
+    await player.init();
+
+    expect(buildControlsMock).toHaveBeenCalledWith({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['captions', 'settings', 'fullscreen'],
+    });
+  });
+
+  test('passes the flat controls config directly to buildControls', async () => {
+    const player = new Player(media, {
+      controls: {
+        top: ['progress'],
+        'bottom-left': ['play', 'volume'],
+        'bottom-right': ['fullscreen'],
+      },
+    });
+    await player.init();
+
+    expect(buildControlsMock).toHaveBeenCalledWith({
+      top: ['progress'],
+      'bottom-left': ['play', 'volume'],
+      'bottom-right': ['fullscreen'],
+    });
+  });
+
+  test('maps layers format to flat format', async () => {
+    const player = new Player(media, {
+      controls: {
+        layers: {
+          left: ['play', 'volume'],
+          middle: ['progress'],
+          right: ['fullscreen'],
+        },
+      },
+    });
+    await player.init();
+
+    expect(buildControlsMock).toHaveBeenCalledWith({
+      'bottom-left': ['play', 'volume'],
+      top: ['progress'],
+      'bottom-right': ['fullscreen'],
+    });
+  });
+
+  test('uses default controls when only alwaysVisible flag is set', async () => {
+    const player = new Player(media, { controls: { alwaysVisible: true } });
+    await player.init();
+
+    expect(buildControlsMock).toHaveBeenCalledWith({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['captions', 'settings', 'fullscreen'],
+    });
+  });
+
+  test('passes alwaysVisible:true to createUI', async () => {
+    const player = new Player(media, { controls: { alwaysVisible: true } });
+    await player.init();
+
+    expect(createUIMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      { alwaysVisible: true }
+    );
+  });
+
+  test('passes alwaysVisible:false to createUI when not set', async () => {
+    const player = new Player(media);
+    await player.init();
+
+    expect(createUIMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      { alwaysVisible: false }
+    );
   });
 });

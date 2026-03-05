@@ -307,4 +307,36 @@ describe('UI createUI + controls autohide', () => {
 
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
   });
+
+  test('alwaysVisible:true prevents controls from auto-hiding during playback', async () => {
+    const p = makeCore();
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, [], { alwaysVisible: true });
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    // Trigger playing — normally this schedules a 3s hide timer
+    p.events.emit('playing');
+    jest.advanceTimersByTime(10000);
+    await flushTimersAndMicrotasks();
+
+    // Controls must remain visible despite the long elapsed time
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
+  });
+
+  test('alwaysVisible:true controls stay visible after pointer move', async () => {
+    const p = makeCore();
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, [], { alwaysVisible: true });
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    wrapper.dispatchEvent(new Event('pointermove', { bubbles: true }));
+    jest.advanceTimersByTime(5000);
+    await flushTimersAndMicrotasks();
+
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
+  });
 });

@@ -206,6 +206,8 @@ core.on('ads:error', ({ reason, error }) => {
 
 ## Code samples
 
+A wide collection of ready-to-run examples — covering preroll, midroll, and postroll VAST/VMAP setups, waterfall sources, and non-linear ads — is available as a living cookbook in the CodePen collection below.
+
 CodePen Collection: [https://codepen.io/collection/kkwgWj](https://codepen.io/collection/kkwgWj)
 
 ---

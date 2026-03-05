@@ -93,7 +93,8 @@ export type PlayerUIContext = {
   grid?: ReturnType<typeof createControlGrid>;
 };
 
-export function createUI(core: Core, media: HTMLMediaElement, controls: Control[]) {
+export function createUI(core: Core, media: HTMLMediaElement, controls: Control[], options: { alwaysVisible?: boolean } = {}) {
+  const alwaysVisible = options.alwaysVisible === true;
   const ui = resolveUIConfig(core);
   media.tabIndex = -1;
   const tmpMedia = media;
@@ -246,6 +247,7 @@ export function createUI(core: Core, media: HTMLMediaElement, controls: Control[
   };
 
   const scheduleHide = (ms?: number): void => {
+    if (alwaysVisible) return;
     if (core.media.paused || core.media.ended) return;
     if (hideTimer) window.clearTimeout(hideTimer);
     hideTimer = window.setTimeout(() => hideControls(), ms ?? POINTER_SHOW_MS);

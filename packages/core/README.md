@@ -274,6 +274,8 @@ export class MyStreamEngine extends BaseMediaEngine implements IEngine {
 
 ## Code samples
 
+A wide collection of ready-to-run examples — from engine setup and custom plugins to playback control and event handling — is available as a living cookbook in the CodePen collection below.
+
 CodePen Collection: [https://codepen.io/collection/WQORze](https://codepen.io/collection/WQORze)
 
 ---

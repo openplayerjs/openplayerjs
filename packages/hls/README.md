@@ -151,6 +151,8 @@ You can then use `extendControls` + `addControl` from `@openplayer/player` to bu
 
 ## Code samples
 
+A wide collection of ready-to-run examples — including adaptive bitrate streaming, live streams, and custom hls.js configuration — is available as a living cookbook in the CodePen collection below.
+
 CodePen Collection: [https://codepen.io/collection/pjwRvL](https://codepen.io/collection/pjwRvL)
 
 ---
