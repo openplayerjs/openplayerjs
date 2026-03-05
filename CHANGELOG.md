@@ -1,5 +1,12 @@
 # Changelog
 
+# [3.0.0-beta.2](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0-beta.1...v3.0.0-beta.2) (2026-03-05)
+
+
+### Bug Fixes
+
+* ads breaks and playAds fixes, alignment with browser's behavior for preload/autoplay policies, and controls/UI fixes ([10ca035](https://github.com/openplayerjs/openplayerjs/commit/10ca035281a0bdacfc2535d27c4ca0c2d37cca3b))
+
 # [3.0.0-beta.1](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0-beta.0...v3.0.0-beta.1) (2026-03-03)
 
 

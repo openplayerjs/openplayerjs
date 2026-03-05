@@ -1,6 +1,6 @@
 {
   "name": "@openplayerjs/ads",
-  "version": "3.0.0-beta.1",
+  "version": "3.0.0-beta.2",
   "description": "VAST/VMAP/Non-linear/companions ad-serving plugin for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
