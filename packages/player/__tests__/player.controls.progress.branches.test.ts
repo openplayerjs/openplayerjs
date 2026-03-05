@@ -167,4 +167,93 @@ describe('ProgressControl branch coverage', () => {
 
     expect(p.currentTime).toBe(0);
   });
+
+  test('playing event removes loading and error classes from slider', () => {
+    const p = makeCore();
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+
+    const slider = nn(el.querySelector('input[type="range"]')) as HTMLInputElement;
+    slider.classList.add('loading');
+    slider.classList.add('error');
+
+    p.events.emit('playing');
+    expect(slider.classList.contains('loading')).toBe(false);
+    expect(slider.classList.contains('error')).toBe(false);
+  });
+
+  test('change event on slider seeks and releases pressed state', () => {
+    const p = makeCore();
+    (p.media as any).duration = 100;
+    (p.media as any).currentTime = 10;
+
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+
+    const slider = nn(el.querySelector('input[type="range"]')) as HTMLInputElement;
+    slider.max = '100';
+    slider.value = '30';
+    slider.classList.add('op-progress--pressed');
+
+    slider.dispatchEvent(new Event('change'));
+    expect(p.currentTime).toBe(30);
+    expect(slider.classList.contains('op-progress--pressed')).toBe(false);
+  });
+
+  test('click on range input early-returns without seeking', () => {
+    const p = makeCore();
+    (p.media as any).duration = 100;
+    (p.media as any).currentTime = 0;
+
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+
+    const slider = nn(el.querySelector('input[type="range"]')) as HTMLInputElement;
+    // Click event whose target is the range slider itself (should early-return, not seek)
+    const clickEvent = new MouseEvent('click', { bubbles: true, clientX: 50 });
+    slider.dispatchEvent(clickEvent);
+
+    // currentTime should remain 0 because the early-return branch fired
+    expect(p.currentTime).toBe(0);
+  });
+
+  test('click on progress container (not range input) triggers seekFromClientX', () => {
+    const p = makeCore();
+    (p.media as any).duration = 100;
+    (p.media as any).currentTime = 0;
+
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+
+    // Click directly on the container (not on the range input) — calls seekFromClientX
+    const clickEvent = new MouseEvent('click', { bubbles: false, clientX: 50 });
+    el.dispatchEvent(clickEvent);
+
+    // jsdom returns width=0 for getBoundingClientRect, so pct clamps to 1 and seeks to duration
+    expect(p.currentTime).toBeGreaterThan(0);
+  });
+
+  test('document pointermove outside progress hides tooltip', () => {
+    const p = makeCore();
+    const c = createProgressControl();
+    const el = c.create(p);
+    document.body.appendChild(el);
+
+    const tooltip = el.querySelector('.op-controls__tooltip') as HTMLElement;
+    tooltip.classList.add('op-controls__tooltip--visible');
+
+    // Move pointer over a non-progress element
+    const outsideEl = document.createElement('div');
+    document.body.appendChild(outsideEl);
+    const moveEvent = new MouseEvent('pointermove', { bubbles: true });
+    Object.defineProperty(moveEvent, 'target', { value: outsideEl });
+    document.dispatchEvent(moveEvent);
+
+    expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
+  });
 });

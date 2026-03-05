@@ -40,4 +40,28 @@ describe('ui/control branch coverage', () => {
     expect(controls.some((c) => c.id === 'dummy' && c.placement.v === 'top' && c.placement.h === 'left')).toBe(true);
     expect(controls.some((c) => c.id === 'dummy' && c.placement.v === 'bottom' && c.placement.h === 'left')).toBe(true);
   });
+
+  test('createControlGrid places region=main elements into mainRoot, not controlsRoot', () => {
+    const controlsRoot = document.createElement('div');
+    const mainRoot = document.createElement('div');
+    const grid = createControlGrid(controlsRoot, mainRoot);
+
+    const el = document.createElement('button');
+    grid.place({ v: 'middle', h: 'center', region: 'main' }, el);
+
+    expect(mainRoot.contains(el)).toBe(true);
+    expect(controlsRoot.contains(el)).toBe(false);
+  });
+
+  test('buildControls maps "main" key to region:main placement', () => {
+    registerControl('dummy-main', () => ({
+      id: 'dummy-main',
+      placement: { v: 'middle', h: 'center' },
+      create: () => document.createElement('div'),
+    }));
+
+    const controls = buildControls({ main: ['dummy-main'] });
+    const c = controls.find((c) => c.id === 'dummy-main');
+    expect(c?.placement.region).toBe('main');
+  });
 });

@@ -46,6 +46,14 @@ export class VolumeControl extends BaseControl {
     wrapper.appendChild(slider);
     wrapper.appendChild(display);
 
+    const btn = document.createElement('button');
+    btn.tabIndex = 0;
+    btn.type = 'button';
+    btn.title = muteLabel;
+    btn.className = 'op-controls__mute';
+    setA11yLabel(btn, muteLabel);
+    btn.setAttribute('aria-pressed', 'false');
+
     let lastVolume = core.volume;
 
     const formatVolume = (vol: number) => {
@@ -102,14 +110,6 @@ export class VolumeControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    const btn = document.createElement('button');
-    btn.tabIndex = 0;
-    btn.type = 'button';
-    btn.title = muteLabel;
-    btn.className = 'op-controls__mute';
-    setA11yLabel(btn, muteLabel);
-    btn.setAttribute('aria-pressed', 'false');
-
     this.listen(
       btn,
       'click',
@@ -152,6 +152,27 @@ export class VolumeControl extends BaseControl {
       },
       EVENT_OPTIONS
     );
+
+    this.onPlayer('loadedmetadata', () => {
+      const muted = core.muted || core.volume === 0;
+      const vol = formatVolume(core.volume);
+
+      if (vol > 0) lastVolume = vol;
+      slider.value = (muted ? 0 : vol).toString();
+
+      updateSlider(muted ? 0 : vol);
+      updateBtn(muted ? 0 : vol);
+
+      const el = getActiveMedia(core);
+      if (el && el !== core.media) {
+        try {
+          el.muted = muted;
+          if (!muted) el.volume = vol;
+        } catch {
+          // ignore
+        }
+      }
+    });
 
     this.onPlayer('volumechange', () => {
       const muted = core.muted || core.volume === 0;

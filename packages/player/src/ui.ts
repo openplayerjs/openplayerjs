@@ -23,7 +23,7 @@ function labelElement(host: HTMLElement, text: string): void {
 
 function maybeAutoplayUnmute(core: Core, wrapper: HTMLDivElement) {
   const media = core.media;
-  const wantsAutoplay = !!(media.autoplay || media.preload === 'auto');
+  const wantsAutoplay = !!media.autoplay;
   if (!wantsAutoplay && !core.canAutoplay && !core.canAutoplayMuted) return;
   if (core.canAutoplay && !core.canAutoplayMuted) return;
 
@@ -98,6 +98,8 @@ export function createUI(core: Core, media: HTMLMediaElement, controls: Control[
   media.tabIndex = -1;
   const tmpMedia = media;
   const isMediaAudio = isAudio(tmpMedia);
+
+  if (!tmpMedia.classList.contains('op-player__media')) tmpMedia.classList.add('op-player__media');
 
   const placeholder = document.createComment('op-player-placeholder');
   const parent = tmpMedia.parentNode;

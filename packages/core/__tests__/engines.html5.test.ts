@@ -7,7 +7,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     document.body.innerHTML = '';
   });
 
-  test('media.load() is called and player reaches loading state when preload is "none"', () => {
+  test('media.load() is called and player reaches loading state when preload is "none"', async () => {
     const media = document.createElement('video');
     media.preload = 'none';
     media.src = 'https://example.com/video.mp4';
@@ -17,6 +17,8 @@ describe('DefaultMediaEngine — preload="none"', () => {
     const callsBefore = loadMock.mock.calls.length;
 
     const player = new Core(media);
+    // maybeAutoLoad() is deferred via queueMicrotask; flush it before asserting
+    await Promise.resolve();
 
     // attach() must call media.load() unconditionally — even with preload="none"
     expect(loadMock.mock.calls.length).toBeGreaterThan(callsBefore);
@@ -47,13 +49,15 @@ describe('DefaultMediaEngine — preload="none"', () => {
     player.destroy();
   });
 
-  test('cmd:startLoad with preload=none bumps preload to metadata and re-calls load() to trigger loadedmetadata', () => {
+  test('cmd:startLoad with preload=none bumps preload to metadata and re-calls load() to trigger loadedmetadata', async () => {
     const media = document.createElement('video');
     media.preload = 'none';
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
 
     const player = new Core(media);
+    // Flush queueMicrotask so engine attaches and registers the cmd:startLoad handler
+    await Promise.resolve();
 
     const loadMock = HTMLMediaElement.prototype.load as jest.Mock;
     const callsAfterInit = loadMock.mock.calls.length;
@@ -90,7 +94,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     player.destroy();
   });
 
-  test('media.load() is also called when preload is "auto"', () => {
+  test('media.load() is also called when preload is "auto"', async () => {
     const media = document.createElement('video');
     media.preload = 'auto';
     media.src = 'https://example.com/video.mp4';
@@ -100,6 +104,8 @@ describe('DefaultMediaEngine — preload="none"', () => {
     const callsBefore = loadMock.mock.calls.length;
 
     const player = new Core(media);
+    // Flush queueMicrotask so engine attaches
+    await Promise.resolve();
 
     expect(loadMock.mock.calls.length).toBeGreaterThan(callsBefore);
     expect(player.state.current).toBe('loading');

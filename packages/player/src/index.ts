@@ -36,5 +36,28 @@ export { default as createSettingsControl } from './controls/settings';
 export { default as createTimeControl } from './controls/time';
 export { default as createVolumeControl } from './controls/volume';
 
+// Auto-register built-in controls so buildControls() works in ESM without
+// manual registerControl() calls (UMD does this lazily in Player.init).
+import createCaptionsControlImpl from './controls/captions';
+import createCurrentTimeControlImpl from './controls/currentTime';
+import createDurationControlImpl from './controls/duration';
+import createFullscreenControlImpl from './controls/fullscreen';
+import createPlayControlImpl from './controls/play';
+import createProgressControlImpl from './controls/progress';
+import createSettingsControlImpl from './controls/settings';
+import createTimeControlImpl from './controls/time';
+import createVolumeControlImpl from './controls/volume';
+import { registerControl } from './control';
+
+registerControl('captions', createCaptionsControlImpl);
+registerControl('currentTime', createCurrentTimeControlImpl);
+registerControl('duration', createDurationControlImpl);
+registerControl('fullscreen', createFullscreenControlImpl);
+registerControl('play', createPlayControlImpl);
+registerControl('progress', createProgressControlImpl);
+registerControl('settings', createSettingsControlImpl);
+registerControl('time', createTimeControlImpl);
+registerControl('volume', createVolumeControlImpl);
+
 // ─── Built-in Accessibility utilities ────────────────────────────────────────
 export { setA11yLabel } from './a11y';

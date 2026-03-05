@@ -544,11 +544,11 @@ describe('AdsPlugin autoplay mute policy', () => {
     jest.useRealTimers();
   });
 
-  test('ad starts MUTED when content has preload=auto and user has not yet interacted', async () => {
+  test('ad starts MUTED when content has autoplay and user has not yet interacted', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
-    // No user interaction, content preloads automatically
-    const { ctx } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.8 });
+    // No user interaction, content autoplays
+    const { ctx } = makeCtx({ autoplay: true, userInteracted: false, muted: false, volume: 0.8 });
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
@@ -658,7 +658,7 @@ describe('AdsPlugin autoplay mute policy', () => {
   test('player:interacted clears forcedMuteUntilInteraction and syncs ad volume from player', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
-    const { ctx, bus } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.8 });
+    const { ctx, bus } = makeCtx({ autoplay: true, userInteracted: false, muted: false, volume: 0.8 });
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
@@ -683,7 +683,7 @@ describe('AdsPlugin autoplay mute policy', () => {
   test('bindAdSurfaceCommands shouldForceMute: forces muted on autoplay path without interaction', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
-    const { ctx, bus } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.9 });
+    const { ctx, bus } = makeCtx({ autoplay: true, userInteracted: false, muted: false, volume: 0.9 });
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
@@ -706,7 +706,7 @@ describe('AdsPlugin autoplay mute policy', () => {
     // player "knows" unmuted autoplay is possible. Ad must still start muted.
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
-    const { ctx } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 1 });
+    const { ctx } = makeCtx({ autoplay: true, userInteracted: false, muted: false, volume: 1 });
     const p = new AdsPlugin({ allowNativeControls: false }) as any;
     p.setup(ctx);
 
@@ -728,7 +728,7 @@ describe('AdsPlugin autoplay mute policy', () => {
     // After "user" unmutes between them, second should be unmuted.
     vastGetMock.mockResolvedValueOnce(linearPodParsed(2));
 
-    const { ctx, bus } = makeCtx({ preload: 'auto', userInteracted: false, muted: false, volume: 0.9 });
+    const { ctx, bus } = makeCtx({ autoplay: true, userInteracted: false, muted: false, volume: 0.9 });
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 

@@ -99,6 +99,29 @@ describe('Settings control + registry', () => {
     expect(btn.getAttribute('aria-pressed')).toBe('false');
   });
 
+  test('Captions submenu "Off" item disables all tracks', () => {
+    const p = makeCore();
+    const trackList = addTextTracks(p.media as HTMLVideoElement, [{ label: 'English', kind: 'captions' }]);
+    (trackList as any)[0].mode = 'showing';
+
+    createCaptionsControl().create(p);
+    const settings = createSettingsControl().create(p) as HTMLDivElement;
+    const gear = settings.querySelector('button.op-controls__settings') as HTMLButtonElement;
+
+    gear.click();
+
+    const items = Array.from(settings.querySelectorAll('.op-controls__menu-item')) as HTMLButtonElement[];
+    const captionsItem = items.find((b) => (b.textContent || '').includes('CC/Subtitles'))!;
+    captionsItem.click();
+
+    const submenuItems = Array.from(settings.querySelectorAll('.op-controls__menu-item')) as HTMLButtonElement[];
+    const offItem = submenuItems.find((b) => (b.textContent || '').trim() === 'Off')!;
+    expect(offItem).toBeTruthy();
+    offItem.click();
+
+    expect((p.media as HTMLVideoElement).textTracks[0].mode).toBe('disabled');
+  });
+
   test('Speed submenu is not available during ads (overlay active)', () => {
     const p = makeCore();
 

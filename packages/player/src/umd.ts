@@ -112,7 +112,7 @@ function shallowMergeDefaults(defaults: any, cfg: any) {
   return { ...defaults, ...cfg };
 }
 
-function maybeInstallEntry(entry: UMDPluginEntry) {
+function maybeInstallEntry(entry: UMDPluginEntry, PlayerCtor: any) {
   if (!entry.install) return;
   const enabled = !!window.OpenPlayerConfig?.extendPlayerPrototype;
   if (!enabled) return;
@@ -120,7 +120,7 @@ function maybeInstallEntry(entry: UMDPluginEntry) {
   window.__OpenPlayerInstalledPlugins = window.__OpenPlayerInstalledPlugins || {};
   if (window.__OpenPlayerInstalledPlugins[entry.name]) return;
 
-  entry.install(CoreExports.Core);
+  entry.install(PlayerCtor);
   window.__OpenPlayerInstalledPlugins[entry.name] = true;
 }
 
@@ -147,7 +147,7 @@ export default class Player {
     this.createdPlugins = this.createDetectedPlugins();
 
     // Optional prototype-level installs, controlled via window.OpenPlayerConfig.extendPlayerPrototype
-    for (const p of this.createdPlugins) maybeInstallEntry(p.entry);
+    for (const p of this.createdPlugins) maybeInstallEntry(p.entry, Player);
 
     // Core receives plugin instances only (core remains generic)
     this.core = new CoreExports.Core(this.media, {

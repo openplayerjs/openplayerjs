@@ -111,13 +111,15 @@ describe('core/player branches', () => {
     expect(p3).toBeTruthy();
   });
 
-  test('destroy detaches engine when context exists', () => {
+  test('destroy detaches engine when context exists', async () => {
     const media = document.createElement('video');
     media.src = 'https://example.com/a.mp4';
     const detachSpy = jest.fn();
     const engine = new EngineB();
     engine.detach = detachSpy;
     const p = new Core(media, { plugins: [engine] });
+    // Flush queueMicrotask so maybeAutoLoad runs and playerContext is set before destroy
+    await Promise.resolve();
     p.destroy();
     expect(detachSpy).toHaveBeenCalled();
   });

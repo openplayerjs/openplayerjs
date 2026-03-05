@@ -34,5 +34,17 @@ describe('core/utils', () => {
     // No extension => default depends on audio vs video.
     expect(predictMimeType(v, 'https://example.com/watch')).toBe('video/mp4');
     expect(predictMimeType(a, 'https://example.com/listen')).toBe('audio/mp3');
+
+    // Remaining format branches
+    expect(predictMimeType(v, 'https://example.com/clip.ogg')).toBe('video/ogg');  // video path of ogg ternary
+    expect(predictMimeType(a, 'https://example.com/sound.ogg')).toBe('audio/ogg');  // audio path of ogg ternary
+    expect(predictMimeType(v, 'https://example.com/clip.ogv')).toBe('video/ogg');
+    expect(predictMimeType(a, 'https://example.com/sound.oga')).toBe('audio/ogg');
+    expect(predictMimeType(v, 'https://example.com/clip.3gp')).toBe('audio/3gpp');
+    expect(predictMimeType(a, 'https://example.com/sound.wav')).toBe('audio/wav');
+    expect(predictMimeType(a, 'https://example.com/sound.aac')).toBe('audio/aac');
+    expect(predictMimeType(a, 'https://example.com/sound.flac')).toBe('audio/flac');
+    expect(predictMimeType(v, 'https://example.com/clip.webm')).toBe('video/webm');
+    expect(predictMimeType(a, 'https://example.com/sound.webm')).toBe('audio/webm');
   });
 });

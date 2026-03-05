@@ -151,6 +151,44 @@ describe('UI Controls', () => {
     c.destroy?.();
   });
 
+  test('factory placement argument sets custom placement on control instance', () => {
+    const custom = { v: 'top' as const, h: 'right' as const };
+    expect(createPlayControl(custom).placement).toEqual(custom);
+    expect(createTimeControl(custom).placement).toEqual(custom);
+    expect(createCurrentTimeControl(custom).placement).toEqual(custom);
+    expect(createDurationControl(custom).placement).toEqual(custom);
+  });
+
+  test('CurrentTimeControl hides when isLive=true and shows ad time when overlay active', () => {
+    const p = makeCore();
+    const el = nn(createCurrentTimeControl()).create(p) as HTMLElement;
+
+    // isLive branch: element should become aria-hidden
+    p.isLive = true;
+    p.events.emit('timeupdate');
+    expect(el.getAttribute('aria-hidden')).toBe('true');
+
+    // Back to normal when isLive is cleared
+    p.isLive = false;
+    p.events.emit('timeupdate');
+    expect(el.getAttribute('aria-hidden')).toBe('false');
+  });
+
+  test('DurationControl shows LIVE label when isLive=true or duration=Infinity', () => {
+    const p = makeCore();
+    const el = nn(createDurationControl()).create(p) as HTMLElement;
+
+    p.isLive = true;
+    p.events.emit('durationchange');
+    expect(el.textContent).toContain('Live');
+    expect(el.hasAttribute('datetime')).toBe(false);
+
+    // Restore isLive=false — should display time again
+    p.isLive = false;
+    p.events.emit('durationchange');
+    expect(el.getAttribute('datetime')).toBeTruthy();
+  });
+
   test('Fullscreen control emits and toggles css class', async () => {
     const p = makeCore();
     const c = nn(createFullscreenControl());

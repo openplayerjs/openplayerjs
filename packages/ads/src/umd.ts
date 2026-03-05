@@ -19,8 +19,14 @@ import { AdsPlugin, extendAds, installAds } from './ads';
     if (!OpenPlayerJS || OpenPlayerJS.prototype.playAds) return;
 
     OpenPlayerJS.prototype.playAds = function (input: string) {
-      const core = typeof this.getPlayer === 'function' ? this.getPlayer() : this.player;
-      return core.playAds(input);
+      const core = typeof this.getCore === 'function' ? this.getCore() : null;
+      if (!core) throw new Error('Call player.init() before player.playAds()');
+      const plugin = typeof core.getPlugin === 'function' ? core.getPlugin('ads') : null;
+      if (!plugin) throw new Error('Ads plugin not installed');
+      const s = String(input ?? '').trim();
+      if (!s) throw new Error('playAds(input) requires a non-empty URL or VAST XML string');
+      if (s.startsWith('<')) return plugin.playAdsFromXml(s);
+      return plugin.playAds(s);
     };
   }
 

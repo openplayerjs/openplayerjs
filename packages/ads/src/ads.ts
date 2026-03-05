@@ -210,7 +210,9 @@ export class AdsPlugin implements PlayerPlugin {
 
     const sources = normalizeSources(config);
     const breaks = config.breaks || [];
-    const hasExplicitPreroll = breaks.some((b) => b.at === 'preroll' && b.source?.src);
+    const hasExplicitPreroll = breaks.some(
+      (b) => b.at === 'preroll' && (b.source?.src || (Array.isArray(b.sources) && b.sources.some((s) => s?.src)))
+    );
     const hasSourceVastOrVmap = sources.some((s) => s.type === 'VAST' || s.type === 'VMAP' || s.type === 'NONLINEAR');
 
     this.cfg = {
@@ -764,6 +766,18 @@ export class AdsPlugin implements PlayerPlugin {
         : { input: { kind: 'url', value: src }, sourceType: t };
     }
 
+    // Waterfall break: sources array. Use the first source as the representative
+    // input (for ID generation and single-source path in startBreak). The actual
+    // waterfall iteration happens in startBreak() when b.sources.length > 1.
+    const firstSource = Array.isArray(b.sources) ? b.sources[0] : undefined;
+    if (firstSource && typeof firstSource.src === 'string' && firstSource.src.trim()) {
+      const src = firstSource.src.trim();
+      const t = firstSource.type as AdsSourceType;
+      return this.isXmlString(src)
+        ? { input: { kind: 'xml', value: src }, sourceType: t }
+        : { input: { kind: 'url', value: src }, sourceType: t };
+    }
+
     return { input: undefined, sourceType: undefined };
   }
 
@@ -1018,6 +1032,9 @@ export class AdsPlugin implements PlayerPlugin {
     // Waterfall: multiple sources configured — try each in order, stop on first success.
     const waterfallSources = b.sources;
     if (waterfallSources && waterfallSources.length > 1) {
+      // Mark before starting so that any cmd:play emitted from within (e.g. non-linear resume)
+      // sees the break as played and does not trigger a re-entrant intercept.
+      if (once) this.playedBreaks.add(id);
       this.startingBreak = true;
       this.bus.emit('ads:break:start', { id, kind, at: b.at });
       try {
@@ -1037,8 +1054,6 @@ export class AdsPlugin implements PlayerPlugin {
           );
           if (success) break; // first valid source played — stop
         }
-        // Always mark as attempted to prevent infinite retry loops on broken sources.
-        this.playedBreaks.add(id);
       } finally {
         this.startingBreak = false;
         this.bus.emit('ads:break:end', { id, kind, at: b.at });
@@ -1050,13 +1065,14 @@ export class AdsPlugin implements PlayerPlugin {
     const { input, sourceType } = this.getVastInputFromBreak(b);
     if (!input) return;
 
+    // Mark before starting so that any cmd:play emitted from within (e.g. non-linear resume)
+    // sees the break as played and does not trigger a re-entrant intercept.
+    if (once) this.playedBreaks.add(id);
     this.startingBreak = true;
     this.bus.emit('ads:break:start', { id, kind, at: b.at });
 
     try {
       await this.playBreakFromVast(input, { kind, id, sourceType }, { suppressResumeOnSuccess: opts?.suppressResume });
-      // Always mark as attempted to prevent infinite retry loops on broken sources.
-      this.playedBreaks.add(id);
     } finally {
       this.startingBreak = false;
       this.bus.emit('ads:break:end', { id, kind, at: b.at });
@@ -2087,7 +2103,7 @@ export class AdsPlugin implements PlayerPlugin {
     v.className = 'op-ads__media';
     v.playsInline = true;
     const contentPreload = (contentMedia.getAttribute('preload') || contentMedia.preload || '').toLowerCase();
-    const isAutoplayPath = !!contentMedia.autoplay || contentPreload === 'auto';
+    const isAutoplayPath = !!contentMedia.autoplay;
 
     // Always force-mute ads on the autoplay path until the user has explicitly interacted.
     // Using cached autoplay-support results here is unreliable: the probe runs against the
@@ -2220,7 +2236,7 @@ export class AdsPlugin implements PlayerPlugin {
 
     this.sessionUnsubs.push(
       events.on('cmd:play', () => {
-        const wantsAutoplayPath = Boolean(this.contentMedia?.autoplay || this.contentMedia?.preload === 'auto');
+        const wantsAutoplayPath = Boolean(this.contentMedia?.autoplay);
         // Same reasoning as mountAdVideo: force-mute until first user interaction when on
         // the autoplay path, regardless of cached autoplay-support results.
         const shouldForceMute = !this.userPlayIntent && wantsAutoplayPath && !this.ctx.core.userInteracted;
@@ -2543,7 +2559,7 @@ export class AdsPlugin implements PlayerPlugin {
     const requestPayload = input.kind === 'url' ? input.value : '[xml]';
     this.bus.emit('ads:requested', requestPayload);
     this.log('requested', requestPayload, meta);
-    this.resumeAfter = this.cfg.resumeContent && meta.kind !== 'postroll';
+    this.resumeAfter = (this.cfg.resumeContent !== false) && meta.kind !== 'postroll';
 
     const pauseAndAcquireLease = () => {
       // Pause the underlying media element as well as emitting the logical event.

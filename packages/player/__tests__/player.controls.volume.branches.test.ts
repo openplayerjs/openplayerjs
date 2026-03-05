@@ -34,10 +34,14 @@ describe('VolumeControl branch coverage', () => {
     expect(c).toBeNull();
   });
 
-  test('updates icon branches and ignores ad element volume errors (try/catch)', () => {
+  test('updates icon branches and ignores ad element volume errors (try/catch)', async () => {
     (isMobile as unknown as jest.Mock).mockReturnValue(false);
 
     const p = makeCore();
+    // jest.useFakeTimers() also fakes queueMicrotask; run all timers then flush Promises
+    // so DefaultMediaEngine attaches and registers the cmd:setVolume handler.
+    jest.runAllTimers();
+    await Promise.resolve();
     const c = nn(createVolumeControl());
     const el = c.create(p);
     document.body.appendChild(el);
@@ -92,5 +96,11 @@ describe('VolumeControl branch coverage', () => {
     expect(p.media.volume).toBe(0);
     btn.click();
     expect(p.media.volume).toBeGreaterThan(0);
+
+    // Fire loadedmetadata and volumechange with the overlay active to cover the
+    // ad-element sync branches (lines 157-170 and 190-192 in volume.ts).
+    // badAdMedia.volume setter throws, which is silently caught.
+    p.events.emit('loadedmetadata');
+    p.events.emit('volumechange');
   });
 });

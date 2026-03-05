@@ -73,9 +73,6 @@ export class Core {
     } else {
       this._muted = this.media.muted;
     }
-
-    this._volume = initialVolume;
-    this._muted = initialVolume <= 0;
     this.media.playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
     this._playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
 
@@ -84,7 +81,7 @@ export class Core {
     this.bindMediaSync();
     this.bindLeaseSync();
     this.bindFirstInteraction();
-    this.maybeAutoLoad();
+    queueMicrotask(() => this.maybeAutoLoad());
   }
 
   on<E extends PlayerEvent>(event: E, cb: (payload?: any) => void) {
@@ -590,6 +587,9 @@ export class Core {
     if (sources.length === 0) return;
     this.detectedSources = sources;
 
+    // Capture autoplay intent before we clear the src attribute.
+    const wantsAutoplay = this.media.autoplay;
+
     try {
       const sources = this.media.querySelectorAll('source');
       sources.forEach((s) => s.remove());
@@ -597,6 +597,16 @@ export class Core {
       if (this.media.src) this.media.src = '';
 
       this.load();
+
+      if (wantsAutoplay) {
+        // Programmatic media.load() above resets the element and causes some browsers
+        // (notably Chromium) not to re-trigger native autoplay after the src is restored.
+        // Disable the autoplay attribute to prevent a native-vs-plugin race, then
+        // propagate the play intent through Core's event system so plugins (e.g. AdsPlugin)
+        // can intercept the preroll before content begins.
+        this.media.autoplay = false;
+        queueMicrotask(() => this.emit('cmd:play'));
+      }
     } catch {
       // best effort; don't block attach
     }

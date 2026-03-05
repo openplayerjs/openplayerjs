@@ -18,7 +18,7 @@ export type Control = {
   destroy?(): void;
 };
 
-const registry = new Map<string, () => Control>();
+const registry = new Map<string, () => Control | null>();
 
 function parsePlacement(key: string): ControlPlacement {
   if (key === 'main') {
@@ -81,7 +81,7 @@ export function createControlGrid(controlsRoot: HTMLElement, mainRoot?: HTMLElem
   };
 }
 
-export function registerControl(name: string, factory: () => Control) {
+export function registerControl(name: string, factory: () => Control | null) {
   registry.set(name, factory);
 }
 

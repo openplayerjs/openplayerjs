@@ -242,19 +242,22 @@
 .op-controls-layer__top,
 .op-controls-layer__center,
 .op-controls-layer__bottom,
-.op-controls__top,
-.op-controls__middle,
-.op-controls__bottom {
-    align-items: center;
-    display: flex;
-    width: 100%;
-}
 .op-controls__left,
-.op-controls__center,
-.op-controls__right,
-.op-controls__volume--container {
+.op-controls__middle,
+.op-controls__right {
     align-items: center;
     display: flex;
+}
+.op-controls-layer__top,
+.op-controls-layer__center,
+.op-controls-layer__bottom {
+  justify-content: space-between;
+}
+.op-controls-layer__top > *,
+.op-controls-layer__center > *,
+.op-controls-layer__bottom > * {
+  flex: 0 0 auto;
+  min-width: 0;
 }
 .op-controls button:hover {
     opacity: 0.5;
@@ -423,11 +426,17 @@
 .op-controls__volume {
     display: inline-block;
     height: 5px;
+    min-width: 0;
     pointer-events: all;
     position: relative;
 }
 
 /* === Progress bar =================== */
+.op-controls__left:has(.op-controls__progress),
+.op-controls__middle:has(.op-controls__progress),
+.op-controls__right:has(.op-controls__progress) {
+  flex: 1 1 0;
+}
 .op-controls__progress[aria-disabled="true"] progress {
     cursor: not-allowed;
     opacity: 0.8;
@@ -459,15 +468,14 @@
 }
 .op-controls .op-controls__progress {
     flex-grow: 2;
+    min-width: 0;
+    width: 100%;
 }
 .op-controls .op-controls__progress,
 .op-controls .op-controls__progress:hover,
 .op-controls .op-controls__volume,
 .op-controls .op-controls__volume:hover {
     cursor: pointer;
-}
-.op-player__video .op-controls__progress {
-    width: 100%;
 }
 
 .op-controls__progress--buffer::-webkit-progress-value {
@@ -572,6 +580,10 @@
 }
 
 /* === Volume =================== */
+.op-controls__volume--container {
+    align-items: center;
+    display: flex;
+}
 .op-controls__volume {
     margin-inline: 10px;
     margin-inline-start: 0;
