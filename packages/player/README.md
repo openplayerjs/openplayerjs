@@ -32,9 +32,9 @@ const video = document.querySelector<HTMLVideoElement>('#player')!;
 const core = new Core(video, { plugins: [] });
 
 const controls = buildControls({
+  top: ['progress'],
   'bottom-left': ['play', 'time', 'volume'],
-  right: ['captions', 'settings', 'fullscreen'],
-  'top-center': ['progress'],
+  'bottom-right': ['captions', 'settings', 'fullscreen'],
 });
 
 createUI(core, video, controls);
@@ -172,17 +172,31 @@ const player = new Player('video', {
 
 The UI ships a standalone CSS file. Import it once per application:
 
-### ESM
+### Bundler (Vite / webpack / esbuild) — recommended
+
+The package exposes a `./openplayer.css` export entry that resolves to `dist/openplayer.css` via the `exports` map in `package.json`. Use this path in any modern bundler:
 
 ```ts
-// Bundler (Vite / webpack / esbuild)
 import '@openplayerjs/player/openplayer.css';
 ```
 
-### UMD
+If your bundler does not support package `exports` (older webpack 4, some legacy setups), reference the `dist/` path directly:
+
+```ts
+import '@openplayerjs/player/dist/openplayer.css';
+```
+
+### CSS `@import` (CodePen, CSS entry files)
+
+In environments where you write CSS directly (a CodePen pen, a plain `.css` entry file, a `<style>` tag), use a regular CSS `@import` with the CDN URL:
+
+```css
+@import url('https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css');
+```
+
+### `<link>` tag (CDN / plain HTML)
 
 ```html
-<!-- CDN / plain HTML -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
 ```
 
