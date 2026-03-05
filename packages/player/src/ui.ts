@@ -93,7 +93,12 @@ export type PlayerUIContext = {
   grid?: ReturnType<typeof createControlGrid>;
 };
 
-export function createUI(core: Core, media: HTMLMediaElement, controls: Control[], options: { alwaysVisible?: boolean } = {}) {
+export function createUI(
+  core: Core,
+  media: HTMLMediaElement,
+  controls: Control[],
+  options: { alwaysVisible?: boolean } = {}
+) {
   const alwaysVisible = options.alwaysVisible === true;
   const ui = resolveUIConfig(core);
   media.tabIndex = -1;
@@ -154,7 +159,6 @@ export function createUI(core: Core, media: HTMLMediaElement, controls: Control[
   const controlsRoot = document.createElement('div');
   controlsRoot.className = 'op-controls';
   controlsRoot.setAttribute('aria-hidden', 'false');
-
   if (isMediaAudio) {
     const grid = createControlGrid(controlsRoot);
 

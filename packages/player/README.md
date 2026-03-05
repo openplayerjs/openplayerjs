@@ -285,28 +285,54 @@ createUI(player, video, controls);
 
 After `createUI` runs, the original media element is wrapped inside `.op-player`, the center overlay and control grid are injected, and each control's `create(player)` factory is called to render the buttons.
 
-### `buildControls(layout)`
+### `buildControls(config?)`
 
-Converts a layout config object into an array of `Control` instances that `createUI` can render.
+Converts a controls configuration into an array of `Control` instances that `createUI` can render. Calling it with no argument (or an empty object) applies the default layout automatically.
 
-The keys are position strings composed of a vertical slot (`top`, `center`/`middle`, `bottom`) and an optional horizontal slot (`left`, `center`, `right`) joined by a hyphen. Each key maps to an array of built-in control IDs or IDs registered via `registerControl`.
+`buildControls` accepts **three equivalent formats**:
+
+**Default** — omit the argument entirely:
+
+```ts
+const controls = buildControls(); // progress on top, play/time/volume left, captions/settings/fullscreen right
+```
+
+**Flat format** — explicit slot keys (`top`, `bottom-left`, `bottom-right`, …):
+
+```ts
+const controls = buildControls({
+  top:            ['progress'],
+  'bottom-left':  ['play', 'time', 'volume'],
+  'bottom-right': ['captions', 'settings', 'fullscreen'],
+});
+```
+
+**Layers format** — semantic `left / middle / right` keys (maps to `bottom-left / top / bottom-right`):
+
+```ts
+const controls = buildControls({
+  layers: {
+    left:   ['play', 'time', 'volume'],
+    middle: ['progress'],
+    right:  ['captions', 'settings', 'fullscreen'],
+  },
+});
+```
+
+Non-array properties (e.g. `alwaysVisible`) are silently ignored by `buildControls` so you can pass the same config object to both `buildControls` and `createUI`:
 
 ```ts
 import { buildControls, createUI } from '@openplayerjs/player';
 
-const controls = buildControls({
-  // Seek bar spanning the full width above the bottom bar
-  'top-left': ['progress'],
+const config = {
+  layers: { left: ['play', 'volume'], middle: ['progress'], right: ['fullscreen'] },
+  alwaysVisible: true,
+};
 
-  // Bottom-left: play button, combined time display, volume
-  'bottom-left': ['play', 'time', 'volume'],
-
-  // Bottom-right: captions toggle, settings menu, fullscreen
-  'bottom-right': ['captions', 'settings', 'fullscreen'],
-});
-
-createUI(core, video, controls);
+createUI(core, video, buildControls(config), { alwaysVisible: config.alwaysVisible });
 ```
+
+The slot key format is a vertical position (`top`, `center`/`middle`, `bottom`) optionally joined with a horizontal position (`left`, `center`, `right`) by a hyphen. Each slot maps to an array of built-in control IDs or IDs registered via `registerControl`.
 
 Valid vertical slots: `top`, `center` (alias `middle`), `bottom`.
 Valid horizontal slots: `left`, `center` (alias `middle`), `right`.

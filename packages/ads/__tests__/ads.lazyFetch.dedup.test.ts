@@ -79,9 +79,8 @@ function makeCtx(media?: HTMLVideoElement) {
 
     dispose,
     add: (d) => dispose.add(d),
-    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
-    listen: (target: any, type: any, handler: any, options?: any) =>
-      dispose.addEventListener(target, type, handler, options),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
+    listen: (target, type, handler, options) => dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, video, lease };
@@ -487,7 +486,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 20, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker: any = (p as any).tracker;
+    const tracker = (p as any).tracker;
     expect(tracker).toBeTruthy();
 
     adVideo!.dispatchEvent(new Event('playing'));
@@ -517,7 +516,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 40, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker: any = (p as any).tracker;
+    const tracker = (p as any).tracker;
     expect(tracker).toBeTruthy();
 
     // 0% (playing event emits quartile 0)
@@ -572,7 +571,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 30, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker: any = (p as any).tracker;
+    const tracker = (p as any).tracker;
     expect(tracker).toBeTruthy();
 
     adVideo!.currentTime = 5;
@@ -599,23 +598,23 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 20, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker: any = (p as any).tracker;
+    const tracker = (p as any).tracker;
     expect(tracker).toBeTruthy();
 
     // Mute: was unmuted (muted=false, volume>0), now mute
-    (adVideo as any).muted = true;
+    adVideo!.muted = true;
     adVideo!.dispatchEvent(new Event('volumechange'));
     expect(tracker.trackMute).toHaveBeenCalledTimes(1);
     expect(tracker.trackUnmute).not.toHaveBeenCalled();
 
     // Unmute
-    (adVideo as any).muted = false;
-    (adVideo as any).volume = 0.8;
+    adVideo!.muted = false;
+    adVideo!.volume = 0.8;
     adVideo!.dispatchEvent(new Event('volumechange'));
     expect(tracker.trackUnmute).toHaveBeenCalledTimes(1);
 
     // Muting again
-    (adVideo as any).muted = true;
+    adVideo!.muted = true;
     adVideo!.dispatchEvent(new Event('volumechange'));
     expect(tracker.trackMute).toHaveBeenCalledTimes(2);
 
@@ -636,7 +635,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     expect(adVideo).toBeTruthy();
 
     // trackImpression must be called synchronously after ad mount (before any events fire).
-    const tracker: any = (p as any).tracker;
+    const tracker = (p as any).tracker;
     expect(tracker).toBeTruthy();
     expect(tracker.trackImpression).toHaveBeenCalledTimes(1);
 

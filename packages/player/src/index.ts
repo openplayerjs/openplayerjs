@@ -18,7 +18,7 @@ export { defaultLabels, defaultUIConfiguration, resolveUIConfig } from './config
 export type { PlayerUIConfig, ResolvedUIConfig } from './configuration';
 
 // ─── Control system ──────────────────────────────────────────────────────────
-export { buildControls, createControlGrid, registerControl } from './control';
+export { buildControls, createControlGrid, normalizeControlsConfig, registerControl, DEFAULT_CONTROLS } from './control';
 export type { Control, ControlPlacement, HorizontalSlot, VerticalSlot } from './control';
 
 // ─── Instance-level extensions (adds player.controls) ────────────────────────

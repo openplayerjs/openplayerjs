@@ -47,14 +47,13 @@ function makeCtx(video?: HTMLVideoElement) {
 
   const ctx: PluginContext = {
     core: { media } as unknown as Core,
-    events: bus as any,
+    events: bus,
     state: new StateManager('playing'),
     leases: lease.leases,
     dispose,
-    add: (d) => dispose.add(d as any),
-    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
-    listen: (target: any, type: any, handler: any, options?: any) =>
-      dispose.addEventListener(target, type, handler, options),
+    add: (d) => dispose.add(d),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
+    listen: (target, type, handler, options) => dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, media, lease };
@@ -119,7 +118,7 @@ describe('AdsPlugin – source:set resets ad state', () => {
     (plugin as any).ctx.leases.acquire('playback', 'ads');
 
     // Trigger source switch
-    bus.emit('source:set' as any);
+    bus.emit('source:set');
     await Promise.resolve();
 
     expect((plugin as any).active).toBe(false);
@@ -139,7 +138,7 @@ describe('AdsPlugin – source:set resets ad state', () => {
     // Manually show overlay (simulates mid-ad state)
     (plugin as any).overlay.style.display = 'block';
 
-    bus.emit('source:set' as any);
+    bus.emit('source:set');
     await Promise.resolve();
 
     expect((plugin as any).overlay.style.display).toBe('none');
@@ -157,7 +156,7 @@ describe('AdsPlugin – source:set resets ad state', () => {
     // Simulate: ad was playing, active is stuck
     (plugin as any).active = true;
 
-    bus.emit('source:set' as any);
+    bus.emit('source:set');
     await Promise.resolve();
 
     // shouldInterceptPreroll should now return true (not blocked by active)
@@ -176,7 +175,7 @@ describe('AdsPlugin – source:set resets ad state', () => {
     // Simulate a completed preroll in playedBreaks
     (plugin as any).playedBreaks.add('preroll:VAST:https://ad.example.com/vast1');
 
-    bus.emit('source:set' as any);
+    bus.emit('source:set');
     await Promise.resolve();
 
     expect((plugin as any).playedBreaks.size).toBe(0);
@@ -258,7 +257,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
 
     const { ctx, bus } = makeCtx();
     const events: string[] = [];
-    bus.on('ads:error' as any, () => events.push('ads:error'));
+    bus.on('ads:error', () => events.push('ads:error'));
 
     const plugin = new AdsPlugin({
       adSourcesMode: 'waterfall',
@@ -318,7 +317,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     plugin.setup(ctx);
 
     // resolvedBreaks should have one break WITHOUT a sources array (single-source path)
-    const breaks: any[] = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as any).resolvedBreaks;
     expect(breaks).toHaveLength(1);
     expect(breaks[0].sources).toBeUndefined();
     expect(breaks[0].source.src).toBe('https://ad1.example.com/vast');
@@ -337,7 +336,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     });
     plugin.setup(ctx);
 
-    const breaks: any[] = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as any).resolvedBreaks;
     expect(breaks).toHaveLength(1);
     expect(breaks[0].at).toBe('preroll');
     expect(breaks[0].sources).toHaveLength(2);
@@ -376,7 +375,7 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     });
     plugin.setup(ctx);
 
-    const breaks: any[] = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as any).resolvedBreaks;
     expect(breaks).toHaveLength(3);
     expect(breaks[0].source.src).toBe('https://ad1.example.com/vast');
     expect(breaks[1].source.src).toBe('https://ad2.example.com/vast');
@@ -401,7 +400,7 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     });
     plugin.setup(ctx);
 
-    const breaks: any[] = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as any).resolvedBreaks;
     const id0 = (plugin as any).getBreakId(breaks[0]);
     const id1 = (plugin as any).getBreakId(breaks[1]);
     expect(id0).not.toBe(id1);
@@ -448,7 +447,7 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     plugin.setup(ctx);
 
     // VMAP is handled separately; only VAST sources become playlist breaks
-    const breaks: any[] = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as any).resolvedBreaks;
     const vastBreaks = breaks.filter((b: any) => b.source?.type !== 'VMAP');
     expect(vastBreaks).toHaveLength(2);
   });

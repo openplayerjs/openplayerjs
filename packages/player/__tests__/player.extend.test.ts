@@ -41,7 +41,7 @@ describe('extendControls', () => {
       const el = document.createElement('div');
 
       const received: AddElementPayload[] = [];
-      player.events.on('ui:addElement', (payload: any) => received.push(payload as AddElementPayload));
+      player.events.on('ui:addElement', (payload) => received.push(payload as AddElementPayload));
 
       const result = api.addElement(el);
 
@@ -57,7 +57,7 @@ describe('extendControls', () => {
       const el = document.createElement('div');
 
       const received: AddElementPayload[] = [];
-      player.events.on('ui:addElement', (payload: any) => received.push(payload as AddElementPayload));
+      player.events.on('ui:addElement', (payload) => received.push(payload as AddElementPayload));
 
       api.addElement(el, { v: 'top', h: 'left' });
 
@@ -87,7 +87,7 @@ describe('extendControls', () => {
         create: jest.fn(() => resultEl),
       };
 
-      player.events.on('ui:addControl', (payload: any) => {
+      player.events.on('ui:addControl', (payload) => {
         (payload as AddControlPayload).el = resultEl;
       });
 

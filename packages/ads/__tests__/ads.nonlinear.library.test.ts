@@ -25,7 +25,7 @@ function makeLibraryParsed(
     minSuggestedDuration?: number;
   } = {}
 ) {
-  const nonLinearVariation: any = {
+  const nonLinearVariation = {
     staticResource: opts.staticResource ?? 'https://example.com/overlay.png',
     nonlinearClickThroughURLTemplate: opts.nonlinearClickThrough ?? 'https://example.com/click',
     minSuggestedDuration: opts.minSuggestedDuration ?? 5,
@@ -53,10 +53,10 @@ function makeLibraryParsed(
 
 describe('non-linear library path: collectNonLinearCreatives', () => {
   test('finds non-linear items from creative.type=nonlinear + variations[]', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     const parsed = makeLibraryParsed();
 
-    const items: any[] = (plugin as any).collectNonLinearCreatives(parsed);
+    const items = (plugin as any).collectNonLinearCreatives(parsed);
 
     expect(items).toHaveLength(1);
     expect(items[0].nonLinear.staticResource).toBe('https://example.com/overlay.png');
@@ -65,27 +65,27 @@ describe('non-linear library path: collectNonLinearCreatives', () => {
   });
 
   test('does not return companion creatives as non-linear items', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     const parsed = makeLibraryParsed();
 
-    const items: any[] = (plugin as any).collectNonLinearCreatives(parsed);
+    const items = (plugin as any).collectNonLinearCreatives(parsed);
 
     // Only 1 item: the nonlinear variation (not the companion)
     expect(items).toHaveLength(1);
   });
 
   test('returns empty array when no non-linear creatives present', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     const parsed = { ads: [{ sequence: '1', creatives: [{ type: 'linear', variations: [] }] }] };
 
-    const items: any[] = (plugin as any).collectNonLinearCreatives(parsed);
+    const items = (plugin as any).collectNonLinearCreatives(parsed);
     expect(items).toHaveLength(0);
   });
 });
 
 describe('non-linear library path: renderNonLinear', () => {
   test('renders staticResource URL from library NonLinearAd (plain string)', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     const nl = {
       staticResource: 'https://example.com/overlay.png',
       nonlinearClickThroughURLTemplate: 'https://example.com/click',
@@ -98,7 +98,7 @@ describe('non-linear library path: renderNonLinear', () => {
   });
 
   test('resolves click-through from nonlinearClickThroughURLTemplate (lowercase variant)', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     // Simulate attaching so sessionUnsubs exists
     (plugin as any).sessionUnsubs = [];
 
@@ -113,7 +113,7 @@ describe('non-linear library path: renderNonLinear', () => {
   });
 
   test('resolves click-through from nonLinearClickThrough (XML path fallback)', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     (plugin as any).sessionUnsubs = [];
 
     const nl = {
@@ -128,7 +128,7 @@ describe('non-linear library path: renderNonLinear', () => {
 
 describe('non-linear library path: renderCompanion', () => {
   test('renders staticResources[0].url from library CompanionAd', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     (plugin as any).sessionUnsubs = [];
 
     const companion = {
@@ -146,7 +146,7 @@ describe('non-linear library path: renderCompanion', () => {
   });
 
   test('renders staticResource.value (XML path)', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     (plugin as any).sessionUnsubs = [];
 
     const companion = {
@@ -162,7 +162,7 @@ describe('non-linear library path: renderCompanion', () => {
   });
 
   test('returns null when no resource is provided', () => {
-    const plugin = new AdsPlugin({} as any);
+    const plugin = new AdsPlugin({});
     (plugin as any).sessionUnsubs = [];
 
     const el: HTMLElement | null = (plugin as any).renderCompanion({});

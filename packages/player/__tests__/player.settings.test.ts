@@ -24,7 +24,7 @@ function addTextTracks(media: HTMLVideoElement, tracks: { label: string; kind?: 
     length: tracks.length,
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    item: (i: number) => (list as any)[i] ?? null,
+    item: (i: number) => list[i] ?? null,
   } as unknown as TextTrackList & Record<number, TextTrack>;
   tracks.forEach((t, i) => {
     (list as Record<number, TextTrack>)[i] = {
@@ -102,7 +102,7 @@ describe('Settings control + registry', () => {
   test('Captions submenu "Off" item disables all tracks', () => {
     const p = makeCore();
     const trackList = addTextTracks(p.media as HTMLVideoElement, [{ label: 'English', kind: 'captions' }]);
-    (trackList as any)[0].mode = 'showing';
+    trackList[0].mode = 'showing';
 
     createCaptionsControl().create(p);
     const settings = createSettingsControl().create(p) as HTMLDivElement;

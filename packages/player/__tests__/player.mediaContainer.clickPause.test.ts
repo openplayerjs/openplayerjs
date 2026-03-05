@@ -25,8 +25,8 @@ function setupVideoCore() {
   const playSpy = jest.fn(async () => {
     player.events.emit('playing');
   });
-  player.pause = pauseSpy as any;
-  player.play = playSpy as any;
+  player.pause = pauseSpy;
+  player.play = playSpy;
 
   createUI(player, player.media, []);
 
@@ -102,7 +102,7 @@ describe('mediaContainer click-to-pause – video UI', () => {
       duration: 30,
       value: 30,
       canSeek: false,
-      fullscreenVideoEl: adVideo as any,
+      fullscreenVideoEl: adVideo,
     });
 
     Object.defineProperty(player.media, 'paused', { value: false, configurable: true });
@@ -217,7 +217,7 @@ describe('mediaContainer click-to-pause – audio UI (excluded)', () => {
 
     const player = new Core(audio, { plugins: [] });
     const pauseSpy = jest.fn();
-    player.pause = pauseSpy as any;
+    player.pause = pauseSpy;
 
     createUI(player, player.media, []);
 

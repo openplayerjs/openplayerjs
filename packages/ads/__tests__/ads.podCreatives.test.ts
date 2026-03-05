@@ -16,27 +16,26 @@ function makeLeases(): Lease {
     if (owners.get(capability) === who) owners.delete(capability);
   });
   const owner = jest.fn<string | undefined, [string]>((capability) => owners.get(capability));
-  return { acquire, release, owner } as any;
+  return { acquire, release, owner } as unknown as Lease;
 }
 
 function makeCtx() {
   const bus = new EventBus();
   const video = document.createElement('video');
   const dispose = new DisposableStore();
-  bus.on('playback:pause', () => (video as any).pause());
-  bus.on('playback:play', () => void (video as any).play());
+  bus.on('playback:pause', () => video.pause());
+  bus.on('playback:play', () => video.play());
 
   const ctx: PluginContext = {
     core: { media: video } as unknown as Core,
-    events: bus as any,
+    events: bus,
     state: new StateManager('playing'),
     leases: makeLeases(),
 
     dispose,
-    add: (d) => dispose.add(d as any),
-    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
-    listen: (target: any, type: any, handler: any, options?: any) =>
-      dispose.addEventListener(target, type, handler, options),
+    add: (d) => dispose.add(d),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
+    listen: (target, type, handler, options) => dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, video };
@@ -226,7 +225,7 @@ describe('AdsPlugin pod playback: multiple linear creatives inside one <Ad>', ()
     p.setup(ctx);
 
     // Trigger a manual VAST ad break.
-    void (p as any).playAds('https://example.com/vast');
+    void p.playAds('https://example.com/vast');
 
     const first = await waitForAdVideo();
     expect(first.src).toContain('bumper.mp4');
@@ -255,7 +254,7 @@ describe('AdsPlugin pod playback: multiple linear creatives inside one <Ad>', ()
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true });
     p.setup(ctx);
 
-    void (p as any).playAds('https://example.com/vast');
+    p.playAds('https://example.com/vast');
 
     const first = await waitForAdVideo();
     expect(first.src).toContain('full.mp4');
@@ -274,7 +273,7 @@ describe('AdsPlugin pod playback: multiple linear creatives inside one <Ad>', ()
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true });
     p.setup(ctx);
 
-    void (p as any).playAds('https://example.com/vast');
+    p.playAds('https://example.com/vast');
 
     const v1 = await waitForAdVideo();
     expect(v1.src).toContain('ad1-bumper.mp4');
@@ -297,7 +296,7 @@ describe('AdsPlugin pod playback: multiple linear creatives inside one <Ad>', ()
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: true });
     p.setup(ctx);
 
-    void (p as any).playAds('https://example.com/vast');
+    p.playAds('https://example.com/vast');
 
     const v1 = await waitForAdVideo();
     expect(v1.src).toContain('ad1-only.mp4');

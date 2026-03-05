@@ -6,7 +6,15 @@ import { createUI } from '../src/ui';
 
 // Isolate the UI-creation side-effects so the tests focus on delegation.
 jest.mock('../src/ui', () => ({ createUI: jest.fn() }));
-jest.mock('../src/control', () => ({ buildControls: jest.fn(() => []), registerControl: jest.fn() }));
+jest.mock('../src/control', () => {
+  const actual = jest.requireActual('../src/control');
+  return {
+    buildControls: jest.fn(() => []),
+    registerControl: jest.fn(),
+    normalizeControlsConfig: actual.normalizeControlsConfig,
+    DEFAULT_CONTROLS: actual.DEFAULT_CONTROLS,
+  };
+});
 jest.mock('../src/extend', () => ({ extendControls: jest.fn() }));
 
 describe('UMD Player — set src', () => {
@@ -232,5 +240,220 @@ describe('UMD Player — controls configuration', () => {
       expect.anything(),
       { alwaysVisible: false }
     );
+  });
+});
+
+describe('UMD Player — currentTime / duration', () => {
+  let media: HTMLVideoElement;
+
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    media = document.createElement('video');
+    media.src = 'https://example.com/video.mp4';
+    document.body.appendChild(media);
+    delete (window as any).OpenPlayerPlugins;
+  });
+
+  test('currentTime getter returns 0 before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(umdPlayer.currentTime).toBe(0);
+  });
+
+  test('currentTime getter delegates to CorePlayer after init()', async () => {
+    const umdPlayer = new Player(media);
+    const corePlayer = await umdPlayer.init();
+
+    corePlayer.events.emit('loadedmetadata');
+    // Advance time via the core directly
+    corePlayer.events.emit('timeupdate');
+    Object.defineProperty(media, 'currentTime', { value: 12, configurable: true });
+    corePlayer.events.emit('timeupdate');
+
+    expect(umdPlayer.currentTime).toBe(corePlayer.currentTime);
+  });
+
+  test('currentTime setter delegates to CorePlayer after init()', async () => {
+    const umdPlayer = new Player(media);
+    const corePlayer = await umdPlayer.init();
+
+    const seekHandler = jest.fn();
+    corePlayer.events.on('cmd:seek', seekHandler);
+
+    umdPlayer.currentTime = 30;
+
+    expect(seekHandler).toHaveBeenCalledWith(30);
+  });
+
+  test('currentTime setter throws before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(() => { umdPlayer.currentTime = 5; }).toThrow('OpenPlayer.currentTime must be set after init()');
+  });
+
+  test('duration getter returns 0 before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(umdPlayer.duration).toBe(0);
+  });
+
+  test('duration getter delegates to CorePlayer after init()', async () => {
+    const umdPlayer = new Player(media);
+    const corePlayer = await umdPlayer.init();
+
+    corePlayer.events.emit('loadedmetadata');
+    Object.defineProperty(media, 'duration', { value: 120, configurable: true });
+    corePlayer.events.emit('durationchange');
+
+    expect(umdPlayer.duration).toBe(corePlayer.duration);
+  });
+});
+
+describe('UMD Player — src getter', () => {
+  let media: HTMLVideoElement;
+
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    media = document.createElement('video');
+    document.body.appendChild(media);
+    delete (window as any).OpenPlayerPlugins;
+  });
+
+  test('returns empty string before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(umdPlayer.src).toBe('');
+  });
+
+  test('reflects the value set via the setter after init()', async () => {
+    const umdPlayer = new Player(media);
+    await umdPlayer.init();
+
+    umdPlayer.src = 'https://example.com/clip.mp4';
+
+    expect(umdPlayer.src).toBe('https://example.com/clip.mp4');
+  });
+});
+
+describe('UMD Player — volume', () => {
+  let media: HTMLVideoElement;
+
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    media = document.createElement('video');
+    media.src = 'https://example.com/video.mp4';
+    document.body.appendChild(media);
+    delete (window as any).OpenPlayerPlugins;
+  });
+
+  test('getter returns 1 before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(umdPlayer.volume).toBe(1);
+  });
+
+  test('setter throws before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(() => { umdPlayer.volume = 0.5; }).toThrow('OpenPlayer.volume must be set after init()');
+  });
+
+  test('setter delegates to CorePlayer and getter reflects the new value', async () => {
+    const umdPlayer = new Player(media);
+    const corePlayer = await umdPlayer.init();
+
+    const volumeHandler = jest.fn();
+    corePlayer.events.on('cmd:setVolume', volumeHandler);
+
+    umdPlayer.volume = 0.6;
+
+    expect(volumeHandler).toHaveBeenCalledWith(0.6);
+    expect(umdPlayer.volume).toBe(corePlayer.volume);
+  });
+
+  test('setter clamps value to [0, 1] via CorePlayer', async () => {
+    const umdPlayer = new Player(media);
+    await umdPlayer.init();
+
+    umdPlayer.volume = 2;
+    expect(umdPlayer.volume).toBe(1);
+
+    umdPlayer.volume = -1;
+    expect(umdPlayer.volume).toBe(0);
+  });
+});
+
+describe('UMD Player — muted', () => {
+  let media: HTMLVideoElement;
+
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    media = document.createElement('video');
+    media.src = 'https://example.com/video.mp4';
+    document.body.appendChild(media);
+    delete (window as any).OpenPlayerPlugins;
+  });
+
+  test('getter returns false before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(umdPlayer.muted).toBe(false);
+  });
+
+  test('setter throws before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(() => { umdPlayer.muted = true; }).toThrow('OpenPlayer.muted must be set after init()');
+  });
+
+  test('setter delegates to CorePlayer and getter reflects the new value', async () => {
+    const umdPlayer = new Player(media);
+    const corePlayer = await umdPlayer.init();
+
+    const muteHandler = jest.fn();
+    corePlayer.events.on('cmd:setMuted', muteHandler);
+
+    umdPlayer.muted = true;
+
+    expect(muteHandler).toHaveBeenCalledWith(true);
+    expect(umdPlayer.muted).toBe(true);
+
+    umdPlayer.muted = false;
+    expect(umdPlayer.muted).toBe(false);
+  });
+});
+
+describe('UMD Player — playbackRate', () => {
+  let media: HTMLVideoElement;
+
+  beforeEach(() => {
+    document.body.innerHTML = '';
+    media = document.createElement('video');
+    media.src = 'https://example.com/video.mp4';
+    document.body.appendChild(media);
+    delete (window as any).OpenPlayerPlugins;
+  });
+
+  test('getter returns 1 before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(umdPlayer.playbackRate).toBe(1);
+  });
+
+  test('setter throws before init()', () => {
+    const umdPlayer = new Player(media);
+    expect(() => { umdPlayer.playbackRate = 2; }).toThrow('OpenPlayer.playbackRate must be set after init()');
+  });
+
+  test('setter delegates to CorePlayer and getter reflects the new value', async () => {
+    const umdPlayer = new Player(media);
+    const corePlayer = await umdPlayer.init();
+
+    const rateHandler = jest.fn();
+    corePlayer.events.on('cmd:setRate', rateHandler);
+
+    umdPlayer.playbackRate = 1.5;
+
+    expect(rateHandler).toHaveBeenCalledWith(1.5);
+    expect(umdPlayer.playbackRate).toBe(corePlayer.playbackRate);
+  });
+
+  test('supports values below 1 (slow motion)', async () => {
+    const umdPlayer = new Player(media);
+    await umdPlayer.init();
+
+    umdPlayer.playbackRate = 0.5;
+    expect(umdPlayer.playbackRate).toBe(0.5);
   });
 });

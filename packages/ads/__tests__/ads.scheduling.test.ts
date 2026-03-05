@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import VMAP from '@dailymotion/vmap';
-import type { Core, PluginContext } from '@openplayerjs/core';
+import type { Core, Lease, PluginContext } from '@openplayerjs/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
@@ -18,13 +18,12 @@ function makeCtx() {
     events: bus,
     // Preroll interception is only enabled in idle/ready/loading.
     state: new StateManager('ready'),
-    leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as any,
+    leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as unknown as Lease,
 
     dispose,
-    add: (d) => dispose.add(d as any),
-    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
-    listen: (target: any, type: any, handler: any, options?: any) =>
-      dispose.addEventListener(target, type, handler, options),
+    add: (d) => dispose.add(d),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
+    listen: (target, type, handler, options) => dispose.addEventListener(target, type, handler, options),
   };
   return { ctx, bus, video };
 }
@@ -64,7 +63,7 @@ function linearParsed(timeOffset = '00:00:00') {
     xml: null,
     // VMAP uses this for determining break start; we attach on the break config in plugin anyway.
     timeOffset,
-  } as any;
+  };
 
   // When AdsPlugin is given a URL source, it uses VASTClient.get(), which in the
   // @dailymotion/vast-client library resolves to a parsed VAST response object.
@@ -91,8 +90,8 @@ describe('AdsPlugin scheduling', () => {
     });
     plugin.setup(ctx);
 
-    ctx.events.emit('source:set' as any);
-    ctx.events.emit('cmd:play' as any);
+    ctx.events.emit('source:set');
+    ctx.events.emit('cmd:play');
 
     await flushPromises(10);
     expect(vastGetMock).toHaveBeenCalledTimes(1);
@@ -121,7 +120,7 @@ describe('AdsPlugin scheduling', () => {
     const plugin = new AdsPlugin({ sources: [{ type: 'VMAP', src: '<vmap />' }], breaks: [] });
     plugin.setup(ctx);
 
-    ctx.events.emit('source:set' as any);
+    ctx.events.emit('source:set');
     await flushPromises(5);
 
     // Pending break should be queued.
@@ -146,8 +145,8 @@ describe('AdsPlugin scheduling', () => {
     plugin.setup(ctx);
 
     // First content source
-    ctx.events.emit('source:set' as any);
-    ctx.events.emit('cmd:play' as any);
+    ctx.events.emit('source:set');
+    ctx.events.emit('cmd:play');
     await flushPromises(10);
     let ad = null as HTMLVideoElement | null;
     for (let i = 0; i < 25; i++) {
@@ -172,8 +171,8 @@ describe('AdsPlugin scheduling', () => {
     expect(document.querySelector('video.op-ads__media')).toBeFalsy();
 
     // New content source -> should allow preroll again
-    ctx.events.emit('source:set' as any);
-    ctx.events.emit('cmd:play' as any);
+    ctx.events.emit('source:set');
+    ctx.events.emit('cmd:play');
     await flushPromises(10);
     let ad2: HTMLVideoElement | null = null;
     for (let i = 0; i < 25; i++) {

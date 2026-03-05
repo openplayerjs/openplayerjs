@@ -14,11 +14,11 @@ function makeCore() {
   // spy play/pause
   p.play = jest.fn(async () => {
     p.events.emit('playing');
-  }) as any;
+  });
   p.pause = jest.fn(() => {
     p.emit('cmd:pause');
     p.events.emit('pause');
-  }) as any;
+  });
   return p;
 }
 

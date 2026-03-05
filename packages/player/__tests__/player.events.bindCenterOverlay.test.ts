@@ -26,7 +26,7 @@ describe('ui/events - bindCenterOverlay', () => {
     expect(wrapper.classList.contains('op-player__keyboard--inactive')).toBe(false);
 
     // JSDOM may not provide PointerEvent; fall back to MouseEvent.
-    const PE: any = (globalThis as any).PointerEvent ?? MouseEvent;
+    const PE = globalThis.PointerEvent ?? MouseEvent;
     wrapper.dispatchEvent(new PE('pointerdown', { bubbles: true }));
     expect(wrapper.classList.contains('op-player__keyboard--inactive')).toBe(true);
   });
@@ -74,7 +74,7 @@ describe('ui/events - bindCenterOverlay', () => {
       duration: 10,
       value: 0,
       canSeek: true,
-      fullscreenVideoEl: overlayVideo as any,
+      fullscreenVideoEl: overlayVideo,
     });
 
     bindCenterOverlay(player, wrapper);
@@ -122,7 +122,7 @@ describe('ui/events - bindCenterOverlay', () => {
 
     bindCenterOverlay(player, wrapper);
 
-    const target = document.createElement('div') as any;
+    const target = document.createElement('div');
     target.requestFullscreen = jest.fn();
     const e = new KeyboardEvent('keydown', { key: 'f', bubbles: true, cancelable: true });
     Object.defineProperty(e, 'target', { value: target });
@@ -168,7 +168,7 @@ describe('ui/events - bindCenterOverlay', () => {
     document.body.innerHTML = '';
     const media = document.createElement('video');
     document.body.appendChild(media);
-    const player = new Core(media, { duration: Infinity as any });
+    const player = new Core(media, { duration: Infinity });
     player.currentTime = 12;
 
     const wrapper = document.createElement('div');

@@ -45,7 +45,7 @@ function makeLeases(): {
     owners.get(capability)
   ) as unknown as jest.MockedFunction<(capability: string) => string | undefined>;
 
-  return { leases: { acquire, release, owner } as any, acquire, release, owner };
+  return { leases: { acquire, release, owner } as unknown as Lease, acquire, release, owner };
 }
 
 function makeCtx(media?: HTMLVideoElement) {
@@ -54,22 +54,21 @@ function makeCtx(media?: HTMLVideoElement) {
   const dispose = new DisposableStore();
 
   // Simulate player reacting to playback bus events.
-  bus.on('cmd:pause', () => (video as any).pause());
-  bus.on('cmd:play', () => void (video as any).play());
+  bus.on('cmd:pause', () => video.pause());
+  bus.on('cmd:play', () => video.play());
 
   const lease = makeLeases();
 
   const ctx: PluginContext = {
     core: { media: video } as unknown as Core,
-    events: bus as any,
+    events: bus,
     state: new StateManager('playing'),
     leases: lease.leases,
 
     dispose,
-    add: (d) => dispose.add(d as any),
-    on: (event: any, cb: any) => dispose.add(bus.on(event, cb)),
-    listen: (target: any, type: any, handler: any, options?: any) =>
-      dispose.addEventListener(target, type, handler, options),
+    add: (d) => dispose.add(d),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
+    listen: (target, type, handler, options) => dispose.addEventListener(target, type, handler, options),
   };
 
   return { ctx, bus, video, lease };
@@ -216,7 +215,7 @@ describe('AdsPlugin (ultimate patch)', () => {
     for (let i = 0; i < 5; i++) await Promise.resolve();
 
     // Linear breaks pause and acquire lease
-    expect((video as any).pause).toHaveBeenCalled();
+    expect(video.pause).toHaveBeenCalled();
     expect(lease.acquire).toHaveBeenCalledWith('playback', 'ads');
 
     const skipBtn = document.querySelector('button.op-ads__skip-btn') as HTMLButtonElement;
@@ -233,7 +232,7 @@ describe('AdsPlugin (ultimate patch)', () => {
     adVideo.dispatchEvent(new Event('timeupdate'));
     expect(skipBtn.textContent).toBe('Skip Ad');
 
-    const skipped: any[] = [];
+    const skipped = [];
     (p as any).bus.on('ads:skip', (payload: any) => skipped.push(payload));
 
     skipBtn.click();
@@ -309,9 +308,9 @@ describe('AdsPlugin (ultimate patch)', () => {
     const { ctx, video } = makeCtx();
 
     // Mock content textTracks (jsdom does not implement them).
-    const t0: any = { kind: 'captions', language: 'en', label: 'English', mode: 'showing' };
-    const t1: any = { kind: 'captions', language: 'es', label: 'Español', mode: 'disabled' };
-    const list: any = { length: 2, 0: t0, 1: t1 };
+    const t0 = { kind: 'captions', language: 'en', label: 'English', mode: 'showing' };
+    const t1 = { kind: 'captions', language: 'es', label: 'Español', mode: 'disabled' };
+    const list = { length: 2, 0: t0, 1: t1 };
     Object.defineProperty(video, 'textTracks', { value: list, configurable: true });
 
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
@@ -347,8 +346,8 @@ describe('AdsPlugin (ultimate patch)', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    const errors: any[] = [];
-    (ctx.events as any).on('ads:error', (e: any) => errors.push(e));
+    const errors = [];
+    ctx.events.on('ads:error', (e) => errors.push(e));
 
     await p.playAds('https://example.com/vast.xml');
 

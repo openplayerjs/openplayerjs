@@ -74,7 +74,7 @@ describe('Media engines', () => {
     events.emit('cmd:setRate', 1.25);
     expect(media.playbackRate).toBe(1.25);
 
-    const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined as any);
+    const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined);
     const pauseSpy = jest.spyOn(media, 'pause').mockImplementation(() => {
       //
     });
@@ -105,18 +105,18 @@ describe('Media engines', () => {
   test('DefaultMediaEngine canPlay uses canPlayType', () => {
     const engine = new DefaultMediaEngine();
     const source = { src: 'x.mp4', type: 'video/mp4' };
-    expect(engine.canPlay(source as any)).toBe(true);
+    expect(engine.canPlay(source)).toBe(true);
   });
 
   test('HlsMediaEngine canPlay and attaches adapter', async () => {
     const engine = new HlsMediaEngine({ debug: true });
     const { media, events, core } = makeCtx();
     const src = { src: 'https://x/y.m3u8', type: 'application/x-mpegURL' };
-    expect(engine.canPlay(src as any)).toBe(true);
+    expect(engine.canPlay(src)).toBe(true);
 
-    engine.attach({ media, events, core, activeSource: src } as any);
+    engine.attach({ media, events, core, activeSource: src });
     // Trigger play command to cover cmd:play command listener
-    const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined as any);
+    const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined);
     events.emit('cmd:play');
     // playback handlers in HlsMediaEngine schedule work in microtasks
     await Promise.resolve();

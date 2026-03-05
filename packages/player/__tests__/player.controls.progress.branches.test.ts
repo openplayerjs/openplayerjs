@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { OverlayManager, OverlayState } from '@openplayerjs/core';
 import { Core, getOverlayManager } from '@openplayerjs/core';
 import createProgressControl from '../src/controls/progress';
 
@@ -26,12 +27,12 @@ describe('ProgressControl branch coverage', () => {
     document.body.appendChild(el);
 
     // Live stream path
-    (p as any).isLive = true;
+    p.isLive = true;
     p.events.emit('durationchange');
     expect(el.getAttribute('aria-hidden')).toBe('true');
 
     // Infinity duration path
-    (p as any).isLive = false;
+    p.isLive = false;
     (p.media as any).duration = Infinity;
     p.events.emit('durationchange');
     expect(el.getAttribute('aria-hidden')).toBe('true');
@@ -40,7 +41,7 @@ describe('ProgressControl branch coverage', () => {
   test('overlay enables visibility + seek disabled, and pressed blocks UI updates', () => {
     const p = makeCore();
     (p.media as any).duration = 100;
-    (p.media as any).currentTime = 10;
+    p.media.currentTime = 10;
 
     const c = createProgressControl();
     const el = c.create(p);
@@ -68,7 +69,7 @@ describe('ProgressControl branch coverage', () => {
     // Pressed blocks updateUI branch
     const before = slider.value;
     slider.classList.add('op-progress--pressed');
-    (p.media as any).currentTime = 15;
+    p.media.currentTime = 15;
     p.events.emit('timeupdate');
     // value should not have been overwritten while pressed
     expect(slider.value).toBe(before);
@@ -77,7 +78,7 @@ describe('ProgressControl branch coverage', () => {
   test('waiting/play/ended branches touch loading/error and reset', () => {
     const p = makeCore();
     (p.media as any).duration = 50;
-    (p.media as any).currentTime = 1;
+    p.media.currentTime = 1;
 
     const c = createProgressControl();
     const el = c.create(p);
@@ -107,17 +108,27 @@ describe('ProgressControl branch coverage', () => {
   test('rail tap-to-seek works when tap lands on progress overlays (mobile touchstart)', () => {
     const p = makeCore();
     (p.media as any).duration = 100;
-    (p.media as any).currentTime = 0;
+    p.media.currentTime = 0;
 
     const c = createProgressControl();
     const el = c.create(p);
     document.body.appendChild(el);
 
     // Stub getBoundingClientRect so we can compute percent.
-    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+    el.getBoundingClientRect = () => ({
+      left: 0,
+      width: 200,
+      top: 0,
+      height: 10,
+      right: 200,
+      bottom: 10,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    });
 
     // Tap at x=50 => 25% => 25s
-    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true }) as any;
+    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true });
     Object.defineProperty(touchEvent, 'touches', {
       value: [{ clientX: 50 }],
     });
@@ -131,18 +142,28 @@ describe('ProgressControl branch coverage', () => {
   test('rail tap-to-seek does not seek when seeking is disabled (overlay canSeek=false)', () => {
     const p = makeCore();
     (p.media as any).duration = 100;
-    (p.media as any).currentTime = 0;
+    p.media.currentTime = 0;
 
     // Disable seeking via overlay manager
-    const om = getOverlayManager(p) as any;
-    om.active = { canSeek: false };
+    const om = getOverlayManager(p) as OverlayManager;
+    om.active = { canSeek: false } as OverlayState;
 
     const c = createProgressControl();
     const el = c.create(p);
     document.body.appendChild(el);
-    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+    el.getBoundingClientRect = () => ({
+      left: 0,
+      width: 200,
+      top: 0,
+      height: 10,
+      right: 200,
+      bottom: 10,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    });
 
-    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true }) as any;
+    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true });
     Object.defineProperty(touchEvent, 'touches', { value: [{ clientX: 150 }] }); // 75%
     const played = nn(el.querySelector('.op-controls__progress--played')) as HTMLElement;
     played.dispatchEvent(touchEvent);
@@ -153,14 +174,24 @@ describe('ProgressControl branch coverage', () => {
   test('rail tap-to-seek ignored when duration is Infinity (live-ish)', () => {
     const p = makeCore();
     (p.media as any).duration = Infinity;
-    (p.media as any).currentTime = 0;
+    p.media.currentTime = 0;
 
     const c = createProgressControl();
     const el = c.create(p);
     document.body.appendChild(el);
-    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+    el.getBoundingClientRect = () => ({
+      left: 0,
+      width: 200,
+      top: 0,
+      height: 10,
+      right: 200,
+      bottom: 10,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    });
 
-    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true }) as any;
+    const touchEvent = new Event('touchstart', { bubbles: true, cancelable: true });
     Object.defineProperty(touchEvent, 'touches', { value: [{ clientX: 100 }] });
     const played = nn(el.querySelector('.op-controls__progress--played')) as HTMLElement;
     played.dispatchEvent(touchEvent);
@@ -186,7 +217,7 @@ describe('ProgressControl branch coverage', () => {
   test('change event on slider seeks and releases pressed state', () => {
     const p = makeCore();
     (p.media as any).duration = 100;
-    (p.media as any).currentTime = 10;
+    p.media.currentTime = 10;
 
     const c = createProgressControl();
     const el = c.create(p);
@@ -205,12 +236,22 @@ describe('ProgressControl branch coverage', () => {
   test('click on range input early-returns without seeking', () => {
     const p = makeCore();
     (p.media as any).duration = 100;
-    (p.media as any).currentTime = 0;
+    p.media.currentTime = 0;
 
     const c = createProgressControl();
     const el = c.create(p);
     document.body.appendChild(el);
-    (el as any).getBoundingClientRect = () => ({ left: 0, width: 200, top: 0, height: 10, right: 200, bottom: 10 });
+    el.getBoundingClientRect = () => ({
+      left: 0,
+      width: 200,
+      top: 0,
+      height: 10,
+      right: 200,
+      bottom: 10,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    });
 
     const slider = nn(el.querySelector('input[type="range"]')) as HTMLInputElement;
     // Click event whose target is the range slider itself (should early-return, not seek)
@@ -224,7 +265,7 @@ describe('ProgressControl branch coverage', () => {
   test('click on progress container (not range input) triggers seekFromClientX', () => {
     const p = makeCore();
     (p.media as any).duration = 100;
-    (p.media as any).currentTime = 0;
+    p.media.currentTime = 0;
 
     const c = createProgressControl();
     const el = c.create(p);

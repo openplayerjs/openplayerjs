@@ -20,6 +20,41 @@ export type Control = {
 
 const registry = new Map<string, () => Control | null>();
 
+export const DEFAULT_CONTROLS: Record<string, string[]> = {
+  top: ['progress'],
+  'bottom-left': ['play', 'time', 'volume'],
+  'bottom-right': ['captions', 'settings', 'fullscreen'],
+};
+
+/**
+ * Normalises any controls configuration shape into a flat slot → id[] map.
+ *
+ * Accepted formats:
+ * - **Omitted / empty** (`undefined`, `null`, `{}`) → returns the default layout.
+ * - **Flat** (`{ top: [...], 'bottom-left': [...] }`) → used as-is; non-array
+ *   properties (e.g. `alwaysVisible`) are silently ignored.
+ * - **Layers** (`{ layers: { left, middle, right } }`) → mapped to
+ *   `bottom-left`, `top`, and `bottom-right` respectively.
+ */
+export function normalizeControlsConfig(cfg: any): Record<string, string[]> {
+  if (!cfg || typeof cfg !== 'object') return { ...DEFAULT_CONTROLS };
+
+  if (cfg.layers && typeof cfg.layers === 'object') {
+    const result: Record<string, string[]> = {};
+    const { left, middle, right } = cfg.layers;
+    if (Array.isArray(left)) result['bottom-left'] = left;
+    if (Array.isArray(middle)) result['top'] = middle;
+    if (Array.isArray(right)) result['bottom-right'] = right;
+    return Object.keys(result).length > 0 ? result : { ...DEFAULT_CONTROLS };
+  }
+
+  const result: Record<string, string[]> = {};
+  for (const [key, val] of Object.entries(cfg)) {
+    if (Array.isArray(val)) result[key] = val as string[];
+  }
+  return Object.keys(result).length > 0 ? result : { ...DEFAULT_CONTROLS };
+}
+
 function parsePlacement(key: string): ControlPlacement {
   if (key === 'main') {
     return { v: 'middle', h: 'center', region: 'main' };
@@ -90,10 +125,11 @@ export function getControl(name: string): Control | null {
   return factory?.() || null;
 }
 
-export function buildControls(config: any) {
+export function buildControls(config?: any) {
   const controls: Control[] = [];
+  const normalized = normalizeControlsConfig(config);
 
-  Object.entries(config || {}).forEach(([key, names]) => {
+  Object.entries(normalized).forEach(([key, names]) => {
     if (!Array.isArray(names)) return;
 
     const placement = parsePlacement(key);

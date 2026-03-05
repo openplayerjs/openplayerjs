@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { Lease } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 
@@ -13,7 +14,7 @@ describe('AdsPlugin VMAP timeOffset parsing extra branches', () => {
       events: new EventBus(),
       state: { current: 'ready' },
       leases: { acquire: () => true, release: () => undefined, owner: () => undefined },
-    } as any;
+    } as unknown as Lease;
   }
 
   test('parseVmapTimeOffset supports HH:MM:SS and numeric strings and invalid falls back to preroll', () => {

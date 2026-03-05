@@ -1,7 +1,7 @@
 import type { PlayerEventPayloadMap } from '@openplayerjs/core';
 import * as CoreExports from '@openplayerjs/core';
 import type { Control } from './control';
-import { buildControls, registerControl } from './control';
+import { buildControls, normalizeControlsConfig, registerControl } from './control';
 import type { ControlPlacement } from './controls/base';
 import createCaptionsControl from './controls/captions';
 import createCurrentTimeControl from './controls/currentTime';
@@ -49,44 +49,6 @@ type PendingListener = {
   off?: Unsubscribe;
 };
 
-const DEFAULT_CONTROLS: Record<string, string[]> = {
-  top: ['progress'],
-  'bottom-left': ['play', 'time', 'volume'],
-  'bottom-right': ['captions', 'settings', 'fullscreen'],
-};
-
-/**
- * Normalizes the controls configuration to a flat layout object.
- *
- * Supports two formats:
- * - **Flat** (default): `{ top: [...], 'bottom-left': [...], 'bottom-right': [...] }`
- * - **Layers** (legacy): `{ layers: { left: [...], middle: [...], right: [...] } }`
- *
- * Non-array properties (e.g. `alwaysVisible`) are ignored during normalization.
- * When no layout keys are found, the default controls layout is returned.
- */
-function normalizeControlsConfig(cfg: any): Record<string, string[]> {
-  if (!cfg || typeof cfg !== 'object') return { ...DEFAULT_CONTROLS };
-
-  // Legacy layers format: { layers: { left, middle, right } }
-  if (cfg.layers && typeof cfg.layers === 'object') {
-    const result: Record<string, string[]> = {};
-    const { left, middle, right } = cfg.layers;
-    if (Array.isArray(left)) result['bottom-left'] = left;
-    if (Array.isArray(middle)) result['top'] = middle;
-    if (Array.isArray(right)) result['bottom-right'] = right;
-    return result;
-  }
-
-  // Flat format — collect only array-valued keys (skip flags like alwaysVisible)
-  const result: Record<string, string[]> = {};
-  for (const [key, val] of Object.entries(cfg)) {
-    if (Array.isArray(val)) result[key] = val as string[];
-  }
-
-  // If no layout keys were provided (e.g. only flags like alwaysVisible), use defaults
-  return Object.keys(result).length > 0 ? result : { ...DEFAULT_CONTROLS };
-}
 
 function extractControlIds(controlsCfg: any): ControlId[] {
   const normalized = normalizeControlsConfig(controlsCfg);
@@ -278,9 +240,53 @@ export default class Player {
     (this.core as any).controls.addControl(control);
   }
 
+  get currentTime(): number {
+    return this.core?.currentTime ?? 0;
+  }
+
+  set currentTime(value: number) {
+    if (!this.core) throw new Error('OpenPlayer.currentTime must be set after init()');
+    this.core.currentTime = value;
+  }
+
+  get duration(): number {
+    return this.core?.duration ?? 0;
+  }
+
   set src(source: string) {
     if (!this.core) throw new Error('OpenPlayer.src must be set after init()');
     this.core.src = source;
+  }
+
+  get src() {
+    return this.core?.src ?? '';
+  }
+
+  set volume(vol: number) {
+    if (!this.core) throw new Error('OpenPlayer.volume must be set after init()');
+    this.core.volume = vol;
+  }
+
+  get volume() {
+    return this.core?.volume ?? 1;
+  }
+
+  set muted(muted: boolean) {
+    if (!this.core) throw new Error('OpenPlayer.muted must be set after init()');
+    this.core.muted = muted;
+  }
+
+  get muted() {
+    return this.core?.muted ?? false;
+  }
+
+  set playbackRate(rate: number) {
+    if (!this.core) throw new Error('OpenPlayer.playbackRate must be set after init()');
+    this.core.playbackRate = rate;
+  }
+
+  get playbackRate() {
+    return this.core?.playbackRate ?? 1;
   }
 
   private createDetectedPlugins() {

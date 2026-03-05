@@ -2,6 +2,7 @@
 
 import type { Core } from '@openplayerjs/core';
 import { EventBus, Lease, StateManager } from '@openplayerjs/core';
+import type { HlsConfig } from 'hls.js';
 import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
 
@@ -40,7 +41,7 @@ jest.mock('hls.js', () => {
     swapAudioCodec = jest.fn();
     destroy = jest.fn();
 
-    constructor(_cfg: any) {
+    constructor(_cfg: HlsConfig) {
       //
     }
 
@@ -109,25 +110,25 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = makeCtx({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
-    const adapter = (engine as any).adapter as any;
+    const adapter = engine.getAdapter();
 
     // first cmd:startLoad should start loading
     ctx.events.emit('cmd:startLoad');
-    expect(adapter.startLoad).toHaveBeenCalledTimes(1);
+    expect(adapter!.startLoad).toHaveBeenCalledTimes(1);
 
     // second emission is a no-op (startedLoad guard)
     ctx.events.emit('cmd:startLoad');
-    expect(adapter.startLoad).toHaveBeenCalledTimes(1);
+    expect(adapter!.startLoad).toHaveBeenCalledTimes(1);
   });
 
   test('cmd:startLoad is a no-op when autoStartLoad is true (preload != none)', () => {
     const engine = new HlsMediaEngine();
     const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = (engine as any).adapter as any;
+    const adapter = engine.getAdapter();
 
     ctx.events.emit('cmd:startLoad');
-    expect(adapter.startLoad).not.toHaveBeenCalled();
+    expect(adapter!.startLoad).not.toHaveBeenCalled();
   });
 
   test('media play event forces pause when lease is owned by another surface', () => {
@@ -143,21 +144,21 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = makeCtx({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
-    const adapter = (engine as any).adapter as any;
+    const adapter = engine.getAdapter();
 
     // start loading
     ctx.events.emit('cmd:startLoad');
-    expect(adapter.startLoad).toHaveBeenCalledTimes(1);
+    expect(adapter!.startLoad).toHaveBeenCalledTimes(1);
     expect((engine as any).startedLoad).toBe(true);
 
     // pause resets startedLoad
     ctx.media.dispatchEvent(new Event('pause'));
-    expect(adapter.stopLoad).toHaveBeenCalledTimes(1);
+    expect(adapter!.stopLoad).toHaveBeenCalledTimes(1);
     expect((engine as any).startedLoad).toBe(false);
 
     // cmd:startLoad works again after reset
     ctx.events.emit('cmd:startLoad');
-    expect(adapter.startLoad).toHaveBeenCalledTimes(2);
+    expect(adapter!.startLoad).toHaveBeenCalledTimes(2);
   });
 
   test('adapter events: MANIFEST_PARSED resolves readiness, media_attached autoplay path, duration events, metadata, texttrack updates', () => {
@@ -172,13 +173,13 @@ describe('HlsMediaEngine branch coverage', () => {
     engine.attach(ctx);
 
     // grab the underlying mocked adapter and emit events
-    const adapter = (engine as any).adapter as any;
-    adapter.emit((Hls as any).Events.MANIFEST_PARSED);
-    adapter.emit((Hls as any).Events.MEDIA_ATTACHED);
-    adapter.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: true, totalduration: 123 } });
-    adapter.emit((Hls as any).Events.LEVEL_LOADED, null, { details: { live: false, totalduration: 456 } });
-    adapter.emit((Hls as any).Events.FRAG_PARSING_METADATA, null, { foo: 'bar' });
-    adapter.emit((Hls as any).Events.SUBTITLE_TRACKS_UPDATED);
+    const adapter = engine.getAdapter();
+    adapter!.emit((Hls as any).Events.MANIFEST_PARSED, null, {});
+    adapter!.emit((Hls as any).Events.MEDIA_ATTACHED, null, {});
+    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: true, totalduration: 123 } });
+    adapter!.emit((Hls as any).Events.LEVEL_LOADED, null, { details: { live: false, totalduration: 456 } });
+    adapter!.emit((Hls as any).Events.FRAG_PARSING_METADATA, null, { foo: 'bar' });
+    adapter!.emit((Hls as any).Events.SUBTITLE_TRACKS_UPDATED, null, {});
 
     expect(seen).toEqual(expect.arrayContaining(['ready', 'duration', 'metadata', 'tracks']));
   });
@@ -187,24 +188,24 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = (engine as any).adapter as any;
+    const adapter = engine.getAdapter();
 
     // MEDIA_ERROR first recovery
-    adapter.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
-    expect(adapter.recoverMediaError).toHaveBeenCalledTimes(1);
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(1);
 
     // second MEDIA_ERROR quickly -> swapAudioCodec branch
-    adapter.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
-    expect(adapter.swapAudioCodec).toHaveBeenCalledTimes(1);
-    expect(adapter.recoverMediaError).toHaveBeenCalledTimes(2);
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(1);
+    expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(2);
 
     // NETWORK_ERROR branch (no destroy)
-    adapter.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.NETWORK_ERROR });
-    expect(adapter.destroy).not.toHaveBeenCalled();
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.NETWORK_ERROR });
+    expect(adapter!.destroy).not.toHaveBeenCalled();
 
     // default branch destroys
-    adapter.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.OTHER_ERROR });
-    expect(adapter.destroy).toHaveBeenCalled();
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.OTHER_ERROR });
+    expect(adapter!.destroy).toHaveBeenCalled();
   });
 
   test('detach cleans adapter and unbinds events (adapterListeners empty branch)', () => {
@@ -215,6 +216,6 @@ describe('HlsMediaEngine branch coverage', () => {
 
     // calling detach again should hit !adapter branch in unbindAdapterEvents
     engine.detach();
-    expect((engine as any).adapter).toBeNull();
+    expect(engine.getAdapter()).toBeNull();
   });
 });

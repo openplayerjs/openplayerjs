@@ -9,7 +9,7 @@ describe('NONLINEAR raw-XML fallback helpers', () => {
     document.body.appendChild(video);
 
     const events = new EventBus();
-    const ctx: any = {
+    const ctx = {
       core: { media: video, muted: false, volume: 1 },
       events,
       state: { current: 'ready' },

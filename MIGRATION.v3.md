@@ -116,8 +116,6 @@ These options **no longer exist** in v3. The table below explains what to use in
 
 | Removed option                                     | Reason / alternative                                                                                                                                                                                                                              |
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `controls.layers`                                  | This approach was removed for more simplicity. The way to do it now is by just setting `top`, `center`, etc. inside `controls`                                                                                                                    |
-| `controls.alwaysVisible`                           | Removed in favor of just viewing the controls when media is paused to follow best practices in modern players                                                                                                                                     |
 | `labels.auto` / `labels.lang.en` / `labels.levels` | These labels belonged to `Levels`                                                                                                                                                                                                                 |
 | `mode`                                             | Sizing mode (`responsive`, `fit`, `fill`) should be handled through CSS classes on the wrapper element entirely                                                                                                                                   |
 | `detachMenus`                                      | Menu layout is determined by the UI package internally, and as a default, everything is set inside the `Settings` control to reduce code footprint                                                                                                |
@@ -148,6 +146,15 @@ These options **no longer exist** in v3. The table below explains what to use in
 | `onError`                                          | Listen for the `'error'` event instead: `player.on('error', handler)`                                                                                                                                                                             |
 | `useDeviceVolume`                                  | Removed                                                                                                                                                                                                                                           |
 | `media.pauseOnClick`                               | Click-to-pause is always active in the UI package                                                                                                                                                                                                 |
+
+### Re-introduced options
+
+These options were temporarily removed in early v3 betas but are fully supported again:
+
+| Option                  | Status      | Notes                                                                                                                                                                                                                             |
+| ----------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `controls.layers`       | Supported   | The `{ layers: { left, middle, right } }` shape is accepted by `buildControls` and `normalizeControlsConfig`. `left` maps to `bottom-left`, `middle` maps to `top`, and `right` maps to `bottom-right` — identical to v2 behaviour. |
+| `controls.alwaysVisible` | Supported  | Pass `alwaysVisible: true` inside the controls config object (UMD) or as `{ alwaysVisible: true }` to `createUI` options (ESM). The controls bar stays permanently visible instead of fading out during playback.                 |
 
 ---
 
@@ -404,10 +411,21 @@ const core = new Core(media, {
   ],
 });
 
+// Flat format (v3 slot names)
 const controls = buildControls({
-  left: ['play', 'time', 'volume'],
-  right: ['captions', 'settings', 'fullscreen'],
+  top: ['progress'],
+  'bottom-left': ['play', 'time', 'volume'],
+  'bottom-right': ['captions', 'settings', 'fullscreen'],
 });
+
+// Or use the v2 layers format — both are equivalent
+// const controls = buildControls({
+//   layers: {
+//     left: ['play', 'time', 'volume'],
+//     middle: ['progress'],
+//     right: ['captions', 'settings', 'fullscreen'],
+//   },
+// });
 
 createUI(core, media, controls);
 ```

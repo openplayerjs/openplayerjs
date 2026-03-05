@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { Core } from '@openplayerjs/core';
+import type { PlayerUIConfig } from '../src/configuration';
 import createProgressControl from '../src/controls/progress';
 import { createUI } from '../src/ui';
 
@@ -13,7 +14,7 @@ describe('controls cleanup on player.destroy', () => {
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
 
-    const player = new Core(media, { plugins: [], controls: { 'top-center': ['progress'] } } as any);
+    const player = new Core(media, { plugins: [], controls: { 'top-center': ['progress'] } } as PlayerUIConfig);
 
     // Create UI with just the progress control.
     const progress = createProgressControl()!;

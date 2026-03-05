@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { Lease } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 
@@ -10,11 +11,11 @@ describe('AdsPlugin VMAP parsing', () => {
     document.body.appendChild(video);
     return {
       ctx: {
-        core: { media: video, muted: false, volume: 1 } as any,
+        core: { media: video, muted: false, volume: 1 },
         events: bus,
         state: { current: 'ready' },
-        leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as any,
-      } as any,
+        leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as unknown as Lease,
+      } as unknown as Lease,
       video,
     };
   }

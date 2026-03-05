@@ -11,10 +11,10 @@ function makeCore() {
   const p = new Core(v, { plugins: [] });
   p.play = jest.fn(async () => {
     p.events.emit('playing');
-  }) as any;
+  });
   p.pause = jest.fn(() => {
     p.events.emit('pause');
-  }) as any;
+  });
   return p;
 }
 
