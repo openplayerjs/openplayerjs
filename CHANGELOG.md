@@ -1,5 +1,12 @@
 # Changelog
 
+# [3.0.0-alpha.2](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2026-03-06)
+
+
+### Bug Fixes
+
+* Added ability to swap Hls instance, and removed ads video and subscriptions per instance, instead of globally ([5424662](https://github.com/openplayerjs/openplayerjs/commit/5424662e16a7b61113e610198f285089a6c1cf03))
+
 # [3.0.0-alpha.1](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0-alpha.0...v3.0.0-alpha.1) (2026-03-05)
 
 
