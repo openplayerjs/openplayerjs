@@ -1,0 +1,25 @@
+on:
+  pull_request:
+    branches: ['**']
+
+name: Commitlint
+
+jobs:
+  commitlint:
+    name: Enforce Conventional Commits
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lint commit messages
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: commitlint.config.cjs
