@@ -33,7 +33,7 @@ module.exports = {
   // Workspace plugin publishes packages; root is not published directly.
   // publish: false keeps the npm plugin active for version reading (package.json)
   // while preventing release-it from publishing the private root package itself.
-  npm: { publish: false },
+  npm: { publish: false, allowSameVersion: true },
 
   plugins: {
     '@release-it/conventional-changelog': {
