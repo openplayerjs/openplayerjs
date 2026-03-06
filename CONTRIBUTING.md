@@ -80,6 +80,20 @@ A PR will not be merged if either command fails.
   (e.g. `_err`, `_unused`). Unused private class members must be removed entirely.
 - Do not use deprecated APIs — `@typescript-eslint/no-deprecated` is set to error.
 
+### New packages
+
+All workspace packages must live under `packages/` and their `name` in `package.json` must use
+the `@openplayerjs/` scope:
+
+```json
+{ "name": "@openplayerjs/my-package" }
+```
+
+CI enforces this on every PR that touches a `packages/*/package.json` file and will fail if the
+prefix is wrong.
+
+---
+
 ### Cross-package imports
 
 Always use the workspace path aliases, never relative paths across packages:
@@ -138,6 +152,20 @@ from commit messages, so the type prefix matters:
 | `chore:`    | Internal / tooling (not shown to users) |
 
 Example: `fix(ads): correct VMAP parsing for non-linear breaks`
+
+### Git hooks (automatic enforcement)
+
+After running `pnpm install`, [husky](https://typicode.github.io/husky/) installs two hooks
+automatically:
+
+| Hook          | What it does                                                          |
+| ------------- | --------------------------------------------------------------------- |
+| `pre-commit`  | Runs lint-staged (ESLint + Prettier + stylelint on changed files)     |
+| `commit-msg`  | Runs commitlint to validate the commit message format                 |
+
+The commit will be aborted locally if either check fails, so you get feedback before pushing.
+CI runs the same checks as a safety net — it will also reject commits that bypass local hooks
+(`git commit -n` skips hooks; avoid it).
 
 ---
 
