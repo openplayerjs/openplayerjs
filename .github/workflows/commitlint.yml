@@ -19,7 +19,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Lint commit messages
-        uses: wagoid/commitlint-github-action@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          configFile: commitlint.config.cjs
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint commit messages
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Resolve the SHA of the earliest v3 tag so pre-v3 commits are never linted.
+          v3_start=$(git rev-list -n 1 v3.0.0-alpha.0)
+
+          # Use whichever boundary is more recent: the PR base or the v3 start.
+          # merge-base --is-ancestor exits 0 if v3_start is an ancestor of PR_BASE,
+          # meaning PR_BASE is newer → use PR_BASE; otherwise fall back to v3_start.
+          if git merge-base --is-ancestor "$v3_start" "$PR_BASE" 2>/dev/null; then
+            from="$PR_BASE"
+          else
+            from="$v3_start"
+          fi
+
+          pnpm exec commitlint --from "$from" --to "$PR_HEAD"

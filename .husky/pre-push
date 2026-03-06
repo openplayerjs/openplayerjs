@@ -1,0 +1,19 @@
+#!/bin/sh
+# Lint all commits being pushed. Catches any that bypassed the commit-msg hook (e.g. git commit -n).
+
+remote="$1"
+
+while IFS=' ' read -r local_ref local_sha remote_ref remote_sha; do
+  # Skip branch deletions
+  [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue
+
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    # New remote branch: lint against the merge-base with the upstream default branch.
+    base=$(git merge-base "$local_sha" "$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null)" 2>/dev/null)
+    from="${base:-$(git rev-list --max-parents=0 HEAD)}"
+  else
+    from="$remote_sha"
+  fi
+
+  pnpm exec commitlint --from "$from" --to "$local_sha" || exit 1
+done
