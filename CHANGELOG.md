@@ -1,5 +1,13 @@
 # Changelog
 
+# [3.0.0](https://github.com/openplayerjs/openplayerjs/compare/v2.14.12...v3.0.0) (2026-03-06)
+
+
+### Bug Fixes
+
+* Added flag to avoid erroring out while performing a release ([94fe446](https://github.com/openplayerjs/openplayerjs/commit/94fe4461785ef31c3bf1323c38fbe0542d7c70cd))
+* Changed configuration of release-it to restore version from package.json, and fixed npm warnings ([1591417](https://github.com/openplayerjs/openplayerjs/commit/1591417b34c8a754da09f5e110edaab11522e7c9))
+
 # [3.0.0-alpha.2](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2026-03-06)
 
 
