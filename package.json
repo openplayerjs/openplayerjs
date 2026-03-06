@@ -33,6 +33,9 @@
     "watch": "npm run build:bundles -- --watch"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@commitlint/types": "^19.5.0",
     "@eslint/js": "^10.0.1",
     "@release-it-plugins/workspaces": "^5.0.3",
     "@release-it/conventional-changelog": "^10.0.5",
@@ -81,6 +84,11 @@
     "overrides": {
       "serialize-javascript": ">=7.0.3",
       "@tootallnate/once": ">=3.0.1"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "eslint-plugin-import>eslint": "^10"
+      }
     }
   }
 }
