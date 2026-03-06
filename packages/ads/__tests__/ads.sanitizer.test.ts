@@ -24,6 +24,7 @@ describe('AdsPlugin HTML sanitizer', () => {
         <script>alert("x")</script>
         <img src="javascript:alert(1)" onerror="alert(2)" />
         <a href="javascript:alert(3)" target="_blank">click</a>
+        <a href="vbscript:MsgBox(1)">vbs</a>
         <span style="color:red">ok</span>
       </div>
     `;
@@ -39,9 +40,11 @@ describe('AdsPlugin HTML sanitizer', () => {
     expect(img?.getAttribute('onerror')).toBeFalsy();
     expect((img?.getAttribute('src') || '').toLowerCase()).not.toContain('javascript:');
 
-    const a = host.querySelector('a') as HTMLAnchorElement | null;
-    expect(a).toBeTruthy();
-    expect((a?.getAttribute('href') || '').toLowerCase()).not.toContain('javascript:');
+    const links = host.querySelectorAll('a');
+    // javascript: href stripped
+    expect((links[0]?.getAttribute('href') || '').toLowerCase()).not.toContain('javascript:');
+    // vbscript: href stripped (CodeQL: executable scheme must be explicitly denied)
+    expect((links[1]?.getAttribute('href') || '').toLowerCase()).not.toContain('vbscript:');
 
     // onclick removed
     const div = host.querySelector('div') as HTMLDivElement | null;

@@ -452,17 +452,18 @@ export class AdsPlugin implements PlayerPlugin {
         if (name.startsWith('on')) {
           node.removeAttribute(attr.name);
         }
-        // Block javascript: URLs and other risky protocols.
+        // Block javascript:, vbscript: and other risky protocols.
         if (name === 'href' || name === 'src' || name === 'xlink:href') {
           const v = value.toLowerCase();
           const isJs = v.startsWith('javascript:');
+          const isVbscript = v.startsWith('vbscript:');
           const isData = v.startsWith('data:');
           const isHttp = v.startsWith('http://') || v.startsWith('https://') || v.startsWith('/') || v.startsWith('./');
 
           // Allow data:image/* only (common in companions). Everything else must be http(s) or relative.
           const isSafeDataImage = isData && /^data:image\/(png|gif|jpe?g|webp|svg\+xml);/i.test(value);
 
-          if (isJs || (!isHttp && !isSafeDataImage)) node.removeAttribute(attr.name);
+          if (isJs || isVbscript || (!isHttp && !isSafeDataImage)) node.removeAttribute(attr.name);
         }
 
         // Disallow inline HTML injection attributes.
@@ -2214,7 +2215,7 @@ export class AdsPlugin implements PlayerPlugin {
 
       overlayMgr.update(this.overlayId, {
         duration: dur,
-        value: Math.max(0, dur - cur) + 1,
+        value: Math.max(0, dur - cur),
         mode: 'countdown',
         canSeek: false,
         fullscreenEl: root,

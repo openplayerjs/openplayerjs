@@ -325,6 +325,30 @@ describe('UI createUI + controls autohide', () => {
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
   });
 
+  test('controls do not hide when a pre-set timer fires while media is paused (ad/preroll scenario)', async () => {
+    const p = makeCore();
+    // Media starts playing — pointer interaction will set the hide timer
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, []);
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    // User hovers → scheduleHide(3000) starts
+    wrapper.dispatchEvent(new Event('pointermove', { bubbles: true }));
+
+    // Ad/preroll starts: content pauses — but no 'pause' event is emitted (preroll intercepts
+    // cmd:play before content ever plays, so showControls() is never called to clear the timer)
+    Object.defineProperty(p.media, 'paused', { value: true, configurable: true });
+
+    // 3+ seconds pass — the timer fires while content is paused
+    jest.advanceTimersByTime(3100);
+    await flushTimersAndMicrotasks();
+
+    // hideControls() must abort because media is paused → controls stay visible
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
+  });
+
   test('alwaysVisible:true controls stay visible after pointer move', async () => {
     const p = makeCore();
     Object.defineProperty(p.media, 'paused', { value: false, configurable: true });

@@ -60,6 +60,25 @@ describe('ui/index - createUI', () => {
     expect(dynDestroy).toHaveBeenCalledTimes(1);
   });
 
+  test('audio controlsRoot class is op-controls and carries no inline position:static override', () => {
+    // The .op-player__audio .op-controls CSS rule must set position:relative (not static).
+    // position:static disables z-index, so .op-ads (z-index:3 inline) would cover the
+    // progress and volume bars (z-index:2) while only buttons (z-index:4) stayed visible.
+    // With position:relative, z-index:4 on .op-controls activates a stacking context
+    // above .op-ads and all child controls are painted correctly.
+    const media = document.createElement('audio');
+    document.body.appendChild(media);
+    const player = new Core(media, {});
+    const ctx = createUI(player, media, []);
+
+    expect(ctx.wrapper.classList.contains('op-player__audio')).toBe(true);
+    expect(ctx.controlsRoot.classList.contains('op-controls')).toBe(true);
+    // No inline style must force position back to static and break the stacking context.
+    expect(ctx.controlsRoot.style.position).not.toBe('static');
+
+    player.destroy();
+  });
+
   test('video UI creates overlay and runs autoplay-unmute flow on desktop', async () => {
     const media = document.createElement('video');
     media.autoplay = true;

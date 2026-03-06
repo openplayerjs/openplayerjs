@@ -238,6 +238,7 @@ export function createUI(
   };
 
   const hideControls = (): void => {
+    if (core.media.paused || core.media.ended) return;
     if (controlsHaveFocus()) {
       if (lastInteraction === 'keyboard') {
         wrapper.focus();

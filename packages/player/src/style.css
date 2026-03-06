@@ -198,7 +198,7 @@
 
 .op-player__audio .op-controls {
     background: transparent;
-    position: static;
+    position: relative;
 }
 
 .op-controls--hidden .op-controls {
