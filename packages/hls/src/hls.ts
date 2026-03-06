@@ -19,9 +19,14 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
   private recoverSwapAudioCodecDate: number | null = null;
   private startedLoad = false;
   private adapterListeners: AdapterListener[] = [];
+  private HlsClass: typeof Hls;
+  private hlsConfig: Record<string, any>;
 
-  constructor(private config: any = {}) {
+  constructor(config: any = {}) {
     super();
+    const { hlsClass, ...hlsConfig } = config;
+    this.HlsClass = hlsClass ?? Hls;
+    this.hlsConfig = hlsConfig;
   }
 
   getAdapter<T = Hls>(): T | undefined {
@@ -29,7 +34,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
   }
 
   canPlay(source: MediaSource) {
-    if (!Hls.isSupported()) return false;
+    if (!this.HlsClass.isSupported()) return false;
     if (source.type === 'application/x-mpegURL' || source.type === 'application/vnd.apple.mpegurl') return true;
     try {
       const u = new URL(source.src, window.location.href);
@@ -45,18 +50,18 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
 
     const autoStartLoad = ctx.media.autoplay || ctx.media.preload !== 'none';
 
-    this.adapter = new Hls({
+    this.adapter = new this.HlsClass({
       autoStartLoad,
       lowLatencyMode: true,
       backBufferLength: 90,
       renderTextTracksNatively: true,
       enableWebVTT: true,
-      ...this.config,
+      ...this.hlsConfig,
     });
     this.adapter.loadSource(ctx.activeSource?.src || '');
     this.adapter.attachMedia(ctx.media);
 
-    for (const e of Object.values(Hls.Events) as string[]) {
+    for (const e of Object.values(this.HlsClass.Events) as string[]) {
       this.onAdapterEvent(
         e,
         (...args: any[]) => {
@@ -104,9 +109,9 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       })
     );
 
-    this.onAdapterEvent(Hls.Events.MANIFEST_PARSED, () => ctx.events.emit('loadedmetadata'), EVENT_OPTIONS);
+    this.onAdapterEvent(this.HlsClass.Events.MANIFEST_PARSED, () => ctx.events.emit('loadedmetadata'), EVENT_OPTIONS);
     this.onAdapterEvent(
-      Hls.Events.MEDIA_ATTACHED,
+      this.HlsClass.Events.MEDIA_ATTACHED,
       () => {
         if (ctx.media.autoplay && this.canHandlePlayback(ctx)) {
           ctx.media.muted = true;
@@ -120,7 +125,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       EVENT_OPTIONS
     );
     this.onAdapterEvent(
-      Hls.Events.LEVEL_UPDATED,
+      this.HlsClass.Events.LEVEL_UPDATED,
       (_, { details }) => {
         ctx.core.isLive = details.live;
         ctx.events.emit('media:duration', details.totalduration);
@@ -128,7 +133,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       EVENT_OPTIONS
     );
     this.onAdapterEvent(
-      Hls.Events.LEVEL_LOADED,
+      this.HlsClass.Events.LEVEL_LOADED,
       (_, { details }) => {
         ctx.core.isLive = details.live;
         ctx.events.emit('media:duration', details.totalduration);
@@ -136,21 +141,21 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       EVENT_OPTIONS
     );
     this.onAdapterEvent(
-      Hls.Events.FRAG_PARSING_METADATA,
+      this.HlsClass.Events.FRAG_PARSING_METADATA,
       (_, data) => ctx.events.emit('playback:metadataready', { data }),
       EVENT_OPTIONS
     );
     this.onAdapterEvent(
-      Hls.Events.SUBTITLE_TRACKS_UPDATED,
+      this.HlsClass.Events.SUBTITLE_TRACKS_UPDATED,
       () => ctx.events.emit('texttrack:listchange'),
       EVENT_OPTIONS
     );
     this.onAdapterEvent(
-      Hls.Events.ERROR,
+      this.HlsClass.Events.ERROR,
       (_, data) => {
         if (data.fatal) {
           switch (data.type) {
-            case Hls.ErrorTypes.MEDIA_ERROR: {
+            case this.HlsClass.ErrorTypes.MEDIA_ERROR: {
               const now = Date.now();
               if (!this.attemptedErrorRecovery || now - this.attemptedErrorRecovery > 3000) {
                 this.attemptedErrorRecovery = now;
@@ -164,7 +169,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
               }
               break;
             }
-            case Hls.ErrorTypes.NETWORK_ERROR:
+            case this.HlsClass.ErrorTypes.NETWORK_ERROR:
               // All retries and media options have been exhausted.
               // Immediately trying to restart loading could cause loop loading.
               // Consider modifying loading policies to best fit your asset and network

@@ -81,6 +81,12 @@ describe('AdsPlugin scheduling', () => {
     global.fetch = undefined;
   });
 
+  afterEach(() => {
+    // Remove all DOM nodes added during the test so that leftover ad video elements
+    // from one test don't pollute document.querySelector results in the next test.
+    document.body.innerHTML = '';
+  });
+
   test('implicit preroll: VAST source with no explicit breaks intercepts play and starts a preroll session', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
     const { ctx } = makeCtx();

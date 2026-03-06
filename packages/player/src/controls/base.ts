@@ -28,6 +28,12 @@ export abstract class BaseControl implements Control {
   }
 
   create(core: Core): HTMLElement {
+    // Guard against re-use: tear down any previous subscriptions so that the
+    // same control instance can be safely passed to a second createUI() call
+    // without cross-wiring events or leaking listeners from the previous core.
+    this.dispose.dispose();
+    this.dispose = new DisposableStore();
+
     this.core = core;
     this.overlayMgr = getOverlayManager(core);
     this.activeOverlay = this.overlayMgr.active ?? null;

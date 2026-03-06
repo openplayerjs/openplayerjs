@@ -2559,7 +2559,7 @@ export class AdsPlugin implements PlayerPlugin {
     const requestPayload = input.kind === 'url' ? input.value : '[xml]';
     this.bus.emit('ads:requested', requestPayload);
     this.log('requested', requestPayload, meta);
-    this.resumeAfter = (this.cfg.resumeContent !== false) && meta.kind !== 'postroll';
+    this.resumeAfter = this.cfg.resumeContent !== false && meta.kind !== 'postroll';
 
     const pauseAndAcquireLease = () => {
       // Pause the underlying media element as well as emitting the logical event.
@@ -2808,9 +2808,13 @@ export class AdsPlugin implements PlayerPlugin {
       this.adVideo = undefined;
     }
 
-    // Defensive cleanup for environments like jsdom where .remove() can be flaky in tests
+    // Defensive cleanup for environments like jsdom where .remove() can be flaky in tests.
+    // Scoped to this.overlay so it never removes ad video elements from other player instances
+    // on the same page (multiple simultaneous players sharing the same document).
     try {
-      document.querySelectorAll('video.op-ads__media').forEach((n) => n?.parentNode?.removeChild?.(n) ?? n.remove?.());
+      this.overlay
+        .querySelectorAll('video.op-ads__media')
+        .forEach((n) => n?.parentNode?.removeChild?.(n) ?? n.remove?.());
     } catch {
       // ignore
     }
