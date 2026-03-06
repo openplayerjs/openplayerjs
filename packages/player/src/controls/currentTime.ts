@@ -1,0 +1,55 @@
+import { formatTime, generateISODateTime } from '@openplayerjs/core';
+import type { Control } from '../control';
+import { BaseControl } from './base';
+
+export class CurrentTimeControl extends BaseControl {
+  id = 'currentTime';
+  placement: Control['placement'] = { v: 'top', h: 'left' };
+
+  protected build(): HTMLElement {
+    const core = this.core;
+
+    const el = document.createElement('time');
+    el.className = 'op-controls__current';
+    el.setAttribute('role', 'timer');
+    el.setAttribute('aria-live', 'off');
+    el.setAttribute('aria-hidden', 'false');
+    el.setAttribute('datetime', 'PT0M0S');
+    el.innerText = '0:00';
+
+    const update = () => {
+      if (this.activeOverlay) {
+        el.setAttribute('aria-hidden', 'false');
+        el.innerText = formatTime(this.activeOverlay.value);
+        return;
+      }
+
+      if (core.isLive) {
+        el.setAttribute('aria-hidden', 'true');
+        return;
+      }
+
+      const t = core.currentTime;
+      el.setAttribute('aria-hidden', 'false');
+      const currTime = Number.isFinite(t) ? Math.max(0, t) : 0;
+      const formattedTime = formatTime(currTime);
+      el.innerText = formattedTime;
+      el.setAttribute('datetime', generateISODateTime(currTime));
+    };
+
+    this.onPlayer('timeupdate', () => update());
+    this.onPlayer('seeked', () => update());
+    this.onPlayer('durationchange', () => update());
+
+    this.overlayMgr.bus.on('overlay:changed', () => update());
+
+    update();
+    return el;
+  }
+}
+
+export default function createCurrentTimeControl(placement?: Control['placement']): Control {
+  const ctrl = new CurrentTimeControl();
+  if (placement) ctrl.placement = placement;
+  return ctrl;
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@openplayerjs/hls",
+  "version": "3.0.0-alpha.2",
+  "description": "HLS streaming engine for OpenPlayerJS, powered by hls.js",
+  "author": {
+    "name": "Rafael Miranda",
+    "email": "rafa8626@gmail.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openplayerjs/openplayerjs.git",
+    "directory": "packages/hls"
+  },
+  "keywords": [
+    "hls",
+    "streaming",
+    "player",
+    "openplayer",
+    "hls.js"
+  ],
+  "scripts": {
+    "test": "jest --passWithNoTests  --config ../../jest.config.cjs"
+  },
+  "peerDependencies": {
+    "@openplayerjs/core": "workspace:^",
+    "hls.js": ">=1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

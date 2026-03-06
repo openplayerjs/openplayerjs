@@ -1,0 +1,57 @@
+{
+  "name": "@openplayerjs/ads",
+  "version": "3.0.0-alpha.2",
+  "description": "VAST/VMAP/Non-linear/companions ad-serving plugin for OpenPlayerJS",
+  "author": {
+    "name": "Rafael Miranda",
+    "email": "rafa8626@gmail.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openplayerjs/openplayerjs.git",
+    "directory": "packages/ads"
+  },
+  "bugs": {
+    "url": "https://github.com/openplayerjs/openplayerjs/issues"
+  },
+  "keywords": [
+    "vast",
+    "vmap",
+    "ads",
+    "ad",
+    "advertising",
+    "player",
+    "openplayer"
+  ],
+  "scripts": {
+    "test": "jest --passWithNoTests  --config ../../jest.config.cjs"
+  },
+  "dependencies": {
+    "@dailymotion/vast-client": "^6.4.2",
+    "@dailymotion/vmap": ">=3.0.0"
+  },
+  "peerDependencies": {
+    "@openplayerjs/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/dailymotion__vast-client": "^6.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

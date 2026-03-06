@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "useDefineForClassFields": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@openplayerjs/core":   ["./packages/core/src/index.ts"],
+      "@openplayerjs/core/*": ["./packages/core/src/*"],
+      "@openplayerjs/player":     ["./packages/player/src/index.ts"],
+      "@openplayerjs/player/*":   ["./packages/player/src/*"],
+      "@openplayerjs/hls":    ["./packages/hls/src/index.ts"],
+      "@openplayerjs/hls/*":  ["./packages/hls/src/*"],
+      "@openplayerjs/ads":    ["./packages/ads/src/index.ts"],
+      "@openplayerjs/ads/*":  ["./packages/ads/src/*"]
+    }
+  },
+  "include": ["packages/*/src", "types"],
+  "exclude": ["node_modules", "dist", "packages/*/dist"]
+}
