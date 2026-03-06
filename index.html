@@ -1,23 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="OpenPlayerJS is an ever-green lightweight media player that supports the most common video/audio files for the web, and also VAST/VPAID/VMAP Ads">
+        <meta name="description" content="OpenPlayerJS v3 — A modular, TypeScript-first media player for the web. Supports HLS streaming, VAST/VMAP ads, subtitles, and more. Lightweight, accessible, and extensible.">
         <meta name="google-site-verification" content="Desj0WKx8CJ5bVxUndGN6WP9k80dxk7fZg0ChsKmIno" />
-        
-        <title>OpenPlayerJS - The Lighweight Media Player for Web</title>
-        
+
+        <title>OpenPlayerJS v3 — Modular, Lightweight Media Player for the Web</title>
+
         <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
         <link rel="icon" href="img/favicon.png" type="image/x-icon">
         <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;700;900&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@3.0.0/dist/openplayer.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
         <link href="css/style.css" rel="stylesheet">
+        <style>
+            .v3-badge {
+                display: inline-block;
+                background: #d60000;
+                color: #fff;
+                font-size: 0.7rem;
+                font-weight: 700;
+                letter-spacing: 2px;
+                padding: 2px 10px;
+                border-radius: 20px;
+                vertical-align: middle;
+                margin-left: 8px;
+                text-transform: uppercase;
+            }
+            .hero-tagline {
+                color: rgba(255,255,255,0.65);
+                font-size: 1.1rem;
+                font-weight: 300;
+                letter-spacing: 2px;
+                text-align: center;
+                margin-bottom: 24px;
+                text-transform: uppercase;
+            }
+            .install-block {
+                background: rgba(0,0,0,0.5);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 8px;
+                padding: 14px 24px;
+                font-family: "Roboto Mono", monospace;
+                font-size: 0.9rem;
+                color: #7ec699;
+                text-align: center;
+                margin: 16px auto 0;
+                max-width: 460px;
+                cursor: pointer;
+                position: relative;
+                user-select: all;
+            }
+            .install-block span.comment {
+                color: rgba(255,255,255,0.3);
+                display: block;
+                font-size: 0.75rem;
+                margin-bottom: 4px;
+            }
+            .packages-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 16px;
+                justify-content: center;
+                padding: 20px 40px 40px;
+                max-width: 960px;
+                margin: 0 auto;
+            }
+            .package-card {
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.12);
+                border-radius: 10px;
+                padding: 20px 24px;
+                flex: 1 1 200px;
+                max-width: 220px;
+                text-align: center;
+            }
+            .package-card h3 {
+                font-size: 0.85rem;
+                font-family: "Roboto Mono", monospace;
+                color: #f8c555;
+                margin: 0 0 8px;
+            }
+            .package-card p {
+                font-size: 0.85rem;
+                color: rgba(255,255,255,0.65);
+                margin: 0;
+                line-height: 1.5;
+            }
+            .section-label {
+                font-size: 0.75rem;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: #d60000;
+                font-weight: 700;
+                text-align: center;
+                margin-bottom: 8px;
+            }
+            .contribute-cta {
+                background: rgba(26,26,26,1);
+                color: #fff;
+                padding: 60px 20px;
+                text-align: center;
+            }
+            .contribute-cta h2 {
+                font-size: 2rem;
+                margin-bottom: 12px;
+            }
+            .contribute-cta p {
+                color: rgba(255,255,255,0.65);
+                max-width: 560px;
+                margin: 0 auto 28px;
+                line-height: 1.6;
+                font-size: 1rem;
+            }
+            .cta-buttons {
+                display: flex;
+                gap: 16px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .btn-outline {
+                border: 2px solid #d60000;
+                color: #fff;
+                background: transparent;
+                padding: 12px 32px;
+                border-radius: 28px;
+                font-size: 1rem;
+                font-weight: 700;
+                text-decoration: none;
+                transition: 0.2s;
+            }
+            .btn-outline:hover {
+                background: #d60000;
+            }
+            .btn-solid {
+                background: #d60000;
+                color: #fff;
+                padding: 12px 32px;
+                border-radius: 28px;
+                font-size: 1rem;
+                font-weight: 700;
+                text-decoration: none;
+                transition: 0.2s;
+            }
+            .btn-solid:hover {
+                background: #f02020;
+            }
+        </style>
     </head>
 
     <body>
@@ -28,9 +162,11 @@
                 <img src="img/openplayer-clean.png" style="max-width: 100px;"/>
               </a>
             </div>
-            <div class="menu-item"><a href="#about">About OpenPlayer JS</a></div>
-            <div class="menu-item"><a href="#features">Features</a></div>
-            <div class="menu-item"><a href="#configuration">Try it Now!</a></div>
+            <div class="menu-item"><a href="#about"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>About</a></div>
+            <div class="menu-item"><a href="#features"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Features</a></div>
+            <div class="menu-item"><a href="#packages"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Packages</a></div>
+            <div class="menu-item"><a href="#configuration"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>Try it</a></div>
+            <div class="menu-item"><a href="https://github.com/openplayerjs/openplayerjs/blob/master/README.md" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Docs</a></div>
             <div class="menu-mobile-item">
               <a class="icon" href="#">
                 <img src="img/menu.svg" />
@@ -46,9 +182,13 @@
                 <img src="img/openplayer-clean.png" />
             </div>
             <div class="description dark-container">
-                <h2>The Lightweight Player for the<br><strong>Web</strong></h2>
-                <a class="download" rel="noopener" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip">Download</a>
-                <div class="github">
+                <p class="hero-tagline">Modular &nbsp;·&nbsp; TypeScript-First &nbsp;·&nbsp; Zero Dependencies</p>
+                <h2>The Lightweight Player for the<br><strong>Modern Web</strong> <span class="v3-badge">v3</span></h2>
+                <div class="install-block">
+                    <span class="comment"># install only what you need</span>
+                    npm install @openplayer/player
+                </div>
+                <div class="github" style="margin-top: 28px;">
                     <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
                     data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
                     <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
@@ -80,31 +220,67 @@
                             </audio>
                         </div>
                     </div>
-                    <p>Technologies are evolving at a <strong>fast pace</strong>. Having a player that plays the most popular content in <strong>all browsers and devices,</strong> keeps itself ever-green, and can be <strong>customized easily</strong> is a no-brainer for everyone that wants the best.</p>
+                    <p>The web moves fast. OpenPlayerJS v3 was rebuilt from the ground up as a <strong>modular monorepo</strong> — so you ship only the code your users actually need. A clean <strong>plugin architecture</strong>, full <strong>TypeScript types</strong>, and a tiny core that stays out of your way. One API. Every browser. Every device.</p>
                 </div>
             </div>
-            <div id="features">
-                <h1>Features</h1>
+
+            <!-- Packages Section -->
+            <div id="packages" style="background: rgba(18,18,18,1); padding: 50px 0 10px;">
+                <p class="section-label" data-aos="fade-up" data-aos-duration="800">v3 Packages</p>
+                <h1 style="text-align:center; color: #fff; margin: 0 0 8px;" data-aos="fade-up" data-aos-duration="900">Pick Only What You Need</h1>
+                <p style="text-align:center; color: rgba(255,255,255,0.5); max-width: 540px; margin: 0 auto 10px; font-size: 0.95rem; line-height: 1.6;" data-aos="fade-up" data-aos-duration="1000">
+                    Every capability ships as its own npm package. Your bundle stays lean regardless of how many features you enable.
+                </p>
+                <div class="packages-grid" data-aos="fade-up" data-aos-duration="1100">
+                    <div class="package-card">
+                        <h3>@openplayer/core</h3>
+                        <p>Player engine, event bus, plugin registry &amp; base media engine.</p>
+                    </div>
+                    <div class="package-card">
+                        <h3>@openplayer/player</h3>
+                        <p>Full ESM and UMD bundles with UI accessible controls layer — progress bar, volume, captions &amp; more.</p>
+                    </div>
+                    <div class="package-card">
+                        <h3>@openplayer/hls</h3>
+                        <p>HLS live &amp; VOD streaming powered by hls.js with quality levels.</p>
+                    </div>
+                    <div class="package-card">
+                        <h3>@openplayer/ads</h3>
+                        <p>VAST &amp; VMAP ad support — preroll, midroll, postroll &amp; non-linear.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="features" style="padding-top: 20px;">
+                <p class="section-label" style="padding-top: 30px;" data-aos="fade-up" data-aos-duration="800">What's inside</p>
+                <h1 style="text-align: center;">Features</h1>
                 <div data-aos="fade-down" data-aos-duration="1000" class="row">
                     <pre class="column" style="flex: 2;">
                         <code>
-&lt;<span class="tag">video</span> <span class="attr-name">class</span>="<span class="attr-value">op-player__media</span>" <span class="attr-name">id</span>="<span class="attr-value">video</span>" <span class="attr-name">controls</span>&gt;
-    &lt;<span class="tag">source</span>
-        <span class="attr-name">src</span>="<span class="attr-value">http://myvideo.com/sample.mp4</span>"
-        <span class="attr-name">type</span>="<span class="attr-value">video/mp4</span>"&gt;
-&lt;/<span class="tag">video</span>&gt;
+<span class="comment">// ES module — tree-shakeable</span>
+<span class="keyword">import</span> { <span class="class">Core</span> } <span class="keyword">from</span> <span class="attr-value">'@openplayer/core'</span>;
+<span class="keyword">import</span> { <span class="method">createUI</span>, <span class="method">buildControls</span> } <span class="keyword">from</span> <span class="attr-value">'@openplayer/player'</span>;
+<span class="keyword">import</span> { <span class="class">HlsMediaEngine</span> } <span class="keyword">from</span> <span class="attr-value">'@openplayer/hls'</span>;
+<span class="keyword">import</span> <span class="attr-value">'@openplayerjs/player/openplayer.css'</span>;
 
-&lt;<span class="tag">script</span>&gt;
-    <span class="keyword">const</span> <span class="constant">player</span> = <span class="keyword">new</span> <span class="class">OpenPlayerJS</span>(<span class="id">'video'</span>);
+<span class="keyword">const</span> <span class="constant">video</span> = document.<span class="method">querySelector</span>&lt;<span class="class">HTMLVideoElement</span>&gt;(<span class="attr-value">'#player'</span>);
+<span class="keyword">const</span> <span class="constant">core</span> = <span class="keyword">new</span> <span class="class">Core</span>(<span class="constant">video</span>, {
+  <span class="attr-name">plugins</span>: [<span class="keyword">new</span> <span class="class">HlsMediaEngine</span>({})],
+});
 
-    // Unleash the power
-    <span class="constant">player</span>.<span class="method">init()</span>;
-&lt;<span class="tag">/script</span>&gt;
+<span class="keyword">const</span> <span class="constant">controls</span> = <span class="method">buildControls</span>({
+  <span class="attr-name">top</span>: [<span class="attr-value">'progress'</span>],
+  <span class="attr-name">'bottom-left'</span>: [<span class="attr-value">'play'</span>, <span class="attr-value">'time'</span>, <span class="attr-value">'volume'</span>],
+  <span class="attr-name">'bottom-right'</span>: [<span class="attr-value">'captions'</span>, <span class="attr-value">'settings'</span>, <span class="attr-value">'fullscreen'</span>],
+});
+
+<span class="method">createUI</span>(<span class="constant">core</span>, <span class="constant">video</span>, <span class="constant">controls</span>);
+
                         </code>
                     </pre>
                     <div class="column">
-                        <h2>Easily configurable</h2>
-                        <p>To unleash the power of OpenPlayerJS, use <strong>video/audio</strong> with a <em>op-player__media</em> class name, an ID  attribute for your element and a small set of configuration options... and that's it!</p>
+                        <h2>Modular &amp; Tree-Shakeable</h2>
+                        <p>v3 is a true monorepo. Import the core engine, add the HLS plugin, sprinkle in ads — or just grab the all-in-one UMD bundle. Your call. <strong>Zero mandatory dependencies</strong> means your users only download what they use.</p>
                     </div>
                 </div>
                 <div data-aos="fade-up" data-aos-duration="1000" class="row">
@@ -118,69 +294,85 @@
                         </div>
                     </div>
                     <div class="column">
-                        <h2>Cross Browser/Cross Device Support</h2>
-                        <p>Giving the constant changes of policies on different browsers, OpenPlayerJS integrates a smart algorithm to detect the browser's autoplay capabilities so you don't have to worry about each browser's quirks or workarounds to do that.</p>
+                        <h2>Every Browser. Every Device.</h2>
+                        <p>OpenPlayerJS v3 ships smart autoplay detection that handles each browser's quirks so you never have to. Full <strong>iOS Safari</strong> support, correct <strong>preload="none"</strong> behaviour, and a user-gesture-aware playback model that just works — across Chrome, Firefox, Edge, and Safari on desktop and mobile.</p>
                     </div>
                 </div>
                 <div data-aos="fade-right" data-aos-duration="1000" class="row">
                     <img src="img/ads.svg" style="max-width: 400px;" class="column"/>
                     <div class="column">
-                        <h2>Media Advertising support</h2>
-                        <p>OpenPlayerJS integrates <a href="https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side" rel="noopener"> Google's IMA SDK</a> so users have full support for all the types of Ads specifications used nowadays: VAST/VPAID/VMAP.</p>
-                        <p>Just provide a valid Ads URL and let OpenPlayerJS to take care of the rest!</p>
+                        <h2>Full Ad Stack — VAST &amp; VMAP</h2>
+                        <p>The <strong>@openplayer/ads</strong> package delivers a production-grade ad runtime. Preroll, midroll, postroll, non-linear overlays, waterfall sources, bumpers, and VMAP scheduling — all in one composable plugin. Provide your ad tag URL and let OpenPlayerJS handle the rest.</p>
+                    </div>
+                </div>
+                <div data-aos="fade-left" data-aos-duration="1000" class="row" style="margin-bottom: 50px;">
+                    <pre class="column" style="flex: 2;">
+                        <code>
+<span class="comment">// TypeScript generics throughout</span>
+<span class="keyword">import</span> <span class="keyword">type</span> { <span class="class">PlayerUIConfig</span> } <span class="keyword">from</span> <span class="attr-value">'@openplayer/core'</span>;
+
+<span class="keyword">const</span> <span class="constant">config</span>: <span class="class">PlayerUIConfig</span> = {
+  <span class="attr-name">controls</span>: {
+    <span class="attr-name">layers</span>: {
+      <span class="attr-name">left</span>:   [<span class="attr-value">'play'</span>, <span class="attr-value">'time'</span>, <span class="attr-value">'volume'</span>],
+      <span class="attr-name">middle</span>: [<span class="attr-value">'progress'</span>],
+      <span class="attr-name">right</span>:  [<span class="attr-value">'captions'</span>, <span class="attr-value">'settings'</span>, <span class="attr-value">'fullscreen'</span>],
+    }
+  },
+};
+                        </code>
+                    </pre>
+                    <div class="column">
+                        <h2>TypeScript-First, Fully Typed</h2>
+                        <p>Every public API ships with complete type definitions. Autocomplete your configuration, catch mistakes at compile time, and build confidently on a stable, typed contract. <strong>No @types package needed</strong> — types are bundled right alongside the source.</p>
                     </div>
                 </div>
             </div>
             <div id="configuration">
                 <h1>Try it Now!</h1>
+                <p style="text-align:center; color:#666; max-width:560px; margin:0 auto 24px; line-height:1.6; font-size:0.95rem;">
+                    Paste any MP4, HLS stream (.m3u8), or audio URL below. Add a VAST/VMAP ad tag to see the full ad stack in action.
+                </p>
                 <div class="row">
                     <div data-aos="fade-up" data-aos-duration="1000" style="width: 100%;">
                         <form id="settings" action="#" method="POST">
                             <div class="panel-body">
                                 <div class="form-group">
-                                    <label for="url" class="col-form-label">Your media URL</label>
+                                    <label for="url" class="col-form-label">Media URL</label>
                                     <input type="url" class="form-control" id="url" name="url" value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">
                                 </div>
                                 <fieldset class="form-group">
                                     <div id="types">
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="types" id="video-type" value="video" checked>
-                                            <label class="form-check-label" for="video-type">
-                                                Video
-                                            </label>
+                                            <label class="form-check-label" for="video-type">Video</label>
                                         </div>
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="types" id="audio-type" value="audio">
-                                            <label class="form-check-label" for="audio-type">
-                                                Audio
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-control" name="levels" id="levels">
-                                            <label for="levels" class="col-form-label">If streaming, <a href="https://github.com/openplayerjs/openplayerjs/blob/master/docs/usage.md#about-the-levels-control" target="_blank" rel="noopener">show quality levels.</a></label>
+                                            <label class="form-check-label" for="audio-type">Audio</label>
                                         </div>
                                     </div>
                                 </fieldset>
                                 <div class="form-group">
-                                    <label for="poster" class="col-form-label">Poster URL</label>
-                                    <input type="url" class="form-control" id="poster" name="poster" placeholder="(Optional)">
+                                    <label for="poster" class="col-form-label">Poster URL <span style="color:#999;font-weight:400;">(optional)</span></label>
+                                    <input type="url" class="form-control" id="poster" name="poster" placeholder="https://…">
                                 </div>
                                 <div class="form-group">
-                                    <label for="subtitles" class="col-form-label">Subtitles URL</label>
-                                    <input type="url" class="form-control" id="subtitles" name="subtitles" placeholder="(Optional)">
+                                    <label for="ads" class="col-form-label">Ad Tag URL <span style="color:#999;font-weight:400;">(optional)</span></label>
+                                    <input type="url" class="form-control" name="ads" id="ads" placeholder="https://…">
                                 </div>
-                                <div class="form-group">
-                                    <label for="subtitles-lang" class="col-form-label">Subtitles Language (Country Code)</label>
-                                    <input type="text" class="form-control" id="subtitles-lang" name="subtitles-lang" placeholder="(i.e., en-US, zh-TW, ar)">
-                                </div>
-                                <div class="form-group">
-                                    <label for="subtitles-label" class="col-form-label">Subtitles Label</label>
-                                    <input type="text" class="form-control" id="subtitles-label" name="subtitles-label" placeholder="(Optional if no Subtitles URL)">
-                                </div>
-                                <div class="form-group">
-                                    <label for="ads" class="col-form-label">Ads URL</label>
-                                    <input type="url" class="form-control" name="ads" id="ads" placeholder="(Optional)">
-                                </div>
+                                <fieldset class="form-group">
+                                    <div id="ads-type">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="ads-format" id="vast-type" value="vast" checked>
+                                            <label class="form-check-label" for="vast-type">VAST <span style="color:#999;font-size:0.8em;">(single break)</span></label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="ads-format" id="vmap-type" value="vmap">
+                                            <label class="form-check-label" for="vmap-type">VMAP <span style="color:#999;font-size:0.8em;">(ad schedule)</span></label>
+                                        </div>
+                                    </div>
+                                </fieldset>
                                 <div style="margin: 10px 0; display: flex; justify-content: space-evenly;">
                                     <button id="load" type="submit">Load</button>
                                     <button id="permalink" type="button">Copy Permalink</button>
@@ -191,11 +383,31 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Contribute CTA -->
+            <div class="contribute-cta">
+                <p class="section-label">Open Source</p>
+                <h2>Built in the open. For everyone.</h2>
+                <p>OpenPlayerJS is MIT-licensed and community-driven. Whether you want to fix a bug, add a feature, improve the docs, or just share feedback — every contribution makes the player better for thousands of developers worldwide.</p>
+                <div class="cta-buttons">
+                    <a class="btn-solid" rel="noopener" href="https://github.com/openplayerjs/openplayerjs/archive/master.zip">Download v3</a>
+                    <a class="btn-outline" rel="noopener" href="https://github.com/openplayerjs/openplayerjs/blob/master/CONTRIBUTING.md" target="_blank">Contribute on GitHub</a>
+                </div>
+                <div class="github" style="margin-top: 28px;">
+                    <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs" data-size="large"
+                    data-show-count="true" aria-label="Star openplayerjs/openplayerjs on GitHub">Star</a>
+                    <a class="btn btn-primary github-button" href="https://github.com/openplayerjs/openplayerjs/fork" data-size="large"
+                    aria-label="Fork openplayerjs/openplayerjs on GitHub">Fork</a>
+                </div>
+            </div>
         </main>
-        <footer>OpenPlayerJS was created by Rafael Miranda</footer>
+        <footer>
+            OpenPlayerJS v3 &mdash; Created by <a href="https://github.com/openplayerjs" style="color:#d60000; text-decoration:none;">Rafael Miranda</a> &amp; contributors &mdash;
+            <a href="https://github.com/openplayerjs/openplayerjs/blob/master/LICENSE" target="_blank" rel="noopener" style="color:#d60000; text-decoration:none;">MIT License</a>
+        </footer>
         <script async defer src="https://buttons.github.io/buttons.js"></script>
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@3.0.0/dist/openplayer.js"></script>
         <script>
             AOS.init();
             const activateTabs = (e) => {
@@ -218,39 +430,20 @@
                 p.init();
             });
 
-            window.addEventListener('message', (event) => {
-                const iframe = document.getElementById('media');
-                iframe.height = event.data;
-            });
-
             const form = document.getElementById('settings');
 
             const generateUrl = () => {
-                let url = `${window.location.protocol}//${window.location.host}/embed.html?file=${encodeURIComponent(form.querySelector('#url').value || '')}&type=${form.querySelector('#video-type').checked ? 'video' : 'audio'}`;
+                const base = window.location.href.replace(/[^/]*(\?.*)?$/, '');
+                let url = `${base}embed.html?file=${encodeURIComponent(form.querySelector('#url').value || '')}&type=${form.querySelector('#video-type').checked ? 'video' : 'audio'}`;
                 const ads = form.querySelector('#ads').value;
-                const levels = form.querySelector('#levels').checked;
+                const adsFormat = form.querySelector('#vast-type').checked ? 'vast' : 'vmap';
                 const poster = form.querySelector('#poster').value;
-                const subtitles = form.querySelector('#subtitles').value;
-                const subtitlesLang = form.querySelector('#subtitles-lang').value;
-                const subtitlesLabel = form.querySelector('#subtitles-label').value;
 
                 if (ads) {
-                    url += `&ads=${encodeURIComponent(ads.replace(/%/g, '~'))}`;
+                    url += `&ads=${encodeURIComponent(ads.replace(/%/g, '~'))}&adsType=${adsFormat}`;
                 }
                 if (poster) {
                     url += `&poster=${encodeURIComponent(poster.replace(/%/g, '~'))}`;
-                }
-                if (subtitles) {
-                    url += `&subtitles=${encodeURIComponent(subtitles.replace(/%/g, '~'))}`;
-                }
-                if (subtitlesLang) {
-                    url += `&lang=${encodeURIComponent(subtitlesLang.replace(/%/g, '~'))}`;
-                }
-                if (subtitlesLabel) {
-                    url += `&label=${encodeURIComponent(subtitlesLabel.replace(/%/g, '~'))}`;
-                }
-                if (levels) {
-                    url += '&levels=true';
                 }
                 return url;
             }
@@ -260,21 +453,11 @@
             }
 
             document.getElementById('permalink').addEventListener('click', () => {
-                const el = document.createElement('textarea');
-                el.value = generateUrl();;
-                el.setAttribute('readonly', '');
-                el.style.position = 'absolute';
-                el.style.left = '-9999px';
-                document.body.appendChild(el);
-
-                const selected = document.getSelection().rangeCount > 0 ? document.getSelection().getRangeAt(0) : false;
-                el.select();
-                document.execCommand('copy');
-                document.body.removeChild(el);
-                if (selected) {
-                    document.getSelection().removeAllRanges();
-                    document.getSelection().addRange(selected);
-                }
+                const btn = document.getElementById('permalink');
+                navigator.clipboard.writeText(generateUrl()).then(() => {
+                    btn.textContent = 'Copied!';
+                    setTimeout(() => { btn.textContent = 'Copy Permalink'; }, 2000);
+                });
             });
 
             window.addEventListener('load', loadMedia);
@@ -285,12 +468,12 @@
                 e.stopPropagation();
             });
 
-            document.getElementById('media').addEventListener('load', (e) => {
-                const iframe = e.target;
-                iframe.width  = iframe.contentWindow.document.body.scrollWidth;
-                iframe.height = iframe.contentWindow.document.body.scrollHeight + 20;
+            // Height is kept in sync via postMessage from the ResizeObserver inside embed.html.
+            window.addEventListener('message', (event) => {
+                const h = Number(event.data);
+                if (h > 0) document.getElementById('media').height = h;
             });
-            
+
             let menuIsClosed = true;
 
             document.querySelector('.icon').addEventListener('click', (e) => {

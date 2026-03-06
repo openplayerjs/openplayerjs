@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon">
     <link rel="icon" href="img/favicon.png" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
     <style>
       body {
         background: #000;
@@ -31,7 +31,9 @@
 
   <body>
     <div id="media"></div>
-    <script src="https://cdn.jsdelivr.net/npm/openplayerjs@latest/dist/openplayer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@openplayerjs/hls@latest/dist/openplayer-hls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@openplayerjs/ads@latest/dist/openplayer-ads.js"></script>
     <script>  
       const getUrlParameter = (name) => {
         const search = new URLSearchParams(location.search);
@@ -40,89 +42,39 @@
       }
 
       const type = getUrlParameter('type');
-      const getMimeType = (url) => {
-        if (/\.m3u8/i.test(url)) {
-          return 'application/x-mpegURL';
-        } else if (/\.mpd/i.test(url)) {
-          return 'application/dash+xml';
-        } else if (/\.mp4/i.test(url)) {
-          return type === 'audio' ? 'audio/mp4' : 'video/mp4';
-        } else if (/\.mp3/i.test(url)) {
-          return 'audio/mp3';
-        } else if (/\.webm/i.test(url)) {
-          return type === 'audio' ? 'audio/webm' : 'video/webm';
-        } else if (/\.ogg/i.test(url)) {
-          return type === 'audio' ? 'audio/ogg' : 'video/ogg';
-        } else if (/\.ogv/i.test(url)) {
-          return 'video/ogg';
-        } else if (/\.oga/i.test(url)) {
-          return 'audio/ogg';
-        } else if (/\.3gp/i.test(url)) {
-          return 'audio/3gpp';
-        } else if (/\.wav/i.test(url)) {
-          return 'audio/wav';
-        } else if (/\.aac/i.test(url)) {
-          return 'audio/aac';
-        } else if (/\.flac/i.test(url)) {
-          return 'audio/flac';
-        }
-
-        // Let browser figure out if it can play it
-        return '';
-      }
-
       const ads = getUrlParameter('ads').replace(/~/g, '%');
+      const adsType = getUrlParameter('adsType') || 'vast';
       const poster = getUrlParameter('poster').replace(/~/g, '%');
-
-      const addLevels = !!getUrlParameter('levels');
-      const rightControls = ['captions', 'settings', 'fullscreen'];
-      if (addLevels) {
-        rightControls.splice(0, 0, 'levels');
-      }
-
-      const subtitles = getUrlParameter('subtitles');
 
       const defaultMedia =
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4';
 
       const url = decodeURIComponent(getUrlParameter('file')) || defaultMedia;
-      const media = document.createElement(type);
-      media.id = 'media1';
-      media.setAttribute('playsinline', true);
+      const media = document.createElement(type || 'video');
+      media.id = 'media-player';
+      media.controls = false;
+      media.playsinline = true;
+      media.src = url;
       if (poster) {
         media.setAttribute('poster', poster);
       }
-      media.controls = true;
-      media.playsinline = true;
       media.className = 'op-player__media';
-      media.innerHTML = `<source src="${url}" type="${getMimeType(url)}">`;
 
-      if (subtitles) {
-        const language = getUrlParameter('lang') || '';
-        const label = getUrlParameter('label') || '';
-        media.innerHTML += `<track src="${subtitles}" srclang="${language}" label="${label}" kind="subtitles" default>`
-      }
-      document.getElementById('media').appendChild(media);
+      const mediaContainer = document.getElementById('media');
+      mediaContainer.appendChild(media);
 
-      const message = document.getElementById('media1').offsetHeight - 80;
-      window.parent.postMessage(message, '*');
-
-      document.addEventListener('DOMContentLoaded', (event) => {
-        const player = new OpenPlayerJS('media1', {
-          ads: {
-            src: ads || null,
-          },
-          controls: {
-            layers: {
-              left: ['play', 'time', 'volume'],
-              middle: ['progress'],
-              right: rightControls,
-            }
-          },
+      setTimeout(() => {
+        const player = new OpenPlayerJS('media-player', {
+          ...(ads ? { ads: { debug: true, sources: [{ src: ads, type: adsType.toUpperCase() }] } } : {}),
         });
-
+  
         player.init();
-      }); 
+  
+        // Report container height to parent after player has rendered,
+        // and again whenever the layout changes (e.g. ads overlay appears/hides).
+        const postHeight = () => window.parent.postMessage(mediaContainer.offsetHeight, '*');
+        new ResizeObserver(postHeight).observe(mediaContainer);
+      }, 500);
     </script>
   </body>
 </html>
