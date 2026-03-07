@@ -8,8 +8,15 @@ while IFS=' ' read -r local_ref local_sha remote_ref remote_sha; do
   [ "$local_sha" = "0000000000000000000000000000000000000000" ] && continue
 
   if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
-    # New remote branch: lint against the merge-base with the upstream default branch.
-    base=$(git merge-base "$local_sha" "$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null)" 2>/dev/null)
+    # New remote branch: lint only the commits not yet on the remote default branch.
+    upstream=$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null)
+    if [ -z "$upstream" ]; then
+      # No local upstream configured (common when pushing a new branch for the first time).
+      # Read the default branch from the locally cached remote HEAD ref — no network call needed.
+      default_ref=$(git symbolic-ref "refs/remotes/${remote}/HEAD" 2>/dev/null || echo "refs/remotes/${remote}/master")
+      upstream="${default_ref#refs/remotes/}"
+    fi
+    base=$(git merge-base "$local_sha" "$upstream" 2>/dev/null)
     from="${base:-$(git rev-list --max-parents=0 HEAD)}"
   else
     from="$remote_sha"
