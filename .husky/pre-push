@@ -9,7 +9,14 @@ while IFS=' ' read -r local_ref local_sha remote_ref remote_sha; do
 
   if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
     # New remote branch: lint against the merge-base with the upstream default branch.
-    base=$(git merge-base "$local_sha" "$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null)" 2>/dev/null)
+    upstream=$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null)
+    if [ -z "$upstream" ]; then
+      # No local upstream configured (common when pushing a new branch for the first time).
+      # Fall back to the remote default branch.
+      default_branch=$(git remote show "$remote" 2>/dev/null | awk '/HEAD branch/{print $NF}')
+      upstream="${remote}/${default_branch:-master}"
+    fi
+    base=$(git merge-base "$local_sha" "$upstream" 2>/dev/null)
     from="${base:-$(git rev-list --max-parents=0 HEAD)}"
   else
     from="$remote_sha"
