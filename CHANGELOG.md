@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.2](https://github.com/openplayerjs/openplayerjs/compare/v3.0.1...v3.0.2) (2026-03-07)
+
+
+### Bug Fixes
+
+* Fixed hook to allow brand-new branches to be pushed ([b4fd5b0](https://github.com/openplayerjs/openplayerjs/commit/b4fd5b05cb679d33028db92f641aba6b3b4f4916))
+* Fixed hook to allow brand-new branches to be pushed to GitHub ([6afea6a](https://github.com/openplayerjs/openplayerjs/commit/6afea6ae9334745cc7b091107b2c9db57bd95883))
+
 ## [3.0.1](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0...v3.0.1) (2026-03-07)
 
 
