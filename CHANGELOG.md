@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/openplayerjs/openplayerjs/compare/v3.0.0...v3.0.1) (2026-03-07)
+
+
+### Bug Fixes
+
+* Removed typo in jsDelivr CDN URLs coming from old files ([05a33fc](https://github.com/openplayerjs/openplayerjs/commit/05a33fce950bfa5a64c74c60f1e0a5f7fae0c076))
+
 # [3.0.0](https://github.com/openplayerjs/openplayerjs/compare/v2.14.12...v3.0.0) (2026-03-06)
 
 
