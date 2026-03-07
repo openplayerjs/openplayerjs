@@ -1,7 +1,7 @@
 /**
  * @openplayerjs/ads
  *
- * VAST / VMAP / VPAID ad-serving plugin for OpenPlayerJS.
+ * VAST / VMAP / SIMID / OMID ad-serving plugin for OpenPlayerJS.
  * Peer dependencies: @openplayerjs/core, @dailymotion/vast-client, @dailymotion/vmap
  *
  * ESM usage:
@@ -13,5 +13,15 @@
  */
 
 export { AdsPlugin } from './ads';
-// Prototype and instance extension helpers (used by the UMD wrapper).
-export { extendAds, installAds } from './ads';
+export { installAds, extendAds } from './install';
+export { SimidSession, SIMID_PLAYER, SIMID_CREATIVE } from './simid';
+export { OmidSession } from './omid';
+export type {
+  AdsEvent,
+  AdsPluginConfig,
+  AdsSource,
+  AdsBreakConfig,
+  AdsSourceType,
+  NormalizedMediaFile,
+  AdVerification,
+} from './types';
