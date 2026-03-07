@@ -8,7 +8,7 @@
  *   import { HlsMediaEngine } from '@openplayerjs/hls';
  *   new Core(el, { plugins: [new HlsMediaEngine()] });
  *
- * UMD / CDN usage: load openplayer-hls.umd.js after the main OpenPlayer bundle.
+ * UMD / CDN usage: load openplayer-hls.js after the main OpenPlayer bundle.
  * It auto-registers itself under window.OpenPlayerPlugins.hls.
  */
 

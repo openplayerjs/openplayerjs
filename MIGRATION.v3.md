@@ -151,10 +151,10 @@ These options **no longer exist** in v3. The table below explains what to use in
 
 These options were temporarily removed in early v3 betas but are fully supported again:
 
-| Option                  | Status      | Notes                                                                                                                                                                                                                             |
-| ----------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `controls.layers`       | Supported   | The `{ layers: { left, middle, right } }` shape is accepted by `buildControls` and `normalizeControlsConfig`. `left` maps to `bottom-left`, `middle` maps to `top`, and `right` maps to `bottom-right` — identical to v2 behaviour. |
-| `controls.alwaysVisible` | Supported  | Pass `alwaysVisible: true` inside the controls config object (UMD) or as `{ alwaysVisible: true }` to `createUI` options (ESM). The controls bar stays permanently visible instead of fading out during playback.                 |
+| Option                   | Status    | Notes                                                                                                                                                                                                                               |
+| ------------------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `controls.layers`        | Supported | The `{ layers: { left, middle, right } }` shape is accepted by `buildControls` and `normalizeControlsConfig`. `left` maps to `bottom-left`, `middle` maps to `top`, and `right` maps to `bottom-right` — identical to v2 behaviour. |
+| `controls.alwaysVisible` | Supported | Pass `alwaysVisible: true` inside the controls config object (UMD) or as `{ alwaysVisible: true }` to `createUI` options (ESM). The controls bar stays permanently visible instead of fading out during playback.                   |
 
 ---
 
@@ -342,10 +342,10 @@ Then v3 keeps that workflow. The main differences are:
   <source src="/video.mp4" type="video/mp4" />
 </video>
 
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.js"></script>
 <!-- Optional add-ons: load before player.init() -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.js"></script>
 
 <script>
   const player = new OpenPlayerJS('player', {

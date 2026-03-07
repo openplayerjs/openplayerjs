@@ -8,7 +8,7 @@
  *   import { AdsPlugin } from '@openplayerjs/ads';
  *   new Core(el, { plugins: [new AdsPlugin({ breaks: [...] })] });
  *
- * UMD / CDN usage: load openplayer-ads.umd.js after the main OpenPlayer bundle.
+ * UMD / CDN usage: load openplayer-ads.js after the main OpenPlayer bundle.
  * It auto-registers itself under window.OpenPlayerPlugins.ads.
  */
 

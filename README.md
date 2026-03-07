@@ -167,11 +167,11 @@ If you prefer loading scripts from a CDN without a build step:
 </video>
 
 <!-- Core + UI -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.js"></script>
 <!-- Optional: HLS support -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.js"></script>
 <!-- Optional: Ads support -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.js"></script>
 
 <script>
   const player = new OpenPlayerJS('player', {
