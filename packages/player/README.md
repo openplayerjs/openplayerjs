@@ -1,8 +1,13 @@
 # @openplayerjs/player
 
-> UI layer, built-in controls, and extension APIs for [OpenPlayerJS](https://github.com/openplayerjs/openplayerjs)
+> UI layer, built-in controls, and extension APIs for [OpenPlayerJS](https://openplayerjs.com)
 
----
+[![npm](https://img.shields.io/npm/v/@openplayerjs/player?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/player)
+[![npm downloads](https://img.shields.io/npm/dm/@openplayerjs/player?logo=npm&label=downloads)](https://www.npmjs.com/package/@openplayerjs/player)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/@openplayerjs/player?label=minzipped)](https://bundlephobia.com/package/@openplayerjs/player)
+[![License](https://img.shields.io/npm/l/@openplayerjs/player)](../../LICENSE.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![JSDelivr](https://data.jsdelivr.com/v1/package/npm/@openplayerjs/player/badge)](https://www.jsdelivr.com/package/npm/@openplayerjs/player)
 
 This is the ESM equivalent to the v2 old `OpenPlayerJS` constructor
 
@@ -74,15 +79,15 @@ createUI(core, video, controls);
 
 ### UI options
 
-| Option        | Type                     | Default | Description                                                                      |
-| ------------- | ------------------------ | ------- | -------------------------------------------------------------------------------- |
-| `width`       | `number \| string`       | —       | Force a specific player width (applied to the wrapper)                           |
-| `height`      | `number \| string`       | —       | Force a specific player height (applied to the wrapper)                          |
-| `step`        | `number`                 | `0`     | Seek distance in seconds for keyboard shortcuts. `0` means use the default (5 s) |
-| `allowSkip`   | `boolean`                | `true`  | Allow seeking forward via the progress bar                                       |
-| `allowRewind` | `boolean`                | `true`  | Allow seeking backward via the progress bar                                      |
-| `labels`      | `Record<string, string>` | —       | Override built-in UI label strings (e.g. `play`, `pause`, `fullscreen`, etc.)    |
-| `controls`    | `ControlsConfig`         | see below | Layout of the built-in controls and auto-hide behaviour                        |
+| Option        | Type                     | Default   | Description                                                                      |
+| ------------- | ------------------------ | --------- | -------------------------------------------------------------------------------- |
+| `width`       | `number \| string`       | —         | Force a specific player width (applied to the wrapper)                           |
+| `height`      | `number \| string`       | —         | Force a specific player height (applied to the wrapper)                          |
+| `step`        | `number`                 | `0`       | Seek distance in seconds for keyboard shortcuts. `0` means use the default (5 s) |
+| `allowSkip`   | `boolean`                | `true`    | Allow seeking forward via the progress bar                                       |
+| `allowRewind` | `boolean`                | `true`    | Allow seeking backward via the progress bar                                      |
+| `labels`      | `Record<string, string>` | —         | Override built-in UI label strings (e.g. `play`, `pause`, `fullscreen`, etc.)    |
+| `controls`    | `ControlsConfig`         | see below | Layout of the built-in controls and auto-hide behaviour                          |
 
 > For engine/plugins and initial playback state options like `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, and `duration`, see `@openplayerjs/core`.
 
@@ -315,8 +320,8 @@ const controls = buildControls(); // progress on top, play/time/volume left, cap
 
 ```ts
 const controls = buildControls({
-  top:            ['progress'],
-  'bottom-left':  ['play', 'time', 'volume'],
+  top: ['progress'],
+  'bottom-left': ['play', 'time', 'volume'],
   'bottom-right': ['captions', 'settings', 'fullscreen'],
 });
 ```
@@ -326,9 +331,9 @@ const controls = buildControls({
 ```ts
 const controls = buildControls({
   layers: {
-    left:   ['play', 'time', 'volume'],
+    left: ['play', 'time', 'volume'],
     middle: ['progress'],
-    right:  ['captions', 'settings', 'fullscreen'],
+    right: ['captions', 'settings', 'fullscreen'],
   },
 });
 ```
@@ -385,7 +390,7 @@ registerControl('my-button', () => ({
 }));
 
 // Now usable by ID:
-buildControls({ bottom: { right: ['my-button', 'fullscreen'] }, main: ['progress'] });
+buildControls({ 'bottom-right': ['my-button', 'fullscreen'], top: ['progress'] });
 ```
 
 ### `extendControls(player)`

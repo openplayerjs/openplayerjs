@@ -4,6 +4,7 @@ import { EventBus } from '../src/core/events';
 import { Lease } from '../src/core/lease';
 import type { MediaEngineContext, MediaSource } from '../src/core/media';
 import { StateManager } from '../src/core/state';
+import { HtmlMediaSurface } from '../src/core/surface';
 import { BaseMediaEngine } from '../src/engines/base';
 
 class TestEngine extends BaseMediaEngine {
@@ -39,18 +40,21 @@ class TestEngine extends BaseMediaEngine {
 }
 
 function ctx(media: HTMLMediaElement) {
+  const surface = new HtmlMediaSurface(media);
   return {
     media,
+    container: media.parentElement ?? media,
     events: new EventBus(),
-    leases: new Lease(),
-    state: new StateManager('idle'),
     config: {},
     activeSource: { src: 'https://example.com/a.mp4', type: 'video/mp4' },
     core: {
       leases: new Lease(),
       state: new StateManager('idle'),
     } as any,
-  } as MediaEngineContext;
+    surface,
+    setSurface(s: any) { return s; },
+    resetSurface() { return surface; },
+  } as unknown as MediaEngineContext;
 }
 
 describe('BaseMediaEngine branch coverage', () => {

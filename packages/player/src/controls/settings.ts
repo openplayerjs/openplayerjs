@@ -33,6 +33,7 @@ export class SettingsControl extends BaseControl {
     this.panel = document.createElement('div');
     this.panel.className = 'op-menu';
     this.panel.setAttribute('role', 'menu');
+    this.panel.tabIndex = -1;
     this.panel.style.display = 'none';
 
     this.view = document.createElement('div');
@@ -76,9 +77,31 @@ export class SettingsControl extends BaseControl {
       EVENT_OPTIONS
     );
 
+    // Close the menu when focus moves outside the player (matching YouTube behaviour).
+    this.listen(
+      document,
+      'focusout',
+      () => {
+        if (!this.isOpen) return;
+        window.setTimeout(() => {
+          const playerEl = this.button.closest('.op-player');
+          if (playerEl && !playerEl.contains(document.activeElement)) this.close();
+        }, 0);
+      },
+      EVENT_OPTIONS
+    );
+
+    let knownOverlayId: string | null = null;
     this.dispose.add(
-      this.overlayMgr.bus.on('overlay:changed', () => {
-        this.activeSubmenuId = null;
+      this.overlayMgr.bus.on('overlay:changed', (ov: any) => {
+        const newId: string | null = ov?.id ?? null;
+        // Only reset submenu navigation when the overlay identity changes
+        // (e.g. ad starts or ends). update() fires overlay:changed on every
+        // timeupdate — we must not reset the user's submenu position then.
+        if (newId !== knownOverlayId) {
+          knownOverlayId = newId;
+          this.activeSubmenuId = null;
+        }
         // Always re-compute availability so the control can hide during ads
         // and re-appear when content resumes, even if the menu isn't open.
         this.render();
@@ -92,7 +115,7 @@ export class SettingsControl extends BaseControl {
         const ov = this.overlayMgr.active;
         if (ov?.id === 'ads') return null;
 
-        const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+        const rates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5];
         const current = core.playbackRate || 1;
         return {
           id: 'speed',
@@ -127,6 +150,7 @@ export class SettingsControl extends BaseControl {
     this.button.setAttribute('aria-expanded', 'true');
     this.panel.style.display = 'block';
     this.render();
+    this.core.events.emit('ui:menu:open');
   }
 
   private close() {
@@ -134,9 +158,17 @@ export class SettingsControl extends BaseControl {
     this.activeSubmenuId = null;
     this.button.setAttribute('aria-expanded', 'false');
     this.panel.style.display = 'none';
+    this.core.events.emit('ui:menu:close');
   }
 
   private render() {
+    // If focus is inside the menu container, move it to the panel before clearing
+    // the DOM so the browser doesn't relocate focus to <body>, which would cause
+    // the focusout handler to close the menu mid-navigation.
+    if (this.isOpen && this.root.contains(document.activeElement)) {
+      this.panel.focus({ preventScroll: true });
+    }
+
     const reg = getSettingsRegistry(this.core);
     const providers = reg.list();
     const available = providers

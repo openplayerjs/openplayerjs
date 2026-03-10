@@ -35,7 +35,8 @@
     "headless"
   ],
   "scripts": {
-    "test": "jest --passWithNoTests  --config ../../jest.config.cjs"
+    "test": "jest --passWithNoTests  --config ../../jest.config.cjs",
+    "release": "dotenv -o -- release-it --config .release-it.cjs"
   },
   "publishConfig": {
     "access": "public"

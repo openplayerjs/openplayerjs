@@ -76,7 +76,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       if (!this.canHandlePlayback(ctx)) {
         // If another surface owns playback (ads/cast/etc), force content back to paused.
         try {
-          ctx.media.pause();
+          ctx.surface.pause();
         } catch {
           //
         }
@@ -114,12 +114,8 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       this.HlsClass.Events.MEDIA_ATTACHED,
       () => {
         if (ctx.media.autoplay && this.canHandlePlayback(ctx)) {
-          ctx.media.muted = true;
-          try {
-            ctx.media.play();
-          } catch {
-            // Nothing
-          }
+          ctx.surface.muted = true;
+          void ctx.surface.play();
         }
       },
       EVENT_OPTIONS

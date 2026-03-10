@@ -597,6 +597,10 @@
 }
 
 /* == Fullscreen ============= */
+.op-fullscreen__on .op-media {
+    height: 100%;
+    width: 100%
+}
 .op-fullscreen__on .op-controls {
     z-index: 2147483648;
 }
@@ -728,6 +732,15 @@
 .op-player__video:not(.op-controls--hidden) video::cue {
     -webkit-transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
             transform: translateY(calc(-1 * (var(--op-controls-height, 48px) + env(safe-area-inset-bottom, 0px) + 8px)));
+}
+
+/* Shrink the YouTube iframe height when controls are visible so YouTube's own
+   caption overlay stays in the visible area above the controls bar.
+   Uses height !important because top+height takes precedence over bottom in the
+   CSS overconstrained case; the YouTube IFrame API sets a fixed inline height
+   which we must override. Restores full height when controls hide. */
+.op-player__video:not(.op-controls--hidden) .op-youtube-iframe {
+    height: calc(100% - var(--op-controls-height, 48px) - env(safe-area-inset-bottom, 0px)) !important;
 }
 
 /* === Accessibility =================== */

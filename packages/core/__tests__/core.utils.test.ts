@@ -47,4 +47,14 @@ describe('core/utils', () => {
     expect(predictMimeType(v, 'https://example.com/clip.webm')).toBe('video/webm');
     expect(predictMimeType(a, 'https://example.com/sound.webm')).toBe('audio/webm');
   });
+
+  test('predictMimeType returns default when given a non-URL string (bare video ID)', () => {
+    const v = document.createElement('video');
+    const a = document.createElement('audio');
+
+    // Bare 11-char YouTube ID — not a valid URL, should not throw
+    expect(() => predictMimeType(v, 'dQw4w9WgXcQ')).not.toThrow();
+    expect(predictMimeType(v, 'dQw4w9WgXcQ')).toBe('video/mp4');
+    expect(predictMimeType(a, 'dQw4w9WgXcQ')).toBe('audio/mp3');
+  });
 });

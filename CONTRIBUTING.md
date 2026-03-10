@@ -92,6 +92,72 @@ the `@openplayerjs/` scope:
 CI enforces this on every PR that touches a `packages/*/package.json` file and will fail if the
 prefix is wrong.
 
+#### Required scripts
+
+Every package **must** expose these scripts in its `package.json` so that Turbo's task pipeline
+and per-package release tooling work correctly:
+
+```json
+{
+  "scripts": {
+    "test": "jest --passWithNoTests --config ../../jest.config.cjs",
+    "release": "dotenv -o -- release-it --config .release-it.cjs"
+  }
+}
+```
+
+#### Turbo pipeline
+
+The monorepo uses [Turbo](https://turbo.build) to run tasks in dependency order. `turbo.json`
+at the repo root defines four tasks: `build`, `test`, `lint`, and `release`. Turbo resolves
+the order from each package's `peerDependencies` / workspace references — no manual ordering
+is needed.
+
+| Task | Dependency rule |
+| --- | --- |
+| `build` | `dependsOn: ["^build"]` — upstream packages build first |
+| `test` | `dependsOn: ["^build"]` — needs compiled deps |
+| `lint` | no deps — runs in parallel |
+| `release` | `dependsOn: ["^release"]` — `core` releases before its dependents |
+
+To run a task across all packages: `turbo run <task>` (e.g. `turbo run build`).
+The root `release:all` script is a convenience alias for `turbo run release`.
+
+#### Per-package versioning and release
+
+Each package manages its own version independently. Create a `.release-it.cjs` in the new
+package directory, following the pattern of any existing package (e.g.
+`packages/hls/.release-it.cjs`):
+
+```js
+module.exports = {
+  git: {
+    requireCleanWorkingDir: false,
+    addFiles: ['package.json', 'CHANGELOG.md'],
+    tagName: '@openplayerjs/my-package@${version}',
+    commitMessage: 'chore(release): @openplayerjs/my-package@${version}',
+  },
+  github: { release: false },
+  npm: { publish: true, publishArgs: ['--no-git-checks'] },
+  plugins: {
+    '@release-it/conventional-changelog': {
+      preset: { name: 'angular' },
+      infile: 'CHANGELOG.md',
+      header: '# Changelog',
+    },
+  },
+};
+```
+
+Key points:
+- **`requireCleanWorkingDir: false`** — other packages may have uncommitted changes in a monorepo.
+- **`addFiles`** — only stages this package's own files; avoids accidentally committing unrelated changes.
+- **`tagName`** — scoped tags (`@openplayerjs/my-package@x.y.z`) keep release history independent in GitHub.
+- **`github.release: false`** — only the root coordinator creates a GitHub Release; packages emit tags only.
+
+To release a single package manually: `cd packages/my-package && pnpm run release`.
+To release all packages in dependency order: `pnpm run release:all` from the repo root.
+
 ---
 
 ### Cross-package imports

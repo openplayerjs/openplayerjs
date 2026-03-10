@@ -44,3 +44,19 @@ export type { Disposer } from './core/dispose';
 // ─── Internals exposed for testing and advanced use ───────────────────────────
 export { Lease } from './core/lease';
 export { StateManager } from './core/state';
+
+export { HtmlMediaSurface } from './core/surface';
+export type { MediaSurface, MediaSurfaceEvent, MediaSurfaceEventMap } from './core/surface';
+
+// ─── Iframe engine primitives (custom iframe-based engine authors) ────────────
+export { IframeMediaSurface } from './engines/iframe';
+export type {
+  IframeMediaAdapter,
+  IframeMediaAdapterEvents,
+  IframePlaybackState,
+  IframeSurfaceOptions,
+} from './engines/iframe';
+
+// ─── Caption track provider (iframe engine caption support) ───────────────────
+export type { CaptionTrack, CaptionTrackProvider } from './core/captions';
+export { getCaptionTrackProvider, setCaptionTrackProvider } from './core/captions';
