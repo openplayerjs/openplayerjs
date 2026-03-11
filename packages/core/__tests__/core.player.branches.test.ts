@@ -212,9 +212,15 @@ describe('core/player branches', () => {
       version = '0';
       capabilities = ['media-engine'];
       priority = 100;
-      canPlay(_s: MediaSource) { return true; }
-      attach(_ctx: MediaEngineContext) { /* intentionally silent */ }
-      detach() {}
+      canPlay(_s: MediaSource) {
+        return true;
+      }
+      attach(_ctx: MediaEngineContext) {
+        /* intentionally silent */
+      }
+      detach() {
+        /* intentionally silent */
+      }
     }
 
     const p = new Core(media, { plugins: [new PendingEngine()] });
@@ -266,9 +272,15 @@ describe('core/player branches', () => {
       version = '0';
       capabilities = ['media-engine'];
       priority = 100;
-      canPlay(_s: MediaSource) { return true; }
-      attach(ctx: MediaEngineContext) { capturedCtx = ctx; }
-      detach() {}
+      canPlay(_s: MediaSource) {
+        return true;
+      }
+      attach(ctx: MediaEngineContext) {
+        capturedCtx = ctx;
+      }
+      detach() {
+        /* intentionally silent */
+      }
     }
 
     const p = new Core(media, { plugins: [new CapturingEngine()] });

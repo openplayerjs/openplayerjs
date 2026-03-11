@@ -1,12 +1,8 @@
 /** @jest-environment jsdom */
 
 import { EventBus } from '../src/core/events';
+import type { IframeMediaAdapter, IframeMediaAdapterEvents, IframePlaybackState } from '../src/engines/iframe';
 import { IframeMediaSurface } from '../src/engines/iframe';
-import type {
-  IframeMediaAdapter,
-  IframeMediaAdapterEvents,
-  IframePlaybackState,
-} from '../src/engines/iframe';
 
 // ─── Minimal mock adapter ────────────────────────────────────────────────────
 
@@ -217,19 +213,14 @@ describe('IframeMediaSurface – mount / destroy', () => {
 });
 
 describe('IframeMediaSurface – onAdapterState', () => {
-  test.each<IframePlaybackState>([
-    'playing',
-    'paused',
-    'ended',
-    'loading',
-    'buffering',
-    'idle',
-    'error',
-  ])('handles state=%s without throwing', (state) => {
-    const { adapter, surface } = makeSurface();
-    expect(() => adapter.emit('state', state)).not.toThrow();
-    void surface; // used
-  });
+  test.each<IframePlaybackState>(['playing', 'paused', 'ended', 'loading', 'buffering', 'idle', 'error'])(
+    'handles state=%s without throwing',
+    (state) => {
+      const { adapter, surface } = makeSurface();
+      expect(() => adapter.emit('state', state)).not.toThrow();
+      void surface; // used
+    }
+  );
 
   test('state=playing updates paused/ended flags and emits play+playing', () => {
     const { adapter, surface } = makeSurface();
@@ -340,7 +331,7 @@ describe('IframeMediaSurface – push events (timeupdate / durationchange / rate
 
   test('applyTime ignores non-finite values', () => {
     const { adapter, surface } = makeSurface();
-    surface.currentTime; // ensure initial is 0
+    surface.currentTime = 0;
     adapter.emit('timeupdate', NaN);
     expect(surface.currentTime).toBe(0);
     adapter.emit('timeupdate', Infinity);

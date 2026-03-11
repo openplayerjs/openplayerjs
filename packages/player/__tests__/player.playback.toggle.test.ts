@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { Core } from '@openplayerjs/core';
+import { PlayControl } from '../src/controls/play';
 import { togglePlayback } from '../src/playback';
 
 function makeCore() {
@@ -33,13 +34,11 @@ describe('togglePlayback', () => {
   });
 });
 
-
 describe('PlayControl – isEnded path', () => {
   test('clicking play button after ended resets currentTime to 0', async () => {
     const v = document.createElement('video');
     document.body.appendChild(v);
-    const player = new (require('@openplayerjs/core').Core)(v, { plugins: [] });
-    const { PlayControl } = require('../src/controls/play') as typeof import('../src/controls/play');
+    const player = new Core(v, { plugins: [] });
 
     const control = new PlayControl();
     const btn = control.create(player);

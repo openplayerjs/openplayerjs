@@ -1,8 +1,8 @@
 /** @jest-environment jsdom */
 
 import { Core, getOverlayManager } from '@openplayerjs/core';
-import { CaptionsControl } from '../src/controls/captions';
-import createCaptionsControl from '../src/controls/captions';
+import createCaptionsControl, { CaptionsControl } from '../src/controls/captions';
+import { getSettingsRegistry } from '../src/settings';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -202,7 +202,6 @@ describe('CaptionsControl – overlay:changed handler', () => {
 describe('CaptionsControl – settings submenu (no tracks → null)', () => {
   test('getSubmenu returns null when no native tracks and no overlay', () => {
     const player = makeCore();
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
 
     const control = new CaptionsControl();
     control.create(player);
@@ -221,7 +220,6 @@ describe('CaptionsControl – settings submenu (no tracks → null)', () => {
   test('getSubmenu during active overlay without adVideo returns null', () => {
     const player = makeCore();
     const overlayMgr = getOverlayManager(player);
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
 
     const control = new CaptionsControl();
     control.create(player);
@@ -250,7 +248,6 @@ describe('CaptionsControl – getSubmenu with native tracks (label/language fall
   test('submenu items use language code when label is empty', () => {
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
 
     // Track with empty label and language set — label should fall back to language code
     mockTextTracksOn(video, [{ kind: 'captions', label: '', language: 'fr', mode: 'disabled' }]);
@@ -274,7 +271,6 @@ describe('CaptionsControl – getSubmenu with native tracks (label/language fall
   test('submenu onSelect for "off" item disables all tracks and refreshes', () => {
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
 
     mockTextTracksOn(video, [{ kind: 'captions', label: 'English', language: 'en', mode: 'disabled' }]);
 
@@ -296,7 +292,6 @@ describe('CaptionsControl – getSubmenu with native tracks (label/language fall
   test('submenu onSelect for a track item enables it and saves pref', () => {
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
 
     mockTextTracksOn(video, [{ kind: 'captions', label: 'English', language: 'en', mode: 'disabled' }]);
 
@@ -377,9 +372,7 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
   test('clicking button again turns captions off via setNativeAllOff', () => {
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
-    const tracks = mockTextTracksOn(video, [
-      { kind: 'captions', label: 'English', language: 'en', mode: 'showing' },
-    ]);
+    const tracks = mockTextTracksOn(video, [{ kind: 'captions', label: 'English', language: 'en', mode: 'showing' }]);
 
     const control = new CaptionsControl();
     const el = control.create(player);
@@ -403,8 +396,6 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
       { kind: 'subtitles', label: 'French', language: 'fr', mode: 'disabled' },
     ]);
 
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
-
     const control = new CaptionsControl();
     control.create(player);
 
@@ -425,11 +416,7 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
   test('getSubmenu onSelect for a track item enables it and stores index', () => {
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
-    const tracks = mockTextTracksOn(video, [
-      { kind: 'captions', label: 'English', language: 'en', mode: 'disabled' },
-    ]);
-
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
+    const tracks = mockTextTracksOn(video, [{ kind: 'captions', label: 'English', language: 'en', mode: 'disabled' }]);
 
     const control = new CaptionsControl();
     control.create(player);
@@ -453,8 +440,6 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
     const video = player.media as HTMLVideoElement;
     mockTextTracksOn(video, [{ kind: 'captions', label: '', language: '', mode: 'disabled' }]);
 
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
-
     const control = new CaptionsControl();
     control.create(player);
 
@@ -476,9 +461,7 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
 
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
-    const tracks = mockTextTracksOn(video, [
-      { kind: 'captions', label: 'French', language: 'fr', mode: 'disabled' },
-    ]);
+    const tracks = mockTextTracksOn(video, [{ kind: 'captions', label: 'French', language: 'fr', mode: 'disabled' }]);
 
     const control = new CaptionsControl();
     control.create(player);
@@ -497,9 +480,7 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
 
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
-    const tracks = mockTextTracksOn(video, [
-      { kind: 'captions', label: 'English', language: 'en', mode: 'disabled' },
-    ]);
+    const tracks = mockTextTracksOn(video, [{ kind: 'captions', label: 'English', language: 'en', mode: 'disabled' }]);
 
     const control = new CaptionsControl();
     control.create(player);
@@ -565,11 +546,7 @@ describe('CaptionsControl – overlay with fullscreenVideoEl (ad video tracks)',
     const player = makeCore();
     const overlayMgr = getOverlayManager(player);
     const adVideo = document.createElement('video');
-    mockTextTracksOn(adVideo, [
-      { kind: 'captions', label: 'Ad EN', language: 'en', mode: 'disabled' },
-    ]);
-
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
+    mockTextTracksOn(adVideo, [{ kind: 'captions', label: 'Ad EN', language: 'en', mode: 'disabled' }]);
 
     const control = new CaptionsControl();
     control.create(player);
@@ -594,7 +571,7 @@ describe('CaptionsControl – overlay with fullscreenVideoEl (ad video tracks)',
     // Items: off + track items
     expect(submenu!.items.length).toBeGreaterThanOrEqual(2);
 
-    // onSelect for "off" item  
+    // onSelect for "off" item
     expect(() => submenu!.items[0].onSelect()).not.toThrow();
 
     // onSelect for track item
@@ -609,26 +586,28 @@ describe('CaptionsControl – overlay with fullscreenVideoEl (ad video tracks)',
 
 // ─── Provider-based captions (CaptionTrackProvider) ──────────────────────────
 
+import type { CaptionTrack, CaptionTrackProvider } from '@openplayerjs/core';
 import { setCaptionTrackProvider } from '@openplayerjs/core';
-import type { CaptionTrackProvider, CaptionTrack } from '@openplayerjs/core';
 
-type MockProvider = CaptionTrackProvider & { _active: string | null; subscribeCallbacks: Array<() => void> };
+type MockProvider = CaptionTrackProvider & { _active: string | null; subscribeCallbacks: (() => void)[] };
 
-function makeProvider(opts: {
-  tracks: CaptionTrack[];
-  active: string | null;
-  withSubscribe?: boolean;
-}): MockProvider {
-  const subscribeCallbacks: Array<() => void> = [];
+function makeProvider(opts: { tracks: CaptionTrack[]; active: string | null; withSubscribe?: boolean }): MockProvider {
+  const subscribeCallbacks: (() => void)[] = [];
   let _active = opts.active;
 
   const provider: MockProvider = {
-    get _active() { return _active; },
-    set _active(v: string | null) { _active = v; },
+    get _active() {
+      return _active;
+    },
+    set _active(v: string | null) {
+      _active = v;
+    },
     subscribeCallbacks,
     getTracks: () => opts.tracks,
     getActiveTrack: () => _active,
-    setTrack: (id: string | null) => { _active = id; },
+    setTrack: (id: string | null) => {
+      _active = id;
+    },
     ...(opts.withSubscribe
       ? {
           subscribe: (cb: () => void) => {
@@ -702,8 +681,6 @@ describe('CaptionsControl – provider-based captions', () => {
     const provider = makeProvider({ tracks: [{ id: 'en', label: 'English', language: 'en' }], active: null });
     setCaptionTrackProvider(player, provider);
 
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
-
     const control = new CaptionsControl();
     control.create(player);
 
@@ -732,8 +709,6 @@ describe('CaptionsControl – provider-based captions', () => {
     const player = makeCore();
     const provider = makeProvider({ tracks: [], active: null });
     setCaptionTrackProvider(player, provider);
-
-    const { getSettingsRegistry } = require('../src/settings') as typeof import('../src/settings');
 
     const control = new CaptionsControl();
     control.create(player);
