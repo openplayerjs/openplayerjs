@@ -101,10 +101,16 @@ export class SettingsControl extends BaseControl {
         if (newId !== knownOverlayId) {
           knownOverlayId = newId;
           this.activeSubmenuId = null;
+          // Dismiss the menu on any context switch (ad↔content) so the user
+          // never sees a stale track list from the previous context. It is safe
+          // to rebuild here because the ad / content transition has completed.
+          if (this.isOpen) this.close();
+          else this.render();
+        } else if (!this.isOpen) {
+          // Periodic timeupdate ticks: only re-render visibility when closed
+          // to avoid destroying buttons the user is actively clicking.
+          this.render();
         }
-        // Always re-compute availability so the control can hide during ads
-        // and re-appear when content resumes, even if the menu isn't open.
-        this.render();
       })
     );
 

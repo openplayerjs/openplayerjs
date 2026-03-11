@@ -1308,6 +1308,7 @@ export class AdsPlugin implements PlayerPlugin {
       t.default = false;
 
       adVideo.appendChild(t);
+      if (t.track) t.track.mode = 'hidden';
       created.push(t);
     }
 
@@ -2208,17 +2209,6 @@ export class AdsPlugin implements PlayerPlugin {
     this.clearAdTracks();
     this.adTrackEls = this.attachAdCaptionTracks(v, mediaFile.raw, creative);
     this.sessionUnsubs.push(() => this.clearAdTracks());
-
-    // Activate the first caption/subtitle track immediately. The video is already
-    // in the DOM at this point, so the browser can start fetching the VTT resource
-    // and will render cues as they become active during playback.
-    for (const trackEl of this.adTrackEls) {
-      const kind = trackEl.track?.kind;
-      if (kind === 'subtitles' || kind === 'captions') {
-        trackEl.track.mode = 'showing';
-        break;
-      }
-    }
 
     let overlayMgr: ReturnType<typeof getOverlayManager> | null = null;
     try {

@@ -363,4 +363,85 @@ describe('UI createUI + controls autohide', () => {
 
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
   });
+
+  test('ui:menu:open clears an active hide timer so controls stay visible', async () => {
+    const p = makeCore();
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, []);
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    // Schedule a hide timer via playing event
+    p.events.emit('playing');
+    // Before the 3 s timer fires, open the menu — this must clear the timer
+    p.events.emit('ui:menu:open');
+
+    jest.advanceTimersByTime(3200);
+    await flushTimersAndMicrotasks();
+
+    // Timer was cleared by ui:menu:open so controls remain visible
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
+  });
+
+  test('ui:menu:close sets menuOpen=false and reschedules the hide timer', async () => {
+    const p = makeCore();
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, []);
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    p.events.emit('ui:menu:open');
+    p.events.emit('ui:menu:close');
+
+    jest.advanceTimersByTime(3200);
+    await flushTimersAndMicrotasks();
+
+    // scheduleHide() was called by ui:menu:close and media is playing → controls hide
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  test('ui:addElement with el payload places element in the controls grid', () => {
+    const p = makeCore();
+    createUI(p, p.media, []);
+
+    const customEl = document.createElement('div');
+    customEl.id = 'test-custom-el';
+
+    p.events.emit('ui:addElement', { el: customEl, placement: { v: 'bottom', h: 'left' } });
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    expect(wrapper.querySelector('#test-custom-el')).toBeTruthy();
+  });
+
+  test('ui:addElement without el payload early-returns without throwing', () => {
+    const p = makeCore();
+    createUI(p, p.media, []);
+
+    expect(() => p.events.emit('ui:addElement', {})).not.toThrow();
+    expect(() => p.events.emit('ui:addElement', undefined)).not.toThrow();
+  });
+
+  test('ui:addControl with control payload creates and places the control', () => {
+    const p = makeCore();
+    createUI(p, p.media, []);
+
+    const pc = createPlayControl();
+    const payload: { control: Control; el?: HTMLElement } = { control: pc };
+    p.events.emit('ui:addControl', payload);
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    expect(wrapper.querySelector('.op-controls__playpause')).toBeTruthy();
+    // payload.el is populated by the handler
+    expect(payload.el).toBeTruthy();
+  });
+
+  test('ui:addControl without control payload early-returns without throwing', () => {
+    const p = makeCore();
+    createUI(p, p.media, []);
+
+    expect(() => p.events.emit('ui:addControl', {})).not.toThrow();
+    expect(() => p.events.emit('ui:addControl', undefined)).not.toThrow();
+  });
 });

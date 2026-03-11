@@ -36,8 +36,10 @@ jobs:
           PR_BASE: ${{ github.event.pull_request.base.sha }}
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
-          # Resolve the SHA of the earliest v3 tag so pre-v3 commits are never linted.
-          v3_start=$(git rev-list -n 1 v3.0.0-alpha.0)
+          # Use v3.0.0 as the baseline so the non-conventional
+          # merge commit "v3.0 upgrade (#457)" — which lands between alpha.0 and
+          # v3.0.0 — is never included in the linted range.
+          v3_start=$(git rev-list -n 1 v3.0.0)
 
           # Use whichever boundary is more recent: the PR base or the v3 start.
           # merge-base --is-ancestor exits 0 if v3_start is an ancestor of PR_BASE,

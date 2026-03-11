@@ -71,6 +71,9 @@ export class CaptionsControl extends BaseControl {
 
   private button!: HTMLButtonElement;
   private lastSelectedIndex: number | null = null;
+  // Separate from lastSelectedIndex (which tracks content-media state) so a
+  // content-video pref can't bleed into ad-video track selection.
+  private lastAdTrackIndex: number | null = null;
   private lastSelectedProviderId: string | null = readCaptionPref();
   private prefApplied = false;
 
@@ -141,7 +144,9 @@ export class CaptionsControl extends BaseControl {
           const showing = getNativeShowingIndex(adVideo);
           if (showing === 'off') {
             const tracks = listNativeTracks(adVideo);
-            const idx = this.lastSelectedIndex ?? tracks[0]?.index;
+            // Use lastAdTrackIndex (ad-specific) — not lastSelectedIndex which
+            // tracks content-media state and may point to a wrong index.
+            const idx = this.lastAdTrackIndex ?? tracks[0]?.index;
             if (typeof idx === 'number') selectNativeIndex(adVideo, idx, 'hidden');
           } else {
             setNativeAllHidden(adVideo);
@@ -204,7 +209,7 @@ export class CaptionsControl extends BaseControl {
                 checked: x.index === showing,
                 onSelect: () => {
                   selectNativeIndex(adVideo, x.index, 'hidden');
-                  this.lastSelectedIndex = x.index;
+                  this.lastAdTrackIndex = x.index;
                   refresh();
                 },
               })),
@@ -290,6 +295,8 @@ export class CaptionsControl extends BaseControl {
           // Defer: mountAdVideo attaches caption tracks after activate() fires overlay:changed.
           Promise.resolve().then(() => refresh());
         } else {
+          // Ad ended — reset the per-ad track preference so the next ad starts fresh.
+          this.lastAdTrackIndex = null;
           refresh();
         }
       })
