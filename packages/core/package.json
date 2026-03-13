@@ -1,6 +1,6 @@
 {
   "name": "@openplayerjs/core",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Core player engine, plugin system and public API for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
