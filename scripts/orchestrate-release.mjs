@@ -88,7 +88,7 @@ function releasePackage(pkg, forcedVersion) {
   // bug: `pnpm run release -- --dry-run` embeds an extra `--` into the script
   // string, causing yargs to treat `--dry-run` as a positional version arg.
   const releaseArgs = [
-    'exec', 'dotenv', '-o', '--',
+    'exec', 'dotenv', '-e', '../../.env', '-o', '--',
     'release-it', '--config', '.release-it.cjs', '--ci',
     ...(forcedVersion ? [forcedVersion] : []),
     ...(isDryRun ? ['--dry-run'] : []),
@@ -159,7 +159,7 @@ function getPlannedCoreVersion() {
     '--ci', '--dry-run',
   ];
   try {
-    const out = execSync(`pnpm exec dotenv -o -- release-it ${args.join(' ')} 2>&1`, {
+    const out = execSync(`pnpm exec dotenv -e ../../.env -o -- release-it ${args.join(' ')} 2>&1`, {
       encoding: 'utf8',
       cwd: pkgDir,
     });
