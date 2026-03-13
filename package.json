@@ -45,8 +45,8 @@
     "release:pack": "pnpm -r --filter @openplayerjs/core --filter @openplayerjs/player --filter @openplayerjs/hls --filter @openplayerjs/ads --filter @openplayerjs/youtube pack --pack-destination ./packed"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.0",
+    "@commitlint/cli": "^20.0.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@eslint/js": "^10.0.1",
     "@release-it-plugins/workspaces": "^5.0.3",
     "@release-it/conventional-changelog": "^10.0.5",
