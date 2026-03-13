@@ -1,6 +1,6 @@
 {
   "name": "@openplayerjs/player",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "UI layer, built-in controls, and accessibility for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
