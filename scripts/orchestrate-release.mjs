@@ -45,6 +45,17 @@ const CORE_DEPENDENTS = ['player', 'hls', 'ads', 'youtube'];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+/** Compare semver strings. Returns 1 if a > b, -1 if a < b, 0 if equal. */
+function semverCompare(a, b) {
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (pa[i] > pb[i]) return 1;
+    if (pa[i] < pb[i]) return -1;
+  }
+  return 0;
+}
+
 function readVersion(pkg) {
   return JSON.parse(
     readFileSync(join(ROOT, 'packages', pkg, 'package.json'), 'utf8'),
@@ -239,9 +250,14 @@ if (coreChanged) {
     );
     releasePackage('core');
     for (const dep of CORE_DEPENDENTS) {
-      // First-ever release: use the package's own version rather than core's.
       const isFirstRelease = getLastTag(dep) === null;
-      releasePackage(dep, isFirstRelease ? readVersion(dep) : (planned ?? undefined));
+      const targetVersion = isFirstRelease ? readVersion(dep) : (planned ?? undefined);
+      // Skip dependents already at or beyond the target version (avoids npm downgrade error).
+      if (targetVersion && semverCompare(readVersion(dep), targetVersion) >= 0) {
+        console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
+        continue;
+      }
+      releasePackage(dep, targetVersion);
     }
     // Restore all package.json files and CHANGELOGs modified by release-it dry-runs.
     restoreDryRunSideEffects(['core', ...CORE_DEPENDENTS]);
@@ -253,9 +269,14 @@ if (coreChanged) {
     const newVersion = readVersion('core');
     console.log(`\nCore released at ${newVersion} → releasing dependents at same version.\n`);
     for (const dep of CORE_DEPENDENTS) {
-      // First-ever release: use the package's own version rather than core's.
       const isFirstRelease = getLastTag(dep) === null;
-      releasePackage(dep, isFirstRelease ? readVersion(dep) : newVersion);
+      const targetVersion = isFirstRelease ? readVersion(dep) : newVersion;
+      // Skip dependents already at or beyond the target version (avoids npm downgrade error).
+      if (!isFirstRelease && semverCompare(readVersion(dep), targetVersion) >= 0) {
+        console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
+        continue;
+      }
+      releasePackage(dep, targetVersion);
     }
     // 3. Update root CHANGELOG.md (from RELEASE_NOTES.md or auto-generated links).
     mergeReleaseNotesToChangelog(newVersion, ['core', ...CORE_DEPENDENTS]);
