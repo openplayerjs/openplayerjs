@@ -1,86 +1,74 @@
-import { EVENT_OPTIONS } from '../core/constants';
-import type { Listener } from '../core/events';
+import type { EventBus, Listener } from '../core/events';
 import type { MediaEngineContext, MediaSource } from '../core/media';
+import type { MediaSurface } from '../core/surface';
+import { bridgeSurfaceEvents } from '../core/surface';
 
-type MediaListener = {
-  type: keyof HTMLMediaElementEventMap;
-  handler: EventListener;
-  options?: boolean | AddEventListenerOptions;
-};
-
-export type IEngine = {
-  getAdapter?<T = unknown>(): T | undefined;
+export type IEngine<T = unknown> = {
+  getAdapter?(): T | undefined;
 };
 
 export abstract class BaseMediaEngine {
-  protected media: HTMLMediaElement | null = null;
+  protected surface: MediaSurface | null = null;
   protected events: MediaEngineContext['events'] | null = null;
-
   protected commands: Listener[] = [];
-  private mediaListeners: MediaListener[] = [];
+  private surfaceListeners: (() => void)[] = [];
 
   abstract name: string;
   abstract version: string;
   abstract capabilities: string[];
   abstract priority: number;
-
   abstract canPlay(source: MediaSource): boolean;
-  abstract attach(ctx: MediaEngineContext): void;
+  abstract attach(ctx: MediaEngineContext): void | Promise<void>;
   abstract detach(): void;
 
-  /**
-   * Bridge real HTMLMediaElement events into the player EventBus using
-   * HTML5 event names (no payload; consumers read from player/media).
-   */
-  protected bindMediaEvents(media: HTMLMediaElement, events: MediaEngineContext['events']) {
-    this.media = media;
+  protected bindSurfaceEvents(surface: MediaSurface, events: MediaEngineContext['events']): void {
+    this.surface = surface;
     this.events = events;
-
-    const onLoadedMetadata = () => events.emit('loadedmetadata');
-    const onDurationChange = () => events.emit('durationchange');
-    const onTimeUpdate = () => events.emit('timeupdate');
-    const onWaiting = () => events.emit('waiting');
-    const onSeeking = () => events.emit('seeking');
-    const onSeeked = () => events.emit('seeked');
-    const onEnded = () => events.emit('ended');
-    const onError = () => events.emit('error', media.error);
-    const onPlay = () => events.emit('play');
-    const onPlaying = () => events.emit('playing');
-    const onPause = () => events.emit('pause');
-    const onVolumeChange = () => events.emit('volumechange');
-    const onRateChange = () => events.emit('ratechange');
-
-    this.addMediaListener(media, 'loadedmetadata', onLoadedMetadata, EVENT_OPTIONS);
-    this.addMediaListener(media, 'durationchange', onDurationChange, EVENT_OPTIONS);
-    this.addMediaListener(media, 'timeupdate', onTimeUpdate, EVENT_OPTIONS);
-    this.addMediaListener(media, 'waiting', onWaiting, EVENT_OPTIONS);
-    this.addMediaListener(media, 'seeking', onSeeking, EVENT_OPTIONS);
-    this.addMediaListener(media, 'seeked', onSeeked, EVENT_OPTIONS);
-    this.addMediaListener(media, 'ended', onEnded, EVENT_OPTIONS);
-    this.addMediaListener(media, 'error', onError, EVENT_OPTIONS);
-    this.addMediaListener(media, 'playing', onPlaying, EVENT_OPTIONS);
-    this.addMediaListener(media, 'pause', onPause, EVENT_OPTIONS);
-    this.addMediaListener(media, 'play', onPlay, EVENT_OPTIONS);
-    this.addMediaListener(media, 'volumechange', onVolumeChange, EVENT_OPTIONS);
-    this.addMediaListener(media, 'ratechange', onRateChange, EVENT_OPTIONS);
+    this.surfaceListeners = bridgeSurfaceEvents(surface, events);
   }
 
-  protected unbindMediaEvents() {
-    if (!this.media) return;
-    for (const l of this.mediaListeners) {
-      this.media.removeEventListener(l.type, l.handler, l.options);
-    }
-    this.mediaListeners = [];
+  protected unbindSurfaceEvents(): void {
+    this.surfaceListeners.forEach((off) => off());
+    this.surfaceListeners = [];
+  }
+
+  protected bindMediaEvents(media: HTMLMediaElement, events: EventBus): void {
+    const shim: MediaSurface = {
+      get currentTime() { return media.currentTime; },
+      set currentTime(v: number) { media.currentTime = v; },
+      get duration() { return media.duration; },
+      set duration(_v: number) { /* read-only */ },
+      get volume() { return media.volume; },
+      set volume(v: number) { media.volume = v; },
+      get muted() { return media.muted; },
+      set muted(v: boolean) { media.muted = v; },
+      get playbackRate() { return media.playbackRate; },
+      set playbackRate(v: number) { media.playbackRate = v; },
+      get paused() { return media.paused; },
+      get ended() { return media.ended; },
+      play: () => media.play(),
+      pause: () => media.pause(),
+      on: (event, handler) => {
+        const wrapped = () => (handler as () => void)();
+        media.addEventListener(event, wrapped);
+        return () => media.removeEventListener(event, wrapped);
+      },
+    };
+    this.surfaceListeners = bridgeSurfaceEvents(shim, events);
+  }
+
+  protected unbindMediaEvents(): void {
+    this.unbindSurfaceEvents();
   }
 
   protected addMediaListener(
     media: HTMLMediaElement,
-    type: keyof HTMLMediaElementEventMap,
-    handler: EventListener,
+    event: string,
+    handler: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions
-  ) {
-    media.addEventListener(type, handler, options);
-    this.mediaListeners.push({ type, handler, options });
+  ): void {
+    media.addEventListener(event, handler, options);
+    this.surfaceListeners.push(() => media.removeEventListener(event, handler, options));
   }
 
   protected canHandlePlayback(ctx: MediaEngineContext): boolean {
@@ -88,17 +76,14 @@ export abstract class BaseMediaEngine {
     return !owner || owner === this.name;
   }
 
-  /**
-   * Commands are explicit and separate from notifications.
-   */
-  protected bindCommands(ctx: MediaEngineContext) {
-    const { media, events } = ctx;
+  protected bindCommands(ctx: MediaEngineContext): void {
+    const { events } = ctx;
 
     this.commands.push(
       events.on('cmd:seek', (t: number) => {
         if (!this.canHandlePlayback(ctx)) return;
         try {
-          media.currentTime = t;
+          ctx.surface.currentTime = t;
         } catch {
           // ignore
         }
@@ -107,54 +92,71 @@ export abstract class BaseMediaEngine {
 
     this.commands.push(
       events.on('cmd:setVolume', (v: number) => {
-        media.volume = v;
+        try {
+          ctx.surface.volume = v;
+        } catch {
+          // ignore
+        }
       })
     );
+
     this.commands.push(
       events.on('cmd:setMuted', (m: boolean) => {
-        media.muted = m;
+        try {
+          ctx.surface.muted = m;
+        } catch {
+          // ignore
+        }
       })
     );
+
     this.commands.push(
       events.on('cmd:setRate', (r: number) => {
         if (!this.canHandlePlayback(ctx)) return;
-        media.playbackRate = r;
+        try {
+          ctx.surface.playbackRate = r;
+        } catch {
+          // ignore
+        }
       })
     );
 
     this.bindPlayPauseCommands(ctx);
   }
 
-  protected unbindCommands() {
+  protected unbindCommands(): void {
     for (const off of this.commands) off();
     this.commands = [];
   }
 
-  protected bindPlayPauseCommands(ctx: MediaEngineContext) {
-    const { media, events } = ctx;
+  protected bindPlayPauseCommands(ctx: MediaEngineContext): void {
+    const { events } = ctx;
 
     this.commands.push(
       events.on('cmd:play', () => {
         if (!this.canHandlePlayback(ctx)) return;
-        this.playImpl(media);
+        this.playImpl(ctx.surface);
       })
     );
 
     this.commands.push(
       events.on('cmd:pause', () => {
         if (!this.canHandlePlayback(ctx)) return;
-        this.pauseImpl(media);
+        this.pauseImpl(ctx.surface);
       })
     );
   }
 
-  private playImpl(media: HTMLMediaElement): void {
-    void media.play().catch(() => {
-      // ignore
-    });
+  private playImpl(surface: MediaSurface): void {
+    const maybePromise = surface.play();
+    if (maybePromise && typeof (maybePromise as Promise<void>).catch === 'function') {
+      void (maybePromise as Promise<void>).catch(() => {
+        // ignore
+      });
+    }
   }
 
-  private pauseImpl(media: HTMLMediaElement) {
-    media.pause();
+  private pauseImpl(surface: MediaSurface): void {
+    surface.pause();
   }
 }

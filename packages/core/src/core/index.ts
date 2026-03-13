@@ -7,8 +7,8 @@ import { Lease } from './lease';
 import type { MediaEngineContext, MediaEnginePlugin, MediaSource } from './media';
 import type { PlayerPlugin } from './plugin';
 import { PluginRegistry } from './plugin';
-import type { PlaybackState } from './state';
-import { StateManager } from './state';
+import { StateManager, type PlaybackState } from './state';
+import { HtmlMediaSurface, type MediaSurface } from './surface';
 import { predictMimeType } from './utils';
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
@@ -23,12 +23,11 @@ export class Core {
   userInteracted = false;
   canAutoplay = false;
   canAutoplayMuted = false;
-
+  private readonly nativeSurface: HtmlMediaSurface;
+  private activeSurface: MediaSurface;
   private interactionUnsubs: (() => void)[] = [];
-
   private plugins = new PluginRegistry();
-  private pluginDisposables = new WeakMap<PlayerPlugin, DisposableStore>();
-
+  private pluginDisposables = new WeakMap();
   private _src?: string;
   private _volume = 1;
   private _playbackRate = 1;
@@ -38,14 +37,11 @@ export class Core {
   private detectedSources?: MediaSource[];
   private activeEngine?: MediaEnginePlugin;
   private playerContext: MediaEngineContext | null = null;
-
   private autoplaySupport?: { autoplay: boolean; muted: boolean };
   private autoplaySupportPromise?: Promise<{ autoplay: boolean; muted: boolean }>;
-
   private readyPromise?: Promise<void>;
   private readyResolve?: () => void;
   private readyReject?: (e?: unknown) => void;
-
   private playRequestPromise?: Promise<void>;
 
   constructor(media: HTMLMediaElement | string, config: PlayerConfig = {}) {
@@ -58,30 +54,40 @@ export class Core {
     } else {
       this.media = media;
     }
+
+    this.nativeSurface = new HtmlMediaSurface(this.media);
+    this.activeSurface = this.nativeSurface;
     this.registerPlugin(new DefaultMediaEngine());
     this.config = { ...defaultConfiguration, ...config };
+
     this.media.currentTime = this.config.startTime || this.media.currentTime;
-    this._currentTime = this.config.startTime || this.media.currentTime;
-    this._duration = this.config.duration || this.media.duration;
-    const initialVolume = clamp01(this.config.startVolume ?? this.media.volume);
-    this.media.volume = initialVolume;
+    this._currentTime = this.config.startTime || this.activeSurface.currentTime;
+    this._duration = this.config.duration || this.activeSurface.duration;
+
+    const initialVolume = clamp01(this.config.startVolume ?? this.activeSurface.volume);
+    this.activeSurface.volume = initialVolume;
     this._volume = initialVolume;
 
     if (this.config.startVolume !== undefined) {
-      this.media.muted = initialVolume <= 0;
+      this.activeSurface.muted = initialVolume <= 0;
       this._muted = initialVolume <= 0;
     } else {
-      this._muted = this.media.muted;
+      this._muted = this.activeSurface.muted;
     }
-    this.media.playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
-    this._playbackRate = this.config.startPlaybackRate || this.media.playbackRate;
+
+    this.activeSurface.playbackRate = this.config.startPlaybackRate || this.activeSurface.playbackRate;
+    this._playbackRate = this.config.startPlaybackRate || this.activeSurface.playbackRate;
 
     (this.config.plugins || []).forEach((p) => this.registerPlugin(p));
     this.bindStateTransitions();
-    this.bindMediaSync();
+    this.bindSurfaceSync();
     this.bindLeaseSync();
     this.bindFirstInteraction();
     queueMicrotask(() => this.maybeAutoLoad());
+  }
+
+  get surface(): MediaSurface {
+    return this.activeSurface;
   }
 
   on<E extends PlayerEvent>(event: E, cb: (payload?: any) => void) {
@@ -200,13 +206,7 @@ export class Core {
     this.detectedSources = sources;
     const { engine, source: activeSource } = this.resolveMediaEngine(sources);
 
-    this.playerContext = {
-      media: this.media,
-      events: this.events,
-      config: this.config,
-      activeSource,
-      core: this,
-    };
+    this.playerContext = this.createPlayerContext(activeSource);
 
     this.activeEngine?.detach?.(this.playerContext);
     this.activeEngine = engine;
@@ -498,33 +498,31 @@ export class Core {
     });
   }
 
-  private bindMediaSync() {
+  private bindSurfaceSync() {
     const read = () => {
-      // time + duration
       try {
-        this._currentTime = this.media.currentTime || 0;
+        this._currentTime = this.activeSurface.currentTime || 0;
       } catch {
         // ignore
       }
+
       try {
-        const d = this.media.duration;
+        const d = this.config.duration || this.activeSurface.duration;
         this._duration = d;
       } catch {
         // ignore
       }
 
-      // volume + mute
       try {
-        this._muted = Boolean(this.media.muted);
-        const v = this.media.volume;
+        this._muted = Boolean(this.activeSurface.muted);
+        const v = this.activeSurface.volume;
         if (Number.isFinite(v)) this._volume = v;
       } catch {
         // ignore
       }
 
-      // rate
       try {
-        const r = this.media.playbackRate;
+        const r = this.activeSurface.playbackRate;
         if (Number.isFinite(r)) this._playbackRate = r;
       } catch {
         // ignore
@@ -536,6 +534,34 @@ export class Core {
     this.events.on('timeupdate', () => read());
     this.events.on('volumechange', () => read());
     this.events.on('ratechange', () => read());
+  }
+
+  private createPlayerContext(activeSource?: MediaSource): MediaEngineContext {
+    const ctx: MediaEngineContext = {
+      media: this.media,
+      container: (this.media.parentElement ?? this.media) as HTMLElement,
+      events: this.events,
+      config: this.config,
+      activeSource,
+      core: this,
+      surface: this.activeSurface, // overridden below with a live getter
+      setSurface: (surface: MediaSurface) => {
+        this.activeSurface = surface;
+        return this.activeSurface;
+      },
+      resetSurface: () => {
+        this.activeSurface = this.nativeSurface;
+        return this.nativeSurface;
+      },
+    };
+    // Replace the snapshot with a live getter so ctx.surface always reflects the
+    // current active surface even after setSurface() is called (e.g. by an iframe engine).
+    Object.defineProperty(ctx, 'surface', {
+      get: () => this.activeSurface,
+      enumerable: true,
+      configurable: true,
+    });
+    return ctx;
   }
 
   private bindLeaseSync() {

@@ -27,10 +27,11 @@ module.exports = {
     'packages/*/src/**/*.ts',
     '!packages/*/src/**/umd.ts',
     '!packages/*/src/index.ts',
+    '!packages/youtube/**',
   ],
   coverageThreshold: {
     global: {
-      branches: 67,
+      branches: 75,
       functions: 85,
       lines: 85,
       statements: 85,

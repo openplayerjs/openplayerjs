@@ -95,7 +95,7 @@ export class VolumeControl extends BaseControl {
         core.muted = v === 0;
 
         const el = getActiveMedia(core);
-        if (el && el !== core.media) {
+        if (el && el !== core.surface) {
           try {
             el.volume = v;
             el.muted = v === 0;
@@ -121,7 +121,7 @@ export class VolumeControl extends BaseControl {
           core.volume = 0;
           core.muted = true;
 
-          if (el && el !== core.media) {
+          if (el && el !== core.surface) {
             try {
               el.volume = 0;
               el.muted = true;
@@ -136,7 +136,7 @@ export class VolumeControl extends BaseControl {
           core.volume = restore;
           core.muted = false;
 
-          if (el && el !== core.media) {
+          if (el && el !== core.surface) {
             try {
               el.volume = restore;
               el.muted = false;
@@ -164,7 +164,7 @@ export class VolumeControl extends BaseControl {
       updateBtn(muted ? 0 : vol);
 
       const el = getActiveMedia(core);
-      if (el && el !== core.media) {
+      if (el && el !== core.surface) {
         try {
           el.muted = muted;
           if (!muted) el.volume = vol;
@@ -186,7 +186,7 @@ export class VolumeControl extends BaseControl {
       btn.setAttribute('aria-pressed', muted ? 'true' : 'false');
 
       const el = getActiveMedia(core);
-      if (el && el !== core.media) {
+      if (el && el !== core.surface) {
         try {
           el.muted = muted;
           if (!muted) el.volume = vol;

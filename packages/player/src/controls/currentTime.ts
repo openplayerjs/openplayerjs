@@ -20,7 +20,7 @@ export class CurrentTimeControl extends BaseControl {
     const update = () => {
       if (this.activeOverlay) {
         el.setAttribute('aria-hidden', 'false');
-        el.innerText = formatTime(this.activeOverlay.value);
+        el.innerText = formatTime(Math.ceil(this.activeOverlay.value));
         return;
       }
 

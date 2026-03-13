@@ -1261,17 +1261,37 @@ export class AdsPlugin implements PlayerPlugin {
       .filter((x) => !!x.src);
   }
 
-  private ensureRawCaptions(mediaFileRaw: any): CaptionResource[] {
-    if (!mediaFileRaw) return [];
-    if (Array.isArray(mediaFileRaw.captions)) return mediaFileRaw.captions as CaptionResource[];
+  private ensureRawCaptions(mediaFileRaw: any, creative?: any): CaptionResource[] {
+    // Prefer captions already parsed on the mediaFile (cached or explicit).
+    if (mediaFileRaw && Array.isArray(mediaFileRaw.captions)) return mediaFileRaw.captions as CaptionResource[];
 
+    // @dailymotion/vast-client stores closedCaptionFiles on the creative (Linear level),
+    // not on the individual MediaFile. Try the creative first.
+    if (creative) {
+      const linear = creative?.linear || creative?.Linear || creative;
+      const ccFiles = linear?.closedCaptionFiles || linear?.ClosedCaptionFiles;
+      if (Array.isArray(ccFiles) && ccFiles.length > 0) {
+        return ccFiles
+          .map((f: any, i: number) => ({
+            src: String(f?.fileURL || f?.url || f?.src || ''),
+            kind: 'captions' as const,
+            srclang: f?.language ? String(f.language) : undefined,
+            label: f?.language ? String(f.language).toUpperCase() : `CC ${i + 1}`,
+            type: f?.type ? String(f.type) : undefined,
+          }))
+          .filter((x) => !!x.src);
+      }
+    }
+
+    // Fallback: try to parse from the raw media file element (XML path).
+    if (!mediaFileRaw) return [];
     const captions = this.buildCaptionsFromVastMediaFileRaw(mediaFileRaw);
     mediaFileRaw.captions = captions;
     return captions;
   }
 
-  private attachAdCaptionTracks(adVideo: HTMLVideoElement, mediaFileRaw: any): HTMLTrackElement[] {
-    const captions = this.ensureRawCaptions(mediaFileRaw);
+  private attachAdCaptionTracks(adVideo: HTMLVideoElement, mediaFileRaw: any, creative?: any): HTMLTrackElement[] {
+    const captions = this.ensureRawCaptions(mediaFileRaw, creative);
     const vtt = captions.filter(
       (c) => (c.type || '').toLowerCase().includes('vtt') || c.src.toLowerCase().endsWith('.vtt')
     );
@@ -1288,6 +1308,7 @@ export class AdsPlugin implements PlayerPlugin {
       t.default = false;
 
       adVideo.appendChild(t);
+      if (t.track) t.track.mode = 'hidden';
       created.push(t);
     }
 
@@ -2090,7 +2111,7 @@ export class AdsPlugin implements PlayerPlugin {
     void dismiss();
   }
 
-  private async mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: NormalizedMediaFile) {
+  private async mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: NormalizedMediaFile, creative?: any) {
     this.ensureOverlayMounted();
     const root = this.overlay.parentElement as HTMLElement;
 
@@ -2186,7 +2207,7 @@ export class AdsPlugin implements PlayerPlugin {
     this.sessionUnsubs.push(() => document.removeEventListener('visibilitychange', onVisibility));
 
     this.clearAdTracks();
-    this.adTrackEls = this.attachAdCaptionTracks(v, mediaFile.raw);
+    this.adTrackEls = this.attachAdCaptionTracks(v, mediaFile.raw, creative);
     this.sessionUnsubs.push(() => this.clearAdTracks());
 
     let overlayMgr: ReturnType<typeof getOverlayManager> | null = null;
@@ -2709,7 +2730,7 @@ export class AdsPlugin implements PlayerPlugin {
           type: item.mediaFile?.type,
           skipOffset: item.skipOffset,
         });
-        this.mountAdVideo(media, item.mediaFile);
+        this.mountAdVideo(media, item.mediaFile, item.creative);
         const endPromise = this.waitForAdEnd();
 
         // Important: some VMAP pod samples contain more than one skippable ad.

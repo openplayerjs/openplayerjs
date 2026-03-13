@@ -38,6 +38,7 @@ export const defaultLabels = Object.freeze({
   play: 'Play',
   progressRail: 'Time Rail',
   progressSlider: 'Time Slider',
+  restart: 'Restart',
   settings: 'Player Settings',
   speed: 'Speed',
   speedNormal: 'Normal',
