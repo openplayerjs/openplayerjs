@@ -1,7 +1,7 @@
 module.exports = {
   git: {
     requireCleanWorkingDir: false,
-    addFiles: ['package.json'],
+    addFiles: ['package.json', 'CHANGELOG.md'],
     tagName: '@openplayerjs/youtube@${version}',
     commitMessage: 'chore(release): @openplayerjs/youtube@${version}',
   },
@@ -10,10 +10,14 @@ module.exports = {
     release: false,
   },
 
+  // Disable npm's own publish; pnpm publish (below) correctly replaces
+  // workspace:^ peer-dependency references with the resolved version.
   npm: {
-    publish: true,
-    // Allow first publish at the version already in package.json (no prior npm release).
-    versionArgs: ['--allow-same-version'],
+    publish: false,
+  },
+
+  hooks: {
+    'before:npm:release': 'pnpm publish --access public --no-git-checks',
   },
 
   plugins: {
@@ -35,6 +39,8 @@ module.exports = {
         ],
       },
 
+      infile: 'CHANGELOG.md',
+      header: '# Changelog\n',
       gitRawCommitsOpts: { path: '.' },
     },
   },
