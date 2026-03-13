@@ -1,6 +1,6 @@
 {
   "name": "@openplayerjs/youtube",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "YouTube IFrame Player engine for OpenPlayerJS",
   "author": {
     "name": "Rafael Miranda",
