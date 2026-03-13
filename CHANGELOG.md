@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.1) (2026-03-13)
+
+- Disabled `npm` publish per package to resolve peer-dependencies version
+- Modified orchestration script to populate root CHANGELOG
+- Added v3.1.0 changes in root CHANGELOG
+
 ## [3.1.0](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/core@3.0.2...@openplayerjs/core@3.1.0) (2026-03-13)
 
 ### Features
