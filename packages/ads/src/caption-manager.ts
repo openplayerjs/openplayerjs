@@ -46,16 +46,31 @@ export class CaptionManager {
     if (match) match.mode = 'showing';
   }
 
-  ensureRawCaptions(mediaFileRaw: any): CaptionResource[] {
+  ensureRawCaptions(mediaFileRaw: any, creative?: any): CaptionResource[] {
+    if (mediaFileRaw && Array.isArray(mediaFileRaw.captions)) return mediaFileRaw.captions as CaptionResource[];
+    if (creative) {
+      const linear = creative?.linear || creative?.Linear || creative;
+      const ccFiles = linear?.closedCaptionFiles || linear?.ClosedCaptionFiles;
+      if (Array.isArray(ccFiles) && ccFiles.length > 0) {
+        return ccFiles
+          .map((f: any) => ({
+            src: f.fileURL || f.url || '',
+            kind: 'captions' as const,
+            srclang: f.language || f.fileLanguage || '',
+            label: f.fileLanguage || f.language || '',
+            type: f.fileType || '',
+          }))
+          .filter((x: CaptionResource) => !!x.src);
+      }
+    }
     if (!mediaFileRaw) return [];
-    if (Array.isArray(mediaFileRaw.captions)) return mediaFileRaw.captions as CaptionResource[];
     const captions = buildCaptionsFromVastMediaFileRaw(mediaFileRaw);
     mediaFileRaw.captions = captions;
     return captions;
   }
 
-  attachAdCaptionTracks(adVideo: HTMLVideoElement, mediaFileRaw: any): HTMLTrackElement[] {
-    const captions = this.ensureRawCaptions(mediaFileRaw);
+  attachAdCaptionTracks(adVideo: HTMLVideoElement, mediaFileRaw: any, creative?: any): HTMLTrackElement[] {
+    const captions = this.ensureRawCaptions(mediaFileRaw, creative);
     const vtt = captions.filter(
       (c) => (c.type || '').toLowerCase().includes('vtt') || c.src.toLowerCase().endsWith('.vtt')
     );
@@ -69,6 +84,7 @@ export class CaptionManager {
       if (c.label) t.label = c.label;
       t.default = false;
       adVideo.appendChild(t);
+      if (t.track) t.track.mode = 'hidden';
       created.push(t);
     }
     this.adTrackEls = created;
@@ -82,7 +98,11 @@ export class CaptionManager {
 
   removeAdCaptions() {
     for (const el of this.adTrackEls) {
-      try { el.remove(); } catch { /* ignore */ }
+      try {
+        el.remove();
+      } catch {
+        /* ignore */
+      }
     }
     this.adTrackEls = [];
   }

@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import type { Core } from '@openplayerjs/core';
-import { EventBus, Lease, StateManager } from '@openplayerjs/core';
+import { EventBus, HtmlMediaSurface, Lease, StateManager } from '@openplayerjs/core';
 import type { HlsConfig } from 'hls.js';
 import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
@@ -81,12 +81,21 @@ function makeCtx(opts: { autoplay?: boolean; preload?: '' | 'none' | 'metadata' 
 
   if (opts.leaseOwner) core.leases.acquire('playback', opts.leaseOwner);
 
+  const surface = new HtmlMediaSurface(media);
   return {
     media,
+    container: media.parentElement ?? media,
     events,
     config: {},
     activeSource: { src: 'https://example.com/stream.m3u8', type: 'application/x-mpegURL' },
     core,
+    surface,
+    setSurface(s: any) {
+      return s;
+    },
+    resetSurface() {
+      return surface;
+    },
   };
 }
 
@@ -217,5 +226,187 @@ describe('HlsMediaEngine branch coverage', () => {
     // calling detach again should hit !adapter branch in unbindAdapterEvents
     engine.detach();
     expect(engine.getAdapter()).toBeNull();
+  });
+
+  // ── canPlay explicit MIME / URL branches ──────────────────────────────────
+
+  test('canPlay – accepts application/x-mpegURL MIME type', () => {
+    const engine = new HlsMediaEngine();
+    expect(engine.canPlay({ src: 'https://example.com/stream', type: 'application/x-mpegURL' })).toBe(true);
+  });
+
+  test('canPlay – accepts application/vnd.apple.mpegurl MIME type', () => {
+    const engine = new HlsMediaEngine();
+    expect(engine.canPlay({ src: 'https://example.com/stream', type: 'application/vnd.apple.mpegurl' })).toBe(true);
+  });
+
+  test('canPlay – rejects non-HLS MIME type (video/mp4)', () => {
+    const engine = new HlsMediaEngine();
+    expect(engine.canPlay({ src: 'https://example.com/video.mp4', type: 'video/mp4' })).toBe(false);
+  });
+
+  test('canPlay – rejects non-.m3u8 URL without MIME type', () => {
+    const engine = new HlsMediaEngine();
+    expect(engine.canPlay({ src: 'https://example.com/video.mp4', type: '' })).toBe(false);
+  });
+
+  test('canPlay – accepts URL with .m3u8 extension and no MIME type', () => {
+    const engine = new HlsMediaEngine();
+    expect(engine.canPlay({ src: 'https://example.com/stream.m3u8', type: '' })).toBe(true);
+  });
+
+  test('canPlay – accepts .m3u8 URL with query string and no MIME type (fallback branch)', () => {
+    // The URL constructor will parse this correctly, pathname ends with .m3u8
+    const engine = new HlsMediaEngine();
+    expect(engine.canPlay({ src: 'https://example.com/stream.m3u8?token=abc', type: '' })).toBe(true);
+  });
+
+  // ── ERROR handler: non-fatal errors ──────────────────────────────────────
+
+  test('ERROR handler – data.fatal=false – no recovery action taken, playback:error still emitted', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const errors: any[] = [];
+    ctx.events.on('playback:error', (d: any) => errors.push(d));
+
+    // Non-fatal error — should NOT call recoverMediaError or destroy
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: false, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+
+    expect(adapter!.recoverMediaError).not.toHaveBeenCalled();
+    expect(adapter!.destroy).not.toHaveBeenCalled();
+    expect(errors).toHaveLength(1);
+  });
+
+  // ── ERROR MEDIA_ERROR: recoverSwapAudioCodecDate guard (within 3s) ───────
+
+  test('ERROR MEDIA_ERROR – third error within 3s window – swap codec skipped (recoverSwapAudioCodecDate guard)', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    // First fatal MEDIA_ERROR → recoverMediaError (no swap)
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(1);
+    expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(0);
+
+    // Second fatal MEDIA_ERROR within 3s → swap + recoverMediaError
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(1);
+    expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(2);
+
+    // Third fatal MEDIA_ERROR within 3s → recoverSwapAudioCodecDate guard fires, no further swap/recover
+    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(1); // still 1, no extra swap
+    expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(2); // still 2, no extra recover
+  });
+
+  // ── MEDIA_ATTACHED: autoplay=false path ──────────────────────────────────
+
+  test('MEDIA_ATTACHED – autoplay=false – play is NOT triggered', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const playCalls: any[] = [];
+    ctx.events.on('cmd:play', () => playCalls.push(1));
+
+    adapter!.emit((Hls as any).Events.MEDIA_ATTACHED, null, {});
+
+    // autoplay=false: no play should have been triggered
+    expect(ctx.media.play).not.toHaveBeenCalled();
+    expect(playCalls).toHaveLength(0);
+  });
+
+  test('MEDIA_ATTACHED – autoplay=true but lease owned by another – play is NOT triggered', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: true, preload: 'auto', leaseOwner: 'ads' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    adapter!.emit((Hls as any).Events.MEDIA_ATTACHED, null, {});
+
+    // Lease owned by ads: canHandlePlayback returns false, play should not be called
+    expect(ctx.media.play).not.toHaveBeenCalled();
+  });
+
+  // ── play event: startedLoad already true (idempotent) ────────────────────
+
+  test('media play event – startedLoad already true – startLoad NOT called again', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'none' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    // First play starts loading
+    ctx.media.dispatchEvent(new Event('play'));
+    expect(adapter!.startLoad).toHaveBeenCalledTimes(1);
+    expect((engine as any).startedLoad).toBe(true);
+
+    // Second play event — startedLoad=true guard fires, no additional startLoad
+    ctx.media.dispatchEvent(new Event('play'));
+    expect(adapter!.startLoad).toHaveBeenCalledTimes(1);
+  });
+
+  // ── play event: autoStartLoad=true – early return, startLoad not called ──
+
+  test('media play event – autoStartLoad=true (preload=metadata) – startLoad NOT called by play handler', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    ctx.media.dispatchEvent(new Event('play'));
+    // autoStartLoad=true path returns early — adapter.startLoad not called via play handler
+    expect(adapter!.startLoad).not.toHaveBeenCalled();
+  });
+
+  // ── pause event: autoStartLoad=true – stopLoad NOT called ────────────────
+
+  test('media pause event – autoStartLoad=true (preload=metadata) – stopLoad NOT called', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    ctx.media.dispatchEvent(new Event('pause'));
+    // onPause only acts when !autoStartLoad
+    expect(adapter!.stopLoad).not.toHaveBeenCalled();
+  });
+
+  // ── getAdapter returns null after detach ──────────────────────────────────
+
+  test('getAdapter returns null after detach', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx();
+    engine.attach(ctx);
+    engine.detach();
+    expect(engine.getAdapter()).toBeNull();
+  });
+
+  // ── cmd:startLoad: adapter is null guard ─────────────────────────────────
+
+  test('cmd:startLoad – no-op if adapter is null (before attach)', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'none' });
+    // Emit cmd:startLoad before attach — engine has no adapter
+    // This is exercised via detaching and emitting
+    engine.attach(ctx);
+    engine.detach();
+    // Should not throw even with no adapter
+    expect(() => ctx.events.emit('cmd:startLoad')).not.toThrow();
+  });
+
+  // ── canPlay: Hls.isSupported=false short-circuits regardless of MIME ─────
+
+  test('canPlay – Hls.isSupported=false – returns false even with valid MIME', () => {
+    const engine = new HlsMediaEngine();
+    (Hls as any)._supported = false;
+    expect(engine.canPlay({ src: 'https://example.com/stream', type: 'application/x-mpegURL' })).toBe(false);
+    expect(engine.canPlay({ src: 'https://example.com/stream.m3u8', type: '' })).toBe(false);
   });
 });

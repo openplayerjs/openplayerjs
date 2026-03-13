@@ -1,8 +1,12 @@
 # @openplayer/core
 
-> Core player engine, plugin system, event bus, and public API for [OpenPlayerJS](https://github.com/openplayerjs/openplayerjs).
+> Core player engine, plugin system, event bus, and public API for [OpenPlayerJS](https://openplayerjs.com).
 
----
+[![npm](https://img.shields.io/npm/v/@openplayerjs/core?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/core)
+[![npm downloads](https://img.shields.io/npm/dm/@openplayerjs/core?logo=npm&label=downloads)](https://www.npmjs.com/package/@openplayerjs/core)
+[![License](https://img.shields.io/npm/l/@openplayerjs/core)](../../LICENSE.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![JSDelivr](https://data.jsdelivr.com/v1/package/npm/@openplayerjs/core/badge)](https://www.jsdelivr.com/package/npm/@openplayerjs/core)
 
 ## Installation
 
@@ -240,6 +244,22 @@ Extend `BaseMediaEngine` and implement `IEngine` to handle a new media format or
 
 Engines are excluded from the `onEvent` broadcast loop.
 
+### The surface model
+
+Every engine operates through a **`MediaSurface`** — a normalized abstraction over the playback backend. The context object (`MediaEngineContext`) provides:
+
+| Field                | Use                                                                                                                                                                                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ctx.surface`        | The current playback surface — use this for all playback operations (seek, volume, play, pause, rate)                                                                                                                                                                                  |
+| `ctx.setSurface(s)`  | Replace the default `HtmlMediaSurface` with your own (e.g. an `IframeMediaSurface`); returns the new surface                                                                                                                                                                           |
+| `ctx.resetSurface()` | Restore the native `HtmlMediaSurface` (call this in `detach()` if you replaced it)                                                                                                                                                                                                     |
+| `ctx.container`      | The DOM element inside which your engine should render visual output                                                                                                                                                                                                                   |
+| `ctx.media`          | The underlying `<video>`/`<audio>` element — **only** use this for: attaching third-party adapters (`myLib.attachMedia(ctx.media)`), reading DOM attributes (`ctx.media.preload`, `ctx.media.autoplay`), and registering raw DOM listeners via `this.addMediaListener(ctx.media, ...)` |
+
+### Native / MSE engine (wraps a `<video>` element)
+
+For engines that extend native HTML5 playback (like HLS or DASH via MSE), use `bindMediaEvents` to bridge DOM events into the player bus, and `bindCommands` to register the standard playback commands:
+
 ```ts
 import { BaseMediaEngine } from '@openplayer/core';
 import type { IEngine, MediaEngineContext, MediaSource } from '@openplayer/core';
@@ -247,28 +267,205 @@ import type { IEngine, MediaEngineContext, MediaSource } from '@openplayer/core'
 export class MyStreamEngine extends BaseMediaEngine implements IEngine {
   name = 'my-stream-engine';
   version = '1.0.0';
-  capabilities = ['media-engine'] as const;
+  capabilities: string[] = ['media-engine'];
 
   // Higher priority = preferred over lower-priority engines.
   // DefaultMediaEngine = 0, HlsMediaEngine = 50.
   priority = 20;
+
+  private adapter: MyLib | null = null;
 
   canPlay(source: MediaSource): boolean {
     return source.src.endsWith('.mystream');
   }
 
   attach(ctx: MediaEngineContext): void {
-    // Set up your streaming library against the media element
-    // Example: myLib.attach(media);
-    // Emit 'loadedmetadata' when the engine is ready so core.whenReady() resolves
-    // ctx.events.emit('loadedmetadata');
+    // Bridge native <video> events into the player event bus:
+    this.bindMediaEvents(ctx.media, ctx.events);
+    // Register standard cmd:play / cmd:pause / cmd:seek / cmd:setVolume etc.:
+    this.bindCommands(ctx);
+
+    // Attach your streaming library to the native element (ctx.media is correct here):
+    this.adapter = new MyLib();
+    this.adapter.attachMedia(ctx.media);
+    this.adapter.loadSource(ctx.activeSource?.src ?? '');
+
+    // Signal readiness once the manifest / metadata is available:
+    this.adapter.on('manifestParsed', () => ctx.events.emit('loadedmetadata'));
+
+    // Autoplay: use ctx.surface for playback operations, not ctx.media directly:
+    if (ctx.media.autoplay) {
+      ctx.surface.muted = true;
+      void ctx.surface.play();
+    }
   }
 
-  detach(ctx: MediaEngineContext): void {
-    // Tear down your library.
+  detach(): void {
+    this.unbindCommands();
+    this.unbindMediaEvents();
+    this.adapter?.destroy();
+    this.adapter = null;
   }
 }
 ```
+
+### Iframe engine (YouTube, Vimeo, etc.)
+
+For engines that embed a third-party player inside an iframe, use `IframeMediaSurface` to adapt the provider's API into the standard surface contract, then call `ctx.setSurface()` to register it:
+
+```ts
+import { BaseMediaEngine, IframeMediaSurface } from '@openplayer/core';
+import type {
+  IEngine,
+  IframeMediaAdapter,
+  IframeMediaAdapterEvents,
+  IframePlaybackState,
+  MediaEngineContext,
+  MediaSource,
+} from '@openplayer/core';
+
+// 1. Implement the provider-specific adapter:
+class MyProviderAdapter implements IframeMediaAdapter {
+  on<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void {
+    /* … */
+  }
+  off<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void {
+    /* … */
+  }
+  mount(container: HTMLElement): void | Promise<void> {
+    /* inject iframe here */
+  }
+  destroy(): void {
+    /* remove iframe */
+  }
+  play(): void {
+    /* … */
+  }
+  pause(): void {
+    /* … */
+  }
+  seekTo(s: number): void {
+    /* … */
+  }
+  setVolume(v: number): void {
+    /* v is 0..1 */
+  }
+  getVolume(): number {
+    return 1;
+  }
+  mute(): void {
+    /* … */
+  }
+  unmute(): void {
+    /* … */
+  }
+  isMuted(): boolean {
+    return false;
+  }
+  setPlaybackRate(r: number): void {
+    /* … */
+  }
+  getPlaybackRate(): number {
+    return 1;
+  }
+  getCurrentTime(): number {
+    return 0;
+  }
+  getDuration(): number {
+    return NaN;
+  }
+}
+
+// 2. Build the engine:
+export class MyProviderEngine extends BaseMediaEngine implements IEngine {
+  name = 'my-provider-engine';
+  version = '1.0.0';
+  capabilities: string[] = ['media-engine'];
+  priority = 30;
+
+  private iframeSurface: IframeMediaSurface | null = null;
+
+  canPlay(source: MediaSource): boolean {
+    // Check explicit MIME type first — allows bare IDs via <source type="x-video/myprovider">
+    if (source.type === 'x-video/myprovider') return true;
+    return source.src.includes('myprovider.com');
+  }
+
+  async attach(ctx: MediaEngineContext): Promise<void> {
+    const adapter = new MyProviderAdapter(/* videoId */);
+    const surface = new IframeMediaSurface(adapter);
+
+    // Replace the native surface with the iframe surface:
+    ctx.setSurface(surface);
+    this.iframeSurface = surface;
+
+    // Bridge surface events → player event bus, register playback commands:
+    this.bindSurfaceEvents(surface, ctx.events);
+    this.bindCommands(ctx);
+
+    // Hide the native <video> element and mount the iframe in its place:
+    ctx.media.style.display = 'none';
+    await surface.mount(ctx.container);
+  }
+
+  detach(ctx: MediaEngineContext): void {
+    this.unbindCommands();
+    this.unbindSurfaceEvents();
+    this.iframeSurface?.destroy();
+    this.iframeSurface = null;
+    ctx.media.style.display = '';
+    ctx.resetSurface();
+  }
+}
+```
+
+> See `@openplayerjs/youtube` for a complete real-world example using this pattern.
+
+### Declaring the source for an iframe engine
+
+There are three ways to tell the player which video to load when using an iframe engine:
+
+**1. `<source>` element with explicit type (recommended for markup-first workflows)**
+
+The `type` attribute is the most reliable signal for `canPlay()`. It lets the engine claim a source even when the URL format is ambiguous (e.g. bare video IDs):
+
+```html
+<video id="my-video">
+  <source src="https://www.myprovider.com/embed/VIDEO_ID" type="x-video/myprovider" />
+</video>
+<script>
+  const player = new OpenPlayerJS('my-video');
+  player.init();
+</script>
+```
+
+**2. URL-only `<source>` (autodetection)**
+
+If the URL is unambiguous (e.g. a well-known provider domain), the engine's URL check in `canPlay()` handles it without an explicit type:
+
+```html
+<video id="my-video">
+  <source src="https://www.myprovider.com/embed/VIDEO_ID" />
+</video>
+```
+
+**3. `player.src` or `core.src` (runtime / SPA)**
+
+Set the source programmatically at any time after `init()`:
+
+```ts
+// ESM
+core.src = 'https://www.myprovider.com/embed/VIDEO_ID';
+
+// UMD
+const player = new OpenPlayerJS('my-video', {
+  plugins: [new MyProviderEngine()],
+});
+player.init();
+player.src = 'https://www.myprovider.com/embed/VIDEO_ID';
+```
+
+> **Note on bare video IDs via `<source>`:** A browser resolves `<source src="VIDEO_ID">` to an absolute URL (`http://example.com/VIDEO_ID`). Your `extractVideoId()` helper should check the last path segment, or require users to pass an explicit `type` attribute when bare IDs are used.
 
 ---
 

@@ -18,7 +18,10 @@ while IFS=' ' read -r local_ref local_sha remote_ref remote_sha; do
       upstream="${default_ref#refs/remotes/}"
     fi
     base=$(git merge-base "$local_sha" "$upstream" 2>/dev/null || true)
-    from="${base:-$(git rev-list --max-parents=0 HEAD)}"
+    # Fall back to v3.0.0 rather than the first commit so the non-conventional
+    # merge commit that predates conventional commits is never linted.
+    v3_sha=$(git rev-list -n 1 v3.0.0 2>/dev/null || true)
+    from="${base:-${v3_sha:-$(git rev-list --max-parents=0 HEAD)}}"
   else
     from="$remote_sha"
   fi

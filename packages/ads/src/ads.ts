@@ -2,15 +2,9 @@ import { VASTClient, VASTTracker } from '@dailymotion/vast-client';
 import type { PlayerPlugin, PluginContext } from '@openplayerjs/core';
 import { getOverlayManager } from '@openplayerjs/core';
 
-import type {
-  AdsBreakConfig,
-  AdsEvent,
-  AdsPluginConfig,
-  AdsSource,
-  AdsSourceType,
-  VastInput,
-} from './types';
-import { PluginBus } from './types';
+import { AdDomManager, setSafeHTMLFn } from './ad-dom';
+import { CaptionManager } from './caption-manager';
+import { OmidSession } from './omid';
 import {
   AdScheduler,
   extractVastTagUriFn,
@@ -19,6 +13,9 @@ import {
   normalizeVmapAdSourceFn,
   parseVmapTimeOffsetFn,
 } from './schedule';
+import { SimidSession } from './simid';
+import type { AdsBreakConfig, AdsEvent, AdsPluginConfig, AdsSource, AdsSourceType, VastInput } from './types';
+import { PluginBus } from './types';
 import {
   collectNonLinearCreatives,
   collectNonLinearFromXml,
@@ -30,12 +27,8 @@ import {
   getVastXmlText,
   toXmlDocument,
 } from './vast-parser';
-import { CaptionManager } from './caption-manager';
-import { AdDomManager, setSafeHTMLFn } from './ad-dom';
-import { SimidSession } from './simid';
-import { OmidSession } from './omid';
 
-export type { AdsEvent, AdsPluginConfig, AdsSource, AdsBreakConfig, AdsSourceType };
+export type { AdsBreakConfig, AdsEvent, AdsPluginConfig, AdsSource, AdsSourceType };
 
 export class AdsPlugin implements PlayerPlugin {
   name = 'ads';
@@ -49,11 +42,28 @@ export class AdsPlugin implements PlayerPlugin {
   private adEndPromise: Promise<void> | null = null;
 
   private cfg: Omit<
-    Required<Omit<AdsPluginConfig, 'mountEl' | 'mountSelector' | 'nonLinearContainer' | 'nonLinearSelector' | 'companionContainer' | 'companionSelector'>>,
+    Required<
+      Omit<
+        AdsPluginConfig,
+        | 'mountEl'
+        | 'mountSelector'
+        | 'nonLinearContainer'
+        | 'nonLinearSelector'
+        | 'companionContainer'
+        | 'companionSelector'
+      >
+    >,
     'sources'
   > &
-    Pick<AdsPluginConfig, 'mountEl' | 'mountSelector' | 'nonLinearContainer' | 'nonLinearSelector' | 'companionContainer' | 'companionSelector'> &
-    { sources: AdsSource[] };
+    Pick<
+      AdsPluginConfig,
+      | 'mountEl'
+      | 'mountSelector'
+      | 'nonLinearContainer'
+      | 'nonLinearSelector'
+      | 'companionContainer'
+      | 'companionSelector'
+    > & { sources: AdsSource[] };
 
   private overlay!: HTMLDivElement;
   private adVideo?: HTMLVideoElement;
@@ -80,11 +90,19 @@ export class AdsPlugin implements PlayerPlugin {
   private get dom(): AdDomManager {
     if (!this._dom) {
       const overlay = document.createElement('div');
-      this._dom = new AdDomManager(overlay, this.cfg, () => this.adVideo, () => this.tracker, () => {});
+      this._dom = new AdDomManager(
+        overlay,
+        this.cfg,
+        () => this.adVideo,
+        () => this.tracker,
+        () => {}
+      );
     }
     return this._dom;
   }
-  private set dom(v: AdDomManager) { this._dom = v; }
+  private set dom(v: AdDomManager) {
+    this._dom = v;
+  }
 
   private simidSession?: SimidSession;
   private omidSession?: OmidSession;
@@ -113,7 +131,12 @@ export class AdsPlugin implements PlayerPlugin {
     this.cfg = {
       allowNativeControls: config.allowNativeControls ?? false,
       resumeContent: config.resumeContent ?? true,
-      preferredMediaTypes: config.preferredMediaTypes || ['video/mp4', 'video/webm', 'application/vnd.apple.mpegurl', 'application/x-mpegURL'],
+      preferredMediaTypes: config.preferredMediaTypes || [
+        'video/mp4',
+        'video/webm',
+        'application/vnd.apple.mpegurl',
+        'application/x-mpegURL',
+      ],
       debug: config.debug ?? false,
       breakTolerance: config.breakTolerance ?? 0.25,
       sources,
@@ -140,15 +163,10 @@ export class AdsPlugin implements PlayerPlugin {
     this.overlay.className = 'op-ads';
     this.overlay.style.display = 'none';
 
-    this.scheduler = new AdScheduler(
-      this.cfg,
-      ctx,
-      this.warn.bind(this),
-      (err) => {
-        this.bus.emit('ads:error', { reason: 'vmap_parse_failed', error: err });
-        ctx.events.emit('ads.error', { reason: 'vmap_parse_failed', error: err });
-      }
-    );
+    this.scheduler = new AdScheduler(this.cfg, ctx, this.warn.bind(this), (err) => {
+      this.bus.emit('ads:error', { reason: 'vmap_parse_failed', error: err });
+      ctx.events.emit('ads.error', { reason: 'vmap_parse_failed', error: err });
+    });
 
     this.captionMgr = new CaptionManager();
     this.dom = new AdDomManager(
@@ -169,7 +187,11 @@ export class AdsPlugin implements PlayerPlugin {
         this.contentHadControls = false;
         this.overlay.style.display = 'none';
         this.ctx.leases.release('playback', this.name);
-        try { getOverlayManager(this.ctx.core).deactivate(this.overlayId); } catch { /* ignore */ }
+        try {
+          getOverlayManager(this.ctx.core).deactivate(this.overlayId);
+        } catch {
+          /* ignore */
+        }
         this.userPlayIntent = false;
         this.scheduler.rebuild();
       })
@@ -187,7 +209,9 @@ export class AdsPlugin implements PlayerPlugin {
           try {
             this.adVideo.muted = ctx.core.muted;
             this.adVideo.volume = ctx.core.volume;
-          } catch { /* ignore */ }
+          } catch {
+            /* ignore */
+          }
         }
       })
     );
@@ -252,7 +276,11 @@ export class AdsPlugin implements PlayerPlugin {
         const shouldInterceptNow = this.shouldInterceptPreroll();
 
         if (shouldInterceptNow || (vmapWasPending && !this.active && !this.startingBreak)) {
-          try { media.pause(); } catch { /* ignore */ }
+          try {
+            media.pause();
+          } catch {
+            /* ignore */
+          }
         }
         void (async () => {
           if (this.scheduler.vmapLoadPromise) await this.scheduler.vmapLoadPromise.catch(() => undefined);
@@ -277,7 +305,11 @@ export class AdsPlugin implements PlayerPlugin {
       const shouldInterceptNow = this.shouldInterceptPreroll();
 
       if (shouldInterceptNow || (vmapWasPending && !this.active && !this.startingBreak)) {
-        try { media.pause(); } catch { /* ignore */ }
+        try {
+          media.pause();
+        } catch {
+          /* ignore */
+        }
       }
       void (async () => {
         if (this.scheduler.vmapLoadPromise) await this.scheduler.vmapLoadPromise.catch(() => undefined);
@@ -446,7 +478,11 @@ export class AdsPlugin implements PlayerPlugin {
     if (this.active) return false;
 
     this.dom.ensureOverlayMounted(this.ctx.core.media);
-    const { events, leases, core: { media } } = this.ctx;
+    const {
+      events,
+      leases,
+      core: { media },
+    } = this.ctx;
 
     const requestPayload = input.kind === 'url' ? input.value : '[xml]';
     this.bus.emit('ads:requested', requestPayload);
@@ -454,7 +490,11 @@ export class AdsPlugin implements PlayerPlugin {
     this.resumeAfter = this.cfg.resumeContent !== false && meta.kind !== 'postroll';
 
     const pauseAndAcquireLease = () => {
-      try { media.pause(); } catch { /* ignore */ }
+      try {
+        media.pause();
+      } catch {
+        /* ignore */
+      }
       events.emit('cmd:pause');
       if (!leases.acquire('playback', this.name)) {
         this.bus.emit('ads:error', { reason: 'playback lease already owned', owner: leases.owner('playback') });
@@ -467,7 +507,11 @@ export class AdsPlugin implements PlayerPlugin {
     let rawDoc: XMLDocument | null = null;
     const loadRawDocBestEffort = async () => {
       if (rawDoc) return;
-      try { rawDoc = this.buildParsedForNonLinearFromXml(await this.getVastXmlText(input)); } catch { rawDoc = null; }
+      try {
+        rawDoc = this.buildParsedForNonLinearFromXml(await this.getVastXmlText(input));
+      } catch {
+        rawDoc = null;
+      }
     };
 
     try {
@@ -567,8 +611,12 @@ export class AdsPlugin implements PlayerPlugin {
         this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative);
         this._lastCreative = item.creative;
 
-        this.log('mount ad video', { url: item.mediaFile?.fileURL, type: item.mediaFile?.type, skipOffset: item.skipOffset });
-        this.mountAdVideo(media, item.mediaFile);
+        this.log('mount ad video', {
+          url: item.mediaFile?.fileURL,
+          type: item.mediaFile?.type,
+          skipOffset: item.skipOffset,
+        });
+        this.mountAdVideo(media, item.mediaFile, item.creative);
         const endPromise = this.waitForAdEnd();
 
         this.dom.setupSkipUIForPodItem(item, this.log.bind(this));
@@ -584,13 +632,23 @@ export class AdsPlugin implements PlayerPlugin {
             onSkip: () => this.requestSkip('api'),
             onStop: () => {
               const v = this.adVideo;
-              if (v) { try { v.dispatchEvent(new Event('ended')); } catch { /* ignore */ } }
+              if (v) {
+                try {
+                  v.dispatchEvent(new Event('ended'));
+                } catch {
+                  /* ignore */
+                }
+              }
             },
             onPause: () => this.ctx.events.emit('cmd:pause'),
             onPlay: () => this.ctx.events.emit('cmd:play'),
             onClickThrough: (url) => {
               this.dom.safeWindowOpen(url);
-              try { this.tracker?.trackClick?.(); } catch { /* ignore */ }
+              try {
+                this.tracker?.trackClick?.();
+              } catch {
+                /* ignore */
+              }
               this.bus.emit('ads:clickthrough', { break: meta, url });
               this.ctx.events.emit('ads.click', { break: meta, url });
             },
@@ -603,7 +661,10 @@ export class AdsPlugin implements PlayerPlugin {
               this.simidSession = undefined;
             },
           });
-          this.sessionUnsubs.push(() => { this.simidSession?.destroy(); this.simidSession = undefined; });
+          this.sessionUnsubs.push(() => {
+            this.simidSession?.destroy();
+            this.simidSession = undefined;
+          });
         }
 
         if (!this.cfg.allowNativeControls) this.bindAdSurfaceCommands();
@@ -621,12 +682,18 @@ export class AdsPlugin implements PlayerPlugin {
 
       this.bus.emit('ads:allAdsCompleted', { break: meta });
       this.ctx.events.emit('ads.allAdsCompleted', { break: meta });
-      this.finish({ resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter), suppressResume: opts?.suppressResumeOnSuccess });
+      this.finish({
+        resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
+        suppressResume: opts?.suppressResumeOnSuccess,
+      });
       return true;
     } catch (err) {
       this.bus.emit('ads:error', err);
       this.ctx.events.emit('ads.error', { err });
-      this.finish({ resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter), suppressResume: opts?.suppressResumeOnError });
+      this.finish({
+        resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
+        suppressResume: opts?.suppressResumeOnError,
+      });
       return false;
     }
   }
@@ -648,17 +715,26 @@ export class AdsPlugin implements PlayerPlugin {
 
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      try { this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative); }
-      catch { this.tracker = undefined; }
+      try {
+        this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative);
+      } catch {
+        this.tracker = undefined;
+      }
       this._lastCreative = item.creative;
 
-      const companionCreative = (item.ad?.creatives as any[] | undefined)?.find((c: any) => c?.type === 'companion') ?? item.creative;
+      const companionCreative =
+        (item.ad?.creatives as any[] | undefined)?.find((c: any) => c?.type === 'companion') ?? item.creative;
       this.dom.mountCompanions(companionCreative);
       this.dom.ensureNonLinearDom();
       const el = this.dom.renderNonLinear(item.nonLinear);
       if (el) this.dom.nonLinearWrap!.appendChild(el);
 
-      try { this.tracker?.trackImpression?.(); this.tracker?.trackCreativeView?.(); } catch { /* ignore */ }
+      try {
+        this.tracker?.trackImpression?.();
+        this.tracker?.trackCreativeView?.();
+      } catch {
+        /* ignore */
+      }
       this.bus.emit('ads:impression', { break: meta, index: i });
       this.bus.emit('ads:ad:start', { break: meta, index: i, sequence: item.sequence });
       maxDuration = Math.max(maxDuration, this.dom.nonLinearSuggestedDurationSeconds(item.nonLinear));
@@ -682,7 +758,8 @@ export class AdsPlugin implements PlayerPlugin {
 
     for (let i = 0; i < items.length; i++) {
       const it = items[i];
-      if (it.companions?.length) this.dom.mountCompanions({ companions: it.companions, companionAds: { companions: it.companions } });
+      if (it.companions?.length)
+        this.dom.mountCompanions({ companions: it.companions, companionAds: { companions: it.companions } });
       this.dom.ensureNonLinearDom();
       const el = this.dom.renderNonLinear(it.nonLinear);
       if (el) this.dom.nonLinearWrap!.appendChild(el);
@@ -702,7 +779,10 @@ export class AdsPlugin implements PlayerPlugin {
       const tick = () => {
         const elapsed = (Date.now() - start) / 1000;
         const anyLeft = !!this.dom.nonLinearWrap?.querySelector('.op-ads__nonlinear-item');
-        if (!anyLeft || elapsed >= maxDuration) { resolve(); return; }
+        if (!anyLeft || elapsed >= maxDuration) {
+          resolve();
+          return;
+        }
         setTimeout(tick, 50);
       };
       tick();
@@ -716,7 +796,7 @@ export class AdsPlugin implements PlayerPlugin {
 
   // ─── Ad video management ──────────────────────────────────────────────────────
 
-  private mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: { fileURL: string; raw: any }) {
+  private mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: { fileURL: string; raw: any }, creative?: any) {
     this.dom.ensureOverlayMounted(contentMedia);
     const root = this.overlay.parentElement as HTMLElement;
     this.overlay.replaceChildren();
@@ -737,7 +817,11 @@ export class AdsPlugin implements PlayerPlugin {
     v.style.width = '100%';
     v.style.height = '100%';
     v.src = mediaFile.fileURL;
-    try { v.load(); } catch { /* ignore */ }
+    try {
+      v.load();
+    } catch {
+      /* ignore */
+    }
 
     const desiredMuted = forceMutedForPolicy ? true : this.ctx.core.muted;
     const desiredVolume = forceMutedForPolicy ? 0 : this.ctx.core.volume;
@@ -747,11 +831,25 @@ export class AdsPlugin implements PlayerPlugin {
 
     this.adEndPromise = new Promise((resolve) => {
       const cleanup = () => {
-        if (this.adVideo === v) { try { v.pause(); } catch { /* ignore */ } v.remove(); this.adVideo = undefined; }
-        else v.remove();
+        if (this.adVideo === v) {
+          try {
+            v.pause();
+          } catch {
+            /* ignore */
+          }
+          v.remove();
+          this.adVideo = undefined;
+        } else v.remove();
       };
-      const onEnded = () => { this.ctx.events.emit('ended'); cleanup(); resolve(); };
-      const onError = () => { cleanup(); resolve(); };
+      const onEnded = () => {
+        this.ctx.events.emit('ended');
+        cleanup();
+        resolve();
+      };
+      const onError = () => {
+        cleanup();
+        resolve();
+      };
       v.addEventListener('ended', onEnded, { once: true });
       v.addEventListener('error', onError, { once: true });
       this.sessionUnsubs.push(() => v.removeEventListener('ended', onEnded));
@@ -765,25 +863,52 @@ export class AdsPlugin implements PlayerPlugin {
       if (document.visibilityState !== 'visible') return;
       const cur = this.adVideo;
       if (!cur || !cur.paused || cur.ended) return;
-      try { const p = cur.play?.(); if (p && typeof p.catch === 'function') p.catch(() => undefined); } catch { /* ignore */ }
+      try {
+        const p = cur.play?.();
+        if (p && typeof p.catch === 'function') p.catch(() => undefined);
+      } catch {
+        /* ignore */
+      }
     };
     document.addEventListener('visibilitychange', onVisibility);
     this.sessionUnsubs.push(() => document.removeEventListener('visibilitychange', onVisibility));
 
-    const captionTracks = this.captionMgr.attachAdCaptionTracks(v, mediaFile.raw);
-    this.sessionUnsubs.push(() => { captionTracks.forEach((el) => el.remove()); });
+    const captionTracks = this.captionMgr.attachAdCaptionTracks(v, mediaFile.raw, creative);
+    this.sessionUnsubs.push(() => {
+      captionTracks.forEach((el) => el.remove());
+    });
 
     let overlayMgr: ReturnType<typeof getOverlayManager> | null = null;
     try {
       overlayMgr = getOverlayManager(this.ctx.core);
-      overlayMgr.activate({ id: 'ads', priority: 100, mode: 'countdown', canSeek: false, duration: 0, value: 0, label: 'Ad', fullscreenEl: root, fullscreenVideoEl: v });
-    } catch { /* ignore */ }
+      overlayMgr.activate({
+        id: 'ads',
+        priority: 100,
+        mode: 'countdown',
+        canSeek: false,
+        duration: 0,
+        value: 0,
+        label: 'Ad',
+        fullscreenEl: root,
+        fullscreenVideoEl: v,
+      });
+    } catch {
+      /* ignore */
+    }
 
     const updateOverlay = () => {
       if (!overlayMgr) return;
-      const dur = v.duration; const cur = v.currentTime;
+      const dur = v.duration;
+      const cur = v.currentTime;
       if (!Number.isFinite(dur) || dur <= 0 || !Number.isFinite(cur)) return;
-      overlayMgr.update(this.overlayId, { duration: dur, value: Math.max(0, dur - cur), mode: 'countdown', canSeek: false, fullscreenEl: root, fullscreenVideoEl: v });
+      overlayMgr.update(this.overlayId, {
+        duration: dur,
+        value: Math.max(0, dur - cur),
+        mode: 'countdown',
+        canSeek: false,
+        fullscreenEl: root,
+        fullscreenVideoEl: v,
+      });
     };
     v.addEventListener('loadedmetadata', updateOverlay);
     v.addEventListener('timeupdate', updateOverlay);
@@ -803,12 +928,30 @@ export class AdsPlugin implements PlayerPlugin {
         const shouldForceMute = !this.userPlayIntent && wantsAutoplayPath && !this.ctx.core.userInteracted;
         if (shouldForceMute) {
           this.forcedMuteUntilInteraction = true;
-          try { if (v()) { v()!.muted = true; v()!.volume = 0; } } catch { /* ignore */ }
+          try {
+            if (v()) {
+              v()!.muted = true;
+              v()!.volume = 0;
+            }
+          } catch {
+            /* ignore */
+          }
         } else {
           this.forcedMuteUntilInteraction = false;
-          try { if (v()) { v()!.muted = this.ctx.core.muted; v()!.volume = this.ctx.core.volume; } } catch { /* ignore */ }
+          try {
+            if (v()) {
+              v()!.muted = this.ctx.core.muted;
+              v()!.volume = this.ctx.core.volume;
+            }
+          } catch {
+            /* ignore */
+          }
         }
-        v()?.play().catch(() => { /* ignore */ });
+        v()
+          ?.play()
+          .catch(() => {
+            /* ignore */
+          });
       })
     );
     this.sessionUnsubs.push(events.on('cmd:pause', () => v()?.pause()));
@@ -823,7 +966,9 @@ export class AdsPlugin implements PlayerPlugin {
       events.on('cmd:setMuted', (x: any) => {
         if (!v() || this.syncingVolume) return;
         if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) {
-          v()!.muted = true; v()!.volume = 0; return;
+          v()!.muted = true;
+          v()!.volume = 0;
+          return;
         }
         v()!.muted = Boolean(x);
       })
@@ -839,7 +984,10 @@ export class AdsPlugin implements PlayerPlugin {
     let lastMuted = v.muted || v.volume === 0;
     let lastVol = Number.isFinite(v.volume) ? v.volume : 1;
     let lastPaused = v.paused;
-    let q25 = false, q50 = false, q75 = false, q100 = false;
+    let q25 = false,
+      q50 = false,
+      q75 = false,
+      q100 = false;
 
     const emitDuration = () => {
       const dur = v.duration;
@@ -851,10 +999,22 @@ export class AdsPlugin implements PlayerPlugin {
 
     const emitQuartile = (quartile: 0 | 25 | 50 | 75 | 100) => {
       this.bus.emit('ads:quartile', { break: meta, quartile });
-      if (quartile === 25) { this.ctx.events.emit('ads.firstQuartile', { break: meta }); this.omidSession?.firstQuartile(); }
-      if (quartile === 50) { this.ctx.events.emit('ads.midpoint', { break: meta }); this.omidSession?.midpoint(); }
-      if (quartile === 75) { this.ctx.events.emit('ads.thirdQuartile', { break: meta }); this.omidSession?.thirdQuartile(); }
-      if (quartile === 100) { this.ctx.events.emit('ads.complete', { break: meta }); this.omidSession?.complete(); }
+      if (quartile === 25) {
+        this.ctx.events.emit('ads.firstQuartile', { break: meta });
+        this.omidSession?.firstQuartile();
+      }
+      if (quartile === 50) {
+        this.ctx.events.emit('ads.midpoint', { break: meta });
+        this.omidSession?.midpoint();
+      }
+      if (quartile === 75) {
+        this.ctx.events.emit('ads.thirdQuartile', { break: meta });
+        this.omidSession?.thirdQuartile();
+      }
+      if (quartile === 100) {
+        this.ctx.events.emit('ads.complete', { break: meta });
+        this.omidSession?.complete();
+      }
     };
 
     const onPlaying = () => {
@@ -866,7 +1026,7 @@ export class AdsPlugin implements PlayerPlugin {
         emitQuartile(0);
         emitDuration();
         const dur = v.duration;
-        const vol = v.muted ? 0 : (Number.isFinite(v.volume) ? v.volume : 1);
+        const vol = v.muted ? 0 : Number.isFinite(v.volume) ? v.volume : 1;
         this.omidSession?.loaded();
         this.omidSession?.start(Number.isFinite(dur) ? dur : 0, vol);
         this.simidSession?.progress(v.currentTime, Number.isFinite(dur) ? dur : 0);
@@ -882,7 +1042,11 @@ export class AdsPlugin implements PlayerPlugin {
     };
 
     const onPause = () => {
-      if (started) { this.tracker?.trackPause?.(); this.omidSession?.pause(); this.simidSession?.pause(); }
+      if (started) {
+        this.tracker?.trackPause?.();
+        this.omidSession?.pause();
+        this.simidSession?.pause();
+      }
       lastPaused = true;
       this.bus.emit('ads:pause', { break: meta });
       this.ctx.events.emit('pause');
@@ -890,7 +1054,8 @@ export class AdsPlugin implements PlayerPlugin {
     };
 
     const onTime = () => {
-      const dur = v.duration; const cur = v.currentTime;
+      const dur = v.duration;
+      const cur = v.currentTime;
       if (!Number.isFinite(dur) || dur <= 0 || !Number.isFinite(cur)) return;
       emitDuration();
       const remaining = Math.max(0, dur - cur);
@@ -901,10 +1066,26 @@ export class AdsPlugin implements PlayerPlugin {
       this.simidSession?.progress(cur, dur);
 
       const pct = cur / dur;
-      if (!q25 && pct >= 0.25) { q25 = true; this.tracker?.trackFirstQuartile?.(); emitQuartile(25); }
-      if (!q50 && pct >= 0.5) { q50 = true; this.tracker?.trackMidpoint?.(); emitQuartile(50); }
-      if (!q75 && pct >= 0.75) { q75 = true; this.tracker?.trackThirdQuartile?.(); emitQuartile(75); }
-      if (!q100 && pct >= 0.999) { q100 = true; this.tracker?.trackComplete?.(); emitQuartile(100); }
+      if (!q25 && pct >= 0.25) {
+        q25 = true;
+        this.tracker?.trackFirstQuartile?.();
+        emitQuartile(25);
+      }
+      if (!q50 && pct >= 0.5) {
+        q50 = true;
+        this.tracker?.trackMidpoint?.();
+        emitQuartile(50);
+      }
+      if (!q75 && pct >= 0.75) {
+        q75 = true;
+        this.tracker?.trackThirdQuartile?.();
+        emitQuartile(75);
+      }
+      if (!q100 && pct >= 0.999) {
+        q100 = true;
+        this.tracker?.trackComplete?.();
+        emitQuartile(100);
+      }
     };
 
     const onVolume = () => {
@@ -918,8 +1099,13 @@ export class AdsPlugin implements PlayerPlugin {
 
       if (muted !== lastMuted) {
         lastMuted = muted;
-        if (muted) { this.tracker?.trackMute?.(); this.bus.emit('ads:mute', { break: meta }); }
-        else { this.tracker?.trackUnmute?.(); this.bus.emit('ads:unmute', { break: meta }); }
+        if (muted) {
+          this.tracker?.trackMute?.();
+          this.bus.emit('ads:mute', { break: meta });
+        } else {
+          this.tracker?.trackUnmute?.();
+          this.bus.emit('ads:unmute', { break: meta });
+        }
       }
 
       if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) return;
@@ -928,13 +1114,18 @@ export class AdsPlugin implements PlayerPlugin {
         this.syncingVolume = true;
         this.ctx.core.muted = muted;
         if (Number.isFinite(vol)) this.ctx.core.volume = Math.max(0, Math.min(1, vol));
-      } catch { /* ignore */ } finally { this.syncingVolume = false; }
+      } catch {
+        /* ignore */
+      } finally {
+        this.syncingVolume = false;
+      }
     };
 
     const onClick = (ev: PointerEvent) => {
       if (ev.defaultPrevented) return;
       const c = this._lastCreative;
-      const click = c?.videoClickThroughURLTemplate || c?.videoClicks?.clickThrough || c?.videoClicks?.clickThroughURLTemplate;
+      const click =
+        c?.videoClickThroughURLTemplate || c?.videoClicks?.clickThrough || c?.videoClicks?.clickThroughURLTemplate;
       if (!click) return;
       const url = typeof click === 'string' ? click : click.url;
       this.dom.safeWindowOpen(url);
@@ -968,17 +1159,26 @@ export class AdsPlugin implements PlayerPlugin {
 
     const tryPlay = (muted: boolean): Promise<void> | undefined => {
       try {
-        if (muted) { v.muted = true; v.volume = 0; this.forcedMuteUntilInteraction = true; }
+        if (muted) {
+          v.muted = true;
+          v.volume = 0;
+          this.forcedMuteUntilInteraction = true;
+        }
         const p = v.play?.();
         return p && typeof p.then === 'function' ? (p as Promise<void>) : undefined;
-      } catch { return undefined; }
+      } catch {
+        return undefined;
+      }
     };
 
     const p = tryPlay(false);
     if (p) {
       p.catch(() => {
         const p2 = tryPlay(true);
-        if (p2) p2.catch(() => { /* both failed */ });
+        if (p2)
+          p2.catch(() => {
+            /* both failed */
+          });
       });
     }
   }
@@ -1012,14 +1212,22 @@ export class AdsPlugin implements PlayerPlugin {
     this.tracker = undefined;
 
     if (this.adVideo) {
-      try { this.adVideo.pause(); } catch { /* ignore */ }
+      try {
+        this.adVideo.pause();
+      } catch {
+        /* ignore */
+      }
       this.adVideo.remove();
       this.adVideo = undefined;
     }
 
     try {
-      this.overlay.querySelectorAll('video.op-ads__media').forEach((n) => n?.parentNode?.removeChild?.(n) ?? n.remove?.());
-    } catch { /* ignore */ }
+      this.overlay
+        .querySelectorAll('video.op-ads__media')
+        .forEach((n) => n?.parentNode?.removeChild?.(n) ?? n.remove?.());
+    } catch {
+      /* ignore */
+    }
 
     this.adEndPromise = null;
     this.captionMgr.removeAdCaptions();
@@ -1039,7 +1247,11 @@ export class AdsPlugin implements PlayerPlugin {
     const shouldResume = !!(opts.resume || this.userPlayIntent || this.resumeAfter);
     this.userPlayIntent = false;
     this.captionMgr.restoreActiveTextTrack(this.ctx?.core?.media);
-    try { getOverlayManager(this.ctx.core).deactivate(this.overlayId); } catch { /* ignore */ }
+    try {
+      getOverlayManager(this.ctx.core).deactivate(this.overlayId);
+    } catch {
+      /* ignore */
+    }
 
     this.omidSession?.destroy();
     this.omidSession = undefined;
@@ -1053,41 +1265,101 @@ export class AdsPlugin implements PlayerPlugin {
   // ─── Sub-module delegates (previously private, kept for test access) ─────────
 
   // Standalone pure utilities — work without setup() having been called:
-  /** @internal */ getVastXmlText(input: any) { return getVastXmlText(input); }
-  /** @internal */ normalizeVmapAdSource(adSource: any) { return normalizeVmapAdSourceFn(adSource); }
-  /** @internal */ extractVastTagUri(adTagURI: any) { return extractVastTagUriFn(adTagURI); }
-  /** @internal */ parseVmapTimeOffset(timeOffset: any) { return parseVmapTimeOffsetFn(timeOffset); }
-  /** @internal */ getVastInputFromBreak(b: AdsBreakConfig) { return getVastInputFromBreakFn(b); }
-  /** @internal */ setSafeHTML(el: HTMLElement, html: string) { return setSafeHTMLFn(el, html); }
-  /** @internal */ collectNonLinearCreatives(parsed: any) { return collectNonLinearCreatives(parsed); }
-  /** @internal */ collectNonLinearFromXml(doc: any) { return collectNonLinearFromXml(doc); }
-  /** @internal */ buildParsedForNonLinearFromXml(xmlText: string) { return toXmlDocument(xmlText); }
-  /** @internal */ computeSkipAtSeconds(skipOffset: string | undefined, duration: number) { return computeSkipAtSeconds(skipOffset, duration); }
-  /** @internal */ collectPodAds(parsed: any) { return collectPodAds(parsed, this.cfg.preferredMediaTypes); }
+  /** @internal */ getVastXmlText(input: any) {
+    return getVastXmlText(input);
+  }
+  /** @internal */ normalizeVmapAdSource(adSource: any) {
+    return normalizeVmapAdSourceFn(adSource);
+  }
+  /** @internal */ extractVastTagUri(adTagURI: any) {
+    return extractVastTagUriFn(adTagURI);
+  }
+  /** @internal */ parseVmapTimeOffset(timeOffset: any) {
+    return parseVmapTimeOffsetFn(timeOffset);
+  }
+  /** @internal */ getVastInputFromBreak(b: AdsBreakConfig) {
+    return getVastInputFromBreakFn(b);
+  }
+  /** @internal */ setSafeHTML(el: HTMLElement, html: string) {
+    return setSafeHTMLFn(el, html);
+  }
+  /** @internal */ collectNonLinearCreatives(parsed: any) {
+    return collectNonLinearCreatives(parsed);
+  }
+  /** @internal */ collectNonLinearFromXml(doc: any) {
+    return collectNonLinearFromXml(doc);
+  }
+  /** @internal */ buildParsedForNonLinearFromXml(xmlText: string) {
+    return toXmlDocument(xmlText);
+  }
+  /** @internal */ computeSkipAtSeconds(skipOffset: string | undefined, duration: number) {
+    return computeSkipAtSeconds(skipOffset, duration);
+  }
+  /** @internal */ collectPodAds(parsed: any) {
+    return collectPodAds(parsed, this.cfg.preferredMediaTypes);
+  }
 
   // Scheduler delegates — require setup() to have been called:
-  /** @internal */ getPrerollBreak() { return this.scheduler.getPrerollBreak(); }
-  /** @internal */ getBreakId(b: AdsBreakConfig) { return this.scheduler ? this.scheduler.getBreakId(b) : getBreakIdFn(b); }
-  /** @internal */ async loadVmapAndMerge(existing: AdsBreakConfig[], src?: string) { return this.scheduler.loadVmapAndMerge(existing, src); }
+  /** @internal */ getPrerollBreak() {
+    return this.scheduler.getPrerollBreak();
+  }
+  /** @internal */ getBreakId(b: AdsBreakConfig) {
+    return this.scheduler ? this.scheduler.getBreakId(b) : getBreakIdFn(b);
+  }
+  /** @internal */ async loadVmapAndMerge(existing: AdsBreakConfig[], src?: string) {
+    return this.scheduler.loadVmapAndMerge(existing, src);
+  }
 
   // Scheduler state accessors:
-  /** @internal */ get resolvedBreaks() { return this.scheduler?.resolvedBreaks; }
-  /** @internal */ set resolvedBreaks(v: AdsBreakConfig[]) { if (this.scheduler) this.scheduler.resolvedBreaks = v; }
-  /** @internal */ get pendingPercentBreaks() { return this.scheduler?.pendingPercentBreaks; }
-  /** @internal */ set pendingPercentBreaks(v: any[]) { if (this.scheduler) this.scheduler.pendingPercentBreaks = v; }
-  /** @internal */ get playedBreaks() { return this.scheduler?.playedBreaks; }
-  /** @internal */ get vmapPending() { return this.scheduler?.vmapPending; }
-  /** @internal */ get vmapLoadPromise() { return this.scheduler?.vmapLoadPromise; }
+  /** @internal */ get resolvedBreaks() {
+    return this.scheduler?.resolvedBreaks;
+  }
+  /** @internal */ set resolvedBreaks(v: AdsBreakConfig[]) {
+    if (this.scheduler) this.scheduler.resolvedBreaks = v;
+  }
+  /** @internal */ get pendingPercentBreaks() {
+    return this.scheduler?.pendingPercentBreaks;
+  }
+  /** @internal */ set pendingPercentBreaks(v: any[]) {
+    if (this.scheduler) this.scheduler.pendingPercentBreaks = v;
+  }
+  /** @internal */ get playedBreaks() {
+    return this.scheduler?.playedBreaks;
+  }
+  /** @internal */ get vmapPending() {
+    return this.scheduler?.vmapPending;
+  }
+  /** @internal */ get vmapLoadPromise() {
+    return this.scheduler?.vmapLoadPromise;
+  }
+  /** @internal */ get pendingVmapSrc() {
+    return this.scheduler?.pendingVmapSrc;
+  }
+  /** @internal */ isXmlString(src: string) {
+    return this.scheduler?.isXmlString(src);
+  }
 
   // Dom delegates — require setup():
-  /** @internal */ ensureOverlayMounted() { return this.dom.ensureOverlayMounted(this.ctx.core.media); }
-  /** @internal */ mountCompanions(creative: any) { return this.dom.mountCompanions(creative); }
-  /** @internal */ renderCompanion(companion: any) { return this.dom.renderCompanion(companion); }
-  /** @internal */ renderNonLinear(nl: any) { return this.dom.renderNonLinear(nl); }
+  /** @internal */ ensureOverlayMounted() {
+    return this.dom.ensureOverlayMounted(this.ctx.core.media);
+  }
+  /** @internal */ mountCompanions(creative: any) {
+    return this.dom.mountCompanions(creative);
+  }
+  /** @internal */ renderCompanion(companion: any) {
+    return this.dom.renderCompanion(companion);
+  }
+  /** @internal */ renderNonLinear(nl: any) {
+    return this.dom.renderNonLinear(nl);
+  }
 
   // Caption delegate — require setup():
-  /** @internal */ ensureRawCaptions(mediaFileRaw: any) { return this.captionMgr.ensureRawCaptions(mediaFileRaw); }
-  /** @internal */ attachAdCaptionTracks(adVideo: HTMLVideoElement, raw: any) { return this.captionMgr.attachAdCaptionTracks(adVideo, raw); }
+  /** @internal */ ensureRawCaptions(mediaFileRaw: any, creative?: any) {
+    return this.captionMgr.ensureRawCaptions(mediaFileRaw, creative);
+  }
+  /** @internal */ attachAdCaptionTracks(adVideo: HTMLVideoElement, raw: any, creative?: any) {
+    return this.captionMgr.attachAdCaptionTracks(adVideo, raw, creative);
+  }
 
   // ─── Logging ──────────────────────────────────────────────────────────────────
 
@@ -1103,4 +1375,4 @@ export class AdsPlugin implements PlayerPlugin {
 }
 
 // Re-export helpers for backwards-compatibility (they now live in install.ts).
-export { installAds, extendAds } from './install';
+export { extendAds, installAds } from './install';

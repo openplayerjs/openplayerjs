@@ -16,13 +16,18 @@ export function extractVastTagUriFn(adTagURI: any): string | undefined {
   if (!adTagURI) return undefined;
   if (typeof adTagURI === 'string') return adTagURI.trim() || undefined;
   if (typeof adTagURI === 'object') {
-    const uri = (adTagURI.uri || adTagURI.URI || adTagURI.value || adTagURI.text || adTagURI['#text']) as string | undefined;
+    const uri = (adTagURI.uri || adTagURI.URI || adTagURI.value || adTagURI.text || adTagURI['#text']) as
+      | string
+      | undefined;
     if (typeof uri === 'string' && uri.trim()) return uri.trim();
   }
   return undefined;
 }
 
-export function parseVmapTimeOffsetFn(timeOffset: any): { at: 'preroll' | 'postroll' | number; pendingPercent?: number | null } {
+export function parseVmapTimeOffsetFn(timeOffset: any): {
+  at: 'preroll' | 'postroll' | number;
+  pendingPercent?: number | null;
+} {
   const s = String(timeOffset || '').trim();
   if (!s || s === 'start') return { at: 'preroll' };
   if (s === 'end') return { at: 'postroll' };
@@ -51,13 +56,17 @@ export function getVastInputFromBreakFn(b: AdsBreakConfig): { input?: VastInput;
   if (b.source && typeof b.source.src === 'string' && b.source.src.trim()) {
     const src = b.source.src.trim();
     const t = b.source.type as AdsSourceType;
-    return isXml(src) ? { input: { kind: 'xml', value: src }, sourceType: t } : { input: { kind: 'url', value: src }, sourceType: t };
+    return isXml(src)
+      ? { input: { kind: 'xml', value: src }, sourceType: t }
+      : { input: { kind: 'url', value: src }, sourceType: t };
   }
   const firstSource = Array.isArray(b.sources) ? b.sources[0] : undefined;
   if (firstSource && typeof firstSource.src === 'string' && firstSource.src.trim()) {
     const src = firstSource.src.trim();
     const t = firstSource.type as AdsSourceType;
-    return isXml(src) ? { input: { kind: 'xml', value: src }, sourceType: t } : { input: { kind: 'url', value: src }, sourceType: t };
+    return isXml(src)
+      ? { input: { kind: 'xml', value: src }, sourceType: t }
+      : { input: { kind: 'url', value: src }, sourceType: t };
   }
   return { input: undefined, sourceType: undefined };
 }
@@ -87,7 +96,15 @@ export class AdScheduler {
   constructor(
     private cfg: Pick<
       Required<
-        Omit<AdsPluginConfig, 'mountEl' | 'mountSelector' | 'nonLinearContainer' | 'nonLinearSelector' | 'companionContainer' | 'companionSelector'>
+        Omit<
+          AdsPluginConfig,
+          | 'mountEl'
+          | 'mountSelector'
+          | 'nonLinearContainer'
+          | 'nonLinearSelector'
+          | 'companionContainer'
+          | 'companionSelector'
+        >
       >,
       'sources' | 'breaks' | 'adSourcesMode' | 'breakTolerance' | 'debug'
     > & { sources: AdsSource[] },
@@ -315,8 +332,14 @@ export class AdScheduler {
         try {
           const ns = xmlDoc.getElementsByTagNameNS('*', 'AdBreak');
           if (ns && ns.length) return ns.length;
-        } catch { /* ignore */ }
-        try { return xmlDoc.getElementsByTagName('AdBreak').length; } catch { return 0; }
+        } catch {
+          /* ignore */
+        }
+        try {
+          return xmlDoc.getElementsByTagName('AdBreak').length;
+        } catch {
+          return 0;
+        }
       })();
 
       for (let i = 0; i < breaks.length; i++) {
@@ -383,14 +406,19 @@ export class AdScheduler {
     }
   }
 
-  private parseVmapFallback(xmlDoc: XMLDocument, vmapBreaks: AdsBreakConfig[], prevPendingCount: number) {
+  private parseVmapFallback(xmlDoc: XMLDocument, vmapBreaks: AdsBreakConfig[], _prevPendingCount: number) {
     const byTag = (root: ParentNode, localName: string): Element[] => {
       try {
         const ns = (root as any).getElementsByTagNameNS?.('*', localName) as HTMLCollectionOf<Element> | undefined;
         if (ns && ns.length) return Array.from(ns);
-      } catch { /* ignore */ }
-      try { return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>); }
-      catch { return []; }
+      } catch {
+        /* ignore */
+      }
+      try {
+        return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>);
+      } catch {
+        return [];
+      }
     };
 
     const adBreakEls = byTag(xmlDoc, 'AdBreak');

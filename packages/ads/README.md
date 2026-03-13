@@ -1,6 +1,12 @@
 # @openplayer/ads
 
-> VAST / VMAP ad plugin for [OpenPlayerJS](https://github.com/openplayerjs/openplayerjs).
+> VAST / VMAP ad plugin for [OpenPlayerJS](https://openplayerjs.com).
+
+[![npm](https://img.shields.io/npm/v/@openplayerjs/ads?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/ads)
+[![npm downloads](https://img.shields.io/npm/dm/@openplayerjs/ads?logo=npm&label=downloads)](https://www.npmjs.com/package/@openplayerjs/ads)
+[![License](https://img.shields.io/npm/l/@openplayerjs/ads)](../../LICENSE.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![JSDelivr](https://data.jsdelivr.com/v1/package/npm/@openplayerjs/ads/badge)](https://www.jsdelivr.com/package/npm/@openplayerjs/ads)
 
 ---
 
@@ -201,6 +207,36 @@ core.on('ads:error', ({ reason, error }) => {
 | `@openplayer/core`         | peer    | `>=3.0.0`        |
 | `@dailymotion/vast-client` | bundled | `>=6.0.0`        |
 | `@dailymotion/vmap`        | bundled | `>=3.0.0`        |
+
+---
+
+## Compatibility with iframe engines (YouTube, Vimeo, etc.)
+
+`AdsPlugin` is designed for native `<video>`/`<audio>` content and currently has several integration gaps when used alongside iframe-based engines such as `@openplayerjs/youtube`. These are **known areas of concern** — ads + YouTube is not a supported combination yet:
+
+### 1. `media.duration` read from the native element
+
+`getDueMidrollBreaks()` and related percentage-based midroll logic read `this.ctx.core.media.duration` directly from the native `<video>` element. When a YouTube (or other iframe) engine is active, that element is hidden and has nothing loaded — `media.duration` will be `NaN`, so percentage-based midrolls will never trigger.
+
+**Fix needed:** replace `this.ctx.core.media.duration` with `this.ctx.core.duration` (which is synced from the active surface via `bindSurfaceSync()`).
+
+### 2. `media.currentTime` read from the native element
+
+`shouldInterceptPreroll()` checks `media?.currentTime` to skip a preroll if playback has already advanced past 0.25 s. For iframe engines, `media.currentTime` is always `0` (the native element is unloaded), so this guard never fires correctly.
+
+**Fix needed:** replace `media?.currentTime` with `this.ctx.core.currentTime`.
+
+### 3. DOM `timeupdate` listener on the native element
+
+`bindBreakScheduler()` listens to the native `'timeupdate'` DOM event on `core.media` to fire midroll checks. Iframe engines never trigger this event on the native element — they emit `timeupdate` through the player EventBus instead.
+
+**Fix needed:** replace the native DOM listener with an EventBus listener (`ctx.events.on('timeupdate', ...)`) so it fires for all engine types.
+
+### 4. Native `'play'` capture listener in preroll interceptors
+
+`bindPrerollInterceptors()` attaches a capture-phase `'play'` listener to `core.media` to intercept prerolls before the browser starts rendering. For iframe engines the native `<video>` never emits `'play'` (it is hidden and unloaded), so the preroll interceptor is never triggered.
+
+**Fix needed:** for iframe engines, hook the preroll interceptor to `cmd:play` on the EventBus instead of the native DOM event.
 
 ---
 

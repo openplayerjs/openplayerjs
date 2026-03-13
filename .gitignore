@@ -30,7 +30,9 @@ dev-dist
 *.tsbuildinfo
 packed/
 .turbo/
-.npmrc
-
 coverage
-index.html
+
+
+# Test files
+*.html
+*.vtt

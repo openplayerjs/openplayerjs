@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 
-import { Core, DefaultMediaEngine, EventBus } from '@openplayerjs/core';
+import { Core, DefaultMediaEngine, EventBus, HtmlMediaSurface } from '@openplayerjs/core';
 import { HlsMediaEngine } from '../src/hls';
 
 // Ensure our Hls.js stub provides the methods HlsMediaEngine expects (attach/detach/destroy etc.)
@@ -36,22 +36,33 @@ function makeCtx() {
   Object.defineProperty(media, 'duration', { value: 10, writable: true, configurable: true });
   const events = new EventBus();
   const core = new Core(media, { plugins: [] });
-  return { media, events, core };
+  const surface = new HtmlMediaSurface(media);
+  return {
+    media,
+    container: media.parentElement ?? media,
+    events,
+    core,
+    surface,
+    setSurface(s: any) {
+      return s;
+    },
+    resetSurface() {
+      return surface;
+    },
+  };
 }
 
 describe('Media engines', () => {
   test('BaseMediaEngine binds media events and commands (seek/volume/rate/play/pause)', () => {
     const engine = new DefaultMediaEngine();
-    const { media, events, core } = makeCtx();
+    const ctx = makeCtx();
+    const { media, events } = ctx;
     const seen: string[] = [];
     events.on('loadedmetadata', () => seen.push('ready'));
     events.on('timeupdate', () => seen.push('time'));
     events.on('durationchange', () => seen.push('dur'));
 
-    // attach binds listeners + commands
-    engine.attach({ media, events, core, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<
-      typeof engine.attach
-    >[0]);
+    engine.attach({ ...ctx, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
 
     media.currentTime = 1;
     media.dispatchEvent(new Event('timeupdate'));
@@ -89,13 +100,12 @@ describe('Media engines', () => {
   test('BaseMediaEngine respects playback lease owner (cannot handle when owned by another)', () => {
     const engine = new DefaultMediaEngine();
 
-    const { media, events, core } = makeCtx();
-    engine.attach({ media, events, core, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as Parameters<
-      typeof engine.attach
-    >[0]);
+    const ctx = makeCtx();
+    const { media, events } = ctx;
+    engine.attach({ ...ctx, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
 
     // someone else owns playback -> seek/rate commands should no-op
-    core.leases.acquire('playback', 'other');
+    ctx.core.leases.acquire('playback', 'other');
     events.emit('cmd:seek', 7);
     expect(media.currentTime).not.toBe(7);
 
@@ -114,7 +124,8 @@ describe('Media engines', () => {
     const src = { src: 'https://x/y.m3u8', type: 'application/x-mpegURL' };
     expect(engine.canPlay(src)).toBe(true);
 
-    engine.attach({ media, events, core, activeSource: src });
+    const { surface, container, setSurface, resetSurface } = makeCtx();
+    engine.attach({ media, events, core, activeSource: src, surface, container, setSurface, resetSurface });
     // Trigger play command to cover cmd:play command listener
     const playSpy = jest.spyOn(media, 'play').mockResolvedValue(undefined);
     events.emit('cmd:play');

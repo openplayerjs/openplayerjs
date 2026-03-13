@@ -180,4 +180,112 @@ describe('ui/events - bindCenterOverlay', () => {
     keydown(wrapper, 'End');
     expect(player.currentTime).toBe(12);
   });
+
+  test('ArrowLeft/j/J seek backward and ArrowRight/l/L seek forward with finite duration', () => {
+    document.body.innerHTML = '';
+    const media = document.createElement('video');
+    document.body.appendChild(media);
+    const player = new Core(media, { duration: 100 });
+    Object.defineProperty(player.media, 'duration', { value: 100, configurable: true });
+    player.events.emit('durationchange');
+    player.currentTime = 50;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'op-player';
+    document.body.appendChild(wrapper);
+
+    bindCenterOverlay(player, wrapper);
+
+    // ArrowLeft seeks back by step (5s default)
+    keydown(wrapper, 'ArrowLeft');
+    expect(player.currentTime).toBe(45);
+
+    // ArrowRight seeks forward
+    keydown(wrapper, 'ArrowRight');
+    expect(player.currentTime).toBe(50);
+
+    // j alias
+    keydown(wrapper, 'j');
+    expect(player.currentTime).toBe(45);
+
+    // l alias
+    keydown(wrapper, 'l');
+    expect(player.currentTime).toBe(50);
+
+    // J alias
+    keydown(wrapper, 'J');
+    expect(player.currentTime).toBe(45);
+
+    // L alias
+    keydown(wrapper, 'L');
+    expect(player.currentTime).toBe(50);
+
+    // Clamps at 0
+    player.currentTime = 2;
+    keydown(wrapper, 'ArrowLeft');
+    expect(player.currentTime).toBe(0);
+
+    // Clamps at duration
+    player.currentTime = 98;
+    keydown(wrapper, 'ArrowRight');
+    expect(player.currentTime).toBe(100);
+  });
+
+  test('ArrowLeft/ArrowRight do nothing when duration is Infinity (live branch)', () => {
+    document.body.innerHTML = '';
+    const media = document.createElement('video');
+    document.body.appendChild(media);
+    const player = new Core(media, { duration: Infinity });
+    player.currentTime = 30;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'op-player';
+    document.body.appendChild(wrapper);
+
+    bindCenterOverlay(player, wrapper);
+
+    keydown(wrapper, 'ArrowLeft');
+    expect(player.currentTime).toBe(30);
+
+    keydown(wrapper, 'ArrowRight');
+    expect(player.currentTime).toBe(30);
+  });
+
+  test('mute/unmute (m) syncs volume to overlay video when fullscreenVideoEl differs from surface', () => {
+    document.body.innerHTML = '';
+    const media = document.createElement('video');
+    document.body.appendChild(media);
+    const player = new Core(media, { duration: 10, startVolume: 0.6 });
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'op-player';
+    document.body.appendChild(wrapper);
+
+    // Use a real video so volume/muted setters work without throwing
+    const overlayVideo = document.createElement('video');
+    overlayVideo.volume = 0.6;
+    getOverlayManager(player).activate({
+      id: 'ads-mute',
+      priority: 100,
+      mode: 'normal',
+      duration: 10,
+      value: 0,
+      canSeek: false,
+      fullscreenVideoEl: overlayVideo,
+    });
+
+    bindCenterOverlay(player, wrapper);
+
+    // Mute — should sync volume=0 and muted=true to overlayVideo
+    keydown(wrapper, 'm');
+    expect(player.muted).toBe(true);
+    expect(overlayVideo.muted).toBe(true);
+    expect(overlayVideo.volume).toBe(0);
+
+    // Unmute — should restore volume and sync
+    keydown(wrapper, 'm');
+    expect(player.muted).toBe(false);
+    expect(overlayVideo.muted).toBe(false);
+    expect(overlayVideo.volume).toBeGreaterThan(0);
+  });
 });

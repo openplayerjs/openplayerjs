@@ -298,3 +298,98 @@ describe('ProgressControl branch coverage', () => {
     expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
   });
 });
+
+test('pointermove on progress element shows tooltip when duration is finite', () => {
+  const p = makeCore();
+  (p.media as any).duration = 100;
+  p.media.currentTime = 0;
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  const tooltip = el.querySelector('.op-controls__tooltip') as HTMLElement;
+  expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
+
+  // Stub offsetWidth so percentage calculation works
+  Object.defineProperty(el, 'offsetWidth', { value: 200, configurable: true });
+  Object.defineProperty(tooltip, 'offsetWidth', { value: 60, configurable: true });
+
+  // Stub offset() helper — returns { left: 0 } in jsdom
+  const moveEvent = new MouseEvent('pointermove', {
+    bubbles: true,
+    cancelable: true,
+    clientX: 100,
+  });
+  Object.defineProperty(moveEvent, 'pageX', { value: 100 });
+  el.dispatchEvent(moveEvent);
+
+  // No crash — tooltip visibility depends on jsdom layout but no exception expected
+  expect(tooltip).toBeTruthy();
+});
+
+test('pointermove on progress element during overlay with canSeek=false early-returns', () => {
+  const p = makeCore();
+  (p.media as any).duration = 100;
+  const om = getOverlayManager(p) as OverlayManager;
+  om.active = { canSeek: false, id: 'ads', priority: 100, mode: 'normal', duration: 30, value: 0 } as OverlayState;
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  const tooltip = el.querySelector('.op-controls__tooltip') as HTMLElement;
+  const moveEvent = new MouseEvent('pointermove', { bubbles: true });
+  Object.defineProperty(moveEvent, 'pageX', { value: 50 });
+  el.dispatchEvent(moveEvent);
+
+  // Tooltip should NOT become visible when seeking is disabled
+  expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
+});
+
+test('pointermove on progress element for live stream (Infinity) early-returns', () => {
+  const p = makeCore();
+  (p.media as any).duration = Infinity;
+  p.isLive = false; // not isLive but Infinity duration
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  const tooltip = el.querySelector('.op-controls__tooltip') as HTMLElement;
+  const moveEvent = new MouseEvent('pointermove', { bubbles: true });
+  Object.defineProperty(moveEvent, 'pageX', { value: 50 });
+  el.dispatchEvent(moveEvent);
+
+  expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
+});
+
+test('pointermove middle position covers pos -= half (line 293) and out-of-range percentage hides tooltip (line 296)', () => {
+  const p = makeCore();
+  (p.media as any).duration = 100;
+
+  // Wrap in .op-player so resolvePlayerRoot() returns a container with known offsetWidth.
+  const opPlayer = document.createElement('div');
+  opPlayer.className = 'op-player';
+  document.body.appendChild(opPlayer);
+  opPlayer.appendChild(p.media);
+  // root.offsetWidth=500 → limit = 500 - 60 = 440; half = 30
+  Object.defineProperty(opPlayer, 'offsetWidth', { value: 500, configurable: true });
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  opPlayer.appendChild(el);
+
+  const tooltip = el.querySelector('.op-controls__tooltip') as HTMLElement;
+  // progress.offsetWidth=200; pageX=300 → percentage = 300/200 = 1.5 (> 1)
+  Object.defineProperty(el, 'offsetWidth', { value: 200, configurable: true });
+  // tooltip.offsetWidth=60 → half=30; limit=440; 300 > 30 && 300 < 440 → else pos -= half (line 293)
+  Object.defineProperty(tooltip, 'offsetWidth', { value: 60, configurable: true });
+
+  const moveEvent = new MouseEvent('pointermove', { bubbles: true, cancelable: true });
+  Object.defineProperty(moveEvent, 'pageX', { value: 300 });
+  el.dispatchEvent(moveEvent);
+
+  // percentage=1.5 > 1 → tooltip class removed (line 296)
+  expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
+});

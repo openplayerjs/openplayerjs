@@ -1,0 +1,48 @@
+{
+  "name": "@openplayerjs/youtube",
+  "version": "3.2.1",
+  "description": "YouTube IFrame Player engine for OpenPlayerJS",
+  "author": {
+    "name": "Rafael Miranda",
+    "email": "rafa8626@gmail.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openplayerjs/openplayerjs.git",
+    "directory": "packages/youtube"
+  },
+  "keywords": [
+    "youtube",
+    "iframe",
+    "player",
+    "openplayer",
+    "video"
+  ],
+  "scripts": {
+    "build:bundles": "rollup -c rollup.config.mjs",
+    "test": "jest --passWithNoTests --config ../../jest.config.cjs",
+    "release": "dotenv -o -- release-it --config .release-it.cjs",
+    "watch": "rollup -c rollup.config.mjs --watch"
+  },
+  "peerDependencies": {
+    "@openplayerjs/core": "workspace:^"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -4,6 +4,7 @@ import { EventBus } from '../src/core/events';
 import { Lease } from '../src/core/lease';
 import type { MediaEngineContext, MediaSource } from '../src/core/media';
 import { StateManager } from '../src/core/state';
+import { HtmlMediaSurface } from '../src/core/surface';
 import { BaseMediaEngine } from '../src/engines/base';
 
 class TestEngine extends BaseMediaEngine {
@@ -36,21 +37,32 @@ class TestEngine extends BaseMediaEngine {
   exposeUnbindCommands() {
     this.unbindCommands();
   }
+
+  exposeAddMediaListener(media: HTMLMediaElement, event: string, handler: EventListenerOrEventListenerObject) {
+    this.addMediaListener(media, event, handler);
+  }
 }
 
 function ctx(media: HTMLMediaElement) {
+  const surface = new HtmlMediaSurface(media);
   return {
     media,
+    container: media.parentElement ?? media,
     events: new EventBus(),
-    leases: new Lease(),
-    state: new StateManager('idle'),
     config: {},
     activeSource: { src: 'https://example.com/a.mp4', type: 'video/mp4' },
     core: {
       leases: new Lease(),
       state: new StateManager('idle'),
     } as any,
-  } as MediaEngineContext;
+    surface,
+    setSurface(s: any) {
+      return s;
+    },
+    resetSurface() {
+      return surface;
+    },
+  } as unknown as MediaEngineContext;
 }
 
 describe('BaseMediaEngine branch coverage', () => {
@@ -147,5 +159,21 @@ describe('BaseMediaEngine branch coverage', () => {
     const prevLen = seen.length;
     media.dispatchEvent(new Event('ended'));
     expect(seen.length).toBe(prevLen);
+  });
+
+  test('addMediaListener registers a DOM listener that is removed by unbindMediaEvents', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const calls: string[] = [];
+
+    engine.exposeAddMediaListener(media, 'play', () => calls.push('play'));
+
+    media.dispatchEvent(new Event('play'));
+    expect(calls).toEqual(['play']);
+
+    // unbindMediaEvents cleans up listeners added via addMediaListener
+    engine.exposeUnbindMediaEvents();
+    media.dispatchEvent(new Event('play'));
+    expect(calls).toHaveLength(1); // no new call
   });
 });
