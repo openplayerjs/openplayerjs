@@ -106,8 +106,8 @@ importers:
         specifier: ^17.4.0
         version: 17.4.0(typescript@5.9.3)
       stylelint-order:
-        specifier: ^7.0.1
-        version: 7.0.1(stylelint@17.4.0(typescript@5.9.3))
+        specifier: ^8.0.0
+        version: 8.0.0(stylelint@17.4.0(typescript@5.9.3))
       ts-jest:
         specifier: ^29.4.6
         version: 29.4.6(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@30.3.0)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@30.3.0)(jest@29.7.0(@types/node@24.11.0))(typescript@5.9.3)
@@ -4096,8 +4096,8 @@ packages:
     resolution: {integrity: sha512-orRsuYpJVw8LdAwqqLykBj9ecS5/cRHlI5+nvTo8LcCKmzDmqVORXtOIYEEQuL9D4BxtA1lm5isAqzQZCoQ6Eg==}
     engines: {node: '>=4'}
 
-  postcss-sorting@9.1.0:
-    resolution: {integrity: sha512-Mn8KJ45HNNG6JBpBizXcyf6LqY/qyqetGcou/nprDnFwBFBLGj0j/sNKV2lj2KMOVOwdXu14aEzqJv8CIV6e8g==}
+  postcss-sorting@10.0.0:
+    resolution: {integrity: sha512-TXbU+h6vVRW+86c/+ewhWq9k7pr7ijASTnepVhCQiC87zAOTkvB1v2dHyWP+ggstSTX/PNvjzS+IOqzejndz9w==}
     peerDependencies:
       postcss: ^8.4.20
 
@@ -4526,8 +4526,8 @@ packages:
     peerDependencies:
       postcss: ^8.4.32
 
-  stylelint-order@7.0.1:
-    resolution: {integrity: sha512-GWPei1zBVDDjxM+/BmcSCiOcHNd8rSqW6FUZtqQGlTRpD0Z5nSzspzWD8rtKif5KPdzUG68DApKEV/y/I9VbTw==}
+  stylelint-order@8.0.0:
+    resolution: {integrity: sha512-1oAwPRz6Ba8u9LPjgvdbeMjZszHhjY6DBBK+xMlS3IC89GdTsvAPpGYvW+dkn6pxc4ZaI1S959g4c8CftZbhIg==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       stylelint: ^16.18.0 || ^17.0.0
@@ -9427,7 +9427,7 @@ snapshots:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
 
-  postcss-sorting@9.1.0(postcss@8.5.8):
+  postcss-sorting@10.0.0(postcss@8.5.8):
     dependencies:
       postcss: 8.5.8
 
@@ -9920,10 +9920,10 @@ snapshots:
       postcss: 8.5.8
       postcss-selector-parser: 7.1.1
 
-  stylelint-order@7.0.1(stylelint@17.4.0(typescript@5.9.3)):
+  stylelint-order@8.0.0(stylelint@17.4.0(typescript@5.9.3)):
     dependencies:
       postcss: 8.5.8
-      postcss-sorting: 9.1.0(postcss@8.5.8)
+      postcss-sorting: 10.0.0(postcss@8.5.8)
       stylelint: 17.4.0(typescript@5.9.3)
 
   stylelint@17.4.0(typescript@5.9.3):
