@@ -1,7 +1,7 @@
 module.exports = {
   git: {
     requireCleanWorkingDir: false,
-    addFiles: ['package.json'],
+    addFiles: ['package.json', 'CHANGELOG.md'],
     tagName: '@openplayerjs/hls@${version}',
     commitMessage: 'chore(release): @openplayerjs/hls@${version}',
   },
@@ -10,8 +10,14 @@ module.exports = {
     release: false,
   },
 
+  // Disable npm's own publish; pnpm publish (below) correctly replaces
+  // workspace:^ peer-dependency references with the resolved version.
   npm: {
-    publish: true,
+    publish: false,
+  },
+
+  hooks: {
+    'before:npm:release': 'pnpm publish --access public --no-git-checks',
   },
 
   plugins: {
@@ -33,6 +39,8 @@ module.exports = {
         ],
       },
 
+      infile: 'CHANGELOG.md',
+      header: '# Changelog\n',
       gitRawCommitsOpts: { path: '.' },
     },
   },

@@ -20,7 +20,7 @@
  */
 
 import { execSync, spawnSync } from 'child_process';
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -111,11 +111,10 @@ function releasePackage(pkg, forcedVersion) {
 }
 
 /**
- * Restore package.json version fields and the root CHANGELOG after a dry-run.
+ * Restore package.json version fields and CHANGELOG files after a dry-run.
  * release-it dry-run still executes `npm version` (bumps the version field in
- * package.json) and writes the CHANGELOG. We revert only those two side-effects
- * using `git restore --worktree` so that other uncommitted changes (e.g. added
- * scripts) are not lost.
+ * package.json) and writes the per-package CHANGELOG. We revert only those
+ * side-effects so that other uncommitted changes are not lost.
  *
  * For package.json we restore only the "version" field in-place using node, so
  * we don't wipe any uncommitted changes to other fields.
@@ -137,14 +136,62 @@ function restoreDryRunSideEffects(pkgs) {
         writeFileSync(pkgJsonPath, JSON.stringify(current, null, 2) + '\n', 'utf8');
       }
     } catch { /* package may not be tracked yet (first release) */ }
+
+    // Restore per-package CHANGELOG.md written by release-it dry-run.
+    try {
+      execSync(`git restore --source=HEAD -- packages/${pkg}/CHANGELOG.md`, {
+        cwd: ROOT,
+        stdio: 'pipe',
+      });
+    } catch { /* file may not exist in HEAD yet */ }
   }
-  // Restore the root CHANGELOG wholesale — it is stable and has no pending edits.
-  try {
-    execSync('git restore --source=HEAD -- CHANGELOG.md', {
-      cwd: ROOT,
-      stdio: 'pipe',
-    });
-  } catch { /* nothing to restore */ }
+  // NOTE: root CHANGELOG.md is not written by release-it (infile points to
+  // per-package paths), so it does not need to be restored here.
+}
+
+/**
+ * After a real release, prepend a versioned entry to the root CHANGELOG.md
+ * and commit it.
+ *
+ * Content priority:
+ *   1. RELEASE_NOTES.md at the repo root (used for major/minor releases with
+ *      hand-crafted highlights).
+ *   2. Fallback: auto-generated links to each released package's CHANGELOG.md
+ *      (used for patch releases where no RELEASE_NOTES.md is written).
+ *
+ * @param {string}   version  - The version string just released (e.g. "3.1.1")
+ * @param {string[]} pkgs     - Packages included in this release
+ */
+function mergeReleaseNotesToChangelog(version, pkgs) {
+  const notesPath = join(ROOT, 'RELEASE_NOTES.md');
+  const changelogPath = join(ROOT, 'CHANGELOG.md');
+  const date = new Date().toISOString().slice(0, 10);
+  const tagUrl = `https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%40${version}`;
+
+  let content;
+  if (existsSync(notesPath)) {
+    content = readFileSync(notesPath, 'utf8').trim();
+  } else {
+    // Patch release: generate minimal content linking per-package changelogs.
+    const links = pkgs
+      .map(p => `- [\`@openplayerjs/${p}\`](packages/${p}/CHANGELOG.md)`)
+      .join('\n');
+    content = `See per-package changelogs for details:\n\n${links}`;
+  }
+
+  const existing = existsSync(changelogPath)
+    ? readFileSync(changelogPath, 'utf8')
+    : '# Changelog\n';
+
+  // Strip the leading "# Changelog" header so we can prepend cleanly.
+  const body = existing.replace(/^#\s+Changelog\s*\n+/, '').trimStart();
+  const entry = `## [${version}](${tagUrl}) (${date})\n\n${content}\n\n`;
+
+  writeFileSync(changelogPath, `# Changelog\n\n${entry}${body}`, 'utf8');
+
+  execSync('git add CHANGELOG.md', { cwd: ROOT });
+  execSync(`git commit -m "docs(changelog): v${version}"`, { cwd: ROOT });
+  console.log(`\n✔ CHANGELOG.md updated to v${version} and committed.`);
 }
 
 /**
@@ -196,7 +243,7 @@ if (coreChanged) {
       const isFirstRelease = getLastTag(dep) === null;
       releasePackage(dep, isFirstRelease ? readVersion(dep) : (planned ?? undefined));
     }
-    // Restore all package.json files and CHANGELOG modified by release-it dry-runs.
+    // Restore all package.json files and CHANGELOGs modified by release-it dry-runs.
     restoreDryRunSideEffects(['core', ...CORE_DEPENDENTS]);
     console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
   } else {
@@ -210,6 +257,8 @@ if (coreChanged) {
       const isFirstRelease = getLastTag(dep) === null;
       releasePackage(dep, isFirstRelease ? readVersion(dep) : newVersion);
     }
+    // 3. Update root CHANGELOG.md (from RELEASE_NOTES.md or auto-generated links).
+    mergeReleaseNotesToChangelog(newVersion, ['core', ...CORE_DEPENDENTS]);
   }
 } else {
   console.log('Core unchanged → releasing only packages with their own changes.\n');
@@ -226,6 +275,13 @@ if (coreChanged) {
       );
     }
   }
+
+  if (!isDryRun && released.length) {
+    // For dependent-only releases, use the version of the first released package.
+    const version = readVersion(released[0]);
+    mergeReleaseNotesToChangelog(version, released);
+  }
+
   if (isDryRun && released.length) {
     restoreDryRunSideEffects(released);
     console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
