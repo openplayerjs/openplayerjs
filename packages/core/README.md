@@ -4,7 +4,6 @@
 
 [![npm](https://img.shields.io/npm/v/@openplayerjs/core?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/core)
 [![npm downloads](https://img.shields.io/npm/dm/@openplayerjs/core?logo=npm&label=downloads)](https://www.npmjs.com/package/@openplayerjs/core)
-[![Bundle size](https://img.shields.io/bundlephobia/minzip/@openplayerjs/core?label=minzipped)](https://bundlephobia.com/package/@openplayerjs/core)
 [![License](https://img.shields.io/npm/l/@openplayerjs/core)](../../LICENSE.md)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/@openplayerjs/core/badge)](https://www.jsdelivr.com/package/npm/@openplayerjs/core)

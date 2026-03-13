@@ -40,18 +40,9 @@ jobs:
           PR_BASE: ${{ github.event.pull_request.base.sha }}
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
-          # Use v3.0.0 as the baseline so the non-conventional
-          # merge commit "v3.0 upgrade (#457)" — which lands between alpha.0 and
-          # v3.0.0 — is never included in the linted range.
-          v3_start=$(git rev-list -n 1 v3.0.0)
-
-          # Use whichever boundary is more recent: the PR base or the v3 start.
-          # merge-base --is-ancestor exits 0 if v3_start is an ancestor of PR_BASE,
-          # meaning PR_BASE is newer → use PR_BASE; otherwise fall back to v3_start.
-          if git merge-base --is-ancestor "$v3_start" "$PR_BASE" 2>/dev/null; then
-            from="$PR_BASE"
-          else
-            from="$v3_start"
-          fi
-
+          # Lint only commits that are genuinely unique to this PR branch by
+          # using the true merge-base of the base branch and PR head.
+          # This avoids flagging commits that were squash-merged into master
+          # and are only reachable via merge commits in the branch graph.
+          from=$(git merge-base "$PR_BASE" "$PR_HEAD")
           pnpm exec commitlint --from "$from" --to "$PR_HEAD"
