@@ -11,6 +11,10 @@ jobs:
   commitlint:
     name: Enforce Conventional Commits
     runs-on: ubuntu-latest
+    # Renovate bot commits are auto-generated; skip linting for its PRs.
+    # semanticCommits: enabled in renovate.json ensures future update PRs
+    # will use conventional commit format regardless.
+    if: ${{ github.actor != 'renovate[bot]' }}
 
     permissions:
       contents: read
