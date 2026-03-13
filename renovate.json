@@ -17,16 +17,21 @@
       "automerge": false
     },
     {
-      "matchPackagePatterns": ["^eslint", "^@typescript-eslint"],
-      "groupName": "ESLint"
+      "groupName": "ESLint",
+      "matchPackageNames": ["/^eslint/", "/^@typescript-eslint/"]
     },
     {
-      "matchPackagePatterns": ["^typescript", "^ts-"],
-      "groupName": "TypeScript"
+      "groupName": "TypeScript",
+      "matchPackageNames": ["/^typescript/", "/^ts-/"]
     },
     {
-      "matchPackagePatterns": ["^jest", "^@jest", "^babel-jest", "^ts-jest"],
-      "groupName": "Jest"
+      "groupName": "Jest",
+      "matchPackageNames": [
+        "/^jest/",
+        "/^@jest/",
+        "/^babel-jest/",
+        "/^ts-jest/"
+      ]
     }
   ]
 }
