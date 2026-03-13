@@ -227,6 +227,7 @@ export function createUI(
   const KEYBOARD_SHOW_MS = 6500;
   let hideTimer: number | undefined;
   let lastInteraction: 'pointer' | 'keyboard' = 'pointer';
+  let menuOpen = false;
 
   const controlsHaveFocus = (): boolean => controlsRoot.contains(document.activeElement);
 
@@ -235,10 +236,11 @@ export function createUI(
     mediaContainer.classList.remove('op-media--controls-hidden');
     if (hideTimer) window.clearTimeout(hideTimer);
     controlsRoot.setAttribute('aria-hidden', 'false');
+    core.events.emit('ui:controls:show');
   };
 
   const hideControls = (): void => {
-    if (core.media.paused || core.media.ended) return;
+    if (core.surface.paused || core.surface.ended) return;
     if (controlsHaveFocus()) {
       if (lastInteraction === 'keyboard') {
         wrapper.focus();
@@ -249,11 +251,13 @@ export function createUI(
     wrapper.classList.add('op-controls--hidden');
     mediaContainer.classList.add('op-media--controls-hidden');
     controlsRoot.setAttribute('aria-hidden', 'true');
+    core.events.emit('ui:controls:hide');
   };
 
   const scheduleHide = (ms?: number): void => {
     if (alwaysVisible) return;
-    if (core.media.paused || core.media.ended) return;
+    if (menuOpen) return;
+    if (core.surface.paused || core.surface.ended) return;
     if (hideTimer) window.clearTimeout(hideTimer);
     hideTimer = window.setTimeout(() => hideControls(), ms ?? POINTER_SHOW_MS);
   };
@@ -366,7 +370,7 @@ export function createUI(
       // Clicks on interactive elements (buttons, links) are handled by those elements.
       if (target && target !== wrapper && target.closest('button, [role="button"], a')) return;
 
-      const isPlaying = !core.media.paused && !core.media.ended;
+      const isPlaying = !core.surface.paused && !core.surface.ended;
       if (isPlaying) {
         overlay?.flashPause(350);
         core.pause();
@@ -380,6 +384,15 @@ export function createUI(
   const offPlaying = core.events.on('playing', () => scheduleHide(POINTER_SHOW_MS));
   const offPause = core.events.on('pause', () => showControls());
   const offEnded = core.events.on('ended', () => showControls());
+
+  const offMenuOpen = core.events.on('ui:menu:open', () => {
+    menuOpen = true;
+    if (hideTimer) window.clearTimeout(hideTimer);
+  });
+  const offMenuClose = core.events.on('ui:menu:close', () => {
+    menuOpen = false;
+    scheduleHide();
+  });
 
   const offDestroy = core.events.on('player:destroy', () => {
     try {
@@ -401,6 +414,8 @@ export function createUI(
       offPlaying?.();
       offPause?.();
       offEnded?.();
+      offMenuOpen?.();
+      offMenuClose?.();
       offAddElement();
       offAddControl();
       offDestroy();

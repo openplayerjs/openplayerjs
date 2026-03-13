@@ -39,7 +39,10 @@
     "openplayer"
   ],
   "scripts": {
-    "test": "jest --passWithNoTests  --config ../../jest.config.cjs"
+    "build:bundles": "rollup -c rollup.config.mjs",
+    "test": "jest --passWithNoTests  --config ../../jest.config.cjs",
+    "release": "dotenv -o -- release-it --config .release-it.cjs",
+    "watch": "rollup -c rollup.config.mjs --watch"
   },
   "dependencies": {
     "@dailymotion/vast-client": "^6.4.2",

@@ -55,21 +55,28 @@ export class FullscreenControl extends BaseControl {
     const resize = (width?: number, height?: number) => {
       const container = this.resolveFullscreenContainer();
       const video = this.resolveFullscreenVideoEl();
+      // For iframe engines the video element is hidden; also resize its parent (.op-media)
+      // so the iframe (position:absolute inside it) fills the fullscreen viewport.
+      const mediaContainer = (video as HTMLElement | null)?.parentElement ?? null;
 
       if (width) {
         container.style.width = '100%';
         if (video) video.style.width = '100%';
+        if (mediaContainer && mediaContainer !== container) mediaContainer.style.width = '100%';
       } else {
         container.style.removeProperty('width');
         if (video) video.style.removeProperty('width');
+        if (mediaContainer && mediaContainer !== container) mediaContainer.style.removeProperty('width');
       }
 
       if (height) {
         container.style.height = '100%';
         if (video) video.style.height = '100%';
+        if (mediaContainer && mediaContainer !== container) mediaContainer.style.height = '100%';
       } else {
         container.style.removeProperty('height');
         if (video) video.style.removeProperty('height');
+        if (mediaContainer && mediaContainer !== container) mediaContainer.style.removeProperty('height');
       }
     };
 

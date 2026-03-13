@@ -90,12 +90,12 @@ export class ProgressControl extends BaseControl {
 
     const getDuration = () => {
       if (this.activeOverlay) return this.activeOverlay.duration;
-      return core.media?.duration ?? core.duration;
+      return core.surface?.duration ?? core.duration;
     };
 
     const getValue = () => {
       if (this.activeOverlay) return this.activeOverlay.value;
-      return core.media?.currentTime ?? core.currentTime;
+      return core.surface?.currentTime ?? core.currentTime;
     };
 
     const getMode = () => (this.activeOverlay ? this.activeOverlay.mode : 'normal');
@@ -121,7 +121,7 @@ export class ProgressControl extends BaseControl {
       this.repaint = updateUI;
 
       if (this.activeOverlay) setSeekEnabled(this.activeOverlay.canSeek);
-      else setSeekEnabled(!core.isLive && core.media?.duration !== Infinity);
+      else setSeekEnabled(!core.isLive && core.surface?.duration !== Infinity);
 
       if (slider.classList.contains('op-progress--pressed')) return;
 
@@ -250,7 +250,7 @@ export class ProgressControl extends BaseControl {
       if (slider.classList.contains('loading')) slider.classList.remove('loading');
       if (slider.classList.contains('error')) slider.classList.remove('error');
 
-      if (!core.isLive && core.media.duration !== Infinity) {
+      if (!core.isLive && core.surface.duration !== Infinity) {
         progress.removeAttribute('aria-valuenow');
         progress.removeAttribute('aria-valuetext');
       }

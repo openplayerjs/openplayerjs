@@ -1,16 +1,16 @@
-import type { Core } from '@openplayerjs/core';
+import type { Core, MediaSurface } from '@openplayerjs/core';
 import { getOverlayManager } from '@openplayerjs/core';
 
-export function getActiveMedia(core: Core): HTMLMediaElement {
+export function getActiveMedia(core: Core): MediaSurface {
   try {
     const hasOverlayMgr = typeof getOverlayManager === 'function';
-    if (!hasOverlayMgr) return core.media;
+    if (!hasOverlayMgr) return core.surface;
 
     const active = getOverlayManager(core)?.active;
-    const v = active?.fullscreenVideoEl as unknown as HTMLMediaElement | undefined;
-    return v && typeof v.play === 'function' ? v : core.media;
+    const v = active?.fullscreenVideoEl as MediaSurface | undefined;
+    return v && typeof v.play === 'function' ? v : core.surface;
   } catch {
-    return core.media;
+    return core.surface;
   }
 }
 

@@ -40,4 +40,39 @@ describe('DisposableStore', () => {
     el.dispatchEvent(new MouseEvent('click'));
     expect(handler).toHaveBeenCalledTimes(1);
   });
+
+  test('isDisposed returns false before disposal and true afterwards', () => {
+    const d = new DisposableStore();
+    expect(d.isDisposed).toBe(false);
+    d.dispose();
+    expect(d.isDisposed).toBe(true);
+  });
+
+  test('add() with undefined creates a no-op disposer that does not throw', () => {
+    const d = new DisposableStore();
+    const disposer = d.add(undefined);
+    expect(typeof disposer).toBe('function');
+    expect(() => d.dispose()).not.toThrow();
+  });
+
+  test('add() on already-disposed store invokes the disposer immediately', () => {
+    const calls: string[] = [];
+    const d = new DisposableStore();
+    d.dispose();
+
+    const returned = d.add(() => calls.push('immediate'));
+    expect(calls).toEqual(['immediate']);
+    expect(() => returned()).not.toThrow();
+  });
+
+  test('dispose() swallows errors thrown by individual disposers', () => {
+    const d = new DisposableStore();
+    const calls: string[] = [];
+
+    d.add(() => { throw new Error('boom'); });
+    d.add(() => calls.push('safe'));
+
+    expect(() => d.dispose()).not.toThrow();
+    expect(calls).toContain('safe');
+  });
 });

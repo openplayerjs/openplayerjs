@@ -83,7 +83,7 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
           core.muted = !(upVolume > 0);
           if (upVolume > 0) lastNonZeroVolume = upVolume;
           const el = getActiveMedia(core);
-          if (el && el !== core.media) {
+          if (el && el !== core.surface) {
             try {
               el.volume = upVolume;
               el.muted = !(upVolume > 0);
@@ -101,7 +101,7 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
           core.muted = !(downVolume > 0);
           if (downVolume > 0) lastNonZeroVolume = downVolume;
           const el = getActiveMedia(core);
-          if (el && el !== core.media) {
+          if (el && el !== core.surface) {
             try {
               el.volume = downVolume;
               el.muted = !(downVolume > 0);
@@ -141,7 +141,7 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
             core.volume = 0;
             core.muted = true;
 
-            if (el && el !== core.media) {
+            if (el && el !== core.surface) {
               try {
                 el.volume = 0;
                 el.muted = true;
@@ -154,7 +154,7 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
             core.volume = restore;
             core.muted = false;
 
-            if (el && el !== core.media) {
+            if (el && el !== core.surface) {
               try {
                 el.volume = restore;
                 el.muted = false;

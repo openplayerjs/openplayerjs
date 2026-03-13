@@ -48,7 +48,14 @@ export function isMobile(): boolean {
 }
 
 export function predictMimeType(media: HTMLMediaElement, url: string): string {
-  const fragments = new URL(url).pathname.split('.');
+  let pathname: string;
+  try {
+    pathname = new URL(url).pathname;
+  } catch {
+    // Non-URL string (e.g. a bare video ID): no extension can be determined.
+    return isAudio(media) ? 'audio/mp3' : 'video/mp4';
+  }
+  const fragments = pathname.split('.');
   const extension = fragments.length > 1 ? fragments.pop()!.toLowerCase() : '';
 
   // If no extension found, check if media is a vendor iframe

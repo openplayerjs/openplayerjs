@@ -1,9 +1,15 @@
-# [OpenPlayer.js](https://www.openplayerjs.com)
+# [OpenPlayer.js](https://openplayerjs.com)
 
 ![openplayerjs](https://user-images.githubusercontent.com/910829/46182430-d4c0f380-c299-11e8-89a8-c7554a70b66c.png)
 
+[![npm](https://img.shields.io/npm/v/@openplayerjs/player?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/player)
+[![jsDelivr hits](https://img.shields.io/jsdelivr/npm/hm/%40openplayerjs%2Fplayer?logo=jsdelivr&logoColor=white&label=CDN%20hits)](https://www.jsdelivr.com/package/npm/@openplayerjs/player)
+[![License](https://img.shields.io/npm/l/@openplayerjs/player)](LICENSE.md)
+[![Build](https://github.com/openplayerjs/openplayerjs/actions/workflows/build.yml/badge.svg)](https://github.com/openplayerjs/openplayerjs/actions/workflows/build.yml)
+[![Lint](https://github.com/openplayerjs/openplayerjs/actions/workflows/linter.yml/badge.svg)](https://github.com/openplayerjs/openplayerjs/actions/workflows/linter.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
-[![JSDelivr](https://data.jsdelivr.com/v1/package/npm/openplayerjs/badge)](https://www.jsdelivr.com/package/npm/openplayerjs)
+[![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg?logo=renovate&logoColor=white)](https://renovateapp.com/)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal)](https://www.paypal.com/donate?business=rafa8626%40gmail.com&currency_code=USD)
 
 # OpenPlayerJS — modular, plugin-first, easier to extend
 
