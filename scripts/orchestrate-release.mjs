@@ -20,7 +20,7 @@
  */
 
 import { execSync, spawnSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -111,21 +111,40 @@ function releasePackage(pkg, forcedVersion) {
 }
 
 /**
- * Restore package.json files and the root CHANGELOG after a dry-run.
- * release-it dry-run still runs `npm version` (modifies package.json) and writes
- * the CHANGELOG; we must undo those side-effects so the working tree stays clean.
+ * Restore package.json version fields and the root CHANGELOG after a dry-run.
+ * release-it dry-run still executes `npm version` (bumps the version field in
+ * package.json) and writes the CHANGELOG. We revert only those two side-effects
+ * using `git restore --worktree` so that other uncommitted changes (e.g. added
+ * scripts) are not lost.
+ *
+ * For package.json we restore only the "version" field in-place using node, so
+ * we don't wipe any uncommitted changes to other fields.
  */
 function restoreDryRunSideEffects(pkgs) {
-  const paths = [
-    ...pkgs.map((p) => `packages/${p}/package.json`),
-    'CHANGELOG.md',
-  ];
+  // Restore each package.json's version to what it was before the dry-run by
+  // reading the committed version from git and writing only that field back.
+  for (const pkg of pkgs) {
+    try {
+      const pkgJsonPath = join(ROOT, 'packages', pkg, 'package.json');
+      const committedJson = execSync(
+        `git show HEAD:packages/${pkg}/package.json`,
+        { encoding: 'utf8', cwd: ROOT, stdio: ['pipe', 'pipe', 'pipe'] },
+      );
+      const committedVersion = JSON.parse(committedJson).version;
+      const current = JSON.parse(readFileSync(pkgJsonPath, 'utf8'));
+      if (current.version !== committedVersion) {
+        current.version = committedVersion;
+        writeFileSync(pkgJsonPath, JSON.stringify(current, null, 2) + '\n', 'utf8');
+      }
+    } catch { /* package may not be tracked yet (first release) */ }
+  }
+  // Restore the root CHANGELOG wholesale — it is stable and has no pending edits.
   try {
-    execSync(`git restore --source=HEAD -- ${paths.join(' ')}`, {
+    execSync('git restore --source=HEAD -- CHANGELOG.md', {
       cwd: ROOT,
       stdio: 'pipe',
     });
-  } catch { /* nothing to restore if release-it failed before writing anything */ }
+  } catch { /* nothing to restore */ }
 }
 
 /**

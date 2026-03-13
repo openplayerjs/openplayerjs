@@ -157,6 +157,12 @@ importers:
         specifier: workspace:^
         version: link:../core
 
+  packages/youtube:
+    dependencies:
+      '@openplayerjs/core':
+        specifier: workspace:^
+        version: link:../core
+
 packages:
 
   '@babel/code-frame@7.29.0':

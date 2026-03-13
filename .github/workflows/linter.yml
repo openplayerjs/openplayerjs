@@ -6,6 +6,9 @@ on:
 
 name: ESLint
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   eslint:
     name: Run ESLint

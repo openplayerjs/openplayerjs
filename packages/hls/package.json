@@ -34,8 +34,10 @@
     "hls.js"
   ],
   "scripts": {
+    "build:bundles": "rollup -c rollup.config.mjs",
     "test": "jest --passWithNoTests  --config ../../jest.config.cjs",
-    "release": "dotenv -o -- release-it --config .release-it.cjs"
+    "release": "dotenv -o -- release-it --config .release-it.cjs",
+    "watch": "rollup -c rollup.config.mjs --watch"
   },
   "peerDependencies": {
     "@openplayerjs/core": "workspace:^",

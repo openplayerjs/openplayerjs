@@ -1,4 +1,4 @@
-import { sharedPlugins, treeshake, CORE_EXTERNAL, sharedPluginsMinified } from '../../rollup.shared.mjs';
+import { sharedPlugins, sharedPluginsMinified, treeshake, CORE_EXTERNAL, CORE_GLOBALS } from '../../rollup.shared.mjs';
 
 export default [
   // ESM library build
@@ -14,16 +14,19 @@ export default [
       inlineDynamicImports: true,
     },
   },
-  // UMD standalone bundle (bundles core + player together, no externals)
+  // UMD build (core is external, consumed via global)
   {
     input: 'src/umd.ts',
-    treeshake: false,
+    external: CORE_EXTERNAL,
+    treeshake,
     plugins: sharedPluginsMinified(),
     output: {
       file: 'dist/openplayer-youtube.js',
       format: 'umd',
       name: 'OpenPlayerJSYouTube',
       sourcemap: true,
+      inlineDynamicImports: true,
+      globals: CORE_GLOBALS,
     },
   },
 ];
