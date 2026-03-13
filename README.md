@@ -45,12 +45,13 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 
 ## 📦 Packages
 
-| Package              | Purpose                                                                 | Docs                                                     |
-| -------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------- |
-| `@openplayer/core`   | Player lifecycle, plugin system, engines, events                        | [packages/core/README.md](./packages/core/README.md)     |
-| `@openplayer/player` | Default UI + built-in controls + UI extension APIs                      | [packages/player/README.md](./packages/player/README.md) |
-| `@openplayer/hls`    | HLS engine (powered by [`hls.js`](https://github.com/video-dev/hls.js)) | [packages/hls/README.md](./packages/hls/README.md)       |
-| `@openplayer/ads`    | VAST/VMAP/non-linear/companion ads plugin + extension APIs              | [packages/ads/README.md](./packages/ads/README.md)       |
+| Package                       | Purpose                                                                                                                              | Docs                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `@openplayer/core`            | Player lifecycle, plugin system, engines, events                                                                                     | [packages/core/README.md](./packages/core/README.md)       |
+| `@openplayer/player`          | Default UI + built-in controls + UI extension APIs                                                                                   | [packages/player/README.md](./packages/player/README.md)   |
+| `@openplayer/hls`             | HLS engine (powered by [`hls.js`](https://github.com/video-dev/hls.js))                                                              | [packages/hls/README.md](./packages/hls/README.md)         |
+| `@openplayer/ads`             | VAST/VMAP/non-linear/companion ads plugin + extension APIs                                                                           | [packages/ads/README.md](./packages/ads/README.md)         |
+| `@openplayer/youtube` _(new)_ | YouTube media engine plugin using [YouTube player API for iframe embeds](https://developers.google.com/youtube/iframe_api_reference) | [packages/youtube/README.md](./packages/youtube/README.md) |
 
 ---
 
