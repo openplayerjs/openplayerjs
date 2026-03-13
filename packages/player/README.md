@@ -587,14 +587,26 @@ const controls = buildControls({
 
 ### UI lifecycle events
 
-| Event              | Payload                                            | Description                                                                                                                                                                                          |
+<<<<<<< HEAD
+| Event | Payload | Description |
 | ------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ui:controls:show` | —                                                  | Fired when the control bar becomes visible (auto-hide timer cancelled, user interaction, or playback paused/ended).                                                                                  |
-| `ui:controls:hide` | —                                                  | Fired when the control bar is hidden by the auto-hide timer. Not emitted when hiding is prevented (e.g. controls have keyboard focus, or playback is paused).                                        |
-| `ui:menu:open`     | —                                                  | Fired when any settings or captions menu is opened. Cancels the auto-hide timer while the menu is open.                                                                                              |
-| `ui:menu:close`    | —                                                  | Fired when the open menu is closed. Restarts the auto-hide timer.                                                                                                                                    |
-| `ui:addElement`    | `{ el: HTMLElement; placement: ControlPlacement }` | Imperative API — emitting this event places an arbitrary element into the player grid. Prefer `player.controls.addElement()` from `extendControls`.                                                  |
-| `ui:addControl`    | `{ control: Control; el?: HTMLElement }`           | Imperative API — emitting this event mounts a `Control` into the control bar. The `el` field is filled in by `createUI` after mounting. Prefer `player.controls.addControl()` from `extendControls`. |
+| `ui:controls:show` | — | Fired when the control bar becomes visible (auto-hide timer cancelled, user interaction, or playback paused/ended). |
+| `ui:controls:hide` | — | Fired when the control bar is hidden by the auto-hide timer. Not emitted when hiding is prevented (e.g. controls have keyboard focus, or playback is paused). |
+| `ui:menu:open` | — | Fired when any settings or captions menu is opened. Cancels the auto-hide timer while the menu is open. |
+| `ui:menu:close` | — | Fired when the open menu is closed. Restarts the auto-hide timer. |
+| `ui:addElement` | `{ el: HTMLElement; placement: ControlPlacement }` | Imperative API — emitting this event places an arbitrary element into the player grid. Prefer `player.controls.addElement()` from `extendControls`. |
+| `ui:addControl` | `{ control: Control; el?: HTMLElement }` | Imperative API — emitting this event mounts a `Control` into the control bar. The `el` field is filled in by `createUI` after mounting. Prefer `player.controls.addControl()` from `extendControls`. |
+=======
+| Event | Payload | Description |
+|---|---|---|
+| `ui:controls:show` | — | Fired when the control bar becomes visible (auto-hide timer cancelled, user interaction, or playback paused/ended). |
+| `ui:controls:hide` | — | Fired when the control bar is hidden by the auto-hide timer. Not emitted when hiding is prevented (e.g. controls have keyboard focus, or playback is paused). |
+| `ui:menu:open` | — | Fired when any settings or captions menu is opened. Cancels the auto-hide timer while the menu is open. |
+| `ui:menu:close` | — | Fired when the open menu is closed. Restarts the auto-hide timer. |
+| `ui:addElement` | `{ el: HTMLElement; placement: ControlPlacement }` | Imperative API — emitting this event places an arbitrary element into the player grid. Prefer `player.controls.addElement()` from `extendControls`. |
+| `ui:addControl` | `{ control: Control; el?: HTMLElement }` | Imperative API — emitting this event mounts a `Control` into the control bar. The `el` field is filled in by `createUI` after mounting. Prefer `player.controls.addControl()` from `extendControls`. |
+
+> > > > > > > master
 
 ### Subscribing to control bar visibility
 
