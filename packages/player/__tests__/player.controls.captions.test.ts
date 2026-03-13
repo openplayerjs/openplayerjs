@@ -456,9 +456,7 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
     control.destroy();
   });
 
-  test('loadedmetadata with stored pref restores by language from mocked tracks', () => {
-    localStorage.setItem('op:caption:track', 'fr');
-
+  test('loadedmetadata does not auto-select native tracks (no localStorage pref in player)', () => {
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
     const tracks = mockTextTracksOn(video, [{ kind: 'captions', label: 'French', language: 'fr', mode: 'disabled' }]);
@@ -468,16 +466,13 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
 
     player.events.emit('loadedmetadata');
 
-    // Language matches 'fr' → should select track by showing
-    expect(tracks[0].mode).toBe('showing');
+    // captions.ts is localStorage-agnostic; track stays disabled until user selects it
+    expect(tracks[0].mode).toBe('disabled');
 
-    localStorage.removeItem('op:caption:track');
     control.destroy();
   });
 
-  test('loadedmetadata with stored index pref restores by index when no language match', () => {
-    localStorage.setItem('op:caption:track', '0');
-
+  test('loadedmetadata does not restore native track by index (no localStorage pref in player)', () => {
     const player = makeCore();
     const video = player.media as HTMLVideoElement;
     const tracks = mockTextTracksOn(video, [{ kind: 'captions', label: 'English', language: 'en', mode: 'disabled' }]);
@@ -485,13 +480,11 @@ describe('CaptionsControl – native tracks (mocked textTracks)', () => {
     const control = new CaptionsControl();
     control.create(player);
 
-    // Remove language match by using a non-matching pref, but index '0' should still work
-    localStorage.setItem('op:caption:track', '0');
     player.events.emit('loadedmetadata');
 
-    expect(tracks[0].mode).toBe('showing');
+    // captions.ts is localStorage-agnostic; track stays disabled until user selects it
+    expect(tracks[0].mode).toBe('disabled');
 
-    localStorage.removeItem('op:caption:track');
     control.destroy();
   });
 });
@@ -722,9 +715,7 @@ describe('CaptionsControl – provider-based captions', () => {
     control.destroy();
   });
 
-  test('loadedmetadata with stored provider pref eagerly applies it', () => {
-    localStorage.setItem('op:caption:track', 'en');
-
+  test('loadedmetadata does not auto-apply provider track (no localStorage pref in player)', () => {
     const player = makeCore();
     const provider = makeProvider({ tracks: [{ id: 'en', label: 'English', language: 'en' }], active: null });
     setCaptionTrackProvider(player, provider);
@@ -734,10 +725,9 @@ describe('CaptionsControl – provider-based captions', () => {
 
     player.events.emit('loadedmetadata');
 
-    // Should have applied the stored preference eagerly
-    expect(provider._active).toBe('en');
+    // captions.ts is localStorage-agnostic; active track stays null until user selects it
+    expect(provider._active).toBeNull();
 
-    localStorage.removeItem('op:caption:track');
     control.destroy();
   });
 
@@ -793,9 +783,7 @@ describe('CaptionsControl – provider-based captions', () => {
     control.destroy();
   });
 
-  test('playing event with provider and available tracks applies pref when prefApplied=false', () => {
-    localStorage.setItem('op:caption:track', 'en');
-
+  test('playing event does not auto-apply provider track (no playing handler in player)', () => {
     const player = makeCore();
     const provider = makeProvider({ tracks: [{ id: 'en', label: 'English', language: 'en' }], active: null });
     setCaptionTrackProvider(player, provider);
@@ -803,13 +791,11 @@ describe('CaptionsControl – provider-based captions', () => {
     const control = new CaptionsControl();
     control.create(player);
 
-    // Do NOT fire loadedmetadata — prefApplied stays false
+    // playing event has no handler in captions.ts; provider active stays null
     player.events.emit('playing');
 
-    // Should have applied the preference
-    expect(provider._active).toBe('en');
+    expect(provider._active).toBeNull();
 
-    localStorage.removeItem('op:caption:track');
     control.destroy();
   });
 
