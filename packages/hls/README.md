@@ -1,8 +1,13 @@
 # @openplayer/hls
 
-> HLS streaming engine for [OpenPlayerJS](https://github.com/openplayerjs/openplayerjs), powered by [hls.js](https://github.com/video-dev/hls.js).
+> HLS streaming engine for [OpenPlayerJS](https://openplayerjs.com), powered by [hls.js](https://github.com/video-dev/hls.js).
 
----
+[![npm](https://img.shields.io/npm/v/@openplayerjs/hls?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/hls)
+[![npm downloads](https://img.shields.io/npm/dm/@openplayerjs/hls?logo=npm&label=downloads)](https://www.npmjs.com/package/@openplayerjs/hls)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/@openplayerjs/hls?label=minzipped)](https://bundlephobia.com/package/@openplayerjs/hls)
+[![License](https://img.shields.io/npm/l/@openplayerjs/hls)](../../LICENSE.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![JSDelivr](https://data.jsdelivr.com/v1/package/npm/@openplayerjs/hls/badge)](https://www.jsdelivr.com/package/npm/@openplayerjs/hls)
 
 ## Installation
 
@@ -73,6 +78,18 @@ new HlsMediaEngine({
   startLevel: -1, // -1 = auto quality selection
 });
 ```
+
+---
+
+## Surface model
+
+`HlsMediaEngine` operates through the standard `MediaSurface` abstraction. All playback operations (play, pause, seek, volume, mute, playback rate) go through `ctx.surface` — never through `ctx.media` directly. `ctx.media` is used only for:
+
+- Attaching hls.js to the element (`adapter.attachMedia(ctx.media)`)
+- Reading DOM attributes (`ctx.media.preload`, `ctx.media.autoplay`)
+- Registering raw DOM listeners via `addMediaListener(ctx.media, ...)`
+
+This means `HlsMediaEngine` is compatible with the surface pipeline and can coexist correctly with other engine types (e.g. ad injection that swaps the surface temporarily).
 
 ---
 

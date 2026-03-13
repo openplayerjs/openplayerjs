@@ -166,11 +166,8 @@ v3 introduces `currentTime` and `duration` as independent controls that can be p
 
 ```ts
 buildControls({
-  bottom: {
-    left: ['play', 'currentTime'], // shows only the current position
-    right: ['duration', 'fullscreen'], // shows only the total duration
-  },
-  main: ['progress'],
+  'bottom-left': ['play', 'currentTime'], // shows only the current position
+  'bottom-right': ['duration', 'fullscreen'], // shows only the total duration
 });
 ```
 

@@ -79,7 +79,7 @@ export abstract class BaseControl implements Control {
   protected resolveFullscreenVideoEl(): HTMLElement | null {
     return (
       (this.activeOverlay?.fullscreenVideoEl as HTMLElement | undefined) ||
-      ((this.core.media as unknown as HTMLElement) ?? null)
+      ((this.core.media as HTMLMediaElement) ?? null)
     );
   }
 }

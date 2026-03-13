@@ -18,9 +18,6 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^19.8.0
         version: 19.8.1
-      '@commitlint/types':
-        specifier: ^19.5.0
-        version: 19.8.1
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.0.2(jiti@2.6.1))
@@ -54,9 +51,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.56.1
         version: 8.56.1(eslint@10.0.2(jiti@2.6.1))(typescript@5.9.3)
-      cross-env:
-        specifier: ^7.0.3
-        version: 7.0.3
       cssnano:
         specifier: ^7.1.2
         version: 7.1.2(postcss@8.5.8)
@@ -87,9 +81,6 @@ importers:
       jest-environment-jsdom:
         specifier: ^29.7.0
         version: 29.7.0
-      jest-util:
-        specifier: ^30.2.0
-        version: 30.2.0
       lint-staged:
         specifier: ^16.3.2
         version: 16.3.2
@@ -111,15 +102,9 @@ importers:
       rollup:
         specifier: ^4.59.0
         version: 4.59.0
-      rollup-plugin-dts:
-        specifier: ^6.3.0
-        version: 6.3.0(rollup@4.59.0)(typescript@5.9.3)
       stylelint:
         specifier: ^17.4.0
         version: 17.4.0(typescript@5.9.3)
-      stylelint-config-standard:
-        specifier: ^40.0.0
-        version: 40.0.0(stylelint@17.4.0(typescript@5.9.3))
       stylelint-order:
         specifier: ^7.0.1
         version: 7.0.1(stylelint@17.4.0(typescript@5.9.3))
@@ -129,6 +114,9 @@ importers:
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
+      turbo:
+        specifier: ^2.5.0
+        version: 2.8.15
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -165,6 +153,12 @@ importers:
 
   packages/player:
     devDependencies:
+      '@openplayerjs/core':
+        specifier: workspace:^
+        version: link:../core
+
+  packages/youtube:
+    dependencies:
       '@openplayerjs/core':
         specifier: workspace:^
         version: link:../core
@@ -2060,11 +2054,6 @@ packages:
   create-jest@29.7.0:
     resolution: {integrity: sha512-Adz2bdH0Vq3F53KEMJOoftQFutWCukm6J24wbPWRO4k1kMY7gS7ds/uoJkNuV8wDCtWWnuwGcJwpWcih+zEW1Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    hasBin: true
-
-  cross-env@7.0.3:
-    resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
-    engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
     hasBin: true
 
   cross-spawn@7.0.6:
@@ -4295,13 +4284,6 @@ packages:
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
-  rollup-plugin-dts@6.3.0:
-    resolution: {integrity: sha512-d0UrqxYd8KyZ6i3M2Nx7WOMy708qsV/7fTHMHxCMCBOAe3V/U7OMPu5GkX8hC+cmkHhzGnfeYongl1IgiooddA==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      rollup: ^3.29.4 || ^4
-      typescript: ^4.5 || ^5.0
-
   rollup@4.59.0:
     resolution: {integrity: sha512-2oMpl67a3zCH9H79LeMcbDhXW/UmWG/y2zuqnF2jQq5uq9TbM9TVyXvA4+t+ne2IIkBdrLpAaRQAvo7YI/Yyeg==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
@@ -4565,18 +4547,6 @@ packages:
     peerDependencies:
       postcss: ^8.4.32
 
-  stylelint-config-recommended@18.0.0:
-    resolution: {integrity: sha512-mxgT2XY6YZ3HWWe3Di8umG6aBmWmHTblTgu/f10rqFXnyWxjKWwNdjSWkgkwCtxIKnqjSJzvFmPT5yabVIRxZg==}
-    engines: {node: '>=20.19.0'}
-    peerDependencies:
-      stylelint: ^17.0.0
-
-  stylelint-config-standard@40.0.0:
-    resolution: {integrity: sha512-EznGJxOUhtWck2r6dJpbgAdPATIzvpLdK9+i5qPd4Lx70es66TkBPljSg4wN3Qnc6c4h2n+WbUrUynQ3fanjHw==}
-    engines: {node: '>=20.19.0'}
-    peerDependencies:
-      stylelint: ^17.0.0
-
   stylelint-order@7.0.1:
     resolution: {integrity: sha512-GWPei1zBVDDjxM+/BmcSCiOcHNd8rSqW6FUZtqQGlTRpD0Z5nSzspzWD8rtKif5KPdzUG68DApKEV/y/I9VbTw==}
     engines: {node: '>=20.19.0'}
@@ -4707,6 +4677,40 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  turbo-darwin-64@2.8.15:
+    resolution: {integrity: sha512-EElCh+Ltxex9lXYrouV3hHjKP3HFP31G91KMghpNHR/V99CkFudRcHcnWaorPbzAZizH1m8o2JkLL8rptgb8WQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  turbo-darwin-arm64@2.8.15:
+    resolution: {integrity: sha512-ORmvtqHiHwvNynSWvLIleyU8dKtwQ4ILk39VsEwfKSEzSHWYWYxZhBmD9GAGRPlNl7l7S1irrziBlDEGVpq+vQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  turbo-linux-64@2.8.15:
+    resolution: {integrity: sha512-Bk1E61a+PCWUTfhqfXFlhEJMLp6nak0J0Qt14IZX1og1zyaiBLkM6M1GQFbPpiWfbUcdLwRaYQhO0ySB07AJ8w==}
+    cpu: [x64]
+    os: [linux]
+
+  turbo-linux-arm64@2.8.15:
+    resolution: {integrity: sha512-3BX0Vk+XkP0uiZc8pkjQGNsAWjk5ojC53bQEMp6iuhSdWpEScEFmcT6p7DL7bcJmhP2mZ1HlAu0A48wrTGCtvg==}
+    cpu: [arm64]
+    os: [linux]
+
+  turbo-windows-64@2.8.15:
+    resolution: {integrity: sha512-m14ogunMF+grHZ1jzxSCO6q0gEfF1tmr+0LU+j1QNd/M1X33tfKnQqmpkeUR/REsGjfUlkQlh6PAzqlT3cA3Pg==}
+    cpu: [x64]
+    os: [win32]
+
+  turbo-windows-arm64@2.8.15:
+    resolution: {integrity: sha512-HWh6dnzhl7nu5gRwXeqP61xbyDBNmQ4UCeWNa+si4/6RAtHlKEcZTNs7jf4U+oqBnbtv4uxbKZZPf/kN0EK4+A==}
+    cpu: [arm64]
+    os: [win32]
+
+  turbo@2.8.15:
+    resolution: {integrity: sha512-ERZf7pKOR155NKs/PZt1+83NrSEJfUL7+p9/TGZg/8xzDVMntXEFQlX4CsNJQTyu4h3j+dZYiQWOOlv5pssuHQ==}
+    hasBin: true
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -5912,6 +5916,7 @@ snapshots:
     dependencies:
       '@types/node': 24.11.0
       jest-regex-util: 30.0.1
+    optional: true
 
   '@jest/reporters@29.7.0':
     dependencies:
@@ -5949,6 +5954,7 @@ snapshots:
   '@jest/schemas@30.0.5':
     dependencies:
       '@sinclair/typebox': 0.34.48
+    optional: true
 
   '@jest/source-map@29.6.3':
     dependencies:
@@ -6008,6 +6014,7 @@ snapshots:
       '@types/node': 24.11.0
       '@types/yargs': 17.0.35
       chalk: 4.1.2
+    optional: true
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -6291,7 +6298,8 @@ snapshots:
 
   '@sinclair/typebox@0.27.10': {}
 
-  '@sinclair/typebox@0.34.48': {}
+  '@sinclair/typebox@0.34.48':
+    optional: true
 
   '@sindresorhus/merge-streams@4.0.0': {}
 
@@ -7059,10 +7067,6 @@ snapshots:
       - babel-plugin-macros
       - supports-color
       - ts-node
-
-  cross-env@7.0.3:
-    dependencies:
-      cross-spawn: 7.0.6
 
   cross-spawn@7.0.6:
     dependencies:
@@ -8397,7 +8401,8 @@ snapshots:
 
   jest-regex-util@29.6.3: {}
 
-  jest-regex-util@30.0.1: {}
+  jest-regex-util@30.0.1:
+    optional: true
 
   jest-resolve-dependencies@29.7.0:
     dependencies:
@@ -8513,6 +8518,7 @@ snapshots:
       ci-info: 4.4.0
       graceful-fs: 4.2.11
       picomatch: 4.0.3
+    optional: true
 
   jest-validate@29.7.0:
     dependencies:
@@ -9650,14 +9656,6 @@ snapshots:
 
   rfdc@1.4.1: {}
 
-  rollup-plugin-dts@6.3.0(rollup@4.59.0)(typescript@5.9.3):
-    dependencies:
-      magic-string: 0.30.21
-      rollup: 4.59.0
-      typescript: 5.9.3
-    optionalDependencies:
-      '@babel/code-frame': 7.29.0
-
   rollup@4.59.0:
     dependencies:
       '@types/estree': 1.0.8
@@ -9957,15 +9955,6 @@ snapshots:
       postcss: 8.5.8
       postcss-selector-parser: 7.1.1
 
-  stylelint-config-recommended@18.0.0(stylelint@17.4.0(typescript@5.9.3)):
-    dependencies:
-      stylelint: 17.4.0(typescript@5.9.3)
-
-  stylelint-config-standard@40.0.0(stylelint@17.4.0(typescript@5.9.3)):
-    dependencies:
-      stylelint: 17.4.0(typescript@5.9.3)
-      stylelint-config-recommended: 18.0.0(stylelint@17.4.0(typescript@5.9.3))
-
   stylelint-order@7.0.1(stylelint@17.4.0(typescript@5.9.3)):
     dependencies:
       postcss: 8.5.8
@@ -10133,6 +10122,33 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@2.8.1: {}
+
+  turbo-darwin-64@2.8.15:
+    optional: true
+
+  turbo-darwin-arm64@2.8.15:
+    optional: true
+
+  turbo-linux-64@2.8.15:
+    optional: true
+
+  turbo-linux-arm64@2.8.15:
+    optional: true
+
+  turbo-windows-64@2.8.15:
+    optional: true
+
+  turbo-windows-arm64@2.8.15:
+    optional: true
+
+  turbo@2.8.15:
+    optionalDependencies:
+      turbo-darwin-64: 2.8.15
+      turbo-darwin-arm64: 2.8.15
+      turbo-linux-64: 2.8.15
+      turbo-linux-arm64: 2.8.15
+      turbo-windows-64: 2.8.15
+      turbo-windows-arm64: 2.8.15
 
   type-check@0.4.0:
     dependencies:

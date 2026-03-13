@@ -1,6 +1,31 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:best-practices", "pnpm"],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["major"],
+      "labels": ["dependencies", "major"],
+      "automerge": false
+    },
+    {
+      "matchPackagePatterns": ["^eslint", "^@typescript-eslint"],
+      "groupName": "ESLint"
+    },
+    {
+      "matchPackagePatterns": ["^typescript", "^ts-"],
+      "groupName": "TypeScript"
+    },
+    {
+      "matchPackagePatterns": ["^jest", "^@jest", "^babel-jest", "^ts-jest"],
+      "groupName": "Jest"
+    }
   ]
 }

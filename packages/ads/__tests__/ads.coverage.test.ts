@@ -794,3 +794,504 @@ describe('AdsPlugin autoplay mute policy', () => {
     await p;
   });
 });
+
+// ---------------------------------------------------------------------------
+// New coverage tests for identified gaps
+// ---------------------------------------------------------------------------
+
+describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll, active guard, VMAP XML', () => {
+  beforeEach(() => {
+    (VMAP as any).__breaks = [];
+    vastGetMock.mockReset();
+    vastParseMock.mockReset();
+    document.body.innerHTML = '';
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    (globalThis as any).fetch = undefined;
+  });
+
+  // -------------------------------------------------------------------------
+  // 1. rebuildSchedule – preload="none" defers VMAP fetch
+  // -------------------------------------------------------------------------
+
+  test('rebuildSchedule: preload="none" sets pendingVmapSrc and leaves vmapLoadPromise null', () => {
+    const video = document.createElement('video');
+    video.setAttribute('preload', 'none');
+    const { ctx } = makeCtx({}, video);
+
+    const plugin = new AdsPlugin({
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
+    }) as any;
+    plugin.setup(ctx);
+
+    // vmapLoadPromise must NOT have been started (no fetch on preload=none)
+    expect(plugin.vmapLoadPromise).toBeNull();
+    // pendingVmapSrc must be set so the first play can trigger the fetch
+    expect(plugin.pendingVmapSrc).toBe('https://example.com/vmap.xml');
+    // vmapPending must be false (no in-flight request yet)
+    expect(plugin.vmapPending).toBe(false);
+  });
+
+  test('rebuildSchedule: preload="metadata" eagerly starts VMAP fetch (vmapPending=true)', () => {
+    const video = document.createElement('video');
+    video.setAttribute('preload', 'metadata');
+    const { ctx } = makeCtx({}, video);
+
+    (globalThis as any).fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
+    });
+
+    const plugin = new AdsPlugin({
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
+    }) as any;
+    plugin.setup(ctx);
+
+    // vmapLoadPromise should be a Promise (fetch started eagerly)
+    expect(plugin.vmapLoadPromise).not.toBeNull();
+    expect(typeof plugin.vmapLoadPromise.then).toBe('function');
+    // pendingVmapSrc should NOT be set (fetch already started)
+    expect(plugin.pendingVmapSrc).toBeUndefined();
+  });
+
+  // -------------------------------------------------------------------------
+  // 2. Deferred VMAP: first cmd:play triggers the deferred fetch
+  // -------------------------------------------------------------------------
+
+  test('preload="none" VMAP: first cmd:play starts the deferred fetch (vmapPending flips true then false)', async () => {
+    const video = document.createElement('video');
+    video.setAttribute('preload', 'none');
+    const { ctx, bus } = makeCtx({}, video);
+
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
+    });
+    (globalThis as any).fetch = fetchMock;
+
+    (VMAP as any).__breaks = [];
+
+    const plugin = new AdsPlugin({
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
+      interceptPlayForPreroll: true,
+    }) as any;
+    plugin.setup(ctx);
+
+    // Before play: no fetch
+    expect(plugin.vmapLoadPromise).toBeNull();
+    expect(plugin.pendingVmapSrc).toBe('https://example.com/vmap.xml');
+
+    // Trigger first cmd:play
+    bus.emit('cmd:play');
+
+    // Immediately after: deferred fetch should have been started
+    expect(plugin.vmapLoadPromise).not.toBeNull();
+    expect(plugin.pendingVmapSrc).toBeUndefined();
+
+    // Let the fetch resolve
+    await flushPromises(10);
+
+    // After fetch completes: vmapPending should be false again
+    expect(plugin.vmapPending).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
+  // 3. playBreakFromVast – active=true guard returns false immediately
+  // -------------------------------------------------------------------------
+
+  test('playBreakFromVast: returns false immediately when active=true (re-entry guard)', async () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    plugin.setup(ctx);
+
+    // Force active to true (simulates an ad already playing)
+    plugin.active = true;
+
+    const result = await plugin.playBreakFromVast(
+      { kind: 'url', value: 'https://example.com/vast.xml' },
+      { kind: 'manual', id: 'test' }
+    );
+
+    // Should return false without fetching anything
+    expect(result).toBe(false);
+    expect(vastGetMock).not.toHaveBeenCalled();
+  });
+
+  // -------------------------------------------------------------------------
+  // 4. playBreakFromVast – postroll does NOT set resumeAfter=true
+  // -------------------------------------------------------------------------
+
+  test('playBreakFromVast: postroll break sets resumeAfter=false regardless of resumeContent', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as any;
+    plugin.setup(ctx);
+
+    // Start playing a postroll
+    const playP = plugin.playBreakFromVast(
+      { kind: 'url', value: 'https://example.com/vast.xml' },
+      { kind: 'postroll', id: 'post1' }
+    );
+
+    // After the VAST fetch and before the ad finishes, check resumeAfter
+    await flushPromises(5);
+    // resumeAfter must be false for postroll (regardless of resumeContent=true)
+    expect(plugin.resumeAfter).toBe(false);
+
+    // Clean up: end the ad
+    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
+    if (adVideo) adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+  });
+
+  test('finish: postroll does NOT emit cmd:play after completion (content not resumed)', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx, bus } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as any;
+    plugin.setup(ctx);
+
+    const emittedPlays: string[] = [];
+    bus.on('cmd:play', () => emittedPlays.push('play'));
+
+    const playP = plugin.playBreakFromVast(
+      { kind: 'url', value: 'https://example.com/vast.xml' },
+      { kind: 'postroll', id: 'post-no-resume' }
+    );
+
+    await flushPromises(5);
+    const playsBefore = emittedPlays.length;
+
+    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
+    if (adVideo) adVideo.dispatchEvent(new Event('ended'));
+    await playP;
+
+    // cmd:play count should NOT have increased after postroll ends
+    // (the ad itself doesn't emit cmd:play; finish() for postroll emits cmd:pause instead)
+    const playsAfterEnd = emittedPlays.length - playsBefore;
+    expect(playsAfterEnd).toBe(0);
+  });
+
+  // -------------------------------------------------------------------------
+  // 5. startBreakGroup – bumper detected via break.id field (not just URL)
+  // -------------------------------------------------------------------------
+
+  test('startBreakGroup: break.id containing "bumper" is treated as bumper (case-insensitive)', async () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false, interceptPlayForPreroll: false }) as any;
+    plugin.setup(ctx);
+
+    const startBreakSpy = jest.spyOn(plugin, 'startBreak').mockResolvedValue(undefined);
+
+    // Group: main ad + post-bumper (identified by id, not URL)
+    const mainBreak = {
+      id: 'main-ad',
+      at: 15,
+      source: { type: 'VAST', src: 'https://example.com/main.xml' },
+      once: true,
+    };
+    const bumperBreak = {
+      id: 'post-BUMPER-slot',
+      at: 15,
+      source: { type: 'VAST', src: 'https://example.com/bumper.xml' },
+      once: true,
+    };
+
+    // Set startedMain=true before the bumper arrives (the non-bumper comes first in the group)
+    // startBreakGroup filters post-bumpers after startedMain is set
+    await plugin.startBreakGroup([mainBreak, bumperBreak], 'midroll');
+
+    // Only the main break should have been played; post-bumper is skipped
+    expect(startBreakSpy).toHaveBeenCalledTimes(1);
+    expect(startBreakSpy).toHaveBeenCalledWith(mainBreak, 'midroll', expect.anything());
+
+    // bumper break should be marked as played (skipped)
+    const bumperBreakId = plugin.getBreakId(bumperBreak);
+    expect(plugin.playedBreaks.has(bumperBreakId)).toBe(true);
+  });
+
+  test('startBreakGroup: pre-bumper (before main ad) is NOT skipped', async () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false, interceptPlayForPreroll: false }) as any;
+    plugin.setup(ctx);
+
+    const startBreakSpy = jest.spyOn(plugin, 'startBreak').mockResolvedValue(undefined);
+
+    // Group: pre-bumper first, then main ad
+    const preBumper = {
+      id: 'pre-bumper',
+      at: 15,
+      source: { type: 'VAST', src: 'https://example.com/bumper.xml' },
+      once: true,
+    };
+    const mainBreak = {
+      id: 'main-ad',
+      at: 15,
+      source: { type: 'VAST', src: 'https://example.com/main.xml' },
+      once: true,
+    };
+
+    await plugin.startBreakGroup([preBumper, mainBreak], 'midroll');
+
+    // Both should be played (pre-bumper is NOT skipped because startedMain=false at that point)
+    expect(startBreakSpy).toHaveBeenCalledTimes(2);
+  });
+
+  // -------------------------------------------------------------------------
+  // 6. loadVmapAndMerge – raw XML string as VMAP input
+  // -------------------------------------------------------------------------
+
+  test('loadVmapAndMerge: raw XML string (starts with "<") is used directly without fetch', async () => {
+    (VMAP as any).__breaks = [
+      {
+        breakType: 'linear',
+        breakId: 'xml-pre',
+        timeOffset: 'start',
+        adSource: { adTagURI: 'https://example.com/pre.xml' },
+      },
+    ];
+
+    // Use preload="none" so rebuildSchedule() defers the VMAP fetch (no eager fetch during setup)
+    const video = document.createElement('video');
+    video.setAttribute('preload', 'none');
+    const { ctx } = makeCtx({}, video);
+    const plugin = new AdsPlugin({
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
+    }) as any;
+    plugin.setup(ctx);
+
+    // Now track fetch from this point — any call here would be unexpected
+    const fetchMock = jest.fn();
+    (globalThis as any).fetch = fetchMock;
+
+    // Pass raw XML string directly (starts with "<")
+    const rawXmlVmapSrc = '<VMAP version="2.0"></VMAP>';
+    await plugin.loadVmapAndMerge([], rawXmlVmapSrc);
+
+    // fetch should NOT have been called since it's a raw XML string
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    // The break from the mock VMAP should have been merged
+    expect(plugin.resolvedBreaks.some((b: any) => b.at === 'preroll')).toBe(true);
+  });
+
+  // -------------------------------------------------------------------------
+  // 7. Waterfall: first source fails (empty), second source is tried and plays
+  // -------------------------------------------------------------------------
+
+  test('waterfall: first source returns empty ads, second source plays successfully', async () => {
+    // Source 1: no ads; Source 2: valid linear ad
+    vastGetMock
+      .mockResolvedValueOnce({ ads: [] }) // source 1: empty
+      .mockResolvedValueOnce(linearParsed('00:00:00')); // source 2: valid
+
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({
+      adSourcesMode: 'waterfall',
+      sources: [
+        { type: 'VAST', src: 'https://ad1.example.com/vast' },
+        { type: 'VAST', src: 'https://ad2.example.com/vast' },
+      ],
+    });
+    plugin.setup(ctx);
+
+    // Trigger preroll via cmd:play
+    ctx.events.emit('cmd:play');
+    const adVideo = await waitForAdVideo();
+
+    // Both sources should have been tried
+    expect(vastGetMock).toHaveBeenCalledWith('https://ad1.example.com/vast');
+    expect(vastGetMock).toHaveBeenCalledWith('https://ad2.example.com/vast');
+    expect(adVideo).not.toBeNull();
+
+    // End the ad
+    adVideo.dispatchEvent(new Event('ended'));
+  });
+
+  // -------------------------------------------------------------------------
+  // 8. rebuildSchedule – playlist mode creates one break per VAST source
+  // -------------------------------------------------------------------------
+
+  test('rebuildSchedule: adSourcesMode=playlist creates independent preroll break per VAST source', () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({
+      adSourcesMode: 'playlist',
+      sources: [
+        { type: 'VAST', src: 'https://ad1.example.com/vast' },
+        { type: 'VAST', src: 'https://ad2.example.com/vast' },
+      ],
+    }) as any;
+    plugin.setup(ctx);
+
+    const breaks = plugin.resolvedBreaks;
+    // Each VAST source gets its own independent break
+    expect(breaks).toHaveLength(2);
+    expect(breaks[0].at).toBe('preroll');
+    expect(breaks[0].source.src).toBe('https://ad1.example.com/vast');
+    expect(breaks[1].at).toBe('preroll');
+    expect(breaks[1].source.src).toBe('https://ad2.example.com/vast');
+    // No waterfall sources array on playlist breaks
+    for (const b of breaks) {
+      expect(b.sources).toBeUndefined();
+    }
+  });
+
+  // -------------------------------------------------------------------------
+  // 9. resumeContent=true default: non-postroll resumes content after ad
+  // -------------------------------------------------------------------------
+
+  test('finish: non-postroll preroll with resumeContent=true emits cmd:play to resume content', async () => {
+    vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
+
+    const { ctx, bus } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as any;
+    plugin.setup(ctx);
+
+    const emittedPlays: string[] = [];
+    // Listen AFTER setup to ignore any play events during ad itself
+    const playPromise = plugin.playBreakFromVast(
+      { kind: 'url', value: 'https://example.com/vast.xml' },
+      { kind: 'preroll', id: 'pre1' }
+    );
+
+    await flushPromises(5);
+
+    bus.on('cmd:play', () => emittedPlays.push('play'));
+
+    const adVideo = document.querySelector('video.op-ads__media') as HTMLVideoElement | null;
+    if (adVideo) adVideo.dispatchEvent(new Event('ended'));
+    await playPromise;
+
+    // cmd:play should have been emitted to resume content
+    expect(emittedPlays.length).toBeGreaterThan(0);
+  });
+
+  // -------------------------------------------------------------------------
+  // 10. destroy() clears globalUnsubs and removes overlay from DOM
+  // -------------------------------------------------------------------------
+
+  test('destroy: removes overlay from DOM and clears all global subscriptions', () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    plugin.setup(ctx);
+
+    // Mount overlay
+    plugin.ensureOverlayMounted();
+    const overlay = document.querySelector('.op-ads');
+    expect(overlay).toBeTruthy();
+
+    const initialUnsubs = plugin.globalUnsubs.length;
+    expect(initialUnsubs).toBeGreaterThan(0);
+
+    plugin.destroy();
+
+    // overlay should be removed
+    expect(document.querySelector('.op-ads')).toBeNull();
+    // globalUnsubs should be cleared
+    expect(plugin.globalUnsubs).toHaveLength(0);
+  });
+
+  // -------------------------------------------------------------------------
+  // 11. source:set resets vmapLoadPromise and pendingVmapSrc
+  // -------------------------------------------------------------------------
+
+  test('source:set resets vmapLoadPromise, vmapPending, and pendingVmapSrc', async () => {
+    const video = document.createElement('video');
+    video.setAttribute('preload', 'none');
+    const { ctx, bus } = makeCtx({}, video);
+
+    const plugin = new AdsPlugin({
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
+      interceptPlayForPreroll: false,
+    }) as any;
+    plugin.setup(ctx);
+
+    // Before source:set: pendingVmapSrc should be set (preload=none path)
+    expect(plugin.pendingVmapSrc).toBe('https://example.com/vmap.xml');
+
+    // Trigger source switch
+    bus.emit('source:set');
+    await Promise.resolve();
+
+    // After source:set: vmapLoadPromise and vmapPending are cleared.
+    // rebuildSchedule() re-primes pendingVmapSrc from config (preload=none path)
+    // so the next play attempt will trigger a fresh fetch.
+    expect(plugin.vmapLoadPromise).toBeNull();
+    expect(plugin.vmapPending).toBe(false);
+    expect(plugin.pendingVmapSrc).toBe('https://example.com/vmap.xml');
+  });
+
+  // -------------------------------------------------------------------------
+  // 12. getBreakId: uses break.id when present, else derives from source
+  // -------------------------------------------------------------------------
+
+  test('getBreakId: uses explicit id when set, derives from source when not', () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    plugin.setup(ctx);
+
+    const withId = { id: 'my-custom-id', at: 'preroll', source: { type: 'VAST', src: 'https://example.com/vast.xml' } };
+    const withoutId = { at: 'preroll', source: { type: 'VAST', src: 'https://example.com/vast.xml' } };
+
+    expect(plugin.getBreakId(withId)).toBe('my-custom-id');
+    expect(plugin.getBreakId(withoutId)).toContain('preroll');
+    expect(plugin.getBreakId(withoutId)).toContain('VAST');
+  });
+
+  // -------------------------------------------------------------------------
+  // 13. isXmlString: correctly identifies XML vs URL strings
+  // -------------------------------------------------------------------------
+
+  test('isXmlString: returns true for strings starting with "<", false otherwise', () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    plugin.setup(ctx);
+
+    expect(plugin.isXmlString('<VAST version="3.0">')).toBe(true);
+    expect(plugin.isXmlString('  <VAST')).toBe(true);
+    expect(plugin.isXmlString('https://example.com/vast.xml')).toBe(false);
+    expect(plugin.isXmlString('http://example.com')).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
+  // 14. getVastInputFromBreak: handles sources array (waterfall break)
+  // -------------------------------------------------------------------------
+
+  test('getVastInputFromBreak: waterfall break with sources[] uses first source for input', () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    plugin.setup(ctx);
+
+    const waterfallBreak = {
+      at: 'preroll',
+      sources: [
+        { type: 'VAST', src: 'https://first.example.com/vast.xml' },
+        { type: 'VAST', src: 'https://second.example.com/vast.xml' },
+      ],
+    };
+
+    const { input, sourceType } = plugin.getVastInputFromBreak(waterfallBreak);
+    expect(input?.kind).toBe('url');
+    expect(input?.value).toBe('https://first.example.com/vast.xml');
+    expect(sourceType).toBe('VAST');
+  });
+
+  test('getVastInputFromBreak: XML source string returns xml input kind', () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    plugin.setup(ctx);
+
+    const xmlBreak = {
+      at: 'preroll',
+      source: { type: 'VAST', src: '<VAST version="3.0"></VAST>' },
+    };
+
+    const { input, sourceType } = plugin.getVastInputFromBreak(xmlBreak);
+    expect(input?.kind).toBe('xml');
+    expect(sourceType).toBe('VAST');
+  });
+});

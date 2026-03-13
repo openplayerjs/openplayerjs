@@ -7,33 +7,34 @@ export class DefaultMediaEngine extends BaseMediaEngine {
   capabilities = ['media-engine'];
   priority = 0;
 
-  canPlay(source: MediaSource) {
+  canPlay(source: MediaSource): boolean {
     const media = document.createElement('video');
     return media.canPlayType(source.type || '') !== '';
   }
 
-  attach(ctx: MediaEngineContext) {
-    if (ctx.activeSource?.src && ctx.media.src !== ctx.activeSource.src) {
-      ctx.media.src = ctx.activeSource.src;
-    }
+  attach(ctx: MediaEngineContext): void {
+    const surface = ctx.resetSurface();
+
     try {
-      ctx.media.load();
+      surface.load?.(ctx.activeSource);
     } catch {
       // ignore
     }
-    this.bindMediaEvents(ctx.media, ctx.events);
+
+    this.bindSurfaceEvents(surface, ctx.events);
     this.bindCommands(ctx);
 
-    // When preload="none" and play is requested, bump preload so the browser
-    // will actually fetch resource metadata and fire loadedmetadata.
     this.commands.push(
       ctx.events.on('cmd:startLoad', () => {
         const s = ctx.core.state.current;
         if (['ready', 'playing', 'paused', 'waiting', 'seeking', 'ended'].includes(s)) return;
+        // ctx.media.preload is intentionally read/written here: it is a DOM attribute
+        // with no surface equivalent. The surface abstraction covers playback operations
+        // only; loading hints are DOM-level concerns that must be set directly on the element.
         if (ctx.media.preload !== 'none') return;
         ctx.media.preload = 'metadata';
         try {
-          ctx.media.load();
+          surface.load?.(ctx.activeSource);
         } catch {
           // ignore
         }
@@ -41,8 +42,8 @@ export class DefaultMediaEngine extends BaseMediaEngine {
     );
   }
 
-  detach() {
+  detach(): void {
     this.unbindCommands();
-    this.unbindMediaEvents();
+    this.unbindSurfaceEvents();
   }
 }

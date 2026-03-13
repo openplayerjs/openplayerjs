@@ -597,6 +597,10 @@
 }
 
 /* == Fullscreen ============= */
+.op-fullscreen__on .op-media {
+    height: 100%;
+    width: 100%
+}
 .op-fullscreen__on .op-controls {
     z-index: 2147483648;
 }

@@ -35,7 +35,10 @@
     "headless"
   ],
   "scripts": {
-    "test": "jest --passWithNoTests  --config ../../jest.config.cjs"
+    "build:bundles": "rollup -c rollup.config.mjs",
+    "test": "jest --passWithNoTests  --config ../../jest.config.cjs",
+    "release": "dotenv -o -- release-it --config .release-it.cjs",
+    "watch": "rollup -c rollup.config.mjs --watch"
   },
   "publishConfig": {
     "access": "public"
