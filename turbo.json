@@ -1,6 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
+    "build:bundles": {
+      "dependsOn": ["^build:bundles"],
+      "outputs": ["dist/index.js", "dist/index.js.map", "dist/openplayer*.js", "dist/openplayer*.js.map"]
+    },
+    "build:css": {
+      "dependsOn": ["build:bundles"],
+      "outputs": ["dist/openplayer.css"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
@@ -10,6 +18,12 @@
       "outputs": []
     },
     "lint": {
+      "outputs": []
+    },
+    "watch": {
+      "dependsOn": ["^build:bundles"],
+      "cache": false,
+      "persistent": true,
       "outputs": []
     },
     "release": {

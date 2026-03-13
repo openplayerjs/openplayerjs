@@ -6,19 +6,6 @@ import type { Control } from '../control';
 import { getSettingsRegistry, type SettingsSubmenuProvider } from '../settings';
 import { BaseControl } from './base';
 
-const CAPTION_PREF_KEY = 'op:caption:track';
-
-function readCaptionPref(): string | null {
-  try { return localStorage.getItem(CAPTION_PREF_KEY); } catch { return null; }
-}
-
-function saveCaptionPref(id: string | null): void {
-  try {
-    if (id === null) localStorage.removeItem(CAPTION_PREF_KEY);
-    else localStorage.setItem(CAPTION_PREF_KEY, id);
-  } catch { /* ignore */ }
-}
-
 type TrackKind = 'captions' | 'subtitles';
 function isRelevantKind(kind: string): kind is TrackKind {
   return kind === 'captions' || kind === 'subtitles';
@@ -74,8 +61,7 @@ export class CaptionsControl extends BaseControl {
   // Separate from lastSelectedIndex (which tracks content-media state) so a
   // content-video pref can't bleed into ad-video track selection.
   private lastAdTrackIndex: number | null = null;
-  private lastSelectedProviderId: string | null = readCaptionPref();
-  private prefApplied = false;
+  private lastSelectedProviderId: string | null = null;
 
   protected build(): HTMLElement {
     const core = this.core;
@@ -161,7 +147,9 @@ export class CaptionsControl extends BaseControl {
               const tracks = provider.getTracks();
               const id = this.lastSelectedProviderId ?? tracks[0]?.id ?? null;
               provider.setTrack(id);
-              if (id) this.lastSelectedProviderId = id;
+              if (id) {
+                this.lastSelectedProviderId = id;
+              }
             }
           } else {
             const showing = getNativeShowingIndex(core.media);
@@ -247,7 +235,6 @@ export class CaptionsControl extends BaseControl {
                 onSelect: () => {
                   captionProvider.setTrack(t.id);
                   this.lastSelectedProviderId = t.id;
-                  saveCaptionPref(t.id);
                   refresh();
                 },
               })),
@@ -278,7 +265,6 @@ export class CaptionsControl extends BaseControl {
               onSelect: () => {
                 selectNativeIndex(core.media, x.index);
                 this.lastSelectedIndex = x.index;
-                saveCaptionPref(x.track.language || String(x.index));
                 refresh();
               },
             })),
@@ -302,82 +288,14 @@ export class CaptionsControl extends BaseControl {
       })
     );
     this.onPlayer('loadedmetadata', () => {
-      // Reset on each new engine attach (e.g. content starting after a preroll ad)
-      // so the stored preference can be re-applied to the fresh provider instance.
-      this.prefApplied = false;
-
-      // Restore native track selection from stored pref (language code or index string).
-      const storedPref = readCaptionPref();
-      if (storedPref) {
-        const nativeTracks = listNativeTracks(core.media);
-        if (nativeTracks.length > 0) {
-          const match =
-            nativeTracks.find((x) => x.track.language === storedPref) ??
-            nativeTracks.find((x) => String(x.index) === storedPref);
-          if (match) {
-            selectNativeIndex(core.media, match.index);
-            this.lastSelectedIndex = match.index;
-            this.prefApplied = true;
-          }
-        }
-      }
-
-      // For provider tracks (e.g. YouTube): eagerly apply the stored preference
-      // before refresh() so the button immediately shows ON. Without this, the
-      // button would flash OFF during the ~500 ms before the subscribe poll fires.
       const captionProvider = getProvider();
-      if (captionProvider && this.lastSelectedProviderId) {
-        captionProvider.setTrack(this.lastSelectedProviderId);
-      }
-
       refresh();
 
-      // If the engine exposes a subscribe hook, wire it up now so it can push
+      // If the engine exposes a subscribe hook, wire it up so it can push
       // track-list updates (e.g. YouTube captions module loads after onReady).
       if (captionProvider?.subscribe) {
-        this.dispose.add(
-          captionProvider.subscribe(() => {
-            // Validate the eagerly-applied preference once tracks are available.
-            // If the track isn't in this video's tracklist, clear it.
-            if (!this.prefApplied) {
-              this.prefApplied = true;
-              const pref = this.lastSelectedProviderId;
-              if (pref) {
-                const available = captionProvider.getTracks();
-                if (available.some((t) => t.id === pref)) {
-                  captionProvider.setTrack(pref);
-                } else {
-                  captionProvider.setTrack(null);
-                }
-              }
-            }
-            refresh();
-          })
-        );
+        this.dispose.add(captionProvider.subscribe(() => refresh()));
       }
-    });
-    this.onPlayer('playing', () => {
-      // If the subscribe poll exhausted its retries before the video started playing
-      // (e.g. a preroll longer than the poll window), apply the stored preference now
-      // that YouTube's tracklist is populated.
-      if (!this.prefApplied) {
-        const provider = getProvider();
-        if (provider) {
-          const tracks = provider.getTracks();
-          if (tracks.length > 0) {
-            this.prefApplied = true;
-            const pref = this.lastSelectedProviderId;
-            if (pref) {
-              if (tracks.some((t) => t.id === pref)) {
-                provider.setTrack(pref);
-              } else {
-                provider.setTrack(null);
-              }
-            }
-          }
-        }
-      }
-      refresh();
     });
 
     refresh();

@@ -236,6 +236,7 @@ export function createUI(
     mediaContainer.classList.remove('op-media--controls-hidden');
     if (hideTimer) window.clearTimeout(hideTimer);
     controlsRoot.setAttribute('aria-hidden', 'false');
+    core.events.emit('ui:controls:show');
   };
 
   const hideControls = (): void => {
@@ -250,6 +251,7 @@ export function createUI(
     wrapper.classList.add('op-controls--hidden');
     mediaContainer.classList.add('op-media--controls-hidden');
     controlsRoot.setAttribute('aria-hidden', 'true');
+    core.events.emit('ui:controls:hide');
   };
 
   const scheduleHide = (ms?: number): void => {

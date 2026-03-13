@@ -2,8 +2,8 @@ module.exports = {
   git: {
     requireCleanWorkingDir: false,
     addFiles: ['package.json', '../../CHANGELOG.md'],
-    tagName: '@openplayerjs/player@${version}',
-    commitMessage: 'chore(release): @openplayerjs/player@${version}',
+    tagName: '@openplayerjs/youtube@${version}',
+    commitMessage: 'chore(release): @openplayerjs/youtube@${version}',
   },
 
   github: {
@@ -12,6 +12,8 @@ module.exports = {
 
   npm: {
     publish: true,
+    // Allow first publish at the version already in package.json (no prior npm release).
+    versionArgs: ['--allow-same-version'],
   },
 
   plugins: {

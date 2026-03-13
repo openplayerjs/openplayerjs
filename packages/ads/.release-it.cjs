@@ -1,7 +1,7 @@
 module.exports = {
   git: {
     requireCleanWorkingDir: false,
-    addFiles: ['package.json', 'CHANGELOG.md'],
+    addFiles: ['package.json', '../../CHANGELOG.md'],
     tagName: '@openplayerjs/ads@${version}',
     commitMessage: 'chore(release): @openplayerjs/ads@${version}',
   },
@@ -12,7 +12,6 @@ module.exports = {
 
   npm: {
     publish: true,
-    publishArgs: ['--no-git-checks'],
   },
 
   plugins: {
@@ -28,8 +27,9 @@ module.exports = {
           { type: 'chore',    section: 'Chores' },
         ],
       },
-      infile: 'CHANGELOG.md',
+      infile: '../../CHANGELOG.md',
       header: '# Changelog',
+      gitRawCommitsOpts: { path: '.' },
     },
   },
 };
