@@ -52,7 +52,7 @@
     "@release-it/conventional-changelog": "^10.0.5",
     "@rollup/plugin-commonjs": "^29.0.1",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.11.0",
