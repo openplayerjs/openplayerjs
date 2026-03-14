@@ -132,7 +132,7 @@ importers:
         specifier: ^6.4.2
         version: 6.4.2
       '@dailymotion/vmap':
-        specifier: '>=3.0.0'
+        specifier: '>=3.3.3'
         version: 3.3.3
       '@openplayerjs/core':
         specifier: workspace:^
