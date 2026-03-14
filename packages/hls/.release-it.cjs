@@ -17,7 +17,9 @@ module.exports = {
   },
 
   hooks: {
-    'before:npm:release': 'pnpm publish --access public --no-git-checks',
+    // Run pnpm publish AFTER git commit+tag+push succeed so a failed push
+    // never leaves the package published without a matching git tag.
+    'after:git:release': 'pnpm publish --access public --no-git-checks',
   },
 
   plugins: {
