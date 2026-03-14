@@ -84,10 +84,10 @@
     "typescript-eslint": "^8.56.1"
   },
   "engines": {
-    "pnpm": "10.32.0",
+    "pnpm": "10.32.1",
     "node": ">=24.13.1"
   },
-  "packageManager": "pnpm@10.32.0",
+  "packageManager": "pnpm@10.32.1",
   "pnpm": {
     "overrides": {
       "serialize-javascript": ">=7.0.3",
