@@ -1,14 +1,50 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices"],
+
+  // config:recommended gives automerge/grouping primitives without the
+  // :pinDevDependencies preset that config:best-practices pulls in.
+  // Pinning is wrong here because:
+  //   • Root devDeps  — pnpm-lock.yaml already gives reproducible installs;
+  //     pinning just creates noise without extra safety.
+  //   • Package deps  — published in package.json; pinning forces exact
+  //     transitive versions on library consumers.
+  //   • peerDeps      — must stay as ranges; consumers install them.
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+
+  // Advance the range floor (^1.2.0 → ^1.3.0) without ever pinning to an
+  // exact version.  Works for both root devDeps and per-package dependencies.
+  "rangeStrategy": "bump",
+
   "semanticCommits": "enabled",
+
+  // Batch all non-major updates on Mondays to keep the PR queue manageable.
+  "schedule": ["before 9am on Monday"],
+
   "packageRules": [
+    // ── peerDependencies ──────────────────────────────────────────────────
+    // Never touch peerDependencies automatically; semver ranges are
+    // intentional contracts between the plugin and its host.
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "enabled": false
+    },
+
+    // ── Root devDependencies: patch + minor ───────────────────────────────
+    // Safe to automerge; CI validates correctness.
     {
       "matchManagers": ["npm"],
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
+      "automerge": true,
+      "automergeType": "pr",
+      "labels": ["dependencies"]
     },
+
+    // ── Root devDependencies: major ───────────────────────────────────────
+    // Require manual review; majors may have breaking API changes.
     {
       "matchManagers": ["npm"],
       "matchDepTypes": ["devDependencies"],
@@ -16,22 +52,49 @@
       "labels": ["dependencies", "major"],
       "automerge": false
     },
+
+    // ── Published package dependencies ────────────────────────────────────
+    // These end up in published package.json files.  Keep ranges; let the
+    // maintainer decide if a dep bump is safe to release.
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["dependencies"],
+      "automerge": false,
+      "labels": ["dependencies"]
+    },
+
+    // ── Tooling groups (reduces PR noise) ────────────────────────────────
     {
       "groupName": "ESLint",
-      "matchPackageNames": ["/^eslint/", "/^@typescript-eslint/"]
+      "matchPackageNames": ["/^eslint/", "/^@eslint/", "/^@typescript-eslint/", "typescript-eslint"]
     },
     {
       "groupName": "TypeScript",
-      "matchPackageNames": ["/^typescript/", "/^ts-/"]
+      "matchPackageNames": ["/^typescript$/", "/^ts-/", "tslib"]
     },
     {
       "groupName": "Jest",
-      "matchPackageNames": [
-        "/^jest/",
-        "/^@jest/",
-        "/^babel-jest/",
-        "/^ts-jest/"
-      ]
+      "matchPackageNames": ["/^jest/", "/^@jest/", "/^babel-jest/", "/^ts-jest/", "jest-environment-jsdom"]
+    },
+    {
+      "groupName": "Rollup",
+      "matchPackageNames": ["/^rollup/", "/^@rollup/"]
+    },
+    {
+      "groupName": "PostCSS",
+      "matchPackageNames": ["/^postcss/", "cssnano", "stylelint", "stylelint-order"]
+    },
+    {
+      "groupName": "Commitlint",
+      "matchPackageNames": ["/^@commitlint/"]
+    },
+    {
+      "groupName": "Release tooling",
+      "matchPackageNames": ["/^release-it/", "/^@release-it/", "/^@release-it-plugins/", "dotenv-cli"]
+    },
+    {
+      "groupName": "Git hooks",
+      "matchPackageNames": ["husky", "lint-staged"]
     }
   ]
 }

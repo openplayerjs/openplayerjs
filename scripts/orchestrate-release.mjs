@@ -20,7 +20,7 @@
  */
 
 import { execSync, spawnSync } from 'child_process';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -42,6 +42,123 @@ if (increment && !['major', 'minor', 'patch'].includes(increment)) {
 
 /** Packages that must follow core's version whenever core releases. */
 const CORE_DEPENDENTS = ['player', 'hls', 'ads', 'youtube'];
+
+// ─── Changelog generation ────────────────────────────────────────────────────
+
+/** Maps conventional-commit types to human-readable section headers. */
+const TYPE_SECTIONS = {
+  feat:     'Features',
+  fix:      'Bug Fixes',
+  perf:     'Performance Improvements',
+  revert:   'Reverts',
+  refactor: 'Refactoring',
+  docs:     'Documentation',
+  build:    'Build System',
+  chore:    'Chores',
+  test:     'Tests',
+  style:    'Styles',
+  ci:       'CI',
+};
+
+/** Display order for sections (most visible first). */
+const SECTION_ORDER = [
+  'Breaking Changes',
+  'Features',
+  'Bug Fixes',
+  'Performance Improvements',
+  'Refactoring',
+  'Documentation',
+  'Build System',
+  'Chores',
+  'Tests',
+  'Styles',
+  'CI',
+  'Reverts',
+];
+
+/**
+ * Generate release notes from git commits, grouped per package and
+ * per section type (Features, Bug Fixes, …).
+ *
+ * @param {string}            version   - Version being released (e.g. "3.1.0")
+ * @param {string[]}          pkgs      - Packages included in this release
+ * @param {Record<string,string|null>} prevTags - Last tag for each pkg BEFORE this release
+ */
+function generateReleaseNotes(version, pkgs, prevTags) {
+  const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const packageSections = [];
+
+  for (const pkg of pkgs) {
+    const prevTag = prevTags[pkg];
+    // After release-it runs the new tag exists on HEAD; use prevTag..HEAD to get
+    // only the commits that belong to this release.
+    const range = prevTag ? `${prevTag}..HEAD` : 'HEAD';
+
+    let rawLog = '';
+    try {
+      rawLog = execSync(
+        `git log "${range}" --pretty=format:"%H\x1f%s\x1f%an" -- packages/${pkg}/`,
+        { encoding: 'utf8', cwd: ROOT, stdio: ['pipe', 'pipe', 'pipe'] },
+      ).trim();
+    } catch { /* package has no history yet */ }
+
+    if (!rawLog) continue;
+
+    const bySection = {};
+
+    for (const line of rawLog.split('\n')) {
+      if (!line.trim()) continue;
+      const [hash, subject, author] = line.split('\x1f');
+      if (!subject) continue;
+
+      // Skip merge commits and release-it's own release commits.
+      if (/^Merge /.test(subject) || /^chore\(release\):/.test(subject)) continue;
+
+      const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
+      if (!ccMatch) continue;
+
+      const [, type, scope, breaking, rawDesc] = ccMatch;
+      const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
+      if (!sectionName) continue;
+
+      // Extract PR number appended by GitHub as "(#N)" in squash/merge commits.
+      const prMatch = rawDesc.match(/\(#(\d+)\)/) || subject.match(/\(#(\d+)\)/);
+      const pr = prMatch?.[1];
+      const desc = rawDesc.replace(/\s*\(#\d+\)\s*$/, '').trim();
+
+      if (!bySection[sectionName]) bySection[sectionName] = [];
+
+      const scopePrefix = scope ? `**[${scope}]** ` : '';
+      const ref = pr
+        ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
+        : `(${hash.slice(0, 7)})`;
+      bySection[sectionName].push(`- ${scopePrefix}${desc} ${ref} @${author}`);
+    }
+
+    if (Object.keys(bySection).length === 0) continue;
+
+    let section = `### \`@openplayerjs/${pkg}@${version}\`\n`;
+    for (const sectionName of SECTION_ORDER) {
+      const items = bySection[sectionName];
+      if (items?.length) {
+        section += `\n#### ${sectionName}\n\n${items.join('\n')}\n`;
+      }
+    }
+    packageSections.push(section);
+  }
+
+  if (packageSections.length === 0) {
+    // Nothing parseable — fall back to per-package CHANGELOG links.
+    return pkgs
+      .map(p => `- [\`@openplayerjs/${p}\`](packages/${p}/CHANGELOG.md)`)
+      .join('\n');
+  }
+
+  let notes = `_${date}_\n`;
+  notes += `\n${packageSections.join('\n')}`;
+
+  return notes.trim();
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -72,6 +189,37 @@ function getLastTag(pkg) {
     }).trim();
   } catch {
     return null;
+  }
+}
+
+/**
+ * Verify that each package's latest tag points to a commit reachable from HEAD.
+ * A tag that is NOT an ancestor of HEAD was made on a branch that was never
+ * merged (or was force-pushed away), which indicates a past botched release.
+ * Logs a warning for each offending tag; does not abort (may be intentional for
+ * hotfix branches).
+ */
+function checkTagAncestry() {
+  const allPkgs = ['core', ...CORE_DEPENDENTS];
+  for (const pkg of allPkgs) {
+    const tag = getLastTag(pkg);
+    if (!tag) continue;
+    try {
+      const tagCommit = execSync(`git rev-list -n 1 "${tag}"`, {
+        encoding: 'utf8',
+        cwd: ROOT,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      }).trim();
+      execSync(`git merge-base --is-ancestor "${tagCommit}" HEAD`, {
+        cwd: ROOT,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+    } catch {
+      console.warn(
+        `\n⚠ WARNING: ${tag} points to a commit that is NOT reachable from HEAD.\n` +
+        `  It may have been published from a non-master branch — investigate before releasing.\n`,
+      );
+    }
   }
 }
 
@@ -165,15 +313,16 @@ function restoreDryRunSideEffects(pkgs) {
  * and commit it.
  *
  * Content priority:
- *   1. RELEASE_NOTES.md at the repo root (used for major/minor releases with
- *      hand-crafted highlights).
- *   2. Fallback: auto-generated links to each released package's CHANGELOG.md
- *      (used for patch releases where no RELEASE_NOTES.md is written).
+ *   1. RELEASE_NOTES.md at the repo root (used for major releases with
+ *      hand-crafted highlights — deleted after merging so it can't carry over).
+ *   2. Auto-generated MUI-style notes from git commits grouped per package and
+ *      section type (Features, Bug Fixes, …).
  *
- * @param {string}   version  - The version string just released (e.g. "3.1.1")
- * @param {string[]} pkgs     - Packages included in this release
+ * @param {string}                     version   - Version just released (e.g. "3.1.1")
+ * @param {string[]}                   pkgs      - Packages included in this release
+ * @param {Record<string,string|null>} prevTags  - Per-package tag snapshot taken BEFORE releasing
  */
-function mergeReleaseNotesToChangelog(version, pkgs) {
+function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}) {
   const notesPath = join(ROOT, 'RELEASE_NOTES.md');
   const changelogPath = join(ROOT, 'CHANGELOG.md');
   const date = new Date().toISOString().slice(0, 10);
@@ -181,13 +330,10 @@ function mergeReleaseNotesToChangelog(version, pkgs) {
 
   let content;
   if (existsSync(notesPath)) {
+    // Hand-crafted notes take precedence (used for major releases).
     content = readFileSync(notesPath, 'utf8').trim();
   } else {
-    // Patch release: generate minimal content linking per-package changelogs.
-    const links = pkgs
-      .map(p => `- [\`@openplayerjs/${p}\`](packages/${p}/CHANGELOG.md)`)
-      .join('\n');
-    content = `See per-package changelogs for details:\n\n${links}`;
+    content = generateReleaseNotes(version, pkgs, prevTags);
   }
 
   const existing = existsSync(changelogPath)
@@ -201,6 +347,14 @@ function mergeReleaseNotesToChangelog(version, pkgs) {
   writeFileSync(changelogPath, `# Changelog\n\n${entry}${body}`, 'utf8');
 
   execSync('git add CHANGELOG.md', { cwd: ROOT });
+
+  // Remove RELEASE_NOTES.md after its content has been merged into CHANGELOG.md
+  // so it doesn't accidentally carry over into the next release's entry.
+  if (existsSync(notesPath)) {
+    rmSync(notesPath);
+    execSync('git rm RELEASE_NOTES.md', { cwd: ROOT });
+  }
+
   execSync(`git commit -m "docs(changelog): v${version}"`, { cwd: ROOT });
   console.log(`\n✔ CHANGELOG.md updated to v${version} and committed.`);
 }
@@ -235,6 +389,9 @@ function getPlannedCoreVersion() {
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
+// Verify existing tags are reachable from HEAD before touching anything.
+checkTagAncestry();
+
 const coreTag = getLastTag('core');
 const coreChanged = hasChangesSince('core', coreTag);
 
@@ -254,6 +411,11 @@ if (coreChanged) {
       const targetVersion = isFirstRelease ? readVersion(dep) : (planned ?? undefined);
       // Skip dependents already at or beyond the target version (avoids npm downgrade error).
       if (targetVersion && semverCompare(readVersion(dep), targetVersion) >= 0) {
+        const cur = readVersion(dep).split('.').map(Number);
+        const tgt = targetVersion.split('.').map(Number);
+        if (cur[0] === tgt[0] && cur[1] > tgt[1] + 1) {
+          console.warn(`  ⚠ WARNING: @openplayerjs/${dep} is ${readVersion(dep)}, which is ${cur[1] - tgt[1]} minor versions ahead of target ${targetVersion}. This indicates a past botched release — investigate.`);
+        }
         console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
         continue;
       }
@@ -263,6 +425,12 @@ if (coreChanged) {
     restoreDryRunSideEffects(['core', ...CORE_DEPENDENTS]);
     console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
   } else {
+    // Snapshot tags BEFORE releasing so generateReleaseNotes can compute the
+    // correct commit range (prevTag..HEAD) after release-it creates new tags.
+    const prevTags = Object.fromEntries(
+      ['core', ...CORE_DEPENDENTS].map(p => [p, getLastTag(p)]),
+    );
+
     // 1. Release core (it bumps its own package.json).
     releasePackage('core');
     // 2. Read the freshly-written version and lock all dependents to it.
@@ -273,20 +441,30 @@ if (coreChanged) {
       const targetVersion = isFirstRelease ? readVersion(dep) : newVersion;
       // Skip dependents already at or beyond the target version (avoids npm downgrade error).
       if (!isFirstRelease && semverCompare(readVersion(dep), targetVersion) >= 0) {
+        const cur = readVersion(dep).split('.').map(Number);
+        const tgt = targetVersion.split('.').map(Number);
+        if (cur[0] === tgt[0] && cur[1] > tgt[1] + 1) {
+          console.warn(`  ⚠ WARNING: @openplayerjs/${dep} is ${readVersion(dep)}, which is ${cur[1] - tgt[1]} minor versions ahead of target ${targetVersion}. This indicates a past botched release — investigate.`);
+        }
         console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
         continue;
       }
       releasePackage(dep, targetVersion);
     }
-    // 3. Update root CHANGELOG.md (from RELEASE_NOTES.md or auto-generated links).
-    mergeReleaseNotesToChangelog(newVersion, ['core', ...CORE_DEPENDENTS]);
+    // 3. Update root CHANGELOG.md (auto-generated or from RELEASE_NOTES.md).
+    mergeReleaseNotesToChangelog(newVersion, ['core', ...CORE_DEPENDENTS], prevTags);
   }
 } else {
   console.log('Core unchanged → releasing only packages with their own changes.\n');
 
+  // Snapshot tags BEFORE releasing for the same reason as in the core-changed path.
+  const prevTags = Object.fromEntries(
+    CORE_DEPENDENTS.map(p => [p, getLastTag(p)]),
+  );
+
   const released = [];
   for (const pkg of CORE_DEPENDENTS) {
-    const tag = getLastTag(pkg);
+    const tag = prevTags[pkg];
     if (hasChangesSince(pkg, tag)) {
       releasePackage(pkg);
       released.push(pkg);
@@ -300,7 +478,7 @@ if (coreChanged) {
   if (!isDryRun && released.length) {
     // For dependent-only releases, use the version of the first released package.
     const version = readVersion(released[0]);
-    mergeReleaseNotesToChangelog(version, released);
+    mergeReleaseNotesToChangelog(version, released, prevTags);
   }
 
   if (isDryRun && released.length) {

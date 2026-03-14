@@ -25,11 +25,6 @@
       "cache": false,
       "persistent": true,
       "outputs": []
-    },
-    "release": {
-      "dependsOn": ["^release"],
-      "cache": false,
-      "outputs": []
     }
   }
 }
