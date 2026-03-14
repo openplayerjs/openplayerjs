@@ -92,7 +92,7 @@
     "overrides": {
       "serialize-javascript": ">=7.0.3",
       "@tootallnate/once": ">=3.0.1",
-      "flatted": ">=3.4.0",
+      "flatted": ">=3.4.1",
       "undici": ">=6.24.0"
     },
     "peerDependencyRules": {
