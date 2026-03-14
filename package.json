@@ -91,7 +91,9 @@
   "pnpm": {
     "overrides": {
       "serialize-javascript": ">=7.0.3",
-      "@tootallnate/once": ">=3.0.1"
+      "@tootallnate/once": ">=3.0.1",
+      "flatted": ">=3.4.0",
+      "undici": ">=6.24.0"
     },
     "peerDependencyRules": {
       "allowedVersions": {
