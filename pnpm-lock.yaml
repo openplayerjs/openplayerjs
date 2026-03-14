@@ -76,10 +76,10 @@ importers:
         specifier: ^9.1.7
         version: 9.1.7
       jest:
-        specifier: ^29.7.0
+        specifier: 29.7.0
         version: 29.7.0(@types/node@24.11.0)
       jest-environment-jsdom:
-        specifier: ^29.7.0
+        specifier: 29.7.0
         version: 29.7.0
       lint-staged:
         specifier: ^16.3.2
@@ -109,7 +109,7 @@ importers:
         specifier: ^8.0.0
         version: 8.0.0(stylelint@17.4.0(typescript@5.9.3))
       ts-jest:
-        specifier: ^29.4.6
+        specifier: 29.4.6
         version: 29.4.6(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@30.3.0)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@30.3.0)(jest@29.7.0(@types/node@24.11.0))(typescript@5.9.3)
       tslib:
         specifier: ^2.8.1
