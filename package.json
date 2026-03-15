@@ -93,7 +93,7 @@
       "serialize-javascript": ">=7.0.4",
       "@tootallnate/once": ">=3.0.1",
       "flatted": ">=3.4.1",
-      "undici": ">=6.24.0"
+      "undici": ">=6.24.1"
     },
     "peerDependencyRules": {
       "allowedVersions": {
