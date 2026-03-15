@@ -8,7 +8,7 @@ overrides:
   serialize-javascript: '>=7.0.4'
   '@tootallnate/once': '>=3.0.1'
   flatted: '>=3.4.1'
-  undici: '>=6.24.1'
+  undici: '>=7.24.3'
 
 importers:
 
@@ -4706,8 +4706,8 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
-  undici@7.24.2:
-    resolution: {integrity: sha512-P9J1HWYV/ajFr8uCqk5QixwiRKmB1wOamgS0e+o2Z4A44Ej2+thFVRLG/eA7qprx88XXhnV5Bl8LHXTURpzB3Q==}
+  undici@7.24.3:
+    resolution: {integrity: sha512-eJdUmK/Wrx2d+mnWWmwwLRyA7OQCkLap60sk3dOK4ViZR7DKwwptwuIvFBg2HaiP9ESaEdhtpSymQPvytpmkCA==}
     engines: {node: '>=20.18.1'}
 
   unicorn-magic@0.4.0:
@@ -9431,7 +9431,7 @@ snapshots:
       proxy-agent: 6.5.0
       semver: 7.7.3
       tinyglobby: 0.2.15
-      undici: 7.24.2
+      undici: 7.24.3
       url-join: 5.0.0
       wildcard-match: 5.1.4
       yargs-parser: 21.1.1
@@ -10047,7 +10047,7 @@ snapshots:
 
   undici-types@7.16.0: {}
 
-  undici@7.24.2: {}
+  undici@7.24.3: {}
 
   unicorn-magic@0.4.0: {}
 
