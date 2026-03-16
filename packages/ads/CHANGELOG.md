@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [3.1.2](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/ads@3.1.1...@openplayerjs/ads@3.1.2) (2026-03-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/issues/486)) ([d9f8084](https://github.com/openplayerjs/openplayerjs/commit/d9f8084451265521fb53f0444ca5c88c6e1d2713))
+
 ## [3.1.1](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/ads@3.1.0...@openplayerjs/ads@3.1.1) (2026-03-13)
 
 
