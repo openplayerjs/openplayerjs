@@ -1,6 +1,6 @@
 {
   "name": "@openplayerjs/hls",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "HLS streaming engine for OpenPlayerJS, powered by hls.js",
   "author": {
     "name": "Rafael Miranda",

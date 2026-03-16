@@ -1,6 +1,8 @@
 # Changelog
 
 
+## [3.1.2](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/hls@3.1.1...@openplayerjs/hls@3.1.2) (2026-03-16)
+
 ## [3.1.1](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/hls@3.1.0...@openplayerjs/hls@3.1.1) (2026-03-13)
 
 
