@@ -90,9 +90,6 @@
   "packageManager": "pnpm@10.32.1",
   "pnpm": {
     "overrides": {
-      "serialize-javascript": ">=7.0.4",
-      "@tootallnate/once": ">=3.0.1",
-      "flatted": ">=3.4.1",
       "undici": ">=7.24.3"
     },
     "peerDependencyRules": {
