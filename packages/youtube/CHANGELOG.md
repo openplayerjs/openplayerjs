@@ -1,6 +1,8 @@
 # Changelog
 
 
+## [3.2.2](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/youtube@3.2.1...@openplayerjs/youtube@3.2.2) (2026-03-16)
+
 ## [3.2.1](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/youtube@3.2.0...@openplayerjs/youtube@3.2.1) (2026-03-13)
 
 
