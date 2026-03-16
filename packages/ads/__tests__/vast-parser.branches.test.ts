@@ -65,14 +65,17 @@ describe('getVastXmlText', () => {
     const badDoc = { toString: () => '[FakeXML]' } as unknown as XMLDocument;
     // Override serialize to throw
     const origSerializer = window.XMLSerializer;
-    const mockSerialize = jest.fn(() => { throw new Error('serialize error'); });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).XMLSerializer = function() { return { serializeToString: mockSerialize }; };
+    const mockSerialize = jest.fn(() => {
+      throw new Error('serialize error');
+    });
+
+    (window as any).XMLSerializer = function () {
+      return { serializeToString: mockSerialize };
+    };
 
     const text = await getVastXmlText({ kind: 'xml', value: badDoc });
     expect(typeof text).toBe('string');
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).XMLSerializer = origSerializer;
   });
 
@@ -182,9 +185,7 @@ describe('pickBestMediaFile', () => {
   });
 
   it('supports alternate field names (url, src, type, bitRate)', () => {
-    const files = [
-      { type: 'video/mp4', url: 'x.mp4', bitRate: 800 },
-    ];
+    const files = [{ type: 'video/mp4', url: 'x.mp4', bitRate: 800 }];
     const result = pickBestMediaFile(files, ['video/mp4']) as NormalizedMediaFile;
     expect(result.fileURL).toBe('x.mp4');
     expect(result.type).toBe('video/mp4');
@@ -244,18 +245,14 @@ describe('extractSimidUrl', () => {
 
   it('extracts from mediaFiles with apiFramework=SIMID', () => {
     const creative = {
-      mediaFiles: [
-        { apiFramework: 'SIMID', fileURL: 'https://example.com/simid.html', mimeType: 'text/html' },
-      ],
+      mediaFiles: [{ apiFramework: 'SIMID', fileURL: 'https://example.com/simid.html', mimeType: 'text/html' }],
     };
     expect(extractSimidUrl(creative)).toBe('https://example.com/simid.html');
   });
 
   it('extracts from interactiveCreativeFiles', () => {
     const creative = {
-      interactiveCreativeFiles: [
-        { apiFramework: 'SIMID', url: 'https://example.com/simid-interactive.html' },
-      ],
+      interactiveCreativeFiles: [{ apiFramework: 'SIMID', url: 'https://example.com/simid-interactive.html' }],
     };
     expect(extractSimidUrl(creative)).toBe('https://example.com/simid-interactive.html');
   });
@@ -389,10 +386,7 @@ describe('extractAdsFromParsed', () => {
 
   it('flattens adPods', () => {
     const parsed = {
-      adPods: [
-        { ads: [{ id: 'a' }, { id: 'b' }] },
-        { ads: [{ id: 'c' }] },
-      ],
+      adPods: [{ ads: [{ id: 'a' }, { id: 'b' }] }, { ads: [{ id: 'c' }] }],
     };
     const result = extractAdsFromParsed(parsed);
     expect(result).toHaveLength(3);
@@ -482,7 +476,6 @@ describe('collectPodAds', () => {
 
 describe('collectPodAdsFromXml', () => {
   it('returns empty array for null doc', () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(collectPodAdsFromXml(null as any, ['video/mp4'])).toEqual([]);
   });
 

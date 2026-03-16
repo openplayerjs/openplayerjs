@@ -1,9 +1,9 @@
 /** @jest-environment jsdom */
 
-import type { CaptionResource } from '../src/types';
 import { CaptionManager } from '../src/caption-manager';
+import type { CaptionResource } from '../src/types';
 
-function makeVideoWithTracks(tracks: Array<{ kind: string; language: string; label: string; mode: string }>) {
+function makeVideoWithTracks(tracks: { kind: string; language: string; label: string; mode: string }[]) {
   const video = document.createElement('video');
 
   // Build a fake TextTrackList
@@ -12,7 +12,10 @@ function makeVideoWithTracks(tracks: Array<{ kind: string; language: string; lab
     length: trackObjects.length,
     item: (i: number) => trackObjects[i] ?? null,
     // Allow indexing
-    ...trackObjects.reduce((acc: Record<number, (typeof trackObjects)[number]>, t, i) => { acc[i] = t; return acc; }, {}),
+    ...trackObjects.reduce((acc: Record<number, (typeof trackObjects)[number]>, t, i) => {
+      acc[i] = t;
+      return acc;
+    }, {}),
   };
 
   Object.defineProperty(video, 'textTracks', {
@@ -68,9 +71,7 @@ describe('CaptionManager', () => {
   describe('captureActiveCaptionTrack', () => {
     it('captures the showing track signature', () => {
       const cm = new CaptionManager();
-      const { video } = makeVideoWithTracks([
-        { kind: 'captions', language: 'en', label: 'English', mode: 'showing' },
-      ]);
+      const { video } = makeVideoWithTracks([{ kind: 'captions', language: 'en', label: 'English', mode: 'showing' }]);
       cm.captureActiveCaptionTrack(video);
       // Internal state captured — restore should work
       const videoForRestore = document.createElement('video');
@@ -119,9 +120,7 @@ describe('CaptionManager', () => {
 
     it('is a no-op when media is undefined', () => {
       const cm = new CaptionManager();
-      const { video } = makeVideoWithTracks([
-        { kind: 'captions', language: 'en', label: 'English', mode: 'showing' },
-      ]);
+      const { video } = makeVideoWithTracks([{ kind: 'captions', language: 'en', label: 'English', mode: 'showing' }]);
       cm.captureActiveCaptionTrack(video);
       // Should not throw
       cm.restoreActiveTextTrack(undefined);
@@ -207,9 +206,7 @@ describe('CaptionManager', () => {
       const cm = new CaptionManager();
       const creative = {
         Linear: {
-          closedCaptionFiles: [
-            { fileURL: 'a.vtt', language: 'de' },
-          ],
+          closedCaptionFiles: [{ fileURL: 'a.vtt', language: 'de' }],
         },
       };
       const result = cm.ensureRawCaptions(undefined, creative);
@@ -253,9 +250,7 @@ describe('CaptionManager', () => {
       const cm = new CaptionManager();
       const adVideo = document.createElement('video');
       const raw = {
-        closedCaptionFiles: [
-          { type: 'text/vtt', language: 'en', fileURL: 'en.vtt' },
-        ],
+        closedCaptionFiles: [{ type: 'text/vtt', language: 'en', fileURL: 'en.vtt' }],
       };
       const [track] = cm.attachAdCaptionTracks(adVideo, raw);
       expect(track.srclang).toBe('en');
@@ -277,9 +272,7 @@ describe('CaptionManager', () => {
       document.body.appendChild(adVideo);
 
       const raw = {
-        closedCaptionFiles: [
-          { type: 'text/vtt', language: 'en', fileURL: 'en.vtt' },
-        ],
+        closedCaptionFiles: [{ type: 'text/vtt', language: 'en', fileURL: 'en.vtt' }],
       };
       cm.attachAdCaptionTracks(adVideo, raw);
       expect(adVideo.querySelectorAll('track')).toHaveLength(1);
@@ -299,9 +292,7 @@ describe('CaptionManager', () => {
       document.body.appendChild(adVideo);
 
       const raw = {
-        closedCaptionFiles: [
-          { type: 'text/vtt', language: 'en', fileURL: 'en.vtt' },
-        ],
+        closedCaptionFiles: [{ type: 'text/vtt', language: 'en', fileURL: 'en.vtt' }],
       };
       cm.attachAdCaptionTracks(adVideo, raw);
       expect(adVideo.querySelectorAll('track')).toHaveLength(1);
@@ -314,7 +305,9 @@ describe('CaptionManager', () => {
       const cm = new CaptionManager();
       // Inject a fake track element whose remove() throws
       const fakeTrack = {
-        remove: () => { throw new Error('DOM error'); },
+        remove: () => {
+          throw new Error('DOM error');
+        },
       } as unknown as HTMLTrackElement;
 
       // Access private field via type cast to inject

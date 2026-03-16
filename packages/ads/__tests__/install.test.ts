@@ -14,17 +14,16 @@ describe('installAds', () => {
   });
 
   it('adds .ads getter and .playAds() to a constructor prototype', () => {
-    // eslint-disable-next-line @typescript-eslint/no-extraneous-class
     class MockPlayer {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      getPlugin(name: string): any { return name === 'ads' ? this.adsPlugin : undefined; }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      getPlugin(name: string): any {
+        return name === 'ads' ? this.adsPlugin : undefined;
+      }
+
       adsPlugin?: any;
     }
 
     installAds(MockPlayer);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(typeof (MockPlayer.prototype as any).playAds).toBe('function');
     const desc = Object.getOwnPropertyDescriptor(MockPlayer.prototype, 'ads');
     expect(desc).toBeDefined();
@@ -33,7 +32,7 @@ describe('installAds', () => {
 
   it('does not overwrite .ads if already defined', () => {
     class MockPlayer {
-      get ads() { return 'original'; }
+      readonly ads = 'original';
     }
 
     installAds(MockPlayer);
@@ -54,8 +53,9 @@ describe('installAds', () => {
 
   it('playAds() throws when ads plugin is not installed', () => {
     class MockPlayer {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      getPlugin(_name: string): any { return undefined; }
+      getPlugin(_name: string): any {
+        return undefined;
+      }
     }
     installAds(MockPlayer);
     const instance = new MockPlayer() as unknown as { playAds(s: string): void };
@@ -65,7 +65,9 @@ describe('installAds', () => {
   it('playAds() throws for empty input (with plugin present)', () => {
     const mockPlugin: Partial<AdsPlugin> = { playAds: jest.fn() };
     class MockPlayer {
-      getPlugin(_name: string) { return mockPlugin; }
+      getPlugin(_name: string) {
+        return mockPlugin;
+      }
     }
     installAds(MockPlayer);
     const instance = new MockPlayer() as unknown as { playAds(s: string): void };
@@ -79,7 +81,9 @@ describe('installAds', () => {
       playAds: jest.fn().mockResolvedValue(undefined),
     };
     class MockPlayer {
-      getPlugin(_name: string) { return mockPlugin; }
+      getPlugin(_name: string) {
+        return mockPlugin;
+      }
     }
     installAds(MockPlayer);
     const instance = new MockPlayer() as unknown as { playAds(s: string): void };
@@ -92,7 +96,9 @@ describe('installAds', () => {
       playAdsFromXml: jest.fn().mockResolvedValue(undefined),
     };
     class MockPlayer {
-      getPlugin(_name: string) { return mockPlugin; }
+      getPlugin(_name: string) {
+        return mockPlugin;
+      }
     }
     installAds(MockPlayer);
     const instance = new MockPlayer() as unknown as { playAds(s: string): void };
@@ -103,7 +109,9 @@ describe('installAds', () => {
   it('playAds() throws when plugin lacks playAdsFromXml and XML is passed', () => {
     const mockPlugin = { playAds: jest.fn() }; // no playAdsFromXml
     class MockPlayer {
-      getPlugin(_name: string) { return mockPlugin; }
+      getPlugin(_name: string) {
+        return mockPlugin;
+      }
     }
     installAds(MockPlayer);
     const instance = new MockPlayer() as unknown as { playAds(s: string): void };
