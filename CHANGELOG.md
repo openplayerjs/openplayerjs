@@ -1,5 +1,39 @@
 # Changelog
 
+## [3.2.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.0) (2026-03-16)
+
+_March 16, 2026_
+
+### `@openplayerjs/core@3.2.0`
+
+#### Features
+
+- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
+
+### `@openplayerjs/player@3.2.0`
+
+#### Features
+
+- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
+
+### `@openplayerjs/hls@3.2.0`
+
+#### Features
+
+- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
+
+### `@openplayerjs/ads@3.2.0`
+
+#### Features
+
+- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
+
+### `@openplayerjs/youtube@3.2.0`
+
+#### Features
+
+- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
+
 ## [3.2.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/youtube%403.2.2) (2026-03-16)
 
 _March 15, 2026_
