@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.2.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.2) (2026-03-16)
+
+_March 15, 2026_
+
+### `@openplayerjs/youtube@3.2.2`
+
+#### Chores
+
+- Fix document links (d89a0b9) @Rafael Miranda
+- Enhancements for release cycle (c5c0eff) @Rafael Miranda
+
 ## [3.1.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.1.2) (2026-03-16)
 
 _March 15, 2026_
