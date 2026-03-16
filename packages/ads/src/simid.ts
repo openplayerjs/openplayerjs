@@ -151,6 +151,7 @@ export class SimidSession {
    *                 (e.g. Google's compiled SIMID sample creative)
    */
   private outgoingFormat: 'plain' | 'json-string' = 'plain';
+  private _targetOrigin: string | null = null;
 
   constructor(
     private iframe: HTMLIFrameElement,
@@ -170,13 +171,31 @@ export class SimidSession {
   }
 
   /**
+   * Returns the target origin for postMessage calls to the creative iframe.
+   * Lazily derived from iframe.src so we don't need a constructor argument.
+   * Falls back to '*' only when the src is not an absolute URL (e.g. data: URIs
+   * used in tests), which is an acceptable edge case.
+   */
+  private getTargetOrigin(): string {
+    if (this._targetOrigin !== null) return this._targetOrigin;
+    try {
+      const origin = new URL(this.iframe.src, window.location.href).origin;
+      // data: and blob: URLs produce the string "null" as their origin — treat as wildcard.
+      this._targetOrigin = origin === 'null' ? '*' : origin;
+    } catch {
+      this._targetOrigin = '*';
+    }
+    return this._targetOrigin;
+  }
+
+  /**
    * Post a payload to the creative's iframe using the detected outgoing format.
-   * - 'plain': postMessage(payload, '*')
-   * - 'json-string': postMessage(JSON.stringify(payload), '*')
+   * - 'plain': postMessage(payload, origin)
+   * - 'json-string': postMessage(JSON.stringify(payload), origin)
    */
   private postMsg(payload: Record<string, unknown>): void {
     const data = this.outgoingFormat === 'json-string' ? JSON.stringify(payload) : payload;
-    this.iframe.contentWindow?.postMessage(data, '*');
+    this.iframe.contentWindow?.postMessage(data, this.getTargetOrigin());
   }
 
   /**
@@ -293,7 +312,7 @@ export class SimidSession {
       // Some third-party implementations send type="SIMID:Creative:resolve" / "SIMID:Creative:reject".
       // Both forms are handled here.
 
-      case 'resolve':           // IAB reference implementation pattern
+      case 'resolve': // IAB reference implementation pattern
       // falls through
       case SIMID_CREATIVE.RESOLVE: {
         // `resolves` (top-level) or args.messageId both point to our outgoing messageId.
@@ -306,7 +325,7 @@ export class SimidSession {
         break;
       }
 
-      case 'reject':            // IAB reference implementation pattern
+      case 'reject': // IAB reference implementation pattern
       // falls through
       case SIMID_CREATIVE.REJECT: {
         const rejectedId = data.rejects ?? (data.args?.messageId as number | undefined);
@@ -406,15 +425,17 @@ export class SimidSession {
       this.initPromise = this.send(SIMID_PLAYER.INIT, {
         creativeData: this.buildCreativeData(),
         environmentData: this.buildEnvironmentData(),
-      }).then(() => {
-        // Creative resolved SIMID:Player:init → send startCreative immediately.
-        // Creatives that never send SIMID:Creative:ready (e.g. Google's compiled sample)
-        // rely on this path to trigger the interactive content.
-        if (!this.started && !this.destroyed) {
-          this.started = true;
-          return this.send(SIMID_PLAYER.START_CREATIVE).catch(() => undefined);
-        }
-      }).catch(() => undefined);
+      })
+        .then(() => {
+          // Creative resolved SIMID:Player:init → send startCreative immediately.
+          // Creatives that never send SIMID:Creative:ready (e.g. Google's compiled sample)
+          // rely on this path to trigger the interactive content.
+          if (!this.started && !this.destroyed) {
+            this.started = true;
+            return this.send(SIMID_PLAYER.START_CREATIVE).catch(() => undefined);
+          }
+        })
+        .catch(() => undefined);
     }
   }
 
@@ -668,7 +689,9 @@ export class SimidSession {
             timestamp: Date.now(),
             args: this.getMediaState(),
           });
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       };
       v.addEventListener(domEvent, handler);
       this.mediaListeners.push({ event: domEvent, handler });
@@ -685,7 +708,9 @@ export class SimidSession {
           timestamp: Date.now(),
           args: {},
         });
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     };
     document.addEventListener('visibilitychange', this.visibilityHandler);
   }
