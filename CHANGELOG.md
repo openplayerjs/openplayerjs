@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.2) (2026-03-16)
+## [3.2.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/youtube%403.2.2) (2026-03-16)
 
 _March 15, 2026_
 
@@ -53,7 +53,7 @@ _March 15, 2026_
 - Fix document links (d89a0b9) @Rafael Miranda
 - Enhancements for release cycle (c5c0eff) @Rafael Miranda
 
-## [3.2.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.1) (2026-03-13)
+## [3.2.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/youtube%403.2.1) (2026-03-13)
 
 - Disabled `npm` publish per package to resolve peer-dependencies version
 - Modified orchestration script to populate root CHANGELOG

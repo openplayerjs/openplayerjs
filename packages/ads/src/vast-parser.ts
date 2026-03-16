@@ -1,4 +1,12 @@
-import type { AdVerification, NormalizedMediaFile, PodAd, VastInput, XmlNonLinearItem, CaptionResource, VastClosedCaption } from './types';
+import type {
+  AdVerification,
+  CaptionResource,
+  NormalizedMediaFile,
+  PodAd,
+  VastClosedCaption,
+  VastInput,
+  XmlNonLinearItem,
+} from './types';
 
 // ─── Utility ─────────────────────────────────────────────────────────────────
 
@@ -17,8 +25,11 @@ export function buildParsedForNonLinearFromXml(xmlText: string): XMLDocument {
 export async function getVastXmlText(input: VastInput): Promise<string> {
   if (input.kind === 'xml') {
     if (typeof input.value === 'string') return input.value;
-    try { return new XMLSerializer().serializeToString(input.value); }
-    catch { return String(input.value); }
+    try {
+      return new XMLSerializer().serializeToString(input.value);
+    } catch {
+      return String(input.value);
+    }
   }
   const res = await fetch(input.value);
   if (!res.ok) throw new Error(`VAST request failed: ${res.status}`);
@@ -141,9 +152,19 @@ export function extractSimidUrl(creative: any, rawDoc?: XMLDocument | null): str
   // Path 1: parsed library object
   // vast-client may expose InteractiveCreativeFile as interactiveCreativeFiles[] or inside mediaFiles[]
   const mediaFiles = [
-    ...(creative?.mediaFiles || creative?.MediaFiles || creative?.linear?.mediaFiles || creative?.linear?.MediaFiles || []),
-    ...(creative?.interactiveCreativeFiles || creative?.linear?.interactiveCreativeFiles || []),
+    ...(creative?.mediaFiles ||
+      creative?.MediaFiles ||
+      creative?.linear?.mediaFiles ||
+      creative?.linear?.MediaFiles ||
+      []),
+    ...(creative?.interactiveCreativeFiles ||
+      creative?.linear?.interactiveCreativeFiles ||
+      creative?.linear?.InteractiveCreativeFiles || [creative?.interactiveCreativeFile] || [
+        creative?.InteractiveCreativeFile,
+      ] ||
+      []),
   ];
+
   for (const mf of mediaFiles) {
     const framework = String(mf?.apiFramework || mf?.APIFramework || '').toLowerCase();
     if (framework === 'simid') {
@@ -186,7 +207,12 @@ export function extractAdVerifications(parsed: any, rawDoc?: XMLDocument | null)
     const verifications: any[] = ad?.adVerifications || ad?.AdVerifications || [];
     for (const v of verifications) {
       const vendor = String(v?.vendor || v?.Vendor || '');
-      const resources: any[] = v?.resource || v?.resources || v?.JavaScriptResource || v?.javaScriptResource || (v?.javascriptResource ? [v.javascriptResource] : []);
+      const resources: any[] =
+        v?.resource ||
+        v?.resources ||
+        v?.JavaScriptResource ||
+        v?.javaScriptResource ||
+        (v?.javascriptResource ? [v.javascriptResource] : []);
       const resArr = Array.isArray(resources) ? resources : [resources];
       for (const r of resArr) {
         const scriptUrl = String(r?.uri || r?.url || r?.browserOptional?.value || r?.value || r || '').trim();
@@ -202,8 +228,16 @@ export function extractAdVerifications(parsed: any, rawDoc?: XMLDocument | null)
   // Path 2: raw XML fallback
   if (rawDoc) {
     const byTag = (root: ParentNode, tag: string): Element[] => {
-      try { return Array.from((root as any).getElementsByTagNameNS('*', tag) as HTMLCollectionOf<Element>); } catch { /* ignore */ }
-      try { return Array.from((root as any).getElementsByTagName(tag) as HTMLCollectionOf<Element>); } catch { return []; }
+      try {
+        return Array.from((root as any).getElementsByTagNameNS('*', tag) as HTMLCollectionOf<Element>);
+      } catch {
+        /* ignore */
+      }
+      try {
+        return Array.from((root as any).getElementsByTagName(tag) as HTMLCollectionOf<Element>);
+      } catch {
+        return [];
+      }
     };
 
     const verEls = byTag(rawDoc, 'Verification');
@@ -349,7 +383,9 @@ export function collectPodAdsFromXml(doc: XMLDocument, preferredMediaTypes: stri
 
 // ─── Non-linear collection ────────────────────────────────────────────────────
 
-export function collectNonLinearCreatives(parsed: any): { ad: any; creative: any; nonLinear: any; sequence?: number }[] {
+export function collectNonLinearCreatives(
+  parsed: any
+): { ad: any; creative: any; nonLinear: any; sequence?: number }[] {
   const ads = extractAdsFromParsed(parsed);
   const out: { ad: any; creative: any; nonLinear: any; sequence?: number }[] = [];
 
@@ -398,9 +434,14 @@ export function collectNonLinearFromXml(doc: XMLDocument): XmlNonLinearItem[] {
         const arr = Array.from(els);
         if (arr.length) return arr;
       }
-    } catch { /* ignore */ }
-    try { return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>); }
-    catch { return []; }
+    } catch {
+      /* ignore */
+    }
+    try {
+      return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>);
+    } catch {
+      return [];
+    }
   };
 
   const firstChildText = (root: Element, localName: string): string => {
@@ -424,7 +465,9 @@ export function collectNonLinearFromXml(doc: XMLDocument): XmlNonLinearItem[] {
         clickThrough: click || undefined,
       });
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 
   const nlEls = byLocalName(doc, 'NonLinear');
   for (const nl of nlEls) {

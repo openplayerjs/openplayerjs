@@ -628,6 +628,19 @@ export class AdsPlugin implements PlayerPlugin {
         const simidUrl = extractSimidUrl(item.creative, rawDoc);
         if (simidUrl && this.adVideo) {
           const iframe = this.dom.mountSimidIframe(simidUrl);
+          const clickThruRaw =
+            item.creative?.videoClickThroughURLTemplate?.url ??
+            item.creative?.videoClickThroughURLTemplate ??
+            item.creative?.videoClicks?.clickThrough ??
+            '';
+          const simidCreativeInfo = {
+            adParameters: String(
+              item.creative?.linear?.adParameters?.value ??
+              item.creative?.adParameters?.value ??
+              ''
+            ),
+            clickThruUri: typeof clickThruRaw === 'string' ? clickThruRaw : String(clickThruRaw || ''),
+          };
           this.simidSession = new SimidSession(iframe, this.adVideo, {
             onSkip: () => this.requestSkip('api'),
             onStop: () => {
@@ -660,7 +673,15 @@ export class AdsPlugin implements PlayerPlugin {
               this.simidSession?.destroy();
               this.simidSession = undefined;
             },
-          });
+            onRequestChangeAdDuration: (durationChange, resolve, _reject) => {
+              // Accept the request; notify the creative of the new total duration.
+              resolve();
+              const v = this.adVideo;
+              if (v && Number.isFinite(v.duration)) {
+                this.simidSession?.adDurationChange(v.duration + durationChange);
+              }
+            },
+          }, simidCreativeInfo);
           this.sessionUnsubs.push(() => {
             this.simidSession?.destroy();
             this.simidSession = undefined;

@@ -9,19 +9,37 @@ export function setSafeHTMLFn(el: HTMLElement, html: string) {
   tpl.innerHTML = String(html || '');
 
   const blockedTags = new Set([
-    'SCRIPT', 'IFRAME', 'OBJECT', 'EMBED', 'LINK', 'STYLE', 'SVG', 'MATH',
-    'FORM', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'META', 'BASE',
+    'SCRIPT',
+    'IFRAME',
+    'OBJECT',
+    'EMBED',
+    'LINK',
+    'STYLE',
+    'SVG',
+    'MATH',
+    'FORM',
+    'INPUT',
+    'TEXTAREA',
+    'SELECT',
+    'OPTION',
+    'META',
+    'BASE',
   ]);
   const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
   const toRemove: Element[] = [];
 
   while (walker.nextNode()) {
     const node = walker.currentNode as Element;
-    if (blockedTags.has(node.tagName)) { toRemove.push(node); continue; }
+    if (blockedTags.has(node.tagName)) {
+      toRemove.push(node);
+      continue;
+    }
     Array.from(node.attributes).forEach((attr) => {
       const name = attr.name.toLowerCase();
       const value = (attr.value || '').trim();
-      if (name.startsWith('on')) { node.removeAttribute(attr.name); }
+      if (name.startsWith('on')) {
+        node.removeAttribute(attr.name);
+      }
       if (name === 'href' || name === 'src' || name === 'xlink:href') {
         const v = value.toLowerCase();
         const isJs = v.startsWith('javascript:');
@@ -58,7 +76,12 @@ export class AdDomManager {
     private overlay: HTMLDivElement,
     private cfg: Pick<
       AdsPluginConfig,
-      'nonLinearContainer' | 'nonLinearSelector' | 'companionContainer' | 'companionSelector' | 'mountEl' | 'mountSelector'
+      | 'nonLinearContainer'
+      | 'nonLinearSelector'
+      | 'companionContainer'
+      | 'companionSelector'
+      | 'mountEl'
+      | 'mountSelector'
     >,
     private getAdVideo: () => HTMLVideoElement | undefined,
     private getTracker: () => any,
@@ -131,19 +154,37 @@ export class AdDomManager {
     tpl.innerHTML = String(html || '');
 
     const blockedTags = new Set([
-      'SCRIPT', 'IFRAME', 'OBJECT', 'EMBED', 'LINK', 'STYLE', 'SVG', 'MATH',
-      'FORM', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION', 'META', 'BASE',
+      'SCRIPT',
+      'IFRAME',
+      'OBJECT',
+      'EMBED',
+      'LINK',
+      'STYLE',
+      'SVG',
+      'MATH',
+      'FORM',
+      'INPUT',
+      'TEXTAREA',
+      'SELECT',
+      'OPTION',
+      'META',
+      'BASE',
     ]);
     const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
     const toRemove: Element[] = [];
 
     while (walker.nextNode()) {
       const node = walker.currentNode as Element;
-      if (blockedTags.has(node.tagName)) { toRemove.push(node); continue; }
+      if (blockedTags.has(node.tagName)) {
+        toRemove.push(node);
+        continue;
+      }
       Array.from(node.attributes).forEach((attr) => {
         const name = attr.name.toLowerCase();
         const value = (attr.value || '').trim();
-        if (name.startsWith('on')) { node.removeAttribute(attr.name); }
+        if (name.startsWith('on')) {
+          node.removeAttribute(attr.name);
+        }
         if (name === 'href' || name === 'src' || name === 'xlink:href') {
           const v = value.toLowerCase();
           const isJs = v.startsWith('javascript:');
@@ -165,7 +206,9 @@ export class AdDomManager {
       const url = new URL(rawUrl, window.location.href);
       if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
       window.open(url.toString(), '_blank', 'noopener,noreferrer');
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   // ─── Skip UI ─────────────────────────────────────────────────────────────────
@@ -234,7 +277,13 @@ export class AdDomManager {
     this.sessionUnsubs.push(() => v.removeEventListener('loadedmetadata', update));
   }
 
-  requestSkip(reason: 'button' | 'close' | 'api', adVideo: HTMLVideoElement | undefined, currentBreakMeta: { kind: string; breakId: string } | undefined, emitSkip: (meta: any) => void, log: (...a: any[]) => void) {
+  requestSkip(
+    reason: 'button' | 'close' | 'api',
+    adVideo: HTMLVideoElement | undefined,
+    currentBreakMeta: { kind: string; breakId: string } | undefined,
+    emitSkip: (meta: any) => void,
+    log: (...a: any[]) => void
+  ) {
     if (this.skipOffsetRaw && this.skipAtSeconds != null && adVideo) {
       const cur = adVideo.currentTime || 0;
       if (cur + 0.01 < this.skipAtSeconds) {
@@ -243,7 +292,11 @@ export class AdDomManager {
       }
     }
 
-    try { this.getTracker()?.trackSkip?.(); } catch { /* ignore */ }
+    try {
+      this.getTracker()?.trackSkip?.();
+    } catch {
+      /* ignore */
+    }
 
     const brk = currentBreakMeta ? { kind: currentBreakMeta.kind, id: currentBreakMeta.breakId } : null;
     emitSkip({ break: brk, reason });
@@ -253,7 +306,9 @@ export class AdDomManager {
       try {
         if (Number.isFinite(v.duration) && v.duration > 0) v.currentTime = Math.max(0, v.duration - 0.001);
         v.dispatchEvent(new Event('ended'));
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
   }
 
@@ -314,20 +369,35 @@ export class AdDomManager {
     wrap.style.position = 'relative';
     wrap.style.cursor = click ? 'pointer' : 'default';
 
-    const staticRes = companion?.staticResource || companion?.StaticResource || companion?.staticResources?.[0] || companion?.StaticResources?.[0];
-    const iframeRes = companion?.iFrameResource || companion?.IFrameResource || companion?.iFrameResources?.[0] || companion?.IFrameResources?.[0];
-    const htmlRes = companion?.htmlResource || companion?.HTMLResource || companion?.htmlResources?.[0] || companion?.HTMLResources?.[0];
+    const staticRes =
+      companion?.staticResource ||
+      companion?.StaticResource ||
+      companion?.staticResources?.[0] ||
+      companion?.StaticResources?.[0];
+    const iframeRes =
+      companion?.iFrameResource ||
+      companion?.IFrameResource ||
+      companion?.iFrameResources?.[0] ||
+      companion?.IFrameResources?.[0];
+    const htmlRes =
+      companion?.htmlResource ||
+      companion?.HTMLResource ||
+      companion?.htmlResources?.[0] ||
+      companion?.HTMLResources?.[0];
 
     let node: HTMLElement | null = null;
     if (staticRes) {
       const img = document.createElement('img');
       img.src = String(staticRes?.url || staticRes?.uri || staticRes?.value || staticRes);
-      img.style.maxWidth = '100%'; img.style.height = 'auto';
+      img.style.maxWidth = '100%';
+      img.style.height = 'auto';
       node = img;
     } else if (iframeRes) {
       const ifr = document.createElement('iframe');
       ifr.src = String(iframeRes?.url || iframeRes?.uri || iframeRes?.value || iframeRes);
-      ifr.style.border = '0'; ifr.style.width = '100%'; ifr.style.height = '100%';
+      ifr.style.border = '0';
+      ifr.style.width = '100%';
+      ifr.style.height = '100%';
       node = ifr;
     } else if (htmlRes) {
       const div = document.createElement('div');
@@ -342,8 +412,14 @@ export class AdDomManager {
       const onClick = (e: PointerEvent) => {
         const url = typeof click === 'string' ? click : click.url;
         this.safeWindowOpen(url);
-        try { this.getTracker()?.trackClick?.(); this.getTracker()?.trackClickThrough?.(); } catch { /* ignore */ }
-        e.preventDefault(); e.stopPropagation();
+        try {
+          this.getTracker()?.trackClick?.();
+          this.getTracker()?.trackClickThrough?.();
+        } catch {
+          /* ignore */
+        }
+        e.preventDefault();
+        e.stopPropagation();
       };
       wrap.addEventListener('click', onClick);
       this.sessionUnsubs.push(() => wrap.removeEventListener('click', onClick));
@@ -354,7 +430,8 @@ export class AdDomManager {
   // ─── Non-linear ───────────────────────────────────────────────────────────────
 
   nonLinearSuggestedDurationSeconds(nl: any): number {
-    const raw = nl?.minSuggestedDuration ?? nl?.minSuggestedDurationSeconds ?? nl?.attributes?.minSuggestedDuration ?? undefined;
+    const raw =
+      nl?.minSuggestedDuration ?? nl?.minSuggestedDurationSeconds ?? nl?.attributes?.minSuggestedDuration ?? undefined;
     if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) return raw;
     if (typeof raw === 'string') {
       const m = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(raw.trim());
@@ -373,7 +450,9 @@ export class AdDomManager {
     const wrap = document.createElement('div');
     wrap.className = 'op-ads__nonlinear';
     wrap.style.position = 'absolute';
-    wrap.style.left = '12px'; wrap.style.right = '12px'; wrap.style.bottom = '12px';
+    wrap.style.left = '12px';
+    wrap.style.right = '12px';
+    wrap.style.bottom = '12px';
     wrap.style.zIndex = '2';
     wrap.style.display = 'flex';
     wrap.style.justifyContent = 'center';
@@ -408,12 +487,15 @@ export class AdDomManager {
     if (staticRes) {
       const img = document.createElement('img');
       img.src = String(staticRes?.url || staticRes?.uri || staticRes?.value || staticRes);
-      img.style.maxWidth = '100%'; img.style.height = 'auto';
+      img.style.maxWidth = '100%';
+      img.style.height = 'auto';
       node = img;
     } else if (iframeRes) {
       const ifr = document.createElement('iframe');
       ifr.src = String(iframeRes?.url || iframeRes?.uri || iframeRes?.value || iframeRes);
-      ifr.style.border = '0'; ifr.style.width = '100%'; ifr.style.height = '100%';
+      ifr.style.border = '0';
+      ifr.style.width = '100%';
+      ifr.style.height = '100%';
       node = ifr;
     } else if (htmlRes) {
       const div = document.createElement('div');
@@ -429,8 +511,14 @@ export class AdDomManager {
         if ((e.target as HTMLElement)?.tagName === 'BUTTON') return;
         const url = typeof click === 'string' ? click : click.url;
         this.safeWindowOpen(url);
-        try { this.getTracker()?.trackClick?.(); this.getTracker()?.trackClickThrough?.(); } catch { /* ignore */ }
-        e.preventDefault(); e.stopPropagation();
+        try {
+          this.getTracker()?.trackClick?.();
+          this.getTracker()?.trackClickThrough?.();
+        } catch {
+          /* ignore */
+        }
+        e.preventDefault();
+        e.stopPropagation();
       };
       container.addEventListener('click', onClick);
       this.sessionUnsubs.push(() => container.removeEventListener('click', onClick));
