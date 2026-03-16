@@ -4,7 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/@openplayerjs/player?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/player)
 [![npm downloads](https://img.shields.io/npm/dm/@openplayerjs/player?logo=npm&label=downloads)](https://www.npmjs.com/package/@openplayerjs/player)
-[![License](https://img.shields.io/npm/l/@openplayerjs/player)](../../LICENSE.md)
+[![License](https://img.shields.io/npm/l/@openplayerjs/player)](../../LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/@openplayerjs/player/badge)](https://www.jsdelivr.com/package/npm/@openplayerjs/player)
 

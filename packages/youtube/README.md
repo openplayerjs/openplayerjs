@@ -6,7 +6,7 @@ YouTube IFrame Player engine for [OpenPlayerJS](https://openplayerjs.com).
 
 [![npm](https://img.shields.io/npm/v/@openplayerjs/youtube?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/youtube)
 [![npm downloads](https://img.shields.io/npm/dm/@openplayerjs/youtube?logo=npm&label=downloads)](https://www.npmjs.com/package/@openplayerjs/youtube)
-[![License](https://img.shields.io/npm/l/@openplayerjs/youtube)](../../LICENSE.md)
+[![License](https://img.shields.io/npm/l/@openplayerjs/youtube)](../../LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![JSDelivr](https://data.jsdelivr.com/v1/package/npm/@openplayerjs/youtube/badge)](https://www.jsdelivr.com/package/npm/@openplayerjs/youtube)
 
