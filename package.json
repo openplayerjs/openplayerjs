@@ -45,20 +45,20 @@
     "release:pack": "pnpm -r --filter @openplayerjs/core --filter @openplayerjs/player --filter @openplayerjs/hls --filter @openplayerjs/ads --filter @openplayerjs/youtube pack --pack-destination ./packed"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.0.0",
-    "@commitlint/config-conventional": "^20.0.0",
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
     "@eslint/js": "^10.0.1",
     "@release-it-plugins/workspaces": "^5.0.3",
-    "@release-it/conventional-changelog": "^10.0.5",
-    "@rollup/plugin-commonjs": "^29.0.1",
+    "@release-it/conventional-changelog": "^10.0.6",
+    "@rollup/plugin-commonjs": "^29.0.2",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.3.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.11.0",
+    "@types/node": "^24.12.0",
     "@typescript-eslint/eslint-plugin": "^8.57.0",
     "@typescript-eslint/parser": "^8.57.0",
-    "cssnano": "^7.1.2",
+    "cssnano": "^7.1.3",
     "dotenv-cli": "^11.0.0",
     "eslint": "^10.0.3",
     "eslint-import-resolver-typescript": "^4.4.4",
@@ -68,7 +68,7 @@
     "husky": "^9.1.7",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
-    "lint-staged": "^16.3.2",
+    "lint-staged": "^16.4.0",
     "postcss": "^8.5.8",
     "postcss-cli": "^11.0.1",
     "postcss-preset-env": "^11.2.0",
@@ -76,24 +76,21 @@
     "release-it": "^19.2.4",
     "rollup": "^4.59.0",
     "stylelint": "^17.4.0",
-    "stylelint-order": "^8.0.0",
+    "stylelint-order": "^8.1.1",
     "ts-jest": "^29.4.6",
     "tslib": "^2.8.1",
-    "turbo": "^2.8.15",
+    "turbo": "^2.8.17",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.57.0"
   },
   "engines": {
     "pnpm": "10.32.1",
-    "node": ">=24.13.1"
+    "node": ">=24.14.0"
   },
   "packageManager": "pnpm@10.32.1",
   "pnpm": {
     "overrides": {
-      "serialize-javascript": ">=7.0.3",
-      "@tootallnate/once": ">=3.0.1",
-      "flatted": ">=3.4.0",
-      "undici": ">=6.24.0"
+      "undici": ">=7.24.3"
     },
     "peerDependencyRules": {
       "allowedVersions": {

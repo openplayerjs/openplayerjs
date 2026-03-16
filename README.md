@@ -4,7 +4,7 @@
 
 [![npm](https://img.shields.io/npm/v/@openplayerjs/player?color=blue&logo=npm&label=npm)](https://www.npmjs.com/package/@openplayerjs/player)
 [![jsDelivr hits](https://img.shields.io/jsdelivr/npm/hm/%40openplayerjs%2Fplayer?logo=jsdelivr&logoColor=white&label=CDN%20hits)](https://www.jsdelivr.com/package/npm/@openplayerjs/player)
-[![License](https://img.shields.io/npm/l/@openplayerjs/player)](LICENSE.md)
+[![License](https://img.shields.io/npm/l/@openplayerjs/player)](LICENSE)
 [![Build](https://github.com/openplayerjs/openplayerjs/actions/workflows/build.yml/badge.svg)](https://github.com/openplayerjs/openplayerjs/actions/workflows/build.yml)
 [![Lint](https://github.com/openplayerjs/openplayerjs/actions/workflows/linter.yml/badge.svg)](https://github.com/openplayerjs/openplayerjs/actions/workflows/linter.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
@@ -200,7 +200,7 @@ If you prefer loading scripts from a CDN without a build step:
 ## 📚 Legacy docs & changelog
 
 - Old changelog: **[CHANGELOG.old.md](./CHANGELOG.old.md)**
-- Legacy docs folder (v2 style): **[docs/](https://github.com/openplayerjs/openplayerjs/tree/v2.14.12/docs)**
+- Legacy docs folder (v2 style): **[docs](https://github.com/openplayerjs/openplayerjs/tree/v2.14.12/docs)**
 
 ---
 
@@ -220,4 +220,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) for details.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.

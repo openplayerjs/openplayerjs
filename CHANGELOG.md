@@ -1,5 +1,58 @@
 # Changelog
 
+## [3.2.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.2) (2026-03-16)
+
+_March 15, 2026_
+
+### `@openplayerjs/youtube@3.2.2`
+
+#### Chores
+
+- Fix document links (d89a0b9) @Rafael Miranda
+- Enhancements for release cycle (c5c0eff) @Rafael Miranda
+
+## [3.1.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.1.2) (2026-03-16)
+
+_March 15, 2026_
+
+### `@openplayerjs/core@3.1.2`
+
+#### Chores
+
+- Fix document links (d89a0b9) @Rafael Miranda
+
+### `@openplayerjs/player@3.1.2`
+
+#### Chores
+
+- Fix document links (d89a0b9) @Rafael Miranda
+- Enhancements for release cycle (c5c0eff) @Rafael Miranda
+
+### `@openplayerjs/hls@3.1.2`
+
+#### Chores
+
+- Fix document links (d89a0b9) @Rafael Miranda
+- Enhancements for release cycle (c5c0eff) @Rafael Miranda
+
+### `@openplayerjs/ads@3.1.2`
+
+#### Bug Fixes
+
+- **[deps]** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/pull/486)) @renovate[bot]
+
+#### Chores
+
+- Fix document links (d89a0b9) @Rafael Miranda
+- Enhancements for release cycle (c5c0eff) @Rafael Miranda
+
+### `@openplayerjs/youtube@3.1.2`
+
+#### Chores
+
+- Fix document links (d89a0b9) @Rafael Miranda
+- Enhancements for release cycle (c5c0eff) @Rafael Miranda
+
 ## [3.2.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.1) (2026-03-13)
 
 - Disabled `npm` publish per package to resolve peer-dependencies version
