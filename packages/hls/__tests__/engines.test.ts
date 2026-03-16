@@ -43,8 +43,12 @@ function makeCtx() {
     events,
     core,
     surface,
-    setSurface(s: any) { return s; },
-    resetSurface() { return surface; },
+    setSurface(s: any) {
+      return s;
+    },
+    resetSurface() {
+      return surface;
+    },
   };
 }
 

@@ -24,14 +24,16 @@ npm install @openplayer/ads @openplayer/core
 
 ## Features
 
-- VAST 2.0 / 3.0 / 4.x linear ads
-- VMAP ad break scheduling (pre-roll, mid-roll, post-roll)
+- **VAST 2.0 / 3.0 / 4.x** linear ads
+- **VMAP** ad break scheduling (pre-roll, mid-roll, post-roll)
 - Non-linear (overlay) ads
 - Companion ads
 - Skip countdown and customisable skip button
 - Click-through tracking
 - Waterfall and playlist ad source modes
 - Preload-aware VMAP fetching (respects `preload="none"`)
+- **SIMID 1.2** — Secure Interactive Media Interface Definition (interactive overlays)
+- **OMID** — Open Measurement Interface Definition (third-party viewability / verification)
 
 ---
 
@@ -195,6 +197,105 @@ core.on('ads:quartile', ({ quartile }) => {
 core.on('ads:error', ({ reason, error }) => {
   console.warn('Ad failed:', reason, error);
   // Content playback resumes automatically on error
+});
+```
+
+---
+
+## SIMID 1.2 — Interactive Ad Creatives
+
+[SIMID (Secure Interactive Media Interface Definition)](https://iabtechlab.com/standards/simid/) is an IAB standard that allows VAST ad creatives to render interactive overlays in an iframe alongside the video.
+
+### How it works
+
+When a VAST response includes an `<InteractiveCreativeFile apiFramework="SIMID">` element, the plugin automatically:
+
+1. Mounts the creative URL in a sandboxed `<iframe>` over the ad video.
+2. Runs the SIMID 1.2 handshake:
+   - Responds to the creative's `createSession` with a `resolve` + `SIMID:Player:init`.
+   - Replies to `SIMID:Creative:getMediaState` with the current media state.
+   - Sends `SIMID:Player:startCreative` when the creative signals it is ready.
+3. Keeps the creative in sync with ad playback (progress, pause, resume, volume, skip, stop).
+4. Handles creative-initiated actions: skip, stop, pause, play, click-through, fullscreen, tracking events.
+
+No extra configuration is needed — detection and lifecycle management happen automatically.
+
+### SIMID sandbox
+
+The iframe is sandboxed with `allow-scripts allow-same-origin allow-forms allow-popups`. The creative's origin is preserved via `referrerpolicy="no-referrer-when-downgrade"`. The iframe is sized to cover the player container.
+
+### Testing SIMID ads
+
+```ts
+new AdsPlugin({
+  sources: [
+    {
+      type: 'VAST',
+      // Google IMA SIMID test tag (replace correlator for each test):
+      src: `https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/simid&description_url=https%3A%2F%2Fdevelopers.google.com%2Finteractive-media-ads&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=${Date.now()}`,
+    },
+  ],
+});
+```
+
+---
+
+## OMID — Open Measurement
+
+[OMID (Open Measurement Interface Definition)](https://iabtechlab.com/standards/open-measurement-sdk/) enables third-party viewability and verification measurement inside a VAST ad break.
+
+### Requirements
+
+The OMID Session Client SDK (`omweb-v1.js`) must be loaded on the page before ads play:
+
+```html
+<!-- Load the IAB OMID Session Client SDK before the player -->
+<script src="https://iab-mm-omid.com/omweb-v1.js"></script>
+```
+
+The plugin detects `window.OmidSessionClient` at runtime. If the SDK is absent OMID silently no-ops — ad playback is never blocked.
+
+### How it works
+
+When the VAST response contains `<AdVerifications>` entries, the plugin:
+
+1. Injects each `<JavaScriptResource>` verification script as a `<script>` tag into the page.
+2. Instantiates an `OmidSession` with the ad video element and all verification resources.
+3. Fires the required OMID lifecycle events:
+   - `impression()` on ad impression
+   - `loaded()` with skip/autoplay/position metadata
+   - `start(duration, volume)` when the ad begins playing
+   - `firstQuartile()`, `midpoint()`, `thirdQuartile()`, `complete()` at the correct percentages
+   - `pause()` / `resume()` on pause/play
+   - `skipped()` when the ad is skipped
+   - `volumeChange(volume)` on volume changes
+   - `playerStateChange('fullscreen')` on fullscreen toggle
+4. Calls `destroy()` when the break ends.
+
+No extra configuration is needed — OMID runs automatically when the SDK and `<AdVerifications>` are both present.
+
+### Access mode
+
+By default, verification scripts run in `limited` access mode (no cross-origin DOM access). You can override this in the plugin config:
+
+```ts
+new AdsPlugin({
+  omid: { accessMode: 'domain' }, // 'limited' (default) | 'domain'
+  sources: [{ type: 'VAST', src: '...' }],
+});
+```
+
+### Testing OMID ads
+
+```ts
+new AdsPlugin({
+  sources: [
+    {
+      type: 'VAST',
+      // Google IMA OMID test tag (replace correlator for each test):
+      src: `https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/omid_ad_samples&env=vp&gdfp_req=1&output=vast&sz=640x480&description_url=http%3A%2F%2Ftest_site.com%2Fhomepage&vpmute=0&vpa=0&vad_format=linear&url=http%3A%2F%2Ftest_site.com&vpos=preroll&unviewed_position_start=1&correlator=${Date.now()}`,
+    },
+  ],
 });
 ```
 

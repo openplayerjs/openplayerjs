@@ -107,9 +107,7 @@ export class CaptionsControl extends BaseControl {
       const hasTracks = nativeTracks.length > 0 || providerTracks.length > 0;
       this.button.style.display = hasTracks ? '' : 'none';
 
-      const on = provider
-        ? provider.getActiveTrack() !== null
-        : getNativeShowingIndex(core.media) !== 'off';
+      const on = provider ? provider.getActiveTrack() !== null : getNativeShowingIndex(core.media) !== 'off';
 
       this.button.classList.toggle('op-controls__captions--on', on);
       this.button.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -189,7 +187,10 @@ export class CaptionsControl extends BaseControl {
                 id: 'off',
                 label: labels.off,
                 checked: showing === 'off',
-                onSelect: () => { setNativeAllHidden(adVideo); refresh(); },
+                onSelect: () => {
+                  setNativeAllHidden(adVideo);
+                  refresh();
+                },
               },
               ...adTracks.map((x) => ({
                 id: String(x.index),

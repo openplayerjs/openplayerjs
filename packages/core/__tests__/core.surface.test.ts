@@ -183,9 +183,20 @@ describe('bridgeSurfaceEvents', () => {
     const offs = bridgeSurfaceEvents(surface, bus);
 
     const events = [
-      'loadstart', 'loadedmetadata', 'durationchange', 'timeupdate',
-      'waiting', 'seeking', 'seeked', 'ended', 'error',
-      'play', 'playing', 'pause', 'volumechange', 'ratechange',
+      'loadstart',
+      'loadedmetadata',
+      'durationchange',
+      'timeupdate',
+      'waiting',
+      'seeking',
+      'seeked',
+      'ended',
+      'error',
+      'play',
+      'playing',
+      'pause',
+      'volumechange',
+      'ratechange',
     ];
     for (const evt of events) {
       media.dispatchEvent(new Event(evt));

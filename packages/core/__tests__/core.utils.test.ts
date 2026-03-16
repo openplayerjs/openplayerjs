@@ -36,8 +36,8 @@ describe('core/utils', () => {
     expect(predictMimeType(a, 'https://example.com/listen')).toBe('audio/mp3');
 
     // Remaining format branches
-    expect(predictMimeType(v, 'https://example.com/clip.ogg')).toBe('video/ogg');  // video path of ogg ternary
-    expect(predictMimeType(a, 'https://example.com/sound.ogg')).toBe('audio/ogg');  // audio path of ogg ternary
+    expect(predictMimeType(v, 'https://example.com/clip.ogg')).toBe('video/ogg'); // video path of ogg ternary
+    expect(predictMimeType(a, 'https://example.com/sound.ogg')).toBe('audio/ogg'); // audio path of ogg ternary
     expect(predictMimeType(v, 'https://example.com/clip.ogv')).toBe('video/ogg');
     expect(predictMimeType(a, 'https://example.com/sound.oga')).toBe('audio/ogg');
     expect(predictMimeType(v, 'https://example.com/clip.3gp')).toBe('audio/3gpp');

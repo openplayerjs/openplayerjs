@@ -101,9 +101,7 @@ describe('SettingsControl – open/close/toggle', () => {
     document.body.appendChild(el);
 
     // Menu is closed — Escape should be a no-op
-    expect(() =>
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
-    ).not.toThrow();
+    expect(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))).not.toThrow();
 
     control.destroy();
   });
@@ -215,7 +213,9 @@ describe('SettingsControl – submenu navigation', () => {
     expect(items.length).toBeGreaterThan(1);
 
     // Click "0.5x" item
-    const halfSpeed = Array.from(items).find((btn) => btn.textContent?.includes('0.5')) as HTMLButtonElement | undefined;
+    const halfSpeed = Array.from(items).find((btn) => btn.textContent?.includes('0.5')) as
+      | HTMLButtonElement
+      | undefined;
     if (halfSpeed) {
       halfSpeed.click();
       expect(player.playbackRate).toBeCloseTo(0.5);

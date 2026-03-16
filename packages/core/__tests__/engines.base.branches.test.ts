@@ -38,11 +38,7 @@ class TestEngine extends BaseMediaEngine {
     this.unbindCommands();
   }
 
-  exposeAddMediaListener(
-    media: HTMLMediaElement,
-    event: string,
-    handler: EventListenerOrEventListenerObject
-  ) {
+  exposeAddMediaListener(media: HTMLMediaElement, event: string, handler: EventListenerOrEventListenerObject) {
     this.addMediaListener(media, event, handler);
   }
 }
@@ -60,8 +56,12 @@ function ctx(media: HTMLMediaElement) {
       state: new StateManager('idle'),
     } as any,
     surface,
-    setSurface(s: any) { return s; },
-    resetSurface() { return surface; },
+    setSurface(s: any) {
+      return s;
+    },
+    resetSurface() {
+      return surface;
+    },
   } as unknown as MediaEngineContext;
 }
 

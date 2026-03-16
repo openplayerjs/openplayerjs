@@ -69,7 +69,9 @@ describe('DisposableStore', () => {
     const d = new DisposableStore();
     const calls: string[] = [];
 
-    d.add(() => { throw new Error('boom'); });
+    d.add(() => {
+      throw new Error('boom');
+    });
     d.add(() => calls.push('safe'));
 
     expect(() => d.dispose()).not.toThrow();

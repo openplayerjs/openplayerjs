@@ -48,10 +48,19 @@ export class PlayControl extends BaseControl {
       setA11yLabel(btn, isEnded && !playing ? restartLabel : playing ? pauseLabel : playLabel);
     };
 
-    this.onPlayer('play', () => { isEnded = false; setPlaying(true); });
-    this.onPlayer('playing', () => { isEnded = false; setPlaying(true); });
+    this.onPlayer('play', () => {
+      isEnded = false;
+      setPlaying(true);
+    });
+    this.onPlayer('playing', () => {
+      isEnded = false;
+      setPlaying(true);
+    });
     this.onPlayer('pause', () => setPlaying(false));
-    this.onPlayer('ended', () => { isEnded = true; setPlaying(false); });
+    this.onPlayer('ended', () => {
+      isEnded = true;
+      setPlaying(false);
+    });
 
     return btn;
   }

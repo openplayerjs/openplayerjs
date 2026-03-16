@@ -90,8 +90,12 @@ function makeCtx(opts: { autoplay?: boolean; preload?: '' | 'none' | 'metadata' 
     activeSource: { src: 'https://example.com/stream.m3u8', type: 'application/x-mpegURL' },
     core,
     surface,
-    setSurface(s: any) { return s; },
-    resetSurface() { return surface; },
+    setSurface(s: any) {
+      return s;
+    },
+    resetSurface() {
+      return surface;
+    },
   };
 }
 

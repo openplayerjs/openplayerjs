@@ -34,18 +34,42 @@ export abstract class BaseMediaEngine {
 
   protected bindMediaEvents(media: HTMLMediaElement, events: EventBus): void {
     const shim: MediaSurface = {
-      get currentTime() { return media.currentTime; },
-      set currentTime(v: number) { media.currentTime = v; },
-      get duration() { return media.duration; },
-      set duration(_v: number) { /* read-only */ },
-      get volume() { return media.volume; },
-      set volume(v: number) { media.volume = v; },
-      get muted() { return media.muted; },
-      set muted(v: boolean) { media.muted = v; },
-      get playbackRate() { return media.playbackRate; },
-      set playbackRate(v: number) { media.playbackRate = v; },
-      get paused() { return media.paused; },
-      get ended() { return media.ended; },
+      get currentTime() {
+        return media.currentTime;
+      },
+      set currentTime(v: number) {
+        media.currentTime = v;
+      },
+      get duration() {
+        return media.duration;
+      },
+      set duration(_v: number) {
+        /* read-only */
+      },
+      get volume() {
+        return media.volume;
+      },
+      set volume(v: number) {
+        media.volume = v;
+      },
+      get muted() {
+        return media.muted;
+      },
+      set muted(v: boolean) {
+        media.muted = v;
+      },
+      get playbackRate() {
+        return media.playbackRate;
+      },
+      set playbackRate(v: number) {
+        media.playbackRate = v;
+      },
+      get paused() {
+        return media.paused;
+      },
+      get ended() {
+        return media.ended;
+      },
       play: () => media.play(),
       pause: () => media.pause(),
       on: (event, handler) => {

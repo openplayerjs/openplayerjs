@@ -830,9 +830,7 @@ describe('YouTubeMediaEngine – attach caption subscribe poll', () => {
       getCurrentTime: jest.fn().mockReturnValue(0),
       getDuration: jest.fn().mockReturnValue(300),
       destroy: jest.fn(),
-      getOption: jest.fn().mockReturnValue([
-        { languageCode: 'en', displayName: 'English', vss_id: '.en' },
-      ]),
+      getOption: jest.fn().mockReturnValue([{ languageCode: 'en', displayName: 'English', vss_id: '.en' }]),
       setOption: jest.fn(),
     };
 

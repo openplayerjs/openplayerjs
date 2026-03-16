@@ -7,7 +7,6 @@ import {
 } from '@openplayerjs/core';
 import { YouTubeIframeAdapter } from './youtubeAdapter';
 
-
 export type YouTubeEngineConfig = {
   /**
    * When `true`, the YouTube IFrame player is served from
@@ -71,13 +70,19 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     const readCcPref = (): string | null | undefined => {
       try {
         const v = localStorage.getItem(CC_PREF_KEY);
-        if (v === null) return undefined;  // key absent = no preference
-        if (v === '') return null;          // '' = explicitly off
-        return v;                           // non-empty string = track id
-      } catch { return undefined; }
+        if (v === null) return undefined; // key absent = no preference
+        if (v === '') return null; // '' = explicitly off
+        return v; // non-empty string = track id
+      } catch {
+        return undefined;
+      }
     };
     const saveCcPref = (id: string | null): void => {
-      try { localStorage.setItem(CC_PREF_KEY, id ?? ''); } catch { /* ignore */ }
+      try {
+        localStorage.setItem(CC_PREF_KEY, id ?? '');
+      } catch {
+        /* ignore */
+      }
     };
 
     // Register the caption provider BEFORE mount() so it is available when
