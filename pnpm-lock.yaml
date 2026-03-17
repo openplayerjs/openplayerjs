@@ -126,8 +126,8 @@ importers:
   packages/ads:
     dependencies:
       '@dailymotion/vast-client':
-        specifier: ^6.4.2
-        version: 6.4.2
+        specifier: ^6.4.3
+        version: 6.4.3
       '@dailymotion/vmap':
         specifier: '>=3.3.3'
         version: 3.3.3
@@ -762,8 +762,8 @@ packages:
     peerDependencies:
       postcss: ^8.4
 
-  '@dailymotion/vast-client@6.4.2':
-    resolution: {integrity: sha512-oHGZr0c59zcxWYhLav2Z2VFeytoHSV8f5TTAVegxnMGu01xL7IUTJ2SLfrCZ/kCgBC1Yp/7DjKV4uhH/NGrEVQ==}
+  '@dailymotion/vast-client@6.4.3':
+    resolution: {integrity: sha512-WMMkc/4fIvWWrWHYw/OA5fr/Kbq9/iQCR32Eh9ypQYlI+UBbKAWurazuy0YsrzBCxp/1n6l4y2tFGHF4VaYwkw==}
     engines: {node: '>=12.22.1'}
 
   '@dailymotion/vmap@3.3.3':
@@ -5575,7 +5575,7 @@ snapshots:
     dependencies:
       postcss: 8.5.8
 
-  '@dailymotion/vast-client@6.4.2':
+  '@dailymotion/vast-client@6.4.3':
     dependencies:
       '@xmldom/xmldom': 0.8.11
 
