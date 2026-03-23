@@ -110,6 +110,19 @@ describe('ui/index - createUI', () => {
     player.destroy();
   });
 
+  test('createUI respects string width and height config values', () => {
+    const media = document.createElement('video');
+    document.body.appendChild(media);
+    const player = new Core(media, { width: '80%', height: '50%' } as PlayerUIConfig);
+
+    const ctx = createUI(player, media, []);
+    // Both width and height are strings → the `typeof === 'number' ? ... : value` else branch
+    expect(ctx.wrapper.getAttribute('style')).toContain('width: 80%');
+    expect(ctx.wrapper.getAttribute('style')).toContain('height: 50%');
+
+    player.destroy();
+  });
+
   test('video UI uses tap label when isMobile() is true', async () => {
     (isMobile as unknown as jest.Mock).mockReturnValue(true);
     const media = document.createElement('video');
