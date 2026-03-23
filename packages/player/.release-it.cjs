@@ -1,7 +1,7 @@
 module.exports = {
   git: {
     requireCleanWorkingDir: false,
-    addFiles: ['package.json', 'CHANGELOG.md'],
+    addFiles: ['package.json'],
     tagName: '@openplayerjs/player@${version}',
     commitMessage: 'chore(release): @openplayerjs/player@${version}',
   },

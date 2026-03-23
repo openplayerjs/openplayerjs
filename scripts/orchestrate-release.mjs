@@ -26,7 +26,51 @@ import { fileURLToPath } from 'url';
 
 // TYPE_SECTIONS and SECTION_ORDER are the single source of truth — shared with
 // split-changelog.mjs.  Do not duplicate them here.
-import { TYPE_SECTIONS, SECTION_ORDER } from './changelog-config.mjs';
+import { TYPE_SECTIONS, SECTION_ORDER, SCOPE_TO_PACKAGE } from './changelog-config.mjs';
+
+// ─── Commit body helpers ──────────────────────────────────────────────────────
+
+/**
+ * Extract meaningful bullet-point lines from a raw git commit body.
+ * Strips squash-commit headers ("* type: …"), co-author lines, separator
+ * lines, and changelog/deps sub-commit markers that add no value.
+ * Returns an indented markdown string, or '' when nothing is worth showing.
+ */
+function cleanBody(raw) {
+  if (!raw?.trim()) return '';
+  const lines = raw
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
+    .filter(l => !/^co-authored-by:/i.test(l))
+    .filter(l => !/^-{5,}$/.test(l))
+    // squash-commit subject lines inside the body ("* feat: …", "* fix(x): …")
+    .filter(l => !/^\* \w+(\([^)]+\))?(!)?:/.test(l))
+    // auto-generated sub-entries
+    .filter(l => !/^\* docs\(changelog\):/.test(l))
+    .filter(l => !/^\* chore\(deps\):/.test(l));
+
+  const bullets = lines.filter(l => l.startsWith('- ')).slice(0, 5);
+  return bullets.length ? bullets.map(l => `  ${l}`).join('\n') : '';
+}
+
+/**
+ * Parse the \x1e-delimited git log output produced by the format string
+ *   "%H\x1f%s\x1f%an\x1f%b\x1e"
+ * and return an array of { hash, subject, author, body } objects.
+ */
+function parseLog(raw) {
+  if (!raw?.trim()) return [];
+  return raw
+    .split('\x1e')
+    .map(r => r.trim())
+    .filter(Boolean)
+    .map(r => {
+      const [hash, subject, author, ...bodyParts] = r.split('\x1f');
+      return { hash: hash?.trim(), subject: subject?.trim(), author: author?.trim(), body: bodyParts.join('\x1f').trim() };
+    })
+    .filter(c => c.hash && c.subject);
+}
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -89,7 +133,7 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
     let rawLog = '';
     try {
       rawLog = execSync(
-        `git log "${range}" --pretty=format:"%H\x1f%s\x1f%an" -- packages/${pkg}/`,
+        `git log "${range}" --pretty=format:"%H\x1f%s\x1f%an\x1f%b\x1e" -- packages/${pkg}/`,
         { encoding: 'utf8', cwd: ROOT, stdio: ['pipe', 'pipe', 'pipe'] },
       ).trim();
     } catch { /* package has no history yet */ }
@@ -98,11 +142,7 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
 
     const bySection = {};
 
-    for (const line of (rawLog ?? '').split('\n')) {
-      if (!line.trim()) continue;
-      const [hash, subject, author] = line.split('\x1f');
-      if (!subject) continue;
-
+    for (const { hash, subject, author, body } of parseLog(rawLog)) {
       coveredHashes.add(hash);
 
       // Skip merge commits and release-it's own release commits.
@@ -112,6 +152,13 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
       if (!ccMatch) continue;
 
       const [, type, scope, breaking, rawDesc] = ccMatch;
+
+      // If the commit has a scope that maps to a specific package, only show it
+      // in that package's section — skip it for all others.  Cross-cutting
+      // commits (no scope, or a scope not in SCOPE_TO_PACKAGE) appear in every
+      // package whose directory the commit touched.
+      if (scope && SCOPE_TO_PACKAGE[scope] && SCOPE_TO_PACKAGE[scope].dir !== `packages/${pkg}`) continue;
+
       const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
       if (!sectionName) continue;
 
@@ -126,7 +173,11 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
       const ref = pr
         ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
         : `(${hash.slice(0, 7)})`;
-      bySection[sectionName].push(`- ${scopePrefix}${desc} ${ref} @${author}`);
+      const bodyLines = cleanBody(body);
+      const entry = bodyLines
+        ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
+        : `- ${scopePrefix}${desc} ${ref} @${author}`;
+      bySection[sectionName].push(entry);
     }
 
     // Lockstep dependents with no commits of their own get a version-bump entry.
@@ -158,17 +209,13 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
   let rootLog = '';
   try {
     rootLog = execSync(
-      `git log "${generalRange}" --pretty=format:"%H\x1f%s\x1f%an" -- . ":(exclude)packages/"`,
+      `git log "${generalRange}" --pretty=format:"%H\x1f%s\x1f%an\x1f%b\x1e" -- . ":(exclude)packages/"`,
       { encoding: 'utf8', cwd: ROOT, stdio: ['pipe', 'pipe', 'pipe'] },
     ).trim();
   } catch { /* no root-level history */ }
 
   const rootBySection = {};
-  for (const line of (rootLog ?? '').split('\n')) {
-    if (!line.trim()) continue;
-    const [hash, subject, author] = line.split('\x1f');
-    if (!subject) continue;
-
+  for (const { hash, subject, author, body } of parseLog(rootLog)) {
     // Skip hashes already shown in a package section, merge commits,
     // auto-generated release/changelog commits.
     if (coveredHashes.has(hash)) continue;
@@ -195,7 +242,11 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
     const ref = pr
       ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
       : `(${hash.slice(0, 7)})`;
-    rootBySection[sectionName].push(`- ${scopePrefix}${desc} ${ref} @${author}`);
+    const bodyLines = cleanBody(body);
+    const entry = bodyLines
+      ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
+      : `- ${scopePrefix}${desc} ${ref} @${author}`;
+    rootBySection[sectionName].push(entry);
   }
 
   if (Object.keys(rootBySection).length > 0) {
