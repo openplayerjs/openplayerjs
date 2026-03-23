@@ -159,6 +159,7 @@ export function createUI(
   const controlsRoot = document.createElement('div');
   controlsRoot.className = 'op-controls';
   controlsRoot.setAttribute('aria-hidden', 'false');
+  controlsRoot.inert = false;
   if (isMediaAudio) {
     const grid = createControlGrid(controlsRoot);
 
@@ -236,6 +237,7 @@ export function createUI(
     mediaContainer.classList.remove('op-media--controls-hidden');
     if (hideTimer) window.clearTimeout(hideTimer);
     controlsRoot.setAttribute('aria-hidden', 'false');
+    controlsRoot.inert = false;
     core.events.emit('ui:controls:show');
   };
 
@@ -251,6 +253,7 @@ export function createUI(
     wrapper.classList.add('op-controls--hidden');
     mediaContainer.classList.add('op-media--controls-hidden');
     controlsRoot.setAttribute('aria-hidden', 'true');
+    controlsRoot.inert = true;
     core.events.emit('ui:controls:hide');
   };
 

@@ -24,11 +24,15 @@ export const defaultUIConfiguration: Required<Pick<PlayerUIConfig, 'step' | 'all
 
 export const defaultLabels = Object.freeze({
   auto: 'Auto',
+  back: 'Back',
   captions: 'CC/Subtitles',
+  captionsOff: 'Captions off',
+  captionsOn: 'Captions on',
   click: 'Click to unmute',
   container: 'Media player',
+  enterFullscreen: 'Enter Fullscreen',
+  exitFullscreen: 'Exit Fullscreen',
   fullscreen: 'Fullscreen',
-  levels: 'Quality Levels',
   live: 'Live',
   loading: 'Loading...',
   media: 'Media',

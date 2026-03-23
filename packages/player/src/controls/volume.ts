@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS, isMobile } from '@openplayerjs/core';
-import { setA11yLabel } from '../a11y';
+import { createAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { getActiveMedia } from '../playback';
@@ -12,11 +12,23 @@ export class VolumeControl extends BaseControl {
   protected build(): HTMLElement {
     const core = this.core;
     const labels = resolveUIConfig(core).labels;
+    const labelsMap = labels as Record<string, string>;
     const muteLabel = labels.mute;
     const unmuteLabel = labels.unmute;
     const volumeLabel = labels.volume;
     const volumeControlLabel = labels.volumeControl;
     const volumeSliderLabel = labels.volumeSlider;
+
+    const { announce, destroy } = createAnnouncer(this.resolvePlayerRoot());
+    this.dispose.add(destroy);
+    const fmt = (key: string, value?: string) => {
+      const t = labelsMap[key] ?? key;
+      return value != null ? t.replace('%s', value) : t;
+    };
+    let volTimer: ReturnType<typeof setTimeout> | null = null;
+    this.dispose.add(() => {
+      if (volTimer) clearTimeout(volTimer);
+    });
 
     const wrapper = document.createElement('div');
     wrapper.className = 'op-controls__volume';
@@ -194,6 +206,13 @@ export class VolumeControl extends BaseControl {
           // ignore
         }
       }
+
+      if (volTimer) clearTimeout(volTimer);
+      volTimer = setTimeout(() => {
+        const pct = Math.round(core.muted ? 0 : core.volume * 100);
+        announce(fmt('volumePercent', String(pct)));
+        volTimer = null;
+      }, 400);
     });
 
     const container = document.createElement('div');

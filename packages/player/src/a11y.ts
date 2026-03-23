@@ -1,5 +1,7 @@
 let srId = 0;
 
+export type Announcer = (message: string) => void;
+
 export type LabelTarget = HTMLElement;
 
 type SetLabelOptions = {
@@ -64,4 +66,40 @@ export function setA11yLabel(el: LabelTarget, labelText: string, opts?: SetLabel
   }
 
   ensureLabelledBy(el, labelText, opts);
+}
+
+export function createAnnouncer(wrapper: HTMLElement): { announce: Announcer; destroy: () => void } {
+  const regions: HTMLDivElement[] = [];
+  let turn = 0;
+
+  for (let i = 0; i < 2; i++) {
+    const el = document.createElement('div');
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.setAttribute('aria-atomic', 'true');
+    el.className = 'op-player__sr-only op-player__announcer';
+    el.setAttribute('aria-hidden', 'true');
+    wrapper.appendChild(el);
+    regions.push(el);
+  }
+
+  const announce: Announcer = (message: string) => {
+    // Rotate between the two regions — forces a DOM mutation even for the
+    // same string, which re-triggers announcement in most screen readers.
+    const current = regions[turn % 2];
+    const other = regions[(turn + 1) % 2];
+    turn++;
+
+    other.textContent = '';
+    other.setAttribute('aria-hidden', 'true');
+
+    current.setAttribute('aria-hidden', 'false');
+    current.textContent = message;
+  };
+
+  const destroy = () => {
+    regions.forEach((r) => r.remove());
+  };
+
+  return { announce, destroy };
 }

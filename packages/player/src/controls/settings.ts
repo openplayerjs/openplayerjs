@@ -207,10 +207,11 @@ export class SettingsControl extends BaseControl {
     const header = document.createElement('div');
     header.className = 'op-menu__header';
 
+    const { labels } = resolveUIConfig(this.core);
     const back = document.createElement('button');
     back.type = 'button';
     back.className = 'op-submenu__back';
-    setA11yLabel(back, 'Back');
+    setA11yLabel(back, labels.back);
     this.listen(
       back,
       'click',

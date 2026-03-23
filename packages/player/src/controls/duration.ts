@@ -13,6 +13,7 @@ export class DurationControl extends BaseControl {
     const el = document.createElement('time');
     el.className = 'op-controls__duration';
     el.setAttribute('aria-hidden', 'false');
+    el.setAttribute('aria-live', 'off');
     el.setAttribute('datetime', 'PT0M0S');
 
     const update = () => {
