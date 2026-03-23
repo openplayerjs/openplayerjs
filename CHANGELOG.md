@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.2.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.0) (2026-03-22)
+
+_March 21, 2026_
+
+### `@openplayerjs/ads@3.2.0`
+
+#### Bug Fixes
+
+- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
+
 ## [3.3.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.3.0) (2026-03-16)
 
 _March 16, 2026_

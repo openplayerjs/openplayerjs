@@ -24,6 +24,10 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
+// TYPE_SECTIONS and SECTION_ORDER are the single source of truth — shared with
+// split-changelog.mjs.  Do not duplicate them here.
+import { TYPE_SECTIONS, SECTION_ORDER } from './changelog-config.mjs';
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 // ─── CLI args ────────────────────────────────────────────────────────────────
@@ -45,37 +49,6 @@ const CORE_DEPENDENTS = ['player', 'hls', 'ads', 'youtube'];
 
 // ─── Changelog generation ────────────────────────────────────────────────────
 
-/** Maps conventional-commit types to human-readable section headers. */
-const TYPE_SECTIONS = {
-  feat:     'Features',
-  fix:      'Bug Fixes',
-  perf:     'Performance Improvements',
-  revert:   'Reverts',
-  refactor: 'Refactoring',
-  docs:     'Documentation',
-  build:    'Build System',
-  chore:    'Chores',
-  test:     'Tests',
-  style:    'Styles',
-  ci:       'CI',
-};
-
-/** Display order for sections (most visible first). */
-const SECTION_ORDER = [
-  'Breaking Changes',
-  'Features',
-  'Bug Fixes',
-  'Performance Improvements',
-  'Refactoring',
-  'Documentation',
-  'Build System',
-  'Chores',
-  'Tests',
-  'Styles',
-  'CI',
-  'Reverts',
-];
-
 /**
  * Generate release notes from git commits, grouped per package and
  * per section type (Features, Bug Fixes, …).
@@ -84,9 +57,28 @@ const SECTION_ORDER = [
  * @param {string[]}          pkgs      - Packages included in this release
  * @param {Record<string,string|null>} prevTags - Last tag for each pkg BEFORE this release
  */
-function generateReleaseNotes(version, pkgs, prevTags) {
+/**
+ * @param {string}                     version      - Version being released (e.g. "3.1.0")
+ * @param {string[]}                   pkgs         - Packages included in this release
+ * @param {Record<string,string|null>} prevTags     - Last tag for each pkg BEFORE this release
+ * @param {Set<string>}                [lockedToCore] - Dependents bumped in lockstep with core
+ */
+function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set()) {
   const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   const packageSections = [];
+
+  // Track every hash seen in a package-scoped log so the General section can
+  // deduplicate commits that touch both a package directory and root files.
+  const coveredHashes = new Set();
+
+  // Use the earliest prevTag as the range anchor for the General section —
+  // root commits (workflows, scripts, linter config…) are not scoped to a
+  // single package, so we cast the widest net that makes sense.
+  const earliestTag = Object.values(prevTags)
+    .filter(Boolean)
+    .sort()               // lexicographic sort works for semver tags
+    .at(0) ?? null;
+  const generalRange = earliestTag ? `${earliestTag}..HEAD` : 'HEAD';
 
   for (const pkg of pkgs) {
     const prevTag = prevTags[pkg];
@@ -102,14 +94,16 @@ function generateReleaseNotes(version, pkgs, prevTags) {
       ).trim();
     } catch { /* package has no history yet */ }
 
-    if (!rawLog) continue;
+    if (!rawLog && !lockedToCore.has(pkg)) continue;
 
     const bySection = {};
 
-    for (const line of rawLog.split('\n')) {
+    for (const line of (rawLog ?? '').split('\n')) {
       if (!line.trim()) continue;
       const [hash, subject, author] = line.split('\x1f');
       if (!subject) continue;
+
+      coveredHashes.add(hash);
 
       // Skip merge commits and release-it's own release commits.
       if (/^Merge /.test(subject) || /^chore\(release\):/.test(subject)) continue;
@@ -135,6 +129,13 @@ function generateReleaseNotes(version, pkgs, prevTags) {
       bySection[sectionName].push(`- ${scopePrefix}${desc} ${ref} @${author}`);
     }
 
+    // Lockstep dependents with no commits of their own get a version-bump entry.
+    if (Object.keys(bySection).length === 0 && lockedToCore.has(pkg)) {
+      bySection['Version Bump'] = [
+        `- Version bump to stay in sync with \`@openplayerjs/core@${version}\``,
+      ];
+    }
+
     if (Object.keys(bySection).length === 0) continue;
 
     let section = `### \`@openplayerjs/${pkg}@${version}\`\n`;
@@ -143,6 +144,65 @@ function generateReleaseNotes(version, pkgs, prevTags) {
       if (items?.length) {
         section += `\n#### ${sectionName}\n\n${items.join('\n')}\n`;
       }
+    }
+    // Version Bump is not in SECTION_ORDER (it only appears for lockstep deps).
+    if (bySection['Version Bump']) {
+      section += `\n#### Version Bump\n\n${bySection['Version Bump'].join('\n')}\n`;
+    }
+    packageSections.push(section);
+  }
+
+  // ── General section: root-level commits (workflows, scripts, tooling…) ─────
+  // Commits that touched files outside packages/ and were not already captured
+  // by a package-scoped log above.
+  let rootLog = '';
+  try {
+    rootLog = execSync(
+      `git log "${generalRange}" --pretty=format:"%H\x1f%s\x1f%an" -- . ":(exclude)packages/"`,
+      { encoding: 'utf8', cwd: ROOT, stdio: ['pipe', 'pipe', 'pipe'] },
+    ).trim();
+  } catch { /* no root-level history */ }
+
+  const rootBySection = {};
+  for (const line of (rootLog ?? '').split('\n')) {
+    if (!line.trim()) continue;
+    const [hash, subject, author] = line.split('\x1f');
+    if (!subject) continue;
+
+    // Skip hashes already shown in a package section, merge commits,
+    // auto-generated release/changelog commits.
+    if (coveredHashes.has(hash)) continue;
+    if (
+      /^Merge /.test(subject) ||
+      /^chore\(release\):/.test(subject) ||
+      /^docs\(changelog\):/.test(subject)
+    ) continue;
+
+    const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
+    if (!ccMatch) continue;
+
+    const [, type, scope, breaking, rawDesc] = ccMatch;
+    const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
+    if (!sectionName) continue;
+
+    const prMatch = rawDesc.match(/\(#(\d+)\)/) || subject.match(/\(#(\d+)\)/);
+    const pr = prMatch?.[1];
+    const desc = rawDesc.replace(/\s*\(#\d+\)\s*$/, '').trim();
+
+    if (!rootBySection[sectionName]) rootBySection[sectionName] = [];
+
+    const scopePrefix = scope ? `**[${scope}]** ` : '';
+    const ref = pr
+      ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
+      : `(${hash.slice(0, 7)})`;
+    rootBySection[sectionName].push(`- ${scopePrefix}${desc} ${ref} @${author}`);
+  }
+
+  if (Object.keys(rootBySection).length > 0) {
+    let section = `### General\n`;
+    for (const sectionName of SECTION_ORDER) {
+      const items = rootBySection[sectionName];
+      if (items?.length) section += `\n#### ${sectionName}\n\n${items.join('\n')}\n`;
     }
     packageSections.push(section);
   }
@@ -181,7 +241,6 @@ function readVersion(pkg) {
 
 function getLastTag(pkg) {
   try {
-    // --tags includes lightweight tags (bootstrap tags are lightweight by default).
     return execSync(`git describe --tags --match "@openplayerjs/${pkg}@*" --abbrev=0`, {
       encoding: 'utf8',
       cwd: ROOT,
@@ -224,7 +283,7 @@ function checkTagAncestry() {
 }
 
 function hasChangesSince(pkg, ref) {
-  if (!ref) return true; // no baseline tag → treat as changed
+  if (!ref) return true;
   try {
     const out = execSync(`git diff --name-only "${ref}" -- packages/${pkg}/`, {
       encoding: 'utf8',
@@ -243,9 +302,6 @@ function hasChangesSince(pkg, ref) {
 function releasePackage(pkg, forcedVersion) {
   const pkgDir = join(ROOT, 'packages', pkg);
 
-  // Invoke release-it directly via `pnpm exec` to avoid pnpm's `--` forwarding
-  // bug: `pnpm run release -- --dry-run` embeds an extra `--` into the script
-  // string, causing yargs to treat `--dry-run` as a positional version arg.
   const releaseArgs = [
     'exec', 'dotenv', '-e', '../../.env', '-o', '--',
     'release-it', '--config', '.release-it.cjs', '--ci',
@@ -265,7 +321,6 @@ function releasePackage(pkg, forcedVersion) {
       console.error(`\n✖ Release failed for ${label}`);
       process.exit(result.status ?? 1);
     }
-    // In dry-run, a non-zero exit (e.g. "nothing to release") is not fatal.
   }
 }
 
@@ -274,13 +329,8 @@ function releasePackage(pkg, forcedVersion) {
  * release-it dry-run still executes `npm version` (bumps the version field in
  * package.json) and writes the per-package CHANGELOG. We revert only those
  * side-effects so that other uncommitted changes are not lost.
- *
- * For package.json we restore only the "version" field in-place using node, so
- * we don't wipe any uncommitted changes to other fields.
  */
 function restoreDryRunSideEffects(pkgs) {
-  // Restore each package.json's version to what it was before the dry-run by
-  // reading the committed version from git and writing only that field back.
   for (const pkg of pkgs) {
     try {
       const pkgJsonPath = join(ROOT, 'packages', pkg, 'package.json');
@@ -294,9 +344,8 @@ function restoreDryRunSideEffects(pkgs) {
         current.version = committedVersion;
         writeFileSync(pkgJsonPath, JSON.stringify(current, null, 2) + '\n', 'utf8');
       }
-    } catch { /* package may not be tracked yet (first release) */ }
+    } catch { /* package may not be tracked yet */ }
 
-    // Restore per-package CHANGELOG.md written by release-it dry-run.
     try {
       execSync(`git restore --source=HEAD -- packages/${pkg}/CHANGELOG.md`, {
         cwd: ROOT,
@@ -304,43 +353,49 @@ function restoreDryRunSideEffects(pkgs) {
       });
     } catch { /* file may not exist in HEAD yet */ }
   }
-  // NOTE: root CHANGELOG.md is not written by release-it (infile points to
-  // per-package paths), so it does not need to be restored here.
 }
 
 /**
  * After a real release, prepend a versioned entry to the root CHANGELOG.md
  * and commit it.
  *
- * Content priority:
- *   1. RELEASE_NOTES.md at the repo root (used for major releases with
- *      hand-crafted highlights — deleted after merging so it can't carry over).
- *   2. Auto-generated MUI-style notes from git commits grouped per package and
- *      section type (Features, Bug Fixes, …).
+ * This function now runs BEFORE any per-package release-it invocations so that
+ * a failed publish never leaves the repo in a state where the version was tagged
+ * but the root CHANGELOG was not updated.
  *
- * @param {string}                     version   - Version just released (e.g. "3.1.1")
- * @param {string[]}                   pkgs      - Packages included in this release
- * @param {Record<string,string|null>} prevTags  - Per-package tag snapshot taken BEFORE releasing
+ * Content priority:
+ *   1. RELEASE_NOTES.md at the repo root (hand-crafted highlights for major
+ *      releases — deleted after merging so it can't carry over).
+ *   2. Auto-generated notes from git commits grouped per package and section.
+ *
+ * @param {string}                     version       - Version being released (e.g. "3.1.1")
+ * @param {string[]}                   pkgs          - Packages included in this release
+ * @param {Record<string,string|null>} prevTags      - Per-package tag snapshot taken BEFORE releasing
+ * @param {Set<string>}                [lockedToCore] - Dependents bumped in lockstep with core
  */
-function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}) {
+function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}, lockedToCore = new Set()) {
   const notesPath = join(ROOT, 'RELEASE_NOTES.md');
   const changelogPath = join(ROOT, 'CHANGELOG.md');
   const date = new Date().toISOString().slice(0, 10);
-  const tagUrl = `https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%40${version}`;
+
+  // FIX: use the leading package's own scoped tag so independent (non-core)
+  // releases (e.g. a youtube patch without any core change) produce a tag URL
+  // that actually exists, not a @openplayerjs/core URL for a version that was
+  // never cut.
+  const leadPkg = pkgs.includes('core') ? 'core' : pkgs[0];
+  const tagUrl = `https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/${leadPkg}%40${version}`;
 
   let content;
   if (existsSync(notesPath)) {
-    // Hand-crafted notes take precedence (used for major releases).
     content = readFileSync(notesPath, 'utf8').trim();
   } else {
-    content = generateReleaseNotes(version, pkgs, prevTags);
+    content = generateReleaseNotes(version, pkgs, prevTags, lockedToCore);
   }
 
   const existing = existsSync(changelogPath)
     ? readFileSync(changelogPath, 'utf8')
     : '# Changelog\n';
 
-  // Strip the leading "# Changelog" header so we can prepend cleanly.
   const body = existing.replace(/^#\s+Changelog\s*\n+/, '').trimStart();
   const entry = `## [${version}](${tagUrl}) (${date})\n\n${content}\n\n`;
 
@@ -348,8 +403,6 @@ function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}) {
 
   execSync('git add CHANGELOG.md', { cwd: ROOT });
 
-  // Remove RELEASE_NOTES.md after its content has been merged into CHANGELOG.md
-  // so it doesn't accidentally carry over into the next release's entry.
   if (existsSync(notesPath)) {
     rmSync(notesPath);
     execSync('git rm RELEASE_NOTES.md', { cwd: ROOT });
@@ -375,21 +428,17 @@ function getPlannedCoreVersion() {
       encoding: 'utf8',
       cwd: pkgDir,
     });
-    // Matches "3.0.2...3.1.0)" in the "Let's release" line
     const match = out.match(/\.\.\.([\d]+\.[\d]+\.[\d]+)\)/);
     return match?.[1] ?? null;
   } catch {
     return null;
   } finally {
-    // release-it dry-run still executes `npm version` (writes package.json) and writes
-    // CHANGELOG. Restore both so the subsequent interactive dry-run starts clean.
     restoreDryRunSideEffects(['core']);
   }
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
-// Verify existing tags are reachable from HEAD before touching anything.
 checkTagAncestry();
 
 const coreTag = getLastTag('core');
@@ -399,65 +448,53 @@ if (coreChanged) {
   console.log('Core has changes → releasing core, then all dependents at the same version.\n');
 
   if (isDryRun) {
-    // Determine the planned next core version from a silent dry-run, so we can
-    // show each dependent dry-run with the same explicit version.
     const planned = getPlannedCoreVersion();
-    console.log(
-      `Planned version: ${readVersion('core')} → ${planned ?? '(auto-detect)'}`,
-    );
+    console.log(`Planned version: ${readVersion('core')} → ${planned ?? '(auto-detect)'}`);
     releasePackage('core');
     for (const dep of CORE_DEPENDENTS) {
       const isFirstRelease = getLastTag(dep) === null;
       const targetVersion = isFirstRelease ? readVersion(dep) : (planned ?? undefined);
-      // Skip dependents already at or beyond the target version (avoids npm downgrade error).
       if (targetVersion && semverCompare(readVersion(dep), targetVersion) >= 0) {
-        const cur = readVersion(dep).split('.').map(Number);
-        const tgt = targetVersion.split('.').map(Number);
-        if (cur[0] === tgt[0] && cur[1] > tgt[1] + 1) {
-          console.warn(`  ⚠ WARNING: @openplayerjs/${dep} is ${readVersion(dep)}, which is ${cur[1] - tgt[1]} minor versions ahead of target ${targetVersion}. This indicates a past botched release — investigate.`);
-        }
         console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
         continue;
       }
       releasePackage(dep, targetVersion);
     }
-    // Restore all package.json files and CHANGELOGs modified by release-it dry-runs.
     restoreDryRunSideEffects(['core', ...CORE_DEPENDENTS]);
     console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
   } else {
-    // Snapshot tags BEFORE releasing so generateReleaseNotes can compute the
-    // correct commit range (prevTag..HEAD) after release-it creates new tags.
     const prevTags = Object.fromEntries(
       ['core', ...CORE_DEPENDENTS].map(p => [p, getLastTag(p)]),
     );
 
-    // 1. Release core (it bumps its own package.json).
+    // ── CHANGELOG FIRST ──────────────────────────────────────────────────
+    // Write the root CHANGELOG before any per-package release so a failed
+    // publish never leaves the version tagged but the CHANGELOG absent.
+    const plannedVersion = getPlannedCoreVersion() ?? readVersion('core');
+    mergeReleaseNotesToChangelog(plannedVersion, ['core', ...CORE_DEPENDENTS], prevTags, new Set(CORE_DEPENDENTS));
+
+    // ── Per-package releases ─────────────────────────────────────────────
     releasePackage('core');
-    // 2. Read the freshly-written version and lock all dependents to it.
     const newVersion = readVersion('core');
     console.log(`\nCore released at ${newVersion} → releasing dependents at same version.\n`);
     for (const dep of CORE_DEPENDENTS) {
       const isFirstRelease = getLastTag(dep) === null;
       const targetVersion = isFirstRelease ? readVersion(dep) : newVersion;
-      // Skip dependents already at or beyond the target version (avoids npm downgrade error).
       if (!isFirstRelease && semverCompare(readVersion(dep), targetVersion) >= 0) {
         const cur = readVersion(dep).split('.').map(Number);
         const tgt = targetVersion.split('.').map(Number);
         if (cur[0] === tgt[0] && cur[1] > tgt[1] + 1) {
-          console.warn(`  ⚠ WARNING: @openplayerjs/${dep} is ${readVersion(dep)}, which is ${cur[1] - tgt[1]} minor versions ahead of target ${targetVersion}. This indicates a past botched release — investigate.`);
+          console.warn(`  ⚠ WARNING: @openplayerjs/${dep} is ${readVersion(dep)}, which is ${cur[1] - tgt[1]} minor versions ahead of target ${targetVersion}. Investigate.`);
         }
         console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
         continue;
       }
       releasePackage(dep, targetVersion);
     }
-    // 3. Update root CHANGELOG.md (auto-generated or from RELEASE_NOTES.md).
-    mergeReleaseNotesToChangelog(newVersion, ['core', ...CORE_DEPENDENTS], prevTags);
   }
 } else {
   console.log('Core unchanged → releasing only packages with their own changes.\n');
 
-  // Snapshot tags BEFORE releasing for the same reason as in the core-changed path.
   const prevTags = Object.fromEntries(
     CORE_DEPENDENTS.map(p => [p, getLastTag(p)]),
   );
@@ -466,23 +503,30 @@ if (coreChanged) {
   for (const pkg of CORE_DEPENDENTS) {
     const tag = prevTags[pkg];
     if (hasChangesSince(pkg, tag)) {
-      releasePackage(pkg);
       released.push(pkg);
     } else {
-      console.log(
-        `▸ @openplayerjs/${pkg}: no changes since ${tag ?? 'start'} — skipping`,
-      );
+      console.log(`▸ @openplayerjs/${pkg}: no changes since ${tag ?? 'start'} — skipping`);
     }
   }
 
   if (!isDryRun && released.length) {
-    // For dependent-only releases, use the version of the first released package.
+    // ── CHANGELOG FIRST ──────────────────────────────────────────────────
     const version = readVersion(released[0]);
     mergeReleaseNotesToChangelog(version, released, prevTags);
+
+    // ── Per-package releases ─────────────────────────────────────────────
+    for (const pkg of released) {
+      releasePackage(pkg);
+    }
   }
 
-  if (isDryRun && released.length) {
-    restoreDryRunSideEffects(released);
-    console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
+  if (isDryRun) {
+    for (const pkg of released) {
+      releasePackage(pkg);
+    }
+    if (released.length) {
+      restoreDryRunSideEffects(released);
+      console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
+    }
   }
 }

@@ -150,6 +150,194 @@ describe('FullscreenControl branch coverage', () => {
     c.destroy?.();
   });
 
+  test('requestFullscreen: uses mozRequestFullScreen when requestFullscreen absent', async () => {
+    const p = makeCore();
+    const c = createFullscreenControl();
+    const btn = c.create(p) as HTMLButtonElement;
+    document.body.appendChild(btn);
+
+    // Ensure no standard requestFullscreen on body/container
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      get() {
+        return null;
+      },
+    });
+
+    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    // Remove standard requestFullscreen (if any) and add moz prefix
+    Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
+    const mozFn = jest.fn(async () => {});
+    (container as any).mozRequestFullScreen = mozFn;
+
+    btn.click();
+    expect(mozFn).toHaveBeenCalled();
+  });
+
+  test('requestFullscreen: uses webkitRequestFullScreen when moz also absent', async () => {
+    const p = makeCore();
+    const c = createFullscreenControl();
+    const btn = c.create(p) as HTMLButtonElement;
+    document.body.appendChild(btn);
+
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      get() {
+        return null;
+      },
+    });
+
+    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
+    (container as any).mozRequestFullScreen = undefined;
+    const webkitFn = jest.fn(async () => {});
+    (container as any).webkitRequestFullScreen = webkitFn;
+
+    btn.click();
+    expect(webkitFn).toHaveBeenCalled();
+  });
+
+  test('requestFullscreen: uses msRequestFullscreen when webkit also absent', async () => {
+    const p = makeCore();
+    const c = createFullscreenControl();
+    const btn = c.create(p) as HTMLButtonElement;
+    document.body.appendChild(btn);
+
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      get() {
+        return null;
+      },
+    });
+
+    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
+    (container as any).mozRequestFullScreen = undefined;
+    (container as any).webkitRequestFullScreen = undefined;
+    const msFn = jest.fn(async () => {});
+    (container as any).msRequestFullscreen = msFn;
+
+    btn.click();
+    expect(msFn).toHaveBeenCalled();
+  });
+
+  test('requestFullscreen: uses webkitEnterFullscreen as last resort', async () => {
+    const p = makeCore();
+    const c = createFullscreenControl();
+    const btn = c.create(p) as HTMLButtonElement;
+    document.body.appendChild(btn);
+
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      get() {
+        return null;
+      },
+    });
+
+    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
+    (container as any).mozRequestFullScreen = undefined;
+    (container as any).webkitRequestFullScreen = undefined;
+    (container as any).msRequestFullscreen = undefined;
+    const webkitEnterFn = jest.fn();
+    (container as any).webkitEnterFullscreen = webkitEnterFn;
+
+    btn.click();
+    expect(webkitEnterFn).toHaveBeenCalled();
+  });
+
+  test('exitFullscreen: uses mozCancelFullScreen when exitFullscreen absent', () => {
+    const p = makeCore();
+    const c = createFullscreenControl();
+    const btn = c.create(p) as HTMLButtonElement;
+    document.body.appendChild(btn);
+
+    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    let fsEl: Element | null = container;
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      get() {
+        return fsEl;
+      },
+    });
+    // Remove standard exitFullscreen from document
+    const origExit = (document as any).exitFullscreen;
+    Object.defineProperty(document, 'exitFullscreen', { value: undefined, configurable: true });
+
+    const mozCancel = jest.fn(() => {
+      fsEl = null;
+    });
+    (document as any).mozCancelFullScreen = mozCancel;
+
+    btn.click(); // getFullscreenElement() is truthy → calls exitFullscreen()
+    expect(mozCancel).toHaveBeenCalled();
+
+    // Restore
+    Object.defineProperty(document, 'exitFullscreen', { value: origExit, configurable: true });
+    delete (document as any).mozCancelFullScreen;
+  });
+
+  test('exitFullscreen: uses msExitFullscreen when webkit also absent', () => {
+    const p = makeCore();
+    const c = createFullscreenControl();
+    const btn = c.create(p) as HTMLButtonElement;
+    document.body.appendChild(btn);
+
+    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    let fsEl: Element | null = container;
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      get() {
+        return fsEl;
+      },
+    });
+    const origExit = (document as any).exitFullscreen;
+    Object.defineProperty(document, 'exitFullscreen', { value: undefined, configurable: true });
+    (document as any).mozCancelFullScreen = undefined;
+    (document as any).webkitCancelFullScreen = undefined;
+
+    const msExit = jest.fn(() => {
+      fsEl = null;
+    });
+    (document as any).msExitFullscreen = msExit;
+
+    btn.click();
+    expect(msExit).toHaveBeenCalled();
+
+    Object.defineProperty(document, 'exitFullscreen', { value: origExit, configurable: true });
+    delete (document as any).msExitFullscreen;
+  });
+
+  test('exitFullscreen: uses webkitCancelFullScreen when moz absent', () => {
+    const p = makeCore();
+    const c = createFullscreenControl();
+    const btn = c.create(p) as HTMLButtonElement;
+    document.body.appendChild(btn);
+
+    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    let fsEl: Element | null = container;
+    Object.defineProperty(document, 'fullscreenElement', {
+      configurable: true,
+      get() {
+        return fsEl;
+      },
+    });
+    const origExit = (document as any).exitFullscreen;
+    Object.defineProperty(document, 'exitFullscreen', { value: undefined, configurable: true });
+    (document as any).mozCancelFullScreen = undefined;
+
+    const webkitCancel = jest.fn(() => {
+      fsEl = null;
+    });
+    (document as any).webkitCancelFullScreen = webkitCancel;
+
+    btn.click();
+    expect(webkitCancel).toHaveBeenCalled();
+
+    Object.defineProperty(document, 'exitFullscreen', { value: origExit, configurable: true });
+    delete (document as any).webkitCancelFullScreen;
+  });
+
   test('onOverlayChanged dispatches fullscreenchange when fullscreen element exists', () => {
     const p = makeCore();
     const c = createFullscreenControl();

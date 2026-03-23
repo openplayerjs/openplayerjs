@@ -40,9 +40,6 @@ module.exports = {
           { type: 'ci',       section: 'CI' },
         ],
       },
-
-      infile: 'CHANGELOG.md',
-      header: '# Changelog\n',
       gitRawCommitsOpts: { path: '.' },
     },
   },

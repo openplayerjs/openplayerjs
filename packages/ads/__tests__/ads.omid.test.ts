@@ -58,9 +58,7 @@ function makeOmidSdk(overrides: Record<string, any> = {}) {
 }
 
 describe('OmidSession', () => {
-  const verifications = [
-    { vendor: 'test.com-omid', scriptUrl: 'https://test.com/omid.js', params: 'ctx=1' },
-  ];
+  const verifications = [{ vendor: 'test.com-omid', scriptUrl: 'https://test.com/omid.js', params: 'ctx=1' }];
 
   afterEach(() => {
     delete (window as any).OmidSessionClient;
@@ -328,13 +326,72 @@ describe('OmidSession', () => {
 
   it('is a graceful no-op when SDK constructor throws', () => {
     const { sdk } = makeOmidSdk({
-      AdSession: jest.fn().mockImplementation(() => { throw new Error('SDK init failed'); }),
+      AdSession: jest.fn().mockImplementation(() => {
+        throw new Error('SDK init failed');
+      }),
     });
     (window as any).OmidSessionClient = sdk;
 
     let session: OmidSession | undefined;
-    expect(() => { session = new OmidSession(makeVideo(), verifications); }).not.toThrow();
+    expect(() => {
+      session = new OmidSession(makeVideo(), verifications);
+    }).not.toThrow();
     expect(() => session!.start(30, 1)).not.toThrow();
     expect(() => session!.destroy()).not.toThrow();
+  });
+
+  // ─── bufferStart / bufferFinish ───────────────────────────────────────────────
+
+  it('bufferStart() delegates to videoEvents', () => {
+    const { sdk, videoEvents } = makeOmidSdk();
+    (window as any).OmidSessionClient = sdk;
+    const session = new OmidSession(makeVideo(), verifications);
+    session.bufferStart();
+    expect(videoEvents.bufferStart).toHaveBeenCalledTimes(1);
+  });
+
+  it('bufferFinish() delegates to videoEvents', () => {
+    const { sdk, videoEvents } = makeOmidSdk();
+    (window as any).OmidSessionClient = sdk;
+    const session = new OmidSession(makeVideo(), verifications);
+    session.bufferFinish();
+    expect(videoEvents.bufferFinish).toHaveBeenCalledTimes(1);
+  });
+
+  it('bufferStart() is a no-op when SDK absent', () => {
+    delete (window as any).OmidSessionClient;
+    const session = new OmidSession(makeVideo(), verifications);
+    expect(() => session.bufferStart()).not.toThrow();
+  });
+
+  it('bufferFinish() is a no-op when SDK absent', () => {
+    delete (window as any).OmidSessionClient;
+    const session = new OmidSession(makeVideo(), verifications);
+    expect(() => session.bufferFinish()).not.toThrow();
+  });
+
+  // ─── impression() adSession.start() fallback ─────────────────────────────────
+
+  it('impression() falls back to adSession.start() when triggerSessionStart is not a function', () => {
+    const startFn = jest.fn();
+    const { sdk, adEvents } = makeOmidSdk({
+      AdSession: jest.fn().mockImplementation(() => ({
+        start: startFn,
+        finish: jest.fn(),
+        error: jest.fn(),
+        // triggerSessionStart intentionally absent (not a function)
+      })),
+    });
+    (window as any).OmidSessionClient = sdk;
+
+    const session = new OmidSession(makeVideo(), verifications);
+    // Clear calls made during constructor (adSession.start is called once on init)
+    startFn.mockClear();
+
+    session.impression();
+
+    // impression() called start() via fallback (no triggerSessionStart)
+    expect(startFn).toHaveBeenCalledTimes(1);
+    expect(adEvents.impressionOccurred).toHaveBeenCalledTimes(1);
   });
 });

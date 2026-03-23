@@ -66,6 +66,37 @@ describe('CaptionManager', () => {
       expect(result).toHaveLength(2);
       expect(result.every((t) => t.kind === 'captions' || t.kind === 'subtitles')).toBe(true);
     });
+
+    it('falls back to list.item(i) when indexed access returns undefined', () => {
+      const cm = new CaptionManager();
+      const track = { kind: 'captions', language: 'en', label: 'English', mode: 'disabled' };
+      // textTracks where numeric index property is absent but item() works
+      const textTracks = {
+        length: 1,
+        item: (i: number) => (i === 0 ? track : null),
+        // No numeric key [0] — so list[0] is undefined
+      };
+      const video = document.createElement('video');
+      Object.defineProperty(video, 'textTracks', { value: textTracks, configurable: true });
+      const result = cm.listCaptionTracks(video);
+      expect(result).toHaveLength(1);
+      expect(result[0].kind).toBe('captions');
+    });
+
+    it('skips null entries returned by list.item()', () => {
+      const cm = new CaptionManager();
+      const goodTrack = { kind: 'captions', language: 'en', label: 'English', mode: 'disabled' };
+      const textTracks = {
+        length: 2,
+        // index 0 returns null; index 1 returns the real track
+        item: (i: number) => (i === 0 ? null : goodTrack),
+      };
+      const video = document.createElement('video');
+      Object.defineProperty(video, 'textTracks', { value: textTracks, configurable: true });
+      const result = cm.listCaptionTracks(video);
+      expect(result).toHaveLength(1);
+      expect(result[0].kind).toBe('captions');
+    });
   });
 
   describe('captureActiveCaptionTrack', () => {
@@ -160,6 +191,26 @@ describe('CaptionManager', () => {
       // No match → all disabled (fr was showing → now disabled)
       expect(fr.mode).toBe('disabled');
     });
+
+    it('returns early when media has no caption/subtitle tracks (line 42)', () => {
+      const cm = new CaptionManager();
+      // Capture a sig first
+      const { video: captureVideo } = makeVideoWithTracks([
+        { kind: 'captions', language: 'en', label: 'English', mode: 'showing' },
+      ]);
+      cm.captureActiveCaptionTrack(captureVideo);
+
+      // Restore target has only non-caption kinds
+      const chTrack = { kind: 'chapters', language: '', label: '', mode: 'disabled' as TextTrackMode };
+      const restoreVideo = document.createElement('video');
+      Object.defineProperty(restoreVideo, 'textTracks', {
+        value: { length: 1, item: () => chTrack, 0: chTrack },
+      });
+
+      // Should not throw, and the chapter track should be untouched
+      cm.restoreActiveTextTrack(restoreVideo as HTMLMediaElement);
+      expect(chTrack.mode).toBe('disabled');
+    });
   });
 
   describe('ensureRawCaptions', () => {
@@ -218,6 +269,39 @@ describe('CaptionManager', () => {
       expect(cm.ensureRawCaptions(undefined, {})).toEqual([]);
     });
 
+    it('uses f.url as fallback src when fileURL is absent', () => {
+      const cm = new CaptionManager();
+      const creative = {
+        linear: {
+          closedCaptionFiles: [{ url: 'fallback.vtt', language: 'en', fileLanguage: 'en', fileType: 'text/vtt' }],
+        },
+      };
+      const result = cm.ensureRawCaptions(undefined, creative);
+      expect(result[0].src).toBe('fallback.vtt');
+    });
+
+    it('uses fileLanguage as srclang when language is absent', () => {
+      const cm = new CaptionManager();
+      const creative = {
+        linear: {
+          closedCaptionFiles: [{ fileURL: 'en.vtt', fileLanguage: 'en-US', fileType: 'text/vtt' }],
+        },
+      };
+      const result = cm.ensureRawCaptions(undefined, creative);
+      expect(result[0].srclang).toBe('en-US');
+    });
+
+    it('uses language as label when fileLanguage is absent', () => {
+      const cm = new CaptionManager();
+      const creative = {
+        linear: {
+          closedCaptionFiles: [{ fileURL: 'en.vtt', language: 'en', fileType: 'text/vtt' }],
+        },
+      };
+      const result = cm.ensureRawCaptions(undefined, creative);
+      expect(result[0].label).toBe('en');
+    });
+
     it('builds captions from mediaFileRaw via vast-parser and caches them', () => {
       const cm = new CaptionManager();
       const raw = {
@@ -231,6 +315,30 @@ describe('CaptionManager', () => {
   });
 
   describe('attachAdCaptionTracks', () => {
+    it('includes tracks identified by .vtt extension when type is absent', () => {
+      const cm = new CaptionManager();
+      const adVideo = document.createElement('video');
+      // Provide pre-built captions directly via mediaFileRaw.captions
+      const raw = { captions: [{ src: 'no-type.vtt', kind: 'captions' as const }] };
+      const tracks = cm.attachAdCaptionTracks(adVideo, raw);
+      expect(tracks).toHaveLength(1);
+      expect(tracks[0].src).toContain('no-type.vtt');
+    });
+
+    it('does not set srclang or label when they are falsy', () => {
+      const cm = new CaptionManager();
+      const adVideo = document.createElement('video');
+      // Pre-built caption with no srclang and no label
+      const raw = {
+        captions: [{ src: 'cc.vtt', kind: 'captions' as const, type: 'text/vtt', srclang: '', label: '' }],
+      };
+      const tracks = cm.attachAdCaptionTracks(adVideo, raw);
+      expect(tracks).toHaveLength(1);
+      // srclang and label should not have been set to empty string
+      expect(tracks[0].srclang).toBe('');
+      expect(tracks[0].label).toBe('');
+    });
+
     it('appends only VTT tracks to the ad video element', () => {
       const cm = new CaptionManager();
       const adVideo = document.createElement('video');
