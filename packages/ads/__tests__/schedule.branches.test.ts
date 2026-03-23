@@ -2,7 +2,14 @@
 
 import type { Core, Lease, PluginContext } from '@openplayerjs/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
-import { AdScheduler, extractVastTagUriFn, getBreakIdFn, getVastInputFromBreakFn, normalizeVmapAdSourceFn, parseVmapTimeOffsetFn } from '../src/schedule';
+import {
+  AdScheduler,
+  extractVastTagUriFn,
+  getBreakIdFn,
+  getVastInputFromBreakFn,
+  normalizeVmapAdSourceFn,
+  parseVmapTimeOffsetFn,
+} from '../src/schedule';
 import type { AdsBreakConfig, AdsSource } from '../src/types';
 
 // ─── Standalone function tests ────────────────────────────────────────────────
@@ -29,10 +36,7 @@ describe('normalizeVmapAdSourceFn', () => {
   });
 
   it('picks the first entry with vastAdData from an array', () => {
-    const arr = [
-      { foo: 1 },
-      { vastAdData: '<VAST/>' },
-    ];
+    const arr = [{ foo: 1 }, { vastAdData: '<VAST/>' }];
     expect(normalizeVmapAdSourceFn(arr)).toEqual({ vastAdData: '<VAST/>' });
   });
 
@@ -167,7 +171,11 @@ describe('getVastInputFromBreakFn', () => {
 
 describe('getBreakIdFn', () => {
   it('uses break id when provided', () => {
-    const b: AdsBreakConfig = { id: 'preroll-main', at: 'preroll', source: { type: 'VAST', src: 'https://x.com/vast.xml' } };
+    const b: AdsBreakConfig = {
+      id: 'preroll-main',
+      at: 'preroll',
+      source: { type: 'VAST', src: 'https://x.com/vast.xml' },
+    };
     expect(getBreakIdFn(b)).toBe('preroll-main');
   });
 
@@ -289,10 +297,7 @@ describe('AdScheduler.getPrerollBreak', () => {
 describe('AdScheduler.normalizeVmapAdSource (class method)', () => {
   it('returns the array item with adTagURI when given array', () => {
     const sched = makeScheduler([]);
-    const result = sched.normalizeVmapAdSource([
-      { x: 1 },
-      { adTagURI: { uri: 'https://a.com/vast.xml' } },
-    ]);
+    const result = sched.normalizeVmapAdSource([{ x: 1 }, { adTagURI: { uri: 'https://a.com/vast.xml' } }]);
     expect(result.adTagURI.uri).toBe('https://a.com/vast.xml');
   });
 
@@ -418,11 +423,7 @@ describe('AdScheduler.rebuild', () => {
     video.setAttribute('preload', 'none');
     document.body.appendChild(video);
 
-    const sched = makeScheduler(
-      [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
-      [],
-      { media: video }
-    );
+    const sched = makeScheduler([{ type: 'VMAP', src: 'https://example.com/vmap.xml' }], [], { media: video });
     sched.rebuild();
     expect(sched.pendingVmapSrc).toBe('https://example.com/vmap.xml');
     expect(sched.vmapPending).toBe(false);

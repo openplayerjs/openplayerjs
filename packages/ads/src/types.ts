@@ -84,6 +84,11 @@ export type AdsPluginConfig = {
   breakTolerance?: number;
   adSourcesMode?: 'waterfall' | 'playlist';
   omid?: OmidConfig;
+  labels?: {
+    skip?: string;
+    advertisement?: string;
+    adEnded?: string;
+  };
 };
 
 // ─── Internal media/creative types ──────────────────────────────────────────
