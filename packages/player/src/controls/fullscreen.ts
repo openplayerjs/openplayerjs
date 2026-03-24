@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS } from '@openplayerjs/core';
-import { createAnnouncer, setA11yLabel } from '../a11y';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { BaseControl } from './base';
@@ -40,7 +40,7 @@ export class FullscreenControl extends BaseControl {
     const labels = resolveUIConfig(core).labels;
     const btn = document.createElement('button');
 
-    const { announce, destroy } = createAnnouncer(this.resolvePlayerRoot());
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
     this.dispose.add(destroy);
 
     btn.tabIndex = 0;

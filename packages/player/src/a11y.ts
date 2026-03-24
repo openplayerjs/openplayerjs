@@ -68,6 +68,34 @@ export function setA11yLabel(el: LabelTarget, labelText: string, opts?: SetLabel
   ensureLabelledBy(el, labelText, opts);
 }
 
+type SharedEntry = { announce: Announcer; refs: number; _destroy: () => void };
+const _sharedAnnouncers = new WeakMap<HTMLElement, SharedEntry>();
+
+/**
+ * Returns the shared announcer for `wrapper`, creating it on first call.
+ * Multiple controls attached to the same wrapper share the same 2 live-region
+ * nodes. Each caller receives its own `destroy` handle; the DOM nodes are only
+ * removed once every caller has destroyed its handle (ref-counting).
+ */
+export function getSharedAnnouncer(wrapper: HTMLElement): { announce: Announcer; destroy: () => void } {
+  let entry = _sharedAnnouncers.get(wrapper);
+  if (!entry) {
+    const { announce, destroy } = createAnnouncer(wrapper);
+    entry = { announce, refs: 0, _destroy: destroy };
+    _sharedAnnouncers.set(wrapper, entry);
+  }
+  entry.refs += 1;
+  const captured = entry;
+  const destroy = () => {
+    captured.refs -= 1;
+    if (captured.refs <= 0) {
+      captured._destroy();
+      _sharedAnnouncers.delete(wrapper);
+    }
+  };
+  return { announce: entry.announce, destroy };
+}
+
 export function createAnnouncer(wrapper: HTMLElement): { announce: Announcer; destroy: () => void } {
   const regions: HTMLDivElement[] = [];
   let turn = 0;

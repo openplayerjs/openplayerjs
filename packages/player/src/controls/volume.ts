@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS, isMobile } from '@openplayerjs/core';
-import { createAnnouncer, setA11yLabel } from '../a11y';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { getActiveMedia } from '../playback';
@@ -19,7 +19,7 @@ export class VolumeControl extends BaseControl {
     const volumeControlLabel = labels.volumeControl;
     const volumeSliderLabel = labels.volumeSlider;
 
-    const { announce, destroy } = createAnnouncer(this.resolvePlayerRoot());
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
     this.dispose.add(destroy);
     const fmt = (key: string, value?: string) => {
       const t = labelsMap[key] ?? key;
@@ -118,6 +118,12 @@ export class VolumeControl extends BaseControl {
 
         updateSlider(v);
         updateBtn(v);
+
+        if (volTimer) clearTimeout(volTimer);
+        volTimer = setTimeout(() => {
+          announce(fmt('volumePercent', String(Math.round(v * 100))));
+          volTimer = null;
+        }, 400);
       },
       EVENT_OPTIONS
     );
@@ -128,10 +134,12 @@ export class VolumeControl extends BaseControl {
       (e: Event) => {
         const me = e as MouseEvent;
         const el = getActiveMedia(core);
+        let announcePct: number;
         if (!core.muted) {
           if (core.volume > 0) lastVolume = core.volume;
           core.volume = 0;
           core.muted = true;
+          announcePct = 0;
 
           if (el && el !== core.surface) {
             try {
@@ -147,6 +155,7 @@ export class VolumeControl extends BaseControl {
           const restore = lastVolume > 0 ? lastVolume : 1;
           core.volume = restore;
           core.muted = false;
+          announcePct = Math.round(restore * 100);
 
           if (el && el !== core.surface) {
             try {
@@ -159,11 +168,35 @@ export class VolumeControl extends BaseControl {
             }
           }
         }
+        if (volTimer) clearTimeout(volTimer);
+        volTimer = null;
+        announce(fmt('volumePercent', String(announcePct)));
         me.preventDefault();
         me.stopPropagation();
       },
       EVENT_OPTIONS
     );
+
+    // Re-entrancy guard: writing el.volume/el.muted fires a DOM volumechange which
+    // bridges back to core.events, re-triggering this handler. The ads plugin also
+    // writes core.volume/core.muted from its own volumechange listener on the ad
+    // video element, creating a cross-handler loop. The flag breaks the cycle.
+    let syncingVolume = false;
+
+    const syncActiveMedia = (muted: boolean, vol: number) => {
+      if (syncingVolume) return;
+      const el = getActiveMedia(core);
+      if (!el || el === core.surface) return;
+      syncingVolume = true;
+      try {
+        if (el.muted !== muted) el.muted = muted;
+        if (!muted && el.volume !== vol) el.volume = vol;
+      } catch {
+        // ignore
+      } finally {
+        syncingVolume = false;
+      }
+    };
 
     this.onPlayer('loadedmetadata', () => {
       const muted = core.muted || core.volume === 0;
@@ -174,19 +207,11 @@ export class VolumeControl extends BaseControl {
 
       updateSlider(muted ? 0 : vol);
       updateBtn(muted ? 0 : vol);
-
-      const el = getActiveMedia(core);
-      if (el && el !== core.surface) {
-        try {
-          el.muted = muted;
-          if (!muted) el.volume = vol;
-        } catch {
-          // ignore
-        }
-      }
+      syncActiveMedia(muted, vol);
     });
 
     this.onPlayer('volumechange', () => {
+      if (syncingVolume) return;
       const muted = core.muted || core.volume === 0;
       const vol = formatVolume(core.volume);
 
@@ -197,22 +222,7 @@ export class VolumeControl extends BaseControl {
       updateBtn(muted ? 0 : vol);
       btn.setAttribute('aria-pressed', muted ? 'true' : 'false');
 
-      const el = getActiveMedia(core);
-      if (el && el !== core.surface) {
-        try {
-          el.muted = muted;
-          if (!muted) el.volume = vol;
-        } catch {
-          // ignore
-        }
-      }
-
-      if (volTimer) clearTimeout(volTimer);
-      volTimer = setTimeout(() => {
-        const pct = Math.round(core.muted ? 0 : core.volume * 100);
-        announce(fmt('volumePercent', String(pct)));
-        volTimer = null;
-      }, 400);
+      syncActiveMedia(muted, vol);
     });
 
     const container = document.createElement('div');

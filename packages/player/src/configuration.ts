@@ -43,6 +43,7 @@ export const defaultLabels = Object.freeze({
   progressRail: 'Time Rail',
   progressSlider: 'Time Slider',
   restart: 'Restart',
+  seekTo: 'Seek to %s',
   settings: 'Player Settings',
   speed: 'Speed',
   speedNormal: 'Normal',
@@ -51,6 +52,7 @@ export const defaultLabels = Object.freeze({
   unmute: 'Unmute',
   volume: 'Volume',
   volumeControl: 'Volume Control',
+  volumePercent: 'Volume: %s%',
   volumeSlider: 'Volume Slider',
 });
 
