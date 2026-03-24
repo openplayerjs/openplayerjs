@@ -1,7 +1,7 @@
 module.exports = {
   git: {
     requireCleanWorkingDir: false,
-    addFiles: ['package.json', 'CHANGELOG.md'],
+    addFiles: ['package.json'],
     tagName: '@openplayerjs/youtube@${version}',
     commitMessage: 'chore(release): @openplayerjs/youtube@${version}',
   },
@@ -40,9 +40,6 @@ module.exports = {
           { type: 'ci',       section: 'CI' },
         ],
       },
-
-      infile: 'CHANGELOG.md',
-      header: '# Changelog\n',
       gitRawCommitsOpts: { path: '.' },
     },
   },

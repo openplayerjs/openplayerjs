@@ -87,22 +87,6 @@ export class AdsPlugin implements PlayerPlugin {
   private scheduler!: AdScheduler;
   private captionMgr!: CaptionManager;
   private _dom?: AdDomManager;
-  private get dom(): AdDomManager {
-    if (!this._dom) {
-      const overlay = document.createElement('div');
-      this._dom = new AdDomManager(
-        overlay,
-        this.cfg,
-        () => this.adVideo,
-        () => this.tracker,
-        () => {}
-      );
-    }
-    return this._dom;
-  }
-  private set dom(v: AdDomManager) {
-    this._dom = v;
-  }
 
   private simidSession?: SimidSession;
   private omidSession?: OmidSession;
@@ -151,6 +135,7 @@ export class AdsPlugin implements PlayerPlugin {
       companionSelector: config.companionSelector,
       adSourcesMode: config.adSourcesMode ?? 'waterfall',
       omid: config.omid ?? {},
+      labels: config.labels ?? {},
     };
   }
 
@@ -252,6 +237,24 @@ export class AdsPlugin implements PlayerPlugin {
     if (!simidUrl) return;
     this.dom.ensureOverlayMounted(this.ctx.core.media);
     this.dom.mountSimidIframe(simidUrl);
+  }
+
+  private get dom(): AdDomManager {
+    if (!this._dom) {
+      const overlay = document.createElement('div');
+      this._dom = new AdDomManager(
+        overlay,
+        this.cfg,
+        () => this.adVideo,
+        () => this.tracker,
+        () => {}
+      );
+    }
+    return this._dom;
+  }
+
+  private set dom(v: AdDomManager) {
+    this._dom = v;
   }
 
   // ─── Preroll interception ─────────────────────────────────────────────────────
@@ -635,53 +638,56 @@ export class AdsPlugin implements PlayerPlugin {
             '';
           const simidCreativeInfo = {
             adParameters: String(
-              item.creative?.linear?.adParameters?.value ??
-              item.creative?.adParameters?.value ??
-              ''
+              item.creative?.linear?.adParameters?.value ?? item.creative?.adParameters?.value ?? ''
             ),
             clickThruUri: typeof clickThruRaw === 'string' ? clickThruRaw : String(clickThruRaw || ''),
           };
-          this.simidSession = new SimidSession(iframe, this.adVideo, {
-            onSkip: () => this.requestSkip('api'),
-            onStop: () => {
-              const v = this.adVideo;
-              if (v) {
+          this.simidSession = new SimidSession(
+            iframe,
+            this.adVideo,
+            {
+              onSkip: () => this.requestSkip('api'),
+              onStop: () => {
+                const v = this.adVideo;
+                if (v) {
+                  try {
+                    v.dispatchEvent(new Event('ended'));
+                  } catch {
+                    /* ignore */
+                  }
+                }
+              },
+              onPause: () => this.ctx.events.emit('cmd:pause'),
+              onPlay: () => this.ctx.events.emit('cmd:play'),
+              onClickThrough: (url) => {
+                this.dom.safeWindowOpen(url);
                 try {
-                  v.dispatchEvent(new Event('ended'));
+                  this.tracker?.trackClick?.();
                 } catch {
                   /* ignore */
                 }
-              }
+                this.bus.emit('ads:clickthrough', { break: meta, url });
+                this.ctx.events.emit('ads.click', { break: meta, url });
+              },
+              onTrackingEvent: (event, _data) => {
+                this.bus.emit('ads:impression', { break: meta, event });
+              },
+              onFatal: (_code, _reason) => {
+                // Fatal SIMID error: continue ad playback using the video element.
+                this.simidSession?.destroy();
+                this.simidSession = undefined;
+              },
+              onRequestChangeAdDuration: (durationChange, resolve, _reject) => {
+                // Accept the request; notify the creative of the new total duration.
+                resolve();
+                const v = this.adVideo;
+                if (v && Number.isFinite(v.duration)) {
+                  this.simidSession?.adDurationChange(v.duration + durationChange);
+                }
+              },
             },
-            onPause: () => this.ctx.events.emit('cmd:pause'),
-            onPlay: () => this.ctx.events.emit('cmd:play'),
-            onClickThrough: (url) => {
-              this.dom.safeWindowOpen(url);
-              try {
-                this.tracker?.trackClick?.();
-              } catch {
-                /* ignore */
-              }
-              this.bus.emit('ads:clickthrough', { break: meta, url });
-              this.ctx.events.emit('ads.click', { break: meta, url });
-            },
-            onTrackingEvent: (event, _data) => {
-              this.bus.emit('ads:impression', { break: meta, event });
-            },
-            onFatal: (_code, _reason) => {
-              // Fatal SIMID error: continue ad playback using the video element.
-              this.simidSession?.destroy();
-              this.simidSession = undefined;
-            },
-            onRequestChangeAdDuration: (durationChange, resolve, _reject) => {
-              // Accept the request; notify the creative of the new total duration.
-              resolve();
-              const v = this.adVideo;
-              if (v && Number.isFinite(v.duration)) {
-                this.simidSession?.adDurationChange(v.duration + durationChange);
-              }
-            },
-          }, simidCreativeInfo);
+            simidCreativeInfo
+          );
           this.sessionUnsubs.push(() => {
             this.simidSession?.destroy();
             this.simidSession = undefined;
@@ -703,6 +709,9 @@ export class AdsPlugin implements PlayerPlugin {
 
       this.bus.emit('ads:allAdsCompleted', { break: meta });
       this.ctx.events.emit('ads.allAdsCompleted', { break: meta });
+      const announcer = this.overlay && this.overlay.querySelector('.op-ads__sr-announcer');
+      if (announcer) announcer.textContent = this.cfg.labels?.adEnded || 'Advertisement ended';
+
       this.finish({
         resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
         suppressResume: opts?.suppressResumeOnSuccess,
@@ -729,6 +738,16 @@ export class AdsPlugin implements PlayerPlugin {
     this.overlay.replaceChildren();
     this.overlay.style.display = 'block';
     this.active = true;
+
+    if (!this.overlay.querySelector('.op-ads__sr-announcer')) {
+      const announcer = document.createElement('div');
+      announcer.className = 'op-ads__sr-announcer op-player__sr-only';
+      announcer.setAttribute('role', 'status');
+      announcer.setAttribute('aria-live', 'polite');
+      announcer.setAttribute('aria-atomic', 'true');
+      announcer.textContent = this.cfg.labels?.advertisement || 'Advertisement';
+      this.overlay.appendChild(announcer);
+    }
 
     const items = collectNonLinearCreatives(parsed);
     if (!items.length) return;

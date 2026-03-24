@@ -7,6 +7,13 @@ module.exports = {
       'always',
       ['feat', 'fix', 'perf', 'refactor', 'chore', 'docs', 'test', 'build', 'ci', 'revert'],
     ],
+    
+    'scope-empty': [2, 'never'],
+    'scope-enum': [
+      2,
+      'always',
+      ['core', 'player', 'hls', 'ads', 'youtube', 'deps', 'ci', 'release', 'docs', 'repo'],
+    ],
     'scope-case': [2, 'always', 'lower-case'],
     'subject-case': [2, 'never', ['start-case', 'pascal-case', 'upper-case']],
     'header-max-length': [2, 'always', 150],

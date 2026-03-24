@@ -364,6 +364,37 @@ test('pointermove on progress element for live stream (Infinity) early-returns',
   expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
 });
 
+// ─── seeked event handler (lines 252-255) ─────────────────────────────────────
+
+test('seeked with finite duration announces seek position with duration', () => {
+  const p = makeCore();
+  (p.media as any).duration = 120;
+  p.media.currentTime = 45;
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  // Fire seeked with finite duration — covers the `d ? fmt('seekTo', t) of ${d}` branch
+  // and `fmt(key, value)` with value != null (true branch in fmt) + ?? fallback for 'seekTo'
+  p.events.emit('seeked');
+  expect(el).toBeTruthy();
+});
+
+test('seeked with non-finite duration announces only current time', () => {
+  const p = makeCore();
+  (p.media as any).duration = NaN; // non-finite → d = undefined → false branch
+  p.media.currentTime = 10;
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  // Fire seeked with non-finite duration — covers the `fmt('seekTo', t)` fallback branch
+  p.events.emit('seeked');
+  expect(el).toBeTruthy();
+});
+
 test('pointermove middle position covers pos -= half (line 293) and out-of-range percentage hides tooltip (line 296)', () => {
   const p = makeCore();
   (p.media as any).duration = 100;

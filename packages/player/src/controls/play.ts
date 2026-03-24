@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS } from '@openplayerjs/core';
-import { setA11yLabel } from '../a11y';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { getActiveMedia, togglePlayback } from '../playback';
@@ -11,10 +11,17 @@ export class PlayControl extends BaseControl {
 
   protected build(): HTMLElement {
     const core = this.core;
-    const labels = resolveUIConfig(core).labels;
+    const labels = resolveUIConfig(core).labels as Record<string, string>;
     const playLabel = labels.play;
     const pauseLabel = labels.pause;
     const restartLabel = labels.restart;
+
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
+    this.dispose.add(destroy);
+    const fmt = (key: string, value?: string) => {
+      const t = labels[key] ?? key;
+      return value != null ? t.replace('%s', value) : t;
+    };
 
     let isEnded = false;
 
@@ -55,8 +62,12 @@ export class PlayControl extends BaseControl {
     this.onPlayer('playing', () => {
       isEnded = false;
       setPlaying(true);
+      if (!core.media.seeking) announce(labels['pause'] ? fmt('play') : 'Playing');
     });
-    this.onPlayer('pause', () => setPlaying(false));
+    this.onPlayer('pause', () => {
+      setPlaying(false);
+      announce(labels['pause'] ?? 'Paused');
+    });
     this.onPlayer('ended', () => {
       isEnded = true;
       setPlaying(false);

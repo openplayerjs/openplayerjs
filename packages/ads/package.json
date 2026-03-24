@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@dailymotion/vast-client": "^6.4.3",
-    "@dailymotion/vmap": ">=3.3.3"
+    "@dailymotion/vmap": "^3.3.3"
   },
   "peerDependencies": {
     "@openplayerjs/core": "workspace:^"

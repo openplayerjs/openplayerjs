@@ -369,6 +369,35 @@ describe('extractAdVerifications', () => {
     const doc = new DOMParser().parseFromString(xml, 'text/xml');
     expect(extractAdVerifications({}, doc)).toEqual([]);
   });
+
+  it('falls back to getElementsByTagName when getElementsByTagNameNS throws', () => {
+    // Mock a rawDoc where getElementsByTagNameNS throws but getElementsByTagName works
+    const mockDoc = {
+      getElementsByTagNameNS: jest.fn().mockImplementation(() => {
+        throw new Error('NS not supported');
+      }),
+      getElementsByTagName: jest.fn().mockReturnValue([]),
+    } as unknown as Document;
+
+    const result = extractAdVerifications({}, mockDoc);
+    expect(result).toEqual([]);
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    expect(mockDoc.getElementsByTagName).toHaveBeenCalledWith('Verification');
+  });
+
+  it('returns empty array when both getElementsByTagNameNS and getElementsByTagName throw', () => {
+    const mockDoc = {
+      getElementsByTagNameNS: jest.fn().mockImplementation(() => {
+        throw new Error('NS error');
+      }),
+      getElementsByTagName: jest.fn().mockImplementation(() => {
+        throw new Error('tag error');
+      }),
+    } as unknown as Document;
+
+    const result = extractAdVerifications({}, mockDoc);
+    expect(result).toEqual([]);
+  });
 });
 
 // ─── extractAdsFromParsed ─────────────────────────────────────────────────────
@@ -448,6 +477,27 @@ describe('collectPodAds', () => {
     const result = collectPodAds(parsed, ['video/mp4']) as PodAd[];
     expect(result[0].mediaFile.fileURL).toBe('a.mp4');
     expect(result[1].mediaFile.fileURL).toBe('b.mp4');
+  });
+
+  it('sorts by creativeIndex when sequences are equal (two creatives in same ad)', () => {
+    // Two creatives in the same ad get creativeIndex 0 and 1; sequence is the same (from ad).
+    // sort: as === bs → use creativeIndex to break the tie (line 380).
+    const parsed = {
+      ads: [
+        {
+          sequence: 1,
+          creatives: [
+            { mediaFiles: [{ mimeType: 'video/mp4', fileURL: 'first.mp4', bitrate: 500 }] },
+            { mediaFiles: [{ mimeType: 'video/mp4', fileURL: 'second.mp4', bitrate: 800 }] },
+          ],
+        },
+      ],
+    };
+    const result = collectPodAds(parsed, ['video/mp4']) as PodAd[];
+    expect(result).toHaveLength(2);
+    // creativeIndex 0 comes before creativeIndex 1
+    expect(result[0].mediaFile.fileURL).toBe('first.mp4');
+    expect(result[1].mediaFile.fileURL).toBe('second.mp4');
   });
 
   it('includes companions and nonLinears when present', () => {

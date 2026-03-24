@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS, formatTime, isMobile, offset } from '@openplayerjs/core';
-import { setA11yLabel } from '../a11y';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { BaseControl } from './base';
@@ -15,6 +15,14 @@ export class ProgressControl extends BaseControl {
 
     const ui = resolveUIConfig(core);
     const { allowRewind, allowSkip, labels } = ui;
+    const labelsMap = labels;
+
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
+    this.dispose.add(destroy);
+    const fmt = (key: string, value?: string) => {
+      const t = labelsMap[key] ?? key;
+      return value != null ? t.replace('%s', value) : t;
+    };
 
     const progressLabel = labels.progressSlider;
     const railLabel = labels.progressRail;
@@ -240,6 +248,12 @@ export class ProgressControl extends BaseControl {
 
     this.onPlayer('durationchange', updateUI);
     this.onPlayer('timeupdate', updateUI);
+
+    this.onPlayer('seeked', () => {
+      const t = formatTime(core.currentTime);
+      const d = isFinite(core.duration) ? formatTime(core.duration) : undefined;
+      announce(d ? `${fmt('seekTo', t)} of ${d}` : fmt('seekTo', t));
+    });
 
     this.onPlayer('waiting', () => {
       if (!slider.classList.contains('loading')) slider.classList.add('loading');

@@ -43,15 +43,13 @@
     box-sizing: border-box;
 }
 .op-player__sr-only {
-  border: 0;
-  clip: rect(0, 0, 0, 0);
-  height: 1px;
-  margin: -1px;
+  block-size: 1px;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  inline-size: 1px;
   overflow: hidden;
-  padding: 0;
   position: absolute;
   white-space: nowrap;
-  width: 1px;
 }
 .op-media {
     align-items: center;
@@ -199,6 +197,7 @@
 .op-player__audio .op-controls {
     background: transparent;
     position: relative;
+    z-index: 4;
 }
 
 .op-controls--hidden .op-controls {
@@ -754,4 +753,118 @@
         scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   WCAG 2.2 Accessibility additions
+   Appended to packages/player/src/style.css
+
+   Criteria addressed:
+     1.4.1  Use of Colour          — non-colour focus indicator (box-shadow fallback)
+     1.4.11 Non-text Contrast      — 3:1 on UI component focus ring
+     2.1.1  Keyboard               — inert-based autohide fix (JS patch)
+     2.4.7  Focus Visible          — :focus-visible rings on every interactive element
+     2.4.11 Focus Not Obscured     — outline-offset ensures ring is not clipped
+     2.5.8  Target Size (Minimum)  — 24×24 px floor on all controls (NEW in 2.2)
+     2.3.3  Animation from Interactions (AAA / best-practice via prefers-reduced-motion)
+     forced-colors / high-contrast — ButtonText / Highlight system colours
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* ── 2.5.8 Target Size (Minimum) ─────────────────────────────────────────── */
+/* Every interactive element must be at least 24 × 24 CSS pixels.
+   Layout allows most controls to exceed this; this is a safe floor.       */
+.op-controls button,
+.op-controls [role="button"],
+.op-ads__skip-btn,
+.op-player__unmute {
+  min-block-size: 24px;
+  min-inline-size: 24px;
+}
+
+/* Pointer-coarse devices (touch screens): raise to 44 × 44 best practice   */
+@media (pointer: coarse) {
+  .op-controls button,
+  .op-controls [role="button"],
+  .op-ads__skip-btn,
+  .op-player__unmute {
+    min-block-size: 44px;
+    min-inline-size: 44px;
+  }
+}
+
+/* ── 2.4.7 / 2.4.11 Focus Visible — high-contrast 3px ring ──────────────── */
+/* White outer ring + dark inner shadow = visible on ANY background.
+   outline-offset: 2px prevents the ring from being clipped by overflow:hidden
+   on parent containers (satisfies 2.4.11 Focus Not Obscured).              */
+.op-controls button:focus-visible,
+.op-controls [role="button"]:focus-visible,
+.op-controls input[type="range"]:focus-visible,
+.op-player__unmute:focus-visible,
+.op-ads__skip-btn:focus-visible,
+.op-media:focus-visible {
+  border-radius: 2px;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.8);
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Suppress default ring only when :focus-visible is supported             */
+.op-controls button:focus:not(:focus-visible),
+.op-controls input[type="range"]:focus:not(:focus-visible),
+.op-player__unmute:focus:not(:focus-visible),
+.op-ads__skip-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── 2.3.3 Prefers-Reduced-Motion (AAA / best practice) ─────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .op-controls,
+  .op-controls *,
+  .op-player__unmute,
+  .op-ads__skip-btn,
+  .op-ads__audio-banner {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Forced-colours / High-contrast mode ─────────────────────────────────── */
+@media (forced-colors: active) {
+  /* Restore button chrome lost by custom colours                           */
+  .op-controls button,
+  .op-controls [role="button"],
+  .op-ads__skip-btn,
+  .op-player__unmute {
+    background: ButtonFace;
+    border: 1px solid ButtonText;
+    color: ButtonText;
+    forced-color-adjust: none;
+  }
+
+  .op-controls button:focus-visible,
+  .op-ads__skip-btn:focus-visible,
+  .op-player__unmute:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* Range inputs: let the system accent colour shine through               */
+  .op-controls input[type="range"] {
+    accent-color: Highlight;
+    forced-color-adjust: none;
+  }
+
+  /* Progress fills use Highlight so they remain visible                    */
+  .op-controls progress {
+    accent-color: Highlight;
+    forced-color-adjust: none;
+  }
+
+  /* Non-text contrast: active/selected state on toggle buttons             */
+  .op-controls button[aria-pressed="true"] {
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
 }

@@ -1,6 +1,6 @@
-import { EVENT_OPTIONS, getCaptionTrackProvider } from '@openplayerjs/core';
 import type { CaptionTrack } from '@openplayerjs/core';
-import { setA11yLabel } from '../a11y';
+import { EVENT_OPTIONS, getCaptionTrackProvider } from '@openplayerjs/core';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { getSettingsRegistry, type SettingsSubmenuProvider } from '../settings';
@@ -68,6 +68,9 @@ export class CaptionsControl extends BaseControl {
     const labels = resolveUIConfig(core).labels;
     const label = labels.captions;
     const buttonLabel = labels.toggleCaptions;
+
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
+    this.dispose.add(destroy);
 
     this.button = document.createElement('button');
     this.button.type = 'button';
@@ -162,6 +165,9 @@ export class CaptionsControl extends BaseControl {
         }
 
         refresh();
+
+        const on = this.button.getAttribute('aria-pressed') === 'true';
+        announce(on ? (labels.captionsOn ?? `${label} on`) : (labels.captionsOff ?? `${label} off`));
         me.preventDefault();
         me.stopPropagation();
       },

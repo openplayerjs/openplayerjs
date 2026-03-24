@@ -13,6 +13,7 @@ export class TimeControl extends BaseControl {
     const delimiter = document.createElement('span');
     delimiter.className = 'op-controls__time-delimiter';
     delimiter.textContent = '/';
+    delimiter.setAttribute('aria-hidden', 'true');
 
     const container = document.createElement('span');
     container.className = 'op-controls-time';

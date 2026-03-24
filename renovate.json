@@ -11,7 +11,8 @@
   //   • peerDeps      — must stay as ranges; consumers install them.
   "extends": [
     "config:recommended",
-    "helpers:pinGitHubActionDigests"
+    "helpers:pinGitHubActionDigests",
+    ":disableDependencyDashboard"
   ],
 
   // Advance the range floor (^1.2.0 → ^1.3.0) without ever pinning to an

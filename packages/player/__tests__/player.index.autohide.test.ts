@@ -444,4 +444,84 @@ describe('UI createUI + controls autohide', () => {
     expect(() => p.events.emit('ui:addControl', {})).not.toThrow();
     expect(() => p.events.emit('ui:addControl', undefined)).not.toThrow();
   });
+
+  test('ui:addElement with el but no placement uses default placement', () => {
+    const p = makeCore();
+    createUI(p, p.media, []);
+
+    const el = document.createElement('span');
+    el.id = 'no-placement-el';
+    // emit without placement → hits the `|| { v: 'bottom', h: 'right' }` fallback branch
+    p.events.emit('ui:addElement', { el });
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    expect(wrapper.querySelector('#no-placement-el')).toBeTruthy();
+  });
+
+  test('scheduleHide is a no-op when menuOpen is true (ui:menu:open guard)', async () => {
+    const p = makeCore();
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, []);
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    // Open menu — sets menuOpen=true and clears any pending timer
+    p.events.emit('ui:menu:open');
+
+    // pointermove calls onControlsHover → scheduleHide; but menuOpen=true → early return
+    wrapper.dispatchEvent(new Event('pointermove', { bubbles: true }));
+    jest.advanceTimersByTime(5000);
+    await flushTimersAndMicrotasks();
+
+    // Controls must remain visible because scheduleHide returned early
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
+  });
+
+  test('wrapper focusin with pending hide timer clears it when focus enters media area', async () => {
+    const p = makeCore();
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, []);
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const mediaContainer = wrapper.querySelector('.op-media') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    // Start a hide timer via pointermove
+    wrapper.dispatchEvent(new Event('pointermove', { bubbles: true }));
+    // Focus inside the media area (not controls) — isFocusInMediaArea() returns true
+    mediaContainer.focus();
+    wrapper.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+
+    // The timer should have been cleared; advance past it
+    jest.advanceTimersByTime(5000);
+    await flushTimersAndMicrotasks();
+
+    // Controls must still be visible (timer was cleared by the focusin handler)
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
+  });
+
+  test('keydown in media area with an active hide timer clears the timer', async () => {
+    const p = makeCore();
+    Object.defineProperty(p.media, 'paused', { value: false, configurable: true });
+    createUI(p, p.media, []);
+
+    const wrapper = document.querySelector('.op-player') as HTMLDivElement;
+    const mediaContainer = wrapper.querySelector('.op-media') as HTMLDivElement;
+    const controlsRoot = wrapper.querySelector('.op-controls') as HTMLDivElement;
+
+    // Start a hide timer
+    wrapper.dispatchEvent(new Event('pointermove', { bubbles: true }));
+
+    // Focus the media area, then fire keydown — isFocusInMediaArea() true → clears hideTimer
+    mediaContainer.focus();
+    wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'Space', bubbles: true }));
+
+    // Advance past the original timer duration
+    jest.advanceTimersByTime(5000);
+    await flushTimersAndMicrotasks();
+
+    // Timer was cleared; controls remain visible
+    expect(controlsRoot.getAttribute('aria-hidden')).toBe('false');
+  });
 });

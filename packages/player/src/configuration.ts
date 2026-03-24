@@ -24,11 +24,15 @@ export const defaultUIConfiguration: Required<Pick<PlayerUIConfig, 'step' | 'all
 
 export const defaultLabels = Object.freeze({
   auto: 'Auto',
+  back: 'Back',
   captions: 'CC/Subtitles',
+  captionsOff: 'Captions off',
+  captionsOn: 'Captions on',
   click: 'Click to unmute',
   container: 'Media player',
+  enterFullscreen: 'Enter Fullscreen',
+  exitFullscreen: 'Exit Fullscreen',
   fullscreen: 'Fullscreen',
-  levels: 'Quality Levels',
   live: 'Live',
   loading: 'Loading...',
   media: 'Media',
@@ -39,6 +43,7 @@ export const defaultLabels = Object.freeze({
   progressRail: 'Time Rail',
   progressSlider: 'Time Slider',
   restart: 'Restart',
+  seekTo: 'Seek to %s',
   settings: 'Player Settings',
   speed: 'Speed',
   speedNormal: 'Normal',
@@ -47,6 +52,7 @@ export const defaultLabels = Object.freeze({
   unmute: 'Unmute',
   volume: 'Volume',
   volumeControl: 'Volume Control',
+  volumePercent: 'Volume: %s%',
   volumeSlider: 'Volume Slider',
 });
 

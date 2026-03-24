@@ -82,6 +82,7 @@ export class AdDomManager {
       | 'companionSelector'
       | 'mountEl'
       | 'mountSelector'
+      | 'labels'
     >,
     private getAdVideo: () => HTMLVideoElement | undefined,
     private getTracker: () => any,
@@ -220,7 +221,7 @@ export class AdDomManager {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'op-ads__skip-btn';
-    btn.textContent = 'Skip Ad';
+    btn.textContent = this.cfg.labels?.skip || 'Skip Ad';
     wrap.appendChild(btn);
     this.overlay.appendChild(wrap);
 
@@ -265,7 +266,8 @@ export class AdDomManager {
       const remaining = Math.max(0, skipAt - cur);
       if (this.skipWrap) this.skipWrap.style.display = 'block';
       if (this.skipBtn) {
-        this.skipBtn.textContent = remaining <= 0.05 ? 'Skip Ad' : Math.ceil(remaining).toString();
+        this.skipBtn.textContent =
+          remaining <= 0.05 ? this.cfg.labels?.skip || 'Skip Ad' : Math.ceil(remaining).toString();
         this.skipBtn.style.pointerEvents = remaining <= 0.05 ? 'auto' : 'none';
       }
     };
