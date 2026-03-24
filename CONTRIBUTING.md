@@ -207,7 +207,9 @@ Prettier settings in brief: single quotes, semicolons, trailing commas (ES5), 12
 ## Commit messages
 
 Use [Conventional Commits](https://www.conventionalcommits.org/). The changelog is generated
-from commit messages, so the type prefix matters:
+from commit messages, so the type and scope both matter.
+
+### Type
 
 | Prefix      | Changelog section                       |
 | ----------- | --------------------------------------- |
@@ -216,8 +218,42 @@ from commit messages, so the type prefix matters:
 | `perf:`     | Performance Improvements                |
 | `refactor:` | Refactoring                             |
 | `chore:`    | Internal / tooling (not shown to users) |
+| `docs:`     | Documentation                           |
+| `test:`     | Tests                                   |
+| `build:`    | Build System                            |
+| `ci:`       | CI                                      |
+| `revert:`   | Reverts                                 |
+
+### Scope (required)
+
+**A scope is mandatory.** Commits without a scope are rejected by `commitlint`. The valid
+scopes are:
+
+| Scope       | Where it appears in the changelog             |
+| ----------- | --------------------------------------------- |
+| `core`      | `@openplayerjs/core` section                  |
+| `player`    | `@openplayerjs/player` section                |
+| `hls`       | `@openplayerjs/hls` section                   |
+| `ads`       | `@openplayerjs/ads` section                   |
+| `youtube`   | `@openplayerjs/youtube` section               |
+| `deps`      | General — dependency updates                  |
+| `ci`        | General — CI/CD pipeline changes              |
+| `release`   | General — release tooling and scripts         |
+| `docs`      | General — documentation                       |
+| `repo`      | General — repository-wide changes             |
+| `changelog` | General — manual changelog corrections        |
+
+Package scopes (`core`, `player`, `hls`, `ads`, `youtube`) drive the per-package sections of
+the root `CHANGELOG.md`. Cross-cutting scopes (`deps`, `ci`, `release`, `docs`, `repo`,
+`changelog`) appear under **General** only and are not split into per-package files.
 
 Example: `fix(ads): correct VMAP parsing for non-linear breaks`
+
+> **Why this matters for releases:** the root changelog is generated automatically from
+> conventional commits since the last tag. If a commit omits the scope — or uses a
+> plain-English summary from a squash merge — it will not appear in the correct package
+> section. Always use a regular merge commit (not squash) when landing release branches so
+> that all individual commits remain visible to the changelog generator.
 
 ### Git hooks (automatic enforcement)
 

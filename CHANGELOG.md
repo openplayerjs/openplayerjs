@@ -4,11 +4,40 @@
 
 _March 24, 2026_
 
+### `@openplayerjs/core@3.3.0`
+
+#### Bug Fixes
+
+- **[core]** iframe engine polling and ended-state fixes (3b7ccd8) @Rafael Miranda
+  - Added equality guards in `applyVolume`, `applyDuration`, and `applyRate` to suppress no-op events during the 250 ms poll tick
+  - Consolidated volume/muted reads into a single `applyVolume` call per tick instead of two
+  - Suppressed `timeupdate` emission when iframe media is paused or ended
+  - Guarded `onAdapterState('ended')` against spurious end events fired by YouTube when seeking within the last ~2 seconds of the video
+  - Added `_playIntentAfterEnd` flag so adapter-initiated `playing` transitions after end are suppressed unless the user explicitly called `play()`
+  - Suppressed `buffering`/`loading` states after end to prevent loader flicker during YouTube's auto-restart cycle
+  - Calls `adapter.pause()` when a genuine ended state is accepted to stop YouTube's automatic replay
+
 ### `@openplayerjs/player@3.3.0`
 
-#### Version Bump
+#### Features
 
-- Version bump to stay in sync with `@openplayerjs/core@3.3.0`
+- **[player]** WCAG 2.2 enhancements for controls (180a140) @Rafael Miranda
+  - Added wrapper and factory to generate a single shared ARIA live region for screen-reader announcements
+  - Integrated announcer and `aria-live` attributes across all interactive controls
+  - Added missing label from configurations for the Settings control
+  - Disabled `aria-live` on current-time controls to prevent announcements on every `timeupdate`
+  - Added `aria-hidden` on the time-delimiter element to avoid it being read by screen readers
+  - Added unit tests for the enhancements
+
+#### Bug Fixes
+
+- **[player]** shared a11y announcer, event cleanup, and volume control loop fix (d2df296) @Rafael Miranda
+  - Refactored announcer to generate a single pair of ARIA live regions instead of one per control
+  - Refactored event listeners to return their `off` callback so all are cleaned up on `destroy`
+  - Removed unexpected re-entrancy loop in `VolumeControl.syncActiveMedia` caused by interactions between core, ads, and the control itself
+  - Fixed `syncActiveMedia` to not write `el.volume` when muted (volume-change path vs. mute-click path)
+  - Restored direct overlay-media sync for keyboard `ArrowUp` / `ArrowDown` / `M` handlers
+- **[player]** expanded unit test coverage in player package (990690a) @Rafael Miranda
 
 ### `@openplayerjs/hls@3.3.0`
 
@@ -20,6 +49,7 @@ _March 24, 2026_
 
 #### Bug Fixes
 
+- **[ads]** added new labels configuration for ads and expanded coverage (0ded85c) @Rafael Miranda
 - **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
 
 ### `@openplayerjs/youtube@3.3.0`
@@ -32,10 +62,17 @@ _March 24, 2026_
 
 #### Bug Fixes
 
+- **[release]** CHANGELOG fixes and script improvements (ac09425) @Rafael Miranda
+  - Modified split-changelog script to include commit descriptions in generated notes
+  - Removed per-package CHANGELOG files in favour of the consolidated root changelog
 - **[release]** added `changelog` as a valid scope (69891eb) @Rafael Miranda
 
 #### Chores
 
+- **[release]** adjustments for release workflow (2935ad8) @Rafael Miranda
+  - Increased branch coverage to 85%
+  - Added new commands to verify release readiness
+  - Removed inline configuration from per-package `.release-it.cjs` files in favour of the root config
 - **[deps]** update dependency rollup to ^4.60.0 ([#505](https://github.com/openplayerjs/openplayerjs/pull/505)) @renovate[bot]
 - Fixed vulnerability (7facec4) @Rafael Miranda
 - **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
