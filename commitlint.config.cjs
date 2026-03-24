@@ -12,7 +12,7 @@ module.exports = {
     'scope-enum': [
       2,
       'always',
-      ['core', 'player', 'hls', 'ads', 'youtube', 'deps', 'ci', 'release', 'docs', 'repo'],
+      ['core', 'player', 'hls', 'ads', 'youtube', 'deps', 'ci', 'release', 'docs', 'repo', 'changelog'],
     ],
     'scope-case': [2, 'always', 'lower-case'],
     'subject-case': [2, 'never', ['start-case', 'pascal-case', 'upper-case']],
