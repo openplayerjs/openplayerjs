@@ -1,5 +1,51 @@
 # Changelog
 
+## [3.3.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.3.0) (2026-03-24)
+
+_March 24, 2026_
+
+### `@openplayerjs/player@3.3.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.3.0`
+
+### `@openplayerjs/hls@3.3.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.3.0`
+
+### `@openplayerjs/ads@3.3.0`
+
+#### Bug Fixes
+
+- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
+
+### `@openplayerjs/youtube@3.3.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.3.0`
+
+### General
+
+#### Bug Fixes
+
+- **[release]** added `changelog` as a valid scope (69891eb) @Rafael Miranda
+
+#### Chores
+
+- **[deps]** update dependency rollup to ^4.60.0 ([#505](https://github.com/openplayerjs/openplayerjs/pull/505)) @renovate[bot]
+- Fixed vulnerability (7facec4) @Rafael Miranda
+- **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
+- **[deps]** update dependency turbo to ^2.8.20 ([#501](https://github.com/openplayerjs/openplayerjs/pull/501)) @renovate[bot]
+- **[deps]** update dependency undici to >=7.24.5 ([#502](https://github.com/openplayerjs/openplayerjs/pull/502)) @renovate[bot]
+- **[deps]** update github/codeql-action digest to 3869755 ([#499](https://github.com/openplayerjs/openplayerjs/pull/499)) @renovate[bot]
+- **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
+- **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
+- **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
+
 ## [3.2.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.0) (2026-03-16)
 
 ### `@openplayerjs/core@3.2.0`

@@ -87,6 +87,7 @@ export class IframeMediaSurface implements MediaSurface {
   // Normalized state — updated by adapter events and polling
   private _paused = true;
   private _ended = false;
+  private _playIntentAfterEnd = false;
   private _duration = NaN;
   private _currentTime = 0;
   private _volume = 1;
@@ -178,6 +179,7 @@ export class IframeMediaSurface implements MediaSurface {
   }
 
   play(): Promise<void> {
+    this._playIntentAfterEnd = this._ended;
     return Promise.resolve(this.adapter.play()).then(() => undefined);
   }
 
@@ -237,12 +239,20 @@ export class IframeMediaSurface implements MediaSurface {
     switch (s) {
       case 'loading':
       case 'buffering':
-        this.internalBus.emit('waiting');
+        // Don't surface a loading state after the video has ended — the adapter
+        // (e.g. YouTube) buffers as it auto-restarts, which would flicker the
+        // loader on top of the ended/restart UI.  Only emit 'waiting' once the
+        // user has expressed a new play intent.
+        if (!this._ended || this._playIntentAfterEnd) this.internalBus.emit('waiting');
         break;
 
       case 'playing':
+        // Some iframe providers fires a spurious PLAYING state immediately after ENDED.
+        // Suppress it unless the user explicitly called play() after the video ended.
+        if (this._ended && !this._playIntentAfterEnd) break;
         this._paused = false;
         this._ended = false;
+        this._playIntentAfterEnd = false;
         this.internalBus.emit('play');
         this.internalBus.emit('playing');
         break;
@@ -252,11 +262,22 @@ export class IframeMediaSurface implements MediaSurface {
         this.internalBus.emit('pause');
         break;
 
-      case 'ended':
+      case 'ended': {
+        // Prevent iframe providers to fire 'ended' spuriously when seekTo() lands within the
+        // last ~2 s of the video before playback has actually completed. Only accept 'ended' when
+        // the tracked position is close enough to the known duration, or when duration is
+        // not yet known (NaN) so we never silently swallow a real end event.
+        const ENDED_TOLERANCE_S = 2;
+        if (Number.isFinite(this._duration) && this._currentTime < this._duration - ENDED_TOLERANCE_S) break;
+
         this._paused = true;
         this._ended = true;
         this.internalBus.emit('ended');
+        // Explicitly pause the adapter so it doesn't auto-replay (e.g. YouTube
+        // restarts from 0 after firing ENDED when seeking near the end).
+        void Promise.resolve(this.adapter.pause());
         break;
+      }
 
       case 'idle':
         break;
@@ -274,24 +295,28 @@ export class IframeMediaSurface implements MediaSurface {
   private applyTime(t: number): void {
     if (!Number.isFinite(t)) return;
     this._currentTime = t;
-    this.internalBus.emit('timeupdate');
+    if (!this._paused && !this._ended) this.internalBus.emit('timeupdate');
   }
 
   private applyDuration(d: number): void {
     if (!Number.isFinite(d) || d <= 0) return;
+    if (d === this._duration) return;
     this._duration = d;
     this.internalBus.emit('durationchange');
   }
 
   private applyRate(r: number): void {
     if (!Number.isFinite(r) || r <= 0) return;
+    if (r === this._playbackRate) return;
     this._playbackRate = r;
     this.internalBus.emit('ratechange');
   }
 
   private applyVolume(v: number, muted: boolean): void {
     if (!Number.isFinite(v)) return;
-    this._volume = Math.min(1, Math.max(0, v));
+    const clamped = Math.min(1, Math.max(0, v));
+    if (clamped === this._volume && !!muted === this._muted) return;
+    this._volume = clamped;
     this._muted = !!muted;
     this.internalBus.emit('volumechange');
   }
@@ -310,8 +335,11 @@ export class IframeMediaSurface implements MediaSurface {
     const tick = () => {
       this.applyTime(this.safeNum(this.adapter.getCurrentTime()));
       this.applyDuration(this.safeNum(this.adapter.getDuration()));
-      if (this.adapter.getVolume) this.applyVolume(this.safeNum(this.adapter.getVolume()), this._muted);
-      if (this.adapter.isMuted) this.applyVolume(this._volume, !!this.adapter.isMuted());
+      if (this.adapter.getVolume || this.adapter.isMuted) {
+        const vol = this.adapter.getVolume ? this.safeNum(this.adapter.getVolume()) : this._volume;
+        const mut = this.adapter.isMuted ? !!this.adapter.isMuted() : this._muted;
+        this.applyVolume(vol, mut);
+      }
       if (this.adapter.getPlaybackRate) this.applyRate(this.safeNum(this.adapter.getPlaybackRate()));
       this.pollTimer = window.setTimeout(tick, this.pollIntervalMs);
     };

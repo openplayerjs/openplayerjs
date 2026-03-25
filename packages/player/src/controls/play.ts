@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS } from '@openplayerjs/core';
-import { createAnnouncer, setA11yLabel } from '../a11y';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { getActiveMedia, togglePlayback } from '../playback';
@@ -16,7 +16,7 @@ export class PlayControl extends BaseControl {
     const pauseLabel = labels.pause;
     const restartLabel = labels.restart;
 
-    const { announce, destroy } = createAnnouncer(this.resolvePlayerRoot());
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
     this.dispose.add(destroy);
     const fmt = (key: string, value?: string) => {
       const t = labels[key] ?? key;

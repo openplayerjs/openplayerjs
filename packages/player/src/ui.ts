@@ -155,7 +155,7 @@ export function createUI(
     mediaContainer.appendChild(overlay.button);
     mediaContainer.appendChild(overlay.loader);
   }
-  bindCenterOverlay(core, wrapper, overlay);
+  const teardownCenterOverlay = bindCenterOverlay(core, wrapper, overlay);
   const controlsRoot = document.createElement('div');
   controlsRoot.className = 'op-controls';
   controlsRoot.setAttribute('aria-hidden', 'false');
@@ -194,6 +194,7 @@ export function createUI(
         // ignore
       }
       try {
+        teardownCenterOverlay();
         offAddElement();
         offAddControl();
         offDestroy();
@@ -271,16 +272,30 @@ export function createUI(
     scheduleHide(POINTER_SHOW_MS);
   };
 
-  controlsRoot.addEventListener('focusin', () => {
+  // Track all video-path DOM listeners so they can be removed on destroy.
+  const domUnsubs: (() => void)[] = [];
+  const trackListener = (
+    target: EventTarget,
+    type: string,
+    handler: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ) => {
+    target.addEventListener(type, handler, options);
+    domUnsubs.push(() => target.removeEventListener(type, handler, options));
+  };
+
+  const onControlsFocusIn = () => {
     lastInteraction = 'keyboard';
     showControls();
     scheduleHide(KEYBOARD_SHOW_MS);
-  });
-  controlsRoot.addEventListener('focusout', () => {
+  };
+  const onControlsFocusOut = () => {
     window.setTimeout(() => {
       if (!controlsHaveFocus()) scheduleHide(lastInteraction === 'keyboard' ? KEYBOARD_SHOW_MS : POINTER_SHOW_MS);
     }, 0);
-  });
+  };
+  trackListener(controlsRoot, 'focusin', onControlsFocusIn);
+  trackListener(controlsRoot, 'focusout', onControlsFocusOut);
 
   const isFocusInMediaArea = (): boolean => {
     const active = document.activeElement;
@@ -288,58 +303,45 @@ export function createUI(
     return wrapper.contains(active) && !controlsRoot.contains(active);
   };
 
-  wrapper.addEventListener(
-    'focusin',
-    () => {
-      if (isFocusInMediaArea()) {
-        showControls();
-        if (hideTimer) window.clearTimeout(hideTimer);
-      }
-    },
-    EVENT_OPTIONS
-  );
-
-  wrapper.addEventListener(
-    'focusout',
-    () => {
-      window.setTimeout(() => {
-        if (!wrapper.contains(document.activeElement) && !controlsHaveFocus()) scheduleHide();
-      }, 0);
-    },
-    EVENT_OPTIONS
-  );
-
-  wrapper.addEventListener(
-    'keydown',
-    () => {
-      lastInteraction = 'keyboard';
-      if (isFocusInMediaArea()) {
-        showControls();
-        if (hideTimer) window.clearTimeout(hideTimer);
-      } else if (controlsHaveFocus()) {
-        showControls();
-        scheduleHide(KEYBOARD_SHOW_MS);
-      }
-    },
-    EVENT_OPTIONS
-  );
+  const onWrapperFocusIn = () => {
+    if (isFocusInMediaArea()) {
+      showControls();
+      if (hideTimer) window.clearTimeout(hideTimer);
+    }
+  };
+  const onWrapperFocusOut = () => {
+    window.setTimeout(() => {
+      if (!wrapper.contains(document.activeElement) && !controlsHaveFocus()) scheduleHide();
+    }, 0);
+  };
+  const onWrapperKeyDown = () => {
+    lastInteraction = 'keyboard';
+    if (isFocusInMediaArea()) {
+      showControls();
+      if (hideTimer) window.clearTimeout(hideTimer);
+    } else if (controlsHaveFocus()) {
+      showControls();
+      scheduleHide(KEYBOARD_SHOW_MS);
+    }
+  };
+  trackListener(wrapper, 'focusin', onWrapperFocusIn, EVENT_OPTIONS);
+  trackListener(wrapper, 'focusout', onWrapperFocusOut, EVENT_OPTIONS);
+  trackListener(wrapper, 'keydown', onWrapperKeyDown, EVENT_OPTIONS);
 
   if (mobile) {
-    wrapper.addEventListener(
-      'pointerdown',
-      () => {
-        lastInteraction = 'pointer';
-        showControls();
-        scheduleHide(POINTER_SHOW_MS);
-      },
-      EVENT_OPTIONS
-    );
+    const onWrapperPointerDown = () => {
+      lastInteraction = 'pointer';
+      showControls();
+      scheduleHide(POINTER_SHOW_MS);
+    };
+    trackListener(wrapper, 'pointerdown', onWrapperPointerDown, EVENT_OPTIONS);
   } else {
-    wrapper.addEventListener('pointermove', onControlsHover, EVENT_OPTIONS);
-    wrapper.addEventListener('pointerenter', onControlsHover, EVENT_OPTIONS);
-    controlsRoot.addEventListener('pointerenter', onControlsHover, EVENT_OPTIONS);
-    controlsRoot.addEventListener('pointermove', onControlsHover, EVENT_OPTIONS);
-    controlsRoot.addEventListener('pointerleave', () => scheduleHide(POINTER_SHOW_MS), EVENT_OPTIONS);
+    const onControlsPointerLeave = () => scheduleHide(POINTER_SHOW_MS);
+    trackListener(wrapper, 'pointermove', onControlsHover, EVENT_OPTIONS);
+    trackListener(wrapper, 'pointerenter', onControlsHover, EVENT_OPTIONS);
+    trackListener(controlsRoot, 'pointerenter', onControlsHover, EVENT_OPTIONS);
+    trackListener(controlsRoot, 'pointermove', onControlsHover, EVENT_OPTIONS);
+    trackListener(controlsRoot, 'pointerleave', onControlsPointerLeave, EVENT_OPTIONS);
   }
 
   const grid = createControlGrid(controlsRoot, mainControls);
@@ -360,29 +362,26 @@ export function createUI(
 
   maybeAutoplayUnmute(core, wrapper);
 
-  wrapper.addEventListener(
-    'click',
-    async (e) => {
-      // Linear overlays (e.g. full-screen ads with their own video) own click handling.
-      // Non-linear ads (no fullscreenVideoEl) run alongside the content, so we allow pause.
-      if (getOverlayManager(core).active?.fullscreenVideoEl) return;
+  const onWrapperClick = async (e: Event) => {
+    // Linear overlays (e.g. full-screen ads with their own video) own click handling.
+    // Non-linear ads (no fullscreenVideoEl) run alongside the content, so we allow pause.
+    if (getOverlayManager(core).active?.fullscreenVideoEl) return;
 
-      const target = e.target as Element | null;
-      // Clicks inside the controls bar must not toggle playback.
-      if (target && controlsRoot.contains(target)) return;
-      // Clicks on interactive elements (buttons, links) are handled by those elements.
-      if (target && target !== wrapper && target.closest('button, [role="button"], a')) return;
+    const target = e.target as Element | null;
+    // Clicks inside the controls bar must not toggle playback.
+    if (target && controlsRoot.contains(target)) return;
+    // Clicks on interactive elements (buttons, links) are handled by those elements.
+    if (target && target !== wrapper && target.closest('button, [role="button"], a')) return;
 
-      const isPlaying = !core.surface.paused && !core.surface.ended;
-      if (isPlaying) {
-        overlay?.flashPause(350);
-        core.pause();
-      } else {
-        await core.play().catch(() => undefined);
-      }
-    },
-    EVENT_OPTIONS
-  );
+    const isPlaying = !core.surface.paused && !core.surface.ended;
+    if (isPlaying) {
+      overlay?.flashPause(350);
+      core.pause();
+    } else {
+      await core.play().catch(() => undefined);
+    }
+  };
+  trackListener(wrapper, 'click', onWrapperClick, EVENT_OPTIONS);
 
   const offPlaying = core.events.on('playing', () => scheduleHide(POINTER_SHOW_MS));
   const offPause = core.events.on('pause', () => showControls());
@@ -414,13 +413,15 @@ export function createUI(
       // ignore
     }
     try {
+      domUnsubs.forEach((u) => u());
+      teardownCenterOverlay();
       offPlaying?.();
       offPause?.();
       offEnded?.();
       offMenuOpen?.();
       offMenuClose?.();
-      offAddElement();
-      offAddControl();
+      offAddElement?.();
+      offAddControl?.();
       offDestroy();
     } catch {
       // ignore

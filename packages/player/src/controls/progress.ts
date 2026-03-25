@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS, formatTime, isMobile, offset } from '@openplayerjs/core';
-import { createAnnouncer, setA11yLabel } from '../a11y';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { BaseControl } from './base';
@@ -17,7 +17,7 @@ export class ProgressControl extends BaseControl {
     const { allowRewind, allowSkip, labels } = ui;
     const labelsMap = labels;
 
-    const { announce, destroy } = createAnnouncer(this.resolvePlayerRoot());
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
     this.dispose.add(destroy);
     const fmt = (key: string, value?: string) => {
       const t = labelsMap[key] ?? key;

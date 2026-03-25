@@ -245,7 +245,7 @@ describe('IframeMediaSurface – onAdapterState', () => {
     expect(emitted).toContain('pause');
   });
 
-  test('state=ended sets paused+ended=true and emits ended', () => {
+  test('state=ended sets paused+ended=true, emits ended, and pauses adapter', () => {
     const { adapter, surface } = makeSurface();
     adapter.emit('state', 'playing');
     const emitted: string[] = [];
@@ -255,6 +255,89 @@ describe('IframeMediaSurface – onAdapterState', () => {
     expect(surface.paused).toBe(true);
     expect(surface.ended).toBe(true);
     expect(emitted).toContain('ended');
+    // Adapter must be paused to prevent auto-replay (e.g. YouTube restarts from 0)
+    expect(adapter.pauseFn).toHaveBeenCalled();
+  });
+
+  test('state=ended is suppressed when current time is more than tolerance before duration', () => {
+    const { adapter, surface } = makeSurface();
+    // Set a finite duration of 100s and push currentTime=50 via timeupdate event
+    adapter.getDurationFn.mockReturnValue(100);
+    adapter.emit('durationchange', 100); // sets _duration=100
+    adapter.emit('timeupdate', 50);       // sets _currentTime=50
+
+    const emitted: string[] = [];
+    surface.on('ended', () => emitted.push('ended'));
+
+    // YouTube fires spurious ENDED at 50s — well before 100-2=98s threshold
+    adapter.emit('state', 'ended');
+    expect(surface.ended).toBe(false);
+    expect(emitted).toHaveLength(0);
+  });
+
+  test('state=loading/buffering after ended does not emit waiting (suppressed until play intent)', () => {
+    const { adapter, surface } = makeSurface();
+    adapter.emit('state', 'playing');
+    adapter.emit('state', 'ended');
+    expect(surface.ended).toBe(true);
+
+    const waiting: string[] = [];
+    surface.on('waiting', () => waiting.push('w'));
+
+    // YouTube buffers as it auto-restarts after ended — must not show loader
+    adapter.emit('state', 'loading');
+    adapter.emit('state', 'buffering');
+    expect(waiting).toHaveLength(0);
+  });
+
+  test('state=loading/buffering after ended IS emitted when play() was called (play intent)', () => {
+    const { adapter, surface } = makeSurface();
+    adapter.emit('state', 'playing');
+    adapter.emit('state', 'ended');
+
+    void surface.play(); // user expressed play intent
+
+    const waiting: string[] = [];
+    surface.on('waiting', () => waiting.push('w'));
+
+    adapter.emit('state', 'buffering');
+    expect(waiting).toHaveLength(1);
+  });
+
+  test('spurious state=playing after ended is suppressed without explicit play()', () => {
+    const { adapter, surface } = makeSurface();
+    adapter.emit('state', 'playing');
+    adapter.emit('state', 'ended');
+    expect(surface.ended).toBe(true);
+
+    const emitted: string[] = [];
+    surface.on('play', () => emitted.push('play'));
+    surface.on('playing', () => emitted.push('playing'));
+
+    // Adapter fires PLAYING spuriously (e.g. YouTube auto-advance) — must be suppressed
+    adapter.emit('state', 'playing');
+    expect(surface.ended).toBe(true);
+    expect(surface.paused).toBe(true);
+    expect(emitted).toHaveLength(0);
+  });
+
+  test('state=playing after ended IS accepted when play() was called first', () => {
+    const { adapter, surface } = makeSurface();
+    adapter.emit('state', 'playing');
+    adapter.emit('state', 'ended');
+    expect(surface.ended).toBe(true);
+
+    // User explicitly replays
+    void surface.play();
+
+    const emitted: string[] = [];
+    surface.on('play', () => emitted.push('play'));
+    surface.on('playing', () => emitted.push('playing'));
+
+    adapter.emit('state', 'playing');
+    expect(surface.ended).toBe(false);
+    expect(surface.paused).toBe(false);
+    expect(emitted).toEqual(expect.arrayContaining(['play', 'playing']));
   });
 
   test('state=loading and state=buffering emit waiting', () => {
@@ -301,6 +384,10 @@ describe('IframeMediaSurface – push events (timeupdate / durationchange / rate
     const ticks: string[] = [];
     surface.on('timeupdate', () => ticks.push('t'));
 
+    // Adapters only push timeupdate during playback; simulate playing state so
+    // applyTime emits the event (paused surfaces suppress timeupdate to match
+    // native HTMLMediaElement behaviour).
+    adapter.emit('state', 'playing');
     adapter.emit('timeupdate', 42.5);
     expect(surface.currentTime).toBe(42.5);
     expect(ticks).toHaveLength(1);
@@ -478,10 +565,10 @@ describe('IframeMediaSurface – bridgeSurfaceEvents integration', () => {
     bus.on('ended', () => seen.push('ended'));
     bus.on('waiting', () => seen.push('waiting'));
 
+    adapter.emit('state', 'buffering'); // buffering before ended → emits waiting
     adapter.emit('state', 'playing');
     adapter.emit('state', 'paused');
     adapter.emit('state', 'ended');
-    adapter.emit('state', 'buffering');
 
     expect(seen).toEqual(expect.arrayContaining(['play', 'pause', 'ended', 'waiting']));
   });

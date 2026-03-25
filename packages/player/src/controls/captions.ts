@@ -1,6 +1,6 @@
 import type { CaptionTrack } from '@openplayerjs/core';
 import { EVENT_OPTIONS, getCaptionTrackProvider } from '@openplayerjs/core';
-import { createAnnouncer, setA11yLabel } from '../a11y';
+import { getSharedAnnouncer, setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { getSettingsRegistry, type SettingsSubmenuProvider } from '../settings';
@@ -69,7 +69,7 @@ export class CaptionsControl extends BaseControl {
     const label = labels.captions;
     const buttonLabel = labels.toggleCaptions;
 
-    const { announce, destroy } = createAnnouncer(this.resolvePlayerRoot());
+    const { announce, destroy } = getSharedAnnouncer(this.resolvePlayerRoot());
     this.dispose.add(destroy);
 
     this.button = document.createElement('button');
