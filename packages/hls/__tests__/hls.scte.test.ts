@@ -2,21 +2,22 @@
 /**
  * packages/hls/__tests__/hls.scte.test.ts
  *
- * Tests for SCTE-35 OUT cue detection (Gap 4: live / DVR server-side ad insertion).
+ * Tests for SCTE-35 OUT cue detection via HlsMediaEngine.onCue.
  *
  * Covers:
  *  - HlsMediaEngine.onCue fires for #EXT-X-DATERANGE tags with SCTE35-OUT
  *  - Deduplication: the same cue ID is not fired more than once per session
  *  - seenCueIds is cleared on detach() so re-attach starts fresh
- *  - ServerAdsBridge resolves URL and calls ads.playAds()
- *  - ServerAdsBridge skips cues when resolveUrl returns null
- *  - ServerAdsBridge chains previously registered onCue handlers
- *  - ServerAdsBridge.destroy() restores the previous handler
+ *
+ * Note: ServerAdsBridge has been absorbed into AdsPlugin (scteSource /
+ * resolveScteUrl config). Bridge behaviour tests live in
+ * packages/ads/__tests__/ads.scte.test.ts.
  */
 
 import { EventBus, HtmlMediaSurface, Core } from '@openplayerjs/core';
-import { HlsMediaEngine, type ScteOutCue } from '../src/hls';
-import { ServerAdsBridge } from '../src/server-ads-bridge';
+import { HlsMediaEngine } from '../src/hls';
+
+type ScteOutCue = { id: string; scte35Out: string; plannedDuration?: number; startDate?: Date };
 
 // ─── hls.js mock ────────────────────────────────────────────────────────────
 
@@ -179,123 +180,5 @@ describe('HlsMediaEngine — SCTE-35 OUT cue detection', () => {
       emitLevelUpdated({ 'ad-x': makeDateRange('ad-x', '0xFC') });
       engine.detach();
     }).not.toThrow();
-  });
-});
-
-// ─── ServerAdsBridge tests ────────────────────────────────────────────────────
-
-describe('ServerAdsBridge', () => {
-  function makeAds() {
-    return { playAds: jest.fn().mockResolvedValue(true) };
-  }
-
-  test('calls ads.playAds with the URL returned by resolveUrl', async () => {
-    const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
-    engine.attach(ctx);
-
-    const ads = makeAds();
-    new ServerAdsBridge(engine, ads, {
-      resolveUrl: (cue) => `https://ad-server/vast?id=${cue.id}`,
-    });
-
-    emitLevelUpdated({ 'scte-1': makeDateRange('scte-1', '0xFC') });
-    await Promise.resolve(); // flush microtasks
-
-    expect(ads.playAds).toHaveBeenCalledWith('https://ad-server/vast?id=scte-1');
-    engine.detach();
-  });
-
-  test('skips cue when resolveUrl returns null', async () => {
-    const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
-    engine.attach(ctx);
-
-    const ads = makeAds();
-    new ServerAdsBridge(engine, ads, { resolveUrl: () => null });
-
-    emitLevelUpdated({ 'scte-skip': makeDateRange('scte-skip', '0xFC') });
-    await Promise.resolve();
-
-    expect(ads.playAds).not.toHaveBeenCalled();
-    engine.detach();
-  });
-
-  test('skips cue when resolveUrl returns undefined', async () => {
-    const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
-    engine.attach(ctx);
-
-    const ads = makeAds();
-    new ServerAdsBridge(engine, ads, { resolveUrl: () => undefined });
-
-    emitLevelUpdated({ 'scte-undef': makeDateRange('scte-undef', '0xFC') });
-    await Promise.resolve();
-
-    expect(ads.playAds).not.toHaveBeenCalled();
-    engine.detach();
-  });
-
-  test('supports async resolveUrl', async () => {
-    const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
-    engine.attach(ctx);
-
-    const ads = makeAds();
-    new ServerAdsBridge(engine, ads, {
-      resolveUrl: async (cue) => {
-        await Promise.resolve(); // simulate async lookup
-        return `https://ads/vast?id=${cue.id}`;
-      },
-    });
-
-    emitLevelUpdated({ 'async-cue': makeDateRange('async-cue', '0xFC') });
-    await Promise.resolve();
-    await Promise.resolve(); // extra tick for the inner async
-
-    expect(ads.playAds).toHaveBeenCalledWith('https://ads/vast?id=async-cue');
-    engine.detach();
-  });
-
-  test('chains a previously registered onCue handler', async () => {
-    const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
-    engine.attach(ctx);
-
-    const prevCues: string[] = [];
-    engine.onCue = (c) => prevCues.push(c.id);
-
-    const ads = makeAds();
-    new ServerAdsBridge(engine, ads, {
-      resolveUrl: (cue) => `https://ads/vast?id=${cue.id}`,
-    });
-
-    emitLevelUpdated({ 'chain-cue': makeDateRange('chain-cue', '0xFC') });
-    await Promise.resolve();
-
-    expect(prevCues).toContain('chain-cue'); // previous handler still fired
-    expect(ads.playAds).toHaveBeenCalled();
-    engine.detach();
-  });
-
-  test('destroy() restores the previous onCue handler', async () => {
-    const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
-    engine.attach(ctx);
-
-    const before: string[] = [];
-    engine.onCue = (c) => before.push(c.id);
-
-    const ads = makeAds();
-    const bridge = new ServerAdsBridge(engine, ads, { resolveUrl: () => 'https://ads/vast' });
-    bridge.destroy(engine);
-
-    // After destroy, the original handler should be restored
-    emitLevelUpdated({ 'post-destroy': makeDateRange('post-destroy', '0xFC') });
-    await Promise.resolve();
-
-    expect(before).toContain('post-destroy');
-    expect(ads.playAds).not.toHaveBeenCalled();
-    engine.detach();
   });
 });

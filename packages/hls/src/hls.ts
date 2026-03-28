@@ -1,5 +1,6 @@
 import type { IEngine, MediaEngineContext, MediaSource } from '@openplayerjs/core';
 import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayerjs/core';
+import type { LevelUpdatedData } from 'hls.js';
 import Hls from 'hls.js';
 
 type AdapterListener = {
@@ -21,6 +22,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
   private adapterListeners: AdapterListener[] = [];
   private HlsClass: typeof Hls;
   private hlsConfig: Record<string, any>;
+  private seenCueIds = new Set<string>();
 
   constructor(config: any = {}) {
     super();
@@ -28,6 +30,8 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.HlsClass = hlsClass ?? Hls;
     this.hlsConfig = hlsConfig;
   }
+
+  onCue?: (cue: { id: string; scte35Out: string; plannedDuration?: number; startDate?: Date }) => void;
 
   getAdapter<T = Hls>(): T | undefined {
     return this.adapter as T;
@@ -56,6 +60,11 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       backBufferLength: 90,
       renderTextTracksNatively: true,
       enableWebVTT: true,
+      // Surface EXT-X-DATERANGE tags and ID3 frames as metadata TextTrack cues so
+      // consumers can detect SCTE-35 splice points via the standard DOM cuechange API without
+      // any engine-specific event coupling.
+      enableDateRangeMetadataCues: true,
+      enableID3MetadataCues: true,
       ...this.hlsConfig,
     });
     this.adapter.loadSource(ctx.activeSource?.src || '');
@@ -137,6 +146,28 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       EVENT_OPTIONS
     );
     this.onAdapterEvent(
+      this.HlsClass.Events.LEVEL_UPDATED,
+      (_, { details }: LevelUpdatedData) => {
+        if (!this.onCue) return;
+        const dateRanges = details?.dateRanges;
+        if (!dateRanges) return;
+        for (const [id, range] of Object.entries(dateRanges)) {
+          if (!range || this.seenCueIds.has(id)) continue;
+          const attr = range.attr;
+          const scte35Out = attr?.['SCTE35-OUT'];
+          if (!scte35Out) continue;
+          this.seenCueIds.add(id);
+          this.onCue({
+            id,
+            scte35Out,
+            plannedDuration: typeof range.plannedDuration === 'number' ? range.plannedDuration : undefined,
+            startDate: range.startDate instanceof Date ? range.startDate : undefined,
+          });
+        }
+      },
+      EVENT_OPTIONS
+    );
+    this.onAdapterEvent(
       this.HlsClass.Events.FRAG_PARSING_METADATA,
       (_, data) => ctx.events.emit('playback:metadataready', { data }),
       EVENT_OPTIONS
@@ -184,6 +215,27 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     );
   }
 
+  /**
+   * Attach a separate hls.js instance to an arbitrary video element without
+   * touching the main engine state. Intended for ad creatives that are HLS
+   * streams — the caller owns the returned dispose function and must call it
+   * when the ad ends (or on any teardown path).
+   */
+  attachMedia(video: HTMLVideoElement, src: string): () => void {
+    const hls = new this.HlsClass({ autoStartLoad: true, ...this.hlsConfig });
+    hls.loadSource(src);
+    hls.attachMedia(video);
+    return () => {
+      try {
+        hls.stopLoad();
+      } catch {
+        /* ignore */
+      }
+      hls.detachMedia();
+      hls.destroy();
+    };
+  }
+
   detach() {
     this.unbindCommands();
     this.unbindMediaEvents();
@@ -192,6 +244,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.adapter?.destroy();
     this.adapter = null;
     this.startedLoad = false;
+    this.seenCueIds.clear();
   }
 
   private onAdapterEvent(event: string, handler: (...args: any[]) => void, options?: any) {

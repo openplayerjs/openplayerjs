@@ -118,6 +118,29 @@ describe('Media engines', () => {
     expect(engine.canPlay(source)).toBe(true);
   });
 
+  test('HlsMediaEngine passes enableDateRangeMetadataCues and enableID3MetadataCues defaults', () => {
+    // Capture the config passed to the HlsMock constructor.
+    const Hls = require('hls.js').default;
+    let capturedConfig: Record<string, unknown> | undefined;
+    const OrigCtor = Hls;
+
+    const ctorSpy = jest.fn().mockImplementation(function (this: any, cfg: any) {
+      capturedConfig = cfg;
+      Object.assign(this, new OrigCtor(cfg));
+    });
+    // Copy static members (Events, isSupported, etc.) so HlsMediaEngine can read HlsClass.Events.
+    Object.assign(ctorSpy, OrigCtor);
+    // Patch the HlsClass reference on a fresh engine instance via config.
+    const engine = new HlsMediaEngine({ hlsClass: ctorSpy });
+    const ctx = makeCtx();
+    engine.attach({ ...ctx, activeSource: { src: 'y.m3u8', type: 'application/x-mpegURL' } } as any);
+
+    expect(capturedConfig?.enableDateRangeMetadataCues).toBe(true);
+    expect(capturedConfig?.enableID3MetadataCues).toBe(true);
+
+    engine.detach();
+  });
+
   test('HlsMediaEngine canPlay and attaches adapter', async () => {
     const engine = new HlsMediaEngine({ debug: true });
     const { media, events, core } = makeCtx();
