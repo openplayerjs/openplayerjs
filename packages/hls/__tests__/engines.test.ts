@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { Core, DefaultMediaEngine, EventBus, HtmlMediaSurface } from '@openplayerjs/core';
+import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
 
 // Ensure our Hls.js stub provides the methods HlsMediaEngine expects (attach/detach/destroy etc.)
@@ -120,7 +121,6 @@ describe('Media engines', () => {
 
   test('HlsMediaEngine passes enableDateRangeMetadataCues and enableID3MetadataCues defaults', () => {
     // Capture the config passed to the HlsMock constructor.
-    const Hls = require('hls.js').default;
     let capturedConfig: Record<string, unknown> | undefined;
     const OrigCtor = Hls;
 

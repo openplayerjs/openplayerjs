@@ -82,12 +82,7 @@ function makeDataCue(id: string, data: ArrayBuffer, startTime = 0, endTime = 0):
 }
 
 /** Create a VTTCue with scte35Out property (hls.js EXT-X-DATERANGE cue). */
-function makeDateRangeCue(
-  id: string,
-  direction: 'out' | 'in',
-  startTime = 10,
-  endTime = 40
-): TextTrackCue {
+function makeDateRangeCue(id: string, direction: 'out' | 'in', startTime = 10, endTime = 40): TextTrackCue {
   const cue = new VTTCue(startTime, endTime, '');
   Object.defineProperty(cue, 'id', { value: id, configurable: true });
   if (direction === 'out') {
@@ -136,7 +131,7 @@ if (typeof VTTCue === 'undefined') {
 // jsdom does not implement HTMLMediaElement.prototype.addTextTrack or proper
 // TextTrackList dispatchEvent. Provide minimal fakes so SSAI tests can run.
 
-type FakeTrackState = { handlers: Map<string, Function[]>; tracks: any[] };
+type FakeTrackState = { handlers: Map<string, EventListener[]>; tracks: any[] };
 const _fakeMediaState = new WeakMap<HTMLMediaElement, FakeTrackState>();
 
 function getMediaState(video: HTMLMediaElement): FakeTrackState {
@@ -148,15 +143,20 @@ function getMediaState(video: HTMLMediaElement): FakeTrackState {
 
 function makeFakeTextTrackList(state: FakeTrackState) {
   return {
-    get length() { return state.tracks.length; },
+    get length() {
+      return state.tracks.length;
+    },
     item: (i: number) => state.tracks[i],
     [Symbol.iterator]: () => state.tracks[Symbol.iterator](),
-    addEventListener: (e: string, h: Function) => {
+    addEventListener: (e: string, h: EventListener) => {
       if (!state.handlers.has(e)) state.handlers.set(e, []);
       state.handlers.get(e)!.push(h);
     },
-    removeEventListener: (e: string, h: Function) => {
-      state.handlers.set(e, (state.handlers.get(e) ?? []).filter((x) => x !== h));
+    removeEventListener: (e: string, h: EventListener) => {
+      state.handlers.set(
+        e,
+        (state.handlers.get(e) ?? []).filter((x) => x !== h)
+      );
     },
     dispatchEvent: (e: Event) => {
       for (const h of state.handlers.get(e.type) ?? []) h(e);
@@ -173,19 +173,22 @@ beforeAll(() => {
     lang = ''
   ) {
     const state = getMediaState(this);
-    const trackHandlers = new Map<string, Function[]>();
+    const trackHandlers = new Map<string, EventListener[]>();
     const track: any = {
       kind,
       label,
       language: lang,
       mode: 'hidden' as TextTrackMode,
       activeCues: null,
-      addEventListener: (event: string, h: Function) => {
+      addEventListener: (event: string, h: EventListener) => {
         if (!trackHandlers.has(event)) trackHandlers.set(event, []);
         trackHandlers.get(event)!.push(h);
       },
-      removeEventListener: (event: string, h: Function) => {
-        trackHandlers.set(event, (trackHandlers.get(event) ?? []).filter((x) => x !== h));
+      removeEventListener: (event: string, h: EventListener) => {
+        trackHandlers.set(
+          event,
+          (trackHandlers.get(event) ?? []).filter((x) => x !== h)
+        );
       },
       dispatchEvent: (e: Event) => {
         for (const h of trackHandlers.get(e.type) ?? []) h(e);
@@ -472,9 +475,7 @@ describe('SsaiAdStrategy — late-arriving tracks', () => {
 
     // Track added AFTER init
     const track = makeMetadataTrack(video);
-    video.textTracks.dispatchEvent(
-      Object.assign(new Event('addtrack'), { track })
-    );
+    video.textTracks.dispatchEvent(Object.assign(new Event('addtrack'), { track }));
 
     const events: string[] = [];
     bus.on('ads:break:start' as any, () => events.push('start'));
@@ -613,9 +614,7 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
 
     // Fire addtrack with a non-metadata track — should not bind.
     const captionsTrack = { kind: 'captions', addEventListener: jest.fn(), removeEventListener: jest.fn() };
-    video.textTracks.dispatchEvent(
-      Object.assign(new Event('addtrack'), { track: captionsTrack })
-    );
+    video.textTracks.dispatchEvent(Object.assign(new Event('addtrack'), { track: captionsTrack }));
 
     const events: string[] = [];
     bus.on('ads:break:start' as any, () => events.push('start'));
