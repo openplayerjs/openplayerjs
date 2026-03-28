@@ -1,5 +1,55 @@
 # Changelog
 
+## [3.4.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.0) (2026-03-28)
+
+_March 28, 2026_
+
+### `@openplayerjs/core@3.4.0`
+
+#### Chores
+
+- **[docs]** Fixed wrong packages names in documentation (168724d) @Rafael Miranda
+
+### `@openplayerjs/player@3.4.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.0`
+
+### `@openplayerjs/hls@3.4.0`
+
+#### Chores
+
+- **[docs]** Fixed wrong packages names in documentation (168724d) @Rafael Miranda
+
+### `@openplayerjs/ads@3.4.0`
+
+#### Features
+
+- **[ads]** SSAI and hybrid support, enhanced support for metadata tracks in HLS ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Increased branch coverage to 85%
+  - Added new commands to verify that release is ready and more in sync to what MUI does
+  - Removed inline elements from each package's release-it config file to merge everything into main one
+  - Minor formatting issues
+  - Modified script to add descriptions from commits, and consolidate it for improve CHANGELOG
+
+### `@openplayerjs/youtube@3.4.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.0`
+
+### General
+
+#### Bug Fixes
+
+- **[repo]** Replaced extension for release commands to match new extension in scripts (6017cd8) @Rafael Miranda
+- **[docs]** Updated CHANGELOG with proper entries from v3.3.0 and added scope for contributing guidelines (cf6f5dd) @Rafael Miranda
+
+#### Chores
+
+- **[deps]** Upgraded lock file (be8bce3) @Rafael Miranda
+
 ## [3.3.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.3.0) (2026-03-24)
 
 _March 24, 2026_
