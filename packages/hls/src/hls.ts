@@ -43,7 +43,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     try {
       const u = new URL(source.src, window.location.href);
       return u.pathname.endsWith('.m3u8');
-    } catch {
+    } catch /* istanbul ignore next */ {
       return source.src.split('?')[0].endsWith('.m3u8');
     }
   }

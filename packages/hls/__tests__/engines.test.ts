@@ -141,6 +141,29 @@ describe('Media engines', () => {
     engine.detach();
   });
 
+  test('HlsMediaEngine attachMedia creates a separate hls instance and disposes it', () => {
+    const OrigCtor = Hls;
+
+    const ctorSpy = jest.fn().mockImplementation(function (this: any, cfg: any) {
+      Object.assign(this, new OrigCtor(cfg));
+    });
+    Object.assign(ctorSpy, OrigCtor);
+
+    const engine = new HlsMediaEngine({ hlsClass: ctorSpy });
+    const video = document.createElement('video');
+
+    const dispose = engine.attachMedia(video, 'https://example.com/ad.m3u8');
+
+    const instance = ctorSpy.mock.instances[0] as any;
+    expect(instance.loadSource).toHaveBeenCalledWith('https://example.com/ad.m3u8');
+    expect(instance.attachMedia).toHaveBeenCalledWith(video);
+
+    // HlsMock has no stopLoad — dispose() hits the catch branch then calls detachMedia + destroy.
+    expect(() => dispose()).not.toThrow();
+    expect(instance.detachMedia).toHaveBeenCalled();
+    expect(instance.destroy).toHaveBeenCalled();
+  });
+
   test('HlsMediaEngine canPlay and attaches adapter', async () => {
     const engine = new HlsMediaEngine({ debug: true });
     const { media, events, core } = makeCtx();
