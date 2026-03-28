@@ -64,9 +64,9 @@ module.exports = {
 
     // Create generated notes + per-package changelogs from the updated root changelog
     'after:changelog': [
-      'node scripts/split-changelog.mjs',
+      'node scripts/split-changelog.cjs',
       // Inject curated notes into the newest release section (optional)
-      'node scripts/inject-release-notes.mjs',
+      'node scripts/inject-release-notes.cjs',
     ],
   },
 };
