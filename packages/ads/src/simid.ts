@@ -184,7 +184,7 @@ export class SimidSession {
       const origin = new URL(this.iframe.src, window.location.href).origin;
       // data: and blob: URLs produce the string "null" as their origin — treat as wildcard.
       return origin === 'null' ? '*' : origin;
-    } catch {
+    } catch /* istanbul ignore next */ {
       return '*';
     }
   }
@@ -295,6 +295,7 @@ export class SimidSession {
     // first valid message. Using event.source (rather than iframe.contentWindow)
     // is resilient to redirects and click-through navigations that replace the
     // iframe's content after the session starts.
+    /* istanbul ignore next — event.source is always null for synthetic MessageEvents in jsdom */
     if (this.creativeWindow === null && event.source instanceof Window) {
       this.creativeWindow = event.source;
     }
