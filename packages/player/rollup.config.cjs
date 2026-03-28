@@ -1,6 +1,8 @@
-import { sharedPlugins, sharedPluginsMinified, treeshake, CORE_EXTERNAL } from '../../rollup.shared.mjs';
+'use strict';
 
-export default [
+const { sharedPlugins, sharedPluginsMinified, treeshake, CORE_EXTERNAL } = require('../../rollup.shared.cjs');
+
+module.exports = [
   // ESM library build (peer-depends on @openplayerjs/core)
   {
     input: 'src/index.ts',

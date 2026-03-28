@@ -1,1310 +1,269 @@
-import { VASTClient, VASTTracker } from '@dailymotion/vast-client';
 import type { PlayerPlugin, PluginContext } from '@openplayerjs/core';
-import { getOverlayManager } from '@openplayerjs/core';
-
 import { AdDomManager, setSafeHTMLFn } from './ad-dom';
-import { CaptionManager } from './caption-manager';
-import { OmidSession } from './omid';
 import {
-  AdScheduler,
   extractVastTagUriFn,
   getBreakIdFn,
   getVastInputFromBreakFn,
   normalizeVmapAdSourceFn,
   parseVmapTimeOffsetFn,
 } from './schedule';
-import { SimidSession } from './simid';
-import type { AdsBreakConfig, AdsEvent, AdsPluginConfig, AdsSource, AdsSourceType, VastInput } from './types';
-import { PluginBus } from './types';
+import { CsaiAdStrategy } from './strategies/csai';
+import { HybridAdStrategy } from './strategies/hybrid';
+import { SsaiAdStrategy } from './strategies/ssai';
+import type {
+  AdSessionStrategy,
+  AdsBreakConfig,
+  AdsEvent,
+  AdsPluginConfig,
+  AdsSource,
+  AdsSourceType,
+  ScteOutCue,
+  ScteSource,
+} from './types';
 import {
   collectNonLinearCreatives,
   collectNonLinearFromXml,
   collectPodAds,
-  collectPodAdsFromXml,
   computeSkipAtSeconds,
-  extractAdVerifications,
-  extractSimidUrl,
   getVastXmlText,
   toXmlDocument,
 } from './vast-parser';
 
 export type { AdsBreakConfig, AdsEvent, AdsPluginConfig, AdsSource, AdsSourceType };
 
+/**
+ * `AdsPlugin` — thin dispatcher for ad delivery strategies.
+ *
+ * Selects an `AdSessionStrategy` based on `config.adDelivery` and delegates
+ * all lifecycle calls to it. Strategy selection:
+ *
+ * | `adDelivery` value | Strategy | Description |
+ * |--------------------|----------|-------------|
+ * | `'csai'` (default) | `CsaiAdStrategy` | Client-side insertion — fetches VAST/VMAP, renders an ad `<video>` |
+ * | `'ssai'` | `SsaiAdStrategy` | Server-side stitching — detects boundaries via SCTE-35 TextTrack cues |
+ * | `'hybrid'` | `HybridAdStrategy` | CSAI triggered by SCTE-35 OUT cues from the HLS engine |
+ *
+ * Auto-selection: if `scteSource` or `hybrid.scteSource` is provided without
+ * an explicit `adDelivery`, the mode defaults to `'hybrid'`.
+ *
+ * @example CSAI with preroll
+ * ```ts
+ * new AdsPlugin({
+ *   breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://example.com/vast.xml' } }],
+ * });
+ * ```
+ *
+ * @example SSAI with event sink
+ * ```ts
+ * new AdsPlugin({
+ *   adDelivery: 'ssai',
+ *   ssai: { eventSink: (e) => console.log(e.type, e.breakId) },
+ * });
+ * ```
+ *
+ * @example Hybrid CSAI + SCTE-35
+ * ```ts
+ * new AdsPlugin({
+ *   adDelivery: 'hybrid',
+ *   hybrid: {
+ *     scteSource: hlsEngine,
+ *     resolveScteUrl: (cue) => `https://ads.example.com/vast?id=${cue.id}`,
+ *   },
+ * });
+ * ```
+ */
 export class AdsPlugin implements PlayerPlugin {
   name = 'ads';
   version = '1.0.0';
   capabilities = ['ads'];
 
-  private ctx!: PluginContext;
-  private bus!: PluginBus<AdsEvent>;
-  private _lastCreative: any;
-  private overlayId = 'ads';
-  private adEndPromise: Promise<void> | null = null;
-
-  private cfg: Omit<
-    Required<
-      Omit<
-        AdsPluginConfig,
-        | 'mountEl'
-        | 'mountSelector'
-        | 'nonLinearContainer'
-        | 'nonLinearSelector'
-        | 'companionContainer'
-        | 'companionSelector'
-      >
-    >,
-    'sources'
-  > &
-    Pick<
-      AdsPluginConfig,
-      | 'mountEl'
-      | 'mountSelector'
-      | 'nonLinearContainer'
-      | 'nonLinearSelector'
-      | 'companionContainer'
-      | 'companionSelector'
-    > & { sources: AdsSource[] };
-
-  private overlay!: HTMLDivElement;
-  private adVideo?: HTMLVideoElement;
-
-  private currentBreakMeta?: { kind: string; breakId: string };
-  private vastClient: any;
-  private tracker?: any;
-
-  private globalUnsubs: (() => void)[] = [];
-  private sessionUnsubs: (() => void)[] = [];
-
-  private active = false;
-  private resumeAfter = false;
-  private contentMedia?: HTMLMediaElement;
-  private contentHadControls = false;
-  private startingBreak = false;
-  private userPlayIntent = false;
-  private forcedMuteUntilInteraction = false;
-  private syncingVolume = false;
-
-  private scheduler!: AdScheduler;
-  private captionMgr!: CaptionManager;
-  private _dom?: AdDomManager;
-
-  private simidSession?: SimidSession;
-  private omidSession?: OmidSession;
+  private readonly rawConfig: AdsPluginConfig;
+  private strategy?: AdSessionStrategy;
+  private scteUnsub?: () => void;
 
   constructor(config: AdsPluginConfig = {}) {
-    const normalizeSources = (cfg: AdsPluginConfig): AdsSource[] => {
-      const list: AdsSource[] = [];
-      const raw = cfg.sources ? (Array.isArray(cfg.sources) ? cfg.sources : [cfg.sources]) : [];
-      raw.forEach((s) => {
-        if (!s || typeof s.src !== 'string') return;
-        const src = s.src.trim();
-        if (!src) return;
-        const type = s.type as AdsSourceType;
-        if (type === 'VAST' || type === 'VMAP' || type === 'NONLINEAR') list.push({ type, src });
-      });
-      return list;
-    };
-
-    const sources = normalizeSources(config);
-    const breaks = config.breaks || [];
-    const hasExplicitPreroll = breaks.some(
-      (b) => b.at === 'preroll' && (b.source?.src || (Array.isArray(b.sources) && b.sources.some((s) => s?.src)))
-    );
-    const hasSourceVastOrVmap = sources.some((s) => s.type === 'VAST' || s.type === 'VMAP' || s.type === 'NONLINEAR');
-
-    this.cfg = {
-      allowNativeControls: config.allowNativeControls ?? false,
-      resumeContent: config.resumeContent ?? true,
-      preferredMediaTypes: config.preferredMediaTypes || [
-        'video/mp4',
-        'video/webm',
-        'application/vnd.apple.mpegurl',
-        'application/x-mpegURL',
-      ],
-      debug: config.debug ?? false,
-      breakTolerance: config.breakTolerance ?? 0.25,
-      sources,
-      breaks,
-      interceptPlayForPreroll: config.interceptPlayForPreroll ?? (Boolean(hasExplicitPreroll) || hasSourceVastOrVmap),
-      autoPlayOnReady: config.autoPlayOnReady || false,
-      mountEl: config.mountEl,
-      mountSelector: config.mountSelector,
-      nonLinearContainer: config.nonLinearContainer,
-      nonLinearSelector: config.nonLinearSelector,
-      companionContainer: config.companionContainer,
-      companionSelector: config.companionSelector,
-      adSourcesMode: config.adSourcesMode ?? 'waterfall',
-      omid: config.omid ?? {},
-      labels: config.labels ?? {},
-    };
+    this.rawConfig = config;
   }
 
-  setup(ctx: PluginContext) {
-    this.ctx = ctx;
-    this.bus = new PluginBus<AdsEvent>(ctx.events);
-    this.vastClient = new VASTClient();
+  setup(ctx: PluginContext): void {
+    const cfg = this.rawConfig;
+    const hasScteSource = !!(cfg.hybrid?.scteSource ?? cfg.scteSource);
+    const mode = cfg.adDelivery ?? (hasScteSource ? 'hybrid' : 'csai');
 
-    this.overlay = document.createElement('div');
-    this.overlay.className = 'op-ads';
-    this.overlay.style.display = 'none';
+    if (mode === 'ssai') {
+      this.strategy = new SsaiAdStrategy();
+    } else if (mode === 'hybrid') {
+      this.strategy = new HybridAdStrategy();
+    } else {
+      this.strategy = new CsaiAdStrategy();
+    }
 
-    this.scheduler = new AdScheduler(this.cfg, ctx, this.warn.bind(this), (err) => {
-      this.bus.emit('ads:error', { reason: 'vmap_parse_failed', error: err });
-      ctx.events.emit('ads.error', { reason: 'vmap_parse_failed', error: err });
-    });
+    this.strategy.init(ctx, cfg);
 
-    this.captionMgr = new CaptionManager();
-    this.dom = new AdDomManager(
-      this.overlay,
-      this.cfg,
-      () => this.adVideo,
-      () => this.tracker,
-      () => this.requestSkip('button')
-    );
+    // Install dispatch proxies so that scheduler-initiated calls go through
+    // AdsPlugin's own methods — enabling jest.spyOn(plugin, 'startBreak') etc.
+    if (this.csai) {
+      this.csai._dispatchStartBreak = (b, kind, opts) => (this as any).startBreak(b, kind, opts);
+      this.csai._dispatchStartBreakGroup = (breaks, kind) => (this as any).startBreakGroup(breaks, kind);
+      this.csai._dispatchPlayBreakFromVast = (...args: any[]) => (this as any).playBreakFromVast(...args);
+      this.csai._dispatchGetVastXmlText = (...args: any[]) => Promise.resolve((this as any).getVastXmlText(...args));
+      this.csai._dispatchBuildParsedForNonLinear = (...args: any[]) =>
+        (this as any).buildParsedForNonLinearFromXml(...args);
+      this.csai._dispatchMountAdVideo = (...args: any[]) => (this as any).mountAdVideo(...args);
+      this.csai._dispatchStartAdPlayback = () => (this as any).startAdPlayback();
+    }
 
-    this.globalUnsubs.push(
-      ctx.events.on('source:set', () => {
-        this.scheduler.reset();
-        this.startingBreak = false;
-        this.clearSession();
-        this.active = false;
-        this.contentMedia = undefined;
-        this.contentHadControls = false;
-        this.overlay.style.display = 'none';
-        this.ctx.leases.release('playback', this.name);
-        try {
-          getOverlayManager(this.ctx.core).deactivate(this.overlayId);
-        } catch {
-          /* ignore */
-        }
-        this.userPlayIntent = false;
-        this.scheduler.rebuild();
-      })
-    );
-
-    this.scheduler.rebuild();
-    this.bindBreakScheduler();
-
-    if (this.cfg.interceptPlayForPreroll) this.bindPrerollInterceptors();
-
-    this.globalUnsubs.push(
-      ctx.events.on('player:interacted', () => {
-        this.forcedMuteUntilInteraction = false;
-        if (this.active && this.adVideo) {
-          try {
-            this.adVideo.muted = ctx.core.muted;
-            this.adVideo.volume = ctx.core.volume;
-          } catch {
-            /* ignore */
-          }
-        }
-      })
-    );
+    if (mode !== 'ssai') {
+      const scteSource = cfg.hybrid?.scteSource ?? cfg.scteSource;
+      const resolveUrl = cfg.hybrid?.resolveScteUrl ?? cfg.resolveScteUrl;
+      if (scteSource && resolveUrl) this.bindScteSource(scteSource, resolveUrl);
+    }
   }
 
-  async playAds(vastUrl: string) {
-    const sourceType = this.scheduler.inferSourceTypeForUrl(vastUrl);
+  async playAds(vastUrl: string): Promise<boolean> {
+    const sourceType = this.csai?.scheduler?.inferSourceTypeForUrl(vastUrl);
     return this.playBreakFromVast({ kind: 'url', value: vastUrl }, { kind: 'manual', id: 'manual', sourceType });
   }
 
-  async playAdsFromXml(vastXml: string) {
+  async playAdsFromXml(vastXml: string): Promise<boolean> {
     return this.playBreakFromVast({ kind: 'xml', value: vastXml }, { kind: 'manual', id: 'manual' });
   }
 
   getDueMidrollBreaks(currentTime: number): AdsBreakConfig[] {
-    return this.scheduler.getDueMidrollBreaks(currentTime);
+    return this.strategy?.getDueMidrollBreaks?.(currentTime) ?? [];
   }
 
   getDueMidrollBreak(currentTime: number): AdsBreakConfig | undefined {
-    return this.scheduler.getDueMidrollBreak(currentTime);
+    return this.strategy?.getDueMidrollBreak?.(currentTime);
   }
 
-  destroy() {
-    this.finish({ resume: false });
-    for (const off of this.globalUnsubs) off();
-    this.globalUnsubs = [];
-    this.overlay?.remove();
+  requestSkip(reason: 'button' | 'close' | 'api' = 'api'): void {
+    this.strategy?.requestSkip?.(reason);
   }
 
-  // ─── Legacy public API ────────────────────────────────────────────────────────
-
-  /**
-   * @deprecated Use SimidSession directly for full protocol support.
-   * Best-effort SIMID iframe mounting from creative data.
-   */
-  tryMountSimidLayer(creative: any): void {
-    const simidUrl = extractSimidUrl(creative);
-    if (!simidUrl) return;
-    this.dom.ensureOverlayMounted(this.ctx.core.media);
-    this.dom.mountSimidIframe(simidUrl);
+  destroy(): void {
+    this.scteUnsub?.();
+    this.scteUnsub = undefined;
+    this.strategy?.destroy();
+    this.strategy = undefined;
   }
 
-  private get dom(): AdDomManager {
-    if (!this._dom) {
+  private bindScteSource(
+    source: ScteSource,
+    resolveUrl: (cue: ScteOutCue) => string | null | undefined | Promise<string | null | undefined>
+  ): void {
+    const prev = source.onCue;
+    source.onCue = (cue) => {
+      prev?.(cue);
+      void Promise.resolve(resolveUrl(cue)).then((url) => {
+        if (url) void this.playAds(url);
+      });
+    };
+    this.scteUnsub = () => {
+      source.onCue = prev;
+    };
+  }
+
+  // ─── Private helpers ──────────────────────────────────────────────────────
+
+  private get csai(): CsaiAdStrategy | undefined {
+    return this.strategy instanceof CsaiAdStrategy ? this.strategy : undefined;
+  }
+
+  // Lazy AdDomManager used by dom delegates when no strategy is set up yet (test-only).
+  private _lazyDom?: AdDomManager;
+  private get lazyDom(): AdDomManager {
+    if (!this._lazyDom) {
       const overlay = document.createElement('div');
-      this._dom = new AdDomManager(
+      this._lazyDom = new AdDomManager(
         overlay,
-        this.cfg,
-        () => this.adVideo,
-        () => this.tracker,
+        this.rawConfig,
+        () => undefined,
+        () => undefined,
         () => {}
       );
     }
-    return this._dom;
+    return this._lazyDom;
   }
 
-  private set dom(v: AdDomManager) {
-    this._dom = v;
+  // Internal field forwarders — test access only, not part of the public API.
+  /** @internal */ get bus() {
+    return this.csai?.bus;
+  }
+  /** @internal */ get tracker() {
+    return this.csai?.tracker;
+  }
+  /** @internal */ get active() {
+    return this.csai?.active;
+  }
+  /** @internal */ set active(v: boolean | undefined) {
+    if (this.csai && v !== undefined) this.csai.active = v;
+  }
+  /** @internal */ get overlay() {
+    return this.csai?.overlay;
+  }
+  /** @internal */ get ctx() {
+    return this.csai?.ctx;
+  }
+  /** @internal */ get sessionUnsubs() {
+    return this.csai?.sessionUnsubs;
+  }
+  /** @internal */ set sessionUnsubs(v: (() => void)[] | undefined) {
+    if (this.csai && v !== undefined) this.csai.sessionUnsubs = v;
+  }
+  /** @internal */ get resumeAfter() {
+    return this.csai?.resumeAfter;
+  }
+  /** @internal */ get globalUnsubs() {
+    return this.csai?.globalUnsubs ?? [];
+  }
+  /** @internal */ get adVideo() {
+    return this.csai?.adVideo;
+  }
+  /** @internal */ set adVideo(v: HTMLVideoElement | undefined) {
+    if (this.csai) this.csai.adVideo = v;
+  }
+  /** @internal */ get forcedMuteUntilInteraction() {
+    return this.csai?.forcedMuteUntilInteraction ?? false;
+  }
+  /** @internal */ set forcedMuteUntilInteraction(v: boolean) {
+    if (this.csai) this.csai.forcedMuteUntilInteraction = v;
+  }
+  /** @internal */ clearSession() {
+    return this.csai?.clearSession();
+  }
+  /** @internal */ startAdPlayback() {
+    return this.csai?.startAdPlayback();
+  }
+  /** @internal */ mountAdVideo(...args: any[]) {
+    return (this.csai as any)?.mountAdVideo(...args);
+  }
+  /** @internal */ get vastClient() {
+    return this.csai?.vastClient;
+  }
+  /** @internal */ set vastClient(v: any) {
+    if (this.csai) this.csai.vastClient = v;
+  }
+  /** @internal */ shouldInterceptPreroll() {
+    return this.csai?.shouldInterceptPreroll();
+  }
+  /** @internal */ startBreak(...args: any[]) {
+    return this.csai?.startBreak(...(args as Parameters<CsaiAdStrategy['startBreak']>));
+  }
+  /** @internal */ startBreakGroup(...args: any[]) {
+    return this.csai?.startBreakGroup(...(args as Parameters<CsaiAdStrategy['startBreakGroup']>));
+  }
+  /** @internal */ async playBreakFromVast(...args: any[]): Promise<boolean> {
+    if (!this.csai) return false;
+    return await this.csai.playBreakFromVast(...(args as Parameters<CsaiAdStrategy['playBreakFromVast']>));
   }
 
-  // ─── Preroll interception ─────────────────────────────────────────────────────
-
-  private bindPrerollInterceptors() {
-    const { events, core } = this.ctx;
-    const media = core.media;
-
-    const maybeStartDeferredVmap = () => {
-      if (this.scheduler.pendingVmapSrc && !this.scheduler.vmapLoadPromise) {
-        this.scheduler.vmapPending = true;
-        const src = this.scheduler.pendingVmapSrc;
-        this.scheduler.pendingVmapSrc = undefined;
-        this.scheduler.vmapLoadPromise = this.scheduler.loadVmapAndMerge([...this.scheduler.resolvedBreaks], src);
-      }
-    };
-
-    this.globalUnsubs.push(
-      events.on('cmd:play', () => {
-        maybeStartDeferredVmap();
-        const vmapWasPending = this.scheduler.vmapPending;
-        const shouldInterceptNow = this.shouldInterceptPreroll();
-
-        if (shouldInterceptNow || (vmapWasPending && !this.active && !this.startingBreak)) {
-          try {
-            media.pause();
-          } catch {
-            /* ignore */
-          }
-        }
-        void (async () => {
-          if (this.scheduler.vmapLoadPromise) await this.scheduler.vmapLoadPromise.catch(() => undefined);
-          if (!this.shouldInterceptPreroll()) {
-            if (vmapWasPending && !shouldInterceptNow && !this.active && !this.startingBreak) events.emit('cmd:play');
-            return;
-          }
-          this.userPlayIntent = !!core.userInteracted;
-          let guard = 0;
-          while (guard++ < 10) {
-            const pre = this.scheduler.getPrerollBreak();
-            if (!pre) break;
-            await this.startBreak(pre, 'preroll');
-          }
-        })();
-      })
-    );
-
-    const onNativePlayCapture = () => {
-      maybeStartDeferredVmap();
-      const vmapWasPending = this.scheduler.vmapPending;
-      const shouldInterceptNow = this.shouldInterceptPreroll();
-
-      if (shouldInterceptNow || (vmapWasPending && !this.active && !this.startingBreak)) {
-        try {
-          media.pause();
-        } catch {
-          /* ignore */
-        }
-      }
-      void (async () => {
-        if (this.scheduler.vmapLoadPromise) await this.scheduler.vmapLoadPromise.catch(() => undefined);
-        if (!this.shouldInterceptPreroll()) {
-          if (vmapWasPending && !shouldInterceptNow && !this.active && !this.startingBreak) events.emit('cmd:play');
-          return;
-        }
-        this.userPlayIntent = !!core.userInteracted;
-        let guard = 0;
-        while (guard++ < 10) {
-          const pre = this.scheduler.getPrerollBreak();
-          if (!pre) break;
-          await this.startBreak(pre, 'preroll');
-        }
-      })();
-    };
-
-    media.addEventListener('play', onNativePlayCapture, { capture: true });
-    this.globalUnsubs.push(() => media.removeEventListener('play', onNativePlayCapture, { capture: true }));
-  }
-
-  private shouldInterceptPreroll() {
-    const pre = this.scheduler.getPrerollBreak();
-    if (!pre) return false;
-    if (this.active || this.startingBreak) return false;
-    const media = this.ctx.core.media;
-    const t = media?.currentTime ?? 0;
-    if (t > 0.25) return false;
-    const id = this.scheduler.getBreakId(pre);
-    if (pre.once !== false && this.scheduler.playedBreaks.has(id)) return false;
-    if (this.ctx.state.current === 'ended') return false;
-    return true;
-  }
-
-  // ─── Break scheduler ──────────────────────────────────────────────────────────
-
-  private bindBreakScheduler() {
-    const content = this.ctx.core.media;
-    if (!content) return;
-
-    const onTime = () => {
-      if (this.active || this.startingBreak) return;
-      const t = content.currentTime || 0;
-      const due = this.scheduler.getDueMidrollBreaks(t);
-      if (!due.length) return;
-      const earliestBreak = due[0];
-      const earliestAt = earliestBreak.at as number;
-      const vmapOffset = earliestBreak.timeOffset;
-      const tol = this.cfg.breakTolerance ?? 0.25;
-
-      const group = vmapOffset
-        ? this.scheduler.resolvedBreaks.filter(
-            (b) =>
-              typeof b.at === 'number' &&
-              !this.scheduler.playedBreaks.has(this.scheduler.getBreakId(b)) &&
-              b.timeOffset === vmapOffset &&
-              Math.abs((b.at as number) - earliestAt) <= Math.max(1.0, tol)
-          )
-        : due.filter((b) => Math.abs((b.at as number) - earliestAt) <= tol);
-
-      if (!group.length) return;
-      if (group.length === 1) void this.startBreak(group[0], 'midroll');
-      else void this.startBreakGroup(group, 'midroll');
-    };
-    content.addEventListener('timeupdate', onTime);
-    this.globalUnsubs.push(() => content.removeEventListener('timeupdate', onTime));
-
-    const onEnded = () => {
-      if (this.active || this.startingBreak) return;
-      void (async () => {
-        if (this.scheduler.vmapLoadPromise) await this.scheduler.vmapLoadPromise.catch(() => undefined);
-        while (!this.active && !this.startingBreak) {
-          const post = this.scheduler.getPostrollBreak();
-          if (!post) break;
-          this.ctx.events.emit('ads.mediaended', {
-            break: { kind: 'postroll', id: this.scheduler.getBreakId(post) },
-            at: post.at,
-          });
-          await this.startBreak(post, 'postroll');
-        }
-      })();
-    };
-    content.addEventListener('ended', onEnded);
-    this.globalUnsubs.push(() => content.removeEventListener('ended', onEnded));
-  }
-
-  // ─── Break control ────────────────────────────────────────────────────────────
-
-  private async startBreak(
-    b: AdsBreakConfig,
-    kind: 'preroll' | 'midroll' | 'postroll' | 'auto',
-    opts?: { suppressResume?: boolean }
-  ) {
-    if (this.active || this.startingBreak) return;
-    const id = this.scheduler.getBreakId(b);
-    const once = b.once !== false;
-    if (once && this.scheduler.playedBreaks.has(id)) return;
-
-    const waterfallSources = b.sources;
-    if (waterfallSources && waterfallSources.length > 1) {
-      if (once) this.scheduler.playedBreaks.add(id);
-      this.startingBreak = true;
-      this.bus.emit('ads:break:start', { id, kind, at: b.at });
-      try {
-        for (let i = 0; i < waterfallSources.length; i++) {
-          const src = waterfallSources[i];
-          const isLastWaterfall = i === waterfallSources.length - 1;
-          const input: VastInput = this.scheduler.isXmlString(src.src)
-            ? { kind: 'xml', value: src.src }
-            : { kind: 'url', value: src.src };
-          const success = await this.playBreakFromVast(
-            input,
-            { kind, id, sourceType: src.type as AdsSourceType },
-            { suppressResumeOnError: !isLastWaterfall, suppressResumeOnSuccess: opts?.suppressResume }
-          );
-          if (success) break;
-        }
-      } finally {
-        this.startingBreak = false;
-        this.bus.emit('ads:break:end', { id, kind, at: b.at });
-      }
-      return;
-    }
-
-    const { input, sourceType } = this.scheduler.getVastInputFromBreak(b);
-    if (!input) return;
-    if (once) this.scheduler.playedBreaks.add(id);
-    this.startingBreak = true;
-    this.bus.emit('ads:break:start', { id, kind, at: b.at });
-    try {
-      await this.playBreakFromVast(input, { kind, id, sourceType }, { suppressResumeOnSuccess: opts?.suppressResume });
-    } finally {
-      this.startingBreak = false;
-      this.bus.emit('ads:break:end', { id, kind, at: b.at });
-    }
-  }
-
-  private async startBreakGroup(breaks: AdsBreakConfig[], kind: 'preroll' | 'midroll' | 'postroll' | 'auto') {
-    let startedMain = false;
-    const playable: AdsBreakConfig[] = [];
-    for (const b of breaks) {
-      if (kind === 'midroll') {
-        const { input } = this.scheduler.getVastInputFromBreak(b);
-        const url = input?.kind === 'url' ? input.value : '';
-        const isBumper = /bumper/i.test(url) || /bumper/i.test(b.id || '');
-        if (isBumper && startedMain) {
-          this.scheduler.playedBreaks.add(this.scheduler.getBreakId(b));
-          continue;
-        }
-        if (!isBumper) startedMain = true;
-      }
-      playable.push(b);
-    }
-    for (let i = 0; i < playable.length; i++) {
-      await this.startBreak(playable[i], kind, { suppressResume: i < playable.length - 1 });
-    }
-  }
-
-  // ─── Main ad playback ─────────────────────────────────────────────────────────
-
-  private async playBreakFromVast(
-    input: VastInput,
-    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string; sourceType?: AdsSourceType },
-    opts?: { suppressResumeOnError?: boolean; suppressResumeOnSuccess?: boolean }
-  ): Promise<boolean> {
-    if (this.active) return false;
-
-    this.dom.ensureOverlayMounted(this.ctx.core.media);
-    const {
-      events,
-      leases,
-      core: { media },
-    } = this.ctx;
-
-    const requestPayload = input.kind === 'url' ? input.value : '[xml]';
-    this.bus.emit('ads:requested', requestPayload);
-    this.log('requested', requestPayload, meta);
-    this.resumeAfter = this.cfg.resumeContent !== false && meta.kind !== 'postroll';
-
-    const pauseAndAcquireLease = () => {
-      try {
-        media.pause();
-      } catch {
-        /* ignore */
-      }
-      events.emit('cmd:pause');
-      if (!leases.acquire('playback', this.name)) {
-        this.bus.emit('ads:error', { reason: 'playback lease already owned', owner: leases.owner('playback') });
-        this.ctx.events.emit('ads.error', { reason: 'playback lease already owned', owner: leases.owner('playback') });
-        return false;
-      }
-      return true;
-    };
-
-    let rawDoc: XMLDocument | null = null;
-    const loadRawDocBestEffort = async () => {
-      if (rawDoc) return;
-      try {
-        rawDoc = this.buildParsedForNonLinearFromXml(await this.getVastXmlText(input));
-      } catch {
-        rawDoc = null;
-      }
-    };
-
-    try {
-      let parsed: any;
-      if (input.kind === 'url') {
-        try {
-          parsed = await this.vastClient.get(input.value);
-        } catch (e) {
-          await loadRawDocBestEffort();
-          if (rawDoc) parsed = await this.vastClient.parseVAST(rawDoc);
-          else throw e;
-        }
-      } else {
-        const doc =
-          typeof input.value === 'string'
-            ? toXmlDocument(input.value)
-            : input.value instanceof XMLDocument
-              ? input.value
-              : toXmlDocument(new XMLSerializer().serializeToString(input.value));
-        rawDoc = doc;
-        parsed = await this.vastClient.parseVAST(doc);
-      }
-
-      this.log('vast parsed', { ads: parsed?.ads?.length ?? 0, version: parsed?.version });
-
-      const emitLoaded = (count: number) => {
-        this.bus.emit('ads:loaded', { break: meta, count });
-        this.ctx.events.emit('ads.loaded', { break: meta, count });
-      };
-
-      if (meta.sourceType === 'NONLINEAR') {
-        const nonLinearItems = collectNonLinearCreatives(parsed);
-        if (nonLinearItems.length) {
-          emitLoaded(nonLinearItems.length);
-          await this.playNonLinearOnlyBreak(parsed, meta);
-          return true;
-        }
-        await loadRawDocBestEffort();
-        if (rawDoc) {
-          const xmlItems = collectNonLinearFromXml(rawDoc);
-          if (xmlItems.length) {
-            emitLoaded(xmlItems.length);
-            await this.playNonLinearOnlyBreakFromXml(xmlItems, meta);
-            return true;
-          }
-        }
-      }
-
-      let pod = collectPodAds(parsed, this.cfg.preferredMediaTypes);
-      this.log('linear pod items', pod.length);
-
-      if (!pod.length) {
-        const nonLinearItems = collectNonLinearCreatives(parsed);
-        if (nonLinearItems.length) {
-          emitLoaded(nonLinearItems.length);
-          await this.playNonLinearOnlyBreak(parsed, meta);
-          return true;
-        }
-        await loadRawDocBestEffort();
-        if (rawDoc) {
-          pod = collectPodAdsFromXml(rawDoc, this.cfg.preferredMediaTypes);
-          this.log('linear pod items (xml fallback)', pod.length);
-          if (!pod.length) {
-            const xmlItems = collectNonLinearFromXml(rawDoc);
-            if (xmlItems.length) {
-              emitLoaded(xmlItems.length);
-              await this.playNonLinearOnlyBreakFromXml(xmlItems, meta);
-              return true;
-            }
-          }
-        }
-      }
-
-      if (!pod.length) {
-        this.warn('no playable ads found in VAST response');
-        throw new Error('No playable ads found in VAST response');
-      }
-
-      emitLoaded(pod.length);
-      if (!pauseAndAcquireLease()) return false;
-      this.active = true;
-
-      // Set up OMID session once per break (covers all pod items).
-      const verifications = extractAdVerifications(parsed, rawDoc);
-      if (OmidSession.isAvailable() && verifications.length) {
-        verifications.forEach((v) => {
-          if (v.scriptUrl) OmidSession.injectVerificationScript(v.scriptUrl, v.params);
-        });
-        this.omidSession = new OmidSession(media as HTMLVideoElement, verifications, this.cfg.omid?.accessMode);
-      }
-
-      for (let i = 0; i < pod.length; i++) {
-        const item = pod[i];
-        this.bus.emit('ads:ad:start', { break: meta, index: i, sequence: item.sequence });
-        this.clearSession();
-
-        this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative);
-        this._lastCreative = item.creative;
-
-        this.log('mount ad video', {
-          url: item.mediaFile?.fileURL,
-          type: item.mediaFile?.type,
-          skipOffset: item.skipOffset,
-        });
-        this.mountAdVideo(media, item.mediaFile, item.creative);
-        const endPromise = this.waitForAdEnd();
-
-        this.dom.setupSkipUIForPodItem(item, this.log.bind(this));
-        this.log('skip ui', { raw: this.dom.skipOffsetRaw, at: this.dom.skipAtSeconds });
-        this.dom.mountCompanions(item.creative);
-        this.dom.mountNonLinear(item.creative);
-
-        // SIMID: detect and start session if creative has a SIMID MediaFile.
-        const simidUrl = extractSimidUrl(item.creative, rawDoc);
-        if (simidUrl && this.adVideo) {
-          const iframe = this.dom.mountSimidIframe(simidUrl);
-          const clickThruRaw =
-            item.creative?.videoClickThroughURLTemplate?.url ??
-            item.creative?.videoClickThroughURLTemplate ??
-            item.creative?.videoClicks?.clickThrough ??
-            '';
-          const simidCreativeInfo = {
-            adParameters: String(
-              item.creative?.linear?.adParameters?.value ?? item.creative?.adParameters?.value ?? ''
-            ),
-            clickThruUri: typeof clickThruRaw === 'string' ? clickThruRaw : String(clickThruRaw || ''),
-          };
-          this.simidSession = new SimidSession(
-            iframe,
-            this.adVideo,
-            {
-              onSkip: () => this.requestSkip('api'),
-              onStop: () => {
-                const v = this.adVideo;
-                if (v) {
-                  try {
-                    v.dispatchEvent(new Event('ended'));
-                  } catch {
-                    /* ignore */
-                  }
-                }
-              },
-              onPause: () => this.ctx.events.emit('cmd:pause'),
-              onPlay: () => this.ctx.events.emit('cmd:play'),
-              onClickThrough: (url) => {
-                this.dom.safeWindowOpen(url);
-                try {
-                  this.tracker?.trackClick?.();
-                } catch {
-                  /* ignore */
-                }
-                this.bus.emit('ads:clickthrough', { break: meta, url });
-                this.ctx.events.emit('ads.click', { break: meta, url });
-              },
-              onTrackingEvent: (event, _data) => {
-                this.bus.emit('ads:impression', { break: meta, event });
-              },
-              onFatal: (_code, _reason) => {
-                // Fatal SIMID error: continue ad playback using the video element.
-                this.simidSession?.destroy();
-                this.simidSession = undefined;
-              },
-              onRequestChangeAdDuration: (durationChange, resolve, _reject) => {
-                // Accept the request; notify the creative of the new total duration.
-                resolve();
-                const v = this.adVideo;
-                if (v && Number.isFinite(v.duration)) {
-                  this.simidSession?.adDurationChange(v.duration + durationChange);
-                }
-              },
-            },
-            simidCreativeInfo
-          );
-          this.sessionUnsubs.push(() => {
-            this.simidSession?.destroy();
-            this.simidSession = undefined;
-          });
-        }
-
-        if (!this.cfg.allowNativeControls) this.bindAdSurfaceCommands();
-
-        this.tracker?.trackImpression?.();
-        this.omidSession?.impression();
-        this.bus.emit('ads:impression', { break: meta, index: i });
-
-        this.bindTrackerAndTelemetry({ kind: meta.kind, breakId: meta.id });
-        this.startAdPlayback();
-        await endPromise;
-
-        this.bus.emit('ads:ad:end', { break: meta, index: i, sequence: item.sequence });
-      }
-
-      this.bus.emit('ads:allAdsCompleted', { break: meta });
-      this.ctx.events.emit('ads.allAdsCompleted', { break: meta });
-      const announcer = this.overlay && this.overlay.querySelector('.op-ads__sr-announcer');
-      if (announcer) announcer.textContent = this.cfg.labels?.adEnded || 'Advertisement ended';
-
-      this.finish({
-        resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
-        suppressResume: opts?.suppressResumeOnSuccess,
-      });
-      return true;
-    } catch (err) {
-      this.bus.emit('ads:error', err);
-      this.ctx.events.emit('ads.error', { err });
-      this.finish({
-        resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
-        suppressResume: opts?.suppressResumeOnError,
-      });
-      return false;
-    }
-  }
-
-  // ─── Non-linear playback ──────────────────────────────────────────────────────
-
-  private async playNonLinearOnlyBreak(
-    parsed: any,
-    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string }
-  ) {
-    this.dom.ensureOverlayMounted(this.ctx.core.media);
-    this.overlay.replaceChildren();
-    this.overlay.style.display = 'block';
-    this.active = true;
-
-    if (!this.overlay.querySelector('.op-ads__sr-announcer')) {
-      const announcer = document.createElement('div');
-      announcer.className = 'op-ads__sr-announcer op-player__sr-only';
-      announcer.setAttribute('role', 'status');
-      announcer.setAttribute('aria-live', 'polite');
-      announcer.setAttribute('aria-atomic', 'true');
-      announcer.textContent = this.cfg.labels?.advertisement || 'Advertisement';
-      this.overlay.appendChild(announcer);
-    }
-
-    const items = collectNonLinearCreatives(parsed);
-    if (!items.length) return;
-    let maxDuration = 0;
-
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      try {
-        this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative);
-      } catch {
-        this.tracker = undefined;
-      }
-      this._lastCreative = item.creative;
-
-      const companionCreative =
-        (item.ad?.creatives as any[] | undefined)?.find((c: any) => c?.type === 'companion') ?? item.creative;
-      this.dom.mountCompanions(companionCreative);
-      this.dom.ensureNonLinearDom();
-      const el = this.dom.renderNonLinear(item.nonLinear);
-      if (el) this.dom.nonLinearWrap!.appendChild(el);
-
-      try {
-        this.tracker?.trackImpression?.();
-        this.tracker?.trackCreativeView?.();
-      } catch {
-        /* ignore */
-      }
-      this.bus.emit('ads:impression', { break: meta, index: i });
-      this.bus.emit('ads:ad:start', { break: meta, index: i, sequence: item.sequence });
-      maxDuration = Math.max(maxDuration, this.dom.nonLinearSuggestedDurationSeconds(item.nonLinear));
-    }
-
-    this.active = false;
-    this.ctx.events.emit('cmd:play');
-    void this.dismissNonLinear(items, meta, maxDuration);
-  }
-
-  private async playNonLinearOnlyBreakFromXml(
-    items: { nonLinear: any; companions?: any[] }[],
-    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string }
-  ) {
-    this.dom.ensureOverlayMounted(this.ctx.core.media);
-    this.dom.clearAdOverlays();
-    this.overlay.replaceChildren();
-    this.overlay.style.display = 'block';
-    this.active = true;
-    let maxDuration = 0;
-
-    for (let i = 0; i < items.length; i++) {
-      const it = items[i];
-      if (it.companions?.length)
-        this.dom.mountCompanions({ companions: it.companions, companionAds: { companions: it.companions } });
-      this.dom.ensureNonLinearDom();
-      const el = this.dom.renderNonLinear(it.nonLinear);
-      if (el) this.dom.nonLinearWrap!.appendChild(el);
-      maxDuration = Math.max(maxDuration, this.dom.nonLinearSuggestedDurationSeconds(it.nonLinear));
-      this.bus.emit('ads:impression', { break: meta, index: i });
-      this.bus.emit('ads:ad:start', { break: meta, index: i });
-    }
-
-    this.active = false;
-    this.ctx.events.emit('cmd:play');
-    void this.dismissNonLinear(items, meta, maxDuration);
-  }
-
-  private async dismissNonLinear(items: any[], meta: any, maxDuration: number) {
-    const start = Date.now();
-    await new Promise<void>((resolve) => {
-      const tick = () => {
-        const elapsed = (Date.now() - start) / 1000;
-        const anyLeft = !!this.dom.nonLinearWrap?.querySelector('.op-ads__nonlinear-item');
-        if (!anyLeft || elapsed >= maxDuration) {
-          resolve();
-          return;
-        }
-        setTimeout(tick, 50);
-      };
-      tick();
-    });
-    for (let i = 0; i < items.length; i++) this.bus.emit('ads:ad:end', { break: meta, index: i });
-    this.clearSession();
-    this.overlay.style.display = 'none';
-    this.overlay.replaceChildren();
-    this.currentBreakMeta = undefined;
-  }
-
-  // ─── Ad video management ──────────────────────────────────────────────────────
-
-  private mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: { fileURL: string; raw: any }, creative?: any) {
-    this.dom.ensureOverlayMounted(contentMedia);
-    const root = this.overlay.parentElement as HTMLElement;
-    this.overlay.replaceChildren();
-    this.overlay.style.display = 'block';
-
-    this.contentMedia = contentMedia;
-    this.captionMgr.captureActiveCaptionTrack(contentMedia);
-
-    const v = document.createElement('video');
-    v.className = 'op-ads__media';
-    v.playsInline = true;
-    const contentPreload = (contentMedia.getAttribute('preload') || contentMedia.preload || '').toLowerCase();
-    const isAutoplayPath = !!contentMedia.autoplay;
-    const forceMutedForPolicy = isAutoplayPath && !this.ctx.core.userInteracted;
-
-    v.preload = contentPreload === 'none' ? 'metadata' : 'auto';
-    v.controls = this.cfg.allowNativeControls;
-    v.style.width = '100%';
-    v.style.height = '100%';
-    v.src = mediaFile.fileURL;
-    try {
-      v.load();
-    } catch {
-      /* ignore */
-    }
-
-    const desiredMuted = forceMutedForPolicy ? true : this.ctx.core.muted;
-    const desiredVolume = forceMutedForPolicy ? 0 : this.ctx.core.volume;
-    v.muted = desiredMuted;
-    v.defaultMuted = desiredMuted;
-    if (Number.isFinite(desiredVolume)) v.volume = Math.max(0, Math.min(1, desiredVolume));
-
-    this.adEndPromise = new Promise((resolve) => {
-      const cleanup = () => {
-        if (this.adVideo === v) {
-          try {
-            v.pause();
-          } catch {
-            /* ignore */
-          }
-          v.remove();
-          this.adVideo = undefined;
-        } else v.remove();
-      };
-      const onEnded = () => {
-        this.ctx.events.emit('ended');
-        cleanup();
-        resolve();
-      };
-      const onError = () => {
-        cleanup();
-        resolve();
-      };
-      v.addEventListener('ended', onEnded, { once: true });
-      v.addEventListener('error', onError, { once: true });
-      this.sessionUnsubs.push(() => v.removeEventListener('ended', onEnded));
-      this.sessionUnsubs.push(() => v.removeEventListener('error', onError));
-    });
-
-    this.overlay.appendChild(v);
-    this.adVideo = v;
-
-    const onVisibility = () => {
-      if (document.visibilityState !== 'visible') return;
-      const cur = this.adVideo;
-      if (!cur || !cur.paused || cur.ended) return;
-      try {
-        const p = cur.play?.();
-        if (p && typeof p.catch === 'function') p.catch(() => undefined);
-      } catch {
-        /* ignore */
-      }
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-    this.sessionUnsubs.push(() => document.removeEventListener('visibilitychange', onVisibility));
-
-    const captionTracks = this.captionMgr.attachAdCaptionTracks(v, mediaFile.raw, creative);
-    this.sessionUnsubs.push(() => {
-      captionTracks.forEach((el) => el.remove());
-    });
-
-    let overlayMgr: ReturnType<typeof getOverlayManager> | null = null;
-    try {
-      overlayMgr = getOverlayManager(this.ctx.core);
-      overlayMgr.activate({
-        id: 'ads',
-        priority: 100,
-        mode: 'countdown',
-        canSeek: false,
-        duration: 0,
-        value: 0,
-        label: 'Ad',
-        fullscreenEl: root,
-        fullscreenVideoEl: v,
-      });
-    } catch {
-      /* ignore */
-    }
-
-    const updateOverlay = () => {
-      if (!overlayMgr) return;
-      const dur = v.duration;
-      const cur = v.currentTime;
-      if (!Number.isFinite(dur) || dur <= 0 || !Number.isFinite(cur)) return;
-      overlayMgr.update(this.overlayId, {
-        duration: dur,
-        value: Math.max(0, dur - cur),
-        mode: 'countdown',
-        canSeek: false,
-        fullscreenEl: root,
-        fullscreenVideoEl: v,
-      });
-    };
-    v.addEventListener('loadedmetadata', updateOverlay);
-    v.addEventListener('timeupdate', updateOverlay);
-    this.sessionUnsubs.push(() => v.removeEventListener('loadedmetadata', updateOverlay));
-    this.sessionUnsubs.push(() => v.removeEventListener('timeupdate', updateOverlay));
-  }
-
-  // ─── Ad surface commands ──────────────────────────────────────────────────────
-
-  private bindAdSurfaceCommands() {
-    const { events } = this.ctx;
-    const v = () => this.adVideo;
-
-    this.sessionUnsubs.push(
-      events.on('cmd:play', () => {
-        const wantsAutoplayPath = Boolean(this.contentMedia?.autoplay);
-        const shouldForceMute = !this.userPlayIntent && wantsAutoplayPath && !this.ctx.core.userInteracted;
-        if (shouldForceMute) {
-          this.forcedMuteUntilInteraction = true;
-          try {
-            if (v()) {
-              v()!.muted = true;
-              v()!.volume = 0;
-            }
-          } catch {
-            /* ignore */
-          }
-        } else {
-          this.forcedMuteUntilInteraction = false;
-          try {
-            if (v()) {
-              v()!.muted = this.ctx.core.muted;
-              v()!.volume = this.ctx.core.volume;
-            }
-          } catch {
-            /* ignore */
-          }
-        }
-        v()
-          ?.play()
-          .catch(() => {
-            /* ignore */
-          });
-      })
-    );
-    this.sessionUnsubs.push(events.on('cmd:pause', () => v()?.pause()));
-    this.sessionUnsubs.push(
-      events.on('cmd:setVolume', (x: any) => {
-        const vol = Number(x);
-        if (!Number.isFinite(vol) || !v() || this.syncingVolume || this.forcedMuteUntilInteraction) return;
-        v()!.volume = vol;
-      })
-    );
-    this.sessionUnsubs.push(
-      events.on('cmd:setMuted', (x: any) => {
-        if (!v() || this.syncingVolume) return;
-        if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) {
-          v()!.muted = true;
-          v()!.volume = 0;
-          return;
-        }
-        v()!.muted = Boolean(x);
-      })
-    );
-  }
-
-  // ─── Tracker & telemetry ──────────────────────────────────────────────────────
-
-  private bindTrackerAndTelemetry(meta: { kind: string; breakId: string }) {
-    this.currentBreakMeta = meta;
-    const v = this.adVideo!;
-    let started = false;
-    let lastMuted = v.muted || v.volume === 0;
-    let lastVol = Number.isFinite(v.volume) ? v.volume : 1;
-    let lastPaused = v.paused;
-    let q25 = false,
-      q50 = false,
-      q75 = false,
-      q100 = false;
-
-    const emitDuration = () => {
-      const dur = v.duration;
-      if (Number.isFinite(dur) && dur > 0) {
-        this.bus.emit('ads:duration', { break: meta, duration: dur });
-        this.ctx.events.emit('ads.durationChange', { duration: dur, break: meta });
-      }
-    };
-
-    const emitQuartile = (quartile: 0 | 25 | 50 | 75 | 100) => {
-      this.bus.emit('ads:quartile', { break: meta, quartile });
-      if (quartile === 25) {
-        this.ctx.events.emit('ads.firstQuartile', { break: meta });
-        this.omidSession?.firstQuartile();
-      }
-      if (quartile === 50) {
-        this.ctx.events.emit('ads.midpoint', { break: meta });
-        this.omidSession?.midpoint();
-      }
-      if (quartile === 75) {
-        this.ctx.events.emit('ads.thirdQuartile', { break: meta });
-        this.omidSession?.thirdQuartile();
-      }
-      if (quartile === 100) {
-        this.ctx.events.emit('ads.complete', { break: meta });
-        this.omidSession?.complete();
-      }
-    };
-
-    const onPlaying = () => {
-      if (!started) {
-        started = true;
-        this.tracker?.trackStart?.();
-        this.ctx.events.emit('play');
-        this.ctx.events.emit('ads.start', { break: meta });
-        emitQuartile(0);
-        emitDuration();
-        const dur = v.duration;
-        const vol = v.muted ? 0 : Number.isFinite(v.volume) ? v.volume : 1;
-        this.omidSession?.loaded();
-        this.omidSession?.start(Number.isFinite(dur) ? dur : 0, vol);
-        this.simidSession?.progress(v.currentTime, Number.isFinite(dur) ? dur : 0);
-      } else if (lastPaused) {
-        this.tracker?.trackResume?.();
-        this.bus.emit('ads:resume', { break: meta });
-        this.ctx.events.emit('ads.resume', { break: meta });
-        this.omidSession?.resume();
-        this.simidSession?.resume();
-      }
-      this.ctx.events.emit('playing');
-      lastPaused = false;
-    };
-
-    const onPause = () => {
-      if (started) {
-        this.tracker?.trackPause?.();
-        this.omidSession?.pause();
-        this.simidSession?.pause();
-      }
-      lastPaused = true;
-      this.bus.emit('ads:pause', { break: meta });
-      this.ctx.events.emit('pause');
-      this.ctx.events.emit('ads.pause', { break: meta });
-    };
-
-    const onTime = () => {
-      const dur = v.duration;
-      const cur = v.currentTime;
-      if (!Number.isFinite(dur) || dur <= 0 || !Number.isFinite(cur)) return;
-      emitDuration();
-      const remaining = Math.max(0, dur - cur);
-      this.bus.emit('ads:timeupdate', { break: meta, currentTime: cur, remainingTime: remaining, duration: dur });
-      this.ctx.events.emit('ads.adProgress', { currentTime: cur, duration: dur, break: meta });
-      this.tracker?.setDuration?.(dur);
-      this.tracker?.setProgress?.(cur);
-      this.simidSession?.progress(cur, dur);
-
-      const pct = cur / dur;
-      if (!q25 && pct >= 0.25) {
-        q25 = true;
-        this.tracker?.trackFirstQuartile?.();
-        emitQuartile(25);
-      }
-      if (!q50 && pct >= 0.5) {
-        q50 = true;
-        this.tracker?.trackMidpoint?.();
-        emitQuartile(50);
-      }
-      if (!q75 && pct >= 0.75) {
-        q75 = true;
-        this.tracker?.trackThirdQuartile?.();
-        emitQuartile(75);
-      }
-      if (!q100 && pct >= 0.999) {
-        q100 = true;
-        this.tracker?.trackComplete?.();
-        emitQuartile(100);
-      }
-    };
-
-    const onVolume = () => {
-      const vol = v.volume;
-      if (Number.isFinite(vol) && vol !== lastVol) lastVol = vol;
-      const muted = v.muted || v.volume === 0;
-      this.bus.emit('ads:volumeChange', { break: meta, volume: vol, muted });
-      this.ctx.events.emit('ads.volumeChange', { volume: vol, muted, break: meta });
-      this.omidSession?.volumeChange(muted ? 0 : vol);
-      this.simidSession?.volumeChange(vol, muted);
-
-      if (muted !== lastMuted) {
-        lastMuted = muted;
-        if (muted) {
-          this.tracker?.trackMute?.();
-          this.bus.emit('ads:mute', { break: meta });
-        } else {
-          this.tracker?.trackUnmute?.();
-          this.bus.emit('ads:unmute', { break: meta });
-        }
-      }
-
-      if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) return;
-      if (this.syncingVolume) return;
-      try {
-        this.syncingVolume = true;
-        this.ctx.core.muted = muted;
-        if (Number.isFinite(vol)) this.ctx.core.volume = Math.max(0, Math.min(1, vol));
-      } catch {
-        /* ignore */
-      } finally {
-        this.syncingVolume = false;
-      }
-    };
-
-    const onClick = (ev: PointerEvent) => {
-      if (ev.defaultPrevented) return;
-      const c = this._lastCreative;
-      const click =
-        c?.videoClickThroughURLTemplate || c?.videoClicks?.clickThrough || c?.videoClicks?.clickThroughURLTemplate;
-      if (!click) return;
-      const url = typeof click === 'string' ? click : click.url;
-      this.dom.safeWindowOpen(url);
-      this.tracker?.trackClick?.();
-      this.tracker?.trackClickThrough?.();
-      this.bus.emit('ads:clickthrough', { break: meta, url: click });
-      this.ctx.events.emit('ads.click', { break: meta, url: click });
-    };
-
-    v.addEventListener('playing', onPlaying);
-    v.addEventListener('pause', onPause);
-    v.addEventListener('timeupdate', onTime);
-    v.addEventListener('volumechange', onVolume);
-    v.addEventListener('click', onClick);
-    v.addEventListener('loadedmetadata', emitDuration);
-
-    this.sessionUnsubs.push(() => v.removeEventListener('playing', onPlaying));
-    this.sessionUnsubs.push(() => v.removeEventListener('pause', onPause));
-    this.sessionUnsubs.push(() => v.removeEventListener('timeupdate', onTime));
-    this.sessionUnsubs.push(() => v.removeEventListener('volumechange', onVolume));
-    this.sessionUnsubs.push(() => v.removeEventListener('click', onClick));
-    this.sessionUnsubs.push(() => v.removeEventListener('loadedmetadata', emitDuration));
-  }
-
-  // ─── Playback start ───────────────────────────────────────────────────────────
-
-  private startAdPlayback() {
-    const v = this.adVideo;
-    this.ctx.events.emit('play');
-    if (!v) return;
-
-    const tryPlay = (muted: boolean): Promise<void> | undefined => {
-      try {
-        if (muted) {
-          v.muted = true;
-          v.volume = 0;
-          this.forcedMuteUntilInteraction = true;
-        }
-        const p = v.play?.();
-        return p && typeof p.then === 'function' ? (p as Promise<void>) : undefined;
-      } catch {
-        return undefined;
-      }
-    };
-
-    const p = tryPlay(false);
-    if (p) {
-      p.catch(() => {
-        const p2 = tryPlay(true);
-        if (p2)
-          p2.catch(() => {
-            /* both failed */
-          });
-      });
-    }
-  }
-
-  private waitForAdEnd(): Promise<void> {
-    return this.adEndPromise || Promise.resolve();
-  }
-
-  private requestSkip(reason: 'button' | 'close' | 'api' = 'api') {
-    this.dom.requestSkip(
-      reason,
-      this.adVideo,
-      this.currentBreakMeta,
-      (data) => {
-        this.bus.emit('ads:skip', data);
-        this.ctx.events.emit('ads.skipped', data);
-        this.ctx.events.emit('adsskipped', data);
-        this.omidSession?.skipped();
-        this.simidSession?.skip();
-      },
-      this.log.bind(this)
-    );
-  }
-
-  // ─── Session cleanup ──────────────────────────────────────────────────────────
-
-  private clearSession() {
-    this.dom.clearSession();
-    for (const off of this.sessionUnsubs) off();
-    this.sessionUnsubs = [];
-    this.tracker = undefined;
-
-    if (this.adVideo) {
-      try {
-        this.adVideo.pause();
-      } catch {
-        /* ignore */
-      }
-      this.adVideo.remove();
-      this.adVideo = undefined;
-    }
-
-    try {
-      this.overlay
-        .querySelectorAll('video.op-ads__media')
-        .forEach((n) => n?.parentNode?.removeChild?.(n) ?? n.remove?.());
-    } catch {
-      /* ignore */
-    }
-
-    this.adEndPromise = null;
-    this.captionMgr.removeAdCaptions();
-    this.overlay.replaceChildren();
-  }
-
-  private finish(opts: { resume: boolean; suppressResume?: boolean }) {
-    const { events, leases } = this.ctx;
-    this.clearSession();
-    if (this.contentMedia && this.contentHadControls) this.contentMedia.setAttribute('controls', '');
-    this.contentMedia = undefined;
-    this.contentHadControls = false;
-    this.overlay.style.display = 'none';
-    this.overlay.replaceChildren();
-    leases.release('playback', this.name);
-    this.active = false;
-    const shouldResume = !!(opts.resume || this.userPlayIntent || this.resumeAfter);
-    this.userPlayIntent = false;
-    this.captionMgr.restoreActiveTextTrack(this.ctx?.core?.media);
-    try {
-      getOverlayManager(this.ctx.core).deactivate(this.overlayId);
-    } catch {
-      /* ignore */
-    }
-
-    this.omidSession?.destroy();
-    this.omidSession = undefined;
-
-    if (!opts.suppressResume) {
-      if (shouldResume) events.emit('cmd:play');
-      else events.emit('cmd:pause');
-    }
-  }
-
-  // ─── Sub-module delegates (previously private, kept for test access) ─────────
-
-  // Standalone pure utilities — work without setup() having been called:
+  // ─── @internal delegates ─────────────────────────────────────────────────
+  //
+  // These exist for test access to internal scheduler / dom / captionMgr state.
+  // They are NOT part of the public API.
+
+  // Standalone pure utilities (no strategy state required):
   /** @internal */ getVastXmlText(input: any) {
     return getVastXmlText(input);
   }
@@ -1336,81 +295,69 @@ export class AdsPlugin implements PlayerPlugin {
     return computeSkipAtSeconds(skipOffset, duration);
   }
   /** @internal */ collectPodAds(parsed: any) {
-    return collectPodAds(parsed, this.cfg.preferredMediaTypes);
+    return collectPodAds(parsed, this.csai?.cfg?.preferredMediaTypes ?? []);
   }
 
-  // Scheduler delegates — require setup() to have been called:
+  // Scheduler delegates (require CSAI strategy):
   /** @internal */ getPrerollBreak() {
-    return this.scheduler.getPrerollBreak();
+    return this.csai?.getPrerollBreak();
   }
   /** @internal */ getBreakId(b: AdsBreakConfig) {
-    return this.scheduler ? this.scheduler.getBreakId(b) : getBreakIdFn(b);
+    return this.csai?.getBreakId(b) ?? getBreakIdFn(b);
   }
   /** @internal */ async loadVmapAndMerge(existing: AdsBreakConfig[], src?: string) {
-    return this.scheduler.loadVmapAndMerge(existing, src);
+    return this.csai?.loadVmapAndMerge(existing, src);
   }
 
   // Scheduler state accessors:
   /** @internal */ get resolvedBreaks() {
-    return this.scheduler?.resolvedBreaks;
+    return this.csai?.resolvedBreaks;
   }
-  /** @internal */ set resolvedBreaks(v: AdsBreakConfig[]) {
-    if (this.scheduler) this.scheduler.resolvedBreaks = v;
+  /** @internal */ set resolvedBreaks(v: AdsBreakConfig[] | undefined) {
+    if (this.csai && v !== undefined) this.csai.resolvedBreaks = v;
   }
   /** @internal */ get pendingPercentBreaks() {
-    return this.scheduler?.pendingPercentBreaks;
+    return this.csai?.pendingPercentBreaks;
   }
-  /** @internal */ set pendingPercentBreaks(v: any[]) {
-    if (this.scheduler) this.scheduler.pendingPercentBreaks = v;
+  /** @internal */ set pendingPercentBreaks(v: any[] | undefined) {
+    if (this.csai && v !== undefined) this.csai.pendingPercentBreaks = v;
   }
   /** @internal */ get playedBreaks() {
-    return this.scheduler?.playedBreaks;
+    return this.csai?.playedBreaks;
   }
   /** @internal */ get vmapPending() {
-    return this.scheduler?.vmapPending;
+    return this.csai?.vmapPending;
   }
   /** @internal */ get vmapLoadPromise() {
-    return this.scheduler?.vmapLoadPromise;
+    return this.csai?.vmapLoadPromise;
   }
   /** @internal */ get pendingVmapSrc() {
-    return this.scheduler?.pendingVmapSrc;
+    return this.csai?.pendingVmapSrc;
   }
   /** @internal */ isXmlString(src: string) {
-    return this.scheduler?.isXmlString(src);
+    return this.csai?.isXmlString(src);
   }
 
-  // Dom delegates — require setup():
+  // Dom delegates:
   /** @internal */ ensureOverlayMounted() {
-    return this.dom.ensureOverlayMounted(this.ctx.core.media);
+    return this.csai?.ensureOverlayMounted();
   }
   /** @internal */ mountCompanions(creative: any) {
-    return this.dom.mountCompanions(creative);
+    return (this.csai?.dom ?? this.lazyDom).mountCompanions(creative);
   }
   /** @internal */ renderCompanion(companion: any) {
-    return this.dom.renderCompanion(companion);
+    return (this.csai?.dom ?? this.lazyDom).renderCompanion(companion);
   }
   /** @internal */ renderNonLinear(nl: any) {
-    return this.dom.renderNonLinear(nl);
+    return (this.csai?.dom ?? this.lazyDom).renderNonLinear(nl);
   }
 
-  // Caption delegate — require setup():
+  // Caption delegates:
   /** @internal */ ensureRawCaptions(mediaFileRaw: any, creative?: any) {
-    return this.captionMgr.ensureRawCaptions(mediaFileRaw, creative);
+    return this.csai?.ensureRawCaptions(mediaFileRaw, creative);
   }
   /** @internal */ attachAdCaptionTracks(adVideo: HTMLVideoElement, raw: any, creative?: any) {
-    return this.captionMgr.attachAdCaptionTracks(adVideo, raw, creative);
-  }
-
-  // ─── Logging ──────────────────────────────────────────────────────────────────
-
-  private log(...args: any[]) {
-    // eslint-disable-next-line no-console
-    if (this.cfg?.debug) console.debug('[player][ads]', ...args);
-  }
-
-  private warn(...args: any[]) {
-    // eslint-disable-next-line no-console
-    if (this.cfg?.debug) console.warn('[player][ads]', ...args);
+    return this.csai?.attachAdCaptionTracks(adVideo, raw, creative);
   }
 }
 

@@ -152,6 +152,8 @@ export class SimidSession {
    */
   private outgoingFormat: 'plain' | 'json-string' = 'plain';
   private _targetOrigin: string | null = null;
+  /** Authoritative window to postMessage to — pinned from event.source on first valid message. */
+  private creativeWindow: Window | null = null;
 
   constructor(
     private iframe: HTMLIFrameElement,
@@ -172,20 +174,19 @@ export class SimidSession {
 
   /**
    * Returns the target origin for postMessage calls to the creative iframe.
-   * Lazily derived from iframe.src so we don't need a constructor argument.
-   * Falls back to '*' only when the src is not an absolute URL (e.g. data: URIs
-   * used in tests), which is an acceptable edge case.
+   * Prefer the origin captured from the first incoming message (event.origin),
+   * which reflects where the iframe actually landed after any redirects.
+   * Falls back to deriving from iframe.src until the first message arrives.
    */
   private getTargetOrigin(): string {
     if (this._targetOrigin !== null) return this._targetOrigin;
     try {
       const origin = new URL(this.iframe.src, window.location.href).origin;
       // data: and blob: URLs produce the string "null" as their origin — treat as wildcard.
-      this._targetOrigin = origin === 'null' ? '*' : origin;
-    } catch {
-      this._targetOrigin = '*';
+      return origin === 'null' ? '*' : origin;
+    } catch /* istanbul ignore next */ {
+      return '*';
     }
-    return this._targetOrigin;
   }
 
   /**
@@ -194,8 +195,10 @@ export class SimidSession {
    * - 'json-string': postMessage(JSON.stringify(payload), origin)
    */
   private postMsg(payload: Record<string, unknown>): void {
+    const target = this.creativeWindow ?? this.iframe.contentWindow;
+    if (!target) return;
     const data = this.outgoingFormat === 'json-string' ? JSON.stringify(payload) : payload;
-    this.iframe.contentWindow?.postMessage(data, this.getTargetOrigin());
+    target.postMessage(data, this.getTargetOrigin());
   }
 
   /**
@@ -287,6 +290,18 @@ export class SimidSession {
     if (this.destroyed) return;
     const data = this.parseMessageData(event.data);
     if (!data || !data.type) return;
+
+    // Pin the target window and origin from event.source/event.origin on the
+    // first valid message. Using event.source (rather than iframe.contentWindow)
+    // is resilient to redirects and click-through navigations that replace the
+    // iframe's content after the session starts.
+    /* istanbul ignore next — event.source is always null for synthetic MessageEvents in jsdom */
+    if (this.creativeWindow === null && event.source instanceof Window) {
+      this.creativeWindow = event.source;
+    }
+    if (this._targetOrigin === null && event.origin && event.origin !== 'null') {
+      this._targetOrigin = event.origin;
+    }
 
     // Support both SIMID 1.2 (messageId) and legacy (msgId) fields.
     const incomingId = data.messageId ?? data.msgId ?? 0;
@@ -680,7 +695,7 @@ export class SimidSession {
     ];
     for (const [domEvent, simidType] of mediaEventMap) {
       const handler: EventListener = () => {
-        if (this.destroyed) return;
+        if (this.destroyed || !this.sessionId) return;
         try {
           this.postMsg({
             type: simidType,
@@ -698,7 +713,7 @@ export class SimidSession {
     }
 
     this.visibilityHandler = () => {
-      if (this.destroyed) return;
+      if (this.destroyed || !this.sessionId) return;
       const type = document.hidden ? SIMID_PLAYER.APP_BACKGROUNDED : SIMID_PLAYER.APP_FOREGROUNDED;
       try {
         this.postMsg({

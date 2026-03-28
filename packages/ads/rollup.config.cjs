@@ -1,6 +1,8 @@
-import { sharedPlugins, sharedPluginsMinified, treeshake, CORE_EXTERNAL, CORE_GLOBALS } from '../../rollup.shared.mjs';
+'use strict';
 
-export default [
+const { sharedPlugins, sharedPluginsMinified, treeshake, CORE_EXTERNAL, CORE_GLOBALS } = require('../../rollup.shared.cjs');
+
+module.exports = [
   // ESM library build
   {
     input: 'src/index.ts',
@@ -21,9 +23,9 @@ export default [
     treeshake,
     plugins: sharedPluginsMinified(),
     output: {
-      file: 'dist/openplayer-hls.js',
+      file: 'dist/openplayer-ads.js',
       format: 'umd',
-      name: 'OpenPlayerJSHls',
+      name: 'OpenPlayerJSAds',
       sourcemap: true,
       inlineDynamicImports: true,
       globals: CORE_GLOBALS,

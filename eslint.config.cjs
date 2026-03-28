@@ -1,12 +1,13 @@
 // @ts-check
+'use strict';
 
-import eslint from '@eslint/js';
-import { defineConfig } from 'eslint/config';
-import tseslint from 'typescript-eslint';
-import pluginPrettier from 'eslint-plugin-prettier';
-import pluginImport from 'eslint-plugin-import';
+const eslint        = require('@eslint/js');
+const { defineConfig } = require('eslint/config');
+const tseslint      = require('typescript-eslint');
+const pluginPrettier = require('eslint-plugin-prettier');
+const pluginImport  = require('eslint-plugin-import');
 
-export default defineConfig({
+module.exports = defineConfig({
     ignores: ['dist/**', 'node_modules/**', 'packages/**/dist/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml'],
   }, {
     files: ['**/*.ts'],
@@ -15,14 +16,14 @@ export default defineConfig({
     languageOptions: {
       parserOptions: {
         project: ["./tsconfig.eslint.json"],
-        tsconfigRootDir: import.meta.dirname
+        tsconfigRootDir: __dirname
       }
     },
     settings: {
       'import/resolver': {
         typescript: {
           project: ['./tsconfig.json'],
-          tsconfigRootDir: import.meta.dirname,
+          tsconfigRootDir: __dirname,
           alwaysTryTypes: true,
           noWarnOnMultipleProjects: true,
         }

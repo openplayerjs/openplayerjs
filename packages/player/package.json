@@ -45,11 +45,11 @@
     "@openplayerjs/core": "workspace:^"
   },
   "scripts": {
-    "build:bundles": "rollup -c rollup.config.mjs",
-    "build:css": "mkdir -p dist && postcss src/style.css -o dist/openplayer.css",
+    "build:bundles": "rollup -c rollup.config.cjs",
+    "build:css": "node -e \"require('fs').mkdirSync('dist', {recursive: true})\" && postcss src/style.css -o dist/openplayer.css",
     "test": "jest --passWithNoTests --config ../../jest.config.cjs",
     "release": "dotenv -o -- release-it --config .release-it.cjs",
-    "watch": "rollup -c rollup.config.mjs --watch"
+    "watch": "rollup -c rollup.config.cjs --watch"
   },
   "publishConfig": {
     "access": "public"

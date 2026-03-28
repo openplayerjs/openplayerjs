@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+'use strict';
 /**
- * scripts/preflight.mjs
+ * scripts/preflight.cjs
  *
  * Pre-release validation gate.  Run via `pnpm run preflight` or as the first
- * step inside orchestrate-release.mjs before any version bump occurs.
+ * step inside orchestrate-release.cjs before any version bump occurs.
  *
  * Checks:
  *   1. Every package under packages/ carries the @openplayerjs/ scope.
@@ -17,11 +18,10 @@
  *   1 — one or more checks failed (details printed to stderr)
  */
 
-import { readdirSync, readFileSync, existsSync } from 'fs';
-import { join, resolve } from 'path';
-import { fileURLToPath } from 'url';
+const { readdirSync, readFileSync, existsSync } = require('fs');
+const { join, resolve } = require('path');
 
-const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
+const ROOT = resolve(__dirname, '..');
 const PACKAGES_DIR = join(ROOT, 'packages');
 const REQUIRED_SCRIPTS = ['test', 'release'];
 

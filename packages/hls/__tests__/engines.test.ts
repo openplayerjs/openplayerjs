@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { Core, DefaultMediaEngine, EventBus, HtmlMediaSurface } from '@openplayerjs/core';
+import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
 
 // Ensure our Hls.js stub provides the methods HlsMediaEngine expects (attach/detach/destroy etc.)
@@ -116,6 +117,51 @@ describe('Media engines', () => {
     const engine = new DefaultMediaEngine();
     const source = { src: 'x.mp4', type: 'video/mp4' };
     expect(engine.canPlay(source)).toBe(true);
+  });
+
+  test('HlsMediaEngine passes enableDateRangeMetadataCues and enableID3MetadataCues defaults', () => {
+    // Capture the config passed to the HlsMock constructor.
+    let capturedConfig: Record<string, unknown> | undefined;
+    const OrigCtor = Hls;
+
+    const ctorSpy = jest.fn().mockImplementation(function (this: any, cfg: any) {
+      capturedConfig = cfg;
+      Object.assign(this, new OrigCtor(cfg));
+    });
+    // Copy static members (Events, isSupported, etc.) so HlsMediaEngine can read HlsClass.Events.
+    Object.assign(ctorSpy, OrigCtor);
+    // Patch the HlsClass reference on a fresh engine instance via config.
+    const engine = new HlsMediaEngine({ hlsClass: ctorSpy });
+    const ctx = makeCtx();
+    engine.attach({ ...ctx, activeSource: { src: 'y.m3u8', type: 'application/x-mpegURL' } } as any);
+
+    expect(capturedConfig?.enableDateRangeMetadataCues).toBe(true);
+    expect(capturedConfig?.enableID3MetadataCues).toBe(true);
+
+    engine.detach();
+  });
+
+  test('HlsMediaEngine attachMedia creates a separate hls instance and disposes it', () => {
+    const OrigCtor = Hls;
+
+    const ctorSpy = jest.fn().mockImplementation(function (this: any, cfg: any) {
+      Object.assign(this, new OrigCtor(cfg));
+    });
+    Object.assign(ctorSpy, OrigCtor);
+
+    const engine = new HlsMediaEngine({ hlsClass: ctorSpy });
+    const video = document.createElement('video');
+
+    const dispose = engine.attachMedia(video, 'https://example.com/ad.m3u8');
+
+    const instance = ctorSpy.mock.instances[0] as any;
+    expect(instance.loadSource).toHaveBeenCalledWith('https://example.com/ad.m3u8');
+    expect(instance.attachMedia).toHaveBeenCalledWith(video);
+
+    // HlsMock has no stopLoad — dispose() hits the catch branch then calls detachMedia + destroy.
+    expect(() => dispose()).not.toThrow();
+    expect(instance.detachMedia).toHaveBeenCalled();
+    expect(instance.destroy).toHaveBeenCalled();
   });
 
   test('HlsMediaEngine canPlay and attaches adapter', async () => {
