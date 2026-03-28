@@ -33,10 +33,10 @@ The good news: if you use the **UMD bundles** (the classic "load a script tag" a
 ### v3
 
 - Separation of concerns in different packages:
-  - `@openplayer/core` — contains only player lifecycle, event bus, plugin system, state machine
-  - `@openplayer/player` — everything related to the visual layer (controls, overlays, keyboard handling, styles, UI behaviors)
-  - `@openplayer/hls` — HLS streaming enhancements via [hls.js](https://github.com/video-dev/hls.js)
-  - `@openplayer/ads` — VAST / VMAP / non-linear / companions ad breaks
+  - `@openplayerjs/core` — contains only player lifecycle, event bus, plugin system, state machine
+  - `@openplayerjs/player` — everything related to the visual layer (controls, overlays, keyboard handling, styles, UI behaviors)
+  - `@openplayerjs/hls` — HLS streaming enhancements via [hls.js](https://github.com/video-dev/hls.js)
+  - `@openplayerjs/ads` — VAST / VMAP / non-linear / companions ad breaks
 - Everything is a **plugin**. Ads, HLS, and even the default UI are plugins registered on the core `Core`
 - `init()` method (only in UMD file) is now a sync method that only sets the UI, and registers plugins and listeners for future use; media setup is delegated to `load` / `play` methods
 
@@ -64,22 +64,22 @@ Install only the packages you need:
 
 ```bash
 # Core + UI (MP4, MP3, WebM, OGG)
-npm install @openplayer/core @openplayer/player
+npm install @openplayerjs/core @openplayerjs/player
 
 # Add HLS
-npm install @openplayer/hls hls.js
+npm install @openplayerjs/hls hls.js
 
 # Add Ads
-npm install @openplayer/ads
+npm install @openplayerjs/ads
 ```
 
 so you can import each one as desired:
 
 ```ts
-import { Core } from '@openplayer/core';
-import { createUI, buildControls } from '@openplayer/player';
-import { HlsMediaEngine } from '@openplayer/hls';
-import { AdsPlugin } from '@openplayer/ads';
+import { Core } from '@openplayerjs/core';
+import { createUI, buildControls } from '@openplayerjs/player';
+import { HlsMediaEngine } from '@openplayerjs/hls';
+import { AdsPlugin } from '@openplayerjs/ads';
 ```
 
 **🚨 IMPORTANT 🚨: The name `OpenPlayer` is no longer supported.**
@@ -104,11 +104,11 @@ Only `OpenPlayerJS` is supported from v3 onwards (both in ESM as `Core` and in U
 
 ### New options in v3
 
-| Option                                                 | Package            | Description                                                                                   |
-| ------------------------------------------------------ | ------------------ | --------------------------------------------------------------------------------------------- |
-| `startPlaybackRate`                                    | `@openplayer/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()` |
-| `labels.loading` / `labels.media` / `labels.container` | `@openplayer/core` | Added new labels on top of the ones already supported. Whole list of labels is [here]()       |
-| `plugins`                                              | `@openplayer/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here]() for more details |
+| Option                                                 | Package              | Description                                                                                   |
+| ------------------------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------- |
+| `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()` |
+| `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/core` | Added new labels on top of the ones already supported. Whole list of labels is [here]()       |
+| `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here]() for more details |
 
 ### Removed options
 
@@ -192,7 +192,7 @@ player.init();
 The `v2` plugin model had a number of rough edges. The new `v3` introduces a clean `CorePlugin` interface with explicit lifecycle hooks:
 
 ```ts
-import type { CorePlugin, PluginContext } from '@openplayer/core';
+import type { CorePlugin, PluginContext } from '@openplayerjs/core';
 
 export class MyPlugin implements CorePlugin {
   name = 'my-plugin';
@@ -214,8 +214,8 @@ export class MyPlugin implements CorePlugin {
 For custom media engines, extend `BaseMediaEngine` and implement `IEngine`:
 
 ```ts
-import { BaseMediaEngine } from '@openplayer/core';
-import type { IEngine, MediaEngineContext, MediaSource } from '@openplayer/core';
+import { BaseMediaEngine } from '@openplayerjs/core';
+import type { IEngine, MediaEngineContext, MediaSource } from '@openplayerjs/core';
 
 export class MyEngine extends BaseMediaEngine implements IEngine {
   name = 'my-engine';
@@ -272,17 +272,17 @@ if (hls) {
 }
 ```
 
-Then build your own quality picker control using `extendControls` + `addControl` from `@openplayer/player`.
+Then build your own quality picker control using `extendControls` + `addControl` from `@openplayerjs/player`.
 
 ---
 
 ### IMA SDK (Google) removed
 
-`v2` used the Google IMA SDK for ads, but in some instances, added a lot of complexity and geoblocked the scripts in some countries. `v3` replaces it with `@dailymotion/vast-client` and `@dailymotion/vmap`, which are bundled inside `@openplayer/ads` and require no additional CDN load.
+`v2` used the Google IMA SDK for ads, but in some instances, added a lot of complexity and geoblocked the scripts in some countries. `v3` replaces it with `@dailymotion/vast-client` and `@dailymotion/vmap`, which are bundled inside `@openplayerjs/ads` and require no additional CDN load.
 
 **What breaks:** Any IMA-specific config (`sdkPath`, `vpaidMode`, `publisherId`, `sessionId`, `customClick`, `language`).
 
-**Mitigation:** Use `@openplayer/ads` with VAST / VMAP ad tags. The new plugin supports linear, non-linear, and companion ads.
+**Mitigation:** Use `@openplayerjs/ads` with VAST / VMAP ad tags. The new plugin supports linear, non-linear, and companion ads.
 
 ---
 
@@ -389,11 +389,11 @@ player.init();
 **v3:**
 
 ```ts
-import { Core } from '@openplayer/core';
-import { createUI, buildControls } from '@openplayer/player';
-import { HlsMediaEngine } from '@openplayer/hls';
-import { AdsPlugin } from '@openplayer/ads';
-import '@openplayer/player/style.css';
+import { Core } from '@openplayerjs/core';
+import { createUI, buildControls } from '@openplayerjs/player';
+import { HlsMediaEngine } from '@openplayerjs/hls';
+import { AdsPlugin } from '@openplayerjs/ads';
+import '@openplayerjs/player/style.css';
 
 const media = document.querySelector<HTMLVideoElement>('#player')!;
 

@@ -1,4 +1,4 @@
-# @openplayer/hls
+# @openplayerjs/hls
 
 > HLS streaming engine for [OpenPlayerJS](https://openplayerjs.com), powered by [hls.js](https://github.com/video-dev/hls.js).
 
@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-npm install @openplayer/hls @openplayer/core hls.js
+npm install @openplayerjs/hls @openplayerjs/core hls.js
 ```
 
 ---
@@ -30,8 +30,8 @@ npm install @openplayer/hls @openplayer/core hls.js
 ## ESM usage
 
 ```ts
-import { Core } from '@openplayer/core';
-import { HlsMediaEngine } from '@openplayer/hls';
+import { Core } from '@openplayerjs/core';
+import { HlsMediaEngine } from '@openplayerjs/hls';
 
 const player = new Core(video, {
   plugins: [
@@ -99,7 +99,7 @@ This means `HlsMediaEngine` is compatible with the surface pipeline and can coex
 Returns the underlying hls.js instance when hls.js is active. Use this to access hls.js-specific APIs (quality levels, stats, P2P plugins, etc.):
 
 ```ts
-import { HlsMediaEngine } from '@openplayer/hls';
+import { HlsMediaEngine } from '@openplayerjs/hls';
 
 const engine = player.getPlugin<HlsMediaEngine>('hls');
 const hls = engine?.getAdapter();
@@ -138,7 +138,7 @@ player.on(Hls.Events.LEVEL_SWITCHED, (data) => {
 The core `levels` / `level` API was removed in v3. To build your own quality picker, access the `hls.js` instance directly:
 
 ```ts
-import { HlsMediaEngine } from '@openplayer/hls';
+import { HlsMediaEngine } from '@openplayerjs/hls';
 
 const engine = player.getPlugin<HlsMediaEngine>('hls');
 const hls = engine?.getAdapter();
@@ -152,16 +152,16 @@ if (hls) {
 }
 ```
 
-You can then use `extendControls` + `addControl` from `@openplayer/player` to build a custom quality selector button.
+You can then use `extendControls` + `addControl` from `@openplayerjs/player` to build a custom quality selector button.
 
 ---
 
 ## Peer dependencies
 
-| Package            | Required version |
-| ------------------ | ---------------- |
-| `@openplayer/core` | `>=3.0.0`        |
-| `hls.js`           | `>=1.0.0`        |
+| Package              | Required version |
+| -------------------- | ---------------- |
+| `@openplayerjs/core` | `>=3.0.0`        |
+| `hls.js`             | `>=1.0.0`        |
 
 ---
 

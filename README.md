@@ -45,13 +45,13 @@ This is a media player that uses all the goods of HTML5 video/audio elements to 
 
 ## 📦 Packages
 
-| Package                       | Purpose                                                                                                                              | Docs                                                       |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `@openplayer/core`            | Player lifecycle, plugin system, engines, events                                                                                     | [packages/core/README.md](./packages/core/README.md)       |
-| `@openplayer/player`          | Default UI + built-in controls + UI extension APIs                                                                                   | [packages/player/README.md](./packages/player/README.md)   |
-| `@openplayer/hls`             | HLS engine (powered by [`hls.js`](https://github.com/video-dev/hls.js))                                                              | [packages/hls/README.md](./packages/hls/README.md)         |
-| `@openplayer/ads`             | VAST/VMAP/non-linear/companion ads plugin + extension APIs                                                                           | [packages/ads/README.md](./packages/ads/README.md)         |
-| `@openplayer/youtube` _(new)_ | YouTube media engine plugin using [YouTube player API for iframe embeds](https://developers.google.com/youtube/iframe_api_reference) | [packages/youtube/README.md](./packages/youtube/README.md) |
+| Package                         | Purpose                                                                                                                              | Docs                                                       |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `@openplayerjs/core`            | Player lifecycle, plugin system, engines, events                                                                                     | [packages/core/README.md](./packages/core/README.md)       |
+| `@openplayerjs/player`          | Default UI + built-in controls + UI extension APIs                                                                                   | [packages/player/README.md](./packages/player/README.md)   |
+| `@openplayerjs/hls`             | HLS engine (powered by [`hls.js`](https://github.com/video-dev/hls.js))                                                              | [packages/hls/README.md](./packages/hls/README.md)         |
+| `@openplayerjs/ads`             | VAST/VMAP/non-linear/companion ads plugin + extension APIs                                                                           | [packages/ads/README.md](./packages/ads/README.md)         |
+| `@openplayerjs/youtube` _(new)_ | YouTube media engine plugin using [YouTube player API for iframe embeds](https://developers.google.com/youtube/iframe_api_reference) | [packages/youtube/README.md](./packages/youtube/README.md) |
 
 ---
 
@@ -125,21 +125,21 @@ Install the packages you need:
 
 ```bash
 # Core + UI (covers MP4, MP3, OGG, and any other natively-supported format)
-npm install @openplayer/core @openplayer/player
+npm install @openplayerjs/core @openplayerjs/player
 
 # Add HLS support (powered by hls.js)
-npm install @openplayer/hls hls.js
+npm install @openplayerjs/hls hls.js
 
 # Add ads support (VAST / VMAP)
-npm install @openplayer/ads
+npm install @openplayerjs/ads
 ```
 
 Then wire everything up:
 
 ```ts
-import { Core } from '@openplayer/core';
-import { createUI, buildControls } from '@openplayer/player';
-import '@openplayer/player/style.css';
+import { Core } from '@openplayerjs/core';
+import { createUI, buildControls } from '@openplayerjs/player';
+import '@openplayerjs/player/style.css';
 
 const media = document.querySelector<HTMLVideoElement>('#player')!;
 

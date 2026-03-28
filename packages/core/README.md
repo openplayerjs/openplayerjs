@@ -1,4 +1,4 @@
-# @openplayer/core
+# @openplayerjs/core
 
 > Core player engine, plugin system, event bus, and public API for [OpenPlayerJS](https://openplayerjs.com).
 
@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-npm install @openplayer/core
+npm install @openplayerjs/core
 ```
 
 ### Constructor
@@ -50,7 +50,7 @@ new Core(media: HTMLMediaElement | string, config?: PlayerConfig)
 ## Quick start
 
 ```ts
-import { Core } from '@openplayer/core';
+import { Core } from '@openplayerjs/core';
 
 const video = document.querySelector<HTMLVideoElement>('#player')!;
 
@@ -124,7 +124,7 @@ Pass options as the second argument to `new Core(...)`:
 
 ## Adding captions at runtime
 
-Use `core.addCaptions(...)` from `@openplayer/core` to inject subtitle tracks after the player is already running (this is the preferred approach for single-page applications):
+Use `core.addCaptions(...)` from `@openplayerjs/core` to inject subtitle tracks after the player is already running (this is the preferred approach for single-page applications):
 
 ```ts
 core.addCaptions({
@@ -189,7 +189,7 @@ core.on('error', (err) => console.error('media error', err));
 A plugin is a class (or plain object) that implements `PlayerPlugin`. It receives a `PluginContext` in `setup()` and can subscribe to events, manipulate the media element, or register cleanup callbacks. Plugins have access to the player instance, the event bus, the media element, and a disposable store for automatic cleanup.
 
 ```ts
-import type { PlayerPlugin, PluginContext } from '@openplayer/core';
+import type { PlayerPlugin, PluginContext } from '@openplayerjs/core';
 
 export class AnalyticsPlugin implements PlayerPlugin {
   name = 'analytics';
@@ -261,8 +261,8 @@ Every engine operates through a **`MediaSurface`** — a normalized abstraction 
 For engines that extend native HTML5 playback (like HLS or DASH via MSE), use `bindMediaEvents` to bridge DOM events into the player bus, and `bindCommands` to register the standard playback commands:
 
 ```ts
-import { BaseMediaEngine } from '@openplayer/core';
-import type { IEngine, MediaEngineContext, MediaSource } from '@openplayer/core';
+import { BaseMediaEngine } from '@openplayerjs/core';
+import type { IEngine, MediaEngineContext, MediaSource } from '@openplayerjs/core';
 
 export class MyStreamEngine extends BaseMediaEngine implements IEngine {
   name = 'my-stream-engine';
@@ -314,7 +314,7 @@ export class MyStreamEngine extends BaseMediaEngine implements IEngine {
 For engines that embed a third-party player inside an iframe, use `IframeMediaSurface` to adapt the provider's API into the standard surface contract, then call `ctx.setSurface()` to register it:
 
 ```ts
-import { BaseMediaEngine, IframeMediaSurface } from '@openplayer/core';
+import { BaseMediaEngine, IframeMediaSurface } from '@openplayerjs/core';
 import type {
   IEngine,
   IframeMediaAdapter,
@@ -322,7 +322,7 @@ import type {
   IframePlaybackState,
   MediaEngineContext,
   MediaSource,
-} from '@openplayer/core';
+} from '@openplayerjs/core';
 
 // 1. Implement the provider-specific adapter:
 class MyProviderAdapter implements IframeMediaAdapter {
