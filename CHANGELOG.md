@@ -12,26 +12,51 @@ _March 28, 2026_
 
 ### `@openplayerjs/player@3.4.0`
 
-#### Version Bump
+#### Features
 
-- Version bump to stay in sync with `@openplayerjs/core@3.4.0`
+- **[player]** WCAG 2.2 enhancements for controls ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Added wrapper and factory to generate area for screen readers to announce events
+  - Integrated announcer factory and aria-live attributes in all controls that have user interactions
+  - Added missing label from configurations for Settings control
+  - Turned off aria-live on current time related controls to avoid updates on every timeupdate event
+  - Added aria-hidden for delimiter in time control to avoid screen reader to read it (more visual element)
+
+#### Bug Fixes
+
+- **[player]** Expanded unit test coverage in player package ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
 
 ### `@openplayerjs/hls@3.4.0`
 
-#### Chores
+#### Features
 
-- **[docs]** Fixed wrong packages names in documentation (168724d) @Rafael Miranda
+- **[hls]** Enhanced support for metadata tracks in HLS ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Added new HLS.js configuration to support ID3 frames and EXT-X-DATERANGE as metadata TextTrack cues so consumers can detect splice points using `cuechange` event
+  - Added new method to generate a separate instance of HLS.js intended to be used for ads that render m3u8 files without interfering with main instance
+
+#### Bug Fixes
+
+- **[hls]** Marked edge cases to avoid decreasing coverage ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
 
 ### `@openplayerjs/ads@3.4.0`
 
 #### Features
 
-- **[ads]** SSAI and hybrid support, enhanced support for metadata tracks in HLS ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-  - Modified script to add descriptions from commits, and consolidate it for improve CHANGELOG
+- **[ads]** Support for SSAI and hybrid approaches, refactor for CSAI ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Refactor ads configuration to support new server-side ads integration (SSAI) and hybrid (client-side ads integration, or CSAI, triggered by SCTE-35 OUT cues) strategies, leaving `debug` and `sources` untouched for backward compatibility
+  - Created new area to contain new SSAI and hybrid strategies for better separation of concerns
+  - Moved Ads client-side logic into a new strategy class to keep code readable and have better separation of concerns
+  - Updated unit tests after moving logic to new class
+  - Updated documentation adding more code snippets and new ways to implement strategies
+
+#### Bug Fixes
+
+- **[ads]** Added new labels configuration for ads and expanded coverage ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+- **[ads]** Added missing `await` to playBreakFromVast call ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+- **[ads]** Removal of deprecated method and SIMID warning ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Removed deprecated method after refactor for CSAI strategy
+  - Removed warning for SIMID iframe related to target origin
+  - Updated unit tests after fixes
+- **[ads]** Marked edge cases to avoid decreasing coverage ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
 
 ### `@openplayerjs/youtube@3.4.0`
 
@@ -45,10 +70,26 @@ _March 28, 2026_
 
 - **[repo]** Replaced extension for release commands to match new extension in scripts (6017cd8) @Rafael Miranda
 - **[docs]** Updated CHANGELOG with proper entries from v3.3.0 and added scope for contributing guidelines (cf6f5dd) @Rafael Miranda
+- **[release]** CHANGELOG fixes ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Modified script to add descriptions from commits, and consolidate it for improve CHANGELOG
+  - Removed CHANGELOG per package to consolidate all in main one
+  - Rewrote CHANGELOG to indicate changes according to new orchestrator changes
+- **[repo]** Fixed vulnerabilities and issues in unit tests ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
 
 #### Chores
 
 - **[deps]** Upgraded lock file (be8bce3) @Rafael Miranda
+- **[release]** Adjustments for release workflow ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Increased branch coverage to 85%
+  - Added new commands to verify that release is ready and more in sync to what MUI does
+  - Removed inline elements from each package's release-it config file to merge everything into main one
+  - Minor formatting issues
+- **[repo]** File conversion to CommonJS ([#507](https://github.com/openplayerjs/openplayerjs/pull/507)) @Rafael Miranda
+  - Converted Rollup configuration files to `.cjs` to make them more portable
+  - Converted scripts to `.cjs` to make them more portable
+  - Updated scripts in all `package.json` files to adjust to these changes
+  - Removed deprecated Rollup configuration file
+  - Changed build:css command to be cross-OS compatible
 
 ## [3.3.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.3.0) (2026-03-24)
 

@@ -55,6 +55,47 @@ function cleanBody(raw) {
 }
 
 /**
+ * If `commit` is a squash-merge commit whose body contains sub-commit headers
+ * ("* type(scope): description"), expand it into one virtual commit per
+ * sub-commit header, each carrying only that sub-header's bullet lines as its
+ * body.  The PR reference is preserved via the outer commit's hash so the
+ * generated link resolves correctly.
+ *
+ * When no sub-commit headers are found the original commit is returned as-is,
+ * so regular (non-squash) commits are unaffected.
+ */
+function expandSquashCommit(commit) {
+  const { hash, author, body } = commit;
+  if (!body?.trim()) return [commit];
+
+  const subjectRe = /^\* \w+(\([^)]+\))?(!)?:/;
+  const lines = body.split('\n');
+
+  const sections = [];
+  let current = null;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (subjectRe.test(trimmed)) {
+      if (current) sections.push(current);
+      current = { subject: trimmed.slice(2), bullets: [] };
+    } else if (current && trimmed.startsWith('- ')) {
+      current.bullets.push(trimmed);
+    }
+  }
+  if (current) sections.push(current);
+
+  if (sections.length === 0) return [commit];
+
+  return sections.map(({ subject, bullets }) => ({
+    hash,
+    subject,
+    author,
+    body: bullets.join('\n'),
+  }));
+}
+
+/**
  * Parse the \x1e-delimited git log output produced by the format string
  *   "%H\x1f%s\x1f%an\x1f%b\x1e"
  * and return an array of { hash, subject, author, body } objects.
@@ -103,7 +144,11 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
   const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   const packageSections = [];
 
-  const coveredHashes = new Set();
+  // Tracks (hash:subject) pairs already attributed to a package section so the
+  // General section doesn't double-count them.  Using the composite key allows
+  // different sub-commits inside the same squash commit to land in different
+  // sections (e.g. feat(ads) → ads, chore(repo) → General).
+  const covered = new Set();
 
   const earliestTag = Object.values(prevTags)
     .filter(Boolean)
@@ -127,8 +172,9 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
 
     const bySection = {};
 
-    for (const { hash, subject, author, body } of parseLog(rawLog)) {
-      coveredHashes.add(hash);
+    for (const rawCommit of parseLog(rawLog)) {
+      for (const { hash, subject, author, body } of expandSquashCommit(rawCommit)) {
+      covered.add(`${hash}:${subject}`);
 
       if (/^Merge /.test(subject) || /^chore\(release\):/.test(subject)) continue;
 
@@ -157,7 +203,8 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
         ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
         : `- ${scopePrefix}${desc} ${ref} @${author}`;
       bySection[sectionName].push(entry);
-    }
+      } // end expandSquashCommit loop
+    } // end parseLog loop
 
     if (Object.keys(bySection).length === 0 && lockedToCore.has(pkg)) {
       bySection['Version Bump'] = [
@@ -189,36 +236,39 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
   } catch { /* no root-level history */ }
 
   const rootBySection = {};
-  for (const { hash, subject, author, body } of parseLog(rootLog)) {
-    if (coveredHashes.has(hash)) continue;
-    if (
-      /^Merge /.test(subject) ||
-      /^chore\(release\):/.test(subject) ||
-      /^docs\(changelog\):/.test(subject)
-    ) continue;
+  for (const rawCommit of parseLog(rootLog)) {
+    for (const { hash, subject, author, body } of expandSquashCommit(rawCommit)) {
+      if (covered.has(`${hash}:${subject}`)) continue;
+      covered.add(`${hash}:${subject}`);
+      if (
+        /^Merge /.test(subject) ||
+        /^chore\(release\):/.test(subject) ||
+        /^docs\(changelog\):/.test(subject)
+      ) continue;
 
-    const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
-    if (!ccMatch) continue;
+      const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
+      if (!ccMatch) continue;
 
-    const [, type, scope, breaking, rawDesc] = ccMatch;
-    const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
-    if (!sectionName) continue;
+      const [, type, scope, breaking, rawDesc] = ccMatch;
+      const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
+      if (!sectionName) continue;
 
-    const prMatch = rawDesc.match(/\(#(\d+)\)/) || subject.match(/\(#(\d+)\)/);
-    const pr = prMatch?.[1];
-    const desc = rawDesc.replace(/\s*\(#\d+\)\s*$/, '').trim();
+      const prMatch = rawDesc.match(/\(#(\d+)\)/) || subject.match(/\(#(\d+)\)/);
+      const pr = prMatch?.[1];
+      const desc = rawDesc.replace(/\s*\(#\d+\)\s*$/, '').trim();
 
-    if (!rootBySection[sectionName]) rootBySection[sectionName] = [];
+      if (!rootBySection[sectionName]) rootBySection[sectionName] = [];
 
-    const scopePrefix = scope ? `**[${scope}]** ` : '';
-    const ref = pr
-      ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
-      : `(${hash.slice(0, 7)})`;
-    const bodyLines = cleanBody(body);
-    const entry = bodyLines
-      ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
-      : `- ${scopePrefix}${desc} ${ref} @${author}`;
-    rootBySection[sectionName].push(entry);
+      const scopePrefix = scope ? `**[${scope}]** ` : '';
+      const ref = pr
+        ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
+        : `(${hash.slice(0, 7)})`;
+      const bodyLines = cleanBody(body);
+      const entry = bodyLines
+        ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
+        : `- ${scopePrefix}${desc} ${ref} @${author}`;
+      rootBySection[sectionName].push(entry);
+    }
   }
 
   if (Object.keys(rootBySection).length > 0) {
