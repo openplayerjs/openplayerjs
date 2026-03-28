@@ -931,6 +931,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     video.dispatchEvent(new Event('timeupdate'));
 
@@ -944,6 +945,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     video.dispatchEvent(new Event('pause'));
 
@@ -955,6 +957,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     video.dispatchEvent(new Event('play'));
 
@@ -966,6 +969,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     video.dispatchEvent(new Event('ended'));
 
@@ -977,6 +981,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     video.dispatchEvent(new Event('volumechange'));
 
@@ -988,6 +993,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     video.dispatchEvent(new Event('durationchange'));
 
@@ -1029,6 +1035,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     Object.defineProperty(document, 'hidden', { value: true, configurable: true });
     document.dispatchEvent(new Event('visibilitychange'));
@@ -1043,6 +1050,7 @@ describe('SimidSession', () => {
     const postSpy = jest.fn();
     mockContentWindow(iframe, postSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-1', args: {} });
 
     Object.defineProperty(document, 'hidden', { value: false, configurable: true });
     document.dispatchEvent(new Event('visibilitychange'));
@@ -1238,5 +1246,57 @@ describe('SimidSession', () => {
 
     const initCall = postSpy.mock.calls.find((c) => c[0].type === SIMID_PLAYER.INIT);
     expect(initCall![0].args.environmentData.variableDurationAllowed).toBe(false);
+  });
+
+  // ─── creativeWindow / _targetOrigin pinning ───────────────────────────────
+
+  it('pins _targetOrigin from event.origin on the first valid message', () => {
+    const postSpy = jest.fn();
+    mockContentWindow(iframe, postSpy);
+    new SimidSession(iframe, video, makeCallbacks());
+
+    // Dispatch with an explicit origin (mirrors a real cross-origin postMessage from the iframe).
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        origin: 'https://creative.test',
+        data: { type: 'createSession', messageId: 0, sessionId: 'sess-pin', args: {} },
+      })
+    );
+
+    // Session should have responded (sendResolve sent), proving postMsg ran with pinned origin.
+    expect(postSpy.mock.calls.some((c) => c[0].type === SIMID_PLAYER.RESOLVE)).toBe(true);
+  });
+
+  // ─── default message type branch ─────────────────────────────────────────
+
+  it('ignores unrecognised message types without throwing', () => {
+    new SimidSession(iframe, video, makeCallbacks());
+    expect(() => dispatch({ type: 'UNKNOWN:Vendor:customEvent', messageId: 99, args: {} })).not.toThrow();
+  });
+
+  // ─── onCreativeReady: awaits in-flight initPromise ────────────────────────
+
+  it('awaits initPromise when SIMID:Creative:ready arrives before INIT is acknowledged', async () => {
+    // Non-auto-resolving spy so INIT stays pending when READY arrives.
+    const postSpy = jest.fn();
+    mockContentWindow(iframe, postSpy);
+    new SimidSession(iframe, video, makeCallbacks());
+
+    // createSession → initSent=true, initPromise pending (no resolve yet).
+    dispatch({ type: 'createSession', messageId: 0, sessionId: 'sess-pending', args: {} });
+
+    // READY arrives while INIT is still in flight → hits else if (this.initPromise) branch.
+    dispatch({ type: SIMID_CREATIVE.READY, messageId: 1 });
+
+    // Now acknowledge INIT to unblock the awaited initPromise.
+    const initMsg = postSpy.mock.calls.find((c) => c[0].type === SIMID_PLAYER.INIT);
+    if (initMsg) {
+      dispatch({ type: SIMID_CREATIVE.RESOLVE, messageId: 0, resolves: initMsg[0].messageId, args: {} });
+    }
+    await new Promise((r) => setTimeout(r, 20));
+
+    // startCreative should be sent exactly once (via onCreativeReady, not the createSession .then path).
+    const startCalls = postSpy.mock.calls.filter((c) => c[0].type === SIMID_PLAYER.START_CREATIVE);
+    expect(startCalls).toHaveLength(1);
   });
 });

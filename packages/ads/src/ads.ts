@@ -141,14 +141,6 @@ export class AdsPlugin implements PlayerPlugin {
     this.strategy?.requestSkip?.(reason);
   }
 
-  /**
-   * @deprecated Use SimidSession directly for full protocol support.
-   */
-  tryMountSimidLayer(creative: any): void {
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    this.csai?.tryMountSimidLayer(creative);
-  }
-
   destroy(): void {
     this.scteUnsub?.();
     this.scteUnsub = undefined;
@@ -262,8 +254,8 @@ export class AdsPlugin implements PlayerPlugin {
     return this.csai?.startBreakGroup(...(args as Parameters<CsaiAdStrategy['startBreakGroup']>));
   }
   /** @internal */ async playBreakFromVast(...args: any[]): Promise<boolean> {
-    return await (this.csai?.playBreakFromVast(...(args as Parameters<CsaiAdStrategy['playBreakFromVast']>)) ??
-      Promise.resolve(false));
+    if (!this.csai) return false;
+    return await this.csai.playBreakFromVast(...(args as Parameters<CsaiAdStrategy['playBreakFromVast']>));
   }
 
   // ─── @internal delegates ─────────────────────────────────────────────────

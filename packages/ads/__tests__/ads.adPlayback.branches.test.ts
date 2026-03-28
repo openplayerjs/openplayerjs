@@ -2,7 +2,6 @@
 
 /**
  * Targets remaining uncovered branches in ads.ts:
- *  - tryMountSimidLayer (251-254)
  *  - cmd:setVolume / cmd:setMuted guards in bindAdSurfaceCommands (948-994)
  *  - onError handler in waitForAdEnd (871-872)
  *  - startAdPlayback muted fallback (1184-1200)
@@ -64,35 +63,6 @@ beforeEach(() => {
   vastGetMock.mockReset();
   vastParseMock.mockReset();
   document.body.innerHTML = '';
-});
-
-// ─── tryMountSimidLayer ───────────────────────────────────────────────────────
-
-describe('AdsPlugin.tryMountSimidLayer', () => {
-  it('mounts a SIMID iframe when creative has a SIMID media file', () => {
-    const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: true });
-    plugin.setup(ctx);
-
-    const creative = {
-      mediaFiles: [
-        { apiFramework: 'SIMID', fileURL: 'https://example.com/simid.html', mimeType: 'text/html' },
-      ],
-    };
-    (plugin as unknown as { tryMountSimidLayer(c: unknown): void }).tryMountSimidLayer(creative);
-
-    // SIMID iframe should exist in the overlay
-    expect(document.querySelector('.op-ads__simid iframe')).not.toBeNull();
-  });
-
-  it('is a no-op when creative has no SIMID media file', () => {
-    const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: true });
-    plugin.setup(ctx);
-
-    (plugin as unknown as { tryMountSimidLayer(c: unknown): void }).tryMountSimidLayer({ mediaFiles: [] });
-    expect(document.querySelector('.op-ads__simid')).toBeNull();
-  });
 });
 
 // ─── bindAdSurfaceCommands: cmd:setVolume guards ──────────────────────────────

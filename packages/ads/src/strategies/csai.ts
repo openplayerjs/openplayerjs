@@ -303,17 +303,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     );
   }
 
-  /**
-   * @deprecated Use SimidSession directly for full protocol support.
-   * Best-effort SIMID iframe mounting from creative data.
-   */
-  tryMountSimidLayer(creative: any): void {
-    const simidUrl = extractSimidUrl(creative);
-    if (!simidUrl) return;
-    this.dom.ensureOverlayMounted(this.ctx.core.media);
-    this.dom.mountSimidIframe(simidUrl);
-  }
-
   // ─── DOM accessor ─────────────────────────────────────────────────────────
 
   /** @internal */
