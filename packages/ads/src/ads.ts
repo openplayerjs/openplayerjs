@@ -261,11 +261,9 @@ export class AdsPlugin implements PlayerPlugin {
   /** @internal */ startBreakGroup(...args: any[]) {
     return this.csai?.startBreakGroup(...(args as Parameters<CsaiAdStrategy['startBreakGroup']>));
   }
-  /** @internal */ playBreakFromVast(...args: any[]) {
-    return (
-      this.csai?.playBreakFromVast(...(args as Parameters<CsaiAdStrategy['playBreakFromVast']>)) ??
-      Promise.resolve(false)
-    );
+  /** @internal */ async playBreakFromVast(...args: any[]): Promise<boolean> {
+    return await (this.csai?.playBreakFromVast(...(args as Parameters<CsaiAdStrategy['playBreakFromVast']>)) ??
+      Promise.resolve(false));
   }
 
   // ─── @internal delegates ─────────────────────────────────────────────────
