@@ -1,18 +1,14 @@
+'use strict';
 /**
- * scripts/changelog-config.mjs
+ * scripts/changelog-config.cjs
  *
  * Single source of truth for the conventional-commit type → changelog section
- * mapping and scope → package mapping used by both orchestrate-release.mjs and
- * split-changelog.mjs.
- *
- * Previously each script maintained its own copy of these constants, causing
- * silent drift: split-changelog lacked the 'refactor' mapping, and independent
- * package releases produced CHANGELOG tag URLs pointing at @openplayerjs/core
- * even when core had not changed.  This module eliminates all of that.
+ * mapping and scope → package mapping used by both orchestrate-release.cjs and
+ * split-changelog.cjs.
  */
 
 /** Maps conventional-commit types to human-readable section headers. */
-export const TYPE_SECTIONS = {
+const TYPE_SECTIONS = {
   feat:     'Features',
   fix:      'Bug Fixes',
   perf:     'Performance Improvements',
@@ -27,7 +23,7 @@ export const TYPE_SECTIONS = {
 };
 
 /** Display order for sections in the generated CHANGELOG (most visible first). */
-export const SECTION_ORDER = [
+const SECTION_ORDER = [
   'Breaking Changes',
   'Features',
   'Bug Fixes',
@@ -46,7 +42,7 @@ export const SECTION_ORDER = [
  * All known package names in release-dependency order.
  * Core must always appear first so dependents can reference its version.
  */
-export const PACKAGES = ['core', 'player', 'hls', 'ads', 'youtube'];
+const PACKAGES = ['core', 'player', 'hls', 'ads', 'youtube'];
 
 /**
  * Maps conventional-commit scopes to their corresponding package folder and
@@ -55,10 +51,12 @@ export const PACKAGES = ['core', 'player', 'hls', 'ads', 'youtube'];
  * Cross-cutting scopes ('deps', 'ci', 'release', 'docs', 'repo') are intentionally
  * absent — those commits surface in the root CHANGELOG only, not per-package files.
  */
-export const SCOPE_TO_PACKAGE = {
+const SCOPE_TO_PACKAGE = {
   core:    { dir: 'packages/core',    name: '@openplayerjs/core' },
   player:  { dir: 'packages/player',  name: '@openplayerjs/player' },
   hls:     { dir: 'packages/hls',     name: '@openplayerjs/hls' },
   ads:     { dir: 'packages/ads',     name: '@openplayerjs/ads' },
   youtube: { dir: 'packages/youtube', name: '@openplayerjs/youtube' },
 };
+
+module.exports = { TYPE_SECTIONS, SECTION_ORDER, PACKAGES, SCOPE_TO_PACKAGE };

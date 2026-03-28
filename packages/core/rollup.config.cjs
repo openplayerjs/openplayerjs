@@ -1,6 +1,8 @@
-import { sharedPlugins, treeshake } from '../../rollup.shared.mjs';
+'use strict';
 
-export default {
+const { sharedPlugins, treeshake } = require('../../rollup.shared.cjs');
+
+module.exports = {
   input: 'src/index.ts',
   treeshake,
   plugins: sharedPlugins(),

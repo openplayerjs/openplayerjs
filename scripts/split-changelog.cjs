@@ -1,19 +1,19 @@
 #!/usr/bin/env node
+'use strict';
 /**
- * scripts/split-changelog.mjs
+ * scripts/split-changelog.cjs
  *
  * Reads the root CHANGELOG.md, extracts the latest release section, and:
  *   1. Writes RELEASE_NOTES.generated.md (used by the GitHub Release body).
  *   2. Prepends the scoped entries to each per-package CHANGELOG.md.
  *
- * SCOPE_TO_PACKAGE is now imported from scripts/changelog-config.mjs — the
- * single source of truth shared with orchestrate-release.mjs.  Previously this
- * file maintained its own copy which was missing 'youtube' and 'refactor'.
+ * SCOPE_TO_PACKAGE is imported from scripts/changelog-config.cjs — the
+ * single source of truth shared with orchestrate-release.cjs.
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { SCOPE_TO_PACKAGE } from './changelog-config.mjs';
+const fs   = require('node:fs');
+const path = require('node:path');
+const { SCOPE_TO_PACKAGE } = require('./changelog-config.cjs');
 
 const ROOT = process.cwd();
 const ROOT_CHANGELOG = path.join(ROOT, 'CHANGELOG.md');
@@ -76,7 +76,6 @@ function filterSectionForScope(section, scope) {
 
   const flush = () => {
     if (!current.length) return;
-    // Always keep the release heading (the first block begins with ##).
     if (out.length === 0) out.push(...current);
     else if (keepCurrent) out.push(...current);
     current = [];
@@ -85,7 +84,7 @@ function filterSectionForScope(section, scope) {
 
   for (const line of lines) {
     const isReleaseHeading = line.startsWith('## ');
-    const isGroupHeading = line.startsWith('### ');
+    const isGroupHeading   = line.startsWith('### ');
 
     if (isReleaseHeading) {
       flush();
@@ -111,7 +110,6 @@ function filterSectionForScope(section, scope) {
       continue;
     }
 
-    // Keep context lines only when we're keeping this group.
     if (keepCurrent) current.push(line);
   }
 
@@ -132,9 +130,8 @@ function main() {
     process.exit(0);
   }
 
-  // Build generated release notes grouped by package.
   const rnParts = [];
-  rnParts.push(latest.split('\n')[0]); // "## vX.Y.Z ..."
+  rnParts.push(latest.split('\n')[0]);
   rnParts.push('');
 
   let any = false;
@@ -152,7 +149,6 @@ function main() {
     rnParts.push('');
   }
 
-  // If no scope-mapped entries, fall back to the whole latest section.
   if (!any) {
     rnParts.push(latest.split('\n').slice(1).join('\n').trim());
     rnParts.push('');
@@ -160,7 +156,6 @@ function main() {
 
   writeFile(GENERATED_NOTES, rnParts.join('\n').trimEnd() + '\n');
 
-  // Update per-package CHANGELOG.md files (best-effort; skip when no entries).
   for (const [scope, pkg] of Object.entries(SCOPE_TO_PACKAGE)) {
     const filtered = filterSectionForScope(latest, scope);
     if (!filtered) continue;
