@@ -132,7 +132,7 @@ importers:
   packages/ads:
     dependencies:
       '@dailymotion/vast-client':
-        specifier: ^6.4.3
+        specifier: ^6.4.4
         version: 6.4.4
       '@dailymotion/vmap':
         specifier: ^3.3.3

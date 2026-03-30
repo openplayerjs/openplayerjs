@@ -45,7 +45,7 @@
     "watch": "rollup -c rollup.config.cjs --watch"
   },
   "dependencies": {
-    "@dailymotion/vast-client": "^6.4.3",
+    "@dailymotion/vast-client": "^6.4.4",
     "@dailymotion/vmap": "^3.3.3"
   },
   "peerDependencies": {
