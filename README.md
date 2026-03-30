@@ -9,6 +9,7 @@
 [![Lint](https://github.com/openplayerjs/openplayerjs/actions/workflows/linter.yml/badge.svg)](https://github.com/openplayerjs/openplayerjs/actions/workflows/linter.yml)
 [![Coverage Status](https://coveralls.io/repos/github/openplayerjs/openplayerjs/badge.svg)](https://coveralls.io/github/openplayerjs/openplayerjs?branch=master)
 [![Renovate enabled](https://img.shields.io/badge/renovate-enabled-brightgreen.svg?logo=renovate&logoColor=white)](https://renovateapp.com/)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12130/badge)](https://www.bestpractices.dev/projects/12130)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal)](https://www.paypal.com/donate?business=rafa8626%40gmail.com&currency_code=USD)
 
 # OpenPlayerJS — modular, plugin-first, easier to extend
