@@ -37,11 +37,11 @@ export async function getVastXmlText(input: VastInput): Promise<string> {
 }
 
 export function parseTimecodeToSeconds(s: string): number | null {
-  const m = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(String(s).trim());
-  if (!m) return null;
-  const hh = Number(m[1]);
-  const mm = Number(m[2]);
-  const ss = Number(m[3]);
+  const timecodeMatch = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(String(s).trim());
+  if (!timecodeMatch) return null;
+  const hh = Number(timecodeMatch[1]);
+  const mm = Number(timecodeMatch[2]);
+  const ss = Number(timecodeMatch[3]);
   if (![hh, mm, ss].every((x) => Number.isFinite(x))) return null;
   return hh * 3600 + mm * 60 + ss;
 }

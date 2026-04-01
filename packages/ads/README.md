@@ -44,6 +44,255 @@ npm install @openplayerjs/ads @openplayerjs/core
 - **Hybrid** — CSAI triggered by SCTE-35 OUT cues from the HLS engine
 - **SIMID 1.2** — Secure Interactive Media Interface Definition (interactive overlays)
 - **OMID** — Open Measurement Interface Definition (third-party viewability / verification)
+- **Ad tag URL pipeline** — `targeting`, `userId` (PPID), `adTagResolver` (header bidding), `adBlockerFallback`
+
+---
+
+## Ad tag URL pipeline
+
+Every ad tag URL passes through the following stages before the VAST/VMAP fetch.
+Each stage sees the URL output of the previous one, so the hooks compose cleanly.
+
+| Stage | Config field         | Purpose                                                             |
+| ----- | -------------------- | ------------------------------------------------------------------- |
+| 1     | `targeting`          | Substitute `{KEY}` macros; append remaining pairs as query params   |
+| 1     | `userId`             | Substitute `{USER_ID}` macro or append `&ppid=` (IAB PPID standard) |
+| 2     | `adTagResolver`      | Just-in-time URL replacement (header bidding, private auction, …)  |
+| 3     | `requestInterceptor` | Final request mutation — add auth headers, sign URLs, etc.          |
+
+Returning an empty string from `adTagResolver` or `null` from `requestInterceptor`
+silently skips the break (or activates `adBlockerFallback` if configured).
+
+### `targeting` — macro substitution and query param injection
+
+Supply a `Record<string, string>` of key→value pairs.  Keys that match a `{KEY}`
+token in the ad tag URL are replaced in-place; remaining keys are appended as
+`&key=value` query parameters.
+
+```ts
+new AdsPlugin({
+  csai: {
+    targeting: {
+      content_cat: 'sport',   // replaces {content_cat} in the URL
+      env: 'prod',            // no macro → appended as &env=prod
+    },
+  },
+  breaks: [
+    {
+      at: 'preroll',
+      source: {
+        type: 'VAST',
+        // Fetched as: https://ads.example.com/vast?cat=sport&env=prod
+        src: 'https://ads.example.com/vast?cat={content_cat}',
+      },
+    },
+  ],
+});
+```
+
+### `userId` — publisher-provided user ID (PPID)
+
+Pass a static string or a (possibly async) factory that is called once per break.
+The value substitutes the `{USER_ID}` macro in the tag URL, or is appended as
+`&ppid=<value>` if no macro is present (`ppid` is the IAB standard parameter name
+for publisher-provided IDs).
+
+```ts
+new AdsPlugin({
+  csai: {
+    // Static string
+    userId: 'user-abc123',
+
+    // Or a lazy factory (sync or async)
+    userId: async () => {
+      const session = await myAuth.getSession();
+      return session.viewerId;
+    },
+  },
+  breaks: [
+    {
+      at: 'preroll',
+      source: {
+        type: 'VAST',
+        // Macro present → substituted: ?uid=user-abc123
+        src: 'https://ads.example.com/vast?uid={USER_ID}',
+      },
+    },
+    {
+      at: 'postroll',
+      source: {
+        type: 'VAST',
+        // No macro → appended: https://ads.example.com/vast?ppid=user-abc123
+        src: 'https://ads.example.com/vast',
+      },
+    },
+  ],
+});
+```
+
+### `adTagResolver` — just-in-time URL resolution (header bidding, private auction)
+
+`adTagResolver` is called just before each fetch, after targeting substitution and
+before `requestInterceptor`.  Return the final VAST URL (or a Promise that resolves
+to it).  Return an empty string to skip the break silently.
+
+The hook is **delivery-agnostic** — use it with Prebid.js, Amazon TAM, Index
+Exchange, a custom private ad-server auction, or any other demand source.
+
+```ts
+import type { AdTagResolverContext } from '@openplayerjs/ads';
+```
+
+**Example: Prebid.js video integration**
+
+```ts
+new AdsPlugin({
+  csai: {
+    adTagResolver: async ({ url, at }: AdTagResolverContext) => {
+      // Kick off a Prebid auction for this break position
+      await new Promise<void>((resolve) =>
+        window.pbjs.requestBids({
+          adUnitCodes: [`video-${at}`],
+          bidsBackHandler: resolve,
+          timeout: 1500,
+        })
+      );
+      // Let Prebid set the targeting on the ad server URL
+      window.pbjs.setTargetingForGPTAsync();
+      // Or grab the winning bid's own VAST URL directly
+      const bids = window.pbjs.getHighestCpmBids(`video-${at}`);
+      return bids[0]?.vastUrl ?? url;
+    },
+  },
+  breaks: [
+    { at: 'preroll', source: { type: 'VAST', src: 'https://gam.example.com/vast' } },
+  ],
+});
+```
+
+**Example: Amazon TAM / A9**
+
+```ts
+new AdsPlugin({
+  csai: {
+    adTagResolver: async ({ url }: AdTagResolverContext) => {
+      const bids = await apstag.fetchBids({ slots: [{ slotID: 'video-pre', mediaType: 'video' }] });
+      apstag.setDisplayBids(); // injects A9 targeting into the URL
+      return bids[0]?.encodedQsParams
+        ? `${url}&${bids[0].encodedQsParams}`
+        : url;
+    },
+  },
+  breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://ads.example.com/vast' } }],
+});
+```
+
+**Example: Private ad-server auction**
+
+Use this pattern when your ad server runs its own first-price auction and returns
+a session token that must be included in the VAST request.  No third-party
+auction data ever leaves your infrastructure.
+
+```ts
+new AdsPlugin({
+  csai: {
+    adTagResolver: async ({ url, breakId, at }: AdTagResolverContext) => {
+      // Start a private auction on your own ad server
+      const { auctionId, winner } = await myAdServer.auction({
+        placement: breakId ?? String(at),
+        contentCategory: 'sport',
+      });
+
+      if (!winner) return ''; // no fill — skip the break gracefully
+
+      // Pass the winner's VAST URL back to the player
+      return winner.vastUrl;
+    },
+  },
+  breaks: [
+    { at: 'preroll', source: { type: 'VAST', src: 'https://adserver.example.com/vast' } },
+    { at: 30,        source: { type: 'VAST', src: 'https://adserver.example.com/vast' } },
+    { at: 'postroll',source: { type: 'VAST', src: 'https://adserver.example.com/vast' } },
+  ],
+});
+```
+
+**Example: Index Exchange video**
+
+```ts
+new AdsPlugin({
+  csai: {
+    adTagResolver: async ({ url }: AdTagResolverContext) => {
+      const response = await fetch('https://htlb.casalemedia.com/openrtb/pbjs', {
+        method: 'POST',
+        body: JSON.stringify({ /* OpenRTB bid request */ }),
+      });
+      const bidResponse = await response.json();
+      const vastUrl = bidResponse?.seatbid?.[0]?.bid?.[0]?.adm;
+      return vastUrl ?? url;
+    },
+  },
+  breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://fallback.example.com/vast' } }],
+});
+```
+
+### `adBlockerFallback` — graceful degradation when ads are blocked
+
+When a VAST network fetch fails (e.g. blocked by an ad blocker, DNS block, or
+firewall), the `adBlockerFallback` strategy determines what happens next.  VAST
+parse errors and "no ads found" responses do **not** trigger this — only genuine
+network failures.
+
+```ts
+import type { AdBlockerFallbackConfig } from '@openplayerjs/ads';
+```
+
+**`mode: 'skip'`** — silently skip the blocked break and resume content
+
+```ts
+new AdsPlugin({
+  csai: {
+    adBlockerFallback: { mode: 'skip' },
+  },
+  breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://ads.example.com/vast' } }],
+});
+```
+
+**`mode: 'custom'`** — replace the break schedule with house ads served from a
+CDN or first-party origin that bypasses ad blockers
+
+```ts
+new AdsPlugin({
+  csai: {
+    adBlockerFallback: {
+      mode: 'custom',
+      breaks: [
+        {
+          at: 'preroll',
+          source: {
+            type: 'VAST',
+            // Served from your own CDN — not on any ad-blocker list
+            src: 'https://cdn.example.com/house-ads/preroll.xml',
+          },
+        },
+      ],
+    },
+  },
+  breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://ads.example.com/vast' } }],
+});
+```
+
+**`mode: 'ssai'`** — switch the session to server-side ad stitching (the ads are
+baked into the HLS stream so the browser never makes a separate ad request)
+
+```ts
+new AdsPlugin({
+  csai: {
+    adBlockerFallback: { mode: 'ssai' },
+  },
+  breaks: [{ at: 'preroll', source: { type: 'VAST', src: 'https://ads.example.com/vast' } }],
+});
+```
 
 ---
 
@@ -659,6 +908,125 @@ new AdsPlugin({
   },
   sources: [{ type: 'VAST', src: '...' }],
 });
+```
+
+---
+
+## Events reference
+
+The plugin surfaces events on two separate buses. Understanding which bus to listen on prevents missed events.
+
+### Plugin bus events (`ads:*`) — `AdsEvent`
+
+Colon-separated events emitted on the internal plugin bus.  Available when you hold a direct reference to the plugin instance:
+
+```ts
+import type { AdsEvent } from '@openplayerjs/ads';
+```
+
+| Event                | Payload                                        | When                              |
+| -------------------- | ---------------------------------------------- | --------------------------------- |
+| `ads:requested`      | tag URL string                                 | Ad tag URL about to be fetched    |
+| `ads:break:start`    | `{ id, kind, at }`                             | Break playback starts             |
+| `ads:break:end`      | `{ id, kind, at }`                             | Break playback ends               |
+| `ads:ad:start`       | `{ break, index, sequence }`                   | Individual ad in pod starts       |
+| `ads:ad:end`         | `{ break, index, sequence }`                   | Individual ad in pod ends         |
+| `ads:loaded`         | `{ break, count }`                             | VAST parsed; pod size known       |
+| `ads:impression`     | `{ break, index }`                             | IAB impression tracked            |
+| `ads:quartile`       | `{ break, index, quartile }`                   | 25 / 50 / 75 / 100 % milestone    |
+| `ads:clickthrough`   | `{ break, url }`                               | Ad click-through triggered        |
+| `ads:skip`           | `{ break }`                                    | Skip button activated             |
+| `ads:error`          | error value                                    | Any ad error                      |
+| `ads:timeupdate`     | `{ break, currentTime, remainingTime, duration }` | Ad playhead updated            |
+| `ads:duration`       | `{ break, duration }`                          | Ad duration became known          |
+| `ads:allAdsCompleted`| `{ break }`                                    | All ads in a break finished       |
+| `ads:pause`          | `{ break }`                                    | Ad video paused                   |
+| `ads:resume`         | `{ break }`                                    | Ad video resumed                  |
+| `ads:mute`           | `{ break }`                                    | Ad video muted                    |
+| `ads:unmute`         | `{ break }`                                    | Ad video unmuted                  |
+| `ads:volumeChange`   | `{ break, volume, muted }`                     | Ad volume changed                 |
+
+### Core EventBus events (`ads.*`) — `AdsCoreEvent`
+
+Dot-separated events emitted on the player's own `EventBus` (`ctx.events` / `core.events`).  These are the events you receive via `core.on()` — available without holding a plugin reference.
+
+```ts
+import type { AdsCoreEvent } from '@openplayerjs/ads';
+```
+
+| Event                         | When                                                                 |
+| ----------------------------- | -------------------------------------------------------------------- |
+| `ads.error`                   | Any ad error (VAST fetch, parse, lease conflict)                     |
+| `ads.loaded`                  | VAST parsed; pod size known                                          |
+| `ads.start`                   | First frame of an ad plays                                           |
+| `ads.allAdsCompleted`         | All ads in a break finished                                          |
+| `ads.click`                   | Ad click-through triggered                                           |
+| `ads.skipped`                 | Skip button activated                                                |
+| `ads.pause`                   | Ad video paused                                                      |
+| `ads.resume`                  | Ad video resumed after pause                                         |
+| `ads.volumeChange`            | Ad volume or mute state changed                                      |
+| `ads.adProgress`              | Ad playhead updated (`currentTime` / `duration`)                     |
+| `ads.durationChange`          | Ad duration became known                                             |
+| `ads.firstQuartile`           | Ad reached 25 %                                                      |
+| `ads.midpoint`                | Ad reached 50 %                                                      |
+| `ads.thirdQuartile`           | Ad reached 75 %                                                      |
+| `ads.complete`                | Ad reached 100 %                                                     |
+| `ads.mediaended`              | Post-roll content ended                                              |
+| `ads.adblocker.ssai_fallback` | Network failure + `adBlockerFallback: { mode: 'ssai' }` triggered   |
+
+The `ads.adblocker.ssai_fallback` event intentionally does **not** appear in `AdsEvent` (plugin bus) because it is an integration-level signal emitted on `ctx.events` — it tells the `AdsPlugin` dispatcher itself to swap strategies.  It is not a per-ad lifecycle event.  If you need to react to an ad-blocker detection in application code, listen for it on the core bus:
+
+```ts
+core.events.on('ads.adblocker.ssai_fallback', () => {
+  analytics.track('adblocker_detected');
+  showAdBlockerMessage();
+});
+```
+
+---
+
+## `requestInterceptor` and `eventSink` — purpose after the URL pipeline changes
+
+With the addition of `targeting`, `userId`, and `adTagResolver`, the roles of these two older hooks are narrower and more precise.
+
+### `requestInterceptor` — last-mile request mutation
+
+`requestInterceptor` runs **after** targeting substitution and `adTagResolver` (Stage 3 of the pipeline).  It receives the fully-resolved URL and an empty headers object, and may return a modified `AdTagRequest` or `null` to skip the break.
+
+**Use it for:**
+- Adding auth headers or bearer tokens to the final VAST request
+- Signing URLs (e.g. HMAC timestamp + signature appended as query params)
+- Blocking specific URLs based on runtime conditions
+- Logging the final resolved URL before each fetch
+
+**Do not use it for:** macro substitution (use `targeting`), header bidding (use `adTagResolver`), or user-ID injection (use `userId`). Those happen earlier in the pipeline and the interceptor receives their output.
+
+```ts
+new AdsPlugin({
+  csai: {
+    requestInterceptor: async (req) => {
+      const sig = await myAuth.signRequest(req.url);
+      return { ...req, url: `${req.url}&sig=${sig}`, headers: { Authorization: `Bearer ${myAuth.token}` } };
+    },
+  },
+});
+```
+
+### `eventSink` — structured lifecycle reporting for SSAI
+
+`eventSink` is a typed callback that receives `AdLifecycleEvent` objects (`type`: `'impression' | 'quartile' | 'complete' | 'skip' | 'error'`).  It is the **primary reporting surface for SSAI** because SSAI does not make VAST requests and does not emit plugin-bus `ads:*` events — the sink is the only place to receive structured break lifecycle data in that mode.
+
+**For CSAI**, `eventSink` is largely redundant with the `ads.*` EventBus events.  Prefer EventBus listeners for CSAI unless you specifically need the structured `AdLifecycleEvent` shape for an analytics pipeline that also handles SSAI.
+
+```ts
+// SSAI — eventSink is the right choice (no VAST requests, no plugin-bus events)
+new AdsPlugin({
+  adDelivery: 'ssai',
+  ssai: { eventSink: (e) => myAnalytics.track(e.type, e) },
+});
+
+// CSAI — prefer EventBus unless you share a pipeline with SSAI
+core.events.on('ads.complete', (e) => myAnalytics.track('complete', e));
 ```
 
 ---

@@ -1,6 +1,4 @@
-import type { EventBus, PluginContext } from '@openplayerjs/core';
-
-// ─── Public event union ──────────────────────────────────────────────────────
+import type { PluginContext } from '@openplayerjs/core';
 
 export type AdsEvent =
   | 'ads:requested'
@@ -23,15 +21,28 @@ export type AdsEvent =
   | 'ads:unmute'
   | 'ads:volumeChange';
 
-// ─── Internal VAST input ─────────────────────────────────────────────────────
+export type AdsCoreEvent =
+  | 'ads.error'
+  | 'ads.loaded'
+  | 'ads.start'
+  | 'ads.allAdsCompleted'
+  | 'ads.click'
+  | 'ads.skipped'
+  | 'ads.pause'
+  | 'ads.resume'
+  | 'ads.volumeChange'
+  | 'ads.adProgress'
+  | 'ads.durationChange'
+  | 'ads.firstQuartile'
+  | 'ads.midpoint'
+  | 'ads.thirdQuartile'
+  | 'ads.complete'
+  | 'ads.mediaended'
+  | 'ads.adblocker.ssai_fallback';
 
 export type VastInput = { kind: 'url'; value: string } | { kind: 'xml'; value: string | XMLDocument | Element };
 
-// ─── Break timing ────────────────────────────────────────────────────────────
-
 export type BreakAt = 'preroll' | 'postroll' | number;
-
-// ─── Caption types ───────────────────────────────────────────────────────────
 
 export type VastClosedCaption = {
   type?: string;
@@ -67,13 +78,8 @@ export type ScteSource = {
 
 // ─── Strategy abstraction ─────────────────────────────────────────────────────
 
-/** Selects which ad delivery path AdsPlugin uses. */
 export type AdDeliveryMode = 'csai' | 'ssai' | 'hybrid';
 
-/**
- * Shared contract for CSAI, SSAI, and hybrid delivery strategies.
- * AdsPlugin is a thin dispatcher; the strategy owns all delivery-specific logic.
- */
 export type AdSessionStrategy = {
   readonly mode: AdDeliveryMode;
   /** Called once when the plugin receives a PluginContext. */
@@ -97,6 +103,35 @@ export type AdSessionStrategy = {
 export type AdsSourceType = 'VAST' | 'VMAP' | 'NONLINEAR';
 
 export type AdsSource = { type: AdsSourceType; src: string };
+
+/**
+ * Context passed to `adTagResolver` before every ad tag fetch.
+ * The resolver is agnostic — use it with Prebid.js, Amazon TAM, Index Exchange,
+ * a private ad-server auction, or any other demand source.
+ */
+export type AdTagResolverContext = {
+  /** Post-targeting, pre-interceptor URL (macros already substituted). */
+  url: string;
+  /** The break `id`, if one was set in the break config. */
+  breakId?: string;
+  /** The break timing: `'preroll'`, `'postroll'`, or seconds into content. */
+  at: BreakAt;
+  /** Whether the break source is `VAST`, `VMAP`, or `NONLINEAR`. */
+  adType: AdsSourceType;
+};
+
+/**
+ * What to do when a VAST network fetch fails (e.g. blocked by an ad blocker).
+ * Distinguishes genuine network errors from VAST parse errors — only network
+ * failures trigger this handler.
+ */
+export type AdBlockerFallbackConfig =
+  /** Silently skip the break and resume content (makes the implicit default explicit). */
+  | { mode: 'skip' }
+  /** Switch the entire session to SSAI delivery for its remainder. */
+  | { mode: 'ssai' }
+  /** Replace the remaining break schedule with custom breaks (e.g. house ads). */
+  | { mode: 'custom'; breaks: AdsBreakConfig[] };
 
 export type AdsBreakConfig = {
   id?: string;
@@ -130,12 +165,31 @@ export type CsaiAdConfig = {
   breakTolerance?: number;
   adSourcesMode?: 'waterfall' | 'playlist';
   omid?: OmidConfig;
+  targeting?: Record<string, string>;
+  // Publisher-provided user ID (PPID)
+  userId?: string | (() => string | Promise<string>);
   labels?: { skip?: string; advertisement?: string; adEnded?: string };
   requestInterceptor?: (req: AdTagRequest) => AdTagRequest | null | Promise<AdTagRequest | null>;
   eventSink?: (event: AdLifecycleEvent) => void;
+  /**
+   * Called just-in-time before each ad tag fetch, after targeting substitution
+   * and before `requestInterceptor`.  Return the final tag URL (or a Promise
+   * that resolves to it).  Return an empty string to skip the break silently.
+   *
+   * The hook is intentionally delivery-agnostic — use it with Prebid.js, Amazon
+   * TAM, Index Exchange, a private ad-server auction, or any other header-bidding
+   * wrapper.
+   */
+  adTagResolver?: (ctx: AdTagResolverContext) => string | Promise<string>;
+
+  /**
+   * Strategy to apply when a VAST network fetch fails with a genuine network
+   * error (e.g. blocked by an ad blocker).  VAST parse errors do **not** trigger
+   * this handler — only network-level failures (TypeError, connection refused).
+   */
+  adBlockerFallback?: AdBlockerFallbackConfig;
 };
 
-/** Options specific to SSAI (server-side ad stitching) delivery. */
 export type SsaiAdConfig = {
   eventSink?: (event: AdLifecycleEvent) => void;
 };
@@ -155,7 +209,6 @@ export type HybridAdConfig = CsaiAdConfig & {
 export type AdsPluginConfig = {
   /** Ad sources to play at the top level (VAST/VMAP/NONLINEAR). */
   sources?: AdsSource | AdsSource[];
-  /** Enable verbose debug logging. */
   debug?: boolean;
   /**
    * 'csai' (default) — client-side ad insertion: plugin fetches VAST/VMAP
@@ -209,6 +262,18 @@ export type AdsPluginConfig = {
   /** Optional sink for structured ad lifecycle events. */
   eventSink?: (event: AdLifecycleEvent) => void;
 
+  /** @see CsaiAdConfig.targeting */
+  targeting?: Record<string, string>;
+
+  /** @see CsaiAdConfig.userId */
+  userId?: string | (() => string | Promise<string>);
+
+  /** @see CsaiAdConfig.adTagResolver */
+  adTagResolver?: (ctx: AdTagResolverContext) => string | Promise<string>;
+
+  /** @see CsaiAdConfig.adBlockerFallback */
+  adBlockerFallback?: AdBlockerFallbackConfig;
+
   // ── Flat SCTE-35 / hybrid fields (backward compat; prefer hybrid.*) ───────
 
   /** CSAI + SCTE-35 hybrid: duck-typed engine reference that exposes `onCue` */
@@ -251,26 +316,10 @@ export type AdVerification = {
   params: string;
 };
 
-// ─── PluginBus ───────────────────────────────────────────────────────────────
-
-export class PluginBus<E extends string> {
-  constructor(private bus: EventBus) {}
-
-  on(event: E, cb: (...args: any[]) => void) {
-    return this.bus.on(event, cb);
-  }
-
-  emit(event: E, ...data: any[]) {
-    this.bus.emit(event, ...data);
-  }
-}
-
 export type AdTagRequest = {
   url: string;
   headers: Record<string, string>;
-  /** 'vast' | 'vmap' — so the server can route by type */
   adType: 'vast' | 'vmap';
-  /** The content source URL playing when this request is made */
   contentSrc?: string;
 };
 

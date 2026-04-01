@@ -1,3 +1,5 @@
+import type { MediaEnginePlugin, MediaSource } from './media';
+
 export function formatTime(seconds: number, frameRate?: number): string {
   const f = Math.floor((seconds % 1) * (frameRate || 0));
   let s = Math.floor(seconds);
@@ -91,4 +93,39 @@ export function predictMimeType(media: HTMLMediaElement, url: string): string {
     default:
       return isAudio(media) ? 'audio/mp3' : 'video/mp4';
   }
+}
+
+export function readMediaSources(media: HTMLMediaElement): MediaSource[] {
+  const sources: MediaSource[] = [];
+
+  if (media.src) {
+    sources.push({ src: media.src, type: predictMimeType(media, media.src) });
+  }
+
+  try {
+    media.querySelectorAll('source').forEach((el) => {
+      sources.push({ src: el.src, type: el.type || predictMimeType(media, el.src) });
+    });
+  } catch {
+    // ignore
+  }
+
+  return sources;
+}
+
+export function resolveMediaEngine(
+  engines: MediaEnginePlugin[],
+  sources: MediaSource[]
+): { engine: MediaEnginePlugin; source: MediaSource } {
+  if (sources.length === 0) throw new Error('Player cannot resolve media with an empty source');
+
+  for (const source of sources) {
+    for (const engine of engines) {
+      if (engine.canPlay?.(source)) {
+        return { engine, source };
+      }
+    }
+  }
+
+  throw new Error('No compatible media engine found');
 }

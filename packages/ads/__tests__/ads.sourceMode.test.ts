@@ -270,8 +270,8 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     plugin.setup(ctx);
 
     (ctx.events as any).emit('cmd:play');
-    // Flush all promises for 3 sources
-    for (let i = 0; i < 10; i++) await Promise.resolve();
+    // Flush all promises for 3 sources (extra turns needed for resolveAdTagUrl pipeline step)
+    for (let i = 0; i < 20; i++) await Promise.resolve();
 
     expect(vastGetMock).toHaveBeenCalledWith('https://ad1.example.com/vast');
     expect(vastGetMock).toHaveBeenCalledWith('https://ad2.example.com/vast');

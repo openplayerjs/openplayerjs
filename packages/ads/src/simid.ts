@@ -22,84 +22,14 @@
  * Spec: https://iabtechlab.com/standards/simid/
  */
 
-// ─── Message type constants ───────────────────────────────────────────────────
+// ─── Protocol constants and wire types (re-exported for consumers) ────────────
 
-export const SIMID_PLAYER = {
-  INIT: 'SIMID:Player:init',
-  START_CREATIVE: 'SIMID:Player:startCreative',
-  AD_PROGRESS: 'SIMID:Player:adProgress',
-  AD_PAUSED: 'SIMID:Player:adPaused',
-  AD_PLAYING: 'SIMID:Player:adPlaying',
-  AD_STOPPED: 'SIMID:Player:adStopped',
-  AD_SKIPPED: 'SIMID:Player:adSkipped',
-  AD_VOLUME: 'SIMID:Player:adVolume',
-  AD_DURATION_CHANGE: 'SIMID:Player:adDurationChange',
-  RESIZE: 'SIMID:Player:resize',
-  FATAL: 'SIMID:Player:fatal',
-  LOG: 'SIMID:Player:log',
-  APP_BACKGROUNDED: 'SIMID:Player:appBackgrounded',
-  APP_FOREGROUNDED: 'SIMID:Player:appForegrounded',
-  /** Player resolves a creative request (spec type: "resolve") */
-  RESOLVE: 'resolve',
-  /** Player rejects a creative request (spec type: "reject") */
-  REJECT: 'reject',
-} as const;
+export { SIMID_PLAYER, SIMID_MEDIA, SIMID_CREATIVE } from './simid-protocol';
+export type { SimidPlayerMessage, SimidMessage, PendingResolve } from './simid-protocol';
 
-/** SIMID 1.2 media event types — player bridges ad video DOM events to these postMessages. */
-export const SIMID_MEDIA = {
-  DURATION_CHANGE: 'SIMID:Media:durationchange',
-  ENDED: 'SIMID:Media:ended',
-  ERROR: 'SIMID:Media:error',
-  PAUSE: 'SIMID:Media:pause',
-  PLAY: 'SIMID:Media:play',
-  PLAYING: 'SIMID:Media:playing',
-  SEEKED: 'SIMID:Media:seeked',
-  SEEKING: 'SIMID:Media:seeking',
-  STALLED: 'SIMID:Media:stalled',
-  TIME_UPDATE: 'SIMID:Media:timeupdate',
-  VOLUME_CHANGE: 'SIMID:Media:volumechange',
-} as const;
-
-export const SIMID_CREATIVE = {
-  READY: 'SIMID:Creative:ready',
-  GET_MEDIA_STATE: 'SIMID:Creative:getMediaState',
-  RESOLVE: 'SIMID:Creative:resolve',
-  REJECT: 'SIMID:Creative:reject',
-  REQUEST_FULLSCREEN: 'SIMID:Creative:requestFullscreen',
-  REQUEST_RESIZE: 'SIMID:Creative:requestResize',
-  CLICK_THROUGH: 'SIMID:Creative:clickThrough',
-  REPORT_TRACKING: 'SIMID:Creative:reportTracking',
-  REQUEST_SKIP: 'SIMID:Creative:requestSkip',
-  REQUEST_STOP: 'SIMID:Creative:requestStop',
-  REQUEST_PAUSE: 'SIMID:Creative:requestPause',
-  REQUEST_PLAY: 'SIMID:Creative:requestPlay',
-  REQUEST_CHANGE_AD_DURATION: 'SIMID:Creative:requestChangeAdDuration',
-  FATAL: 'SIMID:Creative:fatal',
-  LOG: 'SIMID:Creative:log',
-} as const;
-
-type SimidPlayerMessage = (typeof SIMID_PLAYER)[keyof typeof SIMID_PLAYER];
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type SimidMessage = {
-  type: string;
-  /** SIMID 1.2 spec field name */
-  messageId?: number;
-  /** Legacy field used by some older creatives */
-  msgId?: number;
-  sessionId?: string;
-  timestamp?: number;
-  args?: Record<string, unknown>;
-  /** messageId of the player message being resolved by the creative */
-  resolves?: number;
-  /** messageId of the player message being rejected by the creative */
-  rejects?: number;
-  errorCode?: number;
-  reason?: string;
-};
-
-type PendingResolve = { resolve: (v: any) => void; reject: (e: any) => void };
+import { SIMID_PLAYER, SIMID_MEDIA, SIMID_CREATIVE } from './simid-protocol';
+import type { SimidMessage } from './simid-protocol';
+import { SimidRpcChannel } from './simid-rpc';
 
 export type SimidCallbacks = {
   onSkip: () => void;
@@ -132,179 +62,34 @@ export type SimidCreativeInfo = {
 
 // ─── SimidSession ─────────────────────────────────────────────────────────────
 
-export class SimidSession {
-  private msgCounter = 0;
-  private pending = new Map<number, PendingResolve>();
-  private messageListener: (e: MessageEvent) => void;
-  private sessionId = '';
+export class SimidSession extends SimidRpcChannel {
   private initSent = false;
   private initPromise: Promise<any> | null = null;
   private started = false;
   private destroyed = false;
   private mediaListeners: { event: string; handler: EventListener }[] = [];
   private visibilityHandler: (() => void) | null = null;
-  /**
-   * Detected outgoing message format.
-   * 'plain'       — post plain JS objects (spec default, works with most creatives)
-   * 'json-string' — post JSON.stringify(payload) as the message value; used when the
-   *                 creative calls JSON.parse(event.data) to deserialise incoming messages
-   *                 (e.g. Google's compiled SIMID sample creative)
-   */
-  private outgoingFormat: 'plain' | 'json-string' = 'plain';
-  private _targetOrigin: string | null = null;
-  /** Authoritative window to postMessage to — pinned from event.source on first valid message. */
-  private creativeWindow: Window | null = null;
 
   constructor(
-    private iframe: HTMLIFrameElement,
+    iframe: HTMLIFrameElement,
     private adVideo: HTMLVideoElement,
     private callbacks: SimidCallbacks,
     private creativeInfo?: SimidCreativeInfo
   ) {
-    this.messageListener = this.handleMessage.bind(this);
-    window.addEventListener('message', this.messageListener);
-    this.bindMediaEvents();
-  }
-
-  // ─── Internal messaging helpers ───────────────────────────────────────────
-
-  private nextMsgId(): number {
-    return ++this.msgCounter;
-  }
-
-  /**
-   * Returns the target origin for postMessage calls to the creative iframe.
-   * Prefer the origin captured from the first incoming message (event.origin),
-   * which reflects where the iframe actually landed after any redirects.
-   * Falls back to deriving from iframe.src until the first message arrives.
-   */
-  private getTargetOrigin(): string {
-    if (this._targetOrigin !== null) return this._targetOrigin;
-    try {
-      const origin = new URL(this.iframe.src, window.location.href).origin;
-      // data: and blob: URLs produce the string "null" as their origin — treat as wildcard.
-      return origin === 'null' ? '*' : origin;
-    } catch /* istanbul ignore next */ {
-      return '*';
-    }
-  }
-
-  /**
-   * Post a payload to the creative's iframe using the detected outgoing format.
-   * - 'plain': postMessage(payload, origin)
-   * - 'json-string': postMessage(JSON.stringify(payload), origin)
-   */
-  private postMsg(payload: Record<string, unknown>): void {
-    const target = this.creativeWindow ?? this.iframe.contentWindow;
-    if (!target) return;
-    const data = this.outgoingFormat === 'json-string' ? JSON.stringify(payload) : payload;
-    target.postMessage(data, this.getTargetOrigin());
-  }
-
-  /**
-   * Send a player→creative message that expects a resolve/reject response.
-   * Returns a promise that resolves/rejects when the creative responds.
-   */
-  private send(type: SimidPlayerMessage, args?: Record<string, unknown>): Promise<any> {
-    const messageId = this.nextMsgId();
-    const payload: Record<string, unknown> = {
-      type,
-      messageId,
-      sessionId: this.sessionId || undefined,
-      timestamp: Date.now(),
-      args: args ?? {},
-    };
-    return new Promise((resolve, reject) => {
-      this.pending.set(messageId, { resolve, reject });
-      try {
-        this.postMsg(payload);
-      } catch (e) {
-        this.pending.delete(messageId);
-        reject(e);
-      }
+    super(iframe, (data, _event) => {
+      if (!this.destroyed) this.handleMessage(data);
     });
-  }
-
-  /**
-   * Send a resolve response to the creative for a message it sent us.
-   * Per spec: type="resolve", args={ messageId: <original>, value: <payload> }
-   */
-  private sendResolve(resolvedMessageId: number, value?: Record<string, unknown>): void {
-    try {
-      this.postMsg({
-        type: SIMID_PLAYER.RESOLVE,
-        messageId: this.nextMsgId(),
-        sessionId: this.sessionId || undefined,
-        timestamp: Date.now(),
-        args: { messageId: resolvedMessageId, value: value ?? {} },
-      });
-    } catch {
-      /* ignore */
-    }
-  }
-
-  /**
-   * Send a reject response to the creative for a message it sent us.
-   */
-  private sendReject(resolvedMessageId: number, errorCode: number, message: string): void {
-    try {
-      this.postMsg({
-        type: SIMID_PLAYER.REJECT,
-        messageId: this.nextMsgId(),
-        sessionId: this.sessionId || undefined,
-        timestamp: Date.now(),
-        args: { messageId: resolvedMessageId, value: { errorCode, message } },
-      });
-    } catch {
-      /* ignore */
-    }
-  }
-
-  // ─── Message parsing ──────────────────────────────────────────────────────
-
-  /**
-   * Parse a raw postMessage payload into a SimidMessage.
-   * Handles both plain objects and JSON-encoded strings.
-   * Auto-detects the outgoing format from the first valid message received.
-   */
-  private parseMessageData(raw: unknown): SimidMessage | null {
-    if (typeof raw === 'string') {
-      let parsed: SimidMessage;
-      try {
-        parsed = JSON.parse(raw) as SimidMessage;
-      } catch {
-        return null;
-      }
-      if (!parsed?.type) return null;
-      // Creative sends JSON strings → it expects JSON strings back.
-      if (this.outgoingFormat === 'plain') this.outgoingFormat = 'json-string';
-      return parsed;
-    }
-    if (raw && typeof raw === 'object') return raw as SimidMessage;
-    return null;
+    this.bindMediaEvents();
   }
 
   // ─── Message dispatch ─────────────────────────────────────────────────────
 
-  private handleMessage(event: MessageEvent) {
-    if (this.destroyed) return;
-    const data = this.parseMessageData(event.data);
-    if (!data || !data.type) return;
-
-    // Pin the target window and origin from event.source/event.origin on the
-    // first valid message. Using event.source (rather than iframe.contentWindow)
-    // is resilient to redirects and click-through navigations that replace the
-    // iframe's content after the session starts.
-    /* istanbul ignore next — event.source is always null for synthetic MessageEvents in jsdom */
-    if (this.creativeWindow === null && event.source instanceof Window) {
-      this.creativeWindow = event.source;
-    }
-    if (this._targetOrigin === null && event.origin && event.origin !== 'null') {
-      this._targetOrigin = event.origin;
-    }
-
+  private handleMessage(data: SimidMessage) {
     // Support both SIMID 1.2 (messageId) and legacy (msgId) fields.
     const incomingId = data.messageId ?? data.msgId ?? 0;
+
+    // Let the RPC layer handle resolve/reject first.
+    if (this.resolvePending(data)) return;
 
     switch (data.type) {
       // ── SIMID 1.2 session init ───────────────────────────────────────────
@@ -320,40 +105,6 @@ export class SimidSession {
       case SIMID_CREATIVE.READY:
         void this.onCreativeReady();
         break;
-
-      // ── Promise resolution ───────────────────────────────────────────────
-      // IAB reference creatives (simid_protocol.js) and Google's compiled sample send
-      // type="resolve" / type="reject" when acknowledging player messages.
-      // Some third-party implementations send type="SIMID:Creative:resolve" / "SIMID:Creative:reject".
-      // Both forms are handled here.
-
-      case 'resolve': // IAB reference implementation pattern
-      // falls through
-      case SIMID_CREATIVE.RESOLVE: {
-        // `resolves` (top-level) or args.messageId both point to our outgoing messageId.
-        const resolvedId = data.resolves ?? (data.args?.messageId as number | undefined);
-        const pending = resolvedId != null ? this.pending.get(resolvedId) : undefined;
-        if (pending) {
-          this.pending.delete(resolvedId!);
-          pending.resolve(data.args?.value ?? data.args);
-        }
-        break;
-      }
-
-      case 'reject': // IAB reference implementation pattern
-      // falls through
-      case SIMID_CREATIVE.REJECT: {
-        const rejectedId = data.rejects ?? (data.args?.messageId as number | undefined);
-        const pending = rejectedId != null ? this.pending.get(rejectedId) : undefined;
-        if (pending) {
-          this.pending.delete(rejectedId!);
-          pending.reject({
-            errorCode: data.errorCode ?? (data.args?.value as any)?.errorCode,
-            reason: data.reason ?? (data.args?.value as any)?.message,
-          });
-        }
-        break;
-      }
 
       // ── Creative → Player commands ───────────────────────────────────────
 
@@ -733,7 +484,7 @@ export class SimidSession {
   destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
-    window.removeEventListener('message', this.messageListener);
+    this.destroyChannel();
     for (const { event, handler } of this.mediaListeners) {
       this.adVideo.removeEventListener(event, handler);
     }
@@ -742,9 +493,5 @@ export class SimidSession {
       document.removeEventListener('visibilitychange', this.visibilityHandler);
       this.visibilityHandler = null;
     }
-    for (const [, p] of this.pending) {
-      p.reject({ errorCode: 900, reason: 'SimidSession destroyed' });
-    }
-    this.pending.clear();
   }
 }

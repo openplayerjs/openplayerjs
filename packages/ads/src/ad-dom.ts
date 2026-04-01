@@ -1,4 +1,5 @@
 import { EVENT_OPTIONS } from '@openplayerjs/core';
+import { NON_LINEAR_DEFAULT_DURATION_S, SEEK_NEAR_END_DELTA_S, SKIP_NEAR_END_THRESHOLD_S } from './constants';
 import type { AdsPluginConfig } from './types';
 import { computeSkipAtSeconds, extractSkipOffsetFromCreative } from './vast-parser';
 
@@ -151,55 +152,7 @@ export class AdDomManager {
   // ─── Safety ──────────────────────────────────────────────────────────────────
 
   setSafeHTML(el: HTMLElement, html: string) {
-    const tpl = document.createElement('template');
-    tpl.innerHTML = String(html || '');
-
-    const blockedTags = new Set([
-      'SCRIPT',
-      'IFRAME',
-      'OBJECT',
-      'EMBED',
-      'LINK',
-      'STYLE',
-      'SVG',
-      'MATH',
-      'FORM',
-      'INPUT',
-      'TEXTAREA',
-      'SELECT',
-      'OPTION',
-      'META',
-      'BASE',
-    ]);
-    const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
-    const toRemove: Element[] = [];
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode as Element;
-      if (blockedTags.has(node.tagName)) {
-        toRemove.push(node);
-        continue;
-      }
-      Array.from(node.attributes).forEach((attr) => {
-        const name = attr.name.toLowerCase();
-        const value = (attr.value || '').trim();
-        if (name.startsWith('on')) {
-          node.removeAttribute(attr.name);
-        }
-        if (name === 'href' || name === 'src' || name === 'xlink:href') {
-          const v = value.toLowerCase();
-          const isJs = v.startsWith('javascript:');
-          const isVbscript = v.startsWith('vbscript:');
-          const isData = v.startsWith('data:');
-          const isHttp = v.startsWith('http://') || v.startsWith('https://') || v.startsWith('/') || v.startsWith('./');
-          const isSafeDataImage = isData && /^data:image\/(png|gif|jpe?g|webp|svg\+xml);/i.test(value);
-          if (isJs || isVbscript || (!isHttp && !isSafeDataImage)) node.removeAttribute(attr.name);
-        }
-        if (name === 'srcdoc') node.removeAttribute(attr.name);
-      });
-    }
-    toRemove.forEach((n) => n.remove());
-    el.replaceChildren(tpl.content.cloneNode(true));
+    setSafeHTMLFn(el, html);
   }
 
   safeWindowOpen(rawUrl: string) {
@@ -267,8 +220,8 @@ export class AdDomManager {
       if (this.skipWrap) this.skipWrap.style.display = 'block';
       if (this.skipBtn) {
         this.skipBtn.textContent =
-          remaining <= 0.05 ? this.cfg.labels?.skip || 'Skip Ad' : Math.ceil(remaining).toString();
-        this.skipBtn.style.pointerEvents = remaining <= 0.05 ? 'auto' : 'none';
+          remaining <= SKIP_NEAR_END_THRESHOLD_S ? this.cfg.labels?.skip || 'Skip Ad' : Math.ceil(remaining).toString();
+        this.skipBtn.style.pointerEvents = remaining <= SKIP_NEAR_END_THRESHOLD_S ? 'auto' : 'none';
       }
     };
 
@@ -306,7 +259,8 @@ export class AdDomManager {
     const v = adVideo;
     if (v) {
       try {
-        if (Number.isFinite(v.duration) && v.duration > 0) v.currentTime = Math.max(0, v.duration - 0.001);
+        if (Number.isFinite(v.duration) && v.duration > 0)
+          v.currentTime = Math.max(0, v.duration - SEEK_NEAR_END_DELTA_S);
         v.dispatchEvent(new Event('ended'));
       } catch {
         /* ignore */
@@ -436,15 +390,15 @@ export class AdDomManager {
       nl?.minSuggestedDuration ?? nl?.minSuggestedDurationSeconds ?? nl?.attributes?.minSuggestedDuration ?? undefined;
     if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) return raw;
     if (typeof raw === 'string') {
-      const m = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(raw.trim());
-      if (m) {
-        const v = Number(m[1]) * 3600 + Number(m[2]) * 60 + Number(m[3]);
-        if (Number.isFinite(v) && v > 0) return v;
+      const timecodeMatch = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(raw.trim());
+      if (timecodeMatch) {
+        const durationSecs = Number(timecodeMatch[1]) * 3600 + Number(timecodeMatch[2]) * 60 + Number(timecodeMatch[3]);
+        if (Number.isFinite(durationSecs) && durationSecs > 0) return durationSecs;
       }
       const n = Number(raw);
       if (Number.isFinite(n) && n > 0) return n;
     }
-    return 10;
+    return NON_LINEAR_DEFAULT_DURATION_S;
   }
 
   ensureNonLinearDom() {

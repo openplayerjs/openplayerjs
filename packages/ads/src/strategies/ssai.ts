@@ -124,7 +124,11 @@ export class SsaiAdStrategy implements AdSessionStrategy {
       const dur = isFinite(cue.endTime) && cue.endTime > cue.startTime ? cue.endTime - cue.startTime : null;
       this.startBreak(id, dur, cue.startTime);
     } else if (hasSpliceIn) {
-      this.endBreak(id);
+      // Direct match: IN cue shares the same ID as the OUT cue (same DATERANGE tag).
+      // Convention match: a proxy that cannot share IDs may suffix the IN cue ID with
+      // "-in" (e.g. "ad-brk-5-in" closes the break opened by "ad-brk-5").
+      const resolvedId = this.activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
+      this.endBreak(resolvedId);
     }
   }
 

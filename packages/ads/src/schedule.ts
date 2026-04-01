@@ -37,11 +37,11 @@ export function parseVmapTimeOffsetFn(timeOffset: any): {
     if (Number.isFinite(p) && p >= 0 && p <= 100) return { at: 0, pendingPercent: p / 100 };
   }
 
-  const m = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(s);
-  if (m) {
-    const hh = Number(m[1]);
-    const mm = Number(m[2]);
-    const ss = Number(m[3]);
+  const timecodeMatch = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(s);
+  if (timecodeMatch) {
+    const hh = Number(timecodeMatch[1]);
+    const mm = Number(timecodeMatch[2]);
+    const ss = Number(timecodeMatch[3]);
     if ([hh, mm, ss].every((x) => Number.isFinite(x))) return { at: hh * 3600 + mm * 60 + ss };
   }
 
@@ -267,47 +267,15 @@ export class AdScheduler {
   }
 
   normalizeVmapAdSource(adSource: any): any | undefined {
-    if (!adSource) return undefined;
-    if (Array.isArray(adSource)) {
-      return adSource.find((s) => s?.adTagURI || s?.vastAdData) || adSource[0];
-    }
-    return adSource;
+    return normalizeVmapAdSourceFn(adSource);
   }
 
   extractVastTagUri(adTagURI: any): string | undefined {
-    if (!adTagURI) return undefined;
-    if (typeof adTagURI === 'string') return adTagURI.trim() || undefined;
-    if (typeof adTagURI === 'object') {
-      const uri = (adTagURI.uri || adTagURI.URI || adTagURI.value || adTagURI.text || adTagURI['#text']) as
-        | string
-        | undefined;
-      if (typeof uri === 'string' && uri.trim()) return uri.trim();
-    }
-    return undefined;
+    return extractVastTagUriFn(adTagURI);
   }
 
   parseVmapTimeOffset(timeOffset: any): { at: 'preroll' | 'postroll' | number; pendingPercent?: number | null } {
-    const s = String(timeOffset || '').trim();
-    if (!s || s === 'start') return { at: 'preroll' };
-    if (s === 'end') return { at: 'postroll' };
-
-    if (s.endsWith('%')) {
-      const p = Number(s.slice(0, -1));
-      if (Number.isFinite(p) && p >= 0 && p <= 100) return { at: 0, pendingPercent: p / 100 };
-    }
-
-    const m = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(s);
-    if (m) {
-      const hh = Number(m[1]);
-      const mm = Number(m[2]);
-      const ss = Number(m[3]);
-      if ([hh, mm, ss].every((x) => Number.isFinite(x))) return { at: hh * 3600 + mm * 60 + ss };
-    }
-
-    const n = Number(s);
-    if (Number.isFinite(n) && n >= 0) return { at: n };
-
-    return { at: 'preroll' };
+    return parseVmapTimeOffsetFn(timeOffset);
   }
 
   async loadVmapAndMerge(existing: AdsBreakConfig[], vmapSrc?: string) {

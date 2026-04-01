@@ -1,25 +1,27 @@
 import { VASTClient, VASTTracker } from '@dailymotion/vast-client';
-import type { PluginContext } from '@openplayerjs/core';
+import type { EventBus, PluginContext } from '@openplayerjs/core';
 import { getOverlayManager } from '@openplayerjs/core';
 
 import { AdDomManager } from '../ad-dom';
 import { CaptionManager } from '../caption-manager';
+import { NON_LINEAR_DISMISS_MAX_WAIT_S, NON_LINEAR_POLL_INTERVAL_MS } from '../constants';
+import type { NormalizedCsaiConfig } from '../csai-utils';
+import { applyTargeting, isAdBlockerError, normalizeCsaiConfig } from '../csai-utils';
 import { OmidSession } from '../omid';
 import { AdScheduler, getBreakIdFn } from '../schedule';
 import { SimidSession } from '../simid';
 import type {
+  AdBlockerFallbackConfig,
   AdDeliveryMode,
   AdSessionStrategy,
+  AdTagResolverContext,
   AdsBreakConfig,
   AdsEvent,
   AdsPluginConfig,
-  AdsSource,
   AdsSourceType,
-  CsaiAdConfig,
-  ScteSource,
+  BreakAt,
   VastInput,
 } from '../types';
-import { PluginBus } from '../types';
 import {
   collectNonLinearCreatives,
   collectNonLinearFromXml,
@@ -32,88 +34,20 @@ import {
   toXmlDocument,
 } from '../vast-parser';
 
-// ─── Normalized internal config ───────────────────────────────────────────────
+// Re-export for consumers that reference these from this module (e.g. plugins extending CsaiAdStrategy).
+export { applyTargeting, isAdBlockerError } from '../csai-utils';
+export type { NormalizedCsaiConfig } from '../csai-utils';
 
-export type NormalizedCsaiConfig = {
-  sources: AdsSource[];
-  breaks: AdsBreakConfig[];
-  interceptPlayForPreroll: boolean;
-  autoPlayOnReady: boolean;
-  allowNativeControls: boolean;
-  resumeContent: boolean;
-  preferredMediaTypes: string[];
-  debug: boolean;
-  breakTolerance: number;
-  adSourcesMode: 'waterfall' | 'playlist';
-  omid: { accessMode?: 'domain' | 'limited' };
-  labels: { skip?: string; advertisement?: string; adEnded?: string };
-  adDelivery: AdDeliveryMode;
-  mountEl?: HTMLElement;
-  mountSelector?: string;
-  nonLinearContainer?: HTMLElement;
-  nonLinearSelector?: string;
-  companionContainer?: HTMLElement;
-  companionSelector?: string;
-  requestInterceptor?: AdsPluginConfig['requestInterceptor'];
-  eventSink?: AdsPluginConfig['eventSink'];
-  scteSource?: ScteSource;
-  resolveScteUrl?: AdsPluginConfig['resolveScteUrl'];
-};
+export class PluginBus<E extends string> {
+  constructor(private bus: EventBus) {}
 
-/** Merge flat top-level fields with the `csai` sub-config (sub-config wins). */
-function normalizeCsaiConfig(config: AdsPluginConfig): NormalizedCsaiConfig {
-  const merged: AdsPluginConfig & CsaiAdConfig = { ...config, ...config.csai };
+  on(event: E, cb: (...args: any[]) => void) {
+    return this.bus.on(event, cb);
+  }
 
-  const sources = normalizeSources(merged);
-  const breaks = merged.breaks ?? [];
-  const hasExplicitPreroll = breaks.some(
-    (b) => b.at === 'preroll' && (b.source?.src || (Array.isArray(b.sources) && b.sources.some((s) => s?.src)))
-  );
-  const hasSourceVastOrVmap = sources.some((s) => s.type === 'VAST' || s.type === 'VMAP' || s.type === 'NONLINEAR');
-
-  return {
-    allowNativeControls: merged.allowNativeControls ?? false,
-    resumeContent: merged.resumeContent ?? true,
-    preferredMediaTypes: merged.preferredMediaTypes || [
-      'video/mp4',
-      'video/webm',
-      'application/vnd.apple.mpegurl',
-      'application/x-mpegURL',
-    ],
-    debug: config.debug ?? false,
-    breakTolerance: merged.breakTolerance ?? 0.25,
-    sources,
-    breaks,
-    interceptPlayForPreroll: merged.interceptPlayForPreroll ?? (Boolean(hasExplicitPreroll) || hasSourceVastOrVmap),
-    autoPlayOnReady: merged.autoPlayOnReady || false,
-    mountEl: merged.mountEl,
-    mountSelector: merged.mountSelector,
-    nonLinearContainer: merged.nonLinearContainer,
-    nonLinearSelector: merged.nonLinearSelector,
-    companionContainer: merged.companionContainer,
-    companionSelector: merged.companionSelector,
-    adSourcesMode: merged.adSourcesMode ?? 'waterfall',
-    omid: merged.omid ?? {},
-    labels: merged.labels ?? {},
-    adDelivery: config.adDelivery ?? 'csai',
-    requestInterceptor: merged.requestInterceptor,
-    eventSink: merged.eventSink,
-    scteSource: config.hybrid?.scteSource,
-    resolveScteUrl: config.hybrid?.resolveScteUrl,
-  };
-}
-
-function normalizeSources(cfg: AdsPluginConfig): AdsSource[] {
-  const list: AdsSource[] = [];
-  const raw = cfg.sources ? (Array.isArray(cfg.sources) ? cfg.sources : [cfg.sources]) : [];
-  raw.forEach((s) => {
-    if (!s || typeof s.src !== 'string') return;
-    const src = s.src.trim();
-    if (!src) return;
-    const type = s.type as AdsSourceType;
-    if (type === 'VAST' || type === 'VMAP' || type === 'NONLINEAR') list.push({ type, src });
-  });
-  return list;
+  emit(event: E, ...data: any[]) {
+    this.bus.emit(event, ...data);
+  }
 }
 
 // ─── CsaiAdStrategy ───────────────────────────────────────────────────────────
@@ -171,15 +105,27 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     kind: 'preroll' | 'midroll' | 'postroll' | 'auto',
     opts?: { suppressResume?: boolean }
   ) => Promise<void>;
-  _dispatchStartBreakGroup!: (breaks: AdsBreakConfig[], kind: 'preroll' | 'midroll' | 'postroll' | 'auto') => Promise<void>;
+  _dispatchStartBreakGroup!: (
+    breaks: AdsBreakConfig[],
+    kind: 'preroll' | 'midroll' | 'postroll' | 'auto'
+  ) => Promise<void>;
   _dispatchPlayBreakFromVast!: (
     input: VastInput,
-    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string; sourceType?: AdsSourceType },
+    meta: {
+      kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual';
+      id: string;
+      sourceType?: AdsSourceType;
+      at?: BreakAt;
+    },
     opts?: { suppressResumeOnError?: boolean; suppressResumeOnSuccess?: boolean }
   ) => Promise<boolean>;
   _dispatchGetVastXmlText!: (input: VastInput) => Promise<string>;
   _dispatchBuildParsedForNonLinear!: (xmlText: string) => XMLDocument | null;
-  _dispatchMountAdVideo!: (contentMedia: HTMLMediaElement, mediaFile: { fileURL: string; raw: any }, creative?: any) => void;
+  _dispatchMountAdVideo!: (
+    contentMedia: HTMLMediaElement,
+    mediaFile: { fileURL: string; raw: any },
+    creative?: any
+  ) => void;
   _dispatchStartAdPlayback!: () => void;
 
   private simidSession?: SimidSession;
@@ -511,7 +457,11 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     this.startingBreak = true;
     this.bus.emit('ads:break:start', { id, kind, at: b.at });
     try {
-      await this._dispatchPlayBreakFromVast(input, { kind, id, sourceType }, { suppressResumeOnSuccess: opts?.suppressResume });
+      await this._dispatchPlayBreakFromVast(
+        input,
+        { kind, id, sourceType, at: b.at },
+        { suppressResumeOnSuccess: opts?.suppressResume }
+      );
     } finally {
       this.startingBreak = false;
       this.bus.emit('ads:break:end', { id, kind, at: b.at });
@@ -539,11 +489,107 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     }
   }
 
+  // ─── Ad tag URL resolution pipeline ──────────────────────────────────────
+
+  /**
+   * Run the full resolution pipeline for a single ad tag URL:
+   *   1. Targeting macro substitution (including `userId` / `{USER_ID}`)
+   *   2. `adTagResolver` hook (header bidding, private auction, etc.)
+   *   3. `requestInterceptor` (final request mutation — headers, auth tokens)
+   *
+   * Returns the final URL, or `null` when the pipeline signals the break
+   * should be skipped (resolver returned `''`, interceptor returned `null`).
+   */
+  private async resolveAdTagUrl(
+    rawUrl: string,
+    breakMeta: { breakId?: string; at: BreakAt; adType: AdsSourceType }
+  ): Promise<string | null> {
+    // Stage 1 — targeting + userId substitution
+    let userId: string | undefined;
+    if (this.cfg.userId != null) {
+      userId = typeof this.cfg.userId === 'function' ? await Promise.resolve(this.cfg.userId()) : this.cfg.userId;
+    }
+    let url = applyTargeting(rawUrl, this.cfg.targeting ?? {}, userId);
+
+    // Stage 2 — adTagResolver (header bidding / private auction hook)
+    if (this.cfg.adTagResolver) {
+      const ctx: AdTagResolverContext = {
+        url,
+        breakId: breakMeta.breakId,
+        at: breakMeta.at,
+        adType: breakMeta.adType,
+      };
+      const resolved = await Promise.resolve(this.cfg.adTagResolver(ctx));
+      if (!resolved) return null;
+      url = resolved;
+    }
+
+    // Stage 3 — requestInterceptor (headers, auth tokens, final URL mutation)
+    if (this.cfg.requestInterceptor) {
+      const req = await Promise.resolve(
+        this.cfg.requestInterceptor({
+          url,
+          headers: {},
+          adType: breakMeta.adType === 'VMAP' ? 'vmap' : 'vast',
+          contentSrc: this.ctx.core.media?.currentSrc,
+        })
+      );
+      if (!req) return null;
+      url = req.url;
+    }
+
+    return url;
+  }
+
+  /**
+   * Handle a network-level VAST fetch failure according to the configured
+   * `adBlockerFallback` strategy.
+   */
+  private async handleAdBlockerFallback(
+    fallback: AdBlockerFallbackConfig,
+    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string },
+    opts?: { suppressResumeOnError?: boolean }
+  ): Promise<boolean> {
+    if (fallback.mode === 'skip') {
+      this.finish({
+        resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
+        suppressResume: opts?.suppressResumeOnError,
+      });
+      return false;
+    }
+
+    if (fallback.mode === 'ssai') {
+      // Emit a well-known event so AdsPlugin (the dispatcher) can swap strategies.
+      this.ctx.events.emit('ads.adblocker.ssai_fallback', {});
+      this.finish({ resume: false, suppressResume: true });
+      return false;
+    }
+
+    if (fallback.mode === 'custom') {
+      // Replace the scheduler's break schedule with the fallback list and play
+      // the first break immediately.
+      this.scheduler.resolvedBreaks = [...fallback.breaks];
+      this.scheduler.pendingPercentBreaks = [];
+      const first = fallback.breaks[0];
+      if (first) {
+        await this._dispatchStartBreak(first, meta.kind as 'preroll' | 'midroll' | 'postroll' | 'auto');
+      }
+      return true;
+    }
+
+    return false;
+  }
+
   // ─── Main ad playback ─────────────────────────────────────────────────────
 
   /** @internal */ async playBreakFromVast(
     input: VastInput,
-    meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string; sourceType?: AdsSourceType },
+    meta: {
+      kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual';
+      id: string;
+      sourceType?: AdsSourceType;
+      at?: BreakAt;
+    },
     opts?: { suppressResumeOnError?: boolean; suppressResumeOnSuccess?: boolean }
   ): Promise<boolean> {
     if (this.active) return false;
@@ -588,8 +634,20 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     try {
       let parsed: any;
       if (input.kind === 'url') {
+        // ── URL resolution pipeline: targeting → adTagResolver → requestInterceptor ──
+        const resolvedUrl = await this.resolveAdTagUrl(input.value, {
+          breakId: meta.id,
+          at: meta.at ?? 'preroll',
+          adType: meta.sourceType ?? 'VAST',
+        });
+        if (!resolvedUrl) {
+          const skipErr = Object.assign(new Error('Ad tag URL resolution returned empty — skipping break'), {
+            _skipSignal: true,
+          });
+          throw skipErr;
+        }
         try {
-          parsed = await this.vastClient.get(input.value);
+          parsed = await this.vastClient.get(resolvedUrl);
         } catch (e) {
           await loadRawDocBestEffort();
           if (rawDoc) parsed = await this.vastClient.parseVAST(rawDoc);
@@ -674,101 +732,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       }
 
       for (let i = 0; i < pod.length; i++) {
-        const item = pod[i];
-        this.bus.emit('ads:ad:start', { break: meta, index: i, sequence: item.sequence });
-        this.clearSession();
-
-        this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative);
-        this._lastCreative = item.creative;
-
-        this.log('mount ad video', {
-          url: item.mediaFile?.fileURL,
-          type: item.mediaFile?.type,
-          skipOffset: item.skipOffset,
-        });
-        this._dispatchMountAdVideo(media, item.mediaFile, item.creative);
-        const endPromise = this.waitForAdEnd();
-
-        this.dom.setupSkipUIForPodItem(item, this.log.bind(this));
-        this.log('skip ui', { raw: this.dom.skipOffsetRaw, at: this.dom.skipAtSeconds });
-        this.dom.mountCompanions(item.creative);
-        this.dom.mountNonLinear(item.creative);
-
-        const simidUrl = extractSimidUrl(item.creative, rawDoc);
-        if (simidUrl && this.adVideo) {
-          const iframe = this.dom.mountSimidIframe(simidUrl);
-          const clickThruRaw =
-            item.creative?.videoClickThroughURLTemplate?.url ??
-            item.creative?.videoClickThroughURLTemplate ??
-            item.creative?.videoClicks?.clickThrough ??
-            '';
-          const simidCreativeInfo = {
-            adParameters: String(
-              item.creative?.linear?.adParameters?.value ?? item.creative?.adParameters?.value ?? ''
-            ),
-            clickThruUri: typeof clickThruRaw === 'string' ? clickThruRaw : String(clickThruRaw || ''),
-          };
-          this.simidSession = new SimidSession(
-            iframe,
-            this.adVideo,
-            {
-              onSkip: () => this.requestSkip('api'),
-              onStop: () => {
-                const v = this.adVideo;
-                if (v) {
-                  try {
-                    v.dispatchEvent(new Event('ended'));
-                  } catch {
-                    /* ignore */
-                  }
-                }
-              },
-              onPause: () => this.ctx.events.emit('cmd:pause'),
-              onPlay: () => this.ctx.events.emit('cmd:play'),
-              onClickThrough: (url) => {
-                this.dom.safeWindowOpen(url);
-                try {
-                  this.tracker?.trackClick?.();
-                } catch {
-                  /* ignore */
-                }
-                this.bus.emit('ads:clickthrough', { break: meta, url });
-                this.ctx.events.emit('ads.click', { break: meta, url });
-              },
-              onTrackingEvent: (event, _data) => {
-                this.bus.emit('ads:impression', { break: meta, event });
-              },
-              onFatal: (_code, _reason) => {
-                this.simidSession?.destroy();
-                this.simidSession = undefined;
-              },
-              onRequestChangeAdDuration: (durationChange, resolve, _reject) => {
-                resolve();
-                const v = this.adVideo;
-                if (v && Number.isFinite(v.duration)) {
-                  this.simidSession?.adDurationChange(v.duration + durationChange);
-                }
-              },
-            },
-            simidCreativeInfo
-          );
-          this.sessionUnsubs.push(() => {
-            this.simidSession?.destroy();
-            this.simidSession = undefined;
-          });
-        }
-
-        if (!this.cfg.allowNativeControls) this.bindAdSurfaceCommands();
-
-        this.tracker?.trackImpression?.();
-        this.omidSession?.impression();
-        this.bus.emit('ads:impression', { break: meta, index: i });
-
-        this.bindTrackerAndTelemetry({ kind: meta.kind, breakId: meta.id });
-        this._dispatchStartAdPlayback();
-        await endPromise;
-
-        this.bus.emit('ads:ad:end', { break: meta, index: i, sequence: item.sequence });
+        await this.playPodItem(pod[i], i, meta, media, rawDoc);
       }
 
       this.bus.emit('ads:allAdsCompleted', { break: meta });
@@ -782,6 +746,9 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       });
       return true;
     } catch (err) {
+      if (isAdBlockerError(err) && this.cfg.adBlockerFallback) {
+        return this.handleAdBlockerFallback(this.cfg.adBlockerFallback, meta, opts);
+      }
       this.bus.emit('ads:error', err);
       this.ctx.events.emit('ads.error', { err });
       this.finish({
@@ -790,6 +757,125 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       });
       return false;
     }
+  }
+
+  // ─── Pod item playback ────────────────────────────────────────────────────
+
+  /**
+   * Play a single ad from the pod (linear ad sequence).
+   * Called once per ad in the pod by `playBreakFromVast`.
+   */
+  private async playPodItem(
+    item: any,
+    index: number,
+    meta: {
+      kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual';
+      id: string;
+      sourceType?: AdsSourceType;
+      at?: BreakAt;
+    },
+    media: HTMLMediaElement,
+    rawDoc: XMLDocument | null
+  ): Promise<void> {
+    this.bus.emit('ads:ad:start', { break: meta, index, sequence: item.sequence });
+    this.clearSession();
+
+    this.tracker = new VASTTracker(this.vastClient, item.ad, item.creative);
+    this._lastCreative = item.creative;
+
+    this.log('mount ad video', {
+      url: item.mediaFile?.fileURL,
+      type: item.mediaFile?.type,
+      skipOffset: item.skipOffset,
+    });
+    this._dispatchMountAdVideo(media, item.mediaFile, item.creative);
+    const endPromise = this.waitForAdEnd();
+
+    this.dom.setupSkipUIForPodItem(item, this.log.bind(this));
+    this.log('skip ui', { raw: this.dom.skipOffsetRaw, at: this.dom.skipAtSeconds });
+    this.dom.mountCompanions(item.creative);
+    this.dom.mountNonLinear(item.creative);
+
+    this.maybeStartSimidSession(item, meta, rawDoc);
+
+    if (!this.cfg.allowNativeControls) this.bindAdSurfaceCommands();
+
+    this.tracker?.trackImpression?.();
+    this.omidSession?.impression();
+    this.bus.emit('ads:impression', { break: meta, index });
+
+    this.bindTrackerAndTelemetry({ kind: meta.kind, breakId: meta.id });
+    this._dispatchStartAdPlayback();
+    await endPromise;
+
+    this.bus.emit('ads:ad:end', { break: meta, index, sequence: item.sequence });
+  }
+
+  /**
+   * Construct and start a SIMID session for the current ad if a SIMID URL is present.
+   */
+  private maybeStartSimidSession(item: any, meta: { kind: string; id: string }, rawDoc: XMLDocument | null): void {
+    const simidUrl = extractSimidUrl(item.creative, rawDoc);
+    if (!simidUrl || !this.adVideo) return;
+
+    const iframe = this.dom.mountSimidIframe(simidUrl);
+    const clickThruRaw =
+      item.creative?.videoClickThroughURLTemplate?.url ??
+      item.creative?.videoClickThroughURLTemplate ??
+      item.creative?.videoClicks?.clickThrough ??
+      '';
+    const simidCreativeInfo = {
+      adParameters: String(item.creative?.linear?.adParameters?.value ?? item.creative?.adParameters?.value ?? ''),
+      clickThruUri: typeof clickThruRaw === 'string' ? clickThruRaw : String(clickThruRaw || ''),
+    };
+    this.simidSession = new SimidSession(
+      iframe,
+      this.adVideo,
+      {
+        onSkip: () => this.requestSkip('api'),
+        onStop: () => {
+          const v = this.adVideo;
+          if (v) {
+            try {
+              v.dispatchEvent(new Event('ended'));
+            } catch {
+              /* ignore */
+            }
+          }
+        },
+        onPause: () => this.ctx.events.emit('cmd:pause'),
+        onPlay: () => this.ctx.events.emit('cmd:play'),
+        onClickThrough: (url) => {
+          this.dom.safeWindowOpen(url);
+          try {
+            this.tracker?.trackClick?.();
+          } catch {
+            /* ignore */
+          }
+          this.bus.emit('ads:clickthrough', { break: meta, url });
+          this.ctx.events.emit('ads.click', { break: meta, url });
+        },
+        onTrackingEvent: (event, _data) => {
+          this.bus.emit('ads:impression', { break: meta, event });
+        },
+        onFatal: (_code, _reason) => {
+          this.simidSession?.destroy();
+          this.simidSession = undefined;
+        },
+        onRequestChangeAdDuration: (durationChange, resolve, _reject) => {
+          resolve();
+          const v = this.adVideo;
+          if (v && Number.isFinite(v.duration)) {
+            this.simidSession?.adDurationChange(v.duration + durationChange);
+          }
+        },
+      },
+      simidCreativeInfo
+    );
+    this.sessionUnsubs.push(() => {
+      this.simidSession?.destroy();
+      this.simidSession = undefined;
+    });
   }
 
   // ─── Non-linear playback ──────────────────────────────────────────────────
@@ -888,15 +974,16 @@ export class CsaiAdStrategy implements AdSessionStrategy {
 
   private async dismissNonLinear(items: any[], meta: any, maxDuration: number) {
     const start = Date.now();
+    const effectiveMax = Math.min(maxDuration, NON_LINEAR_DISMISS_MAX_WAIT_S);
     await new Promise<void>((resolve) => {
       const tick = () => {
         const elapsed = (Date.now() - start) / 1000;
         const anyLeft = !!this.dom.nonLinearWrap?.querySelector('.op-ads__nonlinear-item');
-        if (!anyLeft || elapsed >= maxDuration) {
+        if (!anyLeft || elapsed >= effectiveMax) {
           resolve();
           return;
         }
-        setTimeout(tick, 50);
+        setTimeout(tick, NON_LINEAR_POLL_INTERVAL_MS);
       };
       tick();
     });

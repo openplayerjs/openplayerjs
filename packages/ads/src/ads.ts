@@ -11,7 +11,10 @@ import { CsaiAdStrategy } from './strategies/csai';
 import { HybridAdStrategy } from './strategies/hybrid';
 import { SsaiAdStrategy } from './strategies/ssai';
 import type {
+  AdBlockerFallbackConfig,
   AdSessionStrategy,
+  AdTagResolverContext,
+  AdsCoreEvent,
   AdsBreakConfig,
   AdsEvent,
   AdsPluginConfig,
@@ -29,7 +32,16 @@ import {
   toXmlDocument,
 } from './vast-parser';
 
-export type { AdsBreakConfig, AdsEvent, AdsPluginConfig, AdsSource, AdsSourceType };
+export type {
+  AdBlockerFallbackConfig,
+  AdTagResolverContext,
+  AdsCoreEvent,
+  AdsBreakConfig,
+  AdsEvent,
+  AdsPluginConfig,
+  AdsSource,
+  AdsSourceType,
+};
 
 /**
  * `AdsPlugin` — thin dispatcher for ad delivery strategies.
@@ -99,6 +111,16 @@ export class AdsPlugin implements PlayerPlugin {
     }
 
     this.strategy.init(ctx, cfg);
+
+    // When the CSAI strategy detects an ad-blocker and adBlockerFallback.mode is
+    // 'ssai', it emits this event.  We swap out the strategy here in the
+    // dispatcher so the HybridAdStrategy lifecycle is properly managed.
+    const ssaiFallbackUnsub = ctx.events.on('ads.adblocker.ssai_fallback', () => {
+      ssaiFallbackUnsub();
+      this.strategy?.destroy();
+      this.strategy = new SsaiAdStrategy();
+      this.strategy.init(ctx, cfg);
+    });
 
     // Install dispatch proxies so that scheduler-initiated calls go through
     // AdsPlugin's own methods — enabling jest.spyOn(plugin, 'startBreak') etc.
