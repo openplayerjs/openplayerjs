@@ -3,21 +3,18 @@
 
   // config:recommended gives automerge/grouping primitives without the
   // :pinDevDependencies preset that config:best-practices pulls in.
-  // Pinning is wrong here because:
-  //   • Root devDeps  — pnpm-lock.yaml already gives reproducible installs;
-  //     pinning just creates noise without extra safety.
-  //   • Package deps  — published in package.json; pinning forces exact
-  //     transitive versions on library consumers.
-  //   • peerDeps      — must stay as ranges; consumers install them.
+  // All dependencies (dev and published) are pinned to exact versions.
+  // pnpm-lock.yaml provides reproducible installs; pinning in package.json
+  // additionally prevents surprise version drift if the lockfile is bypassed
+  // or a consumer installs the package directly.
   "extends": [
     "config:recommended",
     "helpers:pinGitHubActionDigests",
     ":disableDependencyDashboard"
   ],
 
-  // Advance the range floor (^1.2.0 → ^1.3.0) without ever pinning to an
-  // exact version.  Works for both root devDeps and per-package dependencies.
-  "rangeStrategy": "bump",
+  // Pin everything to exact versions — no ^ or ~ ranges anywhere.
+  "rangeStrategy": "pin",
 
   "semanticCommits": "enabled",
 
@@ -55,8 +52,9 @@
     },
 
     // ── Published package dependencies ────────────────────────────────────
-    // These end up in published package.json files.  Keep ranges; let the
-    // maintainer decide if a dep bump is safe to release.
+    // Pinned to exact versions for the same reason as devDeps; exact versions
+    // in published packages give consumers a deterministic dependency graph
+    // and prevent transitive vulnerability drift.
     {
       "matchManagers": ["npm"],
       "matchDepTypes": ["dependencies"],
