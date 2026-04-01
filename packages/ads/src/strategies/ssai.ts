@@ -114,21 +114,51 @@ export class SsaiAdStrategy implements AdSessionStrategy {
     }
 
     // ── EXT-X-DATERANGE / VTTCue path (enableDateRangeMetadataCues) ─────────
-    // hls.js exposes splice direction on the cue as `scte35Out` / `scte35In`,
-    // or inside an `attr` object for older builds.
-    const hasSpliceOut = raw.scte35Out != null || raw.attr?.['SCTE35-OUT'] != null;
+    // hls.js 1.x creates one cue per SCTE35 attribute via createCueWithDataFields,
+    // setting cue.value = { key: 'SCTE35-OUT'|'SCTE35-IN', data: ArrayBuffer }.
+    const value = raw.value as { key?: string; data?: ArrayBuffer } | undefined;
+    if (value?.key === 'SCTE35-OUT' && value.data instanceof ArrayBuffer) {
+      const cmd = decodeSplice(value.data);
+      if (!cmd || cmd.type !== 'splice_insert' || !cmd.outOfNetwork) return;
+      const dur = isFinite(cue.endTime) && cue.endTime > cue.startTime ? cue.endTime - cue.startTime : cmd.durationSecs;
+      this.startBreak(id, dur, cue.startTime);
+      return;
+    }
+    if (value?.key === 'SCTE35-IN') {
+      const resolvedId = this.activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
+      this.endBreak(resolvedId);
+      return;
+    }
 
+    // ── Legacy direct-property path (older hls.js builds) ───────────────────
+    const hasSpliceOut = raw.scte35Out != null || raw.attr?.['SCTE35-OUT'] != null;
     const hasSpliceIn = raw.scte35In != null || raw.attr?.['SCTE35-IN'] != null;
 
     if (hasSpliceOut) {
       const dur = isFinite(cue.endTime) && cue.endTime > cue.startTime ? cue.endTime - cue.startTime : null;
       this.startBreak(id, dur, cue.startTime);
-    } else if (hasSpliceIn) {
-      // Direct match: IN cue shares the same ID as the OUT cue (same DATERANGE tag).
-      // Convention match: a proxy that cannot share IDs may suffix the IN cue ID with
-      // "-in" (e.g. "ad-brk-5-in" closes the break opened by "ad-brk-5").
+      return;
+    }
+    if (hasSpliceIn) {
       const resolvedId = this.activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
       this.endBreak(resolvedId);
+      return;
+    }
+
+    // ── Raw-value path (dash.js, shaka-player, any engine that sets cue.value ─
+    // ── directly to the SCTE-35 payload without a wrapper key) ──────────────
+    const rawValue = raw.value;
+    if (rawValue instanceof ArrayBuffer || rawValue instanceof Uint8Array || typeof rawValue === 'string') {
+      const cmd = decodeSplice(rawValue);
+      if (!cmd || cmd.type !== 'splice_insert') return;
+      if (cmd.outOfNetwork) {
+        const dur =
+          isFinite(cue.endTime) && cue.endTime > cue.startTime ? cue.endTime - cue.startTime : cmd.durationSecs;
+        this.startBreak(id, dur, cue.startTime);
+      } else {
+        const resolvedId = this.activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
+        this.endBreak(resolvedId);
+      }
     }
   }
 
