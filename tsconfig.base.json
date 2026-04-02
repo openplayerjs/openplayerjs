@@ -7,7 +7,6 @@
     "useDefineForClassFields": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "baseUrl": ".",
     "paths": {
       "@openplayerjs/core":   ["./packages/core/src/index.ts"],
       "@openplayerjs/core/*": ["./packages/core/src/*"],

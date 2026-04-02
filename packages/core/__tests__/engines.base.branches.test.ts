@@ -214,7 +214,9 @@ describe('BaseMediaEngine.createMediaSurfaceShim property accessors', () => {
     expect(shim.duration).toBe(120);
 
     // setter must not throw
-    expect(() => { shim.duration = 999; }).not.toThrow();
+    expect(() => {
+      shim.duration = 999;
+    }).not.toThrow();
   });
 
   test('volume getter and setter proxy the underlying media element', () => {

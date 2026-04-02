@@ -1,5 +1,73 @@
 # Changelog
 
+## [3.4.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.1) (2026-04-02)
+
+_April 2, 2026_
+
+### `@openplayerjs/core@3.4.1`
+
+#### Bug Fixes
+
+- **[repo]** minor refactor and coverage increase (3750fa6) @Rafael Miranda
+  - Added new tsconfig to solve TS issues in unit tests
+  - Split logic from core into 2 new utilities to split responsibilities
+  - Fixed issue when checking cues for SSAI strategy using streaming engines
+  - Added more unit tests based on changes
+
+### `@openplayerjs/player@3.4.1`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.1`
+
+### `@openplayerjs/hls@3.4.1`
+
+#### Bug Fixes
+
+- **[repo]** minor refactor and coverage increase (3750fa6) @Rafael Miranda
+  - Added new tsconfig to solve TS issues in unit tests
+  - Split logic from core into 2 new utilities to split responsibilities
+  - Fixed issue when checking cues for SSAI strategy using streaming engines
+  - Added more unit tests based on changes
+
+### `@openplayerjs/ads@3.4.1`
+
+#### Bug Fixes
+
+- **[repo]** minor refactor and coverage increase (3750fa6) @Rafael Miranda
+  - Added new tsconfig to solve TS issues in unit tests
+  - Split logic from core into 2 new utilities to split responsibilities
+  - Fixed issue when checking cues for SSAI strategy using streaming engines
+  - Added more unit tests based on changes
+- **[repo]** Changed Renovate strategy to pin dependencies and pinned all packages versions (e635c12) @Rafael Miranda
+- **[deps]** update dependency @dailymotion/vast-client to ^6.4.4 ([#516](https://github.com/openplayerjs/openplayerjs/pull/516)) @renovate[bot]
+
+### `@openplayerjs/youtube@3.4.1`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.1`
+
+### General
+
+#### Bug Fixes
+
+- **[deps]** Fixed high severity vulnerability related to code injection (b2c0f2f) @Rafael Miranda
+- **[repo]** Modified orchestrator script to consider squash merge commits; updated CHANGELOG (a0d1ca6) @Rafael Miranda
+
+#### Chores
+
+- **[repo]** Added new workflow to scan for package vulnerabilities (b822b73) @Rafael Miranda
+- **[deps]** Fixed high severity vulnerability (ed16a03) @Rafael Miranda
+- **[docs]** Added new badge for OpenSSF Best Practices (1f2ab90) @Rafael Miranda
+- **[deps]** update dependency rollup to ^4.60.1 ([#515](https://github.com/openplayerjs/openplayerjs/pull/515)) @renovate[bot]
+- **[deps]** update node.js ([#513](https://github.com/openplayerjs/openplayerjs/pull/513)) @renovate[bot]
+- **[deps]** update eslint to ^8.57.2 ([#512](https://github.com/openplayerjs/openplayerjs/pull/512)) @renovate[bot]
+- **[deps]** update dependency undici to >=7.24.6 ([#511](https://github.com/openplayerjs/openplayerjs/pull/511)) @renovate[bot]
+- **[deps]** update dependency turbo to ^2.8.21 ([#510](https://github.com/openplayerjs/openplayerjs/pull/510)) @renovate[bot]
+- **[deps]** update dependency stylelint to ^17.6.0 ([#509](https://github.com/openplayerjs/openplayerjs/pull/509)) @renovate[bot]
+- **[deps]** update github/codeql-action digest to c10b806 ([#508](https://github.com/openplayerjs/openplayerjs/pull/508)) @renovate[bot]
+
 ## [3.4.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.0) (2026-03-28)
 
 _March 28, 2026_

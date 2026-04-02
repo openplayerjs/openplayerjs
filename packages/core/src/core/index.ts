@@ -9,7 +9,7 @@ import type { PlayerPlugin } from './plugin';
 import { PluginRegistry } from './plugin';
 import { StateManager, type PlaybackState } from './state';
 import { HtmlMediaSurface, type MediaSurface } from './surface';
-import { predictMimeType, readMediaSources, resolveMediaEngine as resolveEngine } from './utils';
+import { predictMimeType, readMediaSources as readSources, resolveMediaEngine as resolveEngine } from './utils';
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 
@@ -576,7 +576,7 @@ export class Core {
   }
 
   private readMediaSources(media: HTMLMediaElement): MediaSource[] {
-    return readMediaSources(media);
+    return readSources(media);
   }
 
   private maybeAutoLoad() {
