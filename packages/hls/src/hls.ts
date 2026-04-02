@@ -236,7 +236,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     };
   }
 
-  detach() {
+  detach(_ctx?: MediaEngineContext): void {
     this.unbindCommands();
     this.unbindMediaEvents();
     this.unbindAdapterEvents();

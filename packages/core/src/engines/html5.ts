@@ -42,7 +42,7 @@ export class DefaultMediaEngine extends BaseMediaEngine {
     );
   }
 
-  detach(): void {
+  detach(_ctx?: MediaEngineContext): void {
     this.unbindCommands();
     this.unbindSurfaceEvents();
   }
