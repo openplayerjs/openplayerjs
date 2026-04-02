@@ -19,7 +19,7 @@ export abstract class BaseMediaEngine {
   abstract priority: number;
   abstract canPlay(source: MediaSource): boolean;
   abstract attach(ctx: MediaEngineContext): void | Promise<void>;
-  abstract detach(): void;
+  abstract detach(ctx?: MediaEngineContext): void;
 
   protected bindSurfaceEvents(surface: MediaSurface, events: MediaEngineContext['events']): void {
     this.surface = surface;
