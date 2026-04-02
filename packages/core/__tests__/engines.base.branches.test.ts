@@ -41,6 +41,10 @@ class TestEngine extends BaseMediaEngine {
   exposeAddMediaListener(media: HTMLMediaElement, event: string, handler: EventListenerOrEventListenerObject) {
     this.addMediaListener(media, event, handler);
   }
+
+  exposeCreateShim(media: HTMLMediaElement) {
+    return this.createMediaSurfaceShim(media);
+  }
 }
 
 function ctx(media: HTMLMediaElement) {
@@ -175,5 +179,139 @@ describe('BaseMediaEngine branch coverage', () => {
     engine.exposeUnbindMediaEvents();
     media.dispatchEvent(new Event('play'));
     expect(calls).toHaveLength(1); // no new call
+  });
+});
+
+// ─── createMediaSurfaceShim property accessors ───────────────────────────────
+
+describe('BaseMediaEngine.createMediaSurfaceShim property accessors', () => {
+  test('currentTime getter and setter proxy the underlying media element', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    // getter
+    Object.defineProperty(media, 'currentTime', {
+      configurable: true,
+      get: () => 42,
+      set: jest.fn(),
+    });
+    expect(shim.currentTime).toBe(42);
+
+    // setter — verify write reaches the media element
+    const setter = jest.fn();
+    Object.defineProperty(media, 'currentTime', { configurable: true, get: () => 0, set: setter });
+    shim.currentTime = 10;
+    expect(setter).toHaveBeenCalledWith(10);
+  });
+
+  test('duration getter returns media.duration; setter is a no-op', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    Object.defineProperty(media, 'duration', { configurable: true, get: () => 120 });
+    expect(shim.duration).toBe(120);
+
+    // setter must not throw
+    expect(() => {
+      shim.duration = 999;
+    }).not.toThrow();
+  });
+
+  test('volume getter and setter proxy the underlying media element', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    media.volume = 0.6;
+    expect(shim.volume).toBeCloseTo(0.6);
+
+    shim.volume = 0.3;
+    expect(media.volume).toBeCloseTo(0.3);
+  });
+
+  test('muted getter and setter proxy the underlying media element', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    media.muted = false;
+    expect(shim.muted).toBe(false);
+
+    shim.muted = true;
+    expect(media.muted).toBe(true);
+  });
+
+  test('playbackRate getter and setter proxy the underlying media element', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    media.playbackRate = 1.5;
+    expect(shim.playbackRate).toBe(1.5);
+
+    shim.playbackRate = 2.0;
+    expect(media.playbackRate).toBe(2.0);
+  });
+
+  test('paused getter proxies media.paused', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    Object.defineProperty(media, 'paused', { configurable: true, get: () => true });
+    expect(shim.paused).toBe(true);
+
+    Object.defineProperty(media, 'paused', { configurable: true, get: () => false });
+    expect(shim.paused).toBe(false);
+  });
+
+  test('ended getter proxies media.ended', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    Object.defineProperty(media, 'ended', { configurable: true, get: () => true });
+    expect(shim.ended).toBe(true);
+  });
+
+  test('shim.play() delegates to media.play()', async () => {
+    const media = document.createElement('video');
+    const playSpy = jest.fn(() => Promise.resolve());
+    media.play = playSpy;
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    await shim.play();
+    expect(playSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('shim.pause() delegates to media.pause()', () => {
+    const media = document.createElement('video');
+    const pauseSpy = jest.fn();
+    media.pause = pauseSpy;
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    shim.pause();
+    expect(pauseSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('shim.on() registers a DOM listener and returns a cleanup function', () => {
+    const media = document.createElement('video');
+    const engine = new TestEngine();
+    const shim = engine.exposeCreateShim(media);
+
+    const calls: string[] = [];
+    const off = shim.on('play', () => calls.push('play'));
+
+    media.dispatchEvent(new Event('play'));
+    expect(calls).toEqual(['play']);
+
+    // cleanup removes the listener
+    off();
+    media.dispatchEvent(new Event('play'));
+    expect(calls).toHaveLength(1);
   });
 });

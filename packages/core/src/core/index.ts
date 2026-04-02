@@ -9,7 +9,7 @@ import type { PlayerPlugin } from './plugin';
 import { PluginRegistry } from './plugin';
 import { StateManager, type PlaybackState } from './state';
 import { HtmlMediaSurface, type MediaSurface } from './surface';
-import { predictMimeType } from './utils';
+import { predictMimeType, readMediaSources as readSources, resolveMediaEngine as resolveEngine } from './utils';
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
 
@@ -441,8 +441,6 @@ export class Core {
   }
 
   private resolveMediaEngine(sources: MediaSource[]): { engine: MediaEnginePlugin; source: MediaSource } {
-    if (sources.length === 0) throw new Error('Player cannot resolve media with an empty source');
-
     const engines = this.plugins
       .all()
       .filter(
@@ -450,20 +448,12 @@ export class Core {
           !!(!!p && p.capabilities?.includes('media-engine') && typeof (p as MediaEnginePlugin).canPlay === 'function')
       );
 
-    // Don't mutate registry order.
+    // Don't mutate registry order; pass pre-sorted engines to the standalone helper.
     const sortedEngines = [...engines].sort(
       (a, b) => (b.priority ?? 0) - (a.priority ?? 0) || a.name.localeCompare(b.name)
     );
 
-    for (const source of sources) {
-      for (const engine of sortedEngines) {
-        if (engine.canPlay?.(source)) {
-          return { engine, source };
-        }
-      }
-    }
-
-    throw new Error('No compatible media engine found');
+    return resolveEngine(sortedEngines, sources);
   }
 
   private bindStateTransitions() {
@@ -586,21 +576,7 @@ export class Core {
   }
 
   private readMediaSources(media: HTMLMediaElement): MediaSource[] {
-    const sources: MediaSource[] = [];
-
-    if (media.src) {
-      sources.push({ src: media.src, type: predictMimeType(media, media.src) });
-    }
-
-    try {
-      media.querySelectorAll('source').forEach((el) => {
-        sources.push({ src: el.src, type: el.type || predictMimeType(media, el.src) });
-      });
-    } catch {
-      // ignore
-    }
-
-    return sources;
+    return readSources(media);
   }
 
   private maybeAutoLoad() {

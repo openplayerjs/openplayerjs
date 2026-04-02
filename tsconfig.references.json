@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/player" },
+    { "path": "./packages/hls" },
+    { "path": "./packages/ads" },
+    { "path": "./packages/youtube" }
+  ]
+}

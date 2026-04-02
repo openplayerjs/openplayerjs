@@ -681,3 +681,265 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
     strategy.destroy();
   });
 });
+
+// ─── Helper cue factories for uncovered paths ────────────────────────────────
+
+/**
+ * hls.js 2.x+ EXT-X-DATERANGE format: cue.value = { key: 'SCTE35-OUT'|'SCTE35-IN', data?: ArrayBuffer }
+ */
+function makeValueWrappedCue(
+  id: string,
+  direction: 'out' | 'in',
+  data?: ArrayBuffer,
+  startTime = 10,
+  endTime = 40
+): TextTrackCue {
+  const cue = new VTTCue(startTime, endTime, '');
+  Object.defineProperty(cue, 'id', { value: id, configurable: true });
+  if (direction === 'out') {
+    (cue as any).value = { key: 'SCTE35-OUT', data: data ?? makeSpliceInsertBuffer(true) };
+  } else {
+    (cue as any).value = { key: 'SCTE35-IN' };
+  }
+  return cue;
+}
+
+/**
+ * dash.js / shaka-player style: cue.value is a raw ArrayBuffer, Uint8Array, or base64 string
+ * (no wrapper key, no .data property, no scte35Out/In properties).
+ */
+function makeRawValueCue(
+  id: string,
+  rawValue: ArrayBuffer | Uint8Array | string,
+  startTime = 10,
+  endTime = 40
+): TextTrackCue {
+  const cue = new VTTCue(startTime, endTime, '');
+  Object.defineProperty(cue, 'id', { value: id, configurable: true });
+  (cue as any).value = rawValue;
+  return cue;
+}
+
+// ─── EXT-X-DATERANGE value wrapper path (lines 120-130) ─────────────────────
+
+describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => {
+  test('starts a break on SCTE35-OUT cue with ArrayBuffer data', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    fireCueChange(track, [makeValueWrappedCue('vw-out-1', 'out')]);
+    expect(events).toEqual(['start']);
+    strategy.destroy();
+  });
+
+  test('ignores SCTE35-OUT cue when decoded command is not outOfNetwork', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    // splice-in buffer (outOfNetwork=false) used on SCTE35-OUT cue — should be ignored
+    fireCueChange(track, [makeValueWrappedCue('vw-bad', 'out', makeSpliceInsertBuffer(false))]);
+    expect(events).toEqual([]);
+    strategy.destroy();
+  });
+
+  test('uses endTime - startTime as duration when finite', () => {
+    const { ctx, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    fireCueChange(track, [makeValueWrappedCue('vw-dur', 'out', undefined, 10, 40)]);
+    const brk = (strategy as any).activeBreaks.get('vw-dur');
+    expect(brk?.durationSec).toBe(30);
+    strategy.destroy();
+  });
+
+  test('falls back to cmd.durationSecs when endTime equals startTime', () => {
+    const { ctx, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    // endTime === startTime → ternary is false → uses cmd.durationSecs (null for no-duration buffer)
+    fireCueChange(track, [makeValueWrappedCue('vw-nodur', 'out', makeSpliceInsertBuffer(true), 10, 10)]);
+    const brk = (strategy as any).activeBreaks.get('vw-nodur');
+    expect(brk?.durationSec).toBeNull();
+    strategy.destroy();
+  });
+
+  test('ends a break on SCTE35-IN cue (id matches active break)', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:end' as any, () => events.push('end'));
+
+    fireCueChange(track, [makeValueWrappedCue('vw-1', 'out')]);
+    fireCueChange(track, [makeValueWrappedCue('vw-1', 'in')]);
+    expect(events).toEqual(['start', 'end']);
+    strategy.destroy();
+  });
+
+  test('SCTE35-IN resolves id with -in suffix to the base break id', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const ended: string[] = [];
+    bus.on('ads:break:end' as any, () => ended.push('end'));
+
+    // Start break with base id 'brk-a'; end cue arrives with id 'brk-a-in'
+    fireCueChange(track, [makeValueWrappedCue('brk-a', 'out')]);
+    const inCue = new VTTCue(10, 40, '');
+    Object.defineProperty(inCue, 'id', { value: 'brk-a-in', configurable: true });
+    (inCue as any).value = { key: 'SCTE35-IN' };
+    fireCueChange(track, [inCue]);
+
+    expect(ended).toHaveLength(1);
+    strategy.destroy();
+  });
+
+  test('SCTE35-IN with unknown id (no active break, no -in suffix) is a no-op', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const ended: string[] = [];
+    bus.on('ads:break:end' as any, () => ended.push('end'));
+
+    // No break was started; the SCTE35-IN cue should silently do nothing
+    fireCueChange(track, [makeValueWrappedCue('unknown-id', 'in')]);
+    expect(ended).toHaveLength(0);
+    strategy.destroy();
+  });
+});
+
+// ─── Raw-value path (lines 150-162) ─────────────────────────────────────────
+
+describe('SsaiAdStrategy — raw value path (dash.js / shaka-player)', () => {
+  test('starts a break for raw ArrayBuffer splice-out', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    fireCueChange(track, [makeRawValueCue('rv-out', makeSpliceInsertBuffer(true))]);
+    expect(events).toEqual(['start']);
+    strategy.destroy();
+  });
+
+  test('ends a break for raw ArrayBuffer splice-in', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:end' as any, () => events.push('end'));
+
+    fireCueChange(track, [makeRawValueCue('rv-1', makeSpliceInsertBuffer(true))]);
+    fireCueChange(track, [makeRawValueCue('rv-1', makeSpliceInsertBuffer(false))]);
+    expect(events).toEqual(['start', 'end']);
+    strategy.destroy();
+  });
+
+  test('starts a break for raw Uint8Array splice-out', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    fireCueChange(track, [makeRawValueCue('rv-u8', new Uint8Array(makeSpliceInsertBuffer(true)))]);
+    expect(events).toEqual(['start']);
+    strategy.destroy();
+  });
+
+  test('ignores raw value when decodeSplice returns null', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    // Empty ArrayBuffer — decodeSplice returns null (no 0xFC byte found)
+    fireCueChange(track, [makeRawValueCue('rv-null', new ArrayBuffer(0))]);
+    expect(events).toEqual([]);
+    strategy.destroy();
+  });
+
+  test('raw splice-in resolves -in suffix to base break id', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const ended: string[] = [];
+    bus.on('ads:break:end' as any, () => ended.push('end'));
+
+    fireCueChange(track, [makeRawValueCue('rv-base', makeSpliceInsertBuffer(true))]);
+    // End cue uses id 'rv-base-in' — the -in suffix should be stripped to find 'rv-base'
+    const inCue = new VTTCue(10, 40, '');
+    Object.defineProperty(inCue, 'id', { value: 'rv-base-in', configurable: true });
+    (inCue as any).value = makeSpliceInsertBuffer(false);
+    fireCueChange(track, [inCue]);
+
+    expect(ended).toHaveLength(1);
+    strategy.destroy();
+  });
+
+  test('raw splice-in with active break id uses direct id (no -in stripping)', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const ended: string[] = [];
+    bus.on('ads:break:end' as any, () => ended.push('end'));
+
+    // Start break with id 'rv-direct', then end it with the same id
+    fireCueChange(track, [makeRawValueCue('rv-direct', makeSpliceInsertBuffer(true))]);
+    fireCueChange(track, [makeRawValueCue('rv-direct', makeSpliceInsertBuffer(false))]);
+
+    expect(ended).toHaveLength(1);
+    strategy.destroy();
+  });
+});
+
+// ─── ads.ts AdsPlugin — requestSkip delegation ───────────────────────────────
+
+describe('AdsPlugin — requestSkip', () => {
+  test('requestSkip delegates to the strategy when implemented', () => {
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({ adDelivery: 'ssai' });
+    plugin.setup(ctx);
+
+    // SsaiAdStrategy does not implement requestSkip, but the call must not throw
+    expect(() => (plugin as any).requestSkip('button')).not.toThrow();
+    expect(() => (plugin as any).requestSkip()).not.toThrow();
+    plugin.destroy?.();
+  });
+});

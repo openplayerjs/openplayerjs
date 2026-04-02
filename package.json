@@ -16,7 +16,7 @@
   "scripts": {
     "prepare": "husky",
     "build": "pnpm run clean && pnpm run build:types && turbo run build:bundles build:css --force",
-    "build:types": "tsc -b",
+    "build:types": "tsc -b tsconfig.references.json",
     "build:bundles": "turbo run build:bundles",
     "build:bundles:affected": "turbo run build:bundles --affected",
     "build:css": "turbo run build:css",
