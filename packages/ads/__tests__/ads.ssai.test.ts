@@ -680,4 +680,265 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
     expect(brk?.durationSec).toBeNull();
     strategy.destroy();
   });
+
+  test('hasSpliceIn with id ending in "-in" resolves to base id', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:end' as any, () => events.push('end'));
+
+    // Start break with base id "break1"
+    fireCueChange(track, [makeDateRangeCue('break1', 'out', 10, 40)]);
+    // End with "-in" suffix — strategy should resolve "break1-in" → "break1"
+    const cueIn = new VTTCue(40, 40, '');
+    Object.defineProperty(cueIn, 'id', { value: 'break1-in', configurable: true });
+    (cueIn as any).scte35In = '0xFC302F';
+    fireCueChange(track, [cueIn]);
+
+    expect(events).toEqual(['start', 'end']);
+    strategy.destroy();
+  });
+});
+
+// ─── hls.js createCueWithDataFields (cue.value = { key, data }) path ──────────
+
+describe('SsaiAdStrategy — value.key SCTE35-OUT/IN path (hls.js createCueWithDataFields)', () => {
+  test('starts a break when value.key === SCTE35-OUT with valid ArrayBuffer', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    const cue = new VTTCue(10, 40, '');
+    Object.defineProperty(cue, 'id', { value: 'kv-out-1', configurable: true });
+    (cue as any).value = { key: 'SCTE35-OUT', data: makeSpliceInsertBuffer(true) };
+    fireCueChange(track, [cue]);
+
+    expect(events).toEqual(['start']);
+    const brk = (strategy as any).activeBreaks.get('kv-out-1');
+    // endTime(40) > startTime(10) → dur = 30
+    expect(brk?.durationSec).toBe(30);
+    strategy.destroy();
+  });
+
+  test('SCTE35-OUT with endTime === startTime uses durationSecs from cmd', () => {
+    const { ctx, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    // duration ticks: 90000 ticks/s × 15s = 1350000 ticks
+    const cue = new VTTCue(10, 10, '');
+    Object.defineProperty(cue, 'id', { value: 'kv-dur', configurable: true });
+    (cue as any).value = { key: 'SCTE35-OUT', data: makeSpliceInsertBuffer(true, 1350000) };
+    fireCueChange(track, [cue]);
+
+    const brk = (strategy as any).activeBreaks.get('kv-dur');
+    // Falls back to cmd.durationSecs (1350000 / 90000 ≈ 15)
+    expect(typeof brk?.durationSec).toBe('number');
+    strategy.destroy();
+  });
+
+  test('SCTE35-OUT ignores cue when splice command is not outOfNetwork', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    const cue = new VTTCue(10, 40, '');
+    Object.defineProperty(cue, 'id', { value: 'kv-in-only', configurable: true });
+    // outOfNetwork=false on a SCTE35-OUT key → early return
+    (cue as any).value = { key: 'SCTE35-OUT', data: makeSpliceInsertBuffer(false) };
+    fireCueChange(track, [cue]);
+
+    expect(events).toEqual([]);
+    strategy.destroy();
+  });
+
+  test('ends a break when value.key === SCTE35-IN (id matches active break)', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:end' as any, () => events.push('end'));
+
+    // Start break with SCTE35-OUT key
+    const cueOut = new VTTCue(10, 40, '');
+    Object.defineProperty(cueOut, 'id', { value: 'kv-2', configurable: true });
+    (cueOut as any).value = { key: 'SCTE35-OUT', data: makeSpliceInsertBuffer(true) };
+    fireCueChange(track, [cueOut]);
+
+    // End with SCTE35-IN key (same id already in activeBreaks)
+    const cueIn = new VTTCue(40, 40, '');
+    Object.defineProperty(cueIn, 'id', { value: 'kv-2', configurable: true });
+    (cueIn as any).value = { key: 'SCTE35-IN' };
+    fireCueChange(track, [cueIn]);
+
+    expect(events).toEqual(['start', 'end']);
+    strategy.destroy();
+  });
+
+  test('SCTE35-IN with id ending in "-in" resolves to base id', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:end' as any, () => events.push('end'));
+
+    // Start break with id "kv-base"
+    const cueOut = new VTTCue(10, 40, '');
+    Object.defineProperty(cueOut, 'id', { value: 'kv-base', configurable: true });
+    (cueOut as any).value = { key: 'SCTE35-OUT', data: makeSpliceInsertBuffer(true) };
+    fireCueChange(track, [cueOut]);
+
+    // End with "kv-base-in" — should resolve to "kv-base"
+    const cueIn = new VTTCue(40, 40, '');
+    Object.defineProperty(cueIn, 'id', { value: 'kv-base-in', configurable: true });
+    (cueIn as any).value = { key: 'SCTE35-IN' };
+    fireCueChange(track, [cueIn]);
+
+    expect(events).toEqual(['start', 'end']);
+    strategy.destroy();
+  });
+});
+
+// ─── Raw value path (dash.js / shaka-player direct ArrayBuffer/Uint8Array) ───
+
+describe('SsaiAdStrategy — raw cue.value path (ArrayBuffer / Uint8Array)', () => {
+  test('starts break when cue.value is directly an ArrayBuffer (splice-out)', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    const cue = new VTTCue(5, 35, '');
+    Object.defineProperty(cue, 'id', { value: 'raw-ab-out', configurable: true });
+    (cue as any).value = makeSpliceInsertBuffer(true);
+    fireCueChange(track, [cue]);
+
+    expect(events).toEqual(['start']);
+    const brk = (strategy as any).activeBreaks.get('raw-ab-out');
+    expect(brk?.durationSec).toBe(30); // endTime(35) - startTime(5)
+    strategy.destroy();
+  });
+
+  test('ends break when cue.value is directly an ArrayBuffer (splice-in)', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:end' as any, () => events.push('end'));
+
+    // Start via daterange cue, then end via raw ArrayBuffer splice-in
+    fireCueChange(track, [makeDateRangeCue('raw-ab-end', 'out', 5, 35)]);
+
+    const cueIn = new VTTCue(35, 35, '');
+    Object.defineProperty(cueIn, 'id', { value: 'raw-ab-end', configurable: true });
+    (cueIn as any).value = makeSpliceInsertBuffer(false); // outOfNetwork=false → splice-in
+    fireCueChange(track, [cueIn]);
+
+    expect(events).toEqual(['start', 'end']);
+    strategy.destroy();
+  });
+
+  test('raw ArrayBuffer splice-in with "-in" id suffix resolves to base id', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:end' as any, () => events.push('end'));
+
+    fireCueChange(track, [makeDateRangeCue('raw-base', 'out', 5, 35)]);
+
+    const cueIn = new VTTCue(35, 35, '');
+    Object.defineProperty(cueIn, 'id', { value: 'raw-base-in', configurable: true });
+    (cueIn as any).value = makeSpliceInsertBuffer(false);
+    fireCueChange(track, [cueIn]);
+
+    expect(events).toEqual(['start', 'end']);
+    strategy.destroy();
+  });
+
+  test('starts break when cue.value is a Uint8Array (splice-out)', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    const cue = new VTTCue(0, 20, '');
+    Object.defineProperty(cue, 'id', { value: 'raw-u8', configurable: true });
+    // Pass as Uint8Array instead of ArrayBuffer
+    (cue as any).value = new Uint8Array(makeSpliceInsertBuffer(true));
+    fireCueChange(track, [cue]);
+
+    expect(events).toEqual(['start']);
+    strategy.destroy();
+  });
+
+  test('raw ArrayBuffer with non-splice_insert command is a no-op', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const events: string[] = [];
+    bus.on('ads:break:start' as any, () => events.push('start'));
+
+    // time_signal (0x06) — not a splice_insert
+    const buf = new Uint8Array(16);
+    buf[0] = 0xfc;
+    buf[13] = 0x06;
+    const cue = new VTTCue(0, 0, '');
+    Object.defineProperty(cue, 'id', { value: 'raw-ts', configurable: true });
+    (cue as any).value = buf.buffer;
+    fireCueChange(track, [cue]);
+
+    expect(events).toEqual([]);
+    strategy.destroy();
+  });
+
+  test('raw ArrayBuffer splice-out uses cmd.durationSecs when endTime <= startTime', () => {
+    const { ctx, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    // endTime === startTime → fallback to cmd.durationSecs
+    const cue = new VTTCue(10, 10, '');
+    Object.defineProperty(cue, 'id', { value: 'raw-dur-fallback', configurable: true });
+    (cue as any).value = makeSpliceInsertBuffer(true, 1350000); // 15 s
+    fireCueChange(track, [cue]);
+
+    const brk = (strategy as any).activeBreaks.get('raw-dur-fallback');
+    expect(typeof brk?.durationSec).toBe('number');
+    strategy.destroy();
+  });
 });

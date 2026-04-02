@@ -409,4 +409,140 @@ describe('HlsMediaEngine branch coverage', () => {
     expect(engine.canPlay({ src: 'https://example.com/stream', type: 'application/x-mpegURL' })).toBe(false);
     expect(engine.canPlay({ src: 'https://example.com/stream.m3u8', type: '' })).toBe(false);
   });
+
+  // ── generic event bridge: args.length > 1 path ────────────────────────────
+
+  test('generic adapter event with 2+ args picks args[1] as data (args.length > 1 branch)', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const received: any[] = [];
+    // SUBTITLE_TRACKS_UPDATED is in MockHls.Events so the generic bridge is set up for it
+    ctx.events.on('SUBTITLE_TRACKS_UPDATED' as any, (d: any) => received.push(d));
+
+    // Emit with 2 args (simulating real hls.js convention: eventName + data) → picks args[1]
+    (adapter as any).emit('SUBTITLE_TRACKS_UPDATED', 'SUBTITLE_TRACKS_UPDATED', { subtitleTracks: [] });
+
+    expect(received).toHaveLength(1);
+    expect(received[0]).toEqual({ subtitleTracks: [] });
+  });
+
+  test('generic adapter event with 1 arg picks args[0] as data (args.length <= 1 branch)', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const received: any[] = [];
+    ctx.events.on('SUBTITLE_TRACKS_UPDATED' as any, (d: any) => received.push(d));
+
+    // Emit with 1 arg → picks args[0]
+    (adapter as any).emit('SUBTITLE_TRACKS_UPDATED', { subtitleTracks: [] });
+
+    expect(received).toHaveLength(1);
+    expect(received[0]).toEqual({ subtitleTracks: [] });
+  });
+
+  // ── LEVEL_UPDATED: onCue callback ─────────────────────────────────────────
+
+  test('LEVEL_UPDATED with onCue registered fires onCue for new SCTE35-OUT date ranges', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const cues: any[] = [];
+    engine.onCue = (cue) => cues.push(cue);
+
+    const dateRanges = {
+      'scte-1': {
+        attr: { 'SCTE35-OUT': '0xFC302F' },
+        plannedDuration: 30,
+        startDate: new Date('2025-01-01T00:00:00Z'),
+      },
+    };
+
+    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, {
+      details: { live: false, totalduration: 0, dateRanges },
+    });
+
+    expect(cues).toHaveLength(1);
+    expect(cues[0].scte35Out).toBe('0xFC302F');
+    expect(cues[0].id).toBe('scte-1');
+  });
+
+  test('LEVEL_UPDATED: same id seen twice is deduplicated (seenCueIds guard)', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const cues: any[] = [];
+    engine.onCue = (cue) => cues.push(cue);
+
+    const dateRanges = {
+      'scte-dup': {
+        attr: { 'SCTE35-OUT': '0xFC302F' },
+        plannedDuration: 15,
+        startDate: new Date(),
+      },
+    };
+
+    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
+    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
+
+    // Second emission should be deduped
+    expect(cues).toHaveLength(1);
+  });
+
+  test('LEVEL_UPDATED: range without SCTE35-OUT is skipped', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const cues: any[] = [];
+    engine.onCue = (cue) => cues.push(cue);
+
+    const dateRanges = {
+      'no-scte': { attr: { 'OTHER-KEY': 'value' }, plannedDuration: 10, startDate: new Date() },
+    };
+
+    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
+
+    expect(cues).toHaveLength(0);
+  });
+
+  test('LEVEL_UPDATED: no onCue registered — no crash', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    // No onCue registered — should be a no-op
+    const dateRanges = {
+      'scte-no-cue': { attr: { 'SCTE35-OUT': '0xFC302F' }, plannedDuration: 30, startDate: new Date() },
+    };
+    expect(() =>
+      adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } })
+    ).not.toThrow();
+  });
+
+  // ── LEVEL_UPDATED: null/undefined dateRanges ──────────────────────────────
+
+  test('LEVEL_UPDATED with no dateRanges is a no-op (early return)', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    engine.attach(ctx);
+    const adapter = engine.getAdapter();
+
+    const cues: any[] = [];
+    engine.onCue = (cue) => cues.push(cue);
+
+    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0 } });
+
+    expect(cues).toHaveLength(0);
+  });
 });

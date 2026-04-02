@@ -32,8 +32,8 @@ export abstract class BaseMediaEngine {
     this.surfaceListeners = [];
   }
 
-  protected bindMediaEvents(media: HTMLMediaElement, events: EventBus): void {
-    const shim: MediaSurface = {
+  protected createMediaSurfaceShim(media: HTMLMediaElement): MediaSurface {
+    return {
       get currentTime() {
         return media.currentTime;
       },
@@ -78,6 +78,10 @@ export abstract class BaseMediaEngine {
         return () => media.removeEventListener(event, wrapped);
       },
     };
+  }
+
+  protected bindMediaEvents(media: HTMLMediaElement, events: EventBus): void {
+    const shim = this.createMediaSurfaceShim(media);
     this.surfaceListeners = bridgeSurfaceEvents(shim, events);
   }
 
