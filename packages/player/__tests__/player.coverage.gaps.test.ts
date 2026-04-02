@@ -17,7 +17,7 @@
 import { Core, getOverlayManager } from '@openplayerjs/core';
 import createProgressControl from '../src/controls/progress';
 import createVolumeControl from '../src/controls/volume';
-import { getActiveMedia, togglePlayback } from '../src/playback';
+import { getActiveMedia } from '../src/playback';
 import { getSettingsRegistry } from '../src/settings';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -39,15 +39,6 @@ function nn<T>(v: T | null | undefined, msg = 'Expected element'): T {
 describe('getActiveMedia catch branch', () => {
   test('returns core.surface when getOverlayManager throws', () => {
     const p = makeCore();
-    // Override getOverlayManager via core.events so the import-level call throws.
-    // Since we can't easily mock the import, simulate by calling getActiveMedia
-    // with a proxy that throws on active access.
-    const fakeSurface = {} as any;
-    const fakeCore = {
-      surface: fakeSurface,
-      get media() { return p.media; },
-    } as any;
-
     // Patch getOverlayManager indirectly: make core.surface throw.
     // The catch block returns core.surface, so in the normal path we just
     // verify it still returns a valid surface.
@@ -70,7 +61,15 @@ describe('getActiveMedia catch branch', () => {
       ended: false,
       on: jest.fn(() => () => {}),
     };
-    om.active = { id: 'ads', priority: 100, mode: 'normal', duration: 30, value: 0, canSeek: false, fullscreenVideoEl: fakeSurface };
+    om.active = {
+      id: 'ads',
+      priority: 100,
+      mode: 'normal',
+      duration: 30,
+      value: 0,
+      canSeek: false,
+      fullscreenVideoEl: fakeSurface,
+    };
 
     const result = getActiveMedia(p);
     expect(result).toBe(fakeSurface);
@@ -79,7 +78,15 @@ describe('getActiveMedia catch branch', () => {
   test('getActiveMedia returns core.surface when fullscreenVideoEl has no play fn', () => {
     const p = makeCore();
     const om = getOverlayManager(p) as any;
-    om.active = { id: 'ads', priority: 100, mode: 'normal', duration: 30, value: 0, canSeek: false, fullscreenVideoEl: { notAPlayer: true } };
+    om.active = {
+      id: 'ads',
+      priority: 100,
+      mode: 'normal',
+      duration: 30,
+      value: 0,
+      canSeek: false,
+      fullscreenVideoEl: { notAPlayer: true },
+    };
 
     const result = getActiveMedia(p);
     expect(result).toBe(p.surface);
@@ -100,7 +107,9 @@ describe('SettingsRegistry.list() sort and register/unregister', () => {
     const labels = reg.list().map((p) => p.label);
     expect(labels).toEqual(['Apple', 'Mango', 'Zebra']);
 
-    unregZ(); unregA(); unregM();
+    unregZ();
+    unregA();
+    unregM();
   });
 
   test('unregister removes the provider from list()', () => {
@@ -215,8 +224,6 @@ describe('ProgressControl input event branches', () => {
     const slider = nn(el.querySelector('input[type="range"]')) as HTMLInputElement;
     slider.max = '100';
     slider.value = '10'; // 10 < 60 → rewind guard
-
-    const prevTime = p.currentTime;
     slider.dispatchEvent(new Event('change'));
     // If allowRewind=false the guard fires and currentTime is NOT changed to 10
     // (either it was changed or not; we just ensure no crash)
@@ -281,8 +288,6 @@ describe('ui.ts labelElement re-uses existing sr-only span', () => {
     const el = c.create(p);
     document.body.appendChild(el);
 
-    // The sr-only span is created on first use
-    const spans = el.querySelectorAll('.op-player__sr-only');
     // At least some sr-related structure exists
     expect(el).toBeTruthy();
   });
