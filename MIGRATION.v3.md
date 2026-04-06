@@ -104,11 +104,11 @@ Only `OpenPlayerJS` is supported from v3 onwards (both in ESM as `Core` and in U
 
 ### New options in v3
 
-| Option                                                 | Package              | Description                                                                                   |
-| ------------------------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------- |
-| `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()` |
-| `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/core` | Added new labels on top of the ones already supported. Whole list of labels is [here]()       |
-| `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here]() for more details |
+| Option                                                 | Package              | Description                                                                                                                    |
+| ------------------------------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()`                                  |
+| `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/core` | Added new labels on top of the ones already supported. Whole list of labels is [here](./packages/core/docs/labels.md)          |
+| `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here](./packages/core/README.md#plugins) for more details |
 
 ### Removed options
 
@@ -139,7 +139,7 @@ These options **no longer exist** in v3. The table below explains what to use in
 | `ads.publisherId`                                  | Removed                                                                                                                                                                                                                                           |
 | `dash`                                             | DASH support was removed                                                                                                                                                                                                                          |
 | `flv`                                              | FLV support was removed                                                                                                                                                                                                                           |
-| `pauseOthers`                                      | Since the changed the overall structure of the package for a more modular one, this will have to be built manually if you wish to support it. See the [snippet below]() to achieve this                                                           |
+| `pauseOthers`                                      | Since we changed the overall structure of the package for a more modular one, this will have to be built manually if you wish to support it. See the snippet below to achieve this                                                                |
 | `progress.showCurrentTimeOnly`                     | Omit the `duration` control and use `currentTime` control from `buildControls` to achieve the same effect                                                                                                                                         |
 | `progress.duration`                                | Use the top-level `duration` config option                                                                                                                                                                                                        |
 | `showLoaderOnInit`                                 | Loader is shown automatically by the overlay system                                                                                                                                                                                               |
