@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>OpenPlayerJS — Auto-discovery: built-in HLS + Ads</title>
+  <title>OpenPlayerJS — YouTube + Ads</title>
   <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
   <style>
     body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
@@ -12,7 +12,7 @@
 <body>
   <div id="wrap">
     <video class="op-player__media" id="player" controls playsinline>
-      <source src="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+      <source src="dQw4w9WgXcQ" type="x-video/youtube" />
     </video>
   </div>
 
@@ -28,14 +28,14 @@
   </script>
   <script type="module">
     import { Core } from '@openplayerjs/core';
-    import { YoutubeMediaEngine } from '@openplayerjs/youtube';
+    import { YouTubeMediaEngine } from '@openplayerjs/youtube';
     import { createUI, buildControls } from '@openplayerjs/player';
     import { AdsPlugin } from '@openplayerjs/ads';
 
     const media = document.querySelector('#player');
     const core = new Core(media, {
       plugins: [
-        new YoutubeMediaEngine(),
+        new YouTubeMediaEngine(),
         new AdsPlugin({
           sources: [
             {
