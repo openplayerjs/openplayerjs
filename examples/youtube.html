@@ -19,10 +19,10 @@
   <script type="importmap">
     {
       "imports": {
-        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/core": "/packages/core/dist/index.js",
         "@openplayerjs/player": "/packages/player/dist/index.js",
-        "@openplayerjs/youtube":    "/packages/youtube/dist/index.js",
-        "@openplayerjs/ads":    "/packages/ads/dist/index.js"
+        "@openplayerjs/youtube": "/packages/youtube/dist/index.js",
+        "@openplayerjs/ads": "/packages/ads/dist/index.js"
       }
     }
   </script>
@@ -30,6 +30,7 @@
     import { Core } from '@openplayerjs/core';
     import { YoutubeMediaEngine } from '@openplayerjs/youtube';
     import { createUI, buildControls } from '@openplayerjs/player';
+    import { AdsPlugin } from '@openplayerjs/ads';
 
     const media = document.querySelector('#player');
     const core = new Core(media, {
