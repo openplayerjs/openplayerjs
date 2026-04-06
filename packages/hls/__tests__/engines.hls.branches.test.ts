@@ -65,7 +65,9 @@ jest.mock('hls.js', () => {
   return { __esModule: true, default: MockHls };
 });
 
-function makeCtx(opts: { autoplay?: boolean; preload?: '' | 'none' | 'metadata' | 'auto'; leaseOwner?: string } = {}) {
+function createTestMediaEngineContext(
+  opts: { autoplay?: boolean; preload?: '' | 'none' | 'metadata' | 'auto'; leaseOwner?: string } = {}
+) {
   const media = document.createElement('video');
   media.autoplay = Boolean(opts.autoplay);
   media.preload = opts.preload ?? 'metadata';
@@ -117,7 +119,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('cmd:startLoad triggers startLoad for preload=none and is idempotent', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'none' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -132,7 +134,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('cmd:startLoad is a no-op when autoStartLoad is true (preload != none)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -142,7 +144,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('media play event forces pause when lease is owned by another surface', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata', leaseOwner: 'ads' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata', leaseOwner: 'ads' });
     engine.attach(ctx);
 
     ctx.media.dispatchEvent(new Event('play'));
@@ -151,7 +153,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('media pause event stops load and resets startedLoad so next cmd:startLoad works', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'none' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -170,9 +172,9 @@ describe('HlsMediaEngine branch coverage', () => {
     expect(adapter!.startLoad).toHaveBeenCalledTimes(2);
   });
 
-  test('adapter events: MANIFEST_PARSED resolves readiness, media_attached autoplay path, duration events, metadata, texttrack updates', () => {
+  test('adapter events trigger readiness, autoplay, and metadata updates', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: true, preload: 'auto' });
+    const ctx = createTestMediaEngineContext({ autoplay: true, preload: 'auto' });
     const seen: string[] = [];
     ctx.events.on('loadedmetadata', () => seen.push('ready'));
     ctx.events.on('media:duration', () => seen.push('duration'));
@@ -193,9 +195,9 @@ describe('HlsMediaEngine branch coverage', () => {
     expect(seen).toEqual(expect.arrayContaining(['ready', 'duration', 'metadata', 'tracks']));
   });
 
-  test('error handling branches: MEDIA_ERROR recover, swap codec, NETWORK_ERROR noop, default destroys adapter', () => {
+  test('handles Hls error recovery and fallback branches', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -219,7 +221,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('detach cleans adapter and unbinds events (adapterListeners empty branch)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
+    const ctx = createTestMediaEngineContext();
     engine.attach(ctx);
     engine.detach();
 
@@ -265,7 +267,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('ERROR handler – data.fatal=false – no recovery action taken, playback:error still emitted', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -284,7 +286,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('ERROR MEDIA_ERROR – third error within 3s window – swap codec skipped (recoverSwapAudioCodecDate guard)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -308,7 +310,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('MEDIA_ATTACHED – autoplay=false – play is NOT triggered', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -324,7 +326,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('MEDIA_ATTACHED – autoplay=true but lease owned by another – play is NOT triggered', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: true, preload: 'auto', leaseOwner: 'ads' });
+    const ctx = createTestMediaEngineContext({ autoplay: true, preload: 'auto', leaseOwner: 'ads' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -338,7 +340,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('media play event – startedLoad already true – startLoad NOT called again', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'none' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -356,7 +358,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('media play event – autoStartLoad=true (preload=metadata) – startLoad NOT called by play handler', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -369,7 +371,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('media pause event – autoStartLoad=true (preload=metadata) – stopLoad NOT called', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -382,7 +384,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('getAdapter returns null after detach', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx();
+    const ctx = createTestMediaEngineContext();
     engine.attach(ctx);
     engine.detach();
     expect(engine.getAdapter()).toBeNull();
@@ -392,7 +394,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('cmd:startLoad – no-op if adapter is null (before attach)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'none' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'none' });
     // Emit cmd:startLoad before attach — engine has no adapter
     // This is exercised via detaching and emitting
     engine.attach(ctx);
@@ -414,7 +416,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('generic adapter event with 2+ args picks args[1] as data (args.length > 1 branch)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -431,7 +433,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('generic adapter event with 1 arg picks args[0] as data (args.length <= 1 branch)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -449,7 +451,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('LEVEL_UPDATED with onCue registered fires onCue for new SCTE35-OUT date ranges', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -475,7 +477,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('LEVEL_UPDATED: same id seen twice is deduplicated (seenCueIds guard)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -499,7 +501,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('LEVEL_UPDATED: range without SCTE35-OUT is skipped', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -517,7 +519,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('LEVEL_UPDATED: no onCue registered — no crash', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 
@@ -534,7 +536,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('LEVEL_UPDATED with no dateRanges is a no-op (early return)', () => {
     const engine = new HlsMediaEngine();
-    const ctx = makeCtx({ autoplay: false, preload: 'metadata' });
+    const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
     const adapter = engine.getAdapter();
 

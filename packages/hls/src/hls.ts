@@ -3,6 +3,8 @@ import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayerjs/core';
 import type { LevelUpdatedData } from 'hls.js';
 import Hls from 'hls.js';
 
+const ERROR_RECOVERY_THROTTLE_MS = 3000;
+
 type AdapterListener = {
   event: string;
   handler: (...args: any[]) => void;
@@ -17,7 +19,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
 
   private adapter: Hls | null = null;
   private attemptedErrorRecovery: number | null = null;
-  private recoverSwapAudioCodecDate: number | null = null;
+  private recoverSwapAudioCodecTimestamp: number | null = null;
   private startedLoad = false;
   private adapterListeners: AdapterListener[] = [];
   private HlsClass: typeof Hls;
@@ -82,20 +84,8 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     }
 
     const onPlay = () => {
-      if (!this.canHandlePlayback(ctx)) {
-        // If another surface owns playback (ads/cast/etc), force content back to paused.
-        try {
-          ctx.surface.pause();
-        } catch {
-          //
-        }
-        return;
-      }
-      if (!this.adapter) return;
-      if (autoStartLoad) return;
-      if (this.startedLoad) return;
-      this.startedLoad = true;
-      this.adapter.startLoad();
+      if (!this.ensurePlaybackOwnership(ctx)) return;
+      this.maybeStartLoad(autoStartLoad);
     };
 
     const onPause = () => {
@@ -110,11 +100,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
 
     this.commands.push(
       ctx.events.on('cmd:startLoad', () => {
-        if (!this.adapter) return;
-        if (autoStartLoad) return;
-        if (this.startedLoad) return;
-        this.startedLoad = true;
-        this.adapter.startLoad();
+        this.maybeStartLoad(autoStartLoad);
       })
     );
 
@@ -184,12 +170,15 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
           switch (data.type) {
             case this.HlsClass.ErrorTypes.MEDIA_ERROR: {
               const now = Date.now();
-              if (!this.attemptedErrorRecovery || now - this.attemptedErrorRecovery > 3000) {
+              if (!this.attemptedErrorRecovery || now - this.attemptedErrorRecovery > ERROR_RECOVERY_THROTTLE_MS) {
                 this.attemptedErrorRecovery = now;
                 this.adapter?.recoverMediaError();
               } else {
-                if (!this.recoverSwapAudioCodecDate || now - this.recoverSwapAudioCodecDate > 3000) {
-                  this.recoverSwapAudioCodecDate = now;
+                if (
+                  !this.recoverSwapAudioCodecTimestamp ||
+                  now - this.recoverSwapAudioCodecTimestamp > ERROR_RECOVERY_THROTTLE_MS
+                ) {
+                  this.recoverSwapAudioCodecTimestamp = now;
                   this.adapter?.swapAudioCodec();
                   this.adapter?.recoverMediaError();
                 }
@@ -213,6 +202,26 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       },
       EVENT_OPTIONS
     );
+  }
+
+  private ensurePlaybackOwnership(ctx: MediaEngineContext): boolean {
+    if (this.canHandlePlayback(ctx)) {
+      return true;
+    }
+    // If another surface owns playback (ads/cast/etc), force content back to paused.
+    try {
+      ctx.surface.pause();
+    } catch {
+      //
+    }
+    return false;
+  }
+  private maybeStartLoad(autoStartLoad: boolean): void {
+    if (!this.adapter) return;
+    if (autoStartLoad) return;
+    if (this.startedLoad) return;
+    this.startedLoad = true;
+    this.adapter.startLoad();
   }
 
   /**
