@@ -158,10 +158,10 @@ describe('YouTubeMediaEngine', () => {
       ['https://m.youtube.com/watch?v=dQw4w9WgXcQ', undefined, true], // mobile domain
       ['https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ', undefined, true], // no-cookie embed
       ['dQw4w9WgXcQ', undefined, true], // bare 11-char ID
-      // Explicit type="x-video/youtube" accepts any src — even non-YouTube URLs or bare IDs
-      ['dQw4w9WgXcQ', 'x-video/youtube', true], // bare ID + type
-      ['https://example.com/video.mp4', 'x-video/youtube', true], // non-YT url + type
-      ['http://localhost/dQw4w9WgXcQ', 'x-video/youtube', true], // resolved bare ID + type
+      // Explicit type="video/youtube" accepts any src — even non-YouTube URLs or bare IDs
+      ['dQw4w9WgXcQ', 'video/youtube', true], // bare ID + type
+      ['https://example.com/video.mp4', 'video/youtube', true], // non-YT url + type
+      ['http://localhost/dQw4w9WgXcQ', 'video/youtube', true], // resolved bare ID + type
       // Non-YouTube, no type → false
       ['https://vimeo.com/123', undefined, false],
       ['https://example.com/video.mp4', undefined, false],
@@ -269,14 +269,14 @@ describe('YouTubeMediaEngine', () => {
     });
 
     test('resolves videoId when src is a browser-resolved bare ID path', async () => {
-      // Simulates <source src="dQw4w9WgXcQ" type="x-video/youtube"> where the
+      // Simulates <source src="dQw4w9WgXcQ" type="video/youtube"> where the
       // browser resolves the src to http://localhost/dQw4w9WgXcQ
       const PlayerMock = fakeYTPlayer();
       (window as any).YT = { Player: PlayerMock };
 
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
-      ctx.activeSource = { src: 'http://localhost/dQw4w9WgXcQ', type: 'x-video/youtube' };
+      ctx.activeSource = { src: 'http://localhost/dQw4w9WgXcQ', type: 'video/youtube' };
 
       await engine.attach(ctx);
 
@@ -791,8 +791,8 @@ describe('YouTubeMediaEngine – canPlay() named tests', () => {
     expect(engine.canPlay({ src: 'https://youtu.be/dQw4w9WgXcQ' })).toBe(true);
   });
 
-  test('returns true for x-video/youtube MIME type', () => {
-    expect(engine.canPlay({ src: 'https://anything.example.com/path', type: 'x-video/youtube' })).toBe(true);
+  test('returns true for video/youtube MIME type', () => {
+    expect(engine.canPlay({ src: 'https://anything.example.com/path', type: 'video/youtube' })).toBe(true);
   });
 
   test('returns false for empty src', () => {

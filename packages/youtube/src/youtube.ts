@@ -39,7 +39,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     const url = source.src;
     if (!url) return false;
     // Explicit MIME type declared on a <source> element takes precedence.
-    if (source.type === 'x-video/youtube') return true;
+    if (source.type === 'video/youtube') return true;
     return this.isYouTubeUrl(url) || this.looksLikeYouTubeId(url);
   }
 
@@ -240,12 +240,12 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
       if (pivotIdx >= 0 && parts[pivotIdx + 1]) return parts[pivotIdx + 1];
 
       // Last-resort: only when the source was explicitly declared as YouTube via
-      // type="x-video/youtube". A bare ID used as <source src="<id>"> gets resolved
+      // type="video/youtube". A bare ID used as <source src="<id>"> gets resolved
       // by the browser to an absolute URL whose last path segment is the raw ID value.
       // e.g. http://localhost/dQw4w9WgXcQ → last segment = 'dQw4w9WgXcQ'
       // We guard on the explicit type to avoid false positives from non-YouTube paths
       // whose last segment happens to match the 11-character pattern.
-      if (type === 'x-video/youtube') {
+      if (type === 'video/youtube') {
         const lastSegment = parts[parts.length - 1] ?? '';
         if (this.looksLikeYouTubeId(lastSegment)) return lastSegment;
       }

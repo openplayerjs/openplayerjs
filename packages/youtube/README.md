@@ -30,7 +30,7 @@ There are three ways to tell the player which YouTube video to load. All of them
 
 ### 1. `<source>` element with explicit type (markup-first / UMD recommended)
 
-Use `type="x-video/youtube"` so the engine claims the source without any URL pattern matching. This is the most reliable approach for UMD usage and the best match for semantic HTML:
+Use `type="video/youtube"` so the engine claims the source without any URL pattern matching. This is the most reliable approach for UMD usage and the best match for semantic HTML:
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
@@ -38,7 +38,7 @@ Use `type="x-video/youtube"` so the engine claims the source without any URL pat
 <script src="https://cdn.jsdelivr.net/npm/@openplayerjs/youtube@latest/dist/openplayer-youtube.js"></script>
 
 <video id="my-video">
-  <source src="https://www.youtube.com/embed/dQw4w9WgXcQ" type="x-video/youtube" />
+  <source src="https://www.youtube.com/embed/dQw4w9WgXcQ" type="video/youtube" />
 </video>
 <script>
   const player = new OpenPlayerJS('my-video');
@@ -50,7 +50,7 @@ Bare 11-character video IDs also work with the explicit type:
 
 ```html
 <video id="my-video">
-  <source src="dQw4w9WgXcQ" type="x-video/youtube" />
+  <source src="dQw4w9WgXcQ" type="video/youtube" />
 </video>
 ```
 
@@ -150,7 +150,7 @@ new OpenPlayerJS('my-video', { youtube: { noCookie: true } });
 ## How it works
 
 1. `YouTubeMediaEngine.canPlay()` accepts:
-   - An explicit `type="x-video/youtube"` attribute (highest priority)
+   - An explicit `type="video/youtube"` attribute (highest priority)
    - YouTube domain URLs: `youtube.com`, `m.youtube.com`, `youtu.be`, `youtube-nocookie.com`
    - Bare 11-character video IDs (`dQw4w9WgXcQ`)
 2. On `attach()` the engine:
@@ -168,7 +168,7 @@ new OpenPlayerJS('my-video', { youtube: { noCookie: true } });
 
 | Format              | Example                                       |
 | ------------------- | --------------------------------------------- |
-| Explicit MIME type  | `type="x-video/youtube"` (any src)            |
+| Explicit MIME type  | `type="video/youtube"` (any src)              |
 | Standard watch URL  | `https://www.youtube.com/watch?v=<id>`        |
 | Mobile watch URL    | `https://m.youtube.com/watch?v=<id>`          |
 | Short URL           | `https://youtu.be/<id>`                       |
