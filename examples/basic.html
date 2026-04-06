@@ -34,6 +34,7 @@
     import { HlsMediaEngine } from '@openplayerjs/hls';
     import { AdsPlugin } from '@openplayerjs/ads';
     import { createUI, buildControls } from '@openplayerjs/player';
+    import { vastSkippablePreroll } from './ad-tags.js';
 
     const media = document.querySelector('#player');
     const core = new Core(media, {
@@ -42,14 +43,7 @@
         // for .m3u8 sources on non-Safari browsers.
         new HlsMediaEngine({ enableWorker: true, lowLatencyMode: true }),
         new AdsPlugin({
-          sources: [
-            {
-              type: "VAST",
-              src:
-                "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_preroll_skippable&sz=640x480&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=" +
-                Date.now()
-            }
-          ]
+          sources: [{ type: "VAST", src: vastSkippablePreroll() }]
         })
       ]
     });

@@ -12,7 +12,7 @@
 <body>
   <div id="wrap">
     <video class="op-player__media" id="player" controls playsinline>
-      <source src="dQw4w9WgXcQ" type="x-video/youtube" />
+      <source src="dQw4w9WgXcQ" type="video/youtube" />
     </video>
   </div>
 
@@ -31,18 +31,14 @@
     import { YouTubeMediaEngine } from '@openplayerjs/youtube';
     import { createUI, buildControls } from '@openplayerjs/player';
     import { AdsPlugin } from '@openplayerjs/ads';
+    import { vastLinear } from './ad-tags.js';
 
     const media = document.querySelector('#player');
     const core = new Core(media, {
       plugins: [
         new YouTubeMediaEngine(),
         new AdsPlugin({
-          sources: [
-            {
-              type: "VAST",
-              src: `https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirectlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=${Date.now()}`
-            }
-          ]
+          sources: [{ type: "VAST", src: vastLinear() }]
         })
       ]
     });
