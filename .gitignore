@@ -32,7 +32,8 @@ packed/
 .turbo/
 coverage
 
-
 # Test files
 *.html
 *.vtt
+!examples/**/*.html
+!examples/**/*.vtt

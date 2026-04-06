@@ -7,7 +7,8 @@
     "packages/*/src/**/*.ts",
     "packages/*/src/**/*.tsx",
     "packages/*/__tests__/**/*.ts",
-    "packages/*/__tests__/**/*.tsx",
+    "e2e/**/*.ts",
+    "playwright.config.ts",
     "types/**/*.d.ts"
   ],
   "exclude": [

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — HLS live streaming playback</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    #wrap { width: 100%; max-width: 854px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <video id="player" class="op-player__media" controls playsinline muted>
+      <source
+        src="https://media-tyo.hls.nhkworld.jp/hls/w/live/master.m3u8"
+        type="application/x-mpegURL"
+      />
+      <track
+        kind="subtitles"
+        src="/examples/captions/captions-en.vtt"
+        srclang="en"
+        label="English"
+        default
+      />
+    </video>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/player": "/packages/player/dist/index.js",
+        "@openplayerjs/hls":    "/packages/hls/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { createUI, buildControls } from '@openplayerjs/player';
+    import { HlsMediaEngine } from '@openplayerjs/hls';
+
+    const media = document.querySelector('#player');
+    const core = new Core(media, {
+      plugins: [
+        new HlsMediaEngine({ enableWorker: true, lowLatencyMode: false }),
+      ],
+    });
+
+    createUI(core, media, buildControls({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['captions', 'settings', 'fullscreen'],
+    }));
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — VMAP (pre/mid/post-roll schedule) + waterfall fallback</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    #wrap { width: 100%; max-width: 854px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <video id="player" class="op-player__media" controls playsinline muted>
+      <source
+        src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_2MB.mp4"
+        type="video/mp4"
+      />
+    </video>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/player": "/packages/player/dist/index.js",
+        "@openplayerjs/hls":    "/packages/hls/dist/index.js",
+        "@openplayerjs/ads":    "/packages/ads/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { createUI, buildControls } from '@openplayerjs/player';
+    import { AdsPlugin } from '@openplayerjs/ads';
+
+    const media = document.querySelector('#player');
+    const core = new Core(media, {
+      plugins: [
+        new AdsPlugin({
+          sources: [
+            {
+              type: "VMAP",
+              src: `https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpremidpost&ciu_szs=300x250&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&cmsid=496&vid=short_onecue&correlator=${Date.now()}`
+            }
+          ]
+        })
+      ]
+    });
+
+    core.on("ads.break.start", ({ kind, id }) =>
+      console.log(`Break started: ${kind} (${id})`)
+    );
+    core.on("ads.break.end", ({ kind }) => console.log(`Break ended: ${kind}`));
+    core.on("ads.allAdsCompleted", () => console.log("All ad breaks done"));
+
+    createUI(core, media, buildControls({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['settings', 'fullscreen'],
+    }));
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — Ads with Captions</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body {
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    #wrap { width: 100%; max-width: 854px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <video id="player" class="op-player__media" controls playsinline muted>
+      <source
+        src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_2MB.mp4"
+        type="video/mp4"
+      />
+      <track
+        kind="subtitles"
+        src="./captions/captions-en.vtt"
+        srclang="en"
+        label="English"
+        default
+      />
+    </video>
+  </div>
+<script type="importmap">
+    {
+        "imports": {
+          "@openplayerjs/core":   "/packages/core/dist/index.js",
+          "@openplayerjs/player": "/packages/player/dist/index.js",
+          "@openplayerjs/hls":    "/packages/hls/dist/index.js",
+          "@openplayerjs/ads":    "/packages/ads/dist/index.js"
+        }
+    }
+</script>
+<script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { createUI, buildControls } from '@openplayerjs/player';
+    import { HlsMediaEngine } from '@openplayerjs/hls';
+    import { AdsPlugin } from "@openplayerjs/ads";
+
+    // ── VAST 4.1 XML with ClosedCaptionFiles ────────────────────────────────
+    // Passed as an inline string — no ad-server hosting required.
+    // The <ClosedCaptionFile> src must be a CORS-accessible VTT.
+    const vastXml = `<?xml version="1.0" encoding="UTF-8"?>
+    <VAST version="4.1">
+      <Ad id="preroll-with-captions">
+        <InLine>
+          <AdSystem>OpenPlayerJS Sample</AdSystem>
+          <AdTitle>Sample Ad with Captions</AdTitle>
+          <Impression id="imp"><![CDATA[]]></Impression>
+          <Creatives>
+            <Creative id="1" sequence="1">
+              <Linear>
+                <Duration>00:00:15</Duration>
+                <MediaFiles>
+                  <MediaFile
+                    delivery="progressive"
+                    type="video/mp4"
+                    width="1280"
+                    height="720"
+                  ><![CDATA[https://playertest.longtailvideo.com/adaptive/oceans_aes/oceans_aes.m3u8]]></MediaFile>
+                  <ClosedCaptionFiles>
+                    <ClosedCaptionFile type="text/vtt" language="en-US">
+                      <![CDATA[./captions/ad-captions-en.vtt]]>
+                    </ClosedCaptionFile>
+                    <ClosedCaptionFile type="text/vtt" language="de">
+                      <![CDATA[./captions/ad-captions-de.vtt]]>
+                    </ClosedCaptionFile>
+                  </ClosedCaptionFiles>
+                </MediaFiles>
+              </Linear>
+            </Creative>
+          </Creatives>
+        </InLine>
+      </Ad>
+    </VAST>`;
+
+    const media = document.querySelector('#player');
+
+    const core = new Core(media, {
+      plugins: [
+        new AdsPlugin({
+          debug: true,
+          sources: [{ type: 'VAST', src: vastXml }],
+        }),
+      ],
+    });
+
+    createUI(core, media, buildControls({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['captions', 'settings', 'fullscreen'],
+    }));
+  </script>
+</body>
+</html>

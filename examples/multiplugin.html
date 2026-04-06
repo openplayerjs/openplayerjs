@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — Multi-plugin setup with inter-plugin communication via EventBus</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    #wrap { width: 100%; max-width: 854px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <video id="player" class="op-player__media" controls playsinline muted>
+      <source
+        src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+        type="application/x-mpegURL"
+      />
+    </video>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/player": "/packages/player/dist/index.js",
+        "@openplayerjs/hls":    "/packages/hls/dist/index.js",
+        "@openplayerjs/ads":    "/packages/ads/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { createUI, buildControls } from '@openplayerjs/player';
+    import { HlsMediaEngine } from '@openplayerjs/hls';
+
+    // Plugin A: emits a custom event when a chapter boundary is crossed
+    const chaptersPlugin = {
+      name: "chapters",
+      version: "1.0.0",
+      setup(ctx) {
+        const chapters = [
+          { start: 0, end: 30, title: "Intro" },
+          { start: 30, end: 90, title: "Act 1" },
+          { start: 90, end: 180, title: "Act 2" }
+        ];
+        let current = -1;
+
+        ctx.on("timeupdate", () => {
+          const t = ctx.core.currentTime;
+          const idx = chapters.findIndex((c) => t >= c.start && t < c.end);
+          if (idx !== current) {
+            current = idx;
+            // Emit a custom event — any other plugin can listen for it
+            ctx.events.emit("chapter:changed", chapters[idx] ?? null);
+          }
+        });
+      }
+    };
+
+    // Plugin B: listens for the custom event from Plugin A
+    const chapterUiPlugin = {
+      name: "chapterUi",
+      version: "1.0.0",
+      setup(ctx) {
+        const banner = document.createElement("div");
+        banner.className = "chapter-banner";
+        banner.style.cssText =
+          "position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;font-size:14px;border-radius:4px;";
+        ctx.media?.parentElement?.appendChild(banner);
+
+        ctx.on("chapter:changed", (chapter) => {
+          banner.textContent = chapter?.title ?? "";
+          banner.style.display = chapter ? "block" : "none";
+        });
+
+        ctx.add(() => banner.remove());
+      }
+    };
+
+    const video = document.querySelector("#player");
+    const core = new Core(video, {
+      plugins: [
+        chaptersPlugin,
+        chapterUiPlugin,
+        new HlsMediaEngine({ enableWorker: true, lowLatencyMode: true })
+      ]
+    });
+
+    // Consumer code can also react to inter-plugin events
+    core.on("chapter:changed", (chapter) => {
+      console.log("Now in chapter:", chapter?.title);
+    });
+
+    createUI(core, video, buildControls({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['settings', 'fullscreen'],
+    }));
+  </script>
+</body>
+</html>

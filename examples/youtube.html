@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — Auto-discovery: built-in HLS + Ads</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    #wrap { width: 100%; max-width: 854px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <video class="op-player__media" id="player" controls playsinline>
+      <source src="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+    </video>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/player": "/packages/player/dist/index.js",
+        "@openplayerjs/youtube":    "/packages/youtube/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { YoutubeMediaEngine } from '@openplayerjs/youtube';
+    import { createUI, buildControls } from '@openplayerjs/player';
+
+    const media = document.querySelector('#player');
+    const core = new Core(media, {
+      plugins: [
+        new YoutubeMediaEngine(),
+        new AdsPlugin({
+          sources: [
+            {
+              type: "VAST",
+              src: `https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dredirectlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&correlator=${Date.now()}`
+            }
+          ]
+        })
+      ]
+    });
+
+
+    createUI(core, media, buildControls({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['settings', 'fullscreen'],
+    }));
+  </script>
+</body>
+</html>

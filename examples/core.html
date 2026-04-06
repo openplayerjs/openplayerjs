@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — Auto-discovery: built-in HLS + Ads</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    #wrap { width: 100%; max-width: 854px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <video id="player" style="width: 100%" controls playsinline autoplay muted src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8">
+    <p>Use <strong><em>registerPlugin()</em></strong> when you need to add a plugin after the player is already running — for example, loading an analytics SDK lazily, or injecting a plugin based on user interaction.</p>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/hls":    "/packages/hls/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { HlsMediaEngine } from '@openplayerjs/hls';
+
+    const video = document.querySelector('#player');
+    const core = new Core(video);
+
+    // registerPlugin() can be called after new Core() and before the first
+    // microtask runs. maybeAutoLoad() is scheduled via queueMicrotask() in
+    // the constructor, so it fires after all synchronous code in this task
+    // completes — meaning the engine is always registered before attach() is called.
+    core.registerPlugin(new HlsMediaEngine());
+
+    // HlsMediaEngine.adapter is created inside attach(), which is called by
+    // load() -> maybeAutoLoad(). Both run asynchronously, so adapter is always
+    // null when you read it synchronously after new Core(...).
+    //
+    // Wait for loadedmetadata — emitted right after hls.js fires MANIFEST_PARSED
+    // — before accessing the underlying hls.js instance via getAdapter().
+    const offReady = core.on("loadedmetadata", () => {
+    offReady(); // one-shot listener
+
+    const hlsEngine = core.getPlugin("hls-engine");
+    const adapter = hlsEngine?.getAdapter(); // the hls.js Hls instance
+
+    if (!adapter) {
+        console.warn("HLS adapter not available");
+        return;
+    }
+
+    console.log("hls.js adapter:", adapter);
+    console.log("Available quality levels:", adapter.levels);
+
+    // Example operation: lock playback to the highest available bitrate.
+    // -1 = auto (ABR); any other index pins that level.
+    if (adapter.levels.length > 0) {
+        adapter.currentLevel = adapter.levels.length - 1;
+        const top = adapter.levels[adapter.currentLevel];
+        console.log(`Locked to level ${adapter.currentLevel}:`, top);
+    }
+    });
+
+    core.registerPlugin(new HlsMediaEngine());
+
+    // HlsMediaEngine registers itself with name 'hls-engine'
+    // (The engine is registered by the constructor when passed in plugins:[])
+    const hls = core.getPlugin("hls-engine");
+    console.log({ hls });
+  </script>
+</body>
+</html>

@@ -9,6 +9,8 @@
     "packages/*/types/**/*.ts",
     "packages/*/__tests__/**/*.ts",
     "__tests__/setup/**/*.ts",
+    "e2e/**/*.ts",
+    "playwright.config.ts",
     "types/**/*.d.ts"
   ],
   "exclude": [
