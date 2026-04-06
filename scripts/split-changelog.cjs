@@ -22,7 +22,7 @@ const GENERATED_NOTES = path.join(ROOT, 'RELEASE_NOTES.generated.md');
 // Matches typical angular preset bullets:
 //   - **scope:** message
 //   - * **scope:** message
-const SCOPE_BULLET_RE = /^\s*[-*]\s+(?:\*\s+)?\*\*([^*]+)\*\*:\s+/;
+const SCOPE_BULLET_RE = /^\s*[-*]\s+(?:\*\s+)?\*\*([^*\n]+)\*\*:\s+/;
 
 function readIfExists(p) {
   try {
@@ -64,7 +64,7 @@ function prependRelease(changelogPath, releaseSection) {
     return;
   }
   const header = existing.slice(0, firstNl).trimEnd();
-  const rest = existing.slice(firstNl + 1).replace(/^\s+/, '');
+  const rest = existing.slice(firstNl + 1).trimStart();
   writeFile(changelogPath, `${header}\n\n${releaseSection}\n\n${rest}`);
 }
 

@@ -6,13 +6,9 @@ _April 2, 2026_
 
 ### `@openplayerjs/core@3.4.1`
 
-#### Bug Fixes
+#### Version Bump
 
-- **[repo]** minor refactor and coverage increase (3750fa6) @Rafael Miranda
-  - Added new tsconfig to solve TS issues in unit tests
-  - Split logic from core into 2 new utilities to split responsibilities
-  - Fixed issue when checking cues for SSAI strategy using streaming engines
-  - Added more unit tests based on changes
+- Version bump to stay in sync with `@openplayerjs/core@3.4.1`
 
 ### `@openplayerjs/player@3.4.1`
 
@@ -22,23 +18,14 @@ _April 2, 2026_
 
 ### `@openplayerjs/hls@3.4.1`
 
-#### Bug Fixes
+#### Version Bump
 
-- **[repo]** minor refactor and coverage increase (3750fa6) @Rafael Miranda
-  - Added new tsconfig to solve TS issues in unit tests
-  - Split logic from core into 2 new utilities to split responsibilities
-  - Fixed issue when checking cues for SSAI strategy using streaming engines
-  - Added more unit tests based on changes
+- Version bump to stay in sync with `@openplayerjs/core@3.4.1`
 
 ### `@openplayerjs/ads@3.4.1`
 
 #### Bug Fixes
 
-- **[repo]** minor refactor and coverage increase (3750fa6) @Rafael Miranda
-  - Added new tsconfig to solve TS issues in unit tests
-  - Split logic from core into 2 new utilities to split responsibilities
-  - Fixed issue when checking cues for SSAI strategy using streaming engines
-  - Added more unit tests based on changes
 - **[repo]** Changed Renovate strategy to pin dependencies and pinned all packages versions (e635c12) @Rafael Miranda
 - **[deps]** update dependency @dailymotion/vast-client to ^6.4.4 ([#516](https://github.com/openplayerjs/openplayerjs/pull/516)) @renovate[bot]
 
@@ -52,6 +39,11 @@ _April 2, 2026_
 
 #### Bug Fixes
 
+- **[repo]** minor refactor and coverage increase (3750fa6) @Rafael Miranda
+  - Added new tsconfig to solve TS issues in unit tests
+  - Split logic from core into 2 new utilities to split responsibilities
+  - Fixed issue when checking cues for SSAI strategy using streaming engines
+  - Added more unit tests based on changes
 - **[deps]** Fixed high severity vulnerability related to code injection (b2c0f2f) @Rafael Miranda
 - **[repo]** Modified orchestrator script to consider squash merge commits; updated CHANGELOG (a0d1ca6) @Rafael Miranda
 
@@ -242,878 +234,233 @@ _March 24, 2026_
 - **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
 - **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
 
+
 ## [3.2.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.0) (2026-03-16)
 
 ### `@openplayerjs/core@3.2.0`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
+- Version bump to stay in sync with `@openplayerjs/ads@3.2.0`
 
 ### `@openplayerjs/player@3.2.0`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
+- Version bump to stay in sync with `@openplayerjs/core@3.2.0`
 
 ### `@openplayerjs/hls@3.2.0`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
+- Version bump to stay in sync with `@openplayerjs/core@3.2.0`
 
 ### `@openplayerjs/ads@3.2.0`
 
 #### Features
 
 - SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
+  - Split ads file for better maintenance and separation of concerns
   - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
+  - Added new HTML elements when parsing XML ads, removed after ad ends
   - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
+  - Added `case 'resolve':` and `case 'reject':` fallthroughs to the existing `SIMID_CREATIVE` handlers
 
-#### Bug Fixes
+### `@openplayerjs/youtube@3.2.0` / `3.2.1` / `3.2.2`
 
-- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
+#### Version Bump
 
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-
-### `@openplayerjs/youtube@3.2.0`
-
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
+- Version bumps (`3.2.0` → `3.2.1` → `3.2.2`) to track dependency security patches while core remained at `3.1.x`; no user-facing code changes in the youtube package itself
 
 ### General
 
 #### Chores
 
-- Fixed vulnerability (7facec4) @Rafael Miranda
-- **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.20 ([#501](https://github.com/openplayerjs/openplayerjs/pull/501)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.5 ([#502](https://github.com/openplayerjs/openplayerjs/pull/502)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to 3869755 ([#499](https://github.com/openplayerjs/openplayerjs/pull/499)) @renovate[bot]
-- **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
-- **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
-- **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
 - **[deps]** update eslint to ^8.57.1 ([#496](https://github.com/openplayerjs/openplayerjs/pull/496)) @renovate[bot]
 - **[deps]** update github/codeql-action digest to b1bff81 ([#493](https://github.com/openplayerjs/openplayerjs/pull/493)) @renovate[bot]
 - **[deps]** update dependency undici to >=7.24.4 ([#494](https://github.com/openplayerjs/openplayerjs/pull/494)) @renovate[bot]
 
-## [3.2.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/youtube%403.2.2) (2026-03-15)
-
-### `@openplayerjs/youtube@3.2.2`
-
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
-
-### General
-
-#### Bug Fixes
-
-- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
-- **[deps]** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/pull/486)) @renovate[bot]
-
-#### Chores
-
-- Fixed vulnerability (7facec4) @Rafael Miranda
-- **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.20 ([#501](https://github.com/openplayerjs/openplayerjs/pull/501)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.5 ([#502](https://github.com/openplayerjs/openplayerjs/pull/502)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to 3869755 ([#499](https://github.com/openplayerjs/openplayerjs/pull/499)) @renovate[bot]
-- **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
-- **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
-- **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
-- **[deps]** update eslint to ^8.57.1 ([#496](https://github.com/openplayerjs/openplayerjs/pull/496)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to b1bff81 ([#493](https://github.com/openplayerjs/openplayerjs/pull/493)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.4 ([#494](https://github.com/openplayerjs/openplayerjs/pull/494)) @renovate[bot]
-- Removed unnecessary overrides (924d755) @Rafael Miranda
-- **[deps]** update commitlint to ^20.5.0 ([#492](https://github.com/openplayerjs/openplayerjs/pull/492)) @renovate[bot]
-- **[deps]** pin dependencies ([#491](https://github.com/openplayerjs/openplayerjs/pull/491)) @renovate[bot]
-- **[deps]** update dependency stylelint-order to ^8.1.1 ([#490](https://github.com/openplayerjs/openplayerjs/pull/490)) @renovate[bot]
-- **[deps]** update dependency undici to v7 ([#489](https://github.com/openplayerjs/openplayerjs/pull/489)) @renovate[bot]
-- **[deps]** update dependency undici to >=6.24.1 ([#484](https://github.com/openplayerjs/openplayerjs/pull/484)) @renovate[bot]
-- **[deps]** update dependency lint-staged to ^16.4.0 ([#487](https://github.com/openplayerjs/openplayerjs/pull/487)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.17 ([#483](https://github.com/openplayerjs/openplayerjs/pull/483)) @renovate[bot]
-- **[deps]** update commitlint to ^20.4.4 ([#478](https://github.com/openplayerjs/openplayerjs/pull/478)) @renovate[bot]
-- **[deps]** update dependency flatted to >=3.4.1 ([#481](https://github.com/openplayerjs/openplayerjs/pull/481)) @renovate[bot]
-- **[deps]** update dependency @rollup/plugin-commonjs to ^29.0.2 ([#480](https://github.com/openplayerjs/openplayerjs/pull/480)) @renovate[bot]
-- **[deps]** update dependency serialize-javascript to >=7.0.4 ([#482](https://github.com/openplayerjs/openplayerjs/pull/482)) @renovate[bot]
-- **[deps]** update postcss ([#485](https://github.com/openplayerjs/openplayerjs/pull/485)) @renovate[bot]
-- **[deps]** update node.js to >=24.14.0 ([#488](https://github.com/openplayerjs/openplayerjs/pull/488)) @renovate[bot]
-- **[deps]** update dependency @release-it/conventional-changelog to ^10.0.6 ([#479](https://github.com/openplayerjs/openplayerjs/pull/479)) @renovate[bot]
-- **[deps]** update eslint ([#462](https://github.com/openplayerjs/openplayerjs/pull/462)) @renovate[bot]
-- **[deps]** update jest to v30 ([#474](https://github.com/openplayerjs/openplayerjs/pull/474)) @renovate[bot]
-- Remove vulnerabilities after upgrades (4b9d158) @Rafael Miranda
-- **[deps]** update dependency stylelint-order to v8 ([#473](https://github.com/openplayerjs/openplayerjs/pull/473)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.15 ([#475](https://github.com/openplayerjs/openplayerjs/pull/475)) @renovate[bot]
-- **[deps]** update pnpm to v10.32.1 ([#476](https://github.com/openplayerjs/openplayerjs/pull/476)) @renovate[bot]
+---
 
 ## [3.1.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.1.2) (2026-03-15)
 
+### `@openplayerjs/ads@3.1.2`
+
+#### Bug Fixes
+
+- **[deps]** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/pull/486)) @renovate[bot]
+
 ### `@openplayerjs/core@3.1.2`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
+- Version bump to stay in sync with `@openplayerjs/ads@3.1.2`
 
 ### `@openplayerjs/player@3.1.2`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
+- Version bump to stay in sync with `@openplayerjs/core@3.1.2`
 
 ### `@openplayerjs/hls@3.1.2`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
-
-### `@openplayerjs/ads@3.1.2`
-
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
-- **[deps]** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/pull/486)) @renovate[bot]
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
+- Version bump to stay in sync with `@openplayerjs/core@3.1.2`
 
 ### General
 
 #### Bug Fixes
 
-- Updated orchestration file to skip versions if already exist (c0bda19) @Rafael Miranda
+- **[repo]** Updated orchestration file to skip versions if package is already at or above the target (c0bda19) @Rafael Miranda
 
 #### Chores
 
-- Fixed vulnerability (7facec4) @Rafael Miranda
-- **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.20 ([#501](https://github.com/openplayerjs/openplayerjs/pull/501)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.5 ([#502](https://github.com/openplayerjs/openplayerjs/pull/502)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to 3869755 ([#499](https://github.com/openplayerjs/openplayerjs/pull/499)) @renovate[bot]
-- **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
-- **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
-- **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
-- **[deps]** update eslint to ^8.57.1 ([#496](https://github.com/openplayerjs/openplayerjs/pull/496)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to b1bff81 ([#493](https://github.com/openplayerjs/openplayerjs/pull/493)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.4 ([#494](https://github.com/openplayerjs/openplayerjs/pull/494)) @renovate[bot]
-- Removed unnecessary overrides (924d755) @Rafael Miranda
-- **[deps]** update commitlint to ^20.5.0 ([#492](https://github.com/openplayerjs/openplayerjs/pull/492)) @renovate[bot]
-- **[deps]** pin dependencies ([#491](https://github.com/openplayerjs/openplayerjs/pull/491)) @renovate[bot]
-- **[deps]** update dependency stylelint-order to ^8.1.1 ([#490](https://github.com/openplayerjs/openplayerjs/pull/490)) @renovate[bot]
 - **[deps]** update dependency undici to v7 ([#489](https://github.com/openplayerjs/openplayerjs/pull/489)) @renovate[bot]
 - **[deps]** update dependency undici to >=6.24.1 ([#484](https://github.com/openplayerjs/openplayerjs/pull/484)) @renovate[bot]
+- **[deps]** update dependency serialize-javascript to >=7.0.4 ([#482](https://github.com/openplayerjs/openplayerjs/pull/482)) @renovate[bot]
 - **[deps]** update dependency lint-staged to ^16.4.0 ([#487](https://github.com/openplayerjs/openplayerjs/pull/487)) @renovate[bot]
 - **[deps]** update dependency turbo to ^2.8.17 ([#483](https://github.com/openplayerjs/openplayerjs/pull/483)) @renovate[bot]
+- **[deps]** update commitlint to ^20.5.0 ([#492](https://github.com/openplayerjs/openplayerjs/pull/492)) @renovate[bot]
 - **[deps]** update commitlint to ^20.4.4 ([#478](https://github.com/openplayerjs/openplayerjs/pull/478)) @renovate[bot]
 - **[deps]** update dependency flatted to >=3.4.1 ([#481](https://github.com/openplayerjs/openplayerjs/pull/481)) @renovate[bot]
 - **[deps]** update dependency @rollup/plugin-commonjs to ^29.0.2 ([#480](https://github.com/openplayerjs/openplayerjs/pull/480)) @renovate[bot]
-- **[deps]** update dependency serialize-javascript to >=7.0.4 ([#482](https://github.com/openplayerjs/openplayerjs/pull/482)) @renovate[bot]
 - **[deps]** update postcss ([#485](https://github.com/openplayerjs/openplayerjs/pull/485)) @renovate[bot]
 - **[deps]** update node.js to >=24.14.0 ([#488](https://github.com/openplayerjs/openplayerjs/pull/488)) @renovate[bot]
 - **[deps]** update dependency @release-it/conventional-changelog to ^10.0.6 ([#479](https://github.com/openplayerjs/openplayerjs/pull/479)) @renovate[bot]
 - **[deps]** update eslint ([#462](https://github.com/openplayerjs/openplayerjs/pull/462)) @renovate[bot]
 - **[deps]** update jest to v30 ([#474](https://github.com/openplayerjs/openplayerjs/pull/474)) @renovate[bot]
-- Remove vulnerabilities after upgrades (4b9d158) @Rafael Miranda
+- **[deps]** update dependency stylelint-order to ^8.1.1 ([#490](https://github.com/openplayerjs/openplayerjs/pull/490)) @renovate[bot]
 - **[deps]** update dependency stylelint-order to v8 ([#473](https://github.com/openplayerjs/openplayerjs/pull/473)) @renovate[bot]
 - **[deps]** update dependency turbo to ^2.8.15 ([#475](https://github.com/openplayerjs/openplayerjs/pull/475)) @renovate[bot]
 - **[deps]** update pnpm to v10.32.1 ([#476](https://github.com/openplayerjs/openplayerjs/pull/476)) @renovate[bot]
-
-## [3.2.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/youtube%403.2.1) (2026-03-13)
-
-### `@openplayerjs/youtube@3.2.1`
-
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-- Fixed version of YouTube package (42cd8ad) @Rafael Miranda
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
+- Remove vulnerabilities after upgrades (4b9d158) @Rafael Miranda
+- Removed unnecessary overrides (924d755) @Rafael Miranda
+- **[deps]** pin dependencies ([#491](https://github.com/openplayerjs/openplayerjs/pull/491)) @renovate[bot]
 - Enhancements for release cycle (c5c0eff) @Rafael Miranda
   - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
-- Upgraded package version (d78b2ca) @Rafael Miranda
+  - Enhanced orchestrator script to generate release notes and append them to CHANGELOG
+  - Refactor renovate configuration for better dependency strategy and scheduling
 
-### General
-
-#### Bug Fixes
-
-- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
-- **[deps]** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/pull/486)) @renovate[bot]
-- Updated orchestration file to skip versions if already exist (c0bda19) @Rafael Miranda
-
-#### Chores
-
-- Fixed vulnerability (7facec4) @Rafael Miranda
-- **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.20 ([#501](https://github.com/openplayerjs/openplayerjs/pull/501)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.5 ([#502](https://github.com/openplayerjs/openplayerjs/pull/502)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to 3869755 ([#499](https://github.com/openplayerjs/openplayerjs/pull/499)) @renovate[bot]
-- **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
-- **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
-- **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
-- **[deps]** update eslint to ^8.57.1 ([#496](https://github.com/openplayerjs/openplayerjs/pull/496)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to b1bff81 ([#493](https://github.com/openplayerjs/openplayerjs/pull/493)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.4 ([#494](https://github.com/openplayerjs/openplayerjs/pull/494)) @renovate[bot]
-- Removed unnecessary overrides (924d755) @Rafael Miranda
-- **[deps]** update commitlint to ^20.5.0 ([#492](https://github.com/openplayerjs/openplayerjs/pull/492)) @renovate[bot]
-- **[deps]** pin dependencies ([#491](https://github.com/openplayerjs/openplayerjs/pull/491)) @renovate[bot]
-- **[deps]** update dependency stylelint-order to ^8.1.1 ([#490](https://github.com/openplayerjs/openplayerjs/pull/490)) @renovate[bot]
-- **[deps]** update dependency undici to v7 ([#489](https://github.com/openplayerjs/openplayerjs/pull/489)) @renovate[bot]
-- **[deps]** update dependency undici to >=6.24.1 ([#484](https://github.com/openplayerjs/openplayerjs/pull/484)) @renovate[bot]
-- **[deps]** update dependency lint-staged to ^16.4.0 ([#487](https://github.com/openplayerjs/openplayerjs/pull/487)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.17 ([#483](https://github.com/openplayerjs/openplayerjs/pull/483)) @renovate[bot]
-- **[deps]** update commitlint to ^20.4.4 ([#478](https://github.com/openplayerjs/openplayerjs/pull/478)) @renovate[bot]
-- **[deps]** update dependency flatted to >=3.4.1 ([#481](https://github.com/openplayerjs/openplayerjs/pull/481)) @renovate[bot]
-- **[deps]** update dependency @rollup/plugin-commonjs to ^29.0.2 ([#480](https://github.com/openplayerjs/openplayerjs/pull/480)) @renovate[bot]
-- **[deps]** update dependency serialize-javascript to >=7.0.4 ([#482](https://github.com/openplayerjs/openplayerjs/pull/482)) @renovate[bot]
-- **[deps]** update postcss ([#485](https://github.com/openplayerjs/openplayerjs/pull/485)) @renovate[bot]
-- **[deps]** update node.js to >=24.14.0 ([#488](https://github.com/openplayerjs/openplayerjs/pull/488)) @renovate[bot]
-- **[deps]** update dependency @release-it/conventional-changelog to ^10.0.6 ([#479](https://github.com/openplayerjs/openplayerjs/pull/479)) @renovate[bot]
-- **[deps]** update eslint ([#462](https://github.com/openplayerjs/openplayerjs/pull/462)) @renovate[bot]
-- **[deps]** update jest to v30 ([#474](https://github.com/openplayerjs/openplayerjs/pull/474)) @renovate[bot]
-- Remove vulnerabilities after upgrades (4b9d158) @Rafael Miranda
-- **[deps]** update dependency stylelint-order to v8 ([#473](https://github.com/openplayerjs/openplayerjs/pull/473)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.15 ([#475](https://github.com/openplayerjs/openplayerjs/pull/475)) @renovate[bot]
-- **[deps]** update pnpm to v10.32.1 ([#476](https://github.com/openplayerjs/openplayerjs/pull/476)) @renovate[bot]
-- **[deps]** update dependency @rollup/plugin-terser to v1 ([#470](https://github.com/openplayerjs/openplayerjs/pull/470)) @renovate[bot]
-- **[deps]** update dependency @types/jest to v30 ([#471](https://github.com/openplayerjs/openplayerjs/pull/471)) @renovate[bot]
-- **[deps]** update commitlint monorepo to v20 ([#469](https://github.com/openplayerjs/openplayerjs/pull/469)) @renovate[bot]
+---
 
 ## [3.1.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.1.1) (2026-03-13)
 
 ### `@openplayerjs/core@3.1.1`
 
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
 #### Bug Fixes
 
 - publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
+  - Disabled per-package `npm` publish to resolve peer-dependency version conflicts
   - Modified orchestration script to populate root CHANGELOG
   - Added v3.1.0 changes in root CHANGELOG
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
 
 ### `@openplayerjs/player@3.1.1`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
+- Version bump to stay in sync with `@openplayerjs/core@3.1.1`
 
 ### `@openplayerjs/hls@3.1.1`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
+- Version bump to stay in sync with `@openplayerjs/core@3.1.1`
 
 ### `@openplayerjs/ads@3.1.1`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
+- Version bump to stay in sync with `@openplayerjs/core@3.1.1`
 
-#### Bug Fixes
+### `@openplayerjs/youtube@3.1.0`
 
-- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
-- **[deps]** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/pull/486)) @renovate[bot]
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
+#### Version Bump
 
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
+- Version bump to stay in sync with `@openplayerjs/core@3.1.1`
 
 ### General
 
 #### Bug Fixes
 
-- Updated orchestration file to skip versions if already exist (c0bda19) @Rafael Miranda
-- Added missing flag on pre-commit operation (7423955) @Rafael Miranda
+- Added missing flag on pre-commit hook invocation during release (7423955) @Rafael Miranda
+- Fixed version of YouTube package after incorrect tag (eb1e0a6) @Rafael Miranda
 
 #### Chores
 
-- Fixed vulnerability (7facec4) @Rafael Miranda
-- **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.20 ([#501](https://github.com/openplayerjs/openplayerjs/pull/501)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.5 ([#502](https://github.com/openplayerjs/openplayerjs/pull/502)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to 3869755 ([#499](https://github.com/openplayerjs/openplayerjs/pull/499)) @renovate[bot]
-- **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
-- **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
-- **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
-- **[deps]** update eslint to ^8.57.1 ([#496](https://github.com/openplayerjs/openplayerjs/pull/496)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to b1bff81 ([#493](https://github.com/openplayerjs/openplayerjs/pull/493)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.4 ([#494](https://github.com/openplayerjs/openplayerjs/pull/494)) @renovate[bot]
-- Removed unnecessary overrides (924d755) @Rafael Miranda
-- **[deps]** update commitlint to ^20.5.0 ([#492](https://github.com/openplayerjs/openplayerjs/pull/492)) @renovate[bot]
-- **[deps]** pin dependencies ([#491](https://github.com/openplayerjs/openplayerjs/pull/491)) @renovate[bot]
-- **[deps]** update dependency stylelint-order to ^8.1.1 ([#490](https://github.com/openplayerjs/openplayerjs/pull/490)) @renovate[bot]
-- **[deps]** update dependency undici to v7 ([#489](https://github.com/openplayerjs/openplayerjs/pull/489)) @renovate[bot]
-- **[deps]** update dependency undici to >=6.24.1 ([#484](https://github.com/openplayerjs/openplayerjs/pull/484)) @renovate[bot]
-- **[deps]** update dependency lint-staged to ^16.4.0 ([#487](https://github.com/openplayerjs/openplayerjs/pull/487)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.17 ([#483](https://github.com/openplayerjs/openplayerjs/pull/483)) @renovate[bot]
-- **[deps]** update commitlint to ^20.4.4 ([#478](https://github.com/openplayerjs/openplayerjs/pull/478)) @renovate[bot]
-- **[deps]** update dependency flatted to >=3.4.1 ([#481](https://github.com/openplayerjs/openplayerjs/pull/481)) @renovate[bot]
-- **[deps]** update dependency @rollup/plugin-commonjs to ^29.0.2 ([#480](https://github.com/openplayerjs/openplayerjs/pull/480)) @renovate[bot]
-- **[deps]** update dependency serialize-javascript to >=7.0.4 ([#482](https://github.com/openplayerjs/openplayerjs/pull/482)) @renovate[bot]
-- **[deps]** update postcss ([#485](https://github.com/openplayerjs/openplayerjs/pull/485)) @renovate[bot]
-- **[deps]** update node.js to >=24.14.0 ([#488](https://github.com/openplayerjs/openplayerjs/pull/488)) @renovate[bot]
-- **[deps]** update dependency @release-it/conventional-changelog to ^10.0.6 ([#479](https://github.com/openplayerjs/openplayerjs/pull/479)) @renovate[bot]
-- **[deps]** update eslint ([#462](https://github.com/openplayerjs/openplayerjs/pull/462)) @renovate[bot]
-- **[deps]** update jest to v30 ([#474](https://github.com/openplayerjs/openplayerjs/pull/474)) @renovate[bot]
-- Remove vulnerabilities after upgrades (4b9d158) @Rafael Miranda
-- **[deps]** update dependency stylelint-order to v8 ([#473](https://github.com/openplayerjs/openplayerjs/pull/473)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.15 ([#475](https://github.com/openplayerjs/openplayerjs/pull/475)) @renovate[bot]
-- **[deps]** update pnpm to v10.32.1 ([#476](https://github.com/openplayerjs/openplayerjs/pull/476)) @renovate[bot]
 - **[deps]** update dependency @rollup/plugin-terser to v1 ([#470](https://github.com/openplayerjs/openplayerjs/pull/470)) @renovate[bot]
 - **[deps]** update dependency @types/jest to v30 ([#471](https://github.com/openplayerjs/openplayerjs/pull/471)) @renovate[bot]
 - **[deps]** update commitlint monorepo to v20 ([#469](https://github.com/openplayerjs/openplayerjs/pull/469)) @renovate[bot]
+
+---
 
 ## [3.1.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.1.0) (2026-03-13)
 
 ### `@openplayerjs/core@3.1.0`
 
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-- Removed release-it config flags in favor of release notes (bb8cd59) @Rafael Miranda
-- Added new commit types for releases (ec6c75f) @Rafael Miranda
-
 #### Refactoring
 
 - surface layer, Renovate integration and ads fixes ([#458](https://github.com/openplayerjs/openplayerjs/pull/458)) @Rafael Miranda
-  - Added missing badges for all packages and main page
-  - Added Renovate bot to keep dependencies up-to-date in all packages
-  - Added new surface layer in preparation to allow iframe engines (i.e., YouTube) to be authored and unified approach among packages and controls
-  - Added new captions layer in core package to support captions across different engines
-  - Added new entries in .gitignore
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Configure Renovate ([#459](https://github.com/openplayerjs/openplayerjs/pull/459)) @renovate[bot]
-
-### `@openplayerjs/player@3.1.0`
-
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-- Removed release-it config flags in favor of release notes (bb8cd59) @Rafael Miranda
-- Added new commit types for releases (ec6c75f) @Rafael Miranda
-
-#### Refactoring
-
-- surface layer, Renovate integration and ads fixes ([#458](https://github.com/openplayerjs/openplayerjs/pull/458)) @Rafael Miranda
-  - Added missing badges for all packages and main page
-  - Added Renovate bot to keep dependencies up-to-date in all packages
-  - Added new surface layer in preparation to allow iframe engines (i.e., YouTube) to be authored and unified approach among packages and controls
-  - Added new captions layer in core package to support captions across different engines
-  - Added new entries in .gitignore
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
-- Configure Renovate ([#459](https://github.com/openplayerjs/openplayerjs/pull/459)) @renovate[bot]
-
-### `@openplayerjs/hls@3.1.0`
-
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-- Removed release-it config flags in favor of release notes (bb8cd59) @Rafael Miranda
-- Added new commit types for releases (ec6c75f) @Rafael Miranda
-
-#### Refactoring
-
-- surface layer, Renovate integration and ads fixes ([#458](https://github.com/openplayerjs/openplayerjs/pull/458)) @Rafael Miranda
-  - Added missing badges for all packages and main page
-  - Added Renovate bot to keep dependencies up-to-date in all packages
-  - Added new surface layer in preparation to allow iframe engines (i.e., YouTube) to be authored and unified approach among packages and controls
-  - Added new captions layer in core package to support captions across different engines
-  - Added new entries in .gitignore
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
-- Configure Renovate ([#459](https://github.com/openplayerjs/openplayerjs/pull/459)) @renovate[bot]
+  - Added new surface layer (`HtmlMediaSurface`, `IframeMediaSurface`) in preparation for iframe-based engines (YouTube, etc.) with a unified approach across packages and controls
+  - Added new captions layer in core package to support captions across different engines via `CaptionTrackProvider`
+  - Added `BaseMediaEngine` lifecycle helpers: `bindSurfaceEvents`, `bindCommands`, `unbindSurfaceEvents`
+  - Added missing badges for all packages and main documentation page
+  - Added new entries in `.gitignore`
 
 ### `@openplayerjs/ads@3.1.0`
 
-#### Features
-
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
 #### Bug Fixes
 
-- **[deps]** update dependency @dailymotion/vast-client to ^6.4.3 ([#497](https://github.com/openplayerjs/openplayerjs/pull/497)) @renovate[bot]
-- **[deps]** update dependency @dailymotion/vmap to >=3.3.3 ([#486](https://github.com/openplayerjs/openplayerjs/pull/486)) @renovate[bot]
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-- Removed release-it config flags in favor of release notes (bb8cd59) @Rafael Miranda
-- Added new commit types for releases (ec6c75f) @Rafael Miranda
-
-#### Refactoring
-
 - surface layer, Renovate integration and ads fixes ([#458](https://github.com/openplayerjs/openplayerjs/pull/458)) @Rafael Miranda
-  - Added missing badges for all packages and main page
-  - Added Renovate bot to keep dependencies up-to-date in all packages
-  - Added new surface layer in preparation to allow iframe engines (i.e., YouTube) to be authored and unified approach among packages and controls
-  - Added new captions layer in core package to support captions across different engines
-  - Added new entries in .gitignore
+  - Fixed multiple ad lifecycle issues following the surface-layer refactor
 
-#### Chores
+### `@openplayerjs/player@3.1.0`
 
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
-- Configure Renovate ([#459](https://github.com/openplayerjs/openplayerjs/pull/459)) @renovate[bot]
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.1.0`
+
+### `@openplayerjs/hls@3.1.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.1.0`
 
 ### `@openplayerjs/youtube@3.1.0`
 
-#### Features
+#### Version Bump
 
-- SIMID/OMID support ([#495](https://github.com/openplayerjs/openplayerjs/pull/495)) @Rafael Miranda
-  - Split ads file for better maintenance
-  - Generated new files to split responsibilities, including skeletons for SIMID and OMID formats
-  - Added new HTML elements when parsing XML ads and removed if detected
-  - Added SIMID creative information when creating a SIMID session
-  - Added case 'resolve': and case 'reject': fallthroughs to the existing SIMID_CREATIVE.RESOLVE/REJECT handlers
-
-#### Bug Fixes
-
-- publishing packages ([#472](https://github.com/openplayerjs/openplayerjs/pull/472)) @Rafael Miranda
-  - Disabled `npm` publish per package to resolve peer-dependencies version
-  - Modified orchestration script to populate root CHANGELOG
-  - Added v3.1.0 changes in root CHANGELOG
-
-#### Chores
-
-- adjustments for release workflow (cb382ed) @Rafael Miranda
-  - Increased branch coverage to 85%
-  - Added new commands to verify that release is ready and more in sync to what MUI does
-  - Removed inline elements from each package's release-it config file to merge everything into main one
-  - Minor formatting issues
-- Fix document links (d89a0b9) @Rafael Miranda
-- Enhancements for release cycle (c5c0eff) @Rafael Miranda
-  - Fixed release-it hook to publish to NPM after git push has succeeded
-  - Enhanced orchestrator script to generate release notes and appends them to CHANGELOG, check each package's latest tag to avoid botched releases
-  - Removed unnecessary element from turbo configuration
-  - Refactor renovate configuration to better handle third-party library types by changing version handling, grouping and scheduling for a better strategy
-  - Fixed merge issue on documentation
-- Upgraded package version (d78b2ca) @Rafael Miranda
+- Version bump to stay in sync with `@openplayerjs/core@3.1.0`
 
 ### General
 
 #### Bug Fixes
 
-- Updated orchestration file to skip versions if already exist (c0bda19) @Rafael Miranda
-- Added missing flag on pre-commit operation (7423955) @Rafael Miranda
+- Removed release-it config flags in favor of release notes (bb8cd59) @Rafael Miranda
+- Added new commit types for releases (ec6c75f) @Rafael Miranda
 - Removing .npmrc not needed (ad5f8fe) @Rafael Miranda
 - Added fallback for NPM_TOKEN (7c74c62) @Rafael Miranda
 - Changed orchestration file to read .env from package root (6e39215) @Rafael Miranda
 
 #### Chores
 
-- Fixed vulnerability (7facec4) @Rafael Miranda
-- **[deps]** update dependency rollup to ^4.59.1 ([#500](https://github.com/openplayerjs/openplayerjs/pull/500)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.20 ([#501](https://github.com/openplayerjs/openplayerjs/pull/501)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.5 ([#502](https://github.com/openplayerjs/openplayerjs/pull/502)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to 3869755 ([#499](https://github.com/openplayerjs/openplayerjs/pull/499)) @renovate[bot]
-- **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
-- **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
-- **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
-- **[deps]** update eslint to ^8.57.1 ([#496](https://github.com/openplayerjs/openplayerjs/pull/496)) @renovate[bot]
-- **[deps]** update github/codeql-action digest to b1bff81 ([#493](https://github.com/openplayerjs/openplayerjs/pull/493)) @renovate[bot]
-- **[deps]** update dependency undici to >=7.24.4 ([#494](https://github.com/openplayerjs/openplayerjs/pull/494)) @renovate[bot]
-- Removed unnecessary overrides (924d755) @Rafael Miranda
-- **[deps]** update commitlint to ^20.5.0 ([#492](https://github.com/openplayerjs/openplayerjs/pull/492)) @renovate[bot]
-- **[deps]** pin dependencies ([#491](https://github.com/openplayerjs/openplayerjs/pull/491)) @renovate[bot]
-- **[deps]** update dependency stylelint-order to ^8.1.1 ([#490](https://github.com/openplayerjs/openplayerjs/pull/490)) @renovate[bot]
-- **[deps]** update dependency undici to v7 ([#489](https://github.com/openplayerjs/openplayerjs/pull/489)) @renovate[bot]
-- **[deps]** update dependency undici to >=6.24.1 ([#484](https://github.com/openplayerjs/openplayerjs/pull/484)) @renovate[bot]
-- **[deps]** update dependency lint-staged to ^16.4.0 ([#487](https://github.com/openplayerjs/openplayerjs/pull/487)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.17 ([#483](https://github.com/openplayerjs/openplayerjs/pull/483)) @renovate[bot]
-- **[deps]** update commitlint to ^20.4.4 ([#478](https://github.com/openplayerjs/openplayerjs/pull/478)) @renovate[bot]
-- **[deps]** update dependency flatted to >=3.4.1 ([#481](https://github.com/openplayerjs/openplayerjs/pull/481)) @renovate[bot]
-- **[deps]** update dependency @rollup/plugin-commonjs to ^29.0.2 ([#480](https://github.com/openplayerjs/openplayerjs/pull/480)) @renovate[bot]
-- **[deps]** update dependency serialize-javascript to >=7.0.4 ([#482](https://github.com/openplayerjs/openplayerjs/pull/482)) @renovate[bot]
-- **[deps]** update postcss ([#485](https://github.com/openplayerjs/openplayerjs/pull/485)) @renovate[bot]
-- **[deps]** update node.js to >=24.14.0 ([#488](https://github.com/openplayerjs/openplayerjs/pull/488)) @renovate[bot]
-- **[deps]** update dependency @release-it/conventional-changelog to ^10.0.6 ([#479](https://github.com/openplayerjs/openplayerjs/pull/479)) @renovate[bot]
-- **[deps]** update eslint ([#462](https://github.com/openplayerjs/openplayerjs/pull/462)) @renovate[bot]
-- **[deps]** update jest to v30 ([#474](https://github.com/openplayerjs/openplayerjs/pull/474)) @renovate[bot]
-- Remove vulnerabilities after upgrades (4b9d158) @Rafael Miranda
-- **[deps]** update dependency stylelint-order to v8 ([#473](https://github.com/openplayerjs/openplayerjs/pull/473)) @renovate[bot]
-- **[deps]** update dependency turbo to ^2.8.15 ([#475](https://github.com/openplayerjs/openplayerjs/pull/475)) @renovate[bot]
-- **[deps]** update pnpm to v10.32.1 ([#476](https://github.com/openplayerjs/openplayerjs/pull/476)) @renovate[bot]
-- **[deps]** update dependency @rollup/plugin-terser to v1 ([#470](https://github.com/openplayerjs/openplayerjs/pull/470)) @renovate[bot]
-- **[deps]** update dependency @types/jest to v30 ([#471](https://github.com/openplayerjs/openplayerjs/pull/471)) @renovate[bot]
-- **[deps]** update commitlint monorepo to v20 ([#469](https://github.com/openplayerjs/openplayerjs/pull/469)) @renovate[bot]
-- Added permanent npmrc file to use NPM_TOKEN automatically (5afa092) @Rafael Miranda
-- Added YouTube package in the list of supported packages (eb1e0a6) @Rafael Miranda
+- Configure Renovate ([#459](https://github.com/openplayerjs/openplayerjs/pull/459)) @renovate[bot]
+- Added permanent `.npmrc` to use `NPM_TOKEN` automatically (5afa092) @Rafael Miranda
+- Added YouTube package to the list of supported packages in orchestrator (eb1e0a6) @Rafael Miranda
 - **[deps]** update coverallsapp/github-action action to v2.3.6 ([#466](https://github.com/openplayerjs/openplayerjs/pull/466)) @renovate[bot]
 - **[deps]** update pnpm to v10.32.0 ([#467](https://github.com/openplayerjs/openplayerjs/pull/467)) @renovate[bot]
 - **[config]** migrate config renovate.json ([#463](https://github.com/openplayerjs/openplayerjs/pull/463)) @renovate[bot]
 
-## [3.0.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.0.2) (2026-03-07)
+---
 
-### `@openplayerjs/player@3.0.2`
+## [3.0.2](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.0.2) (2026-03-07)
 
-#### Version Bump
+Initial v3 release of the OpenPlayerJS monorepo under the `@openplayerjs/*` scoped package names.
 
-- Version bump to stay in sync with `@openplayerjs/core@3.0.2`
+### Packages published
 
-### `@openplayerjs/hls@3.0.2`
-
-#### Version Bump
-
-- Version bump to stay in sync with `@openplayerjs/core@3.0.2`
-
-### `@openplayerjs/ads@3.0.2`
-
-#### Version Bump
-
-- Version bump to stay in sync with `@openplayerjs/core@3.0.2`
+- `@openplayerjs/core@3.0.2` — `Core`, `EventBus`, `BaseMediaEngine`, plugin system, state manager, overlay manager, `HtmlMediaSurface`
+- `@openplayerjs/player@3.0.2` — `createUI()`, `buildControls()`, controls library (play, pause, volume, progress, time, settings, captions, fullscreen), CSS
+- `@openplayerjs/hls@3.0.2` — `HlsMediaEngine` wrapping hls.js with MSE support
+- `@openplayerjs/ads@3.0.2` — `AdsPlugin` with CSAI/VMAP/waterfall fallback support
+- `@openplayerjs/youtube@3.0.0` — Initial `YoutubeMediaEngine` stub

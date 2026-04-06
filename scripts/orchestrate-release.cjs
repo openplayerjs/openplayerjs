@@ -142,13 +142,6 @@ const CORE_DEPENDENTS = ['player', 'hls', 'ads', 'youtube'];
  */
 function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set()) {
   const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const packageSections = [];
-
-  // Tracks (hash:subject) pairs already attributed to a package section so the
-  // General section doesn't double-count them.  Using the composite key allows
-  // different sub-commits inside the same squash commit to land in different
-  // sections (e.g. feat(ads) → ads, chore(repo) → General).
-  const covered = new Set();
 
   const earliestTag = Object.values(prevTags)
     .filter(Boolean)
@@ -156,10 +149,41 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
     .at(0) ?? null;
   const generalRange = earliestTag ? `${earliestTag}..HEAD` : 'HEAD';
 
+  // ── Helper: parse one conventional commit into a renderable entry ───────────
+
+  function parseEntry(hash, subject, author, body) {
+    if (/^Merge /.test(subject) || /^chore\(release\):/.test(subject) || /^docs\(changelog\):/.test(subject)) {
+      return null;
+    }
+    const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
+    if (!ccMatch) return null;
+    const [, type, scope, breaking, rawDesc] = ccMatch;
+    const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
+    if (!sectionName) return null;
+    const prMatch = rawDesc.match(/\(#(\d+)\)/) || subject.match(/\(#(\d+)\)/);
+    const pr = prMatch?.[1];
+    const desc = rawDesc.replace(/\s*\(#\d+\)\s*$/, '').trim();
+    const scopePrefix = scope ? `**[${scope}]** ` : '';
+    const ref = pr
+      ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
+      : `(${hash.slice(0, 7)})`;
+    const bodyLines = cleanBody(body);
+    const text = bodyLines
+      ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
+      : `- ${scopePrefix}${desc} ${ref} @${author}`;
+    return { sectionName, scope, text };
+  }
+
+  // ── Pass 1: collect candidate entries per package ───────────────────────────
+  // pkgCandidates: Map<pkg, Array<{key, sectionName, scope, text}>>
+  // A "key" is `hash:subject` — stable identity for dedup across packages.
+
+  const pkgCandidates = new Map();
+  const pkgHasLog = new Set(); // packages that had any git history
+
   for (const pkg of pkgs) {
     const prevTag = prevTags[pkg];
     const range = prevTag ? `${prevTag}..HEAD` : 'HEAD';
-
     let rawLog = '';
     try {
       rawLog = execSync(
@@ -168,64 +192,87 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
       ).trim();
     } catch { /* package has no history yet */ }
 
-    if (!rawLog && !lockedToCore.has(pkg)) continue;
+    if (rawLog) pkgHasLog.add(pkg);
 
-    const bySection = {};
-
+    const candidates = [];
     for (const rawCommit of parseLog(rawLog)) {
       for (const { hash, subject, author, body } of expandSquashCommit(rawCommit)) {
-      covered.add(`${hash}:${subject}`);
+        // Skip commits that explicitly target a DIFFERENT known package.
+        const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:/);
+        const scope = ccMatch?.[2];
+        if (scope && SCOPE_TO_PACKAGE[scope] && SCOPE_TO_PACKAGE[scope].dir !== `packages/${pkg}`) continue;
 
-      if (/^Merge /.test(subject) || /^chore\(release\):/.test(subject)) continue;
+        const entry = parseEntry(hash, subject, author, body);
+        if (!entry) continue;
+        candidates.push({ key: `${hash}:${subject}`, ...entry });
+      }
+    }
+    pkgCandidates.set(pkg, candidates);
+  }
 
-      const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
-      if (!ccMatch) continue;
+  // ── Pass 2: identify cross-cutting entries (same key in >1 package) ─────────
+  // These will be shown once in General rather than repeated under each package.
 
-      const [, type, scope, breaking, rawDesc] = ccMatch;
+  const keyPkgs = new Map(); // key → Set<pkg>
+  for (const [pkg, candidates] of pkgCandidates) {
+    for (const { key } of candidates) {
+      if (!keyPkgs.has(key)) keyPkgs.set(key, new Set());
+      keyPkgs.get(key).add(pkg);
+    }
+  }
+  const crossCuttingKeys = new Set(
+    [...keyPkgs.entries()]
+      .filter(([, set]) => set.size > 1)
+      .map(([key]) => key),
+  );
 
-      if (scope && SCOPE_TO_PACKAGE[scope] && SCOPE_TO_PACKAGE[scope].dir !== `packages/${pkg}`) continue;
+  // ── Pass 3: build per-package sections, routing cross-cutting to General ────
 
-      const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
-      if (!sectionName) continue;
+  const packageSections = [];
+  // covered: keys already attributed to a section (package or General)
+  const covered = new Set();
+  // generalBySection: deduplicated cross-cutting entries for the General block
+  const generalBySection = {};
 
-      const prMatch = rawDesc.match(/\(#(\d+)\)/) || subject.match(/\(#(\d+)\)/);
-      const pr = prMatch?.[1];
-      const desc = rawDesc.replace(/\s*\(#\d+\)\s*$/, '').trim();
+  for (const pkg of pkgs) {
+    const candidates = pkgCandidates.get(pkg) ?? [];
+    const bySection = {};
 
+    for (const { key, sectionName, text } of candidates) {
+      covered.add(key);
+      if (crossCuttingKeys.has(key)) {
+        // Deduplicate: use a Set keyed by text so identical bullets appear once.
+        if (!generalBySection[sectionName]) generalBySection[sectionName] = new Set();
+        generalBySection[sectionName].add(text);
+        continue;
+      }
       if (!bySection[sectionName]) bySection[sectionName] = [];
+      bySection[sectionName].push(text);
+    }
 
-      const scopePrefix = scope ? `**[${scope}]** ` : '';
-      const ref = pr
-        ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
-        : `(${hash.slice(0, 7)})`;
-      const bodyLines = cleanBody(body);
-      const entry = bodyLines
-        ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
-        : `- ${scopePrefix}${desc} ${ref} @${author}`;
-      bySection[sectionName].push(entry);
-      } // end expandSquashCommit loop
-    } // end parseLog loop
-
+    // Packages locked to core with no own changes get a version-bump stub.
     if (Object.keys(bySection).length === 0 && lockedToCore.has(pkg)) {
       bySection['Version Bump'] = [
         `- Version bump to stay in sync with \`@openplayerjs/core@${version}\``,
       ];
     }
-
-    if (Object.keys(bySection).length === 0) continue;
+    // Skip packages with no changes and no log (not locked).
+    if (Object.keys(bySection).length === 0 && !pkgHasLog.has(pkg)) continue;
+    // Skip packages with no changes that aren't locked and have log (cross-cutting only).
+    if (Object.keys(bySection).length === 0 && !lockedToCore.has(pkg)) continue;
 
     let section = `### \`@openplayerjs/${pkg}@${version}\`\n`;
     for (const sectionName of SECTION_ORDER) {
       const items = bySection[sectionName];
-      if (items?.length) {
-        section += `\n#### ${sectionName}\n\n${items.join('\n')}\n`;
-      }
+      if (items?.length) section += `\n#### ${sectionName}\n\n${items.join('\n')}\n`;
     }
     if (bySection['Version Bump']) {
       section += `\n#### Version Bump\n\n${bySection['Version Bump'].join('\n')}\n`;
     }
     packageSections.push(section);
   }
+
+  // ── General section: cross-cutting entries + root-level commits ──────────────
 
   let rootLog = '';
   try {
@@ -235,47 +282,23 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
     ).trim();
   } catch { /* no root-level history */ }
 
-  const rootBySection = {};
   for (const rawCommit of parseLog(rootLog)) {
     for (const { hash, subject, author, body } of expandSquashCommit(rawCommit)) {
-      if (covered.has(`${hash}:${subject}`)) continue;
-      covered.add(`${hash}:${subject}`);
-      if (
-        /^Merge /.test(subject) ||
-        /^chore\(release\):/.test(subject) ||
-        /^docs\(changelog\):/.test(subject)
-      ) continue;
-
-      const ccMatch = subject.match(/^(\w+)(?:\(([^)]+)\))?(!)?:\s*(.+)/);
-      if (!ccMatch) continue;
-
-      const [, type, scope, breaking, rawDesc] = ccMatch;
-      const sectionName = breaking ? 'Breaking Changes' : TYPE_SECTIONS[type];
-      if (!sectionName) continue;
-
-      const prMatch = rawDesc.match(/\(#(\d+)\)/) || subject.match(/\(#(\d+)\)/);
-      const pr = prMatch?.[1];
-      const desc = rawDesc.replace(/\s*\(#\d+\)\s*$/, '').trim();
-
-      if (!rootBySection[sectionName]) rootBySection[sectionName] = [];
-
-      const scopePrefix = scope ? `**[${scope}]** ` : '';
-      const ref = pr
-        ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
-        : `(${hash.slice(0, 7)})`;
-      const bodyLines = cleanBody(body);
-      const entry = bodyLines
-        ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
-        : `- ${scopePrefix}${desc} ${ref} @${author}`;
-      rootBySection[sectionName].push(entry);
+      const key = `${hash}:${subject}`;
+      if (covered.has(key)) continue;
+      covered.add(key);
+      const entry = parseEntry(hash, subject, author, body);
+      if (!entry) continue;
+      if (!generalBySection[entry.sectionName]) generalBySection[entry.sectionName] = new Set();
+      generalBySection[entry.sectionName].add(entry.text);
     }
   }
 
-  if (Object.keys(rootBySection).length > 0) {
+  if (Object.keys(generalBySection).length > 0) {
     let section = `### General\n`;
     for (const sectionName of SECTION_ORDER) {
-      const items = rootBySection[sectionName];
-      if (items?.length) section += `\n#### ${sectionName}\n\n${items.join('\n')}\n`;
+      const items = generalBySection[sectionName];
+      if (items?.size) section += `\n#### ${sectionName}\n\n${[...items].join('\n')}\n`;
     }
     packageSections.push(section);
   }
@@ -457,7 +480,7 @@ function getPlannedCoreVersion() {
       encoding: 'utf8',
       cwd: pkgDir,
     });
-    const match = out.match(/\.\.\.([\d]+\.[\d]+\.[\d]+)\)/);
+    const match = out.match(/\.\.\.(\d+\.\d+\.\d+)\)/);
     return match?.[1] ?? null;
   } catch {
     return null;
@@ -466,7 +489,13 @@ function getPlannedCoreVersion() {
   }
 }
 
+// ─── Exports (for testing / tooling) ─────────────────────────────────────────
+
+module.exports = { generateReleaseNotes, readVersion, getLastTag };
+
 // ─── Main ────────────────────────────────────────────────────────────────────
+
+if (require.main !== module) return; // allow require() without side-effects
 
 checkTagAncestry();
 
@@ -535,11 +564,28 @@ if (coreChanged) {
   }
 
   if (!isDryRun && released.length) {
-    const version = readVersion(released[0]);
-    mergeReleaseNotesToChangelog(version, released, prevTags);
+    const versions = released.map(pkg => readVersion(pkg));
+    const allSameVersion = versions.every(v => v === versions[0]);
 
-    for (const pkg of released) {
-      releasePackage(pkg);
+    if (allSameVersion) {
+      // Common case: all independently-released packages landed on the same
+      // version (e.g. manual bump to keep versions in sync).  Write a single
+      // shared changelog entry, then release every package.
+      mergeReleaseNotesToChangelog(versions[0], released, prevTags);
+      for (const pkg of released) {
+        releasePackage(pkg);
+      }
+    } else {
+      // Packages diverged to independent versions.  Write a separate changelog
+      // entry for each package so the version header is accurate, then release
+      // it immediately.  RELEASE_NOTES.md (if present) is applied to the first
+      // entry and auto-deleted; subsequent entries are auto-generated from git.
+      for (let i = 0; i < released.length; i++) {
+        const pkg = released[i];
+        const version = versions[i];
+        mergeReleaseNotesToChangelog(version, [pkg], prevTags);
+        releasePackage(pkg);
+      }
     }
   }
 
