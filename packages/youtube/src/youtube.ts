@@ -60,14 +60,15 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     // Use display:none to remove the native element from layout; give the container an
     // explicit aspect ratio so its height is determined by CSS inheritance, not the video.
     ctx.media.style.display = 'none';
-    const cw = ctx.container.offsetWidth;
-    const ch = ctx.container.offsetHeight;
-    ctx.container.style.aspectRatio = cw > 0 && ch > 0 ? `${cw} / ${ch}` : '16 / 9';
+    const containerWidth = ctx.container.offsetWidth;
+    const containerHeight = ctx.container.offsetHeight;
+    ctx.container.style.aspectRatio =
+      containerWidth > 0 && containerHeight > 0 ? `${containerWidth} / ${containerHeight}` : '16 / 9';
 
     // Caption preference helpers — persisted under a YouTube-specific key so the
     // player package stays agnostic about storage.
     const CAPTION_PREFERENCE_KEY = 'op:yt:caption:track';
-    const readCcPref = (): string | null | undefined => {
+    const readCaptionPreference = (): string | null | undefined => {
       try {
         const v = localStorage.getItem(CAPTION_PREFERENCE_KEY);
         if (v === null) return undefined; // key absent = no preference
@@ -77,7 +78,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
         return undefined;
       }
     };
-    const saveCcPref = (id: string | null): void => {
+    const saveCaptionPreference = (id: string | null): void => {
       try {
         localStorage.setItem(CAPTION_PREFERENCE_KEY, id ?? '');
       } catch {
@@ -118,7 +119,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
       setTrack: (id) => {
         activeTrackId = id;
         adapter.setCaptionTrack(id);
-        saveCcPref(id);
+        saveCaptionPreference(id);
         // Re-evaluate height immediately when captions are toggled on/off.
         updateIframeHeight();
       },
@@ -133,7 +134,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
               // Apply persisted preference. Stored '' means user explicitly turned
               // captions off — override cc_load_policy:1 by calling setCaptionTrack(null).
               // Stored non-empty string = preferred track id. No key = honour YouTube default.
-              const storedPref = readCcPref();
+              const storedPref = readCaptionPreference();
               if (storedPref === null) {
                 activeTrackId = null;
                 adapter.setCaptionTrack(null);
