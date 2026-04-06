@@ -104,7 +104,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     const updateIframeHeight = (): void => {
       const iframe = this.ytAdapter?.getElement() as HTMLIFrameElement | null;
       if (!iframe) return;
-      if (controlsVisible && activeTrackId != null) {
+      if (controlsVisible && activeTrackId !== null && !!activeTrackId) {
         const playerEl = ctx.container.closest('.op-player') as HTMLElement | null;
         const raw = playerEl ? getComputedStyle(playerEl).getPropertyValue('--op-controls-height').trim() : '';
         iframe.style.height = `calc(100% - ${raw || '48px'})`;
