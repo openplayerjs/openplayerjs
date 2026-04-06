@@ -98,6 +98,8 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     let activeTrackId: string | null | undefined = undefined;
     let controlsVisible = false;
 
+    const DEFAULT_CONTROLS_HEIGHT = '48px';
+
     // Shrinks the iframe so YouTube's caption overlay stays above the controls bar,
     // but only when both conditions are true: controls are currently visible AND
     // a caption track is active. Restores full height otherwise.
@@ -107,7 +109,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
       if (controlsVisible && activeTrackId != null) {
         const playerEl = ctx.container.closest('.op-player') as HTMLElement | null;
         const raw = playerEl ? getComputedStyle(playerEl).getPropertyValue('--op-controls-height').trim() : '';
-        iframe.style.height = `calc(100% - ${raw || '48px'})`;
+        iframe.style.height = `calc(100% - ${raw || DEFAULT_CONTROLS_HEIGHT})`;
       } else {
         iframe.style.height = '100%';
       }
