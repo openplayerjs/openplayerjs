@@ -66,10 +66,10 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
 
     // Caption preference helpers — persisted under a YouTube-specific key so the
     // player package stays agnostic about storage.
-    const CC_PREF_KEY = 'op:yt:caption:track';
+    const CAPTION_PREFERENCE_KEY = 'op:yt:caption:track';
     const readCcPref = (): string | null | undefined => {
       try {
-        const v = localStorage.getItem(CC_PREF_KEY);
+        const v = localStorage.getItem(CAPTION_PREFERENCE_KEY);
         if (v === null) return undefined; // key absent = no preference
         if (v === '') return null; // '' = explicitly off
         return v; // non-empty string = track id
@@ -79,7 +79,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     };
     const saveCcPref = (id: string | null): void => {
       try {
-        localStorage.setItem(CC_PREF_KEY, id ?? '');
+        localStorage.setItem(CAPTION_PREFERENCE_KEY, id ?? '');
       } catch {
         /* ignore */
       }
@@ -93,6 +93,7 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     // so we maintain the active track id ourselves. null = captions off.
     // Initialized to undefined until the subscribe poll confirms tracks are available;
     // at that point cc_load_policy:1 means captions are on, so we prime with the first track.
+    // Possible values: undefined: not initialized, null: captions off, string: active track id
     let activeTrackId: string | null | undefined = undefined;
     let controlsVisible = false;
 
@@ -123,8 +124,8 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
       },
       subscribe: (notify) => {
         let attempts = 0;
-        const MAX = 10;
-        const INTERVAL = 500;
+        const MAX_POLL_ATTEMPTS = 10;
+        const POLL_INTERVAL_MS = 500;
         const poll = () => {
           const tracks = adapter.getAvailableCaptionTracks();
           if (tracks.length > 0) {
@@ -148,9 +149,9 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
             notify();
             return;
           }
-          if (++attempts < MAX) timer = window.setTimeout(poll, INTERVAL);
+          if (++attempts < MAX_POLL_ATTEMPTS) timer = window.setTimeout(poll, POLL_INTERVAL_MS);
         };
-        let timer = window.setTimeout(poll, INTERVAL);
+        let timer = window.setTimeout(poll, POLL_INTERVAL_MS);
         return () => window.clearTimeout(timer);
       },
     };
