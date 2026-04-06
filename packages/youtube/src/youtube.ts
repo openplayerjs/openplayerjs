@@ -92,10 +92,11 @@ export class YouTubeMediaEngine extends BaseMediaEngine {
     // the YouTube captions module has loaded its tracklist (lazy, post-onReady).
     // Local state — getOption('captions','track') doesn't reflect setOption() synchronously,
     // so we maintain the active track id ourselves. null = captions off.
-    // Initialized to undefined until the subscribe poll confirms tracks are available;
-    // at that point cc_load_policy:1 means captions are on, so we prime with the first track.
-    // Possible values: undefined: not initialized, null: captions off, string: active track id
-    let activeTrackId: string | null | undefined = undefined;
+    // We track initialization separately: until the subscribe poll confirms tracks are available,
+    // hasInitializedCaptions remains false; at that point cc_load_policy:1 means captions are on,
+    // so we can prime activeTrackId with the first track.
+    let hasInitializedCaptions = false;
+    let activeTrackId: string | null = null;
     let controlsVisible = false;
 
     // Shrinks the iframe so YouTube's caption overlay stays above the controls bar,
