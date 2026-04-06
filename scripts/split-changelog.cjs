@@ -41,7 +41,7 @@ function extractLatestReleaseSection(changelog) {
   const start = changelog.indexOf('\n## ');
   if (start === -1) return null;
   const next = changelog.indexOf('\n## ', start + 4);
-  const section = next === -1 ? changelog.slice(start + 1) : changelog.slice(start + 1, next + 1);
+  const section = next === -1 ? changelog.slice(start + 1) : changelog.slice(start + 1, next);
   return section.trimEnd();
 }
 
@@ -58,6 +58,11 @@ function ensureHeader(filePath, header) {
 
 function prependRelease(changelogPath, releaseSection) {
   const existing = readIfExists(changelogPath);
+  // If the file is empty (or did not exist), avoid introducing leading blank lines.
+  if (existing === '') {
+    writeFile(changelogPath, `${releaseSection}\n`);
+    return;
+  }
   const firstNl = existing.indexOf('\n');
   if (firstNl === -1) {
     writeFile(changelogPath, `${existing}\n\n${releaseSection}\n`);
@@ -74,6 +79,9 @@ function filterSectionForScope(section, scope) {
   let current = [];
   let keepCurrent = false;
 
+  // Always include the first block (the release heading and its lines)
+  // regardless of `keepCurrent`; subsequent blocks are included only
+  // when `keepCurrent` is true.
   const flush = () => {
     if (!current.length) return;
     if (out.length === 0) out.push(...current);
