@@ -1,5 +1,76 @@
 # Changelog
 
+## [3.4.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.2) (2026-04-07)
+
+_April 7, 2026_
+
+### `@openplayerjs/core@3.4.2`
+
+#### Bug Fixes
+
+- **[core]** align detach() signature with Core's calling convention and fix tsconfig deprecation (8db3f28) @Rafael Miranda
+  - BaseMediaEngine.detach() now accepts optional ctx param to match how
+  - tsconfig.json: remove deprecated module/moduleResolution overrides;
+  - tsconfig.jest.json: add ignoreDeprecations:"5.0" to suppress the
+  - CLAUDE.md: add codebase practices, architecture, and test guide
+
+### `@openplayerjs/player@3.4.2`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.2`
+
+### `@openplayerjs/hls@3.4.2`
+
+#### Chores
+
+- **[hls]** Suggested improvements in HLS package (8c4a2a4) @Rafael Miranda
+  - Created variable for magic number used to check for errors, renamed private variable and consolidated play behavior across engine to improve readability
+  - Renamed function in unit tests for better readability
+
+### `@openplayerjs/ads@3.4.2`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.2`
+
+### `@openplayerjs/youtube@3.4.2`
+
+#### Bug Fixes
+
+- **[youtube]** Renamed constants and expanded comments for better readability (c9614a4) @Rafael Miranda
+- **[youtube]** Replaced pseudo type to `video` since `x-video` is considered deprecated (c6ea561) @Rafael Miranda
+
+#### Chores
+
+- **[youtube]** Added constant to replace magic number (e749f16) @Rafael Miranda
+- **[youtube]** Renamed variables/methods for better readability (6ba7a74) @Rafael Miranda
+
+### General
+
+#### Bug Fixes
+
+- **[repo]** Moved closed captions to proper position per VAST 4.1 specs (38ace49) @Rafael Miranda
+- **[repo]** Fixed typo in YT example and changed source to use YT ID (43d75ce) @Rafael Miranda
+
+#### Chores
+
+- **[repo]** Removed unused import from example (1d3eb96) @Rafael Miranda
+- **[repo]** Added new script to share ad unit among examples (4e7941c) @Rafael Miranda
+- **[repo]** Fixed inconsistent spacing and added plugin in example file (28c28c6) @Rafael Miranda
+- **[repo]** Fixed script to avoid issues related to new lines (8df4459) @Rafael Miranda
+- **[repo]** Removed duplicate HLS instantation and added missing plugin (bd8ae54) @Rafael Miranda
+- **[repo]** Added initial e2e tests using Playwright (74373c7) @Rafael Miranda
+- **[repo]** release scripts improvements (c0537a7) @Rafael Miranda
+  - Fixed orchestrator script by cleaning up regex and fixing logic to handle different package versions and avoid duplicate entries per package
+  - Fixed split changeling script by changing slightly regex to avoid matching across line boundaries and using trimStart() method to avoid removing meaningful indentation from nested list items or code blocks
+  - Fixed entries in CHANGELOG after changes
+- **[docs]** Fixed issues in MIGRATION document adding missing links and correcting typos (8d0210f) @Rafael Miranda
+- **[deps]** update dependency @types/node to v24.12.2 ([#518](https://github.com/openplayerjs/openplayerjs/pull/518)) @renovate[bot]
+- **[deps]** update dependency cssnano to v7.1.4 ([#519](https://github.com/openplayerjs/openplayerjs/pull/519)) @renovate[bot]
+- **[deps]** update dependency ts-jest to v29.4.9 ([#520](https://github.com/openplayerjs/openplayerjs/pull/520)) @renovate[bot]
+- **[deps]** Fixed new vulnerability CVE-2026-35209 (aaeed73) @Rafael Miranda
+
 ## [3.4.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.1) (2026-04-02)
 
 _April 2, 2026_
