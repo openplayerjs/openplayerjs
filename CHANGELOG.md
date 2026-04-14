@@ -59,11 +59,11 @@ _April 7, 2026_
 - **[repo]** Added new script to share ad unit among examples (4e7941c) @Rafael Miranda
 - **[repo]** Fixed inconsistent spacing and added plugin in example file (28c28c6) @Rafael Miranda
 - **[repo]** Fixed script to avoid issues related to new lines (8df4459) @Rafael Miranda
-- **[repo]** Removed duplicate HLS instantation and added missing plugin (bd8ae54) @Rafael Miranda
+- **[repo]** Removed duplicate HLS instantiation and added missing plugin (bd8ae54) @Rafael Miranda
 - **[repo]** Added initial e2e tests using Playwright (74373c7) @Rafael Miranda
 - **[repo]** release scripts improvements (c0537a7) @Rafael Miranda
   - Fixed orchestrator script by cleaning up regex and fixing logic to handle different package versions and avoid duplicate entries per package
-  - Fixed split changeling script by changing slightly regex to avoid matching across line boundaries and using trimStart() method to avoid removing meaningful indentation from nested list items or code blocks
+  - Fixed split changelog script by changing slightly regex to avoid matching across line boundaries and using trimStart() method to avoid removing meaningful indentation from nested list items or code blocks
   - Fixed entries in CHANGELOG after changes
 - **[docs]** Fixed issues in MIGRATION document adding missing links and correcting typos (8d0210f) @Rafael Miranda
 - **[deps]** update dependency @types/node to v24.12.2 ([#518](https://github.com/openplayerjs/openplayerjs/pull/518)) @renovate[bot]
@@ -304,7 +304,6 @@ _March 24, 2026_
 - **[deps]** update dependency eslint to ^10.1.0 ([#503](https://github.com/openplayerjs/openplayerjs/pull/503)) @renovate[bot]
 - **[deps]** update dependency stylelint to ^17.5.0 ([#504](https://github.com/openplayerjs/openplayerjs/pull/504)) @renovate[bot]
 - **[deps]** update pnpm/action-setup action to v5 ([#498](https://github.com/openplayerjs/openplayerjs/pull/498)) @renovate[bot]
-
 
 ## [3.2.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.2.0) (2026-03-16)
 
