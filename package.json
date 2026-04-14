@@ -98,7 +98,7 @@
       "brace-expansion": "5.0.5",
       "defu": "6.1.7",
       "picomatch": "4.0.4",
-      "undici": "7.24.6"
+      "undici": "7.25.0"
     },
     "peerDependencyRules": {
       "allowedVersions": {
