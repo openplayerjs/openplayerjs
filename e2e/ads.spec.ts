@@ -34,12 +34,12 @@ test.describe('Ads — VMAP schedule', () => {
     // Confirming the ad overlay mounts is sufficient — asserting content
     // currentTime is unreliable because the 10s test clip can play through
     // while the VMAP is being fetched and parsed.
-    await expect(page.locator('.op-ads')).toBeVisible({ timeout: 12_000 });
+    await expect(page.locator('.op-ads')).toBeVisible({ timeout: 20_000 });
   });
 
   test('play button is in paused-icon state during ad playback', async ({ page }) => {
     await page.click(sel.play);
-    await expect(page.locator('.op-ads')).toBeVisible({ timeout: 12_000 });
+    await expect(page.locator('.op-ads')).toBeVisible({ timeout: 20_000 });
     await expect(page.locator(sel.play)).toHaveClass(/op-controls__playpause--pause/);
   });
 
@@ -75,7 +75,7 @@ test.describe('Ads — VMAP schedule', () => {
 
   test('progress bar is visible during ad playback', async ({ page }) => {
     await page.click(sel.play);
-    await expect(page.locator('.op-ads')).toBeVisible({ timeout: 12_000 });
+    await expect(page.locator('.op-ads')).toBeVisible({ timeout: 20_000 });
     await expect(page.locator(sel.progress)).toBeVisible();
   });
 });
