@@ -74,7 +74,7 @@
     "postcss": "8.5.8",
     "postcss-cli": "11.0.1",
     "postcss-preset-env": "11.2.0",
-    "prettier": "3.8.1",
+    "prettier": "3.8.2",
     "release-it": "19.2.4",
     "rollup": "4.60.1",
     "serve": "14.2.6",
