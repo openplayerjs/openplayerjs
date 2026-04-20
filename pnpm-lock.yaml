@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@xmldom/xmldom': 0.9.9
+  '@xmldom/xmldom': 0.9.10
   basic-ftp: 5.3.0
   brace-expansion: 5.0.5
   defu: 6.1.7
@@ -1704,8 +1704,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@xmldom/xmldom@0.9.9':
-    resolution: {integrity: sha512-qycIHAucxy/LXAYIjmLmtQ8q9GPnMbnjG1KXhWm9o5sCr6pOYDATkMPiTNa6/v8eELyqOQ2FsEqeoFYmgv/gJg==}
+  '@xmldom/xmldom@0.9.10':
+    resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
     deprecated: this version has critical issues, please update to the latest version
 
@@ -5755,7 +5755,7 @@ snapshots:
 
   '@dailymotion/vast-client@6.4.4':
     dependencies:
-      '@xmldom/xmldom': 0.9.9
+      '@xmldom/xmldom': 0.9.10
 
   '@dailymotion/vmap@3.3.3': {}
 
@@ -6706,7 +6706,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@xmldom/xmldom@0.9.9': {}
+  '@xmldom/xmldom@0.9.10': {}
 
   '@zeit/schemas@2.36.0': {}
 
