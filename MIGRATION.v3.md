@@ -104,11 +104,11 @@ Only `OpenPlayerJS` is supported from v3 onwards (both in ESM as `Core` and in U
 
 ### New options in v3
 
-| Option                                                 | Package              | Description                                                                                                                    |
-| ------------------------------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()`                                  |
-| `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/core` | Added new labels on top of the ones already supported. Whole list of labels is [here](./packages/core/docs/labels.md)          |
-| `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here](./packages/core/README.md#plugins) for more details |
+| Option                                                 | Package              | Description                                                                                                                       |
+| ------------------------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()`                                     |
+| `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/core` | Added new labels on top of the ones already supported. Whole list of labels is [here](./packages/player/src/configuration.ts#L25) |
+| `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here](./packages/core/README.md#plugins) for more details    |
 
 ### Removed options
 
