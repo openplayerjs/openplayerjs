@@ -71,7 +71,7 @@
     "jest": "30.3.0",
     "jest-environment-jsdom": "30.3.0",
     "lint-staged": "16.4.0",
-    "postcss": "8.5.8",
+    "postcss": "8.5.10",
     "postcss-cli": "11.0.1",
     "postcss-preset-env": "11.2.0",
     "prettier": "3.8.3",
