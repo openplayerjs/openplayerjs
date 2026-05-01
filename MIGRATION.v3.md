@@ -459,4 +459,4 @@ createUI(core, media, controls);
 ## Legacy references
 
 - Full changelog for v2 and earlier: [CHANGELOG.old.md](./CHANGELOG.old.md)
-- Legacy v2 docs (for reference only): [docs/](./docs/)
+- Legacy v2 docs (for reference only): [docs/](https://github.com/openplayerjs/openplayerjs/tree/v2.14.12/docs/)
