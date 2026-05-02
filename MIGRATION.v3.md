@@ -96,7 +96,7 @@ import { AdsPlugin } from '@openplayerjs/ads';
 
 **🚨 IMPORTANT 🚨: The name `OpenPlayer` is no longer supported.**
 
-Only `OpenPlayerJS` is supported from v3 onwards (both in ESM as `Core` and in UMD as `OpenPlayerJS`). Remove any references to the old `OpenPlayerJS` alias.
+Only `OpenPlayerJS` is supported from v3 onwards (both in ESM as `Core` and in UMD as `OpenPlayerJS`). Remove any references to the old `OpenPlayer` alias.
 
 ---
 
@@ -116,11 +116,11 @@ Only `OpenPlayerJS` is supported from v3 onwards (both in ESM as `Core` and in U
 
 ### New options in v3
 
-| Option                                                 | Package              | Description                                                                                                                       |
-| ------------------------------------------------------ | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()`                                     |
-| `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/core` | Added new labels on top of the ones already supported. Whole list of labels is [here](./packages/player/src/configuration.ts#L25) |
-| `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here](./packages/core/README.md#plugins) for more details    |
+| Option                                                 | Package              | Description                                                                                                                    |
+| ------------------------------------------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()`                                  |
+| `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/core` | Added new labels on top of the ones already supported. Whole list of labels is [here](./packages/player/src/configuration.ts)  |
+| `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here](./packages/core/README.md#plugins) for more details |
 
 ### Removed options
 
@@ -337,12 +337,15 @@ If your current code looks like this:
 
 Then v3 keeps that workflow. The main differences are:
 
-1. Update CDN URLs to the v3 bundles (they all have now a `.umd` element in them)
+> Note: for **UMD/CDN script-tag usage**, v3 is distributed via the `openplayerjs` browser bundle (meta-package).  
+> The scoped packages (`@openplayerjs/core`, `@openplayerjs/player`, etc.) are primarily for npm/ESM and bundler workflows.
+
+1. Update CDN URLs to the v3 bundles
 2. Remove any [removed options](#removed-options) from the config object
 3. Load the HLS and Ads bundles separately if you need them
 4. Do not call `addElement` / `addControl` / `addCaptions` / `play` / `pause` / `destroy` / `src` setter before `init()`
 
-**Updated CDN template:**
+**Updated CDN template (UMD meta-package):**
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
