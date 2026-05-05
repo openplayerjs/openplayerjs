@@ -29,6 +29,7 @@ export class PlayControl extends BaseControl {
     btn.tabIndex = 0;
     btn.type = 'button';
     btn.className = 'op-controls__playpause';
+    btn.title = playLabel;
     setA11yLabel(btn, playLabel);
     btn.setAttribute('aria-pressed', 'false');
 
@@ -52,7 +53,9 @@ export class PlayControl extends BaseControl {
       btn.classList.toggle('op-controls__playpause--pause', playing);
       btn.classList.toggle('op-controls__playpause--replay', isEnded && !playing);
       btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
-      setA11yLabel(btn, isEnded && !playing ? restartLabel : playing ? pauseLabel : playLabel);
+      const newLabel = isEnded && !playing ? restartLabel : playing ? pauseLabel : playLabel;
+      btn.title = newLabel;
+      setA11yLabel(btn, newLabel);
     };
 
     this.onPlayer('play', () => {

@@ -46,6 +46,7 @@ export class FullscreenControl extends BaseControl {
     btn.tabIndex = 0;
     btn.type = 'button';
     btn.className = 'op-controls__fullscreen';
+    btn.title = labels.fullscreen;
     setA11yLabel(btn, labels.fullscreen);
     btn.setAttribute('aria-pressed', 'false');
 
@@ -53,6 +54,7 @@ export class FullscreenControl extends BaseControl {
       if (on) btn.classList.add('op-controls__fullscreen--out');
       else btn.classList.remove('op-controls__fullscreen--out');
       btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.title = on ? labels.exitFullscreen : labels.fullscreen;
     };
 
     const resize = (width?: number, height?: number) => {

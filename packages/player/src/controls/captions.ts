@@ -75,6 +75,7 @@ export class CaptionsControl extends BaseControl {
     this.button = document.createElement('button');
     this.button.type = 'button';
     this.button.className = 'op-controls__captions';
+    this.button.title = buttonLabel;
     setA11yLabel(this.button, buttonLabel);
     this.button.setAttribute('aria-pressed', 'false');
 

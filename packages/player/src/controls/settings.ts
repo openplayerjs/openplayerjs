@@ -26,6 +26,7 @@ export class SettingsControl extends BaseControl {
     this.button = document.createElement('button');
     this.button.type = 'button';
     this.button.className = 'op-controls__settings';
+    this.button.title = labels.settings;
     this.button.setAttribute('aria-haspopup', 'menu');
     this.button.setAttribute('aria-expanded', 'false');
     setA11yLabel(this.button, labels.settings);
