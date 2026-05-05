@@ -46,6 +46,59 @@ createUI(core, video, controls);
 
 ---
 
+## Quick start (UMD / CDN / plain `<script>` tag)
+
+When you load OpenPlayerJS from a CDN or a plain `<script>` tag, the global `OpenPlayer` constructor is provided by the player bundle. There is no `import` / `export` syntax — everything lives on `window.OpenPlayer`.
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
+
+<video id="player" src="https://example.com/video.mp4" controls></video>
+
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.umd.js"></script>
+<script>
+  var player = new OpenPlayer('player', {
+    controls: {
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['captions', 'settings', 'fullscreen'],
+    },
+  });
+
+  player.init();
+</script>
+```
+
+> **UMD note:** You must call `player.init()` explicitly after construction. The constructor only stores configuration — `init()` builds the Core, creates the UI, and wires everything up.
+
+### Accessing the underlying Core from UMD
+
+`player.init()` returns the `Core` instance and also stores it internally. To access Core after initialization:
+
+```js
+var core = player.init();    // init() returns Core
+// — or —
+var core = player.getCore(); // getCore() is always available after init()
+```
+
+### Adding a plugin (e.g. HLS) in UMD
+
+Plugin bundles register themselves on `window.OpenPlayerPlugins` before `init()` is called. Load them in order:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/hls@latest/dist/openplayer-hls.umd.js"></script>
+<script>
+  var player = new OpenPlayer('player', {
+    // hls-specific config under the 'hls' key (passed to the HLS plugin factory)
+    hls: { maxBufferLength: 30 },
+  });
+  player.init();
+</script>
+```
+
+---
+
 ## Configuration
 
 `@openplayerjs/player` owns UI-specific configuration (labels, sizing, keyboard seek step, and progress-bar interaction flags), but it **augments** the `PlayerConfig` type from `@openplayerjs/core`.
@@ -89,6 +142,84 @@ createUI(core, video, controls);
 | `controls`    | `ControlsConfig`         | see below | Layout of the built-in controls and auto-hide behaviour                          |
 
 > For engine/plugins and initial playback state options like `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, and `duration`, see `@openplayerjs/core`.
+
+---
+
+### Labels reference
+
+All label strings are owned by `@openplayerjs/player` — there are no labels in `@openplayerjs/core`. Pass any subset of the keys below via `labels` in the player config; omitted keys keep their default English value.
+
+Two keys accept a `%s` placeholder that is replaced at runtime with a dynamic value (time or percentage).
+
+| Key | Default | Where it appears |
+| --- | --- | --- |
+| `auto` | `'Auto'` | Reserved key — not currently used by any built-in control |
+| `back` | `'Back'` | Settings sub-menu — back/close button accessible label |
+| `captions` | `'CC/Subtitles'` | Captions section header inside the Settings menu |
+| `captionsOff` | `'Captions off'` | Screen reader live-region announcement when captions are turned off |
+| `captionsOn` | `'Captions on'` | Screen reader live-region announcement when captions are turned on |
+| `click` | `'Click to unmute'` | Autoplay-muted overlay prompt text on desktop |
+| `container` | `'Media player'` | `aria-label` on the outermost `.op-player` wrapper element |
+| `enterFullscreen` | `'Enter Fullscreen'` | Screen reader live-region announcement on entering fullscreen |
+| `exitFullscreen` | `'Exit Fullscreen'` | Fullscreen button tooltip/title while in fullscreen mode |
+| `fullscreen` | `'Fullscreen'` | Fullscreen button tooltip/title and initial screen reader label |
+| `live` | `'Live'` | Text shown in the duration/time display for live streams |
+| `loading` | `'Loading...'` | `aria-label` on the loading-spinner overlay element |
+| `media` | `'Media'` | `aria-label` on the inner `.op-media` container element |
+| `mute` | `'Mute'` | Mute button tooltip/title and screen reader label when sound is on |
+| `off` | `'Off'` | "Off" option label in the captions Settings sub-menu |
+| `pause` | `'Pause'` | Play button tooltip/title and screen reader label while playing |
+| `play` | `'Play'` | Play button tooltip/title and screen reader label while paused; also the centre-overlay button label |
+| `progressRail` | `'Time Rail'` | `aria-label` on the progress bar container (the "rail") |
+| `progressSlider` | `'Time Slider'` | `aria-label` on the draggable seek `<input type="range">` |
+| `restart` | `'Restart'` | Play button tooltip/title and screen reader label when the video has ended |
+| `seekTo` | `'Seek to %s'` | Screen reader live-region announcement on seek — `%s` is replaced with the formatted time (e.g. `'1:23'`) |
+| `settings` | `'Player Settings'` | Settings button tooltip/title and screen reader label |
+| `speed` | `'Speed'` | Section header in the Settings speed sub-menu |
+| `speedNormal` | `'Normal'` | Label for the 1× playback rate option in the speed sub-menu |
+| `tap` | `'Tap to unmute'` | Autoplay-muted overlay prompt text on mobile |
+| `toggleCaptions` | `'Toggle Captions'` | Captions button tooltip/title and screen reader label |
+| `unmute` | `'Unmute'` | Mute button tooltip/title and screen reader label while muted |
+| `volume` | `'Volume'` | Used as the prefix inside the `volumePercent` announcement template |
+| `volumeControl` | `'Volume Control'` | `aria-label` on the volume slider wrapper `<div>` (the ARIA `role="slider"` container) |
+| `volumePercent` | `'Volume: %s%'` | Screen reader live-region announcement on volume change — `%s` is replaced with the integer percentage (e.g. `'75'`) |
+| `volumeSlider` | `'Volume Slider'` | `aria-label` on the underlying volume `<input type="range">` |
+
+**Example — override labels for Spanish:**
+
+```js
+// ESM
+const core = new Core(video, {
+  labels: {
+    play: 'Reproducir',
+    pause: 'Pausar',
+    restart: 'Volver a reproducir',
+    mute: 'Silenciar',
+    unmute: 'Activar sonido',
+    fullscreen: 'Pantalla completa',
+    exitFullscreen: 'Salir de pantalla completa',
+    settings: 'Configuración',
+    toggleCaptions: 'Subtítulos',
+    live: 'En directo',
+    loading: 'Cargando...',
+    seekTo: 'Ir a %s',
+    volumePercent: 'Volumen: %s%',
+  },
+});
+```
+
+```js
+// UMD
+var player = new OpenPlayer('player', {
+  labels: {
+    play: 'Reproducir',
+    pause: 'Pausar',
+    mute: 'Silenciar',
+    unmute: 'Activar sonido',
+  },
+});
+player.init();
+```
 
 ---
 
@@ -408,6 +539,18 @@ player.controls.addControl(myControl);
 
 > **Important:** `extendControls` (and `addElement` / `addControl`) can only be called after the player has been fully initialized and `createUI` has run. Calling them before initialization will throw, because the UI DOM does not exist yet.
 
+### `player.addControl()` vs `player.controls.addControl()` (UMD)
+
+When using the UMD `Player` class, **both call the same underlying function** — `player.addControl(control)` is a convenience shortcut on the `Player` wrapper that delegates to `this.core.controls.addControl(control)`.
+
+```js
+// These are exactly equivalent after player.init():
+player.addControl(myControl);
+player.getCore().controls.addControl(myControl);
+```
+
+In ESM, you work directly with `Core` + `extendControls`, so only `core.controls.addControl()` exists (there is no `Player` wrapper class). Use whichever is more convenient in your context — prefer the shorter `player.addControl()` in UMD scripts.
+
 #### `player.controls.addElement(el, placement)`
 
 Place any HTML element at a specific position in the player. Good for watermarks, brand logos, and overlays:
@@ -423,7 +566,7 @@ player.controls.addElement(badge, { v: 'top', h: 'right' });
 | `el`        | `HTMLElement`                                    | The DOM element to insert       |
 | `placement` | `{ v: 'top' \| 'bottom', h: 'left' \| 'right' }` | Where to place it in the player |
 
-> **Security note:** Because you create the DOM element yourself with standard browser APIs, there is no risk of XSS. Never set `.innerHTML` from untrusted input on your custom elements.
+> **Security note:** Because you create the DOM element yourself with standard browser APIs, there is no risk of XSS when you use `document.createElement`, `textContent`, or `appendChild`. Avoid `.innerHTML` even for content you consider trusted — prefer building the element tree with DOM APIs instead. If you do use `.innerHTML`, the string must be your own static markup, never data derived from user input, a URL parameter, or an API response.
 
 #### `player.controls.addControl(control)`
 
@@ -477,7 +620,52 @@ The `placement` argument:
 | `v` | `'top'` \| `'bottom'` | Vertical position relative to the player |
 | `h` | `'left'` \| `'right'` | Horizontal position within that row      |
 
-> **Security note:** Because you create the DOM element yourself with standard browser APIs (`document.createElement`, `element.textContent`, etc.), there is no risk of XSS. Never set `.innerHTML` or `.outerHTML` from untrusted input on your custom elements.
+> **Security note:** Because you create the DOM element yourself with standard browser APIs (`document.createElement`, `element.textContent`, `appendChild`, etc.), there is no risk of XSS. Avoid `.innerHTML` and `.outerHTML` even for content you consider trusted — building the element tree with DOM APIs is always the safer and recommended approach. If you must use `.innerHTML`, the string must be your own static markup, never data derived from user input, a URL parameter, or an API response.
+
+---
+
+## Accessibility
+
+### `setA11yLabel` and `op-player__sr-only`
+
+All built-in controls use `setA11yLabel(element, labelText)` (exported from `@openplayerjs/player`) to attach accessible names to DOM elements in a screen-reader-friendly way.
+
+**What it does:**
+
+- For `<button>` elements it injects a `<span class="op-player__sr-only">` *inside* the button and sets its `textContent` to the label string. The button's own `aria-label` attribute is removed so the screen reader reads the span text instead.
+- For non-button elements (sliders, containers, etc.) it creates a `<span class="op-player__sr-only">` *sibling* and wires up `aria-labelledby` on the target element.
+
+**Why the span text is invisible:** `op-player__sr-only` is a standard visually-hidden utility class. It positions the element off-screen with a 1 px clip so it takes up no visual space but is still read aloud by screen readers. This is why `span.textContent = "Toggle Captions"` does not appear on screen — it is exclusively for assistive technology.
+
+**Using `setA11yLabel` in a custom control:**
+
+```ts
+import { setA11yLabel } from '@openplayerjs/player';
+
+const btn = document.createElement('button');
+btn.className = 'op-control__my-button';
+// This inserts a visually-hidden <span>My Action</span> inside the button.
+// Screen readers announce "My Action" when the button gains focus.
+setA11yLabel(btn, 'My Action');
+```
+
+You can apply the class yourself on any element that should be visible only to screen readers:
+
+```js
+// UMD
+var span = document.createElement('span');
+span.className = 'op-player__sr-only';
+span.textContent = 'Switch to source';
+btn.appendChild(span);
+// setA11yLabel(btn, 'Switch to source') produces the same result
+```
+
+### Available CSS utility classes
+
+| Class | Purpose |
+| --- | --- |
+| `op-player__sr-only` | Visually hidden, still accessible to screen readers. Use for labels and hint text inside interactive elements. |
+| `op-player__announcer` | Added automatically to the live-region nodes that `getSharedAnnouncer` manages. Do not set this manually. |
 
 ---
 
@@ -581,6 +769,98 @@ const controls = buildControls({
 
 ---
 
+## Control tooltips
+
+All built-in controls show a native browser tooltip on hover via the HTML `title` attribute. The tooltip text is taken from the same label that is used for the accessible name, so it reflects the current state:
+
+| Control | Tooltip changes to |
+| --- | --- |
+| Play | "Play" → "Pause" → "Restart" (on `ended`) |
+| Mute | "Mute" ↔ "Unmute" |
+| Fullscreen | "Fullscreen" ↔ "Exit Fullscreen" |
+| Captions | "Toggle Captions" (static) |
+| Settings | "Player Settings" (static) |
+
+To override the text of any tooltip, pass a `labels` map to the player config:
+
+```js
+// ESM
+const core = new Core(video, {
+  labels: {
+    play: 'Reproducir',
+    pause: 'Pausar',
+    fullscreen: 'Pantalla completa',
+    exitFullscreen: 'Salir de pantalla completa',
+    mute: 'Silenciar',
+    unmute: 'Activar sonido',
+    toggleCaptions: 'Subtítulos',
+    settings: 'Configuración',
+  },
+});
+```
+
+```js
+// UMD
+var player = new OpenPlayer('player', {
+  labels: {
+    play: 'Reproducir',
+    fullscreen: 'Pantalla completa',
+  },
+});
+```
+
+Custom controls receive tooltips the same way — set `btn.title` on the element you return from `create()`.
+
+---
+
+## Migration from v2 — removed properties (`title`, `alt`, `index`)
+
+In v2, the `addControl` / `addElement` API accepted plain configuration objects with properties like `title`, `alt`, and `index`. **These properties no longer exist in v3.**
+
+| v2 property | v3 equivalent |
+| --- | --- |
+| `title` / `alt` | Set `btn.title = 'My label'` directly on the DOM element, or use `setA11yLabel(btn, 'My label')` for the accessible name. Both can coexist on the same button. |
+| `index` / ordering | Place controls in the desired slot position by putting them in the right array in `buildControls`. Array order within a slot determines render order. |
+| `icon` (HTML string) | Create the icon as a real DOM element and return it from `create()`. |
+| `content` (HTML string) | Build the element tree in `create()` using `document.createElement`. |
+
+**Before (v2):**
+
+```js
+player.addControl({
+  title: 'Next Episode',
+  alt: 'Skip to next',
+  icon: '<svg>…</svg>',
+  index: 5,
+  // …
+});
+```
+
+**After (v3):**
+
+```js
+var nextBtn = document.createElement('button');
+nextBtn.title = 'Next Episode';          // tooltip
+setA11yLabel(nextBtn, 'Next Episode');   // screen reader label
+
+// Preferred: build the icon with DOM APIs
+var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+// … configure icon …
+nextBtn.appendChild(icon);
+
+// Allowed but not recommended: innerHTML is permitted only for your own
+// static markup — never for user-supplied data, URL params, or API responses.
+// nextBtn.innerHTML = '<svg>…</svg>';
+
+player.addControl({
+  id: 'next-episode',
+  placement: { v: 'bottom', h: 'right' },
+  create: function() { return nextBtn; },
+});
+```
+
+---
+
 ## Events
 
 `createUI` emits the following events on `core.events` in addition to the standard media events documented in `@openplayerjs/core`. Listen with `core.events.on(event, handler)`.
@@ -595,16 +875,6 @@ const controls = buildControls({
 | `ui:menu:close`    | —                                                  | Fired when the open menu is closed. Restarts the auto-hide timer.                                                                                                                                    |
 | `ui:addElement`    | `{ el: HTMLElement; placement: ControlPlacement }` | Imperative API — emitting this event places an arbitrary element into the player grid. Prefer `player.controls.addElement()` from `extendControls`.                                                  |
 | `ui:addControl`    | `{ control: Control; el?: HTMLElement }`           | Imperative API — emitting this event mounts a `Control` into the control bar. The `el` field is filled in by `createUI` after mounting. Prefer `player.controls.addControl()` from `extendControls`. |
-
-=======
-| Event | Payload | Description |
-|---|---|---|
-| `ui:controls:show` | — | Fired when the control bar becomes visible (auto-hide timer cancelled, user interaction, or playback paused/ended). |
-| `ui:controls:hide` | — | Fired when the control bar is hidden by the auto-hide timer. Not emitted when hiding is prevented (e.g. controls have keyboard focus, or playback is paused). |
-| `ui:menu:open` | — | Fired when any settings or captions menu is opened. Cancels the auto-hide timer while the menu is open. |
-| `ui:menu:close` | — | Fired when the open menu is closed. Restarts the auto-hide timer. |
-| `ui:addElement` | `{ el: HTMLElement; placement: ControlPlacement }` | Imperative API — emitting this event places an arbitrary element into the player grid. Prefer `player.controls.addElement()` from `extendControls`. |
-| `ui:addControl` | `{ control: Control; el?: HTMLElement }` | Imperative API — emitting this event mounts a `Control` into the control bar. The `el` field is filled in by `createUI` after mounting. Prefer `player.controls.addControl()` from `extendControls`. |
 
 ### Subscribing to control bar visibility
 
