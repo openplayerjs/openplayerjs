@@ -95,7 +95,7 @@
     "overrides": {
       "@xmldom/xmldom": "0.9.10",
       "basic-ftp": "5.3.1",
-      "brace-expansion": "5.0.5",
+      "brace-expansion": "5.0.6",
       "defu": "6.1.7",
       "picomatch": "4.0.4",
       "undici": "7.25.0"
