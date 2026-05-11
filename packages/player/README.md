@@ -561,10 +561,10 @@ badge.textContent = '● LIVE';
 player.controls.addElement(badge, { v: 'top', h: 'right' });
 ```
 
-| Argument    | Type                                             | Description                     |
-| ----------- | ------------------------------------------------ | ------------------------------- |
-| `el`        | `HTMLElement`                                    | The DOM element to insert       |
-| `placement` | `{ v: 'top' \| 'bottom', h: 'left' \| 'right' }` | Where to place it in the player |
+| Argument    | Type                                                              | Description                     |
+| ----------- | ----------------------------------------------------------------- | ------------------------------- |
+| `el`        | `HTMLElement`                                                     | The DOM element to insert       |
+| `placement` | `{ v: 'top' \| 'middle' \| 'bottom', h: 'left' \| 'center' \| 'right' }` | Where to place it in the player |
 
 > **Security note:** Because you create the DOM element yourself with standard browser APIs, there is no risk of XSS when you use `document.createElement`, `textContent`, or `appendChild`. Avoid `.innerHTML` even for content you consider trusted — prefer building the element tree with DOM APIs instead. If you do use `.innerHTML`, the string must be your own static markup, never data derived from user input, a URL parameter, or an API response.
 
@@ -735,9 +735,9 @@ The `Control` interface:
 | Property    | Type                            | Required | Description                                                                                                                   |
 | ----------- | ------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `id`        | `string`                        | Yes      | Unique identifier used for tracking and deduplication                                                                         |
-| `placement` | `ControlPlacement`              | Yes      | Where to place the control: `{ v: 'bottom' \| 'top', h: 'left' \| 'right' }`                                                  |
+| `placement` | `ControlPlacement`              | Yes      | Where to place the control: `{ v: 'top' \| 'middle' \| 'bottom', h: 'left' \| 'center' \| 'right' }`. Unknown values for `h` silently fall through to `'right'`. |
 | `create`    | `(player: Core) => HTMLElement` | Yes      | Returns the rendered DOM element. The `player` / `core` argument is always passed; name it or ignore it as needed (see below) |
-| `destroy`   | `() => void`                    | No       | Called when the control is removed or the player is destroyed                                                                 |
+| `destroy`   | `() => void`                    | No       | Called when the control is removed or the player is destroyed. **Must store the listener function reference** to remove it — `removeEventListener('click')` without a reference is a silent no-op. |
 
 ### `create` syntax forms
 
@@ -850,18 +850,78 @@ const controls = buildControls({
 
 Both add a custom control to the player, but they serve different purposes and have different constraints.
 
-| | `registerControl` | `addControl` |
-| --- | --- | --- |
-| **When to call** | Before `init()` / `buildControls()` | After `init()` / `createUI()` |
-| **What you pass** | A string ID + a factory function `() => Control` | A fully-formed `Control` object (with `placement` required) |
-| **Ordering** | Array position in the `controls` config determines slot order | Always appended to the **end** of the slot — cannot interleave with existing controls |
-| **Primary use case** | Defining the initial layout, including position relative to built-in controls | Adding a control dynamically after setup (e.g. based on async data or a user action) |
-| **UMD access** | `OpenPlayerJS.registerControl(id, factory)` (static) | `player.addControl(control)` (instance, after `init()`) |
-| **ESM access** | `import { registerControl } from '@openplayerjs/player'` | `core.controls.addControl(control)` after `extendControls(core)` |
+|                      | `registerControl`                                                             | `addControl`                                                                          |
+| -------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **When to call**     | Before `init()` / `buildControls()`                                           | After `init()` / `createUI()`                                                         |
+| **What you pass**    | A string ID + a factory function `() => Control`                              | A fully-formed `Control` object (with `placement` required)                           |
+| **Ordering**         | Array position in the `controls` config determines slot order                 | Always appended to the **end** of the slot — cannot interleave with existing controls |
+| **Primary use case** | Defining the initial layout, including position relative to built-in controls | Adding a control whose factory must close over state that only exists after `init()` — e.g. references to other player instances, async API data, or runtime feature flags |
+| **UMD access**       | `OpenPlayerJS.registerControl(id, factory)` (static)                          | `player.addControl(control)` (instance, after `init()`)                               |
+| **ESM access**       | `import { registerControl } from '@openplayerjs/player'`                      | `core.controls.addControl(control)` after `extendControls(core)`                      |
 
 > **Note:** `player.addControl()` in UMD and `core.controls.addControl()` in ESM are identical — the UMD wrapper is just a shortcut that delegates to `core.controls.addControl()`.
 
-**Rule of thumb:** if you know the control and its position at page-load time, use `registerControl` + the `controls` config. Use `addControl` only when a control needs to be wired up *after* the player is already running — for example, a "Skip Intro" button that appears only once metadata from an API confirms the intro duration.
+**Rule of thumb:** if you know the control and its position at page-load time, use `registerControl` + the `controls` config. Use `addControl` when:
+
+- The control's factory must close over state that doesn't exist yet at page load — for example, a second player instance, a response from an API, or a flag set by another plugin.
+- Exact slot ordering relative to built-in controls does not matter (the control will be appended to the end of its slot regardless).
+
+```js
+// Example: a "Switch source" button that references a second player.
+// addControl is correct here because player2 only exists after player2.init().
+var player1 = new OpenPlayerJS('player1', { /* … */ });
+player1.init();
+
+var player2 = new OpenPlayerJS('player2', { /* … */ });
+player2.init();
+
+function makeSwitchControl(from, to) {
+  var handler;
+  return {
+    id: 'switch-source',
+    placement: { v: 'bottom', h: 'right' },
+    create: function() {
+      var btn = document.createElement('button');
+      var span = document.createElement('span');
+      span.className = 'op-player__sr-only';
+      span.textContent = 'Switch source';
+      btn.appendChild(span);
+
+      // Store the reference so destroy() can actually remove it.
+      handler = function() { to.play(); from.pause(); };
+      btn.addEventListener('click', handler);
+      return btn;
+    },
+    destroy: function() {
+      var btn = document.getElementById('switch-source');
+      if (btn && handler) btn.removeEventListener('click', handler);
+    },
+  };
+}
+
+player1.addControl(makeSwitchControl(player1, player2));
+player2.addControl(makeSwitchControl(player2, player1));
+```
+
+### Migrating from v2
+
+In v2, `addControl` was the only way to add a custom control — it was called after `init()` with a configuration object. That calling convention is preserved in v3, which makes `addControl` the closer match for v2 code. However, the **API shape changed completely** and `registerControl` is an entirely new concept with no v2 equivalent.
+
+| | v2 | v3 `addControl` | v3 `registerControl` |
+| --- | --- | --- | --- |
+| **When to call** | After `init()` | After `init()` ✓ same | Before `init()` — new concept |
+| **Control definition** | Config object: `{ icon, content, title, alt, position, index }` | `Control` object: `{ id, placement, create() }` — shape changed | Factory function: `() => Control` — new concept |
+| **Ordering** | `index` property | Appends to end of slot — `index` removed | Array position in `controls` config |
+| **Icon / content** | HTML strings (`icon: '<svg>…'`) — XSS risk | `create()` builds the DOM element | Same |
+| **Tooltip / label** | `title` / `alt` properties | `btn.title` + `setA11yLabel(btn, '…')` on the element | Same |
+
+**If you used v2 `addControl` and are migrating to v3:**
+
+- Start with `addControl` — the post-`init()` call pattern is the same, and you can convert one control at a time.
+- Replace `icon` / `content` HTML strings with a `create()` function that builds the element using `document.createElement`.
+- Replace `title` / `alt` with `btn.title = '…'` and `setA11yLabel(btn, '…')` inside `create()`.
+- Replace `position: 'right'` with `placement: { v: 'bottom', h: 'right' }` (see [valid placement values](#writing-a-custom-control)).
+- If you relied on `index` for ordering: there is no direct equivalent in `addControl`. Switch to `registerControl` + the `controls` config array, which is the only way to control slot order in v3.
 
 ---
 
