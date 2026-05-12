@@ -1,5 +1,6 @@
 import type { PlayerEventPayloadMap } from '@openplayerjs/core';
 import * as CoreExports from '@openplayerjs/core';
+import { setA11yLabel } from './a11y';
 import type { Control } from './control';
 import { buildControls, normalizeControlsConfig, registerControl } from './control';
 import type { ControlPlacement } from './controls/base';
@@ -48,7 +49,6 @@ type PendingListener = {
   cb: (...args: any[]) => void;
   off?: Unsubscribe;
 };
-
 
 function extractControlIds(controlsCfg: any): ControlId[] {
   const normalized = normalizeControlsConfig(controlsCfg);
@@ -315,7 +315,7 @@ export default class Player {
 // This is safe in ESM/CJS too: it only adds extra static properties.
 const OpenPlayerAny = Player as any;
 try {
-  Object.assign(OpenPlayerAny, CoreExports);
+  Object.assign(OpenPlayerAny, CoreExports, { registerControl, setA11yLabel });
 } catch {
   // ignore if environment prevents assignment
 }

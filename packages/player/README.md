@@ -637,6 +637,12 @@ All built-in controls use `setA11yLabel(element, labelText)` (exported from `@op
 
 **Why the span text is invisible:** `op-player__sr-only` is a standard visually-hidden utility class. It positions the element off-screen with a 1 px clip so it takes up no visual space but is still read aloud by screen readers. This is why `span.textContent = "Toggle Captions"` does not appear on screen — it is exclusively for assistive technology.
 
+**UMD access:** `setA11yLabel` is available as a static method on the `OpenPlayerJS` global — no import needed:
+
+```js
+OpenPlayerJS.setA11yLabel(btn, 'My Action');
+```
+
 **Using `setA11yLabel` in a custom control:**
 
 ```ts
