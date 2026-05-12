@@ -20,6 +20,8 @@
 
   // Batch all non-major updates on Mondays to keep the PR queue manageable.
   "schedule": ["before 9am on Monday"],
+  "timezone": "UTC",
+  "minimumReleaseAge": "5 days",
 
   "packageRules": [
     // ── peerDependencies ──────────────────────────────────────────────────
