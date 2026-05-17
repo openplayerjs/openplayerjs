@@ -1,7 +1,7 @@
 module.exports = {
   git: {
     requireCleanWorkingDir: false,
-    addFiles: ['package.json'],
+    addFiles: ['package.json', '../../CHANGELOG.md'],
     tagName: '@openplayerjs/hls@${version}',
     commitMessage: 'chore(release): @openplayerjs/hls@${version}',
   },
@@ -40,6 +40,7 @@ module.exports = {
           { type: 'ci',       section: 'CI' },
         ],
       },
+      infile: '../../CHANGELOG.md',
       gitRawCommitsOpts: { path: '.' },
     },
   },

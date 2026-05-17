@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.5.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.0) (2026-05-16)
+
+_May 16, 2026_
+
+### `@openplayerjs/player@3.5.0`
+
+#### Bug Fixes
+
+- **[player]** Added missing export in UMD to allow for indexed controls (5b2b23b) @Rafael Miranda
+- **[player]** Added missing `title` attributes for all controls to show tooltips (d30b35e) @Rafael Miranda
+
+#### Documentation
+
+- **[docs]** Unified UMD documentation for better readability and added missing capabilities documentation (474a3be) @Rafael Miranda
+- **[docs]** Added new migration for UMD player; fixed inconsistencies (00780fb) @Rafael Miranda
+- **[docs]** Fixed UMD names; added more documentation for `registerControl` and `addControl` (c4610ca) @Rafael Miranda
+- **[docs]** Removed inconsistencies, and enhanced documentation related to `player` UMD wrapper (51566a7) @Rafael Miranda
+
+---
+
 ## [3.4.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.4.2) (2026-05-16)
 
 _May 16, 2026_
