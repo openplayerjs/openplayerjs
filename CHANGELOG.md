@@ -1,5 +1,79 @@
 # Changelog
 
+## [3.4.3](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.3) (2026-05-17)
+
+_May 17, 2026_
+
+### `@openplayerjs/player@3.4.3`
+
+#### Bug Fixes
+
+- **[player]** Fixed issue when selecting speed not being checked; added missing config to set speeds manually (8ae756c) @Rafael Miranda
+
+### `@openplayerjs/hls@3.4.3`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.3`
+
+### `@openplayerjs/ads@3.4.3`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.3`
+
+### `@openplayerjs/youtube@3.4.3`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.3`
+
+### General
+
+#### Features
+
+- **[repo]** Added new configuration flags for Renovate bot (d61b3d2) @Rafael Miranda
+
+#### Bug Fixes
+
+- **[docs]** Added missing configuration to update CHANGELOG if individual package is released (b04d5f7) @Rafael Miranda
+- **[deps]** Added overrides to remove high severity vulnerabilities (ab50e69) @Rafael Miranda
+- **[docs]** Removed inconsistencies, and enhanced documentation related to `player` UMD wrapper (51566a7) @Rafael Miranda
+- **[repo]** Fixed MIME type in captions example (bffa4fe) @Rafael Miranda
+- **[docs]** Fixed CHANGELOG entry for better readability and removed typo for UMD files across project (55a8691) @Rafael Miranda
+- **[docs]** Update legacy v2 docs link to point to GitHub (de08983) @Rafael Miranda
+- **[docs]** Updated TOC for migration document to remove 404 pages; fixes #538 (33e3c61) @Rafael Miranda
+- **[docs]** Set link for labels to remove 404 page. Fixes #530 (0151389) @Rafael Miranda
+- **[docs]** Fixed typos in CHANGELOG (939bb3a) @Rafael Miranda
+- **[repo]** Updated videos for examples and increased grace period to render ads in tests (e08f4fc) @Rafael Miranda
+
+#### Chores
+
+- **[deps]** update github/codeql-action digest to 68bde55 ([#544](https://github.com/openplayerjs/openplayerjs/pull/544)) @renovate[bot]
+- **[deps]** update dependency brace-expansion to v5.0.6 ([#545](https://github.com/openplayerjs/openplayerjs/pull/545)) @renovate[bot]
+- **[deps]** update dependency node to v24.15.0 ([#548](https://github.com/openplayerjs/openplayerjs/pull/548)) @renovate[bot]
+- **[deps]** update dependency rollup to v4.60.3 ([#546](https://github.com/openplayerjs/openplayerjs/pull/546)) @renovate[bot]
+- **[deps]** update postcss ([#547](https://github.com/openplayerjs/openplayerjs/pull/547)) @renovate[bot]
+- **[deps]** update dependency turbo to v2.9.12 ([#549](https://github.com/openplayerjs/openplayerjs/pull/549)) @renovate[bot]
+- **[deps]** update dependency basic-ftp to v5.3.1 ([#543](https://github.com/openplayerjs/openplayerjs/pull/543)) @renovate[bot]
+- **[deps]** update commitlint to v20.5.3 ([#542](https://github.com/openplayerjs/openplayerjs/pull/542)) @renovate[bot]
+- **[deps]** update github/codeql-action digest to e46ed2c ([#541](https://github.com/openplayerjs/openplayerjs/pull/541)) @renovate[bot]
+- **[deps]** update dependency rollup to v4.60.2 ([#536](https://github.com/openplayerjs/openplayerjs/pull/536)) @renovate[bot]
+- **[deps]** update postcss ([#537](https://github.com/openplayerjs/openplayerjs/pull/537)) @renovate[bot]
+- **[deps]** update dependency postcss to v8.5.10 [security] ([#534](https://github.com/openplayerjs/openplayerjs/pull/534)) @renovate[bot]
+- **[deps]** update dependency @commitlint/cli to v20.5.2 ([#532](https://github.com/openplayerjs/openplayerjs/pull/532)) @renovate[bot]
+- **[deps]** update dependency prettier to v3.8.3 ([#533](https://github.com/openplayerjs/openplayerjs/pull/533)) @renovate[bot]
+- **[deps]** update dependency @xmldom/xmldom to v0.9.10 ([#527](https://github.com/openplayerjs/openplayerjs/pull/527)) @renovate[bot]
+- **[deps]** update github/codeql-action digest to 95e58e9 ([#526](https://github.com/openplayerjs/openplayerjs/pull/526)) @renovate[bot]
+- **[deps]** update actions/setup-node digest to 48b55a0 ([#528](https://github.com/openplayerjs/openplayerjs/pull/528)) @renovate[bot]
+- **[deps]** update dependency hls.js to v1.6.16 ([#529](https://github.com/openplayerjs/openplayerjs/pull/529)) @renovate[bot]
+- **[deps]** Upgraded basic-ftp package to remove vulnerability (354630e) @Rafael Miranda
+- **[deps]** update actions/upload-artifact digest to 043fb46 ([#522](https://github.com/openplayerjs/openplayerjs/pull/522)) @renovate[bot]
+- **[deps]** update dependency undici to v7.25.0 ([#525](https://github.com/openplayerjs/openplayerjs/pull/525)) @renovate[bot]
+- **[deps]** update dependency defu to v6.1.7 ([#523](https://github.com/openplayerjs/openplayerjs/pull/523)) @renovate[bot]
+- **[deps]** update dependency prettier to v3.8.2 ([#524](https://github.com/openplayerjs/openplayerjs/pull/524)) @renovate[bot]
+- **[repo]** Removed unnecessary overrides (a6aa8f2) @Rafael Miranda
+
 ## [3.5.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.0) (2026-05-16)
 
 _May 16, 2026_
