@@ -60,7 +60,7 @@ When you load OpenPlayerJS from a CDN or a plain `<script>` tag, the global `Ope
 
 <video id="player" src="https://example.com/video.mp4" controls></video>
 
-<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
 <script>
   var player = new OpenPlayerJS('player', {
     controls: {
@@ -91,8 +91,8 @@ var core = player.getCore(); // getCore() is always available after init()
 Plugin bundles register themselves on `window.OpenPlayerPlugins` before `init()` is called. Load them in order:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/hls@latest/dist/openplayer-hls.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/hls@latest/dist/openplayer-hls.js"></script>
 <script>
   var player = new OpenPlayerJS('player', {
     // hls-specific config under the 'hls' key (passed to the HLS plugin factory)
@@ -257,6 +257,7 @@ createUI(core, video, controls);
 | `allowSkip`   | `boolean`                | `true`    | Allow seeking forward via the progress bar                                       |
 | `allowRewind` | `boolean`                | `true`    | Allow seeking backward via the progress bar                                      |
 | `labels`      | `Record<string, string>` | —         | Override built-in UI label strings (e.g. `play`, `pause`, `fullscreen`, etc.)    |
+| `speed`       | `{ rates?: number[] }`   | `{ rates: [0.5, 0.75, 1, 1.25, 1.5, 2] }` | Playback speed options shown in the Settings menu |
 | `controls`    | `ControlsConfig`         | see below | Layout of the built-in controls and auto-hide behaviour                          |
 
 > For engine/plugins and initial playback state options like `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, and `duration`, see `@openplayerjs/core`.
@@ -293,7 +294,7 @@ Two keys accept a `%s` placeholder that is replaced at runtime with a dynamic va
 | `restart`         | `'Restart'`          | Play button tooltip/title and screen reader label when the video has ended                                           |
 | `seekTo`          | `'Seek to %s'`       | Screen reader live-region announcement on seek — `%s` is replaced with the formatted time (e.g. `'1:23'`)            |
 | `settings`        | `'Player Settings'`  | Settings button tooltip/title and screen reader label                                                                |
-| `speed`           | `'Speed'`            | Section header in the Settings speed sub-menu                                                                        |
+| `speed`           | `'Speed'`            | Root Settings menu row label and sub-menu header for playback speed                                                  |
 | `speedNormal`     | `'Normal'`           | Label for the 1× playback rate option in the speed sub-menu                                                          |
 | `tap`             | `'Tap to unmute'`    | Autoplay-muted overlay prompt text on mobile                                                                         |
 | `toggleCaptions`  | `'Toggle Captions'`  | Captions button tooltip/title and screen reader label                                                                |
@@ -335,6 +336,27 @@ var player = new OpenPlayerJS('player', {
     mute: 'Silenciar',
     unmute: 'Activar sonido',
   },
+});
+player.init();
+```
+
+---
+
+### Speed configuration
+
+The `speed` option controls which playback rates appear in the Settings menu. The root menu row always shows the currently active speed next to the "Speed" label, and a checkmark appears when the rate differs from 1× (Normal).
+
+```js
+// ESM — show only a compact set of speeds
+const core = new Core(video, {
+  speed: { rates: [0.5, 1, 1.5, 2] },
+});
+```
+
+```js
+// UMD
+var player = new OpenPlayerJS('player', {
+  speed: { rates: [0.5, 1, 1.5, 2] },
 });
 player.init();
 ```
@@ -986,7 +1008,7 @@ const controls = buildControls({
 `registerControl` is available as a static method on the `OpenPlayerJS` global. Call it **before** `init()`, then reference the ID in the `controls` config to control its position:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
 <script>
   // 1. Register the factory before init()
   OpenPlayerJS.registerControl('my-ctrl', function () {

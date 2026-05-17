@@ -122,14 +122,20 @@ export class SettingsControl extends BaseControl {
         const ov = this.overlayMgr.active;
         if (ov?.id === 'ads') return null;
 
-        const rates = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 2.5];
+        const { speed, labels: resolvedLabels } = resolveUIConfig(this.core);
+        const rates = speed.rates;
         const current = core.playbackRate || 1;
+        const rateLabel = (r: number) => (r === 1 ? resolvedLabels.speedNormal : `${r}x`);
+        const matched = rates.find((r) => Math.abs(current - r) < 1e-6);
+        const currentLabel = matched !== undefined ? rateLabel(matched) : `${current}x`;
         return {
           id: 'speed',
-          label: labels.speed,
+          label: resolvedLabels.speed,
+          currentLabel,
+          currentChecked: matched !== undefined && Math.abs(current - 1) > 1e-6,
           items: rates.map((r) => ({
             id: String(r),
-            label: r === 1 ? labels.speedNormal : `${r}x`,
+            label: rateLabel(r),
             checked: Math.abs(current - r) < 1e-6,
             onSelect: () => {
               core.playbackRate = r;
@@ -196,10 +202,16 @@ export class SettingsControl extends BaseControl {
       // Root menu listing submenus
       for (const { submenu } of available) {
         this.view.appendChild(
-          this.makeRow(submenu.label, () => {
-            this.activeSubmenuId = submenu.id;
-            this.render();
-          })
+          this.makeRow(
+            submenu.label,
+            () => {
+              this.activeSubmenuId = submenu.id;
+              this.render();
+            },
+            submenu.currentChecked,
+            false,
+            submenu.currentLabel
+          )
         );
       }
       return;
@@ -250,7 +262,7 @@ export class SettingsControl extends BaseControl {
     }
   }
 
-  private makeRow(label: string, onClick: () => void, checked = false, disabled = false): HTMLElement {
+  private makeRow(label: string, onClick: () => void, checked = false, disabled = false, value?: string): HTMLElement {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'op-controls__menu-item';
@@ -265,7 +277,14 @@ export class SettingsControl extends BaseControl {
     const mark = document.createElement('span');
     mark.className = `op-menu__item-check ${checked ? 'checked' : ''}`;
 
-    btn.append(mark, text);
+    if (value !== undefined) {
+      const val = document.createElement('span');
+      val.className = 'op-controls__menu-item-value';
+      val.textContent = value;
+      btn.append(mark, text, val);
+    } else {
+      btn.append(mark, text);
+    }
 
     this.listen(
       btn,

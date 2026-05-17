@@ -7,6 +7,10 @@ import type { Core, PlayerConfig } from '@openplayerjs/core';
  * sizing, label strings, keyboard seek step and progress interaction flags.
  */
 
+export type SpeedConfig = {
+  rates?: number[];
+};
+
 export type PlayerUIConfig = PlayerConfig & {
   labels?: Record<string, string>;
   width?: string | number;
@@ -14,12 +18,16 @@ export type PlayerUIConfig = PlayerConfig & {
   step?: number;
   allowSkip?: boolean;
   allowRewind?: boolean;
+  speed?: SpeedConfig;
 };
 
-export const defaultUIConfiguration: Required<Pick<PlayerUIConfig, 'step' | 'allowSkip' | 'allowRewind'>> = {
+export const DEFAULT_SPEED_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
+
+export const defaultUIConfiguration: Required<Pick<PlayerUIConfig, 'step' | 'allowSkip' | 'allowRewind' | 'speed'>> = {
   step: 0,
   allowSkip: true,
   allowRewind: true,
+  speed: { rates: [...DEFAULT_SPEED_RATES] },
 };
 
 export const defaultLabels = Object.freeze({
@@ -60,6 +68,7 @@ export type ResolvedUIConfig = {
   allowSkip: boolean;
   allowRewind: boolean;
   step: number;
+  speed: Required<SpeedConfig>;
   width?: string | number;
   height?: string | number;
   labels: Record<string, string>;
@@ -76,6 +85,11 @@ export function resolveUIConfig(coreOrConfig: Core | PlayerConfig): ResolvedUICo
 
   const labels = { ...defaultLabels, ...((config as any).labels || {}) };
 
+  const speedCfg = (config as any).speed as SpeedConfig | undefined;
+  const speed: Required<SpeedConfig> = {
+    rates: Array.isArray(speedCfg?.rates) && speedCfg.rates.length > 0 ? speedCfg.rates : [...DEFAULT_SPEED_RATES],
+  };
+
   // Normalize config in-place when called with a Player instance so downstream code can rely on it.
   if ((coreOrConfig as any).config) {
     try {
@@ -83,10 +97,11 @@ export function resolveUIConfig(coreOrConfig: Core | PlayerConfig): ResolvedUICo
       (config as any).allowSkip = allowSkip;
       (config as any).allowRewind = allowRewind;
       (config as any).step = step;
+      (config as any).speed = speed;
     } catch {
       // ignore
     }
   }
 
-  return { allowSkip, allowRewind, step, width, height, labels };
+  return { allowSkip, allowRewind, step, speed, width, height, labels };
 }

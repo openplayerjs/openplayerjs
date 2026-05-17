@@ -121,6 +121,7 @@ Only `OpenPlayerJS` is supported from v3 onwards (both in ESM as `Core` and in U
 | `startPlaybackRate`                                    | `@openplayerjs/core` | Sets the initial playback speed (default: `1`). Previously you had to set this after `init()`                                  |
 | `labels.loading` / `labels.media` / `labels.container` | `@openplayerjs/player` | Added new labels on top of the ones already supported. Full labels reference is [here](./packages/player/README.md#labels-reference) |
 | `plugins`                                              | `@openplayerjs/core` | Pass an array of plugins (engines, UI, ads) to the constructor; see [here](./packages/core/README.md#plugins) for more details |
+| `speed.rates`                                          | `@openplayerjs/player` | Array of playback rate options in the Settings menu (default: `[0.5, 0.75, 1, 1.25, 1.5, 2]`). The root menu row now shows the current speed and a checkmark when a non-default rate is active. |
 
 ### Removed options
 

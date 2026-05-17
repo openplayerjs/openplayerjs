@@ -11,6 +11,10 @@ export type SettingsMenuItem = {
 export type SettingsSubmenu = {
   id: string;
   label: string;
+  /** Current-value text shown next to the label in the root settings menu (e.g. "1.5×"). */
+  currentLabel?: string;
+  /** When true the checkmark is shown on the root menu row (indicates a non-default selection). */
+  currentChecked?: boolean;
   items: SettingsMenuItem[];
 };
 
