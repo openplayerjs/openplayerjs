@@ -1,14 +1,53 @@
 # Changelog
 
-## [3.4.3](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.3) (2026-05-17)
+## [3.5.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.0) (2026-05-17)
 
 _May 17, 2026_
 
-### `@openplayerjs/player@3.4.3`
+### `@openplayerjs/player@3.5.0`
 
 #### Bug Fixes
 
-- **[player]** Fixed issue when selecting speed not being checked; added missing config to set speeds manually (8ae756c) @Rafael Miranda
+- **[player]** Added missing `title` attributes for all controls to show tooltips (d30b35e) @Rafael Miranda
+- **[player]** Added missing export in UMD to allow for indexed controls (5b2b23b) @Rafael Miranda
+- **[docs]** Unified UMD documentation for better readability and added missing capabilities documentation (474a3be) @Rafael Miranda
+- **[docs]** Added new migration for UMD player; fixed inconsistencies (00780fb) @Rafael Miranda
+- **[docs]** Fixed UMD names; added more documentation for `registerControl` and `addControl` (c4610ca) @Rafael Miranda
+- **[docs]** Removed inconsistencies, and enhanced documentation related to `player` UMD wrapper (51566a7) @Rafael Miranda
+
+---
+
+## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/youtube@3.4.2...@openplayerjs/youtube@3.4.3) (2026-05-17)
+
+
+### Bug Fixes
+
+* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+
+## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/ads@3.4.2...@openplayerjs/ads@3.4.3) (2026-05-17)
+
+
+### Bug Fixes
+
+* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+
+## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/hls@3.4.2...@openplayerjs/hls@3.4.3) (2026-05-17)
+
+
+### Bug Fixes
+
+* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+
+## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/core@3.4.2...@openplayerjs/core@3.4.3) (2026-05-17)
+
+
+### Bug Fixes
+
+* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+
+## [3.4.3](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.3) (2026-05-17)
+
+_May 17, 2026_
 
 ### `@openplayerjs/hls@3.4.3`
 

@@ -526,7 +526,15 @@ if (coreChanged) {
     );
 
     const plannedVersion = getPlannedCoreVersion() ?? readVersion('core');
-    mergeReleaseNotesToChangelog(plannedVersion, ['core', ...CORE_DEPENDENTS], prevTags, new Set(CORE_DEPENDENTS));
+
+    // Only include dependents that will actually be released (not already ahead).
+    // This prevents changelog sections like "@openplayerjs/player@3.4.3" from
+    // appearing when player is already at 3.5.0 and will be skipped.
+    const releasedDeps = CORE_DEPENDENTS.filter(dep => {
+      const isFirstRelease = getLastTag(dep) === null;
+      return isFirstRelease || semverCompare(readVersion(dep), plannedVersion) < 0;
+    });
+    mergeReleaseNotesToChangelog(plannedVersion, ['core', ...releasedDeps], prevTags, new Set(releasedDeps));
 
     releasePackage('core');
     const newVersion = readVersion('core');
