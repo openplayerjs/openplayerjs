@@ -234,7 +234,9 @@
     text-align: center;
     width: 15px;
 }
-
+.op-controls__time-delimiter:before {
+    content: "/";
+}
 .op-controls time {
     margin-inline: 5px;
 }
