@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.5.1](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/player@3.5.0...@openplayerjs/player@3.5.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+* **player:** Fixed failing unit test; switched DOM by CSS in time delimiter to show it ([3063aec](https://github.com/openplayerjs/openplayerjs/commit/3063aeccad8ec589681dacd439aa4c82a9dc8729))
+* **player:** Fixed issue when selecting speed not being checked; added missing config to set speeds manually ([8ae756c](https://github.com/openplayerjs/openplayerjs/commit/8ae756c311766f7b0ff22eeaafe719de54cb6bfe))
+
 ## [3.5.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.0) (2026-05-18)
 
 _May 17, 2026_

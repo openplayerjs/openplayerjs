@@ -464,8 +464,9 @@ function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}, lockedToCore
     execSync('git rm RELEASE_NOTES.md', { cwd: ROOT });
   }
 
-  execSync(`git commit -m "docs(changelog): v${version}"`, { cwd: ROOT });
-  console.log(`\n✔ CHANGELOG.md updated to v${version} and committed.`);
+  // Do NOT commit here — the staged CHANGELOG is picked up by release-it's
+  // addFiles config and included in the chore(release) commit.
+  console.log(`\n✔ CHANGELOG.md updated to v${version} and staged for release commit.`);
 }
 
 function getPlannedCoreVersion() {
