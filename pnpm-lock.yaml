@@ -139,8 +139,8 @@ importers:
   packages/ads:
     dependencies:
       '@dailymotion/vast-client':
-        specifier: 6.4.4
-        version: 6.4.4
+        specifier: 6.4.5
+        version: 6.4.5
       '@dailymotion/vmap':
         specifier: 3.3.3
         version: 3.3.3
@@ -783,8 +783,8 @@ packages:
     peerDependencies:
       postcss: ^8.4
 
-  '@dailymotion/vast-client@6.4.4':
-    resolution: {integrity: sha512-b7qk4aCZoGFiZskQm83WX2T64+p8INzSWoQMStJNiPiFj58LOBX7sEt86HnZZhdhauCYNzLtkQd7wl8Lj7nCSw==}
+  '@dailymotion/vast-client@6.4.5':
+    resolution: {integrity: sha512-mqWYNFf8lg7AxEEV8DwQyUbF90SEG2SMycf4c3PC2IZ7G9C8JRSu3e5XUesE72lrWw+mI+KOUd8GtrHBuHR1Zw==}
     engines: {node: '>=12.22.1'}
 
   '@dailymotion/vmap@3.3.3':
@@ -1710,7 +1710,6 @@ packages:
   '@xmldom/xmldom@0.9.10':
     resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
-    deprecated: this version has critical issues, please update to the latest version
 
   '@zeit/schemas@2.36.0':
     resolution: {integrity: sha512-7kjMwcChYEzMKjeex9ZFXkt1AyNov9R5HZtjBKVsmVpw7pa7ZtlCGvCBC2vnnXctaYN+aRI61HjIqeetZW5ROg==}
@@ -5749,7 +5748,7 @@ snapshots:
     dependencies:
       postcss: 8.5.14
 
-  '@dailymotion/vast-client@6.4.4':
+  '@dailymotion/vast-client@6.4.5':
     dependencies:
       '@xmldom/xmldom': 0.9.10
 
