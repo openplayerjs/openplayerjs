@@ -328,6 +328,27 @@ function semverCompare(a, b) {
   return 0;
 }
 
+/** Applies a bump type (major/minor/patch) to a semver string. */
+function semverBump(version, bumpType) {
+  const [major, minor, patch] = version.split('.').map(Number);
+  if (bumpType === 'major') return `${major + 1}.0.0`;
+  if (bumpType === 'minor') return `${major}.${minor + 1}.0`;
+  return `${major}.${minor}.${patch + 1}`;
+}
+
+/**
+ * Infers the bump type implied by a version transition.
+ * Used to carry the same bump magnitude (major/minor/patch) from core's
+ * planned delta to the max-family-version when packages are out of lockstep.
+ */
+function deriveBumpType(fromVersion, toVersion) {
+  const [fMaj, fMin] = fromVersion.split('.').map(Number);
+  const [tMaj, tMin] = toVersion.split('.').map(Number);
+  if (tMaj > fMaj) return 'major';
+  if (tMin > fMin) return 'minor';
+  return 'patch';
+}
+
 function readVersion(pkg) {
   return JSON.parse(
     readFileSync(join(ROOT, 'packages', pkg, 'package.json'), 'utf8'),
@@ -522,14 +543,43 @@ const coreChanged = hasChangesSince('core', coreTag);
 if (coreChanged) {
   console.log('Core has changes → releasing core, then all dependents at the same version.\n');
 
+  // ── Compute the lockstep version ─────────────────────────────────────────
+  // Problem: packages can drift out of lockstep when only a subset is released
+  // between core releases (e.g. player@3.5.2 while core@3.4.3).  Using core's
+  // raw planned bump target (3.4.4) as the lockstep version would skip player
+  // entirely (3.5.2 ≥ 3.4.4).
+  //
+  // Fix: take the HIGHEST version currently in the family and apply the same
+  // bump magnitude that core's conventional commits imply.
+  //   core@3.4.3 + patch commits → planned 3.4.4 → bump type = patch
+  //   max(3.4.3, 3.5.2) = 3.5.2  → lockstepVersion = 3.5.3
+  // All packages then land at 3.5.3.
+
+  const coreCurrentVersion = readVersion('core');
+  const plannedCoreVersion = getPlannedVersion('core'); // dry-run; side-effects restored inside
+
+  const bumpType = increment
+    ?? (plannedCoreVersion ? deriveBumpType(coreCurrentVersion, plannedCoreVersion) : 'patch');
+
+  const maxFamilyVersion = ['core', ...CORE_DEPENDENTS]
+    .map(p => readVersion(p))
+    .reduce((max, v) => semverCompare(v, max) > 0 ? v : max, '0.0.0');
+
+  const lockstepVersion = semverBump(maxFamilyVersion, bumpType);
+
+  console.log(
+    `Lockstep version: ${lockstepVersion}` +
+    ` (bump=${bumpType}, family max=${maxFamilyVersion}, core=${coreCurrentVersion}→${plannedCoreVersion ?? '?'})\n`,
+  );
+
   if (isDryRun) {
-    const planned = getPlannedVersion('core');
-    console.log(`Planned version: ${readVersion('core')} → ${planned ?? '(auto-detect)'}`);
-    releasePackage('core');
+    releasePackage('core', lockstepVersion);
     for (const dep of CORE_DEPENDENTS) {
       const isFirstRelease = getLastTag(dep) === null;
-      const targetVersion = isFirstRelease ? readVersion(dep) : (planned ?? undefined);
-      if (targetVersion && semverCompare(readVersion(dep), targetVersion) >= 0) {
+      const targetVersion = isFirstRelease ? readVersion(dep) : lockstepVersion;
+      // lockstepVersion is always > maxFamilyVersion ≥ readVersion(dep), so
+      // this guard only fires in the unlikely case of a concurrent release.
+      if (!isFirstRelease && semverCompare(readVersion(dep), targetVersion) >= 0) {
         console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
         continue;
       }
@@ -542,29 +592,20 @@ if (coreChanged) {
       ['core', ...CORE_DEPENDENTS].map(p => [p, getLastTag(p)]),
     );
 
-    const plannedVersion = getPlannedVersion('core') ?? readVersion('core');
-
-    // Only include dependents that will actually be released (not already ahead).
-    // This prevents changelog sections like "@openplayerjs/player@3.4.3" from
-    // appearing when player is already at 3.5.0 and will be skipped.
     const releasedDeps = CORE_DEPENDENTS.filter(dep => {
       const isFirstRelease = getLastTag(dep) === null;
-      return isFirstRelease || semverCompare(readVersion(dep), plannedVersion) < 0;
+      // lockstepVersion > maxFamilyVersion ≥ readVersion(dep), so all deps
+      // satisfy this condition — the filter is a safety net, not a skip rule.
+      return isFirstRelease || semverCompare(readVersion(dep), lockstepVersion) < 0;
     });
-    mergeReleaseNotesToChangelog(plannedVersion, ['core', ...releasedDeps], prevTags, new Set(releasedDeps));
+    mergeReleaseNotesToChangelog(lockstepVersion, ['core', ...releasedDeps], prevTags, new Set(releasedDeps));
 
-    releasePackage('core');
-    const newVersion = readVersion('core');
-    console.log(`\nCore released at ${newVersion} → releasing dependents at same version.\n`);
+    releasePackage('core', lockstepVersion);
+    console.log(`\nCore released at ${lockstepVersion} → releasing dependents at same version.\n`);
     for (const dep of CORE_DEPENDENTS) {
       const isFirstRelease = getLastTag(dep) === null;
-      const targetVersion = isFirstRelease ? readVersion(dep) : newVersion;
+      const targetVersion = isFirstRelease ? readVersion(dep) : lockstepVersion;
       if (!isFirstRelease && semverCompare(readVersion(dep), targetVersion) >= 0) {
-        const cur = readVersion(dep).split('.').map(Number);
-        const tgt = targetVersion.split('.').map(Number);
-        if (cur[0] === tgt[0] && cur[1] > tgt[1] + 1) {
-          console.warn(`  ⚠ WARNING: @openplayerjs/${dep} is ${readVersion(dep)}, which is ${cur[1] - tgt[1]} minor versions ahead of target ${targetVersion}. Investigate.`);
-        }
         console.log(`▸ @openplayerjs/${dep}: already at ${readVersion(dep)} (≥ ${targetVersion}) — skipping`);
         continue;
       }
