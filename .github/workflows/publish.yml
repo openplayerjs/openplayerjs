@@ -1,0 +1,89 @@
+# Publishes a package to npm using OIDC-based Trusted Publishers.
+# No NPM_TOKEN is required — npm authenticates automatically via the GitHub
+# OIDC token when the repository/workflow is registered as a Trusted Publisher
+# on https://www.npmjs.com for each @openplayerjs/* package.
+#
+# Setup checklist (one-time, per package on npmjs.com):
+#   1. Open https://www.npmjs.com/package/@openplayerjs/<name>/settings
+#   2. Under "Publishing access" choose "Granular Access Token (Trusted Publishers)"
+#   3. Add a Trusted Publisher:
+#        GitHub owner:    openplayerjs
+#        Repository name: openplayerjs
+#        Workflow name:   publish.yml
+#        Environment:     (leave blank)
+#
+# Trigger: pushing a release tag of the form @openplayerjs/<name>@<version>
+# which the orchestrate-release.cjs script creates via release-it.
+
+on:
+  push:
+    tags:
+      - '@openplayerjs/*@*'
+
+name: Publish
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  contents: read
+  id-token: write   # required for OIDC Trusted Publishers token exchange
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+
+      - name: Setup Node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 26.2.0
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Resolve package directory from tag
+        id: pkg
+        run: |
+          # Tag format: @openplayerjs/player@3.5.3
+          #   → NAME = player
+          #   → DIR  = packages/player
+          TAG="${{ github.ref_name }}"
+          NAME="$(echo "$TAG" | sed 's|@openplayerjs/||' | sed 's|@.*||')"
+          DIR="packages/$NAME"
+
+          if [ ! -f "$DIR/package.json" ]; then
+            echo "::error ::Cannot resolve package directory for tag '$TAG' (looked for '$DIR/package.json')"
+            exit 1
+          fi
+
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "dir=$DIR"  >> "$GITHUB_OUTPUT"
+          echo "Resolved: $TAG → $DIR"
+
+      - name: Pack
+        # pnpm pack resolves workspace:^ peer-dependency ranges to their
+        # published versions, producing a self-contained tarball that npm can
+        # publish without any workspace tooling on the registry side.
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: pnpm pack
+
+      - name: Publish
+        # npm publish handles the OIDC token exchange with npmjs.com when
+        # id-token: write is granted and the package has a Trusted Publisher
+        # configured.  --provenance attaches a signed SLSA provenance statement
+        # (Supply-chain Levels for Software Artifacts) to the release.
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: npm publish *.tgz --provenance --access public

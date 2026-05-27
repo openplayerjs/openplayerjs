@@ -10,8 +10,11 @@ module.exports = {
     release: false,
   },
 
+  // Publishing is handled by .github/workflows/publish.yml via OIDC Trusted
+  // Publishers.  Disabling here prevents release-it from attempting to publish
+  // with a local NPM_TOKEN (which no longer needs to exist).
   npm: {
-    publish: true,
+    publish: false,
   },
 
   plugins: {

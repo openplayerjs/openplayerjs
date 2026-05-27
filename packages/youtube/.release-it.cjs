@@ -10,16 +10,10 @@ module.exports = {
     release: false,
   },
 
-  // Disable npm's own publish; pnpm publish (below) correctly replaces
-  // workspace:^ peer-dependency references with the resolved version.
+  // Publishing is handled by .github/workflows/publish.yml via OIDC Trusted
+  // Publishers — no local npm/pnpm publish step needed here.
   npm: {
     publish: false,
-  },
-
-  hooks: {
-    // Run pnpm publish AFTER git commit+tag+push succeed so a failed push
-    // never leaves the package published without a matching git tag.
-    'after:git:release': 'pnpm publish --access public --no-git-checks',
   },
 
   plugins: {
