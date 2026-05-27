@@ -107,7 +107,12 @@ export class HtmlMediaSurface implements MediaSurface {
     if (source?.src && this.media.src !== source.src) {
       this.media.src = source.src;
     }
-    this.media.load();
+    // Only call media.load() when the browser is allowed to fetch.
+    // The `cmd:startLoad` handler flips preload to "metadata"
+    // before calling load() again, so deferred loads still work correctly.
+    if (this.media.preload !== 'none') {
+      this.media.load();
+    }
   }
 
   play(): Promise<void> | void {

@@ -27,7 +27,7 @@ describe('DefaultMediaEngine — preload="none"', () => {
     document.body.innerHTML = '';
   });
 
-  test('media.load() is called and player reaches loading state when preload is "none"', async () => {
+  test('media.load() is deferred and player reaches loading state when preload is "none"', async () => {
     const media = document.createElement('video');
     media.preload = 'none';
     media.src = 'https://example.com/video.mp4';
@@ -40,9 +40,11 @@ describe('DefaultMediaEngine — preload="none"', () => {
     // maybeAutoLoad() is deferred via queueMicrotask; flush it before asserting
     await Promise.resolve();
 
-    // attach() must call media.load() unconditionally — even with preload="none"
-    expect(loadMock.mock.calls.length).toBeGreaterThan(callsBefore);
-    // The load sequence emits 'loadstart' → state transitions to 'loading'
+    // With preload="none", HtmlMediaSurface.load() must NOT call media.load() during
+    // initial attach — loading is deferred until cmd:startLoad bumps preload to "metadata".
+    expect(loadMock.mock.calls.length).toBe(callsBefore);
+    // Core.load() emits 'loadstart' directly, so state still transitions to 'loading'
+    // even though the browser fetch hasn't started yet.
     expect(player.state.current).toBe('loading');
 
     player.destroy();
