@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.2](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/player@3.5.1...@openplayerjs/player@3.5.2) (2026-05-18)
+
+
+### Bug Fixes
+
+* **player:** Fixed script to add CHANGELOG when releasing a version; added missing command to update stylesheet in player before release ([45932b4](https://github.com/openplayerjs/openplayerjs/commit/45932b408d7476f9a1090f27a94ead78e067c07c))
+
 ## [3.5.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.1) (2026-05-18)
 
 _May 17, 2026_

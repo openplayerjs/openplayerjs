@@ -35,5 +35,9 @@ coverage
 # Test files
 *.html
 *.vtt
+test-results
 !examples/**/*.html
 !examples/**/*.vtt
+
+# AI
+.claude

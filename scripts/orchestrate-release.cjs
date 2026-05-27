@@ -431,6 +431,14 @@ function restoreDryRunSideEffects(pkgs) {
       });
     } catch { /* file may not exist in HEAD yet */ }
   }
+
+  // The @release-it/conventional-changelog plugin writes to infile even in
+  // --dry-run mode. Although infile has been removed from all package configs
+  // (so the plugin no longer writes to the root CHANGELOG), this guard ensures
+  // any accidental mutation of the root CHANGELOG.md during a dry-run is undone.
+  try {
+    execSync('git restore --source=HEAD -- CHANGELOG.md', { cwd: ROOT, stdio: 'pipe' });
+  } catch { /* file may not exist in HEAD yet */ }
 }
 
 function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}, lockedToCore = new Set()) {
@@ -469,8 +477,16 @@ function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}, lockedToCore
   console.log(`\n✔ CHANGELOG.md updated to v${version} and staged for release commit.`);
 }
 
-function getPlannedCoreVersion() {
-  const pkgDir = join(ROOT, 'packages', 'core');
+/**
+ * Run a release-it --dry-run for `pkg` to determine what version it WOULD
+ * bump to, then undo any side-effects (file writes) the dry-run made.
+ *
+ * This replaces the old getPlannedCoreVersion() and is used for EVERY package
+ * so that mergeReleaseNotesToChangelog always receives the post-bump version —
+ * not the pre-bump version that readVersion() would return.
+ */
+function getPlannedVersion(pkg) {
+  const pkgDir = join(ROOT, 'packages', pkg);
   const args = [
     ...(increment ? [`--increment`, increment] : []),
     '--config', '.release-it.cjs',
@@ -486,7 +502,7 @@ function getPlannedCoreVersion() {
   } catch {
     return null;
   } finally {
-    restoreDryRunSideEffects(['core']);
+    restoreDryRunSideEffects([pkg]);
   }
 }
 
@@ -507,7 +523,7 @@ if (coreChanged) {
   console.log('Core has changes → releasing core, then all dependents at the same version.\n');
 
   if (isDryRun) {
-    const planned = getPlannedCoreVersion();
+    const planned = getPlannedVersion('core');
     console.log(`Planned version: ${readVersion('core')} → ${planned ?? '(auto-detect)'}`);
     releasePackage('core');
     for (const dep of CORE_DEPENDENTS) {
@@ -526,7 +542,7 @@ if (coreChanged) {
       ['core', ...CORE_DEPENDENTS].map(p => [p, getLastTag(p)]),
     );
 
-    const plannedVersion = getPlannedCoreVersion() ?? readVersion('core');
+    const plannedVersion = getPlannedVersion('core') ?? readVersion('core');
 
     // Only include dependents that will actually be released (not already ahead).
     // This prevents changelog sections like "@openplayerjs/player@3.4.3" from
@@ -580,7 +596,13 @@ if (coreChanged) {
       // Common case: all independently-released packages landed on the same
       // version (e.g. manual bump to keep versions in sync).  Write a single
       // shared changelog entry, then release every package.
-      mergeReleaseNotesToChangelog(versions[0], released, prevTags);
+      //
+      // IMPORTANT: readVersion() returns the current (pre-bump) version.  Run a
+      // dry-run to discover the POST-bump version so the CHANGELOG header matches
+      // what will actually be tagged.  Calling getPlannedVersion() for the first
+      // package is enough — all packages in this group bump to the same version.
+      const plannedVersion = getPlannedVersion(released[0]) ?? versions[0];
+      mergeReleaseNotesToChangelog(plannedVersion, released, prevTags);
       for (const pkg of released) {
         releasePackage(pkg);
       }
@@ -589,10 +611,13 @@ if (coreChanged) {
       // entry for each package so the version header is accurate, then release
       // it immediately.  RELEASE_NOTES.md (if present) is applied to the first
       // entry and auto-deleted; subsequent entries are auto-generated from git.
+      //
+      // Each package may bump by a different increment, so we need a separate
+      // getPlannedVersion() call per package.
       for (let i = 0; i < released.length; i++) {
         const pkg = released[i];
-        const version = versions[i];
-        mergeReleaseNotesToChangelog(version, [pkg], prevTags);
+        const plannedVersion = getPlannedVersion(pkg) ?? versions[i];
+        mergeReleaseNotesToChangelog(plannedVersion, [pkg], prevTags);
         releasePackage(pkg);
       }
     }
