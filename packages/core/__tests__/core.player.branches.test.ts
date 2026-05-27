@@ -88,6 +88,63 @@ describe('core/player branches', () => {
     expect(p.state.current).toBe('ready');
   });
 
+  test('src setter resets currentTime to zero when switching sources mid-playback', async () => {
+    const media = document.createElement('video');
+    media.src = 'https://example.com/a.mp4';
+    // EngineA emits loadedmetadata synchronously in attach(), so state is 'ready' after one microtask.
+    const p = new Core(media, { plugins: [new EngineA()] });
+
+    await Promise.resolve();
+    expect(p.state.current).toBe('ready');
+
+    // Simulate time having advanced during playback (mirrors bindSurfaceSync reading from the surface).
+    Object.defineProperty(media, 'currentTime', { value: 42, writable: true, configurable: true });
+    p.events.emit('timeupdate');
+    expect(p.currentTime).toBe(42);
+
+    // Switch source — currentTime must be reset to 0 immediately (mirrors browser behavior on src change).
+    p.src = 'https://example.com/b.mp4';
+    expect(p.currentTime).toBe(0);
+
+    // Simulate what the browser does on src change: it resets media.currentTime to 0.
+    // jsdom does not do this automatically, so we set it manually so the subsequent
+    // loadedmetadata → bindSurfaceSync round-trip reads the correct value.
+    media.currentTime = 0;
+
+    // Flush the microtask — EngineA re-attaches and emits loadedmetadata again,
+    // bindSurfaceSync reads media.currentTime (now 0).  currentTime must stay at 0.
+    await Promise.resolve();
+    expect(p.currentTime).toBe(0);
+  });
+
+  test('src setter resets currentTime to zero for a second consecutive source switch', async () => {
+    const media = document.createElement('video');
+    media.src = 'https://example.com/a.mp4';
+    const p = new Core(media, { plugins: [new EngineA()] });
+
+    await Promise.resolve();
+    expect(p.state.current).toBe('ready');
+
+    // First switch — advance time, then switch source.
+    Object.defineProperty(media, 'currentTime', { value: 30, writable: true, configurable: true });
+    p.events.emit('timeupdate');
+    expect(p.currentTime).toBe(30);
+
+    p.src = 'https://example.com/b.mp4';
+    expect(p.currentTime).toBe(0);
+
+    media.currentTime = 0; // browser resets this on src change
+    await Promise.resolve(); // flush EngineA re-attach
+
+    // Second switch — simulate more time on source B, then switch again.
+    media.currentTime = 15;
+    p.events.emit('timeupdate');
+    expect(p.currentTime).toBe(15);
+
+    p.src = 'https://example.com/c.mp4';
+    expect(p.currentTime).toBe(0);
+  });
+
   test('maybeAutoLoad branches: no engines, no sources, and try/catch protection', () => {
     // no engines: create via selector path and then remove the default engine by overriding registerPlugin
     const media1 = document.createElement('video');

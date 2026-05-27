@@ -105,3 +105,50 @@ describe('PlayControl: uncovered fmt and playing-event branches', () => {
     expect(el.classList.contains('op-controls__playpause--pause')).toBe(true);
   });
 });
+
+describe('PlayControl: source:set resets play button to paused state', () => {
+  test('button reverts to play icon on source:set while playing', () => {
+    const p = makeCore();
+
+    const opPlayer = document.createElement('div');
+    opPlayer.className = 'op-player';
+    document.body.appendChild(opPlayer);
+    opPlayer.appendChild(p.media);
+
+    const c = createPlayControl();
+    const el = c.create(p);
+    opPlayer.appendChild(el);
+
+    // Simulate the player entering playing state.
+    p.events.emit('playing');
+    expect(el.classList.contains('op-controls__playpause--pause')).toBe(true);
+
+    // Switching source: engine detaches without emitting 'pause'. The button
+    // must still reset to the "play" icon via the source:set handler.
+    p.events.emit('source:set');
+    expect(el.classList.contains('op-controls__playpause--pause')).toBe(false);
+    expect(el.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  test('source:set clears the ended/replay state as well', () => {
+    const p = makeCore();
+
+    const opPlayer = document.createElement('div');
+    opPlayer.className = 'op-player';
+    document.body.appendChild(opPlayer);
+    opPlayer.appendChild(p.media);
+
+    const c = createPlayControl();
+    const el = c.create(p);
+    opPlayer.appendChild(el);
+
+    // Reach ended state.
+    p.events.emit('ended');
+    expect(el.classList.contains('op-controls__playpause--replay')).toBe(true);
+
+    // Switch source → button should show play icon, not replay.
+    p.events.emit('source:set');
+    expect(el.classList.contains('op-controls__playpause--replay')).toBe(false);
+    expect(el.classList.contains('op-controls__playpause--pause')).toBe(false);
+  });
+});

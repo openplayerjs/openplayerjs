@@ -142,6 +142,7 @@ export class Core {
         this.playerContext = null;
       }
       this.state.transition('idle');
+      this._currentTime = 0;
       this.readyPromise = undefined;
       this.readyResolve = undefined;
       this.readyReject = undefined;

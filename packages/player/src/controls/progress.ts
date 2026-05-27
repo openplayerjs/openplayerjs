@@ -315,17 +315,19 @@ export class ProgressControl extends BaseControl {
       EVENT_OPTIONS
     );
 
-    this.listen(
-      document,
-      'pointermove',
-      (e: Event) => {
-        const me = e as MouseEvent;
-        if (!(me.target as HTMLElement).closest('.op-controls__progress')) {
-          tooltip.classList.remove('op-controls__tooltip--visible');
-        }
-      },
-      EVENT_OPTIONS
-    );
+    if (!isMobile()) {
+      this.listen(
+        document,
+        'pointermove',
+        (e: Event) => {
+          const me = e as MouseEvent;
+          if (!(me.target as HTMLElement).closest('.op-controls__progress')) {
+            tooltip.classList.remove('op-controls__tooltip--visible');
+          }
+        },
+        EVENT_OPTIONS
+      );
+    }
 
     updateUI();
     return progress;

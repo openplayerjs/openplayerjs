@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — Source switching</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body { background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; gap: 16px; }
+    #wrap { width: 100%; max-width: 854px; }
+    #controls { display: flex; gap: 12px; }
+    button {
+      padding: 8px 16px;
+      background: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <video
+      id="player"
+      class="op-player__media"
+      controls
+      playsinline
+      muted
+      src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+    ></video>
+  </div>
+
+  <div id="controls">
+    <button id="btn-switch" data-testid="btn-switch">Switch source</button>
+    <button id="btn-restore" data-testid="btn-restore">Restore source</button>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/player": "/packages/player/dist/index.js",
+        "@openplayerjs/hls":    "/packages/hls/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { HlsMediaEngine } from '@openplayerjs/hls';
+    import { createUI, buildControls } from '@openplayerjs/player';
+
+    const SOURCE_A = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+    const SOURCE_B = 'https://playertest.longtailvideo.com/adaptive/progdatime/playlist2.m3u8';
+
+    const media = document.querySelector('#player');
+    const core = new Core(media, {
+      plugins: [new HlsMediaEngine()],
+    });
+
+    createUI(core, media, buildControls({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['settings', 'fullscreen'],
+    }));
+
+    // Expose core on window so e2e tests can interact with it.
+    window.__core = core;
+
+    const btnSwitch  = document.querySelector('#btn-switch');
+    const btnRestore = document.querySelector('#btn-restore');
+
+    btnSwitch.addEventListener('click', () => {
+      core.src = SOURCE_B;
+    });
+
+    btnRestore.addEventListener('click', () => {
+      core.src = SOURCE_A;
+    });
+  </script>
+</body>
+</html>
