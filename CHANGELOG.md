@@ -1,5 +1,58 @@
 # Changelog
 
+## [3.4.4](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.4) (2026-05-27)
+
+_May 26, 2026_
+
+### `@openplayerjs/core@3.4.4`
+
+#### Bug Fixes
+
+- **[core]** Added conditional to avoid loading source when preload is `none`; fixes #562 (48ed8b1) @Rafael Miranda
+
+### `@openplayerjs/hls@3.4.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.4`
+
+### `@openplayerjs/ads@3.4.4`
+
+#### Bug Fixes
+
+- **[deps]** update dependency @dailymotion/vast-client to v6.4.5 ([#557](https://github.com/openplayerjs/openplayerjs/pull/557)) @renovate[bot]
+
+### `@openplayerjs/youtube@3.4.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.4.4`
+
+### General
+
+#### Features
+
+- **[repo]** Added new GitHub Action to publish packages without access tokens (4511cd1) @Rafael Miranda
+
+#### Bug Fixes
+
+- **[repo]** Fixed release scripts to write CHANGELOG file correctly on each release, even per package (96b6ada) @Rafael Miranda
+- **[player]** Set flag to reset current time and dispatched event in play button when setting source; fixes #567 (9f42e64) @Rafael Miranda
+- **[player]** Fixed script to add CHANGELOG when releasing a version; added missing command to update stylesheet in player before release (45932b4) @Rafael Miranda
+- **[repo]** Fixed orchestrator script to avoid overriding versions (c899f29) @Rafael Miranda
+
+#### Chores
+
+- **[deps]** Upgraded Node to v26.2.0 (87bdf72) @Rafael Miranda
+- **[deps]** update eslint ([#566](https://github.com/openplayerjs/openplayerjs/pull/566)) @renovate[bot]
+- **[deps]** update postcss ([#565](https://github.com/openplayerjs/openplayerjs/pull/565)) @renovate[bot]
+- **[deps]** update dependency rollup to v4.60.4 ([#564](https://github.com/openplayerjs/openplayerjs/pull/564)) @renovate[bot]
+- **[deps]** update dependency turbo to v2.9.14 [security] ([#560](https://github.com/openplayerjs/openplayerjs/pull/560)) @renovate[bot]
+- **[deps]** update github/codeql-action digest to 7211b7c ([#555](https://github.com/openplayerjs/openplayerjs/pull/555)) @renovate[bot]
+- **[deps]** update dependency ip-address to v10.2.0 ([#559](https://github.com/openplayerjs/openplayerjs/pull/559)) @renovate[bot]
+- **[deps]** update dependency @playwright/test to v1.60.0 ([#558](https://github.com/openplayerjs/openplayerjs/pull/558)) @renovate[bot]
+- **[deps]** update dependency @types/node to v24.12.4 ([#556](https://github.com/openplayerjs/openplayerjs/pull/556)) @renovate[bot]
+
 ## [3.5.2](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/player@3.5.1...@openplayerjs/player@3.5.2) (2026-05-18)
 
 
