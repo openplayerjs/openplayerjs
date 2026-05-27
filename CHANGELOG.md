@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.5.3](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.3) (2026-05-27)
+
+_May 26, 2026_
+
+### `@openplayerjs/player@3.5.3`
+
+#### Features
+
+- **[repo]** Added new GitHub Action to publish packages without access tokens (4511cd1) @Rafael Miranda
+
+#### Bug Fixes
+
+- **[player]** Set flag to reset current time and dispatched event in play button when setting source; fixes #567 (9f42e64) @Rafael Miranda
+- **[repo]** Fixed release scripts to write CHANGELOG file correctly on each release, even per package (96b6ada) @Rafael Miranda
+
+### General
+
+#### Bug Fixes
+
+- **[repo]** Fix lockstep version skipping packages ahead of core (ca9bb1b) @Rafael Miranda
+
 ## [3.4.4](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.4) (2026-05-27)
 
 _May 26, 2026_
