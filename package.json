@@ -88,7 +88,7 @@
   },
   "engines": {
     "pnpm": "10.32.1",
-    "node": ">=26.2.0"
+    "node": "v26.3.0"
   },
   "packageManager": "pnpm@10.32.1",
   "pnpm": {

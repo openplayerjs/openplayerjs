@@ -76,10 +76,9 @@ _May 26, 2026_
 
 ## [3.5.2](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/player@3.5.1...@openplayerjs/player@3.5.2) (2026-05-18)
 
-
 ### Bug Fixes
 
-* **player:** Fixed script to add CHANGELOG when releasing a version; added missing command to update stylesheet in player before release ([45932b4](https://github.com/openplayerjs/openplayerjs/commit/45932b408d7476f9a1090f27a94ead78e067c07c))
+- **player:** Fixed script to add CHANGELOG when releasing a version; added missing command to update stylesheet in player before release ([45932b4](https://github.com/openplayerjs/openplayerjs/commit/45932b408d7476f9a1090f27a94ead78e067c07c))
 
 ## [3.5.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.1) (2026-05-18)
 
@@ -99,12 +98,11 @@ _May 17, 2026_
 
 ## [3.5.1](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/player@3.5.0...@openplayerjs/player@3.5.1) (2026-05-18)
 
-
 ### Bug Fixes
 
-* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
-* **player:** Fixed failing unit test; switched DOM by CSS in time delimiter to show it ([3063aec](https://github.com/openplayerjs/openplayerjs/commit/3063aeccad8ec589681dacd439aa4c82a9dc8729))
-* **player:** Fixed issue when selecting speed not being checked; added missing config to set speeds manually ([8ae756c](https://github.com/openplayerjs/openplayerjs/commit/8ae756c311766f7b0ff22eeaafe719de54cb6bfe))
+- **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+- **player:** Fixed failing unit test; switched DOM by CSS in time delimiter to show it ([3063aec](https://github.com/openplayerjs/openplayerjs/commit/3063aeccad8ec589681dacd439aa4c82a9dc8729))
+- **player:** Fixed issue when selecting speed not being checked; added missing config to set speeds manually ([8ae756c](https://github.com/openplayerjs/openplayerjs/commit/8ae756c311766f7b0ff22eeaafe719de54cb6bfe))
 
 ## [3.5.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.0) (2026-05-18)
 
@@ -143,31 +141,27 @@ _May 17, 2026_
 
 ## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/youtube@3.4.2...@openplayerjs/youtube@3.4.3) (2026-05-17)
 
-
 ### Bug Fixes
 
-* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+- **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
 
 ## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/ads@3.4.2...@openplayerjs/ads@3.4.3) (2026-05-17)
 
-
 ### Bug Fixes
 
-* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+- **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
 
 ## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/hls@3.4.2...@openplayerjs/hls@3.4.3) (2026-05-17)
 
-
 ### Bug Fixes
 
-* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+- **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
 
 ## [3.4.3](https://github.com/openplayerjs/openplayerjs/compare/@openplayerjs/core@3.4.2...@openplayerjs/core@3.4.3) (2026-05-17)
 
-
 ### Bug Fixes
 
-* **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
+- **docs:** Added missing configuration to update CHANGELOG if individual package is released ([b04d5f7](https://github.com/openplayerjs/openplayerjs/commit/b04d5f7eeb7ab51c66b6767d45343476d0cb59be))
 
 ## [3.4.3](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.4.3) (2026-05-17)
 
