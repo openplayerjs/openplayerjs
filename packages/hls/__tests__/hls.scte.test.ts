@@ -26,7 +26,9 @@ let capturedLevelUpdatedHandler: ((event: string, data: any) => void) | undefine
 jest.mock('hls.js', () => ({
   __esModule: true,
   default: class HlsMock {
-    static isSupported() { return true; }
+    static isSupported() {
+      return true;
+    }
     static Events: Record<string, string> = {
       MEDIA_ATTACHED: 'MEDIA_ATTACHED',
       MANIFEST_PARSED: 'MANIFEST_PARSED',
@@ -65,8 +67,12 @@ function makeCtx() {
     events,
     core,
     surface,
-    setSurface(s: any) { return s; },
-    resetSurface() { return surface; },
+    setSurface(s: any) {
+      return s;
+    },
+    resetSurface() {
+      return surface;
+    },
     activeSource: { src: 'https://example.com/live.m3u8', type: 'application/x-mpegURL' },
   } as any;
 }
@@ -180,5 +186,26 @@ describe('HlsMediaEngine — SCTE-35 OUT cue detection', () => {
       emitLevelUpdated({ 'ad-x': makeDateRange('ad-x', '0xFC') });
       engine.detach();
     }).not.toThrow();
+  });
+
+  test('startDate is undefined in cue when dateRange.startDate is not a Date', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = makeCtx();
+    const cues: ScteOutCue[] = [];
+    engine.onCue = (c) => cues.push(c);
+
+    engine.attach(ctx);
+    // Pass a dateRange where startDate is a string (not a Date instance)
+    emitLevelUpdated({
+      'no-date': {
+        attr: { 'SCTE35-OUT': '0xFC302F' },
+        plannedDuration: 15,
+        startDate: '2024-01-01T00:00:00Z', // string, not a Date
+      },
+    });
+
+    expect(cues).toHaveLength(1);
+    expect(cues[0].startDate).toBeUndefined();
+    engine.detach();
   });
 });

@@ -171,7 +171,10 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     kind: 'preroll' | 'midroll' | 'postroll' | 'auto',
     opts?: { suppressResume?: boolean }
   ) => Promise<void>;
-  _dispatchStartBreakGroup!: (breaks: AdsBreakConfig[], kind: 'preroll' | 'midroll' | 'postroll' | 'auto') => Promise<void>;
+  _dispatchStartBreakGroup!: (
+    breaks: AdsBreakConfig[],
+    kind: 'preroll' | 'midroll' | 'postroll' | 'auto'
+  ) => Promise<void>;
   _dispatchPlayBreakFromVast!: (
     input: VastInput,
     meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string; sourceType?: AdsSourceType },
@@ -179,7 +182,11 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   ) => Promise<boolean>;
   _dispatchGetVastXmlText!: (input: VastInput) => Promise<string>;
   _dispatchBuildParsedForNonLinear!: (xmlText: string) => XMLDocument | null;
-  _dispatchMountAdVideo!: (contentMedia: HTMLMediaElement, mediaFile: { fileURL: string; raw: any }, creative?: any) => void;
+  _dispatchMountAdVideo!: (
+    contentMedia: HTMLMediaElement,
+    mediaFile: { fileURL: string; raw: any },
+    creative?: any
+  ) => void;
   _dispatchStartAdPlayback!: () => void;
 
   private simidSession?: SimidSession;
@@ -511,7 +518,11 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     this.startingBreak = true;
     this.bus.emit('ads:break:start', { id, kind, at: b.at });
     try {
-      await this._dispatchPlayBreakFromVast(input, { kind, id, sourceType }, { suppressResumeOnSuccess: opts?.suppressResume });
+      await this._dispatchPlayBreakFromVast(
+        input,
+        { kind, id, sourceType },
+        { suppressResumeOnSuccess: opts?.suppressResume }
+      );
     } finally {
       this.startingBreak = false;
       this.bus.emit('ads:break:end', { id, kind, at: b.at });
@@ -1051,9 +1062,10 @@ export class CsaiAdStrategy implements AdSessionStrategy {
         if (shouldForceMute) {
           this.forcedMuteUntilInteraction = true;
           try {
-            if (v()) {
-              v()!.muted = true;
-              v()!.volume = 0;
+            const el = v();
+            if (el) {
+              el.muted = true;
+              el.volume = 0;
             }
           } catch {
             /* ignore */
@@ -1061,9 +1073,10 @@ export class CsaiAdStrategy implements AdSessionStrategy {
         } else {
           this.forcedMuteUntilInteraction = false;
           try {
-            if (v()) {
-              v()!.muted = this.ctx.core.muted;
-              v()!.volume = this.ctx.core.volume;
+            const el = v();
+            if (el) {
+              el.muted = this.ctx.core.muted;
+              el.volume = this.ctx.core.volume;
             }
           } catch {
             /* ignore */
@@ -1080,19 +1093,21 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     this.sessionUnsubs.push(
       events.on('cmd:setVolume', (x: any) => {
         const vol = Number(x);
-        if (!Number.isFinite(vol) || !v() || this.syncingVolume || this.forcedMuteUntilInteraction) return;
-        v()!.volume = vol;
+        const el = v();
+        if (!Number.isFinite(vol) || !el || this.syncingVolume || this.forcedMuteUntilInteraction) return;
+        el.volume = vol;
       })
     );
     this.sessionUnsubs.push(
       events.on('cmd:setMuted', (x: any) => {
-        if (!v() || this.syncingVolume) return;
+        const el = v();
+        if (!el || this.syncingVolume) return;
         if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) {
-          v()!.muted = true;
-          v()!.volume = 0;
+          el.muted = true;
+          el.volume = 0;
           return;
         }
-        v()!.muted = Boolean(x);
+        el.muted = Boolean(x);
       })
     );
   }

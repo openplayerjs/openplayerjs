@@ -221,7 +221,7 @@ export class Core {
     this.emit('cmd:setVolume', this._volume);
     this.emit('cmd:setMuted', this._muted);
     this.emit('cmd:setRate', this._playbackRate);
-    if (this._currentTime) this.emit('cmd:seek', this._currentTime);
+    if (this._currentTime !== 0) this.emit('cmd:seek', this._currentTime);
   }
 
   async whenReady(): Promise<void> {
@@ -597,7 +597,7 @@ export class Core {
         this.emit('cmd:setVolume', this._volume);
         this.emit('cmd:setMuted', this._muted);
         this.emit('cmd:setRate', this._playbackRate);
-        if (this._currentTime) this.emit('cmd:seek', this._currentTime);
+        if (this._currentTime !== 0) this.emit('cmd:seek', this._currentTime);
       });
     });
   }
