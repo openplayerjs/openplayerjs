@@ -171,7 +171,10 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     kind: 'preroll' | 'midroll' | 'postroll' | 'auto',
     opts?: { suppressResume?: boolean }
   ) => Promise<void>;
-  _dispatchStartBreakGroup!: (breaks: AdsBreakConfig[], kind: 'preroll' | 'midroll' | 'postroll' | 'auto') => Promise<void>;
+  _dispatchStartBreakGroup!: (
+    breaks: AdsBreakConfig[],
+    kind: 'preroll' | 'midroll' | 'postroll' | 'auto'
+  ) => Promise<void>;
   _dispatchPlayBreakFromVast!: (
     input: VastInput,
     meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string; sourceType?: AdsSourceType },
@@ -179,7 +182,11 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   ) => Promise<boolean>;
   _dispatchGetVastXmlText!: (input: VastInput) => Promise<string>;
   _dispatchBuildParsedForNonLinear!: (xmlText: string) => XMLDocument | null;
-  _dispatchMountAdVideo!: (contentMedia: HTMLMediaElement, mediaFile: { fileURL: string; raw: any }, creative?: any) => void;
+  _dispatchMountAdVideo!: (
+    contentMedia: HTMLMediaElement,
+    mediaFile: { fileURL: string; raw: any },
+    creative?: any
+  ) => void;
   _dispatchStartAdPlayback!: () => void;
 
   private simidSession?: SimidSession;
@@ -511,7 +518,11 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     this.startingBreak = true;
     this.bus.emit('ads:break:start', { id, kind, at: b.at });
     try {
-      await this._dispatchPlayBreakFromVast(input, { kind, id, sourceType }, { suppressResumeOnSuccess: opts?.suppressResume });
+      await this._dispatchPlayBreakFromVast(
+        input,
+        { kind, id, sourceType },
+        { suppressResumeOnSuccess: opts?.suppressResume }
+      );
     } finally {
       this.startingBreak = false;
       this.bus.emit('ads:break:end', { id, kind, at: b.at });
@@ -782,8 +793,9 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       });
       return true;
     } catch (err) {
-      this.bus.emit('ads:error', err);
-      this.ctx.events.emit('ads.error', { err });
+      const message = err instanceof Error ? err.message : String(err);
+      this.bus.emit('ads:error', { message, error: err });
+      this.ctx.events.emit('ads.error', { message, error: err });
       this.finish({
         resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
         suppressResume: opts?.suppressResumeOnError,

@@ -306,6 +306,58 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     expect(adVideo).not.toBeNull();
   });
 
+  test('waterfall: ads.error payload has message string and error object', async () => {
+    const networkErr = new Error('network error');
+    vastGetMock.mockRejectedValueOnce(networkErr).mockResolvedValueOnce(linearParsed());
+
+    const { ctx, bus } = makeCtx();
+    const errorPayloads: unknown[] = [];
+    bus.on('ads:error', (payload: unknown) => errorPayloads.push(payload));
+
+    const plugin = new AdsPlugin({
+      adSourcesMode: 'waterfall',
+      sources: [
+        { type: 'VAST', src: 'https://failing.example.com/vast' },
+        { type: 'VAST', src: 'https://working.example.com/vast' },
+      ],
+    });
+    plugin.setup(ctx);
+
+    (ctx.events as any).emit('cmd:play');
+    await waitForAdVideo();
+
+    expect(errorPayloads).toHaveLength(1);
+    const payload = errorPayloads[0] as { message: string; error: unknown };
+    expect(typeof payload.message).toBe('string');
+    expect(payload.message).toBe('network error');
+    expect(payload.error).toBe(networkErr);
+  });
+
+  test('waterfall: ads.error payload has message when non-Error is thrown', async () => {
+    vastGetMock.mockRejectedValueOnce('plain string error').mockResolvedValueOnce(linearParsed());
+
+    const { ctx, bus } = makeCtx();
+    const errorPayloads: unknown[] = [];
+    bus.on('ads:error', (payload: unknown) => errorPayloads.push(payload));
+
+    const plugin = new AdsPlugin({
+      adSourcesMode: 'waterfall',
+      sources: [
+        { type: 'VAST', src: 'https://failing.example.com/vast' },
+        { type: 'VAST', src: 'https://working.example.com/vast' },
+      ],
+    });
+    plugin.setup(ctx);
+
+    (ctx.events as any).emit('cmd:play');
+    await waitForAdVideo();
+
+    expect(errorPayloads).toHaveLength(1);
+    const payload = errorPayloads[0] as { message: string; error: unknown };
+    expect(payload.message).toBe('plain string error');
+    expect(payload.error).toBe('plain string error');
+  });
+
   test('waterfall with single source uses standard single-source path', async () => {
     vastGetMock.mockResolvedValue(linearParsed());
 
@@ -450,5 +502,74 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     const breaks = (plugin as any).resolvedBreaks;
     const vastBreaks = breaks.filter((b: any) => b.source?.type !== 'VMAP');
     expect(vastBreaks).toHaveLength(2);
+  });
+
+  test('playlist: plays first source ad on first cmd:play', async () => {
+    vastGetMock.mockResolvedValue(linearParsed());
+
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({
+      adSourcesMode: 'playlist',
+      sources: [
+        { type: 'VAST', src: 'https://ad1.example.com/vast' },
+        { type: 'VAST', src: 'https://ad2.example.com/vast' },
+      ],
+    });
+    plugin.setup(ctx);
+
+    (ctx.events as any).emit('cmd:play');
+    const adVideo = await waitForAdVideo();
+
+    expect(vastGetMock).toHaveBeenCalledWith('https://ad1.example.com/vast');
+    expect(adVideo).not.toBeNull();
+  });
+
+  test('playlist: ads.error payload has message string and error object', async () => {
+    const networkErr = new Error('fetch failed');
+    vastGetMock.mockRejectedValueOnce(networkErr).mockResolvedValueOnce(linearParsed());
+
+    const { ctx, bus } = makeCtx();
+    const errorPayloads: unknown[] = [];
+    bus.on('ads:error', (payload: unknown) => errorPayloads.push(payload));
+
+    const plugin = new AdsPlugin({
+      adSourcesMode: 'playlist',
+      sources: [
+        { type: 'VAST', src: 'https://failing.example.com/vast' },
+        { type: 'VAST', src: 'https://working.example.com/vast' },
+      ],
+    });
+    plugin.setup(ctx);
+
+    (ctx.events as any).emit('cmd:play');
+    // Flush enough microtasks for the first break to fail and error to emit
+    for (let i = 0; i < 10; i++) await Promise.resolve();
+
+    expect(errorPayloads).toHaveLength(1);
+    const payload = errorPayloads[0] as { message: string; error: unknown };
+    expect(typeof payload.message).toBe('string');
+    expect(payload.message).toBe('fetch failed');
+    expect(payload.error).toBe(networkErr);
+  });
+
+  test('playlist: all sources fetched even if one fails', async () => {
+    vastGetMock.mockRejectedValueOnce(new Error('source 1 failed')).mockResolvedValueOnce(linearParsed());
+
+    const { ctx } = makeCtx();
+    const plugin = new AdsPlugin({
+      adSourcesMode: 'playlist',
+      sources: [
+        { type: 'VAST', src: 'https://ad1.example.com/vast' },
+        { type: 'VAST', src: 'https://ad2.example.com/vast' },
+      ],
+    });
+    plugin.setup(ctx);
+
+    (ctx.events as any).emit('cmd:play');
+    // Allow first break to fail and second to be attempted
+    for (let i = 0; i < 15; i++) await Promise.resolve();
+
+    expect(vastGetMock).toHaveBeenCalledWith('https://ad1.example.com/vast');
+    expect(vastGetMock).toHaveBeenCalledWith('https://ad2.example.com/vast');
   });
 });
