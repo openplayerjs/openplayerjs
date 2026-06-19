@@ -33,7 +33,7 @@ export default defineConfig({
 
   webServer: {
     // Serve the entire repo root as static files; no bundling step needed.
-    command: 'npx serve . --listen 4173 --no-clipboard',
+    command: 'node_modules/.bin/serve . --listen 4173 --no-clipboard',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
