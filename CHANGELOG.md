@@ -1,5 +1,69 @@
 # Changelog
 
+## [3.5.4](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.5.4) (2026-06-19)
+
+_June 19, 2026_
+
+### `@openplayerjs/core@3.5.4`
+
+#### Features
+
+- **[core]** add source fallback with source:fallback event (9c160a8) @Rafael Miranda
+
+### `@openplayerjs/player@3.5.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.4`
+
+### `@openplayerjs/hls@3.5.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.4`
+
+### `@openplayerjs/ads@3.5.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.4`
+
+### `@openplayerjs/youtube@3.5.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.4`
+
+### General
+
+#### Bug Fixes
+
+- **[deps]** Upgraded Node version to 26.3.0 (400e370) @renovate[bot]
+- **[deps]** Updated lock (9d1e6b3) @renovate[bot]
+- **[repo]** Fix lockstep version skipping packages ahead of core (ca9bb1b) @Rafael Miranda
+
+#### Documentation
+
+- **[docs]** fix CDN links to use scoped packages with @latest (2ec8dca) @Rafael Miranda
+
+#### Chores
+
+- **[repo]** suppress Node deprecation warnings in test and e2e scripts (4a17a5e) @Rafael Miranda
+- **[deps]** update dependency @types/node to v24.13.1 ([#583](https://github.com/openplayerjs/openplayerjs/pull/583)) @renovate[bot]
+- **[deps]** update turbo monorepo to v2.9.17 ([#582](https://github.com/openplayerjs/openplayerjs/pull/582)) @renovate[bot]
+- **[deps]** pin dependencies (400e370) @renovate[bot]
+- **[deps]** update rollup to v4.61.1 ([#581](https://github.com/openplayerjs/openplayerjs/pull/581)) @renovate[bot]
+- **[deps]** update dependency prettier to v3.8.4 ([#580](https://github.com/openplayerjs/openplayerjs/pull/580)) @renovate[bot]
+- **[deps]** update rollup (9d1e6b3) @renovate[bot]
+- **[deps]** update actions/checkout digest to df4cb1c ([#574](https://github.com/openplayerjs/openplayerjs/pull/574)) @renovate[bot]
+- **[deps]** update github/codeql-action digest to 8aad20d ([#575](https://github.com/openplayerjs/openplayerjs/pull/575)) @renovate[bot]
+- **[deps]** update dependency turbo to v2.9.15 ([#570](https://github.com/openplayerjs/openplayerjs/pull/570)) @renovate[bot]
+- **[deps]** update dependency stylelint to v17.12.0 ([#571](https://github.com/openplayerjs/openplayerjs/pull/571)) @renovate[bot]
+
+#### Tests
+
+- **[repo]** add source-fallback e2e spec with full player UI (7f4915a) @Rafael Miranda
+
 ## [3.5.3](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.5.3) (2026-05-27)
 
 _May 26, 2026_
