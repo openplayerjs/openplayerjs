@@ -93,14 +93,17 @@
   "packageManager": "pnpm@10.32.1",
   "pnpm": {
     "overrides": {
+      "@babel/core": "7.29.7",
       "@xmldom/xmldom": "0.9.10",
       "basic-ftp": "5.3.1",
       "brace-expansion": "5.0.6",
       "defu": "6.1.7",
       "fast-uri": "3.1.2",
       "ip-address": "10.2.0",
+      "js-yaml": "4.2.0",
       "picomatch": "4.0.4",
-      "undici": "7.25.0"
+      "undici": "7.28.0",
+      "ws": "8.21.0"
     },
     "peerDependencyRules": {
       "allowedVersions": {
