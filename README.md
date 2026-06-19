@@ -89,7 +89,7 @@ All you need in your markup is a standard `<video>` or `<audio>` element with a 
 ```html
 <html>
   <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
   </head>
   <body>
     <video id="player" class="op-player__media" controls playsinline>
@@ -168,18 +168,18 @@ createUI(player, media, controls);
 If you prefer loading scripts from a CDN without a build step:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
 
 <video id="player" class="op-player__media" controls playsinline>
   <source src="/path/to/video.mp4" type="video/mp4" />
 </video>
 
 <!-- Core + UI -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
 <!-- Optional: HLS support -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/hls@latest/dist/openplayer-hls.js"></script>
 <!-- Optional: Ads support -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/ads@latest/dist/openplayer-ads.js"></script>
 
 <script>
   const player = new OpenPlayerJS('player', {

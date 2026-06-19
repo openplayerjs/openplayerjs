@@ -349,16 +349,16 @@ Then v3 keeps that workflow. The main differences are:
 **Updated CDN template (UMD meta-package):**
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.css" />
 
 <video id="player" class="op-player__media" controls playsinline>
   <source src="/video.mp4" type="video/mp4" />
 </video>
 
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/player@latest/dist/openplayer.js"></script>
 <!-- Optional add-ons: load before player.init() -->
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-hls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/openplayerjs/dist/openplayer-ads.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/hls@latest/dist/openplayer-hls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openplayerjs/ads@latest/dist/openplayer-ads.js"></script>
 
 <script>
   const player = new OpenPlayerJS('player', {
