@@ -4,6 +4,7 @@ export type PlayerConfig = {
   startVolume?: number;
   startPlaybackRate?: number;
   duration?: number;
+  sourceFallback?: boolean;
 };
 
 export const defaultConfiguration: PlayerConfig = {

@@ -74,13 +74,14 @@ await core.play();
 
 Pass options as the second argument to `new Core(...)`:
 
-| Option              | Type             | Default | Description                                                       |
-| ------------------- | ---------------- | ------- | ----------------------------------------------------------------- |
-| `plugins`           | `PlayerPlugin[]` | `[]`    | Plugins and engines to activate at startup                        |
-| `startTime`         | `number`         | `0`     | Initial playback position in seconds                              |
-| `startVolume`       | `number`         | `1`     | Initial volume from `0` to `1`                                    |
-| `startPlaybackRate` | `number`         | `1`     | Initial playback speed (`1` = normal, `2` = double, `0.5` = half) |
-| `duration`          | `number`         | `0`     | Override the detected duration. Use `Infinity` for live streams   |
+| Option              | Type             | Default | Description                                                                                                                                                                   |
+| ------------------- | ---------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugins`           | `PlayerPlugin[]` | `[]`    | Plugins and engines to activate at startup                                                                                                                                    |
+| `startTime`         | `number`         | `0`     | Initial playback position in seconds                                                                                                                                          |
+| `startVolume`       | `number`         | `1`     | Initial volume from `0` to `1`                                                                                                                                                |
+| `startPlaybackRate` | `number`         | `1`     | Initial playback speed (`1` = normal, `2` = double, `0.5` = half)                                                                                                             |
+| `duration`          | `number`         | `0`     | Override the detected duration. Use `Infinity` for live streams                                                                                                               |
+| `sourceFallback`    | `boolean`        | `false` | When `true`, automatically try the next `<source>` element when the current one fails. The `error` event still fires per failure; the `source:fallback` event tracks progress |
 
 ---
 
@@ -156,29 +157,30 @@ core.on('timeupdate', () => console.log(core.currentTime));
 core.on('error', (err) => console.error('media error', err));
 ```
 
-| Event                  | Payload              | When it fires                                                      |
-| ---------------------- | -------------------- | ------------------------------------------------------------------ |
-| `loadstart`            | —                    | The browser begins loading the media source                        |
-| `loadedmetadata`       | —                    | Duration and dimensions are known; safe to call `play()`           |
-| `durationchange`       | —                    | The reported duration changes (common during HLS live streams)     |
-| `play`                 | —                    | A play request was made (may fire before any frames are displayed) |
-| `playing`              | —                    | The first frame is rendered; playback is actually running          |
-| `pause`                | —                    | Playback was paused                                                |
-| `timeupdate`           | —                    | The current time updated during playback                           |
-| `seeking`              | —                    | The player is seeking to a new position                            |
-| `seeked`               | —                    | Seeking completed                                                  |
-| `waiting`              | —                    | Playback stalled while the buffer catches up                       |
-| `ended`                | —                    | The media finished playing                                         |
-| `volumechange`         | —                    | Volume or mute state changed                                       |
-| `ratechange`           | —                    | Playback rate changed                                              |
-| `error`                | `MediaError \| null` | A media error occurred                                             |
-| `source:set`           | `string`             | A new source URL was set on the player                             |
-| `player:interacted`    | —                    | The user interacted with the page for the first time               |
-| `player:destroy`       | —                    | The player is about to be destroyed                                |
-| `texttrack:add`        | `HTMLTrackElement`   | A new caption/subtitle track was appended                          |
-| `texttrack:remove`     | `HTMLTrackElement`   | A caption/subtitle track was removed                               |
-| `texttrack:listchange` | —                    | The list of available tracks changed                               |
-| `overlay:changed`      | —                    | The overlay state changed (used by ads, loaders, etc.)             |
+| Event                  | Payload                            | When it fires                                                                                                  |
+| ---------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `loadstart`            | —                                  | The browser begins loading the media source                                                                    |
+| `loadedmetadata`       | —                                  | Duration and dimensions are known; safe to call `play()`                                                       |
+| `durationchange`       | —                                  | The reported duration changes (common during HLS live streams)                                                 |
+| `play`                 | —                                  | A play request was made (may fire before any frames are displayed)                                             |
+| `playing`              | —                                  | The first frame is rendered; playback is actually running                                                      |
+| `pause`                | —                                  | Playback was paused                                                                                            |
+| `timeupdate`           | —                                  | The current time updated during playback                                                                       |
+| `seeking`              | —                                  | The player is seeking to a new position                                                                        |
+| `seeked`               | —                                  | Seeking completed                                                                                              |
+| `waiting`              | —                                  | Playback stalled while the buffer catches up                                                                   |
+| `ended`                | —                                  | The media finished playing                                                                                     |
+| `volumechange`         | —                                  | Volume or mute state changed                                                                                   |
+| `ratechange`           | —                                  | Playback rate changed                                                                                          |
+| `error`                | `MediaError \| null`               | A media error occurred (fires per source failure; state becomes `'error'` only when all sources are exhausted) |
+| `source:set`           | `string`                           | A new source URL was set on the player                                                                         |
+| `source:fallback`      | `{ failed: string; next: string }` | A source failed and the player is trying the next one (requires `sourceFallback: true`)                        |
+| `player:interacted`    | —                                  | The user interacted with the page for the first time                                                           |
+| `player:destroy`       | —                                  | The player is about to be destroyed                                                                            |
+| `texttrack:add`        | `HTMLTrackElement`                 | A new caption/subtitle track was appended                                                                      |
+| `texttrack:remove`     | `HTMLTrackElement`                 | A caption/subtitle track was removed                                                                           |
+| `texttrack:listchange` | —                                  | The list of available tracks changed                                                                           |
+| `overlay:changed`      | —                                  | The overlay state changed (used by ads, loaders, etc.)                                                         |
 
 > **HTML5 command events** (`cmd:play`, `cmd:pause`, `cmd:seek`, etc.) are lower-level bus messages intended for engines and plugins. In most cases you should use the higher-level `play` / `pause` / `timeupdate` / `ended` events instead.
 

@@ -5,6 +5,7 @@ export type PlayerEventPayloadMap = {
   'player:interacted': void;
   'player:destroy': void;
   'source:set': string;
+  'source:fallback': { failed: string; next: string };
   'overlay:changed': unknown;
 
   // Commands (requests)

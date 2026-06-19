@@ -249,18 +249,18 @@ createUI(core, video, controls);
 
 ### UI options
 
-| Option        | Type                     | Default   | Description                                                                      |
-| ------------- | ------------------------ | --------- | -------------------------------------------------------------------------------- |
-| `width`       | `number \| string`       | —         | Force a specific player width (applied to the wrapper)                           |
-| `height`      | `number \| string`       | —         | Force a specific player height (applied to the wrapper)                          |
-| `step`        | `number`                 | `0`       | Seek distance in seconds for keyboard shortcuts. `0` means use the default (5 s) |
-| `allowSkip`   | `boolean`                | `true`    | Allow seeking forward via the progress bar                                       |
-| `allowRewind` | `boolean`                | `true`    | Allow seeking backward via the progress bar                                      |
-| `labels`      | `Record<string, string>` | —         | Override built-in UI label strings (e.g. `play`, `pause`, `fullscreen`, etc.)    |
-| `speed`       | `{ rates?: number[] }`   | `{ rates: [0.5, 0.75, 1, 1.25, 1.5, 2] }` | Playback speed options shown in the Settings menu |
-| `controls`    | `ControlsConfig`         | see below | Layout of the built-in controls and auto-hide behaviour                          |
+| Option        | Type                     | Default                                   | Description                                                                      |
+| ------------- | ------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------- |
+| `width`       | `number \| string`       | —                                         | Force a specific player width (applied to the wrapper)                           |
+| `height`      | `number \| string`       | —                                         | Force a specific player height (applied to the wrapper)                          |
+| `step`        | `number`                 | `0`                                       | Seek distance in seconds for keyboard shortcuts. `0` means use the default (5 s) |
+| `allowSkip`   | `boolean`                | `true`                                    | Allow seeking forward via the progress bar                                       |
+| `allowRewind` | `boolean`                | `true`                                    | Allow seeking backward via the progress bar                                      |
+| `labels`      | `Record<string, string>` | —                                         | Override built-in UI label strings (e.g. `play`, `pause`, `fullscreen`, etc.)    |
+| `speed`       | `{ rates?: number[] }`   | `{ rates: [0.5, 0.75, 1, 1.25, 1.5, 2] }` | Playback speed options shown in the Settings menu                                |
+| `controls`    | `ControlsConfig`         | see below                                 | Layout of the built-in controls and auto-hide behaviour                          |
 
-> For engine/plugins and initial playback state options like `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, and `duration`, see `@openplayerjs/core`.
+> For engine/plugins, initial playback state, and resilience options — `plugins`, `startTime`, `startVolume`, `startPlaybackRate`, `duration`, and `sourceFallback` — see `@openplayerjs/core`.
 
 ---
 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OpenPlayerJS — Source fallback</title>
+  <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
+  <style>
+    body { background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; gap: 16px; }
+    #wrap { width: 100%; max-width: 854px; }
+    #status { color: #ccc; font-family: monospace; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <!--
+      Two sources: the first is intentionally broken so the player falls back
+      to the second automatically when sourceFallback: true is set.
+    -->
+    <video id="player" class="op-player__media" controls playsinline muted>
+      <source src="/broken-video-source.mp4" type="video/mp4" />
+      <source src="https://310f8760-d696-4c44-994c-91579dcd96c7.mdnplay.dev/shared-assets/videos/flower.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <div id="status">Waiting…</div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@openplayerjs/core":   "/packages/core/dist/index.js",
+        "@openplayerjs/player": "/packages/player/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { Core } from '@openplayerjs/core';
+    import { createUI, buildControls } from '@openplayerjs/player';
+
+    const media = document.querySelector('#player');
+    const status = document.querySelector('#status');
+
+    const core = new Core(media, {
+      sourceFallback: true,
+      plugins: [],
+    });
+
+    core.on('source:fallback', (payload) => {
+      window.__sourceFallbackPayload = payload;
+      status.textContent = `Fallback: ${payload.failed} → ${payload.next}`;
+    });
+
+    core.on('error', () => {
+      // The 'error' event fires for every media error, including handled ones.
+      // Only treat it as fatal when the player actually entered the error state —
+      // if tryNextSource() handled the error, state will be 'loading' here, not 'error'.
+      if (core.state.current === 'error') {
+        window.__playerError = true;
+        status.textContent = 'Error: all sources failed';
+      }
+    });
+
+    createUI(core, media, buildControls({
+      top: ['progress'],
+      'bottom-left': ['play', 'time', 'volume'],
+      'bottom-right': ['settings', 'fullscreen'],
+    }));
+
+    window.__core = core;
+  </script>
+</body>
+</html>

@@ -415,6 +415,38 @@ export class Core {
     return this;
   }
 
+  private tryNextSource(): boolean {
+    if (!this.config.sourceFallback || !this.detectedSources || this.detectedSources.length <= 1) {
+      return false;
+    }
+
+    const failed = this.detectedSources[0].src;
+    const next = this.detectedSources[1].src;
+
+    // Drop the failed source; the next one becomes index 0.
+    this.detectedSources = this.detectedSources.slice(1);
+
+    if (this.playerContext) {
+      try {
+        this.activeEngine?.detach?.(this.playerContext);
+      } catch {
+        // ignore
+      }
+      this.activeEngine = undefined;
+      this.playerContext = null;
+    }
+
+    // Reset to idle so load() can proceed.
+    // readyPromise is intentionally NOT reset: any pending whenReady() callers
+    // already hold a reference to it. The existing resolve/reject will be
+    // fulfilled by the new engine when it signals loadedmetadata or error.
+    this.state.transition('idle');
+
+    this.events.emit('source:fallback', { failed, next });
+    this.load();
+    return true;
+  }
+
   private bindFirstInteraction() {
     const doc = typeof document !== 'undefined' ? document : null;
     if (!doc) return;
@@ -480,6 +512,8 @@ export class Core {
     this.events.on('ended', () => this.state.transition('ended'));
 
     this.events.on('error', (e: MediaError | null) => {
+      if (this.tryNextSource()) return;
+
       this.state.transition('error');
       if (this.readyReject) {
         this.readyReject(e);
@@ -574,6 +608,10 @@ export class Core {
       this.readyResolve = resolve;
       this.readyReject = reject;
     });
+    // Suppress unhandled-rejection crashes when nobody calls whenReady().
+    // Callers that do care can still catch errors via whenReady().catch(fn) —
+    // they get the same promise reference and their handler runs too.
+    this.readyPromise.catch(() => {});
   }
 
   private readMediaSources(media: HTMLMediaElement): MediaSource[] {
