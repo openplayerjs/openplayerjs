@@ -7,11 +7,54 @@ Monorepo managed with **pnpm workspaces** and **Turbo**. All source lives under 
 ```
 packages/
   core/      — Player, EventBus, engines, plugin system, state, overlays
-  player/    — UI controls, createUI(), CSS
+  player/    — UI controls, createUI(), style.css  (@openplayerjs/player)
   hls/       — HlsMediaEngine (wraps hls.js)
   ads/       — AdsPlugin, strategies (CSAI/SSAI/Hybrid)
   youtube/   — YouTubeMediaEngine + YouTubeIframeAdapter
 ```
+
+---
+
+## Local Development
+
+```sh
+pnpm install          # install all workspace deps
+pnpm run build        # full build (required before running tests)
+pnpm run watch        # incremental rebuild on file changes (Turbo watch)
+pnpm run test         # Jest with coverage
+pnpm run test:watch   # Jest in watch mode
+pnpm run lint         # ESLint + stylelint
+pnpm run type-check   # tsc --noEmit across all packages
+pnpm run preflight    # pre-release sanity check script
+```
+
+For E2E testing (Playwright):
+
+```sh
+pnpm run test:e2e           # headless
+pnpm run test:e2e:ui        # with Playwright UI
+pnpm run test:e2e:debug     # debug mode
+```
+
+---
+
+## Releases
+
+Releases are automated via `scripts/orchestrate-release.cjs` using conventional commits.
+
+**Rules:**
+- Core changed → release core first, then **all dependents at the same version** (lockstep). All packages share one version number.
+- Core unchanged → release only packages that have their own changes since their last tag.
+
+```sh
+pnpm run release              # patch bump (default)
+pnpm run release:minor        # minor bump
+pnpm run release:major        # major bump
+pnpm run release:dry-run      # preview without writing anything
+pnpm run release:pack         # pack all packages to ./packed/ (for local testing)
+```
+
+Bump type is inferred from conventional commit prefixes (`feat:` → minor, `fix:` → patch, `BREAKING CHANGE` → major). Pass `--increment` to override.
 
 ---
 
@@ -141,6 +184,8 @@ const off = events.on('cmd:play', () => media.play());
 // Emit
 events.emit('media:timeupdate', currentTime);
 ```
+
+**To add a new event:** extend `PlayerEventPayloadMap` in `packages/core/src/core/events.ts`, then re-export from `packages/core/src/index.ts` if needed.
 
 Event naming conventions:
 
@@ -359,6 +404,34 @@ pnpm run lint         # ESLint (flat config) + stylelint for CSS
 ```
 
 Key enforced rules: `consistent-type-imports`, `consistent-type-definitions: type`, `import/no-cycle` (max depth 10), `no-unused-vars`.
+
+---
+
+## Ads Plugin Architecture
+
+### Ad source modes (`adSourcesMode`)
+
+`AdsPluginConfig.adSourcesMode` controls how multiple ad sources are handled per break:
+
+- `'waterfall'` (default) — single `AdsBreakConfig` with a `sources: AdsSource[]` array. `startBreak()` tries each source in order and stops on first success. Failed tries do **not** emit `cmd:play` between attempts (`suppressResumeOnError`).
+- `'playlist'` — one `AdsBreakConfig` per source; the interceptor loop plays them sequentially.
+- Single source — same as before (no `sources` array).
+
+`playedBreaks.add(id)` is always called after `startBreak()` regardless of success, preventing infinite retry.
+
+### `resumeContent` default
+
+`resumeAfter = (this.cfg.resumeContent !== false) && meta.kind !== 'postroll'`
+
+`resumeContent` is **opt-out** (`!== false`), not opt-in. Using `=== true` means unset config defaults to `false` and content never resumes.
+
+### `preload="none"` VMAP deferral
+
+VMAP fetch starts synchronously at the top of the first `cmd:play` handler (not in `rebuildSchedule()`). This ensures `vmapPending=true` is captured before the eager-pause check runs.
+
+### `source:set` handler
+
+Calls `clearSession()` and also resets: `active=false`, `contentMedia=undefined`, overlay hidden, releases playback lease, deactivates `overlayManager`, clears `vmapLoadPromise`/`vmapPending`/`pendingVmapSrc`. This prevents stuck `active=true` state after source switches.
 
 ---
 
