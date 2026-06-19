@@ -12,7 +12,7 @@ overrides:
   fast-uri: 3.1.2
   ip-address: 10.2.0
   picomatch: 4.0.4
-  undici: 7.25.0
+  undici: 7.28.0
 
 importers:
 
@@ -4860,8 +4860,8 @@ packages:
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
-  undici@7.25.0:
-    resolution: {integrity: sha512-xXnp4kTyor2Zq+J1FfPI6Eq3ew5h6Vl0F/8d9XU5zZQf1tX9s2Su1/3PiMmUANFULpmksxkClamIZcaUqryHsQ==}
+  undici@7.28.0:
+    resolution: {integrity: sha512-cRZYrTDwWznlnRiPjggAGxZXanty6M8RV1ff8Wm4LWXBp7/IG8v5DnOm74DtUBp9OONpK75YlPnIjQqX0dBDtA==}
     engines: {node: '>=20.18.1'}
 
   unicorn-magic@0.4.0:
@@ -9733,7 +9733,7 @@ snapshots:
       proxy-agent: 6.5.0
       semver: 7.7.3
       tinyglobby: 0.2.15
-      undici: 7.25.0
+      undici: 7.28.0
       url-join: 5.0.0
       wildcard-match: 5.1.4
       yargs-parser: 21.1.1
@@ -10355,7 +10355,7 @@ snapshots:
 
   undici-types@7.18.2: {}
 
-  undici@7.25.0: {}
+  undici@7.28.0: {}
 
   unicorn-magic@0.4.0: {}
 
