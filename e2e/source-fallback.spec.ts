@@ -24,6 +24,22 @@ test.describe('Source fallback', () => {
     await expect(page.locator(sel.settings)).toBeVisible();
   });
 
+  // ── default enabled ────────────────────────────────────────────────────────
+
+  test('sourceFallback is enabled by default — no explicit config needed', async ({ page }) => {
+    await abortFirstSource(page);
+    await loadExample(page, PAGE);
+
+    // The fallback fires without sourceFallback being set in the config,
+    // because multiple <source> tags enable it automatically.
+    await page.waitForFunction(() => (window as unknown as Record<string, unknown>).__sourceFallbackPayload, {
+      timeout: 10_000,
+    });
+
+    const hasError = await page.evaluate(() => (window as unknown as Record<string, unknown>).__playerError);
+    expect(hasError).toBeFalsy();
+  });
+
   // ── fallback fires ─────────────────────────────────────────────────────────
 
   test('source:fallback event fires with the failed and next source URLs', async ({ page }) => {

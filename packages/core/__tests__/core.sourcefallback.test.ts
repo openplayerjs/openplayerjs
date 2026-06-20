@@ -54,15 +54,53 @@ describe('source fallback', () => {
     document.body.innerHTML = '';
   });
 
-  // ── default (disabled) ────────────────────────────────────────────────────
+  // ── default (enabled for <source> tags) ─────────────────────────────────
 
-  test('without sourceFallback, error transitions to error state immediately even with multiple sources', async () => {
+  test('sourceFallback is enabled by default: second <source> tag is tried after first fails', async () => {
+    const media = document.createElement('audio');
+    media.appendChild(makeAudioSource(1)); // fails
+    media.appendChild(makeVideoSource(1)); // succeeds
+    document.body.appendChild(media);
+
+    const p = new Core(media, { plugins: [new FailingEngine(), new SucceedingEngine()] });
+    await Promise.resolve();
+
+    expect(p.state.current).toBe('ready');
+  });
+
+  test('with sourceFallback: false, error transitions to error state immediately even with multiple sources', async () => {
     const media = document.createElement('audio');
     media.appendChild(makeAudioSource(1));
     media.appendChild(makeAudioSource(2));
     document.body.appendChild(media);
 
-    const p = new Core(media, { plugins: [new FailingEngine()] });
+    const p = new Core(media, { sourceFallback: false, plugins: [new FailingEngine()] });
+    await Promise.resolve();
+
+    expect(p.state.current).toBe('error');
+  });
+
+  test('single programmatic src does not trigger fallback even with default sourceFallback: true', async () => {
+    class HighPriorityFailingEngine {
+      name = 'hp-failing-engine';
+      version = '0';
+      capabilities = ['media-engine'];
+      priority = 999;
+      canPlay(_s: MediaSource) {
+        return true;
+      }
+      attach(ctx: MediaEngineContext) {
+        ctx.events.emit('error', null);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      detach() {}
+    }
+
+    const media = document.createElement('audio');
+    document.body.appendChild(media);
+
+    const p = new Core(media, { plugins: [new HighPriorityFailingEngine()] });
+    p.src = 'https://example.com/audio-1.mp3';
     await Promise.resolve();
 
     expect(p.state.current).toBe('error');

@@ -14,7 +14,8 @@
   <div id="wrap">
     <!--
       Two sources: the first is intentionally broken so the player falls back
-      to the second automatically when sourceFallback: true is set.
+      to the second automatically. sourceFallback is true by default when
+      multiple <source> tags are present — no extra config needed.
     -->
     <video id="player" class="op-player__media" controls playsinline muted>
       <source src="/broken-video-source.mp4" type="video/mp4" />
@@ -38,10 +39,7 @@
     const media = document.querySelector('#player');
     const status = document.querySelector('#status');
 
-    const core = new Core(media, {
-      sourceFallback: true,
-      plugins: [],
-    });
+    const core = new Core(media, { plugins: [] });
 
     core.on('source:fallback', (payload) => {
       window.__sourceFallbackPayload = payload;

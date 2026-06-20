@@ -7,6 +7,23 @@ test.describe('Live — HLS live stream', () => {
     await loadExample(page, '/examples/live.html');
   });
 
+  // ── isLive auto-detection ──────────────────────────────────────────────────
+
+  test('core.isLive is true after live stream starts playing', async ({ page }) => {
+    await clickPlay(page);
+    await waitForPlayback(page, 1);
+
+    const isLive = await page.evaluate(() => (window as any).__core?.isLive);
+    expect(isLive).toBe(true);
+  });
+
+  test('current time control is hidden by default during live playback', async ({ page }) => {
+    await clickPlay(page);
+    await waitForPlayback(page, 1);
+
+    await expect(page.locator(sel.currentTime)).toHaveAttribute('aria-hidden', 'true');
+  });
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   test('renders player wrapper and controls', async ({ page }) => {
@@ -133,5 +150,26 @@ test.describe('Live — HLS live stream', () => {
     // Turn OFF again — confirm the toggle is reversible.
     await captionsBtn.click();
     await expect(captionsBtn).toHaveAttribute('aria-pressed', 'false', { timeout: 3_000 });
+  });
+});
+
+test.describe('Live — showLiveCurrentTime', () => {
+  test.beforeEach(async ({ page }) => {
+    await loadExample(page, '/examples/live-show-current-time.html');
+  });
+
+  test('current time control is visible during live playback when showLiveCurrentTime is enabled', async ({ page }) => {
+    await clickPlay(page);
+    await waitForPlayback(page, 1);
+
+    await expect(page.locator(sel.currentTime)).toHaveAttribute('aria-hidden', 'false');
+  });
+
+  test('current time value is non-zero during live playback', async ({ page }) => {
+    await clickPlay(page);
+    await waitForPlayback(page, 1);
+
+    const text = await page.locator(sel.currentTime).innerText();
+    expect(text).not.toBe('0:00');
   });
 });

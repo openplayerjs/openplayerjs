@@ -19,6 +19,7 @@ export type PlayerUIConfig = PlayerConfig & {
   allowSkip?: boolean;
   allowRewind?: boolean;
   speed?: SpeedConfig;
+  showLiveCurrentTime?: boolean;
 };
 
 export const DEFAULT_SPEED_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
@@ -69,6 +70,7 @@ export type ResolvedUIConfig = {
   allowRewind: boolean;
   step: number;
   speed: Required<SpeedConfig>;
+  showLiveCurrentTime: boolean;
   width?: string | number;
   height?: string | number;
   labels: Record<string, string>;
@@ -80,6 +82,7 @@ export function resolveUIConfig(coreOrConfig: Core | PlayerConfig): ResolvedUICo
   const allowSkip = (config as any).allowSkip ?? defaultUIConfiguration.allowSkip;
   const allowRewind = (config as any).allowRewind ?? defaultUIConfiguration.allowRewind;
   const step = (config as any).step ?? defaultUIConfiguration.step;
+  const showLiveCurrentTime = (config as any).showLiveCurrentTime ?? false;
   const width = (config as any).width;
   const height = (config as any).height;
 
@@ -98,10 +101,11 @@ export function resolveUIConfig(coreOrConfig: Core | PlayerConfig): ResolvedUICo
       (config as any).allowRewind = allowRewind;
       (config as any).step = step;
       (config as any).speed = speed;
+      (config as any).showLiveCurrentTime = showLiveCurrentTime;
     } catch {
       // ignore
     }
   }
 
-  return { allowSkip, allowRewind, step, speed, width, height, labels };
+  return { allowSkip, allowRewind, step, speed, showLiveCurrentTime, width, height, labels };
 }

@@ -409,4 +409,64 @@ describe('core/player branches', () => {
 
     expect(seeks).toEqual([30]);
   });
+
+  // ── isLive from Infinity duration ─────────────────────────────────────────
+
+  test('isLive is set to true when durationchange fires with Infinity duration', async () => {
+    const media = document.createElement('video');
+    media.src = 'https://example.com/live.m3u8';
+    document.body.appendChild(media);
+
+    const p = new Core(media, { plugins: [new EngineA()] });
+    await Promise.resolve();
+
+    expect(p.isLive).toBe(false);
+
+    Object.defineProperty(media, 'duration', { value: Infinity, configurable: true });
+    p.events.emit('durationchange');
+
+    expect(p.isLive).toBe(true);
+
+    document.body.removeChild(media);
+  });
+
+  test('isLive resets to false when a new source is set via src setter', async () => {
+    const media = document.createElement('video');
+    media.src = 'https://example.com/live.m3u8';
+    document.body.appendChild(media);
+
+    const p = new Core(media, { plugins: [new EngineA()] });
+    await Promise.resolve();
+
+    Object.defineProperty(media, 'duration', { value: Infinity, configurable: true });
+    p.events.emit('durationchange');
+    expect(p.isLive).toBe(true);
+
+    Object.defineProperty(media, 'duration', { value: 120, configurable: true });
+    p.src = 'https://example.com/vod.mp4';
+    expect(p.isLive).toBe(false);
+
+    document.body.removeChild(media);
+  });
+
+  test('isLive resets to false at the start of each load() call', async () => {
+    const media = document.createElement('video');
+    media.src = 'https://example.com/live.m3u8';
+    document.body.appendChild(media);
+
+    const p = new Core(media, { plugins: [new EngineA()] });
+    await Promise.resolve();
+
+    Object.defineProperty(media, 'duration', { value: Infinity, configurable: true });
+    p.events.emit('durationchange');
+    expect(p.isLive).toBe(true);
+
+    (p as any).state.transition('idle');
+    Object.defineProperty(media, 'duration', { value: 300, configurable: true });
+    p.load();
+
+    expect(p.isLive).toBe(false);
+
+    document.body.removeChild(media);
+  });
 });

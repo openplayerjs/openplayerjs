@@ -1,6 +1,7 @@
 import { formatTime, generateISODateTime } from '@openplayerjs/core';
 import type { Control } from '../control';
 import { BaseControl } from './base';
+import { resolveUIConfig } from '../configuration';
 
 export class CurrentTimeControl extends BaseControl {
   id = 'currentTime';
@@ -8,6 +9,7 @@ export class CurrentTimeControl extends BaseControl {
 
   protected build(): HTMLElement {
     const core = this.core;
+    const { showLiveCurrentTime } = resolveUIConfig(core);
 
     const el = document.createElement('time');
     el.className = 'op-controls__current';
@@ -24,7 +26,7 @@ export class CurrentTimeControl extends BaseControl {
         return;
       }
 
-      if (core.isLive) {
+      if (core.isLive && !showLiveCurrentTime) {
         el.setAttribute('aria-hidden', 'true');
         return;
       }

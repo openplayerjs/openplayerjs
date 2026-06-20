@@ -141,6 +141,7 @@ export class Core {
         this.activeEngine = undefined;
         this.playerContext = null;
       }
+      this.isLive = false;
       this.state.transition('idle');
       this._currentTime = 0;
       this.readyPromise = undefined;
@@ -200,6 +201,7 @@ export class Core {
   load() {
     if (this.state.current !== 'idle') return;
 
+    this.isLive = false;
     this.emit('cmd:startLoad');
     this.createReadyPromise();
 
@@ -534,6 +536,7 @@ export class Core {
       try {
         const d = this.config.duration || this.activeSurface.duration;
         this._duration = d;
+        if (d === Infinity) this.isLive = true;
       } catch {
         // ignore
       }

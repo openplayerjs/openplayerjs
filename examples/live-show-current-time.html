@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>OpenPlayerJS — HLS live streaming playback</title>
+  <title>OpenPlayerJS — HLS live streaming with current time visible</title>
   <link rel="stylesheet" href="/packages/player/dist/openplayer.css" />
   <style>
     body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
@@ -15,13 +15,6 @@
       <source
         src="https://media-tyo.hls.nhkworld.jp/hls/w/live/master.m3u8"
         type="application/x-mpegURL"
-      />
-      <track
-        kind="subtitles"
-        src="/examples/captions/captions-en.vtt"
-        srclang="en"
-        label="English"
-        default
       />
     </video>
   </div>
@@ -42,6 +35,7 @@
 
     const media = document.querySelector('#player');
     const core = new Core(media, {
+      showLiveCurrentTime: true,
       plugins: [
         new HlsMediaEngine({ enableWorker: true, lowLatencyMode: false }),
       ],
@@ -50,7 +44,7 @@
     createUI(core, media, buildControls({
       top: ['progress'],
       'bottom-left': ['play', 'time', 'volume'],
-      'bottom-right': ['captions', 'settings', 'fullscreen'],
+      'bottom-right': ['settings', 'fullscreen'],
     }));
 
     window.__core = core;
