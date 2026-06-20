@@ -63,7 +63,6 @@ export class Core {
     this.media.currentTime = this.config.startTime || this.media.currentTime;
     this._currentTime = this.config.startTime || this.activeSurface.currentTime;
     this._duration = this.config.duration || this.activeSurface.duration;
-    if (this._duration === Infinity) this.isLive = true;
 
     const initialVolume = clamp01(this.config.startVolume ?? this.activeSurface.volume);
     this.activeSurface.volume = initialVolume;

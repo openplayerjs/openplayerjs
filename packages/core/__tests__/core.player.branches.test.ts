@@ -469,16 +469,4 @@ describe('core/player branches', () => {
 
     document.body.removeChild(media);
   });
-
-  test('isLive is true immediately from constructor when config.duration is Infinity', () => {
-    const media = document.createElement('video');
-    media.src = 'https://example.com/live.m3u8';
-    document.body.appendChild(media);
-
-    const p = new Core(media, { plugins: [], duration: Infinity });
-
-    expect(p.isLive).toBe(true);
-
-    document.body.removeChild(media);
-  });
 });
