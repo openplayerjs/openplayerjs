@@ -899,6 +899,45 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
   });
 
   // -------------------------------------------------------------------------
+  // 2b. vmapWasPending && !shouldInterceptNow → re-emits cmd:play
+  // -------------------------------------------------------------------------
+
+  test('preload="none" VMAP with no preroll breaks re-emits cmd:play to resume content', async () => {
+    const video = document.createElement('video');
+    video.setAttribute('preload', 'none');
+    const { ctx, bus } = makeCtx({}, video);
+
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
+    });
+    (globalThis as any).fetch = fetchMock;
+
+    // VMAP returns no ad breaks — no preroll to intercept
+    (VMAP as any).__breaks = [];
+
+    const plugin = new AdsPlugin({
+      sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
+      interceptPlayForPreroll: true,
+    });
+    plugin.setup(ctx);
+
+    const plays: string[] = [];
+    bus.on('cmd:play', () => plays.push('play'));
+
+    // Fire the first cmd:play — intercepted, VMAP fetch starts
+    bus.emit('cmd:play');
+
+    // Let the deferred VMAP fetch resolve (fetch → parse → schedule)
+    await flushPromises(15);
+
+    // The interceptor found no preroll: it must re-emit cmd:play so content starts
+    expect(plays.length).toBeGreaterThanOrEqual(1);
+    // Plugin must not be in active state (no ad played)
+    expect((plugin as any).active).toBe(false);
+  });
+
+  // -------------------------------------------------------------------------
   // 3. playBreakFromVast – active=true guard returns false immediately
   // -------------------------------------------------------------------------
 

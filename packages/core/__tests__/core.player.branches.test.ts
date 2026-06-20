@@ -382,4 +382,31 @@ describe('core/player branches', () => {
     p.destroy();
     expect(detachSpy).toHaveBeenCalled();
   });
+
+  test('startTime=0 does not emit cmd:seek on attach (zero is falsy but valid)', async () => {
+    const media = document.createElement('video');
+    media.src = 'https://example.com/a.mp4';
+    const p = new Core(media, { plugins: [new EngineA()], startTime: 0 });
+
+    const seeks: number[] = [];
+    p.events.on('cmd:seek', (t: number) => seeks.push(t));
+
+    await Promise.resolve();
+
+    // startTime of 0 must NOT trigger cmd:seek — seeking to 0 is the default position
+    expect(seeks).toHaveLength(0);
+  });
+
+  test('startTime>0 emits cmd:seek on attach', async () => {
+    const media = document.createElement('video');
+    media.src = 'https://example.com/a.mp4';
+    const p = new Core(media, { plugins: [new EngineA()], startTime: 30 });
+
+    const seeks: number[] = [];
+    p.events.on('cmd:seek', (t: number) => seeks.push(t));
+
+    await Promise.resolve();
+
+    expect(seeks).toEqual([30]);
+  });
 });

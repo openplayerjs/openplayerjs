@@ -362,10 +362,10 @@ class StubAdapter implements IframeMediaAdapter {
 
 85% branches / functions / lines / statements globally. YouTube package is excluded from coverage collection. `umd.ts` and `index.ts` barrel files are also excluded.
 
-### Coverage gaps (as of Apr 2026)
+### Coverage gaps (as of Jun 2026)
 
 - `packages/youtube/` — excluded from thresholds; only basic engine lifecycle tested
-- `packages/hls/` — SCTE-35 cue parsing has minimal coverage; error recovery paths partially covered
+- `packages/ads/src/strategies/csai.ts` — weakest area (~74% branches); uncovered paths include SIMID, OMID, and HLS-engine-for-ad-video paths which require external dependencies and full browser contexts not available in jsdom
 - Async race conditions in surface swapping (Core.load with concurrent attach/detach)
 
 ---

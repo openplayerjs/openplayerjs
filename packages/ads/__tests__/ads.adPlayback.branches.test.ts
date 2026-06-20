@@ -340,3 +340,78 @@ describe('AdsPlugin player:interacted event', () => {
     bus.emit('player:interacted');
   });
 });
+
+// ─── shouldForceMute: cmd:play during ad session ─────────────────────────────
+
+describe('AdsPlugin: cmd:play handler during ad — shouldForceMute branches', () => {
+  it('restores player volume on cmd:play when content is not autoplay (shouldForceMute=false)', async () => {
+    vastGetMock.mockResolvedValueOnce(linearVast());
+
+    const contentVideo = document.createElement('video');
+    // autoplay is NOT set — shouldForceMute evaluates to false
+    document.body.appendChild(contentVideo);
+
+    const { ctx, bus } = makeCtx(contentVideo);
+    // Set known volume/muted state on core for the else-branch to copy to the ad video
+    (ctx.core as unknown as { muted: boolean }).muted = false;
+    (ctx.core as unknown as { volume: number }).volume = 0.7;
+
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
+    plugin.setup(ctx);
+
+    const play = plugin.playAds('https://example.com/vast.xml');
+    await Promise.resolve();
+
+    const adVideo = await waitForEl<HTMLVideoElement>('video.op-ads__media');
+    if (!adVideo) {
+      await play;
+      return;
+    }
+
+    // Fire cmd:play — shouldForceMute=false → else branch: restores player volume
+    bus.emit('cmd:play');
+
+    // forcedMuteUntilInteraction must NOT have been set
+    expect((plugin as unknown as { forcedMuteUntilInteraction: boolean }).forcedMuteUntilInteraction).toBe(false);
+    // Ad video should have the player's muted/volume applied
+    expect(adVideo.muted).toBe(false);
+    expect(adVideo.volume).toBe(0.7);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await play;
+  });
+
+  it('forces ad video muted when content has autoplay and no user gesture', async () => {
+    vastGetMock.mockResolvedValueOnce(linearVast());
+
+    // Content video with autoplay=true (simulates an autoplay page)
+    const contentVideo = document.createElement('video');
+    contentVideo.autoplay = true;
+    document.body.appendChild(contentVideo);
+
+    const { ctx, bus } = makeCtx(contentVideo);
+    // userInteracted stays false (autoplay, no gesture)
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
+    plugin.setup(ctx);
+
+    const play = plugin.playAds('https://example.com/vast.xml');
+    await Promise.resolve();
+
+    const adVideo = await waitForEl<HTMLVideoElement>('video.op-ads__media');
+    if (!adVideo) {
+      await play;
+      return;
+    }
+
+    // Fire cmd:play while ad is active (simulates autoplay path cmd:play)
+    // userPlayIntent=false + contentVideo.autoplay=true + userInteracted=false → shouldForceMute=true
+    bus.emit('cmd:play');
+
+    expect((plugin as unknown as { forcedMuteUntilInteraction: boolean }).forcedMuteUntilInteraction).toBe(true);
+    expect(adVideo.muted).toBe(true);
+    expect(adVideo.volume).toBe(0);
+
+    adVideo.dispatchEvent(new Event('ended'));
+    await play;
+  });
+});

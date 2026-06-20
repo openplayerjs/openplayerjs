@@ -395,6 +395,95 @@ test('seeked with non-finite duration announces only current time', () => {
   expect(el).toBeTruthy();
 });
 
+test('seekFromClientX: no-op when duration is not finite (line 162)', () => {
+  const v = document.createElement('video');
+  v.src = 'https://example.com/video.mp4';
+  document.body.appendChild(v);
+  const p = new Core(v, { plugins: [] });
+  // Leave duration as NaN (jsdom default) — non-finite path should bail early
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  el.getBoundingClientRect = () => ({ left: 0, top: 0, right: 100, bottom: 20, width: 100, height: 20 }) as DOMRect;
+
+  const before = p.media.currentTime;
+  const clickEvt = new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 50 });
+  el.dispatchEvent(clickEvt);
+
+  // currentTime must not change — non-finite duration caused early return
+  expect(p.media.currentTime).toBe(before);
+});
+
+test('seekFromClientX: allowRewind=false blocks seeking backward', () => {
+  const v = document.createElement('video');
+  v.src = 'https://example.com/video.mp4';
+  document.body.appendChild(v);
+  // Pass allowRewind=false via config so resolveUIConfig picks it up
+  const p = new Core(v, { plugins: [], allowRewind: false } as any);
+  Object.defineProperty(p.media, 'duration', { value: 100, configurable: true });
+  p.media.currentTime = 50;
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  // Mock getBoundingClientRect so pct = clientX / 100 (left=0, width=100)
+  el.getBoundingClientRect = () => ({ left: 0, top: 0, right: 100, bottom: 20, width: 100, height: 20 }) as DOMRect;
+
+  // Click at clientX=10 → pct=0.1 → val=10, which is < currentTime(50) → blocked by allowRewind=false
+  const clickEvt = new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 10 });
+  el.dispatchEvent(clickEvt);
+
+  // currentTime must NOT have changed (seek backward was blocked)
+  expect(p.media.currentTime).toBe(50);
+});
+
+test('seekFromClientX: allowSkip=false blocks seeking forward', () => {
+  const v = document.createElement('video');
+  v.src = 'https://example.com/video.mp4';
+  document.body.appendChild(v);
+  // Pass allowSkip=false via config so resolveUIConfig picks it up
+  const p = new Core(v, { plugins: [], allowSkip: false } as any);
+  Object.defineProperty(p.media, 'duration', { value: 100, configurable: true });
+  p.media.currentTime = 20;
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  el.getBoundingClientRect = () => ({ left: 0, top: 0, right: 100, bottom: 20, width: 100, height: 20 }) as DOMRect;
+
+  // Click at clientX=90 → pct=0.9 → val=90, which is > currentTime(20) → blocked by allowSkip=false
+  const clickEvt = new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 90 });
+  el.dispatchEvent(clickEvt);
+
+  // currentTime must NOT have changed (seek forward was blocked)
+  expect(p.media.currentTime).toBe(20);
+});
+
+test('seekFromClientX: seek is allowed when val equals currentTime (no rewind, no skip)', () => {
+  const v = document.createElement('video');
+  v.src = 'https://example.com/video.mp4';
+  document.body.appendChild(v);
+  const p = new Core(v, { plugins: [], allowRewind: false, allowSkip: false } as any);
+  Object.defineProperty(p.media, 'duration', { value: 100, configurable: true });
+  p.media.currentTime = 50;
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  document.body.appendChild(el);
+
+  el.getBoundingClientRect = () => ({ left: 0, top: 0, right: 100, bottom: 20, width: 100, height: 20 }) as DOMRect;
+
+  // Click at clientX=50 → pct=0.5 → val=50, equal to currentTime → neither branch blocks it
+  const clickEvt = new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 50 });
+  el.dispatchEvent(clickEvt);
+
+  expect(p.media.currentTime).toBe(50);
+});
+
 test('pointermove middle position covers pos -= half (line 293) and out-of-range percentage hides tooltip (line 296)', () => {
   const p = makeCore();
   (p.media as any).duration = 100;

@@ -1063,9 +1063,10 @@ export class CsaiAdStrategy implements AdSessionStrategy {
         if (shouldForceMute) {
           this.forcedMuteUntilInteraction = true;
           try {
-            if (v()) {
-              v()!.muted = true;
-              v()!.volume = 0;
+            const el = v();
+            if (el) {
+              el.muted = true;
+              el.volume = 0;
             }
           } catch {
             /* ignore */
@@ -1073,9 +1074,10 @@ export class CsaiAdStrategy implements AdSessionStrategy {
         } else {
           this.forcedMuteUntilInteraction = false;
           try {
-            if (v()) {
-              v()!.muted = this.ctx.core.muted;
-              v()!.volume = this.ctx.core.volume;
+            const el = v();
+            if (el) {
+              el.muted = this.ctx.core.muted;
+              el.volume = this.ctx.core.volume;
             }
           } catch {
             /* ignore */
@@ -1092,19 +1094,21 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     this.sessionUnsubs.push(
       events.on('cmd:setVolume', (x: any) => {
         const vol = Number(x);
-        if (!Number.isFinite(vol) || !v() || this.syncingVolume || this.forcedMuteUntilInteraction) return;
-        v()!.volume = vol;
+        const el = v();
+        if (!Number.isFinite(vol) || !el || this.syncingVolume || this.forcedMuteUntilInteraction) return;
+        el.volume = vol;
       })
     );
     this.sessionUnsubs.push(
       events.on('cmd:setMuted', (x: any) => {
-        if (!v() || this.syncingVolume) return;
+        const el = v();
+        if (!el || this.syncingVolume) return;
         if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) {
-          v()!.muted = true;
-          v()!.volume = 0;
+          el.muted = true;
+          el.volume = 0;
           return;
         }
-        v()!.muted = Boolean(x);
+        el.muted = Boolean(x);
       })
     );
   }
