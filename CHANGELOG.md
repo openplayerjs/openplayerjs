@@ -1,5 +1,56 @@
 # Changelog
 
+## [3.5.5](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.5.5) (2026-06-20)
+
+_June 19, 2026_
+
+### `@openplayerjs/player@3.5.5`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.5`
+
+### `@openplayerjs/hls@3.5.5`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.5`
+
+### `@openplayerjs/ads@3.5.5`
+
+#### Bug Fixes
+
+- **[ads]** normalize ads.error payload to include message string and error object ([#586](https://github.com/openplayerjs/openplayerjs/pull/586)) @Rafael Miranda
+
+### `@openplayerjs/youtube@3.5.5`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.5`
+
+### General
+
+#### Bug Fixes
+
+- **[core,ads,hls,player]** fix zero-seek bug, v() caching, and expand meaningful test coverage ([#587](https://github.com/openplayerjs/openplayerjs/pull/587)) @Rafael Miranda
+  - core: fix startTime=0 silently skipped by falsy check (if (this._currentTime) → !== 0)
+  - ads/csai: cache v() getter in cmd:play/setVolume/setMuted handlers to prevent stale-ref bugs
+  - tests: add startTime=0/30 seek tests, shouldForceMute (autoplay/non-autoplay) paths,
+  - CLAUDE.md: update coverage gap note (csai.ts is the remaining weak spot)
+
+#### Documentation
+
+- **[repo]** add local dev, release workflow, ads architecture, and event extension guidance ([#585](https://github.com/openplayerjs/openplayerjs/pull/585)) @Rafael Miranda
+  - Add Local Development section with all pnpm scripts (build, watch, test, e2e, lint, type-check)
+  - Add Releases section documenting the lockstep vs. independent release rules and all release:* commands
+  - Add Ads Plugin Architecture section covering adSourcesMode waterfall/playlist, resumeContent opt-out, VMAP deferral, and source:set reset behavior
+  - Clarify PlayerEventPayloadMap file path and how to extend typed events
+  - Fix packages/player description to include package name (@openplayerjs/player)
+
+#### Chores
+
+- **[deps]** fix audit vulnerabilities via pnpm overrides (3d11205) @Rafael Miranda
+
 ## [3.5.4](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.5.4) (2026-06-19)
 
 _June 19, 2026_
