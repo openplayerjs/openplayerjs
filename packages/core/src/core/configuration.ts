@@ -10,4 +10,5 @@ export type PlayerConfig = {
 export const defaultConfiguration: PlayerConfig = {
   startTime: 0,
   duration: 0,
+  sourceFallback: true,
 };

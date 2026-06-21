@@ -19,6 +19,7 @@ export const sel = {
   settingsItems: '.op-controls__menu-item',
   settingsBack: '.op-submenu__back',
   centerOverlay: '.op-player__play',
+  currentTime: 'time.op-controls__current',
 } as const;
 
 /**

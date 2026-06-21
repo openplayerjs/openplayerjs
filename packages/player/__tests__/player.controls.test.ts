@@ -174,6 +174,19 @@ describe('UI Controls', () => {
     expect(el.getAttribute('aria-hidden')).toBe('false');
   });
 
+  test('CurrentTimeControl remains visible when isLive=true and showLiveCurrentTime is enabled', () => {
+    const v = document.createElement('video');
+    v.src = 'https://example.com/live.m3u8';
+    document.body.appendChild(v);
+    const p = new Core(v, { plugins: [], showLiveCurrentTime: true } as any);
+
+    const el = nn(createCurrentTimeControl()).create(p) as HTMLElement;
+
+    p.isLive = true;
+    p.events.emit('timeupdate');
+    expect(el.getAttribute('aria-hidden')).toBe('false');
+  });
+
   test('DurationControl shows LIVE label when isLive=true or duration=Infinity', () => {
     const p = makeCore();
     const el = nn(createDurationControl()).create(p) as HTMLElement;
