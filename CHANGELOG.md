@@ -1,5 +1,54 @@
 # Changelog
 
+## [3.5.6](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.5.6) (2026-06-21)
+
+_June 21, 2026_
+
+### `@openplayerjs/core@3.5.6`
+
+#### Bug Fixes
+
+- **[core]** set isLive=true immediately when config.duration is Infinity (3f5e34d) @Rafael Miranda
+
+#### Reverts
+
+- **[core]** remove constructor isLive shortcut for config.duration=Infinity (3f5e34d) @Rafael Miranda
+
+### `@openplayerjs/player@3.5.6`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.6`
+
+### `@openplayerjs/hls@3.5.6`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.6`
+
+### `@openplayerjs/ads@3.5.6`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.6`
+
+### `@openplayerjs/youtube@3.5.6`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.5.6`
+
+### General
+
+#### Features
+
+- **[core,player]** sourceFallback on by default, isLive from Infinity, showLiveCurrentTime config (3f5e34d) @Rafael Miranda
+  - sourceFallback defaults to true so multiple <source> tags fall back
+  - Core.load() and the src setter reset isLive to false on each new source;
+  - PlayerUIConfig gains showLiveCurrentTime (default false); when true the
+  - Unit tests updated: sourceFallback default, isLive lifecycle, showLiveCurrentTime
+  - E2E: live.spec verifies isLive flag and both hidden/visible currentTime
+
 ## [3.5.5](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.5.5) (2026-06-20)
 
 _June 19, 2026_
