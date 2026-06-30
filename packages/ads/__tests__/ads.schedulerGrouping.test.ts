@@ -1,21 +1,29 @@
 /** @jest-environment jsdom */
 
+import type { PluginContext } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
+import type { AdsBreakConfig } from '../src/types';
+
+/** AdsPlugin with `resolvedBreaks` narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & { resolvedBreaks: NonNullable<AdsPlugin['resolvedBreaks']> };
 
 describe('midroll scheduler grouping', () => {
   test('groups same-time breaks', () => {
     const video = document.createElement('video');
     const events = new EventBus();
 
-    const ctx: any = {
+    const ctx = {
       core: { media: video },
       events,
       state: { current: 'ready' },
       leases: { acquire: jest.fn(() => true), release: jest.fn(), owner: jest.fn(() => null) },
-    };
+    } as unknown as PluginContext;
 
-    const plugin: any = new AdsPlugin({ breakTolerance: 0.25, interceptPlayForPreroll: false });
+    const plugin = new AdsPlugin({
+      breakTolerance: 0.25,
+      interceptPlayForPreroll: false,
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     plugin.resolvedBreaks = [
@@ -25,7 +33,10 @@ describe('midroll scheduler grouping', () => {
     ];
 
     // Pretend breaks have inputs.
-    plugin.getVastInputFromBreak = (b: any) => ({ input: { kind: 'url', value: b.source.src }, sourceType: 'VAST' });
+    plugin.getVastInputFromBreak = (b: AdsBreakConfig) => ({
+      input: { kind: 'url', value: b.source!.src },
+      sourceType: 'VAST',
+    });
 
     const due = plugin.getDueMidrollBreaks(15);
     expect(due.length).toBe(2);

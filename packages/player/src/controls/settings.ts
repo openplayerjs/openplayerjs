@@ -2,7 +2,7 @@ import { EVENT_OPTIONS } from '@openplayerjs/core';
 import { setA11yLabel } from '../a11y';
 import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
-import { getSettingsRegistry, type SettingsSubmenu } from '../settings';
+import { getSettingsRegistry, type SettingsSubmenu, type SettingsSubmenuProvider } from '../settings';
 import { BaseControl } from './base';
 
 export class SettingsControl extends BaseControl {
@@ -94,7 +94,7 @@ export class SettingsControl extends BaseControl {
 
     let knownOverlayId: string | null = null;
     this.dispose.add(
-      this.overlayMgr.bus.on('overlay:changed', (ov: any) => {
+      this.overlayMgr.bus.on('overlay:changed', (ov?: { id?: string | null }) => {
         const newId: string | null = ov?.id ?? null;
         // Only reset submenu navigation when the overlay identity changes
         // (e.g. ad starts or ends). update() fires overlay:changed on every
@@ -186,7 +186,10 @@ export class SettingsControl extends BaseControl {
     const providers = reg.list();
     const available = providers
       .map((p) => ({ p, submenu: p.getSubmenu(this.core) }))
-      .filter((x) => x.submenu && x.submenu.items.length) as { p: any; submenu: SettingsSubmenu }[];
+      .filter((x) => x.submenu && x.submenu.items.length) as {
+      p: SettingsSubmenuProvider;
+      submenu: SettingsSubmenu;
+    }[];
 
     // Hide settings if there's nothing to show
     this.root.style.display = available.length ? '' : 'none';

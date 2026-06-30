@@ -5,6 +5,15 @@ import createFullscreenControl from '../src/controls/fullscreen';
 
 jest.useFakeTimers();
 
+// Exposes BaseControl private methods and properties for branch coverage
+type ControlInternals = ReturnType<typeof createFullscreenControl> & {
+  resolvePlayerRoot(): HTMLElement | null;
+  resolveFullscreenContainer(): HTMLElement;
+  resolveFullscreenVideoEl(): HTMLElement | null;
+  core: Core | null;
+  activeOverlay: OverlayState | null;
+};
+
 function makeCore(video?: HTMLVideoElement) {
   const v = video ?? document.createElement('video');
   v.src = 'https://example.com/video.mp4';
@@ -27,7 +36,7 @@ describe('BaseControl branch coverage', () => {
       const c = createFullscreenControl();
       c.create(p);
 
-      const root = (c as any).resolvePlayerRoot() as HTMLElement;
+      const root = (c as unknown as ControlInternals).resolvePlayerRoot() as HTMLElement;
       expect(root).toBe(wrapper);
     });
 
@@ -44,7 +53,7 @@ describe('BaseControl branch coverage', () => {
       const c = createFullscreenControl();
       c.create(p);
 
-      const root = (c as any).resolvePlayerRoot() as HTMLElement;
+      const root = (c as unknown as ControlInternals).resolvePlayerRoot() as HTMLElement;
       expect(root).toBe(parent);
     });
 
@@ -55,7 +64,7 @@ describe('BaseControl branch coverage', () => {
       const c = createFullscreenControl();
       c.create(p);
 
-      const root = (c as any).resolvePlayerRoot() as HTMLElement;
+      const root = (c as unknown as ControlInternals).resolvePlayerRoot() as HTMLElement;
       expect(root).toBe(document.body);
     });
 
@@ -65,8 +74,9 @@ describe('BaseControl branch coverage', () => {
       c.create(p);
 
       // Force media to null after create so resolvePlayerRoot hits the !media guard
-      (c as any).core = { ...(c as any).core, media: null };
-      const root = (c as any).resolvePlayerRoot() as HTMLElement;
+      // Override media to null on the internal core reference to exercise the !media guard
+      Object.defineProperty((c as unknown as ControlInternals).core, 'media', { value: null, configurable: true });
+      const root = (c as unknown as ControlInternals).resolvePlayerRoot() as HTMLElement;
       expect(root).toBe(document.body);
     });
   });
@@ -88,7 +98,7 @@ describe('BaseControl branch coverage', () => {
         fullscreenEl: fakeEl,
       } as OverlayState);
 
-      const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+      const container = (c as unknown as ControlInternals).resolveFullscreenContainer();
       expect(container).toBe(fakeEl);
     });
 
@@ -107,7 +117,7 @@ describe('BaseControl branch coverage', () => {
         canSeek: false,
       } as OverlayState);
 
-      const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+      const container = (c as unknown as ControlInternals).resolveFullscreenContainer();
       // Should be the player root, not undefined
       expect(container).toBeTruthy();
       expect(container).not.toBe(undefined);
@@ -131,7 +141,7 @@ describe('BaseControl branch coverage', () => {
         fullscreenVideoEl: fakeVideo,
       } as OverlayState);
 
-      const el = (c as any).resolveFullscreenVideoEl() as HTMLElement;
+      const el = (c as unknown as ControlInternals).resolveFullscreenVideoEl();
       expect(el).toBe(fakeVideo);
     });
 
@@ -150,7 +160,7 @@ describe('BaseControl branch coverage', () => {
         canSeek: false,
       } as OverlayState);
 
-      const el = (c as any).resolveFullscreenVideoEl() as HTMLElement;
+      const el = (c as unknown as ControlInternals).resolveFullscreenVideoEl();
       expect(el).toBe(p.media);
     });
 
@@ -160,9 +170,10 @@ describe('BaseControl branch coverage', () => {
       c.create(p);
 
       // Force core.media to null — no overlay, no media
-      (c as any).core = { ...(c as any).core, media: null };
-      (c as any).activeOverlay = null;
-      const el = (c as any).resolveFullscreenVideoEl();
+      // Override media to null on the internal core reference to exercise the !media guard
+      Object.defineProperty((c as unknown as ControlInternals).core, 'media', { value: null, configurable: true });
+      (c as unknown as ControlInternals).activeOverlay = null;
+      const el = (c as unknown as ControlInternals).resolveFullscreenVideoEl();
       expect(el).toBeNull();
     });
   });

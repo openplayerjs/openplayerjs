@@ -15,16 +15,16 @@ describe('installAds', () => {
 
   it('adds .ads getter and .playAds() to a constructor prototype', () => {
     class MockPlayer {
-      getPlugin(name: string): any {
+      getPlugin(name: string): unknown {
         return name === 'ads' ? this.adsPlugin : undefined;
       }
 
-      adsPlugin?: any;
+      adsPlugin?: unknown;
     }
 
     installAds(MockPlayer);
 
-    expect(typeof (MockPlayer.prototype as any).playAds).toBe('function');
+    expect(typeof (MockPlayer.prototype as unknown as { playAds?: unknown }).playAds).toBe('function');
     const desc = Object.getOwnPropertyDescriptor(MockPlayer.prototype, 'ads');
     expect(desc).toBeDefined();
     expect(typeof desc!.get).toBe('function');
@@ -53,7 +53,7 @@ describe('installAds', () => {
 
   it('playAds() throws when ads plugin is not installed', () => {
     class MockPlayer {
-      getPlugin(_name: string): any {
+      getPlugin(_name: string): unknown {
         return undefined;
       }
     }

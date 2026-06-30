@@ -4,6 +4,9 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "ignoreDeprecations": "5.0",
+    // ts-jest transpiles ESM source to CommonJS; verbatimModuleSyntax (inherited
+    // from base) forbids that mix, so disable it for the test transform only.
+    "verbatimModuleSyntax": false,
     "types": ["jest", "node"]
   },
   "include": [

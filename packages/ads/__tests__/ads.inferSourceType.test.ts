@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { PluginContext } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import type { AdsSourceType } from '../src/ads';
 import { AdsPlugin } from '../src/ads';
@@ -15,19 +16,19 @@ describe('AdsPlugin manual-play sourceType inference', () => {
       events: new EventBus(),
       state: { current: 'ready' },
       leases: { acquire: () => true, release: () => undefined, owner: () => undefined },
-    };
+    } as unknown as PluginContext;
   }
 
   test('infers NONLINEAR when only a NONLINEAR source is configured', async () => {
     const ctx = makeCtx();
-    const plugin: any = new AdsPlugin({
+    const plugin = new AdsPlugin({
       sources: [{ type: 'NONLINEAR', src: 'https://example.com/nl.xml' }],
       interceptPlayForPreroll: false,
       allowNativeControls: true,
     });
     plugin.setup(ctx);
 
-    const spy = jest.spyOn(plugin, 'playBreakFromVast').mockResolvedValue(undefined);
+    const spy = jest.spyOn(plugin, 'playBreakFromVast').mockResolvedValue(undefined as unknown as boolean);
 
     await plugin.playAds('https://example.com/anything.xml');
     expect(spy).toHaveBeenCalled();
@@ -36,7 +37,7 @@ describe('AdsPlugin manual-play sourceType inference', () => {
 
   test('infers NONLINEAR when the manual URL matches the configured NONLINEAR source exactly', async () => {
     const ctx = makeCtx();
-    const plugin: any = new AdsPlugin({
+    const plugin = new AdsPlugin({
       sources: [
         { type: 'VAST', src: 'https://example.com/vast.xml' },
         { type: 'NONLINEAR', src: 'https://example.com/nl.xml' },
@@ -46,7 +47,7 @@ describe('AdsPlugin manual-play sourceType inference', () => {
     });
     plugin.setup(ctx);
 
-    const spy = jest.spyOn(plugin, 'playBreakFromVast').mockResolvedValue(undefined);
+    const spy = jest.spyOn(plugin, 'playBreakFromVast').mockResolvedValue(undefined as unknown as boolean);
 
     await plugin.playAds('https://example.com/nl.xml');
     expect(spy).toHaveBeenCalled();

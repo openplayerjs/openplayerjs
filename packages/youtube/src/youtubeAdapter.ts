@@ -44,9 +44,11 @@ type YTPlayer = {
   getDuration(): number;
   getPlayerState(): number;
   destroy(): void;
-  getOption?(module: string, option: string): any;
-  setOption?(module: string, option: string, value: any): void;
+  getOption?(module: string, option: string): unknown;
+  setOption?(module: string, option: string, value: unknown): void;
 };
+
+type YTCaptionTrack = { languageCode?: string; vss_id?: string; displayName?: string };
 
 // ─── YT player-state → adapter state ─────────────────────────────────────────
 
@@ -87,7 +89,7 @@ function loadYouTubeAPI(): Promise<void> {
 // ─── Simple typed event emitter ───────────────────────────────────────────────
 
 type HandlerSets = {
-  [K in keyof IframeMediaAdapterEvents]?: Set<IframeMediaAdapterEvents[K]>;
+  [K in keyof IframeMediaAdapterEvents]?: Set<NonNullable<IframeMediaAdapterEvents[K]>>;
 };
 
 // ─── YouTubeIframeAdapter ─────────────────────────────────────────────────────
@@ -108,22 +110,22 @@ export class YouTubeIframeAdapter implements IframeMediaAdapter {
 
   // ─── Event emitter ──────────────────────────────────────────────────────
 
-  on<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void {
+  on<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: NonNullable<IframeMediaAdapterEvents[E]>): void {
     if (!this.handlers[evt]) {
-      this.handlers[evt] = new Set() as any;
+      this.handlers[evt] = new Set() as HandlerSets[E];
     }
-    (this.handlers[evt] as Set<any>).add(cb);
+    (this.handlers[evt] as Set<NonNullable<IframeMediaAdapterEvents[E]>>).add(cb);
   }
 
-  off<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void {
-    (this.handlers[evt] as Set<any> | undefined)?.delete(cb);
+  off<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: NonNullable<IframeMediaAdapterEvents[E]>): void {
+    (this.handlers[evt] as Set<NonNullable<IframeMediaAdapterEvents[E]>> | undefined)?.delete(cb);
   }
 
   private emit<E extends keyof IframeMediaAdapterEvents>(
     evt: E,
-    ...args: Parameters<IframeMediaAdapterEvents[E] & ((...a: any[]) => void)>
+    ...args: Parameters<NonNullable<IframeMediaAdapterEvents[E]>>
   ): void {
-    (this.handlers[evt] as Set<any> | undefined)?.forEach((cb: (...a: any[]) => void) => cb(...args));
+    (this.handlers[evt] as Set<(...a: unknown[]) => void> | undefined)?.forEach((cb) => cb(...args));
   }
 
   // ─── Lifecycle ──────────────────────────────────────────────────────────
@@ -205,7 +207,7 @@ export class YouTubeIframeAdapter implements IframeMediaAdapter {
     this._pendingPlay = false;
 
     for (const key of Object.keys(this.handlers) as (keyof IframeMediaAdapterEvents)[]) {
-      (this.handlers[key] as Set<any> | undefined)?.clear();
+      (this.handlers[key] as Set<unknown> | undefined)?.clear();
     }
   }
 
@@ -281,8 +283,8 @@ export class YouTubeIframeAdapter implements IframeMediaAdapter {
   /** Returns available YouTube caption tracks (best-effort; undocumented API). */
   getAvailableCaptionTracks(): { id: string; label: string; language: string }[] {
     try {
-      const tracklist: any[] = this.player?.getOption?.('captions', 'tracklist') ?? [];
-      return tracklist.map((t: any) => ({
+      const tracklist = (this.player?.getOption?.('captions', 'tracklist') ?? []) as YTCaptionTrack[];
+      return tracklist.map((t) => ({
         id: String(t.languageCode ?? t.vss_id ?? ''),
         label: String(t.displayName ?? t.languageCode ?? ''),
         language: String(t.languageCode ?? ''),
@@ -295,7 +297,7 @@ export class YouTubeIframeAdapter implements IframeMediaAdapter {
   /** Returns the active caption track language code, or null if captions are off. */
   getActiveCaptionTrack(): string | null {
     try {
-      const track = this.player?.getOption?.('captions', 'track') as any;
+      const track = this.player?.getOption?.('captions', 'track') as { languageCode?: string } | undefined;
       const code = track?.languageCode;
       return code && String(code).length > 0 ? String(code) : null;
     } catch {

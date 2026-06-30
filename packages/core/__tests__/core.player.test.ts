@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { Core } from '../src/core';
+import type { EventBus } from '../src/core/events';
 import type { PlayerPlugin } from '../src/core/plugin';
 
 describe('Player core', () => {
@@ -106,7 +107,13 @@ describe('Player core', () => {
   });
 
   test('destroy detaches active engine if present', () => {
-    const p = makeCore() as any;
+    const p = makeCore() as unknown as {
+      media: HTMLMediaElement;
+      events: EventBus;
+      activeEngine: { detach: () => void } | null;
+      playerContext: object | null;
+      destroy(): void;
+    };
     const detach = jest.fn();
     p.activeEngine = { detach };
     p.playerContext = { media: p.media, events: p.events, player: p };

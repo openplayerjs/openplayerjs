@@ -1,5 +1,42 @@
 packages:
   - packages/*
 
-engineStrict: true
+engineStrict: false
 
+# ── Supply-chain security (https://pnpm.io/supply-chain-security) ──────────────
+# Do not install any dependency version published less than 5 days ago. This
+# "cooldown" gives the ecosystem time to detect and unpublish malicious releases
+# (typosquats, compromised maintainer accounts) before they can reach this repo.
+# The value is in MINUTES — 5 days = 5 × 24 × 60 = 7200.
+minimumReleaseAge: 7200
+
+# Before running any package script, warn if installed node_modules have drifted
+# from the lockfile — surfaces tampering or a stale/partial install.
+verifyDepsBeforeRun: warn
+
+overrides:
+  '@babel/core': 7.29.7
+  '@xmldom/xmldom': 0.9.10
+  basic-ftp: 5.3.1
+  brace-expansion: 5.0.6
+  defu: 6.1.7
+  fast-uri: 3.1.2
+  ip-address: 10.2.0
+  js-yaml: 4.2.0
+  picomatch: 4.0.4
+  undici: 7.28.0
+  ws: 8.21.0
+
+peerDependencyRules:
+  allowedVersions:
+    eslint-plugin-import>eslint: '^10'
+
+# Dependency build (lifecycle) scripts are blocked by default in pnpm 10+. List
+# each reviewed package here with an EXPLICIT BOOLEAN: true = allow its script to
+# run, false = keep it blocked. Either real boolean clears ERR_PNPM_IGNORED_BUILDS;
+# a string/placeholder leaves the package "undecided" and the error persists.
+#   - unrs-resolver = false: its postinstall is only `napi-postinstall <pkg> <ver>
+#     check` (a diagnostic). The prebuilt native binary ships as an optional
+#     dependency that is already installed, so blocking the script is safe.
+allowBuilds:
+  unrs-resolver: false

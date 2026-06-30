@@ -69,14 +69,14 @@ describe('getVastXmlText', () => {
       throw new Error('serialize error');
     });
 
-    (window as any).XMLSerializer = function () {
+    (window as unknown as { XMLSerializer: unknown }).XMLSerializer = function () {
       return { serializeToString: mockSerialize };
     };
 
     const text = await getVastXmlText({ kind: 'xml', value: badDoc });
     expect(typeof text).toBe('string');
 
-    (window as any).XMLSerializer = origSerializer;
+    (window as unknown as { XMLSerializer: unknown }).XMLSerializer = origSerializer;
   });
 
   it('fetches URL for url kind', async () => {
@@ -526,7 +526,7 @@ describe('collectPodAds', () => {
 
 describe('collectPodAdsFromXml', () => {
   it('returns empty array for null doc', () => {
-    expect(collectPodAdsFromXml(null as any, ['video/mp4'])).toEqual([]);
+    expect(collectPodAdsFromXml(null as unknown as XMLDocument, ['video/mp4'])).toEqual([]);
   });
 
   it('parses ads from XML and sorts by sequence', () => {

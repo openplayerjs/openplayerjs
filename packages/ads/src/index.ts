@@ -34,6 +34,9 @@
  * It auto-registers itself under window.OpenPlayerPlugins.ads.
  */
 
+// Side-effect import: registers ad event payloads on the shared EventBus type.
+import './events';
+
 export { AdsPlugin } from './ads';
 export { extendAds, installAds } from './install';
 export { OmidSession } from './omid';

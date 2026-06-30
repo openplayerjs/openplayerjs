@@ -2,14 +2,7 @@
 
 import VMAP from '@dailymotion/vmap';
 import type { Core, PluginContext } from '@openplayerjs/core';
-import {
-  DisposableStore,
-  EventBus,
-  Lease,
-  StateManager,
-  type Listener,
-  type PlayerEventPayloadMap,
-} from '@openplayerjs/core';
+import { DisposableStore, EventBus, Lease, StateManager } from '@openplayerjs/core';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -195,8 +188,7 @@ function makeCtx() {
 
     dispose,
     add: (d: void | (() => void) | null | undefined) => dispose.add(d ?? undefined),
-    on: <K extends keyof PlayerEventPayloadMap>(event: K, cb: Listener<PlayerEventPayloadMap[K]>) =>
-      dispose.add(bus.on(event, cb)),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
     listen: (
       target: EventTarget,
       type: string,
@@ -468,7 +460,7 @@ describe('AdsPlugin - Google sample URLs are supported', () => {
 
     // VMAP playback is driven by the scheduler (timeupdate), not manual playAds().
     const run = new Promise<void>((resolve) => {
-      ctx.events.on('ads.allAdsCompleted', () => resolve());
+      ctx.events.on('ads:allAdsCompleted', () => resolve());
     });
 
     // Skip first ad

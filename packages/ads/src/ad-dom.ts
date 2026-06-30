@@ -1,5 +1,5 @@
 import { EVENT_OPTIONS } from '@openplayerjs/core';
-import type { AdsPluginConfig } from './types';
+import type { AdsPluginConfig, VastParsed } from './types';
 import { computeSkipAtSeconds, extractSkipOffsetFromCreative } from './vast-parser';
 
 // ─── Standalone export (no class state needed) ────────────────────────────────
@@ -85,7 +85,7 @@ export class AdDomManager {
       | 'labels'
     >,
     private getAdVideo: () => HTMLVideoElement | undefined,
-    private getTracker: () => any,
+    private getTracker: () => VastParsed,
     private onSkipCallback: SkipCallback
   ) {}
 
@@ -151,55 +151,7 @@ export class AdDomManager {
   // ─── Safety ──────────────────────────────────────────────────────────────────
 
   setSafeHTML(el: HTMLElement, html: string) {
-    const tpl = document.createElement('template');
-    tpl.innerHTML = String(html || '');
-
-    const blockedTags = new Set([
-      'SCRIPT',
-      'IFRAME',
-      'OBJECT',
-      'EMBED',
-      'LINK',
-      'STYLE',
-      'SVG',
-      'MATH',
-      'FORM',
-      'INPUT',
-      'TEXTAREA',
-      'SELECT',
-      'OPTION',
-      'META',
-      'BASE',
-    ]);
-    const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
-    const toRemove: Element[] = [];
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode as Element;
-      if (blockedTags.has(node.tagName)) {
-        toRemove.push(node);
-        continue;
-      }
-      Array.from(node.attributes).forEach((attr) => {
-        const name = attr.name.toLowerCase();
-        const value = (attr.value || '').trim();
-        if (name.startsWith('on')) {
-          node.removeAttribute(attr.name);
-        }
-        if (name === 'href' || name === 'src' || name === 'xlink:href') {
-          const v = value.toLowerCase();
-          const isJs = v.startsWith('javascript:');
-          const isVbscript = v.startsWith('vbscript:');
-          const isData = v.startsWith('data:');
-          const isHttp = v.startsWith('http://') || v.startsWith('https://') || v.startsWith('/') || v.startsWith('./');
-          const isSafeDataImage = isData && /^data:image\/(png|gif|jpe?g|webp|svg\+xml);/i.test(value);
-          if (isJs || isVbscript || (!isHttp && !isSafeDataImage)) node.removeAttribute(attr.name);
-        }
-        if (name === 'srcdoc') node.removeAttribute(attr.name);
-      });
-    }
-    toRemove.forEach((n) => n.remove());
-    el.replaceChildren(tpl.content.cloneNode(true));
+    return setSafeHTMLFn(el, html);
   }
 
   safeWindowOpen(rawUrl: string) {
@@ -243,7 +195,10 @@ export class AdDomManager {
     this.skipAtSeconds = undefined;
   }
 
-  setupSkipUIForPodItem(item: { skipOffset?: string; creative: any; sequence?: number }, log: (...a: any[]) => void) {
+  setupSkipUIForPodItem(
+    item: { skipOffset?: string; creative: VastParsed; sequence?: number },
+    log: (...a: unknown[]) => void
+  ) {
     this.hideSkipUi();
     const v = this.getAdVideo();
     if (!v) return;
@@ -282,9 +237,9 @@ export class AdDomManager {
   requestSkip(
     reason: 'button' | 'close' | 'api',
     adVideo: HTMLVideoElement | undefined,
-    currentBreakMeta: { kind: string; breakId: string } | undefined,
-    emitSkip: (meta: any) => void,
-    log: (...a: any[]) => void
+    currentBreakMeta: { kind: string; id: string } | undefined,
+    emitSkip: (meta: { break: { id: string; kind: string } | null; reason: string }) => void,
+    log: (...a: unknown[]) => void
   ) {
     if (this.skipOffsetRaw && this.skipAtSeconds != null && adVideo) {
       const cur = adVideo.currentTime || 0;
@@ -300,7 +255,7 @@ export class AdDomManager {
       /* ignore */
     }
 
-    const brk = currentBreakMeta ? { kind: currentBreakMeta.kind, id: currentBreakMeta.breakId } : null;
+    const brk = currentBreakMeta ? { kind: currentBreakMeta.kind, id: currentBreakMeta.id } : null;
     emitSkip({ break: brk, reason });
 
     const v = adVideo;
@@ -329,7 +284,7 @@ export class AdDomManager {
 
   // ─── Companions ───────────────────────────────────────────────────────────────
 
-  mountCompanions(creative: any) {
+  mountCompanions(creative: VastParsed) {
     const container = this.getCompanionContainer();
     if (!container) return;
 
@@ -359,7 +314,7 @@ export class AdDomManager {
     this.sessionUnsubs.push(() => wrap.remove());
   }
 
-  renderCompanion(companion: any): HTMLElement | null {
+  renderCompanion(companion: VastParsed): HTMLElement | null {
     const click =
       companion?.companionClickThroughURLTemplate ||
       companion?.clickThroughURLTemplate ||
@@ -431,7 +386,7 @@ export class AdDomManager {
 
   // ─── Non-linear ───────────────────────────────────────────────────────────────
 
-  nonLinearSuggestedDurationSeconds(nl: any): number {
+  nonLinearSuggestedDurationSeconds(nl: VastParsed): number {
     const raw =
       nl?.minSuggestedDuration ?? nl?.minSuggestedDurationSeconds ?? nl?.attributes?.minSuggestedDuration ?? undefined;
     if (typeof raw === 'number' && Number.isFinite(raw) && raw > 0) return raw;
@@ -466,7 +421,7 @@ export class AdDomManager {
     this.sessionUnsubs.push(() => wrap.remove());
   }
 
-  renderNonLinear(nl: any): HTMLElement | null {
+  renderNonLinear(nl: VastParsed): HTMLElement | null {
     const click =
       nl?.nonlinearClickThroughURLTemplate ||
       nl?.nonLinearClickThroughURLTemplate ||
@@ -480,7 +435,7 @@ export class AdDomManager {
     container.style.maxWidth = '100%';
     container.style.cursor = click ? 'pointer' : 'default';
 
-    const pickFirst = (v: any) => (Array.isArray(v) ? v[0] : v);
+    const pickFirst = (v: VastParsed) => (Array.isArray(v) ? v[0] : v);
     const staticRes = pickFirst(nl?.staticResource ?? nl?.StaticResource ?? nl?.staticResources ?? nl?.StaticResources);
     const iframeRes = pickFirst(nl?.iFrameResource ?? nl?.IFrameResource ?? nl?.iFrameResources ?? nl?.IFrameResources);
     const htmlRes = pickFirst(nl?.htmlResource ?? nl?.HTMLResource ?? nl?.htmlResources ?? nl?.HTMLResources);
@@ -528,7 +483,7 @@ export class AdDomManager {
     return container;
   }
 
-  mountNonLinear(creative: any) {
+  mountNonLinear(creative: VastParsed) {
     const raw =
       (creative?.type === 'nonlinear' ? creative?.variations : undefined) ??
       creative?.nonLinearAds?.nonLinears ??

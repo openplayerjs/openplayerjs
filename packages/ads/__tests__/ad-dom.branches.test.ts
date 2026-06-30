@@ -49,7 +49,13 @@ function makeDom(
     ...opts.cfg,
   };
 
-  const dom = new AdDomManager(overlay, cfg, () => adVideo, () => tracker, onSkip);
+  const dom = new AdDomManager(
+    overlay,
+    cfg,
+    () => adVideo,
+    () => tracker,
+    onSkip
+  );
   return { overlay, dom, adVideo, tracker, onSkip };
 }
 
@@ -280,7 +286,7 @@ describe('AdDomManager.requestSkip', () => {
       configurable: true,
     });
 
-    dom.requestSkip('button', adVideo, { kind: 'preroll', breakId: 'b1' }, emitSkip, log);
+    dom.requestSkip('button', adVideo, { kind: 'preroll', id: 'b1' }, emitSkip, log);
     expect(emitSkip).toHaveBeenCalledWith({ break: { kind: 'preroll', id: 'b1' }, reason: 'button' });
   });
 
@@ -323,12 +329,14 @@ describe('AdDomManager.requestSkip', () => {
   });
 
   it('handles tracker.trackSkip() throwing without crashing', () => {
-    const tracker = { trackSkip: jest.fn(() => { throw new Error('track error'); }) };
+    const tracker = {
+      trackSkip: jest.fn(() => {
+        throw new Error('track error');
+      }),
+    };
     const { dom, adVideo } = makeDom({ tracker });
     const emitSkip = jest.fn();
-    expect(() =>
-      dom.requestSkip('button', adVideo, undefined, emitSkip, jest.fn())
-    ).not.toThrow();
+    expect(() => dom.requestSkip('button', adVideo, undefined, emitSkip, jest.fn())).not.toThrow();
     expect(emitSkip).toHaveBeenCalled();
   });
 });
@@ -534,7 +542,9 @@ describe('AdDomManager.renderNonLinear', () => {
 
   it('supports staticResources array (picks first)', () => {
     const { dom } = makeDom();
-    const nl = { staticResources: [{ value: 'https://example.com/first.jpg' }, { value: 'https://example.com/second.jpg' }] };
+    const nl = {
+      staticResources: [{ value: 'https://example.com/first.jpg' }, { value: 'https://example.com/second.jpg' }],
+    };
     const el = dom.renderNonLinear(nl)!;
     expect(el.querySelector('img')?.src).toContain('first.jpg');
   });
@@ -632,9 +642,7 @@ describe('AdDomManager.mountNonLinear', () => {
     const { dom, overlay } = makeDom();
     dom.mountNonLinear({
       nonLinearAds: {
-        nonLinears: [
-          { staticResource: { value: 'https://example.com/nl.jpg' } },
-        ],
+        nonLinears: [{ staticResource: { value: 'https://example.com/nl.jpg' } }],
       },
     });
     const wrap = overlay.querySelector('.op-ads__nonlinear');
@@ -656,9 +664,7 @@ describe('AdDomManager.mountNonLinear', () => {
     const { dom, overlay } = makeDom();
     dom.mountNonLinear({
       type: 'nonlinear',
-      variations: [
-        { staticResource: { value: 'https://example.com/var.jpg' } },
-      ],
+      variations: [{ staticResource: { value: 'https://example.com/var.jpg' } }],
     });
     expect(overlay.querySelector('.op-ads__nonlinear img')).not.toBeNull();
   });

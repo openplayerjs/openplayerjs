@@ -1,8 +1,14 @@
 /** @jest-environment jsdom */
 
-import type { Lease } from '@openplayerjs/core';
+import type { PluginContext } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
+
+/** AdsPlugin with `@internal` getters narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & {
+  resolvedBreaks: NonNullable<AdsPlugin['resolvedBreaks']>;
+  pendingPercentBreaks: NonNullable<AdsPlugin['pendingPercentBreaks']>;
+};
 
 describe('AdsPlugin VMAP timeOffset parsing extra branches', () => {
   function makeCtx() {
@@ -14,11 +20,14 @@ describe('AdsPlugin VMAP timeOffset parsing extra branches', () => {
       events: new EventBus(),
       state: { current: 'ready' },
       leases: { acquire: () => true, release: () => undefined, owner: () => undefined },
-    } as unknown as Lease;
+    } as unknown as PluginContext;
   }
 
   test('parseVmapTimeOffset supports HH:MM:SS and numeric strings and invalid falls back to preroll', () => {
-    const plugin: any = new AdsPlugin({ interceptPlayForPreroll: false, allowNativeControls: true });
+    const plugin = new AdsPlugin({
+      interceptPlayForPreroll: false,
+      allowNativeControls: true,
+    }) as unknown as AdsPluginInternals;
     plugin.setup(makeCtx());
 
     expect(plugin.parseVmapTimeOffset('00:00:05').at).toBe(5);
@@ -28,7 +37,10 @@ describe('AdsPlugin VMAP timeOffset parsing extra branches', () => {
 
   test('pending percent breaks resolve when duration becomes known', () => {
     const ctx = makeCtx();
-    const plugin: any = new AdsPlugin({ interceptPlayForPreroll: false, allowNativeControls: true });
+    const plugin = new AdsPlugin({
+      interceptPlayForPreroll: false,
+      allowNativeControls: true,
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // simulate a pending percent midroll at 10% of 200 => 20s
@@ -40,7 +52,7 @@ describe('AdsPlugin VMAP timeOffset parsing extra branches', () => {
         once: true,
         source: { type: 'VAST', src: 'https://example.com/mid.xml' },
       },
-    ];
+    ] as unknown as AdsPluginInternals['pendingPercentBreaks'];
     plugin.resolvedBreaks = [];
 
     const due = plugin.getDueMidrollBreaks(21);

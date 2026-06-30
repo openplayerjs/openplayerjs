@@ -33,8 +33,8 @@ export const generateISODateTime = (d: number) => {
 export function offset(el: HTMLElement): { left: number; top: number } {
   const rect = el.getBoundingClientRect();
   return {
-    left: rect.left + (window.pageXOffset || document.documentElement.scrollLeft),
-    top: rect.top + (window.pageYOffset || document.documentElement.scrollTop),
+    left: rect.left + window.scrollX,
+    top: rect.top + window.scrollY,
   };
 }
 
@@ -44,7 +44,7 @@ export function isAudio(element: HTMLMediaElement): boolean {
 
 export function isMobile(): boolean {
   return (
-    (/ipad|iphone|ipod/i.test(window.navigator.userAgent) && !(window as any).MSStream) ||
+    (/ipad|iphone|ipod/i.test(window.navigator.userAgent) && !(window as { MSStream?: unknown }).MSStream) ||
     /android/i.test(window.navigator.userAgent)
   );
 }

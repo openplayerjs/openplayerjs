@@ -1,5 +1,5 @@
 import type { Core } from '@openplayerjs/core';
-import type { Control, ControlPlacement } from './control';
+import type { AddControlPayload, Control, ControlPlacement } from './control';
 
 export function extendControls(core: Core) {
   const api = {
@@ -16,10 +16,10 @@ export function extendControls(core: Core) {
       if (core.events.listenerCount('ui:addControl') === 0) {
         throw new Error('UI not initialized; cannot addControl');
       }
-      const payload: any = { control, el: undefined };
+      const payload: AddControlPayload = { control, el: undefined };
       core.events.emit('ui:addControl', payload);
       core.emit('controls:changed');
-      return payload.el as HTMLElement | undefined;
+      return payload.el;
     },
   };
 

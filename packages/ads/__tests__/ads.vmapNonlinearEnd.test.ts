@@ -1,8 +1,13 @@
 /** @jest-environment jsdom */
 
-import type { Lease } from '@openplayerjs/core';
+import type { Lease, PluginContext } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
+
+/** AdsPlugin with `resolvedBreaks` narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & { resolvedBreaks: NonNullable<AdsPlugin['resolvedBreaks']> };
+
+const globalWithFetch = globalThis as unknown as { fetch: unknown };
 
 describe('AdsPlugin VMAP parsing', () => {
   function makeCtx() {
@@ -15,14 +20,17 @@ describe('AdsPlugin VMAP parsing', () => {
         events: bus,
         state: { current: 'ready' },
         leases: { acquire: () => true, release: () => undefined, owner: () => undefined } as unknown as Lease,
-      } as unknown as Lease,
+      } as unknown as PluginContext,
       video,
     };
   }
 
   test('accepts breakType non-linear/nonlinear and maps timeOffset=end to postroll with NONLINEAR source', async () => {
     const { ctx } = makeCtx();
-    const plugin: any = new AdsPlugin({ interceptPlayForPreroll: false, allowNativeControls: true });
+    const plugin = new AdsPlugin({
+      interceptPlayForPreroll: false,
+      allowNativeControls: true,
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -34,13 +42,13 @@ describe('AdsPlugin VMAP parsing', () => {
         </AdBreak>
       </VMAP>`;
 
-    (globalThis as any).fetch = jest.fn(async () => ({ ok: true, text: async () => xml }));
+    globalWithFetch.fetch = jest.fn(async () => ({ ok: true, text: async () => xml }));
 
     await plugin.loadVmapAndMerge([], 'https://example.com/vmap.xml');
     expect(Array.isArray(plugin.resolvedBreaks)).toBe(true);
-    expect(plugin.resolvedBreaks.some((b: any) => b.at === 'postroll')).toBe(true);
+    expect(plugin.resolvedBreaks.some((b) => b.at === 'postroll')).toBe(true);
 
-    const post = plugin.resolvedBreaks.find((b: any) => b.at === 'postroll');
+    const post = plugin.resolvedBreaks.find((b) => b.at === 'postroll');
     expect(post?.source?.type).toBe('NONLINEAR');
   });
 });

@@ -92,18 +92,18 @@ describe('core/utils', () => {
     const el = document.createElement('div');
     document.body.appendChild(el);
 
-    // Patch pageXOffset/pageYOffset to a non-zero value so the left-side || branch is taken
-    Object.defineProperty(window, 'pageXOffset', { get: () => 80, configurable: true });
-    Object.defineProperty(window, 'pageYOffset', { get: () => 40, configurable: true });
+    // Patch scrollX/scrollY to a non-zero value to verify scroll offset is added to rect position
+    Object.defineProperty(window, 'scrollX', { get: () => 80, configurable: true });
+    Object.defineProperty(window, 'scrollY', { get: () => 40, configurable: true });
 
     const r1 = offset(el);
     // getBoundingClientRect returns zeros in jsdom; position = 0 + scroll
     expect(r1.left).toBe(80);
     expect(r1.top).toBe(40);
 
-    // Reset to 0 so the right-side || branch (scrollLeft / scrollTop) is exercised
-    Object.defineProperty(window, 'pageXOffset', { get: () => 0, configurable: true });
-    Object.defineProperty(window, 'pageYOffset', { get: () => 0, configurable: true });
+    // Reset to 0
+    Object.defineProperty(window, 'scrollX', { get: () => 0, configurable: true });
+    Object.defineProperty(window, 'scrollY', { get: () => 0, configurable: true });
 
     const r2 = offset(el);
     expect(r2.left).toBe(0);

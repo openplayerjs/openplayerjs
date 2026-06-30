@@ -2,14 +2,14 @@
 
 import { EventBus } from '../src/core/events';
 import { Lease } from '../src/core/lease';
-import { PluginBus, PluginRegistry } from '../src/core/plugin';
+import { PluginRegistry } from '../src/core/plugin';
 import { StateManager } from '../src/core/state';
 import { formatTime, isMobile, offset, predictMimeType } from '../src/core/utils';
 
 describe('core basics', () => {
   test('EventBus on/emit/unsubscribe', () => {
     const bus = new EventBus();
-    const calls: any[] = [];
+    const calls: unknown[] = [];
     const off = bus.on('media:timeupdate', (p) => calls.push(p));
     bus.emit('media:timeupdate', 1);
     bus.emit('media:timeupdate', 2);
@@ -19,15 +19,7 @@ describe('core basics', () => {
     expect(calls).toEqual([1, 2]);
   });
 
-  test('PluginRegistry + PluginBus forward events', () => {
-    const bus = new EventBus();
-    const pb = new PluginBus<'x' | 'y'>(bus as any);
-    const seen: any[] = [];
-    pb.on('x', (...a) => seen.push(['x', ...a]));
-    pb.emit('x', 1, 2);
-    // PluginBus only forwards the first payload argument (by design)
-    expect(seen).toEqual([['x', 1]]);
-
+  test('PluginRegistry registers and lists plugins', () => {
     const reg = new PluginRegistry();
     reg.register({ name: 'a', version: '1' });
     reg.register({ name: 'b', version: '1' });
@@ -76,9 +68,9 @@ describe('core basics', () => {
         toJSON() {
           //
         },
-      }) as any;
-    Object.defineProperty(window, 'pageXOffset', { value: 5, configurable: true });
-    Object.defineProperty(window, 'pageYOffset', { value: 7, configurable: true });
+      }) as DOMRect;
+    Object.defineProperty(window, 'scrollX', { value: 5, configurable: true });
+    Object.defineProperty(window, 'scrollY', { value: 7, configurable: true });
     const o = offset(el);
     expect(o.left).toBe(15);
     expect(o.top).toBe(27);

@@ -184,6 +184,32 @@ core.on('error', (err) => console.error('media error', err));
 
 > **HTML5 command events** (`cmd:play`, `cmd:pause`, `cmd:seek`, etc.) are lower-level bus messages intended for engines and plugins. In most cases you should use the higher-level `play` / `pause` / `timeupdate` / `ended` events instead.
 
+### Package-specific events (declaration merging)
+
+The table above lists only **core** events. Core is the agnostic kernel — it never declares events that belong to other packages. Engines and plugins contribute their own events by **augmenting** the `PlayerEventPayloadMap` interface, so `core.on(...)` stays fully typed once you import the package:
+
+```ts
+import { Core } from '@openplayerjs/core';
+import '@openplayerjs/ads'; // augments PlayerEventPayloadMap with ads:*
+
+core.on('ads:break:start', ({ id }) => {/* typed */});
+core.on('ads:quartile', ({ breakId, quartile }) => {/* typed */});
+```
+
+If you are authoring a package and need a new event, add it to **your package's** `src/events.ts`:
+
+```ts
+// packages/<pkg>/src/events.ts
+import '@openplayerjs/core';
+declare module '@openplayerjs/core' {
+  interface PlayerEventPayloadMap {
+    'my:event': MyPayload;
+  }
+}
+```
+
+then side-effect-import it from your package entry (`import './events';`). **Never add package-specific keys to core's `PlayerEventPayloadMap`.**
+
 ---
 
 ## Writing a plugin

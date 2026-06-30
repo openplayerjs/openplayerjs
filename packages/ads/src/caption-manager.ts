@@ -1,21 +1,29 @@
 import type { CaptionResource } from './types';
 import { buildCaptionsFromVastMediaFileRaw } from './vast-parser';
 
+/** A TextTrack-like row (real DOM TextTrack or a VAST-derived stand-in). */
+type TrackLike = { kind?: unknown; language?: unknown; srclang?: unknown; label?: unknown; mode?: unknown };
+
+/** Minimal structural view of something that exposes a `textTracks` collection. */
+type TextTrackSource = {
+  textTracks?: (ArrayLike<TrackLike> & { item?(i: number): TrackLike | null }) | null;
+};
+
 export class CaptionManager {
   private adTrackEls: HTMLTrackElement[] = [];
   private prevActiveCaptionSig: string | null = null;
 
-  captionsSignature(t: any): string {
+  captionsSignature(t: TrackLike | null | undefined): string {
     const kind = String(t?.kind ?? '');
     const lang = String((t?.language ?? t?.srclang ?? '') || '');
     const label = String((t?.label ?? '') || '');
     return `${kind}|${lang}|${label}`;
   }
 
-  listCaptionTracks(media: any): any[] {
+  listCaptionTracks(media: TextTrackSource | null | undefined): TrackLike[] {
     const list = media?.textTracks;
     if (!list || typeof list.length !== 'number') return [];
-    const out = [];
+    const out: TrackLike[] = [];
     for (let i = 0; i < Number(list.length); i++) {
       const t = list[i] ?? (typeof list.item === 'function' ? list.item(i) : null);
       if (!t) continue;
@@ -26,7 +34,7 @@ export class CaptionManager {
     return out;
   }
 
-  captureActiveCaptionTrack(media: any) {
+  captureActiveCaptionTrack(media: TextTrackSource | null | undefined) {
     if (this.prevActiveCaptionSig) return;
     const tracks = this.listCaptionTracks(media);
     const active = tracks.find((t) => String(t.mode) === 'showing');
@@ -46,30 +54,32 @@ export class CaptionManager {
     if (match) match.mode = 'showing';
   }
 
-  ensureRawCaptions(mediaFileRaw: any, creative?: any): CaptionResource[] {
-    if (mediaFileRaw && Array.isArray(mediaFileRaw.captions)) return mediaFileRaw.captions as CaptionResource[];
+  ensureRawCaptions(mediaFileRaw: unknown, creative?: unknown): CaptionResource[] {
+    const raw = mediaFileRaw as { captions?: unknown } | null | undefined;
+    if (raw && Array.isArray(raw.captions)) return raw.captions as CaptionResource[];
     if (creative) {
-      const linear = creative?.linear || creative?.Linear || creative;
-      const ccFiles = linear?.closedCaptionFiles || linear?.ClosedCaptionFiles;
+      const c = creative as Record<string, unknown>;
+      const linear = (c.linear || c.Linear || c) as Record<string, unknown>;
+      const ccFiles = linear.closedCaptionFiles || linear.ClosedCaptionFiles;
       if (Array.isArray(ccFiles) && ccFiles.length > 0) {
-        return ccFiles
-          .map((f: any) => ({
-            src: f.fileURL || f.url || '',
+        return (ccFiles as Record<string, unknown>[])
+          .map((f) => ({
+            src: String(f.fileURL || f.url || ''),
             kind: 'captions' as const,
-            srclang: f.language || f.fileLanguage || '',
-            label: f.fileLanguage || f.language || '',
-            type: f.fileType || '',
+            srclang: String(f.language || f.fileLanguage || ''),
+            label: String(f.fileLanguage || f.language || ''),
+            type: String(f.fileType || ''),
           }))
           .filter((x: CaptionResource) => !!x.src);
       }
     }
-    if (!mediaFileRaw) return [];
+    if (!raw) return [];
     const captions = buildCaptionsFromVastMediaFileRaw(mediaFileRaw);
-    mediaFileRaw.captions = captions;
+    raw.captions = captions;
     return captions;
   }
 
-  attachAdCaptionTracks(adVideo: HTMLVideoElement, mediaFileRaw: any, creative?: any): HTMLTrackElement[] {
+  attachAdCaptionTracks(adVideo: HTMLVideoElement, mediaFileRaw: unknown, creative?: unknown): HTMLTrackElement[] {
     const captions = this.ensureRawCaptions(mediaFileRaw, creative);
     const vtt = captions.filter(
       (c) => (c.type || '').toLowerCase().includes('vtt') || c.src.toLowerCase().endsWith('.vtt')

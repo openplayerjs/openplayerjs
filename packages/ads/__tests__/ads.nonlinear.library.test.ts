@@ -15,6 +15,9 @@
 
 import { AdsPlugin } from '../src/ads';
 
+/** AdsPlugin with `sessionUnsubs` narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & { sessionUnsubs: NonNullable<AdsPlugin['sessionUnsubs']> };
+
 // Build a library-style parsed VAST response for a non-linear-only ad.
 function makeLibraryParsed(
   opts: {
@@ -56,7 +59,7 @@ describe('non-linear library path: collectNonLinearCreatives', () => {
     const plugin = new AdsPlugin({});
     const parsed = makeLibraryParsed();
 
-    const items = (plugin as any).collectNonLinearCreatives(parsed);
+    const items = (plugin as unknown as AdsPluginInternals).collectNonLinearCreatives(parsed);
 
     expect(items).toHaveLength(1);
     expect(items[0].nonLinear.staticResource).toBe('https://example.com/overlay.png');
@@ -68,7 +71,7 @@ describe('non-linear library path: collectNonLinearCreatives', () => {
     const plugin = new AdsPlugin({});
     const parsed = makeLibraryParsed();
 
-    const items = (plugin as any).collectNonLinearCreatives(parsed);
+    const items = (plugin as unknown as AdsPluginInternals).collectNonLinearCreatives(parsed);
 
     // Only 1 item: the nonlinear variation (not the companion)
     expect(items).toHaveLength(1);
@@ -78,7 +81,7 @@ describe('non-linear library path: collectNonLinearCreatives', () => {
     const plugin = new AdsPlugin({});
     const parsed = { ads: [{ sequence: '1', creatives: [{ type: 'linear', variations: [] }] }] };
 
-    const items = (plugin as any).collectNonLinearCreatives(parsed);
+    const items = (plugin as unknown as AdsPluginInternals).collectNonLinearCreatives(parsed);
     expect(items).toHaveLength(0);
   });
 });
@@ -91,7 +94,7 @@ describe('non-linear library path: renderNonLinear', () => {
       nonlinearClickThroughURLTemplate: 'https://example.com/click',
     };
 
-    const el: HTMLElement | null = (plugin as any).renderNonLinear(nl);
+    const el: HTMLElement | null = (plugin as unknown as AdsPluginInternals).renderNonLinear(nl);
     expect(el).not.toBeNull();
     const img = el!.querySelector('img');
     expect(img?.src).toBe('https://example.com/overlay.png');
@@ -100,28 +103,28 @@ describe('non-linear library path: renderNonLinear', () => {
   test('resolves click-through from nonlinearClickThroughURLTemplate (lowercase variant)', () => {
     const plugin = new AdsPlugin({});
     // Simulate attaching so sessionUnsubs exists
-    (plugin as any).sessionUnsubs = [];
+    (plugin as unknown as AdsPluginInternals).sessionUnsubs = [];
 
     const nl = {
       staticResource: 'https://example.com/overlay.png',
       nonlinearClickThroughURLTemplate: 'https://example.com/click',
     };
 
-    const el: HTMLElement | null = (plugin as any).renderNonLinear(nl);
+    const el: HTMLElement | null = (plugin as unknown as AdsPluginInternals).renderNonLinear(nl);
     // cursor = pointer means click was detected
     expect(el?.style.cursor).toBe('pointer');
   });
 
   test('resolves click-through from nonLinearClickThrough (XML path fallback)', () => {
     const plugin = new AdsPlugin({});
-    (plugin as any).sessionUnsubs = [];
+    (plugin as unknown as AdsPluginInternals).sessionUnsubs = [];
 
     const nl = {
       staticResource: { value: 'https://example.com/overlay.png' },
       nonLinearClickThrough: 'https://example.com/click',
     };
 
-    const el: HTMLElement | null = (plugin as any).renderNonLinear(nl);
+    const el: HTMLElement | null = (plugin as unknown as AdsPluginInternals).renderNonLinear(nl);
     expect(el?.style.cursor).toBe('pointer');
   });
 });
@@ -129,7 +132,7 @@ describe('non-linear library path: renderNonLinear', () => {
 describe('non-linear library path: renderCompanion', () => {
   test('renders staticResources[0].url from library CompanionAd', () => {
     const plugin = new AdsPlugin({});
-    (plugin as any).sessionUnsubs = [];
+    (plugin as unknown as AdsPluginInternals).sessionUnsubs = [];
 
     const companion = {
       staticResources: [{ url: 'https://example.com/companion.png', creativeType: 'image/png' }],
@@ -138,7 +141,7 @@ describe('non-linear library path: renderCompanion', () => {
       height: 250,
     };
 
-    const el: HTMLElement | null = (plugin as any).renderCompanion(companion);
+    const el: HTMLElement | null = (plugin as unknown as AdsPluginInternals).renderCompanion(companion);
     expect(el).not.toBeNull();
     const img = el!.querySelector('img');
     expect(img?.src).toBe('https://example.com/companion.png');
@@ -147,14 +150,14 @@ describe('non-linear library path: renderCompanion', () => {
 
   test('renders staticResource.value (XML path)', () => {
     const plugin = new AdsPlugin({});
-    (plugin as any).sessionUnsubs = [];
+    (plugin as unknown as AdsPluginInternals).sessionUnsubs = [];
 
     const companion = {
       staticResource: { value: 'https://example.com/companion.png' },
       clickThrough: 'https://example.com/companion-click',
     };
 
-    const el: HTMLElement | null = (plugin as any).renderCompanion(companion);
+    const el: HTMLElement | null = (plugin as unknown as AdsPluginInternals).renderCompanion(companion);
     expect(el).not.toBeNull();
     const img = el!.querySelector('img');
     expect(img?.src).toBe('https://example.com/companion.png');
@@ -163,9 +166,9 @@ describe('non-linear library path: renderCompanion', () => {
 
   test('returns null when no resource is provided', () => {
     const plugin = new AdsPlugin({});
-    (plugin as any).sessionUnsubs = [];
+    (plugin as unknown as AdsPluginInternals).sessionUnsubs = [];
 
-    const el: HTMLElement | null = (plugin as any).renderCompanion({});
+    const el: HTMLElement | null = (plugin as unknown as AdsPluginInternals).renderCompanion({});
     expect(el).toBeNull();
   });
 });
@@ -175,8 +178,8 @@ describe('non-linear library path: mountCompanions', () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
 
-    const plugin = new AdsPlugin({ companionContainer: container } as any);
-    (plugin as any).sessionUnsubs = [];
+    const plugin = new AdsPlugin({ companionContainer: container });
+    (plugin as unknown as AdsPluginInternals).sessionUnsubs = [];
 
     const companionCreative = {
       type: 'companion',
@@ -190,19 +193,22 @@ describe('non-linear library path: mountCompanions', () => {
       ],
     };
 
-    (plugin as any).mountCompanions(companionCreative);
+    (plugin as unknown as AdsPluginInternals).mountCompanions(companionCreative);
 
     expect(container.querySelector('img')?.src).toBe('https://example.com/companion.png');
     container.remove();
   });
 
   test('no-ops when no companion container is configured', () => {
-    const plugin = new AdsPlugin({} as any);
-    (plugin as any).sessionUnsubs = [];
+    const plugin = new AdsPlugin({});
+    (plugin as unknown as AdsPluginInternals).sessionUnsubs = [];
 
     // Should not throw even without a container
     expect(() =>
-      (plugin as any).mountCompanions({ type: 'companion', variations: [{ staticResources: [] }] })
+      (plugin as unknown as AdsPluginInternals).mountCompanions({
+        type: 'companion',
+        variations: [{ staticResources: [] }],
+      })
     ).not.toThrow();
   });
 });

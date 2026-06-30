@@ -1,6 +1,31 @@
-export type Listener<T = any> = (payload?: T) => void;
+export type Listener<T = unknown> = (payload?: T) => void;
 
-export type PlayerEventPayloadMap = {
+/**
+ * Typed registry of every event that can travel on the shared {@link EventBus}.
+ *
+ * Core declares ONLY kernel-level events here (lifecycle, commands, HTML5 media
+ * notifications, tracks). Core stays agnostic of any package's domain — it must
+ * never gain `hls:*`, `ads:*`, or `ui:*` entries.
+ *
+ * Package-specific events are contributed via **declaration merging**: each
+ * package ships an augmentation that adds its own keys, e.g.
+ *
+ * ```ts
+ * // packages/<pkg>/src/events.ts
+ * declare module '@openplayerjs/core' {
+ *   interface PlayerEventPayloadMap {
+ *     'my:event': MyPayload;
+ *   }
+ * }
+ * ```
+ *
+ * This is the one place we intentionally use `interface` over `type` (the repo
+ * default) — a `type` alias cannot be augmented across module boundaries.
+ *
+ * @see packages/ads/src/events.ts
+ */
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface PlayerEventPayloadMap {
   // Player lifecycle / high-level
   'player:interacted': void;
   'player:destroy': void;
@@ -12,7 +37,7 @@ export type PlayerEventPayloadMap = {
   'cmd:load': void;
   'cmd:play': void;
   'cmd:pause': void;
-  // 'cmd:startLoad': void;
+  'cmd:startLoad': void;
   'cmd:seek': number;
   'cmd:setVolume': number;
   'cmd:setMuted': boolean;
@@ -38,7 +63,7 @@ export type PlayerEventPayloadMap = {
   'texttrack:add': HTMLTrackElement;
   'texttrack:remove': HTMLTrackElement;
   'texttrack:listchange': void;
-};
+}
 
 export type PlayerEvent = keyof PlayerEventPayloadMap;
 
@@ -49,18 +74,20 @@ export class EventBus {
     event: E,
     cb: (payload: PlayerEventPayloadMap[E] extends void ? undefined : PlayerEventPayloadMap[E]) => void
   ): () => boolean;
-  on(event: PlayerEvent | string, cb: Listener): () => boolean;
-  on(event: PlayerEvent | string, cb: Listener) {
+  // A `never` payload param accepts a callback with any concrete payload type
+  // (parameter contravariance), so untyped/dynamic events stay usable without `any`.
+  on(event: PlayerEvent | string, cb: (payload: never) => void): () => boolean;
+  on(event: PlayerEvent | string, cb: (payload: never) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
-    this.listeners.get(event)!.add(cb);
-    return () => this.listeners.get(event)!.delete(cb);
+    this.listeners.get(event)!.add(cb as Listener);
+    return () => this.listeners.get(event)!.delete(cb as Listener);
   }
 
   emit<E extends PlayerEvent>(event: E, payload?: PlayerEventPayloadMap[E]): void;
-  emit(event: PlayerEvent | string, payload?: any): void;
-  emit(event: PlayerEvent | string, payload?: any) {
+  emit(event: PlayerEvent | string, payload?: unknown): void;
+  emit(event: PlayerEvent | string, payload?: unknown) {
     this.listeners.get(event)?.forEach((cb) => cb(payload));
   }
 

@@ -1,15 +1,29 @@
 import type { IEngine, MediaEngineContext, MediaSource } from '@openplayerjs/core';
 import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayerjs/core';
-import type { LevelUpdatedData } from 'hls.js';
+import type { ErrorData, HlsConfig, LevelLoadedData, LevelUpdatedData } from 'hls.js';
 import Hls from 'hls.js';
 
 const ERROR_RECOVERY_THROTTLE_MS = 3000;
 
+// hls.js types `.on`/`.off` per-event via its `Events` enum. The generic forwarder is
+// event-agnostic, so handlers use a `never[]` param list: by parameter contravariance this
+// accepts callbacks with any concrete per-event payload signature, without `any`.
+type HlsEventHandler = (...args: never[]) => void;
+
 type AdapterListener = {
   event: string;
-  handler: (...args: any[]) => void;
-  options?: any;
+  handler: HlsEventHandler;
+  options?: AddEventListenerOptions;
 };
+
+/** hls.js `.on`/`.off` narrowed to a string-keyed event API for the generic forwarder. */
+type HlsStringEventApi = {
+  on(event: string, listener: HlsEventHandler): void;
+  off(event: string, listener: HlsEventHandler): void;
+};
+
+/** Engine config = hls.js config plus an optional injectable Hls class (for tests). */
+type HlsEngineConfig = Partial<HlsConfig> & { hlsClass?: typeof Hls };
 
 export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
   name = 'hls-engine';
@@ -23,10 +37,10 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
   private startedLoad = false;
   private adapterListeners: AdapterListener[] = [];
   private HlsClass: typeof Hls;
-  private hlsConfig: Record<string, any>;
+  private hlsConfig: Partial<HlsConfig>;
   private seenCueIds = new Set<string>();
 
-  constructor(config: any = {}) {
+  constructor(config: HlsEngineConfig = {}) {
     super();
     const { hlsClass, ...hlsConfig } = config;
     this.HlsClass = hlsClass ?? Hls;
@@ -75,7 +89,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     for (const e of Object.values(this.HlsClass.Events) as string[]) {
       this.onAdapterEvent(
         e,
-        (...args: any[]) => {
+        (...args: unknown[]) => {
           const data = args.length > 1 ? args[1] : args[0];
           ctx.events.emit(e, data);
         },
@@ -115,47 +129,39 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       },
       EVENT_OPTIONS
     );
-    this.onAdapterEvent(
-      this.HlsClass.Events.LEVEL_UPDATED,
-      (_, { details }) => {
-        ctx.core.isLive = details.live;
-        ctx.events.emit('media:duration', details.totalduration);
-      },
-      EVENT_OPTIONS
-    );
+    // LEVEL_LOADED fires once per level load — keep `core.isLive` in sync.
+    // Duration itself reaches the player via the native `durationchange` event
+    // (bridged by bindMediaEvents) which updates `core.duration`.
     this.onAdapterEvent(
       this.HlsClass.Events.LEVEL_LOADED,
-      (_, { details }) => {
+      (_: unknown, { details }: LevelLoadedData) => {
         ctx.core.isLive = details.live;
-        ctx.events.emit('media:duration', details.totalduration);
       },
       EVENT_OPTIONS
     );
+    // LEVEL_UPDATED fires on every playlist refresh (frequent on live streams).
+    // Keep its work minimal: only sync isLive and process EXT-X-DATERANGE SCTE-35
+    // cues for the hybrid ad strategy.
     this.onAdapterEvent(
       this.HlsClass.Events.LEVEL_UPDATED,
       (_, { details }: LevelUpdatedData) => {
-        if (!this.onCue) return;
-        const dateRanges = details?.dateRanges;
-        if (!dateRanges) return;
-        for (const [id, range] of Object.entries(dateRanges)) {
-          if (!range || this.seenCueIds.has(id)) continue;
-          const attr = range.attr;
-          const scte35Out = attr?.['SCTE35-OUT'];
-          if (!scte35Out) continue;
-          this.seenCueIds.add(id);
-          this.onCue({
-            id,
-            scte35Out,
-            plannedDuration: typeof range.plannedDuration === 'number' ? range.plannedDuration : undefined,
-            startDate: range.startDate instanceof Date ? range.startDate : undefined,
-          });
+        ctx.core.isLive = details.live;
+        if (this.onCue && details?.dateRanges) {
+          for (const [id, range] of Object.entries(details.dateRanges)) {
+            if (!range || this.seenCueIds.has(id)) continue;
+            const attr = range.attr;
+            const scte35Out = attr?.['SCTE35-OUT'];
+            if (!scte35Out) continue;
+            this.seenCueIds.add(id);
+            this.onCue({
+              id,
+              scte35Out,
+              plannedDuration: typeof range.plannedDuration === 'number' ? range.plannedDuration : undefined,
+              startDate: range.startDate instanceof Date ? range.startDate : undefined,
+            });
+          }
         }
       },
-      EVENT_OPTIONS
-    );
-    this.onAdapterEvent(
-      this.HlsClass.Events.FRAG_PARSING_METADATA,
-      (_, data) => ctx.events.emit('playback:metadataready', { data }),
       EVENT_OPTIONS
     );
     this.onAdapterEvent(
@@ -165,7 +171,7 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     );
     this.onAdapterEvent(
       this.HlsClass.Events.ERROR,
-      (_, data) => {
+      (_: unknown, data: ErrorData) => {
         if (data.fatal) {
           switch (data.type) {
             case this.HlsClass.ErrorTypes.MEDIA_ERROR: {
@@ -197,8 +203,6 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
               break;
           }
         }
-
-        ctx.events.emit('playback:error', data);
       },
       EVENT_OPTIONS
     );
@@ -256,9 +260,12 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.seenCueIds.clear();
   }
 
-  private onAdapterEvent(event: string, handler: (...args: any[]) => void, options?: any) {
+  private onAdapterEvent(event: string, handler: HlsEventHandler, options?: AddEventListenerOptions) {
     if (!this.adapter) return;
-    this.adapter.on(event as any, handler);
+    // hls.js types `.on`/`.off` per-event via its `Events` enum; the generic forwarder
+    // works structurally, so narrow the adapter to a string-keyed event API.
+    const adapter = this.adapter as unknown as HlsStringEventApi;
+    adapter.on(event, handler);
     this.adapterListeners.push({ event, handler, options });
   }
 
@@ -268,8 +275,9 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       return;
     }
 
+    const adapter = this.adapter as unknown as HlsStringEventApi;
     for (const l of this.adapterListeners) {
-      this.adapter.off(l.event as any, l.handler);
+      adapter.off(l.event, l.handler);
     }
     this.adapterListeners = [];
   }

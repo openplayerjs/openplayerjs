@@ -3,19 +3,19 @@
 import { AdsPlugin } from '../src/ads';
 
 function makePlugin() {
-  const ctx: any = {
+  const ctx = {
     name: 'player',
     core: { media: document.createElement('video') },
     events: { emit: jest.fn() },
     leases: { acquire: jest.fn(() => true), release: jest.fn(), owner: jest.fn(() => null) },
     bus: { emit: jest.fn() },
   };
-  return new AdsPlugin(ctx);
+  return new AdsPlugin(ctx as unknown as ConstructorParameters<typeof AdsPlugin>[0]);
 }
 
 describe('ads pod ordering', () => {
   test('plays multiple creatives within same Ad in order', () => {
-    const plugin: any = makePlugin();
+    const plugin = makePlugin();
     const parsed = {
       ads: [
         {
@@ -34,7 +34,7 @@ describe('ads pod ordering', () => {
   });
 
   test('orders across Ads and creatives', () => {
-    const plugin: any = makePlugin();
+    const plugin = makePlugin();
     const parsed = {
       ads: [
         {
@@ -51,7 +51,7 @@ describe('ads pod ordering', () => {
       ],
     };
     const pod = plugin.collectPodAds(parsed);
-    expect(pod.map((x: any) => x.mediaFile.fileURL)).toEqual([
+    expect(pod.map((x) => x.mediaFile.fileURL)).toEqual([
       'https://a/ad1.mp4',
       'https://a/bumper2.mp4',
       'https://a/main2.mp4',

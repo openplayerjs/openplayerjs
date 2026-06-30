@@ -10,6 +10,15 @@ type SsaiBreak = {
   firedQuartiles: Set<number>;
 };
 
+/** Non-standard SCTE-35 fields hls.js attaches to metadata cues (DataCue / VTTCue / legacy). */
+type RawCue = TextTrackCue & {
+  data?: ArrayBuffer;
+  value?: { key?: string; data?: ArrayBuffer };
+  scte35Out?: unknown;
+  scte35In?: unknown;
+  attr?: Record<string, unknown>;
+};
+
 /**
  * Server-side ad insertion strategy.
  *
@@ -56,7 +65,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
 
     // Belt-and-suspenders: also react to the bus event fired by HlsMediaEngine
     // after subtitle/metadata track list changes.
-    const unsubListChange = ctx.on('texttrack:listchange' as any, () => this.scanTracks(media));
+    const unsubListChange = ctx.on('texttrack:listchange', () => this.scanTracks(media));
     this.cleanups.push(unsubListChange);
 
     // Quartile tracking via timeupdate.
@@ -98,7 +107,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
   }
 
   private processCue(cue: TextTrackCue): void {
-    const raw = cue as any;
+    const raw = cue as RawCue;
     const id = cue.id || String(cue.startTime);
 
     // ── ID3 / DataCue path (enableID3MetadataCues) ───────────────────────────
@@ -168,7 +177,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
     const brk: SsaiBreak = { id, startTimeSec, durationSec, firedQuartiles: new Set() };
     this.activeBreaks.set(id, brk);
 
-    this.ctx.events.emit('ads:break:start' as any, { id, kind: 'ssai' });
+    this.ctx.events.emit('ads:break:start', { id, kind: 'ssai' });
     this.sink({ type: 'impression', breakId: id, contentSrc: this.ctx.core.media?.src });
   }
 
@@ -177,7 +186,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
     if (!brk) return;
 
     this.activeBreaks.delete(id);
-    this.ctx.events.emit('ads:break:end' as any, { id, kind: 'ssai' });
+    this.ctx.events.emit('ads:break:end', { id, kind: 'ssai' });
     this.sink({ type: 'complete', breakId: id });
   }
 
@@ -191,7 +200,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
       for (const q of [25, 50, 75, 100] as const) {
         if (pct >= q && !brk.firedQuartiles.has(q)) {
           brk.firedQuartiles.add(q);
-          this.ctx.events.emit('ads:quartile' as any, { breakId: brk.id, quartile: q });
+          this.ctx.events.emit('ads:quartile', { breakId: brk.id, quartile: q });
           this.sink({ type: 'quartile', breakId: brk.id, elapsedSec: elapsed, metadata: { quartile: q } });
         }
       }

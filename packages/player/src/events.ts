@@ -4,6 +4,13 @@ import { resolveUIConfig } from './configuration';
 import type { CenterOverlayBindings } from './overlay';
 import { getActiveMedia, togglePlayback } from './playback';
 
+type VendorElement = HTMLElement & {
+  mozRequestFullScreen?: () => void;
+  webkitRequestFullScreen?: () => void;
+  msRequestFullscreen?: () => void;
+  webkitEnterFullscreen?: () => void;
+};
+
 export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?: CenterOverlayBindings): () => void {
   let lastNonZeroVolume = core.volume || 1;
 
@@ -81,8 +88,13 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
         if (upVolume > 0) lastNonZeroVolume = upVolume;
         try {
           const el = getActiveMedia(core);
-          if (el && el !== core.surface) { el.volume = upVolume; el.muted = !(upVolume > 0); }
-        } catch { /* ignore */ }
+          if (el && el !== core.surface) {
+            el.volume = upVolume;
+            el.muted = !(upVolume > 0);
+          }
+        } catch {
+          /* ignore */
+        }
         e.preventDefault();
         e.stopPropagation();
         break;
@@ -94,8 +106,13 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
         if (downVolume > 0) lastNonZeroVolume = downVolume;
         try {
           const el = getActiveMedia(core);
-          if (el && el !== core.surface) { el.volume = downVolume; el.muted = !(downVolume > 0); }
-        } catch { /* ignore */ }
+          if (el && el !== core.surface) {
+            el.volume = downVolume;
+            el.muted = !(downVolume > 0);
+          }
+        } catch {
+          /* ignore */
+        }
         e.preventDefault();
         e.stopPropagation();
         break;
@@ -104,12 +121,13 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
       // Fullscreen toggle
       case 'f':
       case 'F': {
-        const fullscreenTarget = e.target as any;
-        if (fullscreenTarget.requestFullscreen) fullscreenTarget.requestFullscreen();
-        else if (fullscreenTarget.mozRequestFullScreen) fullscreenTarget.mozRequestFullScreen();
-        else if (fullscreenTarget.webkitRequestFullScreen) fullscreenTarget.webkitRequestFullScreen();
-        else if (fullscreenTarget.msRequestFullscreen) fullscreenTarget.msRequestFullscreen();
-        else if (fullscreenTarget.webkitEnterFullscreen) fullscreenTarget.webkitEnterFullscreen();
+        // Use the player wrapper (keyTarget), not e.target which may be a focusable child element.
+        const fsEl = keyTarget as VendorElement;
+        if (fsEl.requestFullscreen) void fsEl.requestFullscreen();
+        else if (fsEl.mozRequestFullScreen) void fsEl.mozRequestFullScreen();
+        else if (fsEl.webkitRequestFullScreen) void fsEl.webkitRequestFullScreen();
+        else if (fsEl.msRequestFullscreen) void fsEl.msRequestFullscreen();
+        else if (fsEl.webkitEnterFullscreen) void fsEl.webkitEnterFullscreen();
         e.preventDefault();
         e.stopPropagation();
         break;
@@ -125,16 +143,26 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
           core.muted = true;
           try {
             const el = getActiveMedia(core);
-            if (el && el !== core.surface) { el.volume = 0; el.muted = true; }
-          } catch { /* ignore */ }
+            if (el && el !== core.surface) {
+              el.volume = 0;
+              el.muted = true;
+            }
+          } catch {
+            /* ignore */
+          }
         } else {
           const restore = lastNonZeroVolume > 0 ? lastNonZeroVolume : 1;
           core.volume = restore;
           core.muted = false;
           try {
             const el = getActiveMedia(core);
-            if (el && el !== core.surface) { el.volume = restore; el.muted = false; }
-          } catch { /* ignore */ }
+            if (el && el !== core.surface) {
+              el.volume = restore;
+              el.muted = false;
+            }
+          } catch {
+            /* ignore */
+          }
         }
 
         e.preventDefault();

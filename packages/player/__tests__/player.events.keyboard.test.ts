@@ -3,6 +3,15 @@
 import { Core, getOverlayManager } from '@openplayerjs/core';
 import { bindCenterOverlay } from '../src/events';
 import { createCenterOverlayDom } from '../src/overlay';
+import type { PlayerUIConfig } from '../src/configuration';
+
+// Vendor-prefixed fullscreen properties (non-standard, browser-specific)
+type VendorElement = HTMLElement & {
+  mozRequestFullScreen?: () => void;
+  webkitRequestFullScreen?: () => void;
+  msRequestFullscreen?: () => void;
+  webkitEnterFullscreen?: () => void;
+};
 
 jest.useFakeTimers();
 
@@ -166,7 +175,7 @@ describe('ui/events keyboard bindings', () => {
     v.src = 'https://example.com/video.mp4';
     document.body.appendChild(v);
     // Pass step=10 via config
-    const p = new Core(v, { plugins: [], step: 10 } as any);
+    const p = new Core(v, { plugins: [], step: 10 } as PlayerUIConfig);
     Object.defineProperty(v, 'duration', { value: 100, configurable: true, writable: true });
     p.events.emit('durationchange');
     p.currentTime = 50;
@@ -191,7 +200,7 @@ describe('ui/events keyboard bindings', () => {
 
     const mozFn = jest.fn();
     // Set mozRequestFullScreen on wrapper (the keydown target)
-    (wrapper as any).mozRequestFullScreen = mozFn;
+    (wrapper as VendorElement).mozRequestFullScreen = mozFn;
 
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', bubbles: true }));
     expect(mozFn).toHaveBeenCalled();
@@ -206,8 +215,8 @@ describe('ui/events keyboard bindings', () => {
     bindCenterOverlay(p, wrapper, bindings);
 
     const webkitFn = jest.fn();
-    (wrapper as any).mozRequestFullScreen = undefined;
-    (wrapper as any).webkitRequestFullScreen = webkitFn;
+    (wrapper as VendorElement).mozRequestFullScreen = undefined;
+    (wrapper as VendorElement).webkitRequestFullScreen = webkitFn;
 
     wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'F', bubbles: true }));
     expect(webkitFn).toHaveBeenCalled();

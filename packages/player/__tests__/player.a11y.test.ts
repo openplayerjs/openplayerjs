@@ -184,7 +184,9 @@ describe('WCAG 2.1.1 / 2.4.11 — controls become inert when auto-hidden', () =>
     // Controls should be hidden AND inert (keyboard users can't tab into hidden controls)
     expect(controlsRoot.getAttribute('aria-hidden')).toBe('true');
     // inert may be reflected as IDL property or HTML attribute depending on jsdom version
-    expect(controlsRoot.hasAttribute('inert') || (controlsRoot as any).inert === true).toBe(true);
+    expect(controlsRoot.hasAttribute('inert') || (controlsRoot as unknown as { inert?: boolean }).inert === true).toBe(
+      true
+    );
   });
 
   test('controlsRoot loses inert when controls are shown', () => {

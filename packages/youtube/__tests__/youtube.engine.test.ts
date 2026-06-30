@@ -6,6 +6,7 @@ import type {
   IframePlaybackState,
   MediaEngineContext,
   MediaSource,
+  MediaSurface,
 } from '@openplayerjs/core';
 import {
   EventBus,
@@ -17,21 +18,36 @@ import {
 } from '@openplayerjs/core';
 import { YouTubeMediaEngine } from '../src/youtube';
 
+// ─── Test typing helpers ──────────────────────────────────────────────────────
+
+/** Options object the YT.Player constructor receives; only `onReady` matters for tests. */
+type YTReadyOpts = { events?: { onReady?: () => void } };
+
+/** `window` view that lets tests assign the ambient `YT` global a jest-mock Player. */
+const win = window as unknown as { YT?: { Player: jest.Mock } };
+
 // ─── Minimal adapter stub ─────────────────────────────────────────────────────
+
+type AdapterHandlerSets = {
+  [K in keyof IframeMediaAdapterEvents]?: Set<NonNullable<IframeMediaAdapterEvents[K]>>;
+};
 
 class StubAdapter implements IframeMediaAdapter {
   public mountedContainer: HTMLElement | null = null;
-  private handlers: Partial<{ [K in keyof IframeMediaAdapterEvents]: Set<any> }> = {};
+  private handlers: AdapterHandlerSets = {};
 
-  on<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void {
-    if (!this.handlers[evt]) this.handlers[evt] = new Set();
-    (this.handlers[evt] as Set<any>).add(cb);
+  on<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: NonNullable<IframeMediaAdapterEvents[E]>): void {
+    if (!this.handlers[evt]) this.handlers[evt] = new Set() as AdapterHandlerSets[E];
+    (this.handlers[evt] as Set<NonNullable<IframeMediaAdapterEvents[E]>>).add(cb);
   }
-  off<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void {
-    (this.handlers[evt] as Set<any> | undefined)?.delete(cb);
+  off<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: NonNullable<IframeMediaAdapterEvents[E]>): void {
+    (this.handlers[evt] as Set<NonNullable<IframeMediaAdapterEvents[E]>> | undefined)?.delete(cb);
   }
-  emit<E extends keyof IframeMediaAdapterEvents>(evt: E, ...args: any[]): void {
-    (this.handlers[evt] as Set<any> | undefined)?.forEach((cb: any) => cb(...args));
+  emit<E extends keyof IframeMediaAdapterEvents>(
+    evt: E,
+    ...args: Parameters<NonNullable<IframeMediaAdapterEvents[E]>>
+  ): void {
+    (this.handlers[evt] as Set<(...a: unknown[]) => void> | undefined)?.forEach((cb) => cb(...args));
   }
 
   mount(container: HTMLElement): void {
@@ -82,10 +98,10 @@ class StubAdapter implements IframeMediaAdapter {
 
 function makeCtx(
   media: HTMLMediaElement
-): MediaEngineContext & { activeSurface: { current: any }; container: HTMLElement } {
+): MediaEngineContext & { activeSurface: { current: MediaSurface }; container: HTMLElement } {
   const events = new EventBus();
   const nativeSurface = new HtmlMediaSurface(media);
-  const activeSurface = { current: nativeSurface as any };
+  const activeSurface: { current: MediaSurface } = { current: nativeSurface };
 
   return {
     media,
@@ -93,11 +109,11 @@ function makeCtx(
     events,
     activeSource: { src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', type: '' },
     config: {},
-    core: { leases: new Lease(), state: new StateManager('idle') } as any,
+    core: { leases: new Lease(), state: new StateManager('idle') } as unknown as MediaEngineContext['core'],
     get surface() {
       return activeSurface.current;
     },
-    setSurface(s: any) {
+    setSurface(s: MediaSurface) {
       activeSurface.current = s;
       return s;
     },
@@ -111,7 +127,7 @@ function makeCtx(
 
 /** Minimal fake YT.Player that fires onReady immediately. */
 function fakeYTPlayer(playerOverrides: Record<string, jest.Mock> = {}) {
-  return jest.fn().mockImplementation((_el: any, opts: any) => {
+  return jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
     opts.events?.onReady?.();
     return {
       playVideo: jest.fn(),
@@ -144,7 +160,7 @@ describe('YouTubeMediaEngine', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   describe('canPlay()', () => {
@@ -192,7 +208,7 @@ describe('YouTubeMediaEngine', () => {
     test('sets surface on ctx, hides media element, calls mount on container', async () => {
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
-      (window as any).YT = { Player: fakeYTPlayer() };
+      win.YT = { Player: fakeYTPlayer() };
 
       await engine.attach(ctx);
 
@@ -203,7 +219,7 @@ describe('YouTubeMediaEngine', () => {
     test('detach restores media visibility and resets surface', async () => {
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
-      (window as any).YT = { Player: fakeYTPlayer() };
+      win.YT = { Player: fakeYTPlayer() };
 
       await engine.attach(ctx);
       expect(media.style.display).toBe('none');
@@ -216,7 +232,7 @@ describe('YouTubeMediaEngine', () => {
 
     test('noCookie: false does not pass host to YT.Player', async () => {
       const PlayerMock = fakeYTPlayer();
-      (window as any).YT = { Player: PlayerMock };
+      win.YT = { Player: PlayerMock };
 
       const engine = new YouTubeMediaEngine({ noCookie: false });
       const ctx = makeCtx(media);
@@ -229,7 +245,7 @@ describe('YouTubeMediaEngine', () => {
 
     test('noCookie: true passes youtube-nocookie.com host to YT.Player', async () => {
       const PlayerMock = fakeYTPlayer();
-      (window as any).YT = { Player: PlayerMock };
+      win.YT = { Player: PlayerMock };
 
       const engine = new YouTubeMediaEngine({ noCookie: true });
       const ctx = makeCtx(media);
@@ -242,7 +258,7 @@ describe('YouTubeMediaEngine', () => {
 
     test('accepts youtube-nocookie.com source URL and parses videoId', async () => {
       const PlayerMock = fakeYTPlayer();
-      (window as any).YT = { Player: PlayerMock };
+      win.YT = { Player: PlayerMock };
 
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
@@ -256,7 +272,7 @@ describe('YouTubeMediaEngine', () => {
 
     test('accepts m.youtube.com source URL and parses videoId', async () => {
       const PlayerMock = fakeYTPlayer();
-      (window as any).YT = { Player: PlayerMock };
+      win.YT = { Player: PlayerMock };
 
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
@@ -272,7 +288,7 @@ describe('YouTubeMediaEngine', () => {
       // Simulates <source src="dQw4w9WgXcQ" type="video/youtube"> where the
       // browser resolves the src to http://localhost/dQw4w9WgXcQ
       const PlayerMock = fakeYTPlayer();
-      (window as any).YT = { Player: PlayerMock };
+      win.YT = { Player: PlayerMock };
 
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
@@ -286,7 +302,7 @@ describe('YouTubeMediaEngine', () => {
 
     test('resolves videoId from a bare 11-char ID set via player.src', async () => {
       const PlayerMock = fakeYTPlayer();
-      (window as any).YT = { Player: PlayerMock };
+      win.YT = { Player: PlayerMock };
 
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
@@ -301,7 +317,7 @@ describe('YouTubeMediaEngine', () => {
     test('sets container aspect-ratio during attach and clears on detach', async () => {
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
-      (window as any).YT = { Player: fakeYTPlayer() };
+      win.YT = { Player: fakeYTPlayer() };
 
       await engine.attach(ctx);
       // When container has no dimensions (offsetWidth=0), defaults to 16/9
@@ -314,7 +330,7 @@ describe('YouTubeMediaEngine', () => {
     test('registers a caption provider on attach and removes it on detach', async () => {
       const engine = new YouTubeMediaEngine();
       const ctx = makeCtx(media);
-      (window as any).YT = { Player: fakeYTPlayer() };
+      win.YT = { Player: fakeYTPlayer() };
 
       await engine.attach(ctx);
       expect(getCaptionTrackProvider(ctx.core)).not.toBeNull();
@@ -327,13 +343,13 @@ describe('YouTubeMediaEngine', () => {
 
 describe('YouTubeIframeAdapter caption API', () => {
   afterEach(() => {
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   test('getAvailableCaptionTracks returns empty array when player lacks getOption', async () => {
     const { YouTubeIframeAdapter } = await import('../src/youtubeAdapter');
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return {
           playVideo: jest.fn(),
@@ -387,8 +403,8 @@ describe('YouTubeIframeAdapter caption API', () => {
       setOption: jest.fn(),
     };
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return mockPlayer;
       }),
@@ -428,8 +444,8 @@ describe('YouTubeIframeAdapter caption API', () => {
       setOption: jest.fn(),
     };
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return mockPlayer;
       }),
@@ -466,8 +482,8 @@ describe('YouTubeIframeAdapter caption API', () => {
       setOption: jest.fn(),
     };
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return mockPlayer;
       }),
@@ -505,8 +521,8 @@ describe('YouTubeIframeAdapter caption API', () => {
       setOption: mockSetOption,
     };
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return mockPlayer;
       }),
@@ -529,8 +545,8 @@ describe('YouTubeIframeAdapter caption API', () => {
 
   test('getElement returns null before mount and iframe element after mount', async () => {
     const { YouTubeIframeAdapter } = await import('../src/youtubeAdapter');
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return {
           playVideo: jest.fn(),
@@ -706,17 +722,17 @@ describe('YouTubeMediaEngine – extractVideoId (via attach)', () => {
   beforeEach(() => {
     document.body.innerHTML = '<div id="wrapper"><video></video></div>';
     media = document.querySelector('video')!;
-    (window as any).YT = { Player: fakeYTPlayer() };
+    win.YT = { Player: fakeYTPlayer() };
   });
 
   afterEach(() => {
     document.body.innerHTML = '';
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   test('parses youtu.be short URL format', async () => {
     const PlayerMock = fakeYTPlayer();
-    (window as any).YT = { Player: PlayerMock };
+    win.YT = { Player: PlayerMock };
 
     const engine = new YouTubeMediaEngine();
     const ctx = makeCtx(media);
@@ -730,7 +746,7 @@ describe('YouTubeMediaEngine – extractVideoId (via attach)', () => {
 
   test('parses ?v= query parameter', async () => {
     const PlayerMock = fakeYTPlayer();
-    (window as any).YT = { Player: PlayerMock };
+    win.YT = { Player: PlayerMock };
 
     const engine = new YouTubeMediaEngine();
     const ctx = makeCtx(media);
@@ -744,7 +760,7 @@ describe('YouTubeMediaEngine – extractVideoId (via attach)', () => {
 
   test('parses /embed/ path', async () => {
     const PlayerMock = fakeYTPlayer();
-    (window as any).YT = { Player: PlayerMock };
+    win.YT = { Player: PlayerMock };
 
     const engine = new YouTubeMediaEngine();
     const ctx = makeCtx(media);
@@ -758,7 +774,7 @@ describe('YouTubeMediaEngine – extractVideoId (via attach)', () => {
 
   test('parses /shorts/ path', async () => {
     const PlayerMock = fakeYTPlayer();
-    (window as any).YT = { Player: PlayerMock };
+    win.YT = { Player: PlayerMock };
 
     const engine = new YouTubeMediaEngine();
     const ctx = makeCtx(media);
@@ -811,7 +827,7 @@ describe('YouTubeMediaEngine – attach caption subscribe poll', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
-    delete (window as any).YT;
+    delete win.YT;
     jest.useRealTimers();
   });
 
@@ -834,8 +850,8 @@ describe('YouTubeMediaEngine – attach caption subscribe poll', () => {
       setOption: jest.fn(),
     };
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return mockPlayer;
       }),
@@ -886,8 +902,8 @@ describe('YouTubeMediaEngine – attach caption subscribe poll', () => {
       setOption: jest.fn(),
     };
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return mockPlayer;
       }),
@@ -931,12 +947,12 @@ describe('YouTubeMediaEngine – detach clears layout and caption provider', () 
 
   afterEach(() => {
     document.body.innerHTML = '';
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   test('clears aspect ratio, display, and caption provider on detach', async () => {
     const { getCaptionTrackProvider } = await import('@openplayerjs/core');
-    (window as any).YT = { Player: fakeYTPlayer() };
+    win.YT = { Player: fakeYTPlayer() };
 
     const engine = new YouTubeMediaEngine();
     const ctx = makeCtx(media);
@@ -965,12 +981,12 @@ describe('YouTubeMediaEngine – noCookie option', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   test('noCookie: true passes noCookie host to adapter via YT.Player options', async () => {
     const PlayerMock = fakeYTPlayer();
-    (window as any).YT = { Player: PlayerMock };
+    win.YT = { Player: PlayerMock };
 
     const engine = new YouTubeMediaEngine({ noCookie: true });
     const ctx = makeCtx(media);
@@ -985,7 +1001,7 @@ describe('YouTubeMediaEngine – noCookie option', () => {
 
 describe('YouTubeIframeAdapter – pending play', () => {
   afterEach(() => {
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   test('play() before ready sets _pendingPlay and does not call playVideo()', async () => {
@@ -994,8 +1010,8 @@ describe('YouTubeIframeAdapter – pending play', () => {
     let onReadyCallback: (() => void) | undefined;
     const mockPlayVideo = jest.fn();
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         // Capture but do NOT call onReady yet
         onReadyCallback = opts.events?.onReady;
         return {
@@ -1050,8 +1066,8 @@ describe('YouTubeIframeAdapter – pending play', () => {
     let onReadyCallback: (() => void) | undefined;
     const mockPlayVideo = jest.fn();
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         onReadyCallback = opts.events?.onReady;
         return {
           playVideo: mockPlayVideo,
@@ -1097,8 +1113,8 @@ describe('YouTubeIframeAdapter – pending play', () => {
     const mockPlayVideo = jest.fn();
     const mockPauseVideo = jest.fn();
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         onReadyCallback = opts.events?.onReady;
         return {
           playVideo: mockPlayVideo,
@@ -1144,7 +1160,7 @@ describe('YouTubeIframeAdapter – pending play', () => {
 
 describe('YouTubeIframeAdapter – destroy robustness', () => {
   afterEach(() => {
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   test('destroy() – player.destroy() throws, state still cleaned up (_ready=false, _pendingPlay=false)', async () => {
@@ -1154,8 +1170,8 @@ describe('YouTubeIframeAdapter – destroy robustness', () => {
       throw new Error('YT player destroy failed');
     });
 
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return {
           playVideo: jest.fn(),
@@ -1194,11 +1210,11 @@ describe('YouTubeIframeAdapter – destroy robustness', () => {
 
 describe('YouTubeIframeAdapter – caption error handling', () => {
   afterEach(() => {
-    delete (window as any).YT;
+    delete win.YT;
   });
 
   function makeAdapterWithGetOptionThrowing() {
-    return jest.fn().mockImplementation((_el: any, opts: any) => {
+    return jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
       opts.events?.onReady?.();
       return {
         playVideo: jest.fn(),
@@ -1226,7 +1242,7 @@ describe('YouTubeIframeAdapter – caption error handling', () => {
 
   test('getAvailableCaptionTracks() – getOption throws, returns []', async () => {
     const { YouTubeIframeAdapter } = await import('../src/youtubeAdapter');
-    (window as any).YT = { Player: makeAdapterWithGetOptionThrowing() };
+    win.YT = { Player: makeAdapterWithGetOptionThrowing() };
 
     const adapter = new YouTubeIframeAdapter({ videoId: 'dQw4w9WgXcQ' });
     const container = document.createElement('div');
@@ -1241,7 +1257,7 @@ describe('YouTubeIframeAdapter – caption error handling', () => {
 
   test('getActiveCaptionTrack() – getOption throws, returns null', async () => {
     const { YouTubeIframeAdapter } = await import('../src/youtubeAdapter');
-    (window as any).YT = { Player: makeAdapterWithGetOptionThrowing() };
+    win.YT = { Player: makeAdapterWithGetOptionThrowing() };
 
     const adapter = new YouTubeIframeAdapter({ videoId: 'dQw4w9WgXcQ' });
     const container = document.createElement('div');
@@ -1256,7 +1272,7 @@ describe('YouTubeIframeAdapter – caption error handling', () => {
 
   test('setCaptionTrack() – setOption throws, no error propagated', async () => {
     const { YouTubeIframeAdapter } = await import('../src/youtubeAdapter');
-    (window as any).YT = { Player: makeAdapterWithGetOptionThrowing() };
+    win.YT = { Player: makeAdapterWithGetOptionThrowing() };
 
     const adapter = new YouTubeIframeAdapter({ videoId: 'dQw4w9WgXcQ' });
     const container = document.createElement('div');
@@ -1273,7 +1289,7 @@ describe('YouTubeIframeAdapter – caption error handling', () => {
 
 describe('YouTubeIframeAdapter – loadYouTubeAPI singleton', () => {
   afterEach(() => {
-    delete (window as any).YT;
+    delete win.YT;
     // Remove any injected YT script tags
     document.querySelectorAll('script[src*="youtube.com/iframe_api"]').forEach((s) => s.remove());
     // Reset the module to clear the singleton apiLoadPromise
@@ -1286,8 +1302,8 @@ describe('YouTubeIframeAdapter – loadYouTubeAPI singleton', () => {
     const { YouTubeIframeAdapter: Adapter } = await import('../src/youtubeAdapter');
 
     // Set up YT before mount so loadYouTubeAPI resolves via the window.YT.Player check
-    (window as any).YT = {
-      Player: jest.fn().mockImplementation((_el: any, opts: any) => {
+    win.YT = {
+      Player: jest.fn().mockImplementation((_el: HTMLElement, opts: YTReadyOpts) => {
         opts.events?.onReady?.();
         return {
           playVideo: jest.fn(),

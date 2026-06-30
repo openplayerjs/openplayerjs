@@ -18,6 +18,17 @@ import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
 
+/** AdsPlugin with its `@internal` getters narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & {
+  resolvedBreaks: NonNullable<AdsPlugin['resolvedBreaks']>;
+  tracker: NonNullable<AdsPlugin['tracker']>;
+};
+
+/** VMAP mock exposes a `__breaks` fixture array the parser mock reads. */
+const vmapMock = VMAP as unknown as { __breaks: unknown[] };
+/** `globalThis` view for stubbing `fetch` without fighting its ambient typing. */
+const globalWithFetch = globalThis as unknown as { fetch: unknown };
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -156,7 +167,7 @@ const nonLinearVastXml = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe('AdsPlugin lazy fetch guard', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -165,14 +176,14 @@ describe('AdsPlugin lazy fetch guard', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    globalWithFetch.fetch = undefined;
   });
 
   test('fetch() is NOT called when vastClient.get() succeeds for a linear URL input', async () => {
     vastGetMock.mockResolvedValueOnce(linearParsed());
 
     const fetchMock = jest.fn();
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
@@ -195,7 +206,7 @@ describe('AdsPlugin lazy fetch guard', () => {
     vastGetMock.mockResolvedValueOnce(nonLinearParsed());
 
     const fetchMock = jest.fn();
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
@@ -219,7 +230,7 @@ describe('AdsPlugin lazy fetch guard', () => {
 
     // Raw XML has non-linear creatives.
     const fetchMock = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(nonLinearVastXml) });
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
@@ -264,7 +275,7 @@ describe('AdsPlugin lazy fetch guard', () => {
     vastParseMock.mockResolvedValueOnce(linearParsed());
 
     const fetchMock = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(linearXml) });
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
@@ -288,7 +299,7 @@ describe('AdsPlugin lazy fetch guard', () => {
 
 describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -297,12 +308,12 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    globalWithFetch.fetch = undefined;
   });
 
   test('two <AdBreak> elements sharing the same breakId are both scheduled via DOM fallback', async () => {
     // Simulate the VMAP library deduplicating two identical breakIds into one entry.
-    (VMAP as any).__breaks = [
+    vmapMock.__breaks = [
       {
         breakType: 'linear',
         breakId: 'midroll-1',
@@ -328,15 +339,15 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
   </AdBreak>
 </VMAP>`;
 
-    (globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
+    globalWithFetch.fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
 
     const { ctx } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false }) as any;
+    const p = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
     await p.loadVmapAndMerge([], 'https://example.com/vmap.xml');
 
-    const resolvedBreaks = p.resolvedBreaks as any[];
+    const resolvedBreaks = p.resolvedBreaks;
 
     // Both midroll breaks must be scheduled (DOM fallback generates unique IDs via loop index).
     const midrolls = resolvedBreaks.filter((b) => typeof b.at === 'number' && b.at === 15);
@@ -348,7 +359,7 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
   });
 
   test('VMAP with unique breakIds still resolves correctly (no false deduplication trigger)', async () => {
-    (VMAP as any).__breaks = [
+    vmapMock.__breaks = [
       {
         breakType: 'linear',
         breakId: 'pre',
@@ -374,15 +385,15 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
   </AdBreak>
 </VMAP>`;
 
-    (globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
+    globalWithFetch.fetch = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(vmapXml) });
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    await (p as any).loadVmapAndMerge([], 'https://example.com/vmap.xml');
+    await (p as unknown as AdsPluginInternals).loadVmapAndMerge([], 'https://example.com/vmap.xml');
 
-    const resolvedBreaks = (p as any).resolvedBreaks as any[];
+    const resolvedBreaks = (p as unknown as AdsPluginInternals).resolvedBreaks;
     expect(resolvedBreaks.some((b) => b.at === 'preroll')).toBe(true);
     expect(resolvedBreaks.some((b) => b.at === 30)).toBe(true);
   });
@@ -394,7 +405,7 @@ describe('AdsPlugin VMAP duplicate breakId deduplication', () => {
 
 describe('AdsPlugin startBreakGroup suppressResumeOnSuccess', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -403,7 +414,7 @@ describe('AdsPlugin startBreakGroup suppressResumeOnSuccess', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    globalWithFetch.fetch = undefined;
   });
 
   test('cmd:play is NOT emitted between two consecutive breaks, but IS emitted after the last', async () => {
@@ -416,14 +427,14 @@ describe('AdsPlugin startBreakGroup suppressResumeOnSuccess', () => {
     p.setup(ctx);
 
     const cmdPlays: number[] = [];
-    bus.on('cmd:play' as any, () => cmdPlays.push(Date.now()));
+    bus.on('cmd:play', () => cmdPlays.push(Date.now()));
 
     const breaks = [
       { id: 'grp-1', at: 'preroll' as const, source: { type: 'VAST' as const, src: 'https://example.com/ad1.xml' } },
       { id: 'grp-2', at: 'preroll' as const, source: { type: 'VAST' as const, src: 'https://example.com/ad2.xml' } },
     ];
 
-    const groupP = (p as any).startBreakGroup(breaks, 'preroll');
+    const groupP = (p as unknown as AdsPluginInternals).startBreakGroup(breaks, 'preroll');
 
     // ---- First ad ----
     const adVideo1 = await waitForAdVideo();
@@ -460,7 +471,7 @@ describe('AdsPlugin startBreakGroup suppressResumeOnSuccess', () => {
 
 describe('AdsPlugin VASTTracker method calls', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -469,7 +480,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    globalWithFetch.fetch = undefined;
   });
 
   test('trackStart is called when ad video fires playing event', async () => {
@@ -486,7 +497,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 20, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker = (p as any).tracker;
+    const tracker = (p as unknown as AdsPluginInternals).tracker;
     expect(tracker).toBeTruthy();
 
     adVideo!.dispatchEvent(new Event('playing'));
@@ -516,7 +527,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 40, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker = (p as any).tracker;
+    const tracker = (p as unknown as AdsPluginInternals).tracker;
     expect(tracker).toBeTruthy();
 
     // 0% (playing event emits quartile 0)
@@ -571,7 +582,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 30, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker = (p as any).tracker;
+    const tracker = (p as unknown as AdsPluginInternals).tracker;
     expect(tracker).toBeTruthy();
 
     adVideo!.currentTime = 5;
@@ -598,7 +609,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     Object.defineProperty(adVideo!, 'duration', { value: 20, configurable: true });
     adVideo!.dispatchEvent(new Event('loadedmetadata'));
 
-    const tracker = (p as any).tracker;
+    const tracker = (p as unknown as AdsPluginInternals).tracker;
     expect(tracker).toBeTruthy();
 
     // Mute: was unmuted (muted=false, volume>0), now mute
@@ -635,7 +646,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
     expect(adVideo).toBeTruthy();
 
     // trackImpression must be called synchronously after ad mount (before any events fire).
-    const tracker = (p as any).tracker;
+    const tracker = (p as unknown as AdsPluginInternals).tracker;
     expect(tracker).toBeTruthy();
     expect(tracker.trackImpression).toHaveBeenCalledTimes(1);
 
@@ -650,7 +661,7 @@ describe('AdsPlugin VASTTracker method calls', () => {
 
 describe('AdsPlugin NONLINEAR sourceType path', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -659,21 +670,21 @@ describe('AdsPlugin NONLINEAR sourceType path', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    globalWithFetch.fetch = undefined;
   });
 
   test('NONLINEAR sourceType: non-linear overlay rendered, no playback lease acquired', async () => {
     vastGetMock.mockResolvedValueOnce(nonLinearParsed());
 
     const fetchMock = jest.fn();
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     const { ctx, lease } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
     p.setup(ctx);
 
     // Use playBreakFromVast directly with NONLINEAR sourceType
-    const play = (p as any).playBreakFromVast(
+    const play = (p as unknown as AdsPluginInternals).playBreakFromVast(
       { kind: 'url', value: 'https://example.com/nonlinear.xml' },
       { kind: 'preroll', id: 'nl-test', sourceType: 'NONLINEAR' }
     );
@@ -698,13 +709,13 @@ describe('AdsPlugin NONLINEAR sourceType path', () => {
     vastGetMock.mockResolvedValueOnce({ ads: [] });
 
     const fetchMock = jest.fn().mockResolvedValue({ ok: true, text: jest.fn().mockResolvedValue(nonLinearVastXml) });
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     const { ctx } = makeCtx();
     const p = new AdsPlugin({ allowNativeControls: false, resumeContent: false });
     p.setup(ctx);
 
-    const play = (p as any).playBreakFromVast(
+    const play = (p as unknown as AdsPluginInternals).playBreakFromVast(
       { kind: 'url', value: 'https://example.com/nonlinear.xml' },
       { kind: 'preroll', id: 'nl-xml', sourceType: 'NONLINEAR' }
     );

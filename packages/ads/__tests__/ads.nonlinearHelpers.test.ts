@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { PluginContext } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 
@@ -14,9 +15,9 @@ describe('NONLINEAR raw-XML fallback helpers', () => {
       events,
       state: { current: 'ready' },
       leases: { acquire: jest.fn(() => true), release: jest.fn(), owner: jest.fn(() => null) },
-    };
+    } as unknown as PluginContext;
 
-    const plugin: any = new AdsPlugin({ interceptPlayForPreroll: false, allowNativeControls: true });
+    const plugin = new AdsPlugin({ interceptPlayForPreroll: false, allowNativeControls: true });
     plugin.setup(ctx);
 
     // Ensure parse path doesn't throw.
@@ -25,12 +26,12 @@ describe('NONLINEAR raw-XML fallback helpers', () => {
       parseVAST: jest.fn(async () => ({ ads: [], version: '3.0' })),
     };
 
-    const getXmlSpy = jest.spyOn(plugin as any, 'getVastXmlText').mockResolvedValue('<VAST version="3.0"></VAST>');
+    const getXmlSpy = jest.spyOn(plugin, 'getVastXmlText').mockResolvedValue('<VAST version="3.0"></VAST>');
     const buildSpy = jest
-      .spyOn(plugin as any, 'buildParsedForNonLinearFromXml')
+      .spyOn(plugin, 'buildParsedForNonLinearFromXml')
       .mockImplementation((xmlText) => new DOMParser().parseFromString(xmlText as string, 'text/xml'));
 
-    await (plugin as any).playBreakFromVast(
+    await plugin.playBreakFromVast(
       { kind: 'url', value: 'https://example.com/vast' },
       { kind: 'manual', id: 'manual', sourceType: 'NONLINEAR' }
     );

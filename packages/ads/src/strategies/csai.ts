@@ -18,6 +18,7 @@ import type {
   CsaiAdConfig,
   ScteSource,
   VastInput,
+  VastParsed,
 } from '../types';
 import { PluginBus } from '../types';
 import {
@@ -144,10 +145,10 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   private adEndPromise: Promise<void> | null = null;
   private adEngineDetach?: () => void;
 
-  private currentBreakMeta?: { kind: string; breakId: string };
-  /** @internal */ vastClient: any;
-  /** @internal */ tracker?: any;
-  private _lastCreative: any;
+  private currentBreakMeta?: { kind: string; id: string };
+  /** @internal */ vastClient: VastParsed;
+  /** @internal */ tracker?: VastParsed;
+  private _lastCreative: VastParsed;
 
   /** @internal */ globalUnsubs: (() => void)[] = [];
   /** @internal */ sessionUnsubs: (() => void)[] = [];
@@ -184,8 +185,8 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   _dispatchBuildParsedForNonLinear!: (xmlText: string) => XMLDocument | null;
   _dispatchMountAdVideo!: (
     contentMedia: HTMLMediaElement,
-    mediaFile: { fileURL: string; raw: any },
-    creative?: any
+    mediaFile: { fileURL: string; raw: VastParsed },
+    creative?: VastParsed
   ) => void;
   _dispatchStartAdPlayback!: () => void;
 
@@ -206,7 +207,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
 
     this.scheduler = new AdScheduler(this.cfg, ctx, this.warn.bind(this), (err) => {
       this.bus.emit('ads:error', { reason: 'vmap_parse_failed', error: err });
-      ctx.events.emit('ads.error', { reason: 'vmap_parse_failed', error: err });
     });
 
     this.captionMgr = new CaptionManager();
@@ -301,8 +301,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       this.currentBreakMeta,
       (data) => {
         this.bus.emit('ads:skip', data);
-        this.ctx.events.emit('ads.skipped', data);
-        this.ctx.events.emit('adsskipped', data);
         this.omidSession?.skipped();
         this.simidSession?.skip();
       },
@@ -462,10 +460,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
         while (!this.active && !this.startingBreak) {
           const post = this.scheduler.getPostrollBreak();
           if (!post) break;
-          this.ctx.events.emit('ads.mediaended', {
-            break: { kind: 'postroll', id: this.scheduler.getBreakId(post) },
-            at: post.at,
-          });
           await this._dispatchStartBreak(post, 'postroll');
         }
       })();
@@ -580,7 +574,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       events.emit('cmd:pause');
       if (!leases.acquire('playback', 'ads')) {
         this.bus.emit('ads:error', { reason: 'playback lease already owned', owner: leases.owner('playback') });
-        this.ctx.events.emit('ads.error', { reason: 'playback lease already owned', owner: leases.owner('playback') });
         return false;
       }
       return true;
@@ -597,7 +590,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     };
 
     try {
-      let parsed: any;
+      let parsed: VastParsed;
       if (input.kind === 'url') {
         try {
           parsed = await this.vastClient.get(input.value);
@@ -621,7 +614,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
 
       const emitLoaded = (count: number) => {
         this.bus.emit('ads:loaded', { break: meta, count });
-        this.ctx.events.emit('ads.loaded', { break: meta, count });
       };
 
       if (meta.sourceType === 'NONLINEAR') {
@@ -744,7 +736,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
                   /* ignore */
                 }
                 this.bus.emit('ads:clickthrough', { break: meta, url });
-                this.ctx.events.emit('ads.click', { break: meta, url });
               },
               onTrackingEvent: (event, _data) => {
                 this.bus.emit('ads:impression', { break: meta, event });
@@ -775,7 +766,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
         this.omidSession?.impression();
         this.bus.emit('ads:impression', { break: meta, index: i });
 
-        this.bindTrackerAndTelemetry({ kind: meta.kind, breakId: meta.id });
+        this.bindTrackerAndTelemetry({ kind: meta.kind, id: meta.id });
         this._dispatchStartAdPlayback();
         await endPromise;
 
@@ -783,7 +774,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       }
 
       this.bus.emit('ads:allAdsCompleted', { break: meta });
-      this.ctx.events.emit('ads.allAdsCompleted', { break: meta });
       const announcer = this.overlay && this.overlay.querySelector('.op-ads__sr-announcer');
       if (announcer) announcer.textContent = this.cfg.labels?.adEnded || 'Advertisement ended';
 
@@ -795,7 +785,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       this.bus.emit('ads:error', { message, error: err });
-      this.ctx.events.emit('ads.error', { message, error: err });
       this.finish({
         resume: meta.kind !== 'postroll' && (this.userPlayIntent || this.resumeAfter),
         suppressResume: opts?.suppressResumeOnError,
@@ -807,7 +796,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   // ─── Non-linear playback ──────────────────────────────────────────────────
 
   private async playNonLinearOnlyBreak(
-    parsed: any,
+    parsed: VastParsed,
     meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string }
   ) {
     this.dom.ensureOverlayMounted(this.ctx.core.media);
@@ -848,7 +837,8 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       this._lastCreative = item.creative;
 
       const companionCreative =
-        (item.ad?.creatives as any[] | undefined)?.find((c: any) => c?.type === 'companion') ?? item.creative;
+        (item.ad?.creatives as VastParsed[] | undefined)?.find((c: VastParsed) => c?.type === 'companion') ??
+        item.creative;
       this.dom.mountCompanions(companionCreative);
       this.dom.ensureNonLinearDom();
       const el = this.dom.renderNonLinear(item.nonLinear);
@@ -871,7 +861,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   }
 
   private async playNonLinearOnlyBreakFromXml(
-    items: { nonLinear: any; companions?: any[] }[],
+    items: { nonLinear: VastParsed; companions?: VastParsed[] }[],
     meta: { kind: 'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'; id: string }
   ) {
     this.dom.ensureOverlayMounted(this.ctx.core.media);
@@ -898,7 +888,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     void this.dismissNonLinear(items, meta, maxDuration);
   }
 
-  private async dismissNonLinear(items: any[], meta: any, maxDuration: number) {
+  private async dismissNonLinear(items: VastParsed[], meta: VastParsed, maxDuration: number) {
     const start = Date.now();
     await new Promise<void>((resolve) => {
       const tick = () => {
@@ -921,7 +911,11 @@ export class CsaiAdStrategy implements AdSessionStrategy {
 
   // ─── Ad video management ──────────────────────────────────────────────────
 
-  private mountAdVideo(contentMedia: HTMLMediaElement, mediaFile: { fileURL: string; raw: any }, creative?: any) {
+  private mountAdVideo(
+    contentMedia: HTMLMediaElement,
+    mediaFile: { fileURL: string; raw: VastParsed },
+    creative?: VastParsed
+  ) {
     this.dom.ensureOverlayMounted(contentMedia);
     const root = this.overlay.parentElement as HTMLElement;
     this.overlay.replaceChildren();
@@ -1092,7 +1086,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
     );
     this.sessionUnsubs.push(events.on('cmd:pause', () => v()?.pause()));
     this.sessionUnsubs.push(
-      events.on('cmd:setVolume', (x: any) => {
+      events.on('cmd:setVolume', (x: number) => {
         const vol = Number(x);
         const el = v();
         if (!Number.isFinite(vol) || !el || this.syncingVolume || this.forcedMuteUntilInteraction) return;
@@ -1100,7 +1094,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       })
     );
     this.sessionUnsubs.push(
-      events.on('cmd:setMuted', (x: any) => {
+      events.on('cmd:setMuted', (x: boolean) => {
         const el = v();
         if (!el || this.syncingVolume) return;
         if (this.forcedMuteUntilInteraction && !this.ctx.core.userInteracted) {
@@ -1115,7 +1109,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
 
   // ─── Tracker & telemetry ──────────────────────────────────────────────────
 
-  private bindTrackerAndTelemetry(meta: { kind: string; breakId: string }): void {
+  private bindTrackerAndTelemetry(meta: { kind: string; id: string }): void {
     this.currentBreakMeta = meta;
     const v = this.adVideo!;
     let started = false;
@@ -1131,26 +1125,21 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       const dur = v.duration;
       if (Number.isFinite(dur) && dur > 0) {
         this.bus.emit('ads:duration', { break: meta, duration: dur });
-        this.ctx.events.emit('ads.durationChange', { duration: dur, break: meta });
       }
     };
 
     const emitQuartile = (quartile: 0 | 25 | 50 | 75 | 100) => {
-      this.bus.emit('ads:quartile', { break: meta, quartile });
+      this.bus.emit('ads:quartile', { breakId: meta.id, quartile });
       if (quartile === 25) {
-        this.ctx.events.emit('ads.firstQuartile', { break: meta });
         this.omidSession?.firstQuartile();
       }
       if (quartile === 50) {
-        this.ctx.events.emit('ads.midpoint', { break: meta });
         this.omidSession?.midpoint();
       }
       if (quartile === 75) {
-        this.ctx.events.emit('ads.thirdQuartile', { break: meta });
         this.omidSession?.thirdQuartile();
       }
       if (quartile === 100) {
-        this.ctx.events.emit('ads.complete', { break: meta });
         this.omidSession?.complete();
       }
     };
@@ -1160,7 +1149,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
         started = true;
         this.tracker?.trackStart?.();
         this.ctx.events.emit('play');
-        this.ctx.events.emit('ads.start', { break: meta });
         emitQuartile(0);
         emitDuration();
         const dur = v.duration;
@@ -1171,7 +1159,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       } else if (lastPaused) {
         this.tracker?.trackResume?.();
         this.bus.emit('ads:resume', { break: meta });
-        this.ctx.events.emit('ads.resume', { break: meta });
         this.omidSession?.resume();
         this.simidSession?.resume();
       }
@@ -1188,7 +1175,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       lastPaused = true;
       this.bus.emit('ads:pause', { break: meta });
       this.ctx.events.emit('pause');
-      this.ctx.events.emit('ads.pause', { break: meta });
     };
 
     const onTime = () => {
@@ -1198,7 +1184,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       emitDuration();
       const remaining = Math.max(0, dur - cur);
       this.bus.emit('ads:timeupdate', { break: meta, currentTime: cur, remainingTime: remaining, duration: dur });
-      this.ctx.events.emit('ads.adProgress', { currentTime: cur, duration: dur, break: meta });
       this.tracker?.setDuration?.(dur);
       this.tracker?.setProgress?.(cur);
       this.simidSession?.progress(cur, dur);
@@ -1231,7 +1216,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       if (Number.isFinite(vol) && vol !== lastVol) lastVol = vol;
       const muted = v.muted || v.volume === 0;
       this.bus.emit('ads:volumeChange', { break: meta, volume: vol, muted });
-      this.ctx.events.emit('ads.volumeChange', { volume: vol, muted, break: meta });
       this.omidSession?.volumeChange(muted ? 0 : vol);
       this.simidSession?.volumeChange(vol, muted);
 
@@ -1270,7 +1254,6 @@ export class CsaiAdStrategy implements AdSessionStrategy {
       this.tracker?.trackClick?.();
       this.tracker?.trackClickThrough?.();
       this.bus.emit('ads:clickthrough', { break: meta, url: click });
-      this.ctx.events.emit('ads.click', { break: meta, url: click });
     };
 
     v.addEventListener('playing', onPlaying);
@@ -1391,19 +1374,19 @@ export class CsaiAdStrategy implements AdSessionStrategy {
 
   // ─── Logging ──────────────────────────────────────────────────────────────
 
-  protected log(...args: any[]): void {
+  protected log(...args: unknown[]): void {
     // eslint-disable-next-line no-console
     if (this.cfg?.debug) console.debug('[player][ads]', ...args);
   }
 
-  protected warn(...args: any[]): void {
+  protected warn(...args: unknown[]): void {
     // eslint-disable-next-line no-console
     if (this.cfg?.debug) console.warn('[player][ads]', ...args);
   }
 
   // ─── @internal delegates (used by AdsPlugin for test access) ─────────────
 
-  /** @internal */ getVastXmlText(input: any) {
+  /** @internal */ getVastXmlText(input: VastInput) {
     return getVastXmlText(input);
   }
   /** @internal */ buildParsedForNonLinearFromXml(xmlText: string) {
@@ -1412,7 +1395,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   /** @internal */ computeSkipAtSecondsDelegate(skipOffset: string | undefined, duration: number) {
     return computeSkipAtSeconds(skipOffset, duration);
   }
-  /** @internal */ collectPodAdsDelegate(parsed: any) {
+  /** @internal */ collectPodAdsDelegate(parsed: VastParsed) {
     return collectPodAds(parsed, this.cfg?.preferredMediaTypes);
   }
   /** @internal */ getPrerollBreak() {
@@ -1433,7 +1416,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   /** @internal */ get pendingPercentBreaks() {
     return this.scheduler?.pendingPercentBreaks;
   }
-  /** @internal */ set pendingPercentBreaks(v: any[]) {
+  /** @internal */ set pendingPercentBreaks(v: AdScheduler['pendingPercentBreaks']) {
     if (this.scheduler) this.scheduler.pendingPercentBreaks = v;
   }
   /** @internal */ get playedBreaks() {
@@ -1454,19 +1437,19 @@ export class CsaiAdStrategy implements AdSessionStrategy {
   /** @internal */ ensureOverlayMounted() {
     return this.dom.ensureOverlayMounted(this.ctx.core.media);
   }
-  /** @internal */ mountCompanions(creative: any) {
+  /** @internal */ mountCompanions(creative: VastParsed) {
     return this.dom.mountCompanions(creative);
   }
-  /** @internal */ renderCompanion(companion: any) {
+  /** @internal */ renderCompanion(companion: VastParsed) {
     return this.dom.renderCompanion(companion);
   }
-  /** @internal */ renderNonLinear(nl: any) {
+  /** @internal */ renderNonLinear(nl: VastParsed) {
     return this.dom.renderNonLinear(nl);
   }
-  /** @internal */ ensureRawCaptions(mediaFileRaw: any, creative?: any) {
+  /** @internal */ ensureRawCaptions(mediaFileRaw: VastParsed, creative?: VastParsed) {
     return this.captionMgr.ensureRawCaptions(mediaFileRaw, creative);
   }
-  /** @internal */ attachAdCaptionTracks(adVideo: HTMLVideoElement, raw: any, creative?: any) {
+  /** @internal */ attachAdCaptionTracks(adVideo: HTMLVideoElement, raw: VastParsed, creative?: VastParsed) {
     return this.captionMgr.attachAdCaptionTracks(adVideo, raw, creative);
   }
 }

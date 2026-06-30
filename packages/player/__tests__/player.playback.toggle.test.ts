@@ -48,9 +48,9 @@ describe('PlayControl – isEnded path', () => {
     player.events.emit('ended');
 
     // Now click play — should reset currentTime to 0
-    (v as any).currentTime = 30;
+    v.currentTime = 30;
     player.events.emit('cmd:seek', 30); // sync currentTime
-    (player as any)._currentTime = 30;
+    (player as unknown as { _currentTime: number })._currentTime = 30;
 
     const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
     btn.dispatchEvent(clickEvent);

@@ -62,7 +62,37 @@ Bump type is inferred from conventional commit prefixes (`feat:` → minor, `fix
 
 ### Strict mode is non-negotiable
 
-All packages compile with `"strict": true`. No `any` without justification. Use `unknown` for unknowns.
+All packages compile with `"strict": true` and **TypeScript 6**. No `any` without justification. Use `unknown` for unknowns.
+
+### Never add `as any` — use typed alternatives
+
+`as any` defeats the type system and hides real errors. Prefer:
+
+```ts
+// Vendor-prefixed / non-standard browser APIs → typed intersection
+type VendorElement = HTMLElement & { webkitEnterFullscreen?: () => void };
+const el = target as VendorElement;
+
+// Non-standard DOM properties (e.g. DataCue, TextTrackCue extensions) → local typed alias
+type RawCue = TextTrackCue & { data?: ArrayBuffer; value?: unknown };
+const raw = cue as RawCue;
+
+// Opaque objects that need structural access → minimal typed interface
+type PlayerLike = { events?: { on?: unknown; emit?: unknown } };
+const p = player as PlayerLike;
+
+// Private method access in tests → typed handle alias
+type ControlInternals = ReturnType<typeof createControl> & { resolveRoot(): HTMLElement };
+const c = control as unknown as ControlInternals;
+
+// Read-only HTMLMediaElement properties in tests → Object.defineProperty
+Object.defineProperty(media, 'duration', { value: 120, configurable: true });
+```
+
+Justified `as any` exceptions (document with an inline comment):
+- Experimental browser APIs not yet in TypeScript's lib (e.g. `window.screen.orientation.lock`)
+- Generic event forwarding loops over third-party typed event enums (hls.js)
+- External library outputs with no shipped types (OMID, SIMID, `@dailymotion/vast-client` parsed objects)
 
 ### `type` over `interface` — enforced by ESLint
 
@@ -185,16 +215,38 @@ const off = events.on('cmd:play', () => media.play());
 events.emit('media:timeupdate', currentTime);
 ```
 
-**To add a new event:** extend `PlayerEventPayloadMap` in `packages/core/src/core/events.ts`, then re-export from `packages/core/src/index.ts` if needed.
+#### Package boundary — core stays agnostic of package events (CRITICAL)
+
+`PlayerEventPayloadMap` lives in core and declares **only kernel-level events** (lifecycle, commands, HTML5 media notifications, tracks). **Core must never gain `hls:*`, `ads:*`, `ui:*`, or any other package-specific keys.** This preserves the hierarchy: core is the kernel, player is the UI layer, and engines/plugins are independent packages.
+
+Package-specific events are added via **TypeScript declaration merging**. Each owning package ships a `src/events.ts` that augments the interface and is side-effect-imported from its `index.ts`:
+
+```ts
+// packages/<pkg>/src/events.ts
+import '@openplayerjs/core';
+
+declare module '@openplayerjs/core' {
+  interface PlayerEventPayloadMap {
+    'my:event': MyPayload;
+  }
+}
+```
+
+```ts
+// packages/<pkg>/src/index.ts
+import './events'; // registers the augmentation in the published types
+```
+
+Because `PlayerEventPayloadMap` is an `interface` (the one sanctioned exception to the `type`-over-`interface` rule — a `type` alias cannot be augmented), any consumer that imports the package gets its events typed on `core.on(...)` / `core.emit(...)`. Canonical example: [packages/ads/src/events.ts](packages/ads/src/events.ts). (The HLS engine currently augments nothing — it drives the player through standard core events only.)
+
+**To add an event:** core/kernel event → edit `packages/core/src/core/events.ts`. Package event → edit that package's `src/events.ts` augmentation (never core).
 
 Event naming conventions:
 
-- `cmd:*` — commands from player to engine (`cmd:play`, `cmd:pause`, `cmd:seek`, `cmd:startLoad`)
-- `media:*` — media state notifications (`media:timeupdate`, `media:rate`, `media:volume`)
-- HTML5-native names without prefix — playback events bridged from DOM (`playing`, `pause`, `ended`, `loadedmetadata`)
-- `ads:*` — ad lifecycle events emitted by AdsPlugin
-- `source:set` — player source changed
-- `player:interacted` — user interacted with player
+- `cmd:*` — commands from player to engine (`cmd:play`, `cmd:pause`, `cmd:seek`, `cmd:startLoad`) — **core**
+- HTML5-native names without prefix — playback events bridged from DOM (`playing`, `pause`, `ended`, `loadedmetadata`) — **core**
+- `source:set` / `player:interacted` — source/interaction — **core**
+- `ads:*` — ad lifecycle events on the **shared EventBus** (all 20 events; `core.on('ads:X', cb)` works for any delivery mode) — **`@openplayerjs/ads`** (augmentation)
 
 ### Iframe engine pattern
 

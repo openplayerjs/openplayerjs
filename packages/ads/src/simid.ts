@@ -99,7 +99,7 @@ type SimidMessage = {
   reason?: string;
 };
 
-type PendingResolve = { resolve: (v: any) => void; reject: (e: any) => void };
+type PendingResolve = { resolve: (v: unknown) => void; reject: (e: unknown) => void };
 
 export type SimidCallbacks = {
   onSkip: () => void;
@@ -107,9 +107,9 @@ export type SimidCallbacks = {
   onPause: () => void;
   onPlay: () => void;
   onClickThrough: (url: string) => void;
-  onTrackingEvent: (event: string, data?: any) => void;
+  onTrackingEvent: (event: string, data?: unknown) => void;
   onFatal: (errorCode: number, reason: string) => void;
-  onLog?: (data: any) => void;
+  onLog?: (data: unknown) => void;
   /**
    * Called when the creative requests a duration change (SIMID:Creative:requestChangeAdDuration).
    * The handler receives the requested delta in seconds and resolve/reject callbacks.
@@ -138,7 +138,7 @@ export class SimidSession {
   private messageListener: (e: MessageEvent) => void;
   private sessionId = '';
   private initSent = false;
-  private initPromise: Promise<any> | null = null;
+  private initPromise: Promise<unknown> | null = null;
   private started = false;
   private destroyed = false;
   private mediaListeners: { event: string; handler: EventListener }[] = [];
@@ -205,7 +205,7 @@ export class SimidSession {
    * Send a player→creative message that expects a resolve/reject response.
    * Returns a promise that resolves/rejects when the creative responds.
    */
-  private send(type: SimidPlayerMessage, args?: Record<string, unknown>): Promise<any> {
+  private send(type: SimidPlayerMessage, args?: Record<string, unknown>): Promise<unknown> {
     const messageId = this.nextMsgId();
     const payload: Record<string, unknown> = {
       type,
@@ -347,9 +347,10 @@ export class SimidSession {
         const pending = rejectedId != null ? this.pending.get(rejectedId) : undefined;
         if (pending) {
           this.pending.delete(rejectedId!);
+          const value = data.args?.value as { errorCode?: number; message?: string } | undefined;
           pending.reject({
-            errorCode: data.errorCode ?? (data.args?.value as any)?.errorCode,
-            reason: data.reason ?? (data.args?.value as any)?.message,
+            errorCode: data.errorCode ?? value?.errorCode,
+            reason: data.reason ?? value?.message,
           });
         }
         break;
@@ -534,7 +535,7 @@ export class SimidSession {
   private getMediaState(): Record<string, unknown> {
     const v = this.adVideo;
     return {
-      currentSrc: v.currentSrc || (v as any).src || '',
+      currentSrc: v.currentSrc || v.src || '',
       currentTime: v.currentTime,
       duration: Number.isFinite(v.duration) ? v.duration : 0,
       ended: v.ended,
@@ -548,12 +549,12 @@ export class SimidSession {
   // ─── Player → Creative public API ─────────────────────────────────────────
 
   /** Manually send SIMID:Player:init (e.g. when not using the automatic handshake). */
-  init(creativeData: Record<string, unknown>, environmentData: Record<string, unknown>): Promise<any> {
+  init(creativeData: Record<string, unknown>, environmentData: Record<string, unknown>): Promise<unknown> {
     return this.send(SIMID_PLAYER.INIT, { creativeData, environmentData });
   }
 
   /** Manually send SIMID:Player:startCreative. */
-  start(): Promise<any> {
+  start(): Promise<unknown> {
     return this.send(SIMID_PLAYER.START_CREATIVE);
   }
 
@@ -602,7 +603,7 @@ export class SimidSession {
     }
   }
 
-  stop(): Promise<any> {
+  stop(): Promise<unknown> {
     if (this.destroyed) return Promise.resolve();
     return this.send(SIMID_PLAYER.AD_STOPPED).catch(() => undefined);
   }
@@ -652,7 +653,7 @@ export class SimidSession {
     }
   }
 
-  resize(width: number, height: number): Promise<any> {
+  resize(width: number, height: number): Promise<unknown> {
     return this.send(SIMID_PLAYER.RESIZE, { width, height });
   }
 

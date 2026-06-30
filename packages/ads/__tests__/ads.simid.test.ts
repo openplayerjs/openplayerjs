@@ -20,7 +20,9 @@ function makeIframe(): HTMLIFrameElement {
   return iframe;
 }
 
-function makeVideo(overrides: Partial<{ duration: number; volume: number; muted: boolean; currentTime: number }> = {}): HTMLVideoElement {
+function makeVideo(
+  overrides: Partial<{ duration: number; volume: number; muted: boolean; currentTime: number }> = {}
+): HTMLVideoElement {
   const v = document.createElement('video');
   Object.defineProperty(v, 'duration', { value: overrides.duration ?? 30, writable: true });
   Object.defineProperty(v, 'currentTime', { value: overrides.currentTime ?? 0, writable: true });
@@ -48,9 +50,7 @@ function makeCallbacks(overrides: Partial<SimidCallbacks> = {}): SimidCallbacks 
 
 /** Dispatch a message with the given data (object or JSON string). */
 function dispatch(data: unknown, asString = false) {
-  window.dispatchEvent(
-    new MessageEvent('message', { data: asString ? JSON.stringify(data) : data })
-  );
+  window.dispatchEvent(new MessageEvent('message', { data: asString ? JSON.stringify(data) : data }));
 }
 
 /**
@@ -164,7 +164,10 @@ describe('SimidSession', () => {
 
   it('is idempotent: second destroy() is a no-op', () => {
     const session = new SimidSession(iframe, video, makeCallbacks());
-    expect(() => { session.destroy(); session.destroy(); }).not.toThrow();
+    expect(() => {
+      session.destroy();
+      session.destroy();
+    }).not.toThrow();
   });
 
   it('rejects all pending promises on destroy', async () => {
@@ -642,14 +645,14 @@ describe('SimidSession', () => {
     mockContentWindow(iframe, postSpy);
     // Ensure no requestFullscreen on the parent
     const origReqFs = document.body.requestFullscreen;
-    delete (document.body as any).requestFullscreen;
+    delete (document.body as unknown as { requestFullscreen?: () => Promise<void> }).requestFullscreen;
 
     new SimidSession(iframe, video, makeCallbacks());
     dispatch({ type: SIMID_CREATIVE.REQUEST_FULLSCREEN, messageId: 10 });
 
     const rejectCall = postSpy.mock.calls.find((c) => c[0].type === SIMID_PLAYER.REJECT);
     expect(rejectCall).toBeDefined();
-    (document.body as any).requestFullscreen = origReqFs;
+    (document.body as unknown as { requestFullscreen?: () => Promise<void> }).requestFullscreen = origReqFs;
   });
 
   // ─── REQUEST_RESIZE ───────────────────────────────────────────────────────
@@ -710,7 +713,11 @@ describe('SimidSession', () => {
     const resizePromise = session.resize(640, 360);
 
     const sentId = postSpy.mock.calls.find((c) => c[0].type === SIMID_PLAYER.RESIZE)?.[0]?.messageId;
-    dispatch({ type: SIMID_CREATIVE.REJECT, messageId: 0, args: { messageId: sentId, value: { errorCode: 500, message: 'err' } } });
+    dispatch({
+      type: SIMID_CREATIVE.REJECT,
+      messageId: 0,
+      args: { messageId: sentId, value: { errorCode: 500, message: 'err' } },
+    });
     await expect(resizePromise).rejects.toMatchObject({ errorCode: 500 });
     session.destroy();
   });
@@ -881,7 +888,9 @@ describe('SimidSession', () => {
   // ─── postMessage error handling ───────────────────────────────────────────
 
   it('send() rejects promise when postMessage throws', async () => {
-    const throwingSpy = jest.fn().mockImplementation(() => { throw new Error('cross-origin'); });
+    const throwingSpy = jest.fn().mockImplementation(() => {
+      throw new Error('cross-origin');
+    });
     mockContentWindow(iframe, throwingSpy);
     const session = new SimidSession(iframe, video, makeCallbacks());
     await expect(session.resize(100, 100)).rejects.toThrow('cross-origin');

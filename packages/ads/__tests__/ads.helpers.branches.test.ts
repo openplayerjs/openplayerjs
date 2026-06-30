@@ -28,7 +28,7 @@ function makeCtx() {
 describe('AdsPlugin helper methods - branch coverage', () => {
   test('extractVastTagUri supports string, object shapes, and rejects empty', () => {
     const p = new AdsPlugin();
-    const anyP = p as any;
+    const anyP = p;
 
     expect(anyP.extractVastTagUri(' https://example.com/vast ')).toBe('https://example.com/vast');
     expect(anyP.extractVastTagUri({ uri: 'https://example.com/a' })).toBe('https://example.com/a');
@@ -44,7 +44,7 @@ describe('AdsPlugin helper methods - branch coverage', () => {
 
   test('normalizeVmapAdSource picks first usable entry from arrays', () => {
     const p = new AdsPlugin();
-    const anyP = p as any;
+    const anyP = p;
 
     expect(anyP.normalizeVmapAdSource(undefined)).toBeUndefined();
     expect(anyP.normalizeVmapAdSource({ adTagURI: { uri: 'x' } })).toEqual({ adTagURI: { uri: 'x' } });
@@ -55,7 +55,7 @@ describe('AdsPlugin helper methods - branch coverage', () => {
 
   test('parseVmapTimeOffset handles start/end, percentages, clock time, seconds, and fallback', () => {
     const p = new AdsPlugin();
-    const anyP = p as any;
+    const anyP = p;
 
     expect(anyP.parseVmapTimeOffset('start')).toEqual({ at: 'preroll' });
     expect(anyP.parseVmapTimeOffset('end')).toEqual({ at: 'postroll' });
@@ -67,7 +67,7 @@ describe('AdsPlugin helper methods - branch coverage', () => {
 
   test('setSafeHTML strips blocked tags and inline event handlers', () => {
     const p = new AdsPlugin();
-    const anyP = p as any;
+    const anyP = p;
     const el = document.createElement('div');
 
     anyP.setSafeHTML(
@@ -94,7 +94,7 @@ describe('AdsPlugin helper methods - branch coverage', () => {
     const { ctx } = makeCtx();
     const p = new AdsPlugin();
     p.setup(ctx);
-    const anyP = p as any;
+    const anyP = p;
 
     expect(anyP.getVastInputFromBreak({ at: 'preroll', source: { type: 'VAST', src: ' https://x ' } })).toEqual({
       input: { kind: 'url', value: 'https://x' },

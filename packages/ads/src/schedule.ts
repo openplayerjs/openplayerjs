@@ -1,30 +1,30 @@
 import VMAP from '@dailymotion/vmap';
 import type { PluginContext } from '@openplayerjs/core';
-import type { AdsBreakConfig, AdsPluginConfig, AdsSource, AdsSourceType, VastInput } from './types';
+import type { AdsBreakConfig, AdsPluginConfig, AdsSource, AdsSourceType, VastInput, VastParsed } from './types';
 
 // ─── Standalone utility exports (no class state needed) ───────────────────────
 
-export function normalizeVmapAdSourceFn(adSource: any): any | undefined {
+export function normalizeVmapAdSourceFn(adSource: unknown): VastParsed {
   if (!adSource) return undefined;
   if (Array.isArray(adSource)) {
-    return adSource.find((s) => s?.adTagURI || s?.vastAdData) || adSource[0];
+    const arr = adSource as Record<string, unknown>[];
+    return arr.find((s) => s?.adTagURI || s?.vastAdData) || arr[0];
   }
   return adSource;
 }
 
-export function extractVastTagUriFn(adTagURI: any): string | undefined {
+export function extractVastTagUriFn(adTagURI: unknown): string | undefined {
   if (!adTagURI) return undefined;
   if (typeof adTagURI === 'string') return adTagURI.trim() || undefined;
   if (typeof adTagURI === 'object') {
-    const uri = (adTagURI.uri || adTagURI.URI || adTagURI.value || adTagURI.text || adTagURI['#text']) as
-      | string
-      | undefined;
+    const o = adTagURI as Record<string, unknown>;
+    const uri = (o.uri || o.URI || o.value || o.text || o['#text']) as string | undefined;
     if (typeof uri === 'string' && uri.trim()) return uri.trim();
   }
   return undefined;
 }
 
-export function parseVmapTimeOffsetFn(timeOffset: any): {
+export function parseVmapTimeOffsetFn(timeOffset: unknown): {
   at: 'preroll' | 'postroll' | number;
   pendingPercent?: number | null;
 } {
@@ -85,6 +85,12 @@ type PendingPercentBreak = {
   source: AdsSource;
 };
 
+/** A namespace-aware DOM query root. `ParentNode` alone lacks `getElementsByTagName*` in the TS lib. */
+type DOMQuerier = ParentNode & {
+  getElementsByTagNameNS?(ns: string, name: string): HTMLCollectionOf<Element>;
+  getElementsByTagName(name: string): HTMLCollectionOf<Element>;
+};
+
 export class AdScheduler {
   resolvedBreaks: AdsBreakConfig[] = [];
   pendingPercentBreaks: PendingPercentBreak[] = [];
@@ -109,7 +115,7 @@ export class AdScheduler {
       'sources' | 'breaks' | 'adSourcesMode' | 'breakTolerance' | 'debug'
     > & { sources: AdsSource[] },
     private ctx: PluginContext,
-    private warn: (...args: any[]) => void,
+    private warn: (...args: unknown[]) => void,
     private onVmapError: (err: unknown) => void
   ) {}
 
@@ -134,24 +140,7 @@ export class AdScheduler {
   }
 
   getVastInputFromBreak(b: AdsBreakConfig): { input?: VastInput; sourceType?: AdsSourceType } {
-    if (b.source && typeof b.source.src === 'string' && b.source.src.trim()) {
-      const src = b.source.src.trim();
-      const t = b.source.type as AdsSourceType;
-      return this.isXmlString(src)
-        ? { input: { kind: 'xml', value: src }, sourceType: t }
-        : { input: { kind: 'url', value: src }, sourceType: t };
-    }
-
-    const firstSource = Array.isArray(b.sources) ? b.sources[0] : undefined;
-    if (firstSource && typeof firstSource.src === 'string' && firstSource.src.trim()) {
-      const src = firstSource.src.trim();
-      const t = firstSource.type as AdsSourceType;
-      return this.isXmlString(src)
-        ? { input: { kind: 'xml', value: src }, sourceType: t }
-        : { input: { kind: 'url', value: src }, sourceType: t };
-    }
-
-    return { input: undefined, sourceType: undefined };
+    return getVastInputFromBreakFn(b);
   }
 
   getBreakId(b: AdsBreakConfig): string {
@@ -266,48 +255,16 @@ export class AdScheduler {
     this.resolvedBreaks = combined;
   }
 
-  normalizeVmapAdSource(adSource: any): any | undefined {
-    if (!adSource) return undefined;
-    if (Array.isArray(adSource)) {
-      return adSource.find((s) => s?.adTagURI || s?.vastAdData) || adSource[0];
-    }
-    return adSource;
+  normalizeVmapAdSource(adSource: unknown): VastParsed {
+    return normalizeVmapAdSourceFn(adSource);
   }
 
-  extractVastTagUri(adTagURI: any): string | undefined {
-    if (!adTagURI) return undefined;
-    if (typeof adTagURI === 'string') return adTagURI.trim() || undefined;
-    if (typeof adTagURI === 'object') {
-      const uri = (adTagURI.uri || adTagURI.URI || adTagURI.value || adTagURI.text || adTagURI['#text']) as
-        | string
-        | undefined;
-      if (typeof uri === 'string' && uri.trim()) return uri.trim();
-    }
-    return undefined;
+  extractVastTagUri(adTagURI: unknown): string | undefined {
+    return extractVastTagUriFn(adTagURI);
   }
 
-  parseVmapTimeOffset(timeOffset: any): { at: 'preroll' | 'postroll' | number; pendingPercent?: number | null } {
-    const s = String(timeOffset || '').trim();
-    if (!s || s === 'start') return { at: 'preroll' };
-    if (s === 'end') return { at: 'postroll' };
-
-    if (s.endsWith('%')) {
-      const p = Number(s.slice(0, -1));
-      if (Number.isFinite(p) && p >= 0 && p <= 100) return { at: 0, pendingPercent: p / 100 };
-    }
-
-    const m = /^(\d+):(\d+):(\d+(?:\.\d+)?)$/.exec(s);
-    if (m) {
-      const hh = Number(m[1]);
-      const mm = Number(m[2]);
-      const ss = Number(m[3]);
-      if ([hh, mm, ss].every((x) => Number.isFinite(x))) return { at: hh * 3600 + mm * 60 + ss };
-    }
-
-    const n = Number(s);
-    if (Number.isFinite(n) && n >= 0) return { at: n };
-
-    return { at: 'preroll' };
+  parseVmapTimeOffset(timeOffset: unknown): { at: 'preroll' | 'postroll' | number; pendingPercent?: number | null } {
+    return parseVmapTimeOffsetFn(timeOffset);
   }
 
   async loadVmapAndMerge(existing: AdsBreakConfig[], vmapSrc?: string) {
@@ -407,15 +364,15 @@ export class AdScheduler {
   }
 
   private parseVmapFallback(xmlDoc: XMLDocument, vmapBreaks: AdsBreakConfig[], _prevPendingCount: number) {
-    const byTag = (root: ParentNode, localName: string): Element[] => {
+    const byTag = (root: DOMQuerier, localName: string): Element[] => {
       try {
-        const ns = (root as any).getElementsByTagNameNS?.('*', localName) as HTMLCollectionOf<Element> | undefined;
+        const ns = root.getElementsByTagNameNS?.('*', localName);
         if (ns && ns.length) return Array.from(ns);
       } catch {
         /* ignore */
       }
       try {
-        return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>);
+        return Array.from(root.getElementsByTagName(localName));
       } catch {
         return [];
       }

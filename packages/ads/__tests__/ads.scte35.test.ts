@@ -31,12 +31,7 @@ function makeSpliceInsert(opts: {
   durationTicks?: number;
   autoReturn?: boolean;
 }): Uint8Array {
-  const {
-    outOfNetwork = true,
-    hasDuration = false,
-    durationTicks = 0,
-    autoReturn = false,
-  } = opts;
+  const { outOfNetwork = true, hasDuration = false, durationTicks = 0, autoReturn = false } = opts;
 
   const buf = new Uint8Array(32);
   buf[0] = 0xfc; // table_id
@@ -44,7 +39,7 @@ function makeSpliceInsert(opts: {
 
   let flags = 0;
   if (outOfNetwork) flags |= 0x80;
-  if (hasDuration)  flags |= 0x02;
+  if (hasDuration) flags |= 0x02;
   buf[14] = flags;
 
   if (hasDuration) {
@@ -54,8 +49,8 @@ function makeSpliceInsert(opts: {
     buf[19] = (autoReturn ? 0x80 : 0x00) | hi;
     buf[20] = (lo >>> 24) & 0xff;
     buf[21] = (lo >>> 16) & 0xff;
-    buf[22] = (lo >>> 8)  & 0xff;
-    buf[23] =  lo         & 0xff;
+    buf[22] = (lo >>> 8) & 0xff;
+    buf[23] = lo & 0xff;
   }
 
   return buf;
@@ -94,19 +89,19 @@ describe('decodeSplice — splice_insert', () => {
     const buf = makeSpliceInsert({ outOfNetwork: true, hasDuration: true, durationTicks: ticks });
     const cmd = decodeSplice(buf);
     expect(cmd?.type).toBe('splice_insert');
-    expect((cmd as any).durationSecs).toBeCloseTo(60, 4);
+    expect((cmd as { durationSecs?: number }).durationSecs).toBeCloseTo(60, 4);
   });
 
   test('autoReturn flag is preserved', () => {
     const buf = makeSpliceInsert({ hasDuration: true, durationTicks: 90_000, autoReturn: true });
     const cmd = decodeSplice(buf);
-    expect((cmd as any).autoReturn).toBe(true);
+    expect((cmd as { autoReturn?: boolean }).autoReturn).toBe(true);
   });
 
   test('autoReturn defaults to false when not set', () => {
     const buf = makeSpliceInsert({ hasDuration: true, durationTicks: 90_000, autoReturn: false });
     const cmd = decodeSplice(buf);
-    expect((cmd as any).autoReturn).toBe(false);
+    expect((cmd as { autoReturn?: boolean }).autoReturn).toBe(false);
   });
 });
 

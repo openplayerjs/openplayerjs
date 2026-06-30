@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import type { PluginContext } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 
@@ -8,14 +9,14 @@ describe('AdsPlugin HTML sanitizer', () => {
     const video = document.createElement('video');
     document.body.appendChild(video);
 
-    const ctx: any = {
+    const ctx = {
       core: { media: video, muted: false, volume: 1 },
       events: new EventBus(),
       state: { current: 'ready' },
       leases: { acquire: () => true, release: () => undefined, owner: () => undefined },
-    };
+    } as unknown as PluginContext;
 
-    const plugin: any = new AdsPlugin({ interceptPlayForPreroll: false, allowNativeControls: true });
+    const plugin = new AdsPlugin({ interceptPlayForPreroll: false, allowNativeControls: true });
     plugin.setup(ctx);
 
     const host = document.createElement('div');
@@ -29,7 +30,7 @@ describe('AdsPlugin HTML sanitizer', () => {
       </div>
     `;
 
-    (plugin as any).setSafeHTML(host, html);
+    plugin.setSafeHTML(host, html);
 
     // script removed
     expect(host.querySelector('script')).toBeFalsy();

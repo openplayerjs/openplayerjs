@@ -36,6 +36,7 @@ coverage
 *.html
 *.vtt
 test-results
+playwright-report/
 !examples/**/*.html
 !examples/**/*.vtt
 

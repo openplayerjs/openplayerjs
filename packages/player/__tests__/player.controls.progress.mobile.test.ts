@@ -5,6 +5,11 @@
  * other specific conditions not tested in the main progress test file.
  */
 
+// `duration` is read-only on HTMLMediaElement; use defineProperty to set it in tests
+function setDuration(media: HTMLMediaElement, value: number) {
+  Object.defineProperty(media, 'duration', { value, configurable: true });
+}
+
 jest.mock('@openplayerjs/core', () => {
   const actual = jest.requireActual('@openplayerjs/core');
   return { ...actual, isMobile: jest.fn() };
@@ -47,7 +52,7 @@ describe('ProgressControl – mobile and special branches', () => {
 
   test('touchstart with no touches (te.touches[0] undefined) does nothing', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 0;
 
     const c = createProgressControl();
@@ -67,7 +72,7 @@ describe('ProgressControl – mobile and special branches', () => {
 
   test('touchstart with null touches does nothing', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 0;
 
     const c = createProgressControl();
@@ -85,7 +90,7 @@ describe('ProgressControl – mobile and special branches', () => {
 
   test('countdown mode: progress bar shows remaining time (overlay mode=countdown)', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
 
     const c = createProgressControl();
     const el = c.create(p);
@@ -115,7 +120,7 @@ describe('ProgressControl – mobile and special branches', () => {
 
   test('slider change with canSeek=false overlay returns early', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
 
     const c = createProgressControl();
     const el = c.create(p);
@@ -144,7 +149,7 @@ describe('ProgressControl – mobile and special branches', () => {
     (isMobile as unknown as jest.Mock).mockReturnValue(true);
 
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 0;
 
     const c = createProgressControl();
@@ -162,7 +167,7 @@ describe('ProgressControl – mobile and special branches', () => {
 
   test('updateUI: setSeekEnabled enables slider for normal finite duration (no overlay, !isLive)', () => {
     const p = makeCore();
-    (p.media as any).duration = 60;
+    setDuration(p.media, 60);
     p.isLive = false;
 
     const c = createProgressControl();
@@ -194,7 +199,7 @@ describe('ProgressControl – mobile and special branches', () => {
     (isMobile as unknown as jest.Mock).mockReturnValue(true);
 
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
 
     const c = createProgressControl();
     const el = c.create(p);

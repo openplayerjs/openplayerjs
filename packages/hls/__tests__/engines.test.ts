@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 
 import { Core, DefaultMediaEngine, EventBus, HtmlMediaSurface } from '@openplayerjs/core';
+import type { MediaEngineContext, MediaSurface } from '@openplayerjs/core';
 import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
 
@@ -44,7 +45,7 @@ function makeCtx() {
     events,
     core,
     surface,
-    setSurface(s: any) {
+    setSurface(s: MediaSurface) {
       return s;
     },
     resetSurface() {
@@ -63,7 +64,7 @@ describe('Media engines', () => {
     events.on('timeupdate', () => seen.push('time'));
     events.on('durationchange', () => seen.push('dur'));
 
-    engine.attach({ ...ctx, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
+    engine.attach({ ...ctx, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as MediaEngineContext);
 
     media.currentTime = 1;
     media.dispatchEvent(new Event('timeupdate'));
@@ -103,7 +104,7 @@ describe('Media engines', () => {
 
     const ctx = makeCtx();
     const { media, events } = ctx;
-    engine.attach({ ...ctx, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as any);
+    engine.attach({ ...ctx, activeSource: { src: 'x.mp4', type: 'video/mp4' } } as unknown as MediaEngineContext);
 
     // someone else owns playback -> seek/rate commands should no-op
     ctx.core.leases.acquire('playback', 'other');
@@ -124,17 +125,24 @@ describe('Media engines', () => {
     let capturedConfig: Record<string, unknown> | undefined;
     const OrigCtor = Hls;
 
-    const ctorSpy = jest.fn().mockImplementation(function (this: any, cfg: any) {
+    const ctorSpy = jest.fn().mockImplementation(function (this: Hls, cfg: ConstructorParameters<typeof Hls>[0]) {
       capturedConfig = cfg;
       Object.assign(this, new OrigCtor(cfg));
     });
     // Copy static members (Events, isSupported, etc.) so HlsMediaEngine can read HlsClass.Events.
     Object.assign(ctorSpy, OrigCtor);
     // Patch the HlsClass reference on a fresh engine instance via config.
-    const engine = new HlsMediaEngine({ hlsClass: ctorSpy });
+    const engine = new HlsMediaEngine({ hlsClass: ctorSpy as unknown as typeof Hls });
     const ctx = makeCtx();
-    engine.attach({ ...ctx, activeSource: { src: 'y.m3u8', type: 'application/x-mpegURL' } } as any);
+    engine.attach({
+      ...ctx,
+      activeSource: { src: 'y.m3u8', type: 'application/x-mpegURL' },
+    } as unknown as MediaEngineContext);
 
+    // Contract: these flags make hls.js surface EXT-X-DATERANGE and ID3 timed
+    // metadata as native metadata-TextTrack cues, so consumers read them via the
+    // standard DOM `cuechange` event (no custom player event needed). Do not remove.
+    expect(capturedConfig?.renderTextTracksNatively).toBe(true);
     expect(capturedConfig?.enableDateRangeMetadataCues).toBe(true);
     expect(capturedConfig?.enableID3MetadataCues).toBe(true);
 
@@ -144,17 +152,17 @@ describe('Media engines', () => {
   test('HlsMediaEngine attachMedia creates a separate hls instance and disposes it', () => {
     const OrigCtor = Hls;
 
-    const ctorSpy = jest.fn().mockImplementation(function (this: any, cfg: any) {
+    const ctorSpy = jest.fn().mockImplementation(function (this: Hls, cfg: ConstructorParameters<typeof Hls>[0]) {
       Object.assign(this, new OrigCtor(cfg));
     });
     Object.assign(ctorSpy, OrigCtor);
 
-    const engine = new HlsMediaEngine({ hlsClass: ctorSpy });
+    const engine = new HlsMediaEngine({ hlsClass: ctorSpy as unknown as typeof Hls });
     const video = document.createElement('video');
 
     const dispose = engine.attachMedia(video, 'https://example.com/ad.m3u8');
 
-    const instance = ctorSpy.mock.instances[0] as any;
+    const instance = ctorSpy.mock.instances[0] as unknown as Record<string, jest.Mock>;
     expect(instance.loadSource).toHaveBeenCalledWith('https://example.com/ad.m3u8');
     expect(instance.attachMedia).toHaveBeenCalledWith(video);
 

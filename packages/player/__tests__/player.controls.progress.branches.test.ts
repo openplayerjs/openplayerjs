@@ -3,8 +3,14 @@
 import type { OverlayManager, OverlayState } from '@openplayerjs/core';
 import { Core, getOverlayManager } from '@openplayerjs/core';
 import createProgressControl from '../src/controls/progress';
+import type { PlayerUIConfig } from '../src/configuration';
 
 jest.useFakeTimers();
+
+// `duration` is read-only on HTMLMediaElement; use defineProperty to set it in tests
+function setDuration(media: HTMLMediaElement, value: number) {
+  Object.defineProperty(media, 'duration', { value, configurable: true });
+}
 
 function makeCore() {
   const v = document.createElement('video');
@@ -33,14 +39,14 @@ describe('ProgressControl branch coverage', () => {
 
     // Infinity duration path
     p.isLive = false;
-    (p.media as any).duration = Infinity;
+    setDuration(p.media, Infinity);
     p.events.emit('durationchange');
     expect(el.getAttribute('aria-hidden')).toBe('true');
   });
 
   test('overlay enables visibility + seek disabled, and pressed blocks UI updates', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 10;
 
     const c = createProgressControl();
@@ -77,7 +83,7 @@ describe('ProgressControl branch coverage', () => {
 
   test('waiting/play/ended branches touch loading/error and reset', () => {
     const p = makeCore();
-    (p.media as any).duration = 50;
+    setDuration(p.media, 50);
     p.media.currentTime = 1;
 
     const c = createProgressControl();
@@ -107,7 +113,7 @@ describe('ProgressControl branch coverage', () => {
 
   test('rail tap-to-seek works when tap lands on progress overlays (mobile touchstart)', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 0;
 
     const c = createProgressControl();
@@ -141,7 +147,7 @@ describe('ProgressControl branch coverage', () => {
 
   test('rail tap-to-seek does not seek when seeking is disabled (overlay canSeek=false)', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 0;
 
     // Disable seeking via overlay manager
@@ -173,7 +179,7 @@ describe('ProgressControl branch coverage', () => {
 
   test('rail tap-to-seek ignored when duration is Infinity (live-ish)', () => {
     const p = makeCore();
-    (p.media as any).duration = Infinity;
+    setDuration(p.media, Infinity);
     p.media.currentTime = 0;
 
     const c = createProgressControl();
@@ -216,7 +222,7 @@ describe('ProgressControl branch coverage', () => {
 
   test('change event on slider seeks and releases pressed state', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 10;
 
     const c = createProgressControl();
@@ -235,7 +241,7 @@ describe('ProgressControl branch coverage', () => {
 
   test('click on range input early-returns without seeking', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 0;
 
     const c = createProgressControl();
@@ -264,7 +270,7 @@ describe('ProgressControl branch coverage', () => {
 
   test('click on progress container (not range input) triggers seekFromClientX', () => {
     const p = makeCore();
-    (p.media as any).duration = 100;
+    setDuration(p.media, 100);
     p.media.currentTime = 0;
 
     const c = createProgressControl();
@@ -301,7 +307,7 @@ describe('ProgressControl branch coverage', () => {
 
 test('pointermove on progress element shows tooltip when duration is finite', () => {
   const p = makeCore();
-  (p.media as any).duration = 100;
+  setDuration(p.media, 100);
   p.media.currentTime = 0;
 
   const c = createProgressControl();
@@ -330,7 +336,7 @@ test('pointermove on progress element shows tooltip when duration is finite', ()
 
 test('pointermove on progress element during overlay with canSeek=false early-returns', () => {
   const p = makeCore();
-  (p.media as any).duration = 100;
+  setDuration(p.media, 100);
   const om = getOverlayManager(p) as OverlayManager;
   om.active = { canSeek: false, id: 'ads', priority: 100, mode: 'normal', duration: 30, value: 0 } as OverlayState;
 
@@ -349,7 +355,7 @@ test('pointermove on progress element during overlay with canSeek=false early-re
 
 test('pointermove on progress element for live stream (Infinity) early-returns', () => {
   const p = makeCore();
-  (p.media as any).duration = Infinity;
+  setDuration(p.media, Infinity);
   p.isLive = false; // not isLive but Infinity duration
 
   const c = createProgressControl();
@@ -368,7 +374,7 @@ test('pointermove on progress element for live stream (Infinity) early-returns',
 
 test('seeked with finite duration announces seek position with duration', () => {
   const p = makeCore();
-  (p.media as any).duration = 120;
+  setDuration(p.media, 120);
   p.media.currentTime = 45;
 
   const c = createProgressControl();
@@ -383,7 +389,7 @@ test('seeked with finite duration announces seek position with duration', () => 
 
 test('seeked with non-finite duration announces only current time', () => {
   const p = makeCore();
-  (p.media as any).duration = NaN; // non-finite → d = undefined → false branch
+  setDuration(p.media, NaN); // non-finite → d = undefined → false branch
   p.media.currentTime = 10;
 
   const c = createProgressControl();
@@ -421,7 +427,7 @@ test('seekFromClientX: allowRewind=false blocks seeking backward', () => {
   v.src = 'https://example.com/video.mp4';
   document.body.appendChild(v);
   // Pass allowRewind=false via config so resolveUIConfig picks it up
-  const p = new Core(v, { plugins: [], allowRewind: false } as any);
+  const p = new Core(v, { plugins: [], allowRewind: false } as PlayerUIConfig);
   Object.defineProperty(p.media, 'duration', { value: 100, configurable: true });
   p.media.currentTime = 50;
 
@@ -445,7 +451,7 @@ test('seekFromClientX: allowSkip=false blocks seeking forward', () => {
   v.src = 'https://example.com/video.mp4';
   document.body.appendChild(v);
   // Pass allowSkip=false via config so resolveUIConfig picks it up
-  const p = new Core(v, { plugins: [], allowSkip: false } as any);
+  const p = new Core(v, { plugins: [], allowSkip: false } as PlayerUIConfig);
   Object.defineProperty(p.media, 'duration', { value: 100, configurable: true });
   p.media.currentTime = 20;
 
@@ -467,7 +473,7 @@ test('seekFromClientX: seek is allowed when val equals currentTime (no rewind, n
   const v = document.createElement('video');
   v.src = 'https://example.com/video.mp4';
   document.body.appendChild(v);
-  const p = new Core(v, { plugins: [], allowRewind: false, allowSkip: false } as any);
+  const p = new Core(v, { plugins: [], allowRewind: false, allowSkip: false } as PlayerUIConfig);
   Object.defineProperty(p.media, 'duration', { value: 100, configurable: true });
   p.media.currentTime = 50;
 
@@ -486,7 +492,7 @@ test('seekFromClientX: seek is allowed when val equals currentTime (no rewind, n
 
 test('pointermove middle position covers pos -= half (line 293) and out-of-range percentage hides tooltip (line 296)', () => {
   const p = makeCore();
-  (p.media as any).duration = 100;
+  setDuration(p.media, 100);
 
   // Wrap in .op-player so resolvePlayerRoot() returns a container with known offsetWidth.
   const opPlayer = document.createElement('div');

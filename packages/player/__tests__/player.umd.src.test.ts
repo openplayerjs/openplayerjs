@@ -24,7 +24,7 @@ describe('UMD Player — set src', () => {
     document.body.innerHTML = '';
     media = document.createElement('video');
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('delegates the assigned value to CorePlayer after init()', async () => {
@@ -91,7 +91,7 @@ describe('UMD Player — play()', () => {
     media = document.createElement('video');
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('delegates to CorePlayer.play() and resolves after init()', async () => {
@@ -123,7 +123,7 @@ describe('UMD Player — load()', () => {
     document.body.innerHTML = '';
     media = document.createElement('video');
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('throws when called before init()', () => {
@@ -154,7 +154,7 @@ describe('UMD Player — controls configuration', () => {
     document.body.innerHTML = '';
     media = document.createElement('video');
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
     buildControlsMock.mockClear();
     (registerControl as jest.Mock).mockClear();
     createUIMock.mockClear();
@@ -222,24 +222,18 @@ describe('UMD Player — controls configuration', () => {
     const player = new Player(media, { controls: { alwaysVisible: true } });
     await player.init();
 
-    expect(createUIMock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      { alwaysVisible: true }
-    );
+    expect(createUIMock).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), {
+      alwaysVisible: true,
+    });
   });
 
   test('passes alwaysVisible:false to createUI when not set', async () => {
     const player = new Player(media);
     await player.init();
 
-    expect(createUIMock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      expect.anything(),
-      { alwaysVisible: false }
-    );
+    expect(createUIMock).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), {
+      alwaysVisible: false,
+    });
   });
 });
 
@@ -251,7 +245,7 @@ describe('UMD Player — currentTime / duration', () => {
     media = document.createElement('video');
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('currentTime getter returns 0 before init()', () => {
@@ -286,7 +280,9 @@ describe('UMD Player — currentTime / duration', () => {
 
   test('currentTime setter throws before init()', () => {
     const umdPlayer = new Player(media);
-    expect(() => { umdPlayer.currentTime = 5; }).toThrow('OpenPlayer.currentTime must be set after init()');
+    expect(() => {
+      umdPlayer.currentTime = 5;
+    }).toThrow('OpenPlayer.currentTime must be set after init()');
   });
 
   test('duration getter returns 0 before init()', () => {
@@ -313,7 +309,7 @@ describe('UMD Player — src getter', () => {
     document.body.innerHTML = '';
     media = document.createElement('video');
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('returns empty string before init()', () => {
@@ -339,7 +335,7 @@ describe('UMD Player — volume', () => {
     media = document.createElement('video');
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('getter returns 1 before init()', () => {
@@ -349,7 +345,9 @@ describe('UMD Player — volume', () => {
 
   test('setter throws before init()', () => {
     const umdPlayer = new Player(media);
-    expect(() => { umdPlayer.volume = 0.5; }).toThrow('OpenPlayer.volume must be set after init()');
+    expect(() => {
+      umdPlayer.volume = 0.5;
+    }).toThrow('OpenPlayer.volume must be set after init()');
   });
 
   test('setter delegates to CorePlayer and getter reflects the new value', async () => {
@@ -385,7 +383,7 @@ describe('UMD Player — muted', () => {
     media = document.createElement('video');
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('getter returns false before init()', () => {
@@ -395,7 +393,9 @@ describe('UMD Player — muted', () => {
 
   test('setter throws before init()', () => {
     const umdPlayer = new Player(media);
-    expect(() => { umdPlayer.muted = true; }).toThrow('OpenPlayer.muted must be set after init()');
+    expect(() => {
+      umdPlayer.muted = true;
+    }).toThrow('OpenPlayer.muted must be set after init()');
   });
 
   test('setter delegates to CorePlayer and getter reflects the new value', async () => {
@@ -423,7 +423,7 @@ describe('UMD Player — playbackRate', () => {
     media = document.createElement('video');
     media.src = 'https://example.com/video.mp4';
     document.body.appendChild(media);
-    delete (window as any).OpenPlayerPlugins;
+    delete window.OpenPlayerPlugins;
   });
 
   test('getter returns 1 before init()', () => {
@@ -433,7 +433,9 @@ describe('UMD Player — playbackRate', () => {
 
   test('setter throws before init()', () => {
     const umdPlayer = new Player(media);
-    expect(() => { umdPlayer.playbackRate = 2; }).toThrow('OpenPlayer.playbackRate must be set after init()');
+    expect(() => {
+      umdPlayer.playbackRate = 2;
+    }).toThrow('OpenPlayer.playbackRate must be set after init()');
   });
 
   test('setter delegates to CorePlayer and getter reflects the new value', async () => {
