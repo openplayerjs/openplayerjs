@@ -1,4 +1,5 @@
 import { EVENT_OPTIONS } from '@openplayerjs/core';
+import { NON_LINEAR_DEFAULT_DURATION_S, SEEK_NEAR_END_DELTA_S, SKIP_NEAR_END_THRESHOLD_S } from './constants';
 import type { AdsPluginConfig, VastParsed } from './types';
 import { computeSkipAtSeconds, extractSkipOffsetFromCreative } from './vast-parser';
 
@@ -222,8 +223,8 @@ export class AdDomManager {
       if (this.skipWrap) this.skipWrap.style.display = 'block';
       if (this.skipBtn) {
         this.skipBtn.textContent =
-          remaining <= 0.05 ? this.cfg.labels?.skip || 'Skip Ad' : Math.ceil(remaining).toString();
-        this.skipBtn.style.pointerEvents = remaining <= 0.05 ? 'auto' : 'none';
+          remaining <= SKIP_NEAR_END_THRESHOLD_S ? this.cfg.labels?.skip || 'Skip Ad' : Math.ceil(remaining).toString();
+        this.skipBtn.style.pointerEvents = remaining <= SKIP_NEAR_END_THRESHOLD_S ? 'auto' : 'none';
       }
     };
 
@@ -261,7 +262,8 @@ export class AdDomManager {
     const v = adVideo;
     if (v) {
       try {
-        if (Number.isFinite(v.duration) && v.duration > 0) v.currentTime = Math.max(0, v.duration - 0.001);
+        if (Number.isFinite(v.duration) && v.duration > 0)
+          v.currentTime = Math.max(0, v.duration - SEEK_NEAR_END_DELTA_S);
         v.dispatchEvent(new Event('ended'));
       } catch {
         /* ignore */
@@ -399,7 +401,7 @@ export class AdDomManager {
       const n = Number(raw);
       if (Number.isFinite(n) && n > 0) return n;
     }
-    return 10;
+    return NON_LINEAR_DEFAULT_DURATION_S;
   }
 
   ensureNonLinearDom() {

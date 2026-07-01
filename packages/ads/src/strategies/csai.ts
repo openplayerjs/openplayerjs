@@ -4,6 +4,7 @@ import { getOverlayManager } from '@openplayerjs/core';
 
 import { AdDomManager } from '../ad-dom';
 import { CaptionManager } from '../caption-manager';
+import { NON_LINEAR_POLL_INTERVAL_MS } from '../constants';
 import { OmidSession } from '../omid';
 import { AdScheduler, getBreakIdFn } from '../schedule';
 import { SimidSession } from '../simid';
@@ -898,7 +899,7 @@ export class CsaiAdStrategy implements AdSessionStrategy {
           resolve();
           return;
         }
-        setTimeout(tick, 50);
+        setTimeout(tick, NON_LINEAR_POLL_INTERVAL_MS);
       };
       tick();
     });
