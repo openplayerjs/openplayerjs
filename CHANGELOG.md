@@ -1,5 +1,65 @@
 # Changelog
 
+## [3.6.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.6.0) (2026-07-01)
+
+_July 1, 2026_
+
+### `@openplayerjs/player@3.6.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.6.0`
+
+### `@openplayerjs/hls@3.6.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.6.0`
+
+### `@openplayerjs/ads@3.6.0`
+
+#### Refactoring
+
+- **[ads]** centralise constants and split SIMID transport into SimidRpcChannel (c6b238c) @Rafael Miranda
+  - Add `constants.ts` with the named thresholds/limits (skip near-end, seek delta,
+  - Split the 751-line simid.ts into three files by extracting the module's own code:
+  - `simid-protocol.ts` — SIMID 1.2 message constants + wire types.
+  - `simid-rpc.ts` — `SimidRpcChannel`: postMessage transport (counter, pending
+  - `simid.ts` — `SimidSession extends SimidRpcChannel`: session handshake, media
+
+### `@openplayerjs/youtube@3.6.0`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.6.0`
+
+### General
+
+#### Bug Fixes
+
+- **[repo]** Removed comments and flag from JSON file (c6b238c) @Rafael Miranda
+
+#### Refactoring
+
+- **[repo]** strict typing, package event hierarchy, and tooling modernization (c6b238c) @Rafael Miranda
+  - Remove every `@typescript-eslint/no-explicit-any` in source and test files;
+  - `PlayerEventPayloadMap` is now an augmentable `interface` declaring ONLY
+  - Moved all `ads:*` events into `packages/ads/src/events.ts`; unified the ad
+  - Removed the three HLS events (`media:duration`, `playback:error`,
+  - Bump target ES2020 -> ES2022 + explicit `lib` (incl. ESNext.Disposable):
+
+#### Chores
+
+- **[ci]** make Coveralls report-only so small coverage decreases don't block merges (c6b238c) @Rafael Miranda
+- **[deps]** update dependency rollup to v4.62.2 ([#596](https://github.com/openplayerjs/openplayerjs/pull/596)) @renovate[bot]
+- **[deps]** update dependency @playwright/test to v1.61.1 ([#595](https://github.com/openplayerjs/openplayerjs/pull/595)) @renovate[bot]
+- **[deps]** update node.js to v26.3.1 ([#590](https://github.com/openplayerjs/openplayerjs/pull/590)) @renovate[bot]
+- **[deps]** update jest ([#594](https://github.com/openplayerjs/openplayerjs/pull/594)) @renovate[bot]
+- **[deps]** update eslint ([#593](https://github.com/openplayerjs/openplayerjs/pull/593)) @renovate[bot]
+- **[deps]** update dependency @types/node to v24.13.2 ([#589](https://github.com/openplayerjs/openplayerjs/pull/589)) @renovate[bot]
+- **[deps]** update postcss ([#591](https://github.com/openplayerjs/openplayerjs/pull/591)) @renovate[bot]
+- **[deps]** update turbo monorepo to v2.9.18 ([#592](https://github.com/openplayerjs/openplayerjs/pull/592)) @renovate[bot]
+
 ## [3.5.6](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.5.6) (2026-06-21)
 
 _June 21, 2026_
