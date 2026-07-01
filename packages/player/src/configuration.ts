@@ -77,31 +77,32 @@ export type ResolvedUIConfig = {
 };
 
 export function resolveUIConfig(coreOrConfig: Core | PlayerConfig): ResolvedUIConfig {
-  const config = (coreOrConfig as Core).config ? (coreOrConfig as Core).config : (coreOrConfig as PlayerConfig);
+  const coreInstance = coreOrConfig as Core;
+  const uiConfig = (coreInstance.config ? coreInstance.config : coreOrConfig) as PlayerUIConfig;
 
-  const allowSkip = (config as any).allowSkip ?? defaultUIConfiguration.allowSkip;
-  const allowRewind = (config as any).allowRewind ?? defaultUIConfiguration.allowRewind;
-  const step = (config as any).step ?? defaultUIConfiguration.step;
-  const showLiveCurrentTime = (config as any).showLiveCurrentTime ?? false;
-  const width = (config as any).width;
-  const height = (config as any).height;
+  const allowSkip = uiConfig.allowSkip ?? defaultUIConfiguration.allowSkip;
+  const allowRewind = uiConfig.allowRewind ?? defaultUIConfiguration.allowRewind;
+  const step = uiConfig.step ?? defaultUIConfiguration.step;
+  const showLiveCurrentTime = uiConfig.showLiveCurrentTime ?? false;
+  const width = uiConfig.width;
+  const height = uiConfig.height;
 
-  const labels = { ...defaultLabels, ...((config as any).labels || {}) };
+  const labels = { ...defaultLabels, ...(uiConfig.labels || {}) };
 
-  const speedCfg = (config as any).speed as SpeedConfig | undefined;
+  const speedCfg = uiConfig.speed;
   const speed: Required<SpeedConfig> = {
     rates: Array.isArray(speedCfg?.rates) && speedCfg.rates.length > 0 ? speedCfg.rates : [...DEFAULT_SPEED_RATES],
   };
 
   // Normalize config in-place when called with a Player instance so downstream code can rely on it.
-  if ((coreOrConfig as any).config) {
+  if (coreInstance.config) {
     try {
-      (config as any).labels = labels;
-      (config as any).allowSkip = allowSkip;
-      (config as any).allowRewind = allowRewind;
-      (config as any).step = step;
-      (config as any).speed = speed;
-      (config as any).showLiveCurrentTime = showLiveCurrentTime;
+      uiConfig.labels = labels;
+      uiConfig.allowSkip = allowSkip;
+      uiConfig.allowRewind = allowRewind;
+      uiConfig.step = step;
+      uiConfig.speed = speed;
+      uiConfig.showLiveCurrentTime = showLiveCurrentTime;
     } catch {
       // ignore
     }

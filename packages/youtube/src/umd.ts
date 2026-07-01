@@ -1,10 +1,15 @@
 import { YouTubeMediaEngine } from './youtube';
 
-(function (global: any) {
+type UMDGlobal = {
+  OpenPlayerPlugins?: Record<string, unknown>;
+  OpenPlayerYouTube?: unknown;
+};
+
+(function (global: UMDGlobal) {
   global.OpenPlayerPlugins = global.OpenPlayerPlugins || {};
   global.OpenPlayerPlugins.youtube = {
     name: 'youtube',
-    factory: (config?: any) => new YouTubeMediaEngine(config || {}),
+    factory: (config?: ConstructorParameters<typeof YouTubeMediaEngine>[0]) => new YouTubeMediaEngine(config || {}),
   };
 
   // Expose YouTubeMediaEngine for advanced UMD usage:
@@ -17,4 +22,4 @@ import { YouTubeMediaEngine } from './youtube';
   // Or pass noCookie through the player config:
   //   new OpenPlayerJS('video', { youtube: { noCookie: true } });
   global.OpenPlayerYouTube = { YouTubeMediaEngine };
-})(window);
+})(window as unknown as UMDGlobal);

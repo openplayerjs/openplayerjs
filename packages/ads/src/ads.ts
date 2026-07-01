@@ -19,6 +19,8 @@ import type {
   AdsSourceType,
   ScteOutCue,
   ScteSource,
+  VastInput,
+  VastParsed,
 } from './types';
 import {
   collectNonLinearCreatives,
@@ -103,14 +105,13 @@ export class AdsPlugin implements PlayerPlugin {
     // Install dispatch proxies so that scheduler-initiated calls go through
     // AdsPlugin's own methods — enabling jest.spyOn(plugin, 'startBreak') etc.
     if (this.csai) {
-      this.csai._dispatchStartBreak = (b, kind, opts) => (this as any).startBreak(b, kind, opts);
-      this.csai._dispatchStartBreakGroup = (breaks, kind) => (this as any).startBreakGroup(breaks, kind);
-      this.csai._dispatchPlayBreakFromVast = (...args: any[]) => (this as any).playBreakFromVast(...args);
-      this.csai._dispatchGetVastXmlText = (...args: any[]) => Promise.resolve((this as any).getVastXmlText(...args));
-      this.csai._dispatchBuildParsedForNonLinear = (...args: any[]) =>
-        (this as any).buildParsedForNonLinearFromXml(...args);
-      this.csai._dispatchMountAdVideo = (...args: any[]) => (this as any).mountAdVideo(...args);
-      this.csai._dispatchStartAdPlayback = () => (this as any).startAdPlayback();
+      this.csai._dispatchStartBreak = (b, kind, opts) => this.startBreak(b, kind, opts);
+      this.csai._dispatchStartBreakGroup = (breaks, kind) => this.startBreakGroup(breaks, kind);
+      this.csai._dispatchPlayBreakFromVast = (...args) => this.playBreakFromVast(...args);
+      this.csai._dispatchGetVastXmlText = (...args) => Promise.resolve(this.getVastXmlText(...args));
+      this.csai._dispatchBuildParsedForNonLinear = (...args) => this.buildParsedForNonLinearFromXml(...args);
+      this.csai._dispatchMountAdVideo = (...args) => this.mountAdVideo(...args);
+      this.csai._dispatchStartAdPlayback = () => this.startAdPlayback();
     }
 
     if (mode !== 'ssai') {
@@ -235,27 +236,29 @@ export class AdsPlugin implements PlayerPlugin {
   /** @internal */ startAdPlayback() {
     return this.csai?.startAdPlayback();
   }
-  /** @internal */ mountAdVideo(...args: any[]) {
-    return (this.csai as any)?.mountAdVideo(...args);
+  /** @internal */ mountAdVideo(...args: Parameters<CsaiAdStrategy['_dispatchMountAdVideo']>) {
+    // `mountAdVideo` is private on the strategy; reach it via a typed handle for delegation.
+    const csai = this.csai as unknown as { mountAdVideo: CsaiAdStrategy['_dispatchMountAdVideo'] } | undefined;
+    return csai?.mountAdVideo(...args);
   }
   /** @internal */ get vastClient() {
     return this.csai?.vastClient;
   }
-  /** @internal */ set vastClient(v: any) {
+  /** @internal */ set vastClient(v: VastParsed) {
     if (this.csai) this.csai.vastClient = v;
   }
   /** @internal */ shouldInterceptPreroll() {
     return this.csai?.shouldInterceptPreroll();
   }
-  /** @internal */ startBreak(...args: any[]) {
-    return this.csai?.startBreak(...(args as Parameters<CsaiAdStrategy['startBreak']>));
+  /** @internal */ startBreak(...args: Parameters<CsaiAdStrategy['startBreak']>): Promise<void> {
+    return this.csai?.startBreak(...args) ?? Promise.resolve();
   }
-  /** @internal */ startBreakGroup(...args: any[]) {
-    return this.csai?.startBreakGroup(...(args as Parameters<CsaiAdStrategy['startBreakGroup']>));
+  /** @internal */ startBreakGroup(...args: Parameters<CsaiAdStrategy['startBreakGroup']>): Promise<void> {
+    return this.csai?.startBreakGroup(...args) ?? Promise.resolve();
   }
-  /** @internal */ async playBreakFromVast(...args: any[]): Promise<boolean> {
+  /** @internal */ async playBreakFromVast(...args: Parameters<CsaiAdStrategy['playBreakFromVast']>): Promise<boolean> {
     if (!this.csai) return false;
-    return await this.csai.playBreakFromVast(...(args as Parameters<CsaiAdStrategy['playBreakFromVast']>));
+    return await this.csai.playBreakFromVast(...args);
   }
 
   // ─── @internal delegates ─────────────────────────────────────────────────
@@ -264,16 +267,16 @@ export class AdsPlugin implements PlayerPlugin {
   // They are NOT part of the public API.
 
   // Standalone pure utilities (no strategy state required):
-  /** @internal */ getVastXmlText(input: any) {
+  /** @internal */ getVastXmlText(input: VastInput) {
     return getVastXmlText(input);
   }
-  /** @internal */ normalizeVmapAdSource(adSource: any) {
+  /** @internal */ normalizeVmapAdSource(adSource: unknown) {
     return normalizeVmapAdSourceFn(adSource);
   }
-  /** @internal */ extractVastTagUri(adTagURI: any) {
+  /** @internal */ extractVastTagUri(adTagURI: unknown) {
     return extractVastTagUriFn(adTagURI);
   }
-  /** @internal */ parseVmapTimeOffset(timeOffset: any) {
+  /** @internal */ parseVmapTimeOffset(timeOffset: unknown) {
     return parseVmapTimeOffsetFn(timeOffset);
   }
   /** @internal */ getVastInputFromBreak(b: AdsBreakConfig) {
@@ -282,10 +285,10 @@ export class AdsPlugin implements PlayerPlugin {
   /** @internal */ setSafeHTML(el: HTMLElement, html: string) {
     return setSafeHTMLFn(el, html);
   }
-  /** @internal */ collectNonLinearCreatives(parsed: any) {
+  /** @internal */ collectNonLinearCreatives(parsed: VastParsed) {
     return collectNonLinearCreatives(parsed);
   }
-  /** @internal */ collectNonLinearFromXml(doc: any) {
+  /** @internal */ collectNonLinearFromXml(doc: XMLDocument) {
     return collectNonLinearFromXml(doc);
   }
   /** @internal */ buildParsedForNonLinearFromXml(xmlText: string) {
@@ -294,7 +297,7 @@ export class AdsPlugin implements PlayerPlugin {
   /** @internal */ computeSkipAtSeconds(skipOffset: string | undefined, duration: number) {
     return computeSkipAtSeconds(skipOffset, duration);
   }
-  /** @internal */ collectPodAds(parsed: any) {
+  /** @internal */ collectPodAds(parsed: VastParsed) {
     return collectPodAds(parsed, this.csai?.cfg?.preferredMediaTypes ?? []);
   }
 
@@ -319,7 +322,7 @@ export class AdsPlugin implements PlayerPlugin {
   /** @internal */ get pendingPercentBreaks() {
     return this.csai?.pendingPercentBreaks;
   }
-  /** @internal */ set pendingPercentBreaks(v: any[] | undefined) {
+  /** @internal */ set pendingPercentBreaks(v: CsaiAdStrategy['pendingPercentBreaks'] | undefined) {
     if (this.csai && v !== undefined) this.csai.pendingPercentBreaks = v;
   }
   /** @internal */ get playedBreaks() {
@@ -342,21 +345,21 @@ export class AdsPlugin implements PlayerPlugin {
   /** @internal */ ensureOverlayMounted() {
     return this.csai?.ensureOverlayMounted();
   }
-  /** @internal */ mountCompanions(creative: any) {
+  /** @internal */ mountCompanions(creative: VastParsed) {
     return (this.csai?.dom ?? this.lazyDom).mountCompanions(creative);
   }
-  /** @internal */ renderCompanion(companion: any) {
+  /** @internal */ renderCompanion(companion: VastParsed) {
     return (this.csai?.dom ?? this.lazyDom).renderCompanion(companion);
   }
-  /** @internal */ renderNonLinear(nl: any) {
+  /** @internal */ renderNonLinear(nl: VastParsed) {
     return (this.csai?.dom ?? this.lazyDom).renderNonLinear(nl);
   }
 
   // Caption delegates:
-  /** @internal */ ensureRawCaptions(mediaFileRaw: any, creative?: any) {
+  /** @internal */ ensureRawCaptions(mediaFileRaw: VastParsed, creative?: VastParsed) {
     return this.csai?.ensureRawCaptions(mediaFileRaw, creative);
   }
-  /** @internal */ attachAdCaptionTracks(adVideo: HTMLVideoElement, raw: any, creative?: any) {
+  /** @internal */ attachAdCaptionTracks(adVideo: HTMLVideoElement, raw: VastParsed, creative?: VastParsed) {
     return this.csai?.attachAdCaptionTracks(adVideo, raw, creative);
   }
 }

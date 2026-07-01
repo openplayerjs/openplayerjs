@@ -3,6 +3,9 @@
  */
 import { OmidSession } from '../src/omid';
 
+/** `window` view for stubbing the ambient OMID SDK global without `any`. */
+const winOmid = window as unknown as { OmidSessionClient?: unknown };
+
 function makeVideo(): HTMLVideoElement {
   const v = document.createElement('video');
   Object.defineProperty(v, 'duration', { value: 30, writable: true });
@@ -11,7 +14,7 @@ function makeVideo(): HTMLVideoElement {
   return v;
 }
 
-function makeOmidSdk(overrides: Record<string, any> = {}) {
+function makeOmidSdk(overrides: Record<string, unknown> = {}) {
   const adSession = {
     start: jest.fn(),
     finish: jest.fn(),
@@ -61,25 +64,25 @@ describe('OmidSession', () => {
   const verifications = [{ vendor: 'test.com-omid', scriptUrl: 'https://test.com/omid.js', params: 'ctx=1' }];
 
   afterEach(() => {
-    delete (window as any).OmidSessionClient;
+    delete winOmid.OmidSessionClient;
   });
 
   // ─── isAvailable() ────────────────────────────────────────────────────────────
 
   it('isAvailable() returns false when SDK is not loaded', () => {
-    delete (window as any).OmidSessionClient;
+    delete winOmid.OmidSessionClient;
     expect(OmidSession.isAvailable()).toBe(false);
   });
 
   it('isAvailable() returns true when OmidSessionClient is on window', () => {
-    (window as any).OmidSessionClient = {};
+    winOmid.OmidSessionClient = {};
     expect(OmidSession.isAvailable()).toBe(true);
   });
 
   // ─── No-op when SDK absent ────────────────────────────────────────────────────
 
   it('is a graceful no-op when SDK is not loaded', () => {
-    delete (window as any).OmidSessionClient;
+    delete winOmid.OmidSessionClient;
     const session = new OmidSession(makeVideo(), verifications);
     expect(() => {
       session.impression();
@@ -102,7 +105,7 @@ describe('OmidSession', () => {
 
   it('creates AdSession and calls start() in constructor', () => {
     const { sdk, adSession } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     new OmidSession(makeVideo(), verifications);
 
@@ -112,7 +115,7 @@ describe('OmidSession', () => {
 
   it('creates VideoEvents with the AdSession', () => {
     const { sdk, adSession } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     new OmidSession(makeVideo(), verifications);
 
@@ -121,7 +124,7 @@ describe('OmidSession', () => {
 
   it('creates VerificationScriptResource for each verification', () => {
     const { sdk } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     new OmidSession(makeVideo(), [
       { vendor: 'a.com', scriptUrl: 'https://a.com/s.js', params: '' },
@@ -133,7 +136,7 @@ describe('OmidSession', () => {
 
   it('sets video element on context if method is available', () => {
     const { sdk } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const video = makeVideo();
 
     new OmidSession(video, verifications);
@@ -147,7 +150,7 @@ describe('OmidSession', () => {
 
   it('impression() calls triggerSessionStart and adEvents.impressionOccurred', () => {
     const { sdk, adSession, adEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     const session = new OmidSession(makeVideo(), verifications);
     session.impression();
@@ -160,7 +163,7 @@ describe('OmidSession', () => {
 
   it('loaded() calls videoEvents.loaded with VastProperties', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     const session = new OmidSession(makeVideo(), verifications);
     session.loaded(true, 5, false, 'preroll');
@@ -171,7 +174,7 @@ describe('OmidSession', () => {
 
   it('start() calls videoEvents.start with duration and volume', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     const session = new OmidSession(makeVideo(), verifications);
     session.start(30, 0.8);
@@ -181,7 +184,7 @@ describe('OmidSession', () => {
 
   it('firstQuartile() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.firstQuartile();
     expect(videoEvents.firstQuartile).toHaveBeenCalledTimes(1);
@@ -189,7 +192,7 @@ describe('OmidSession', () => {
 
   it('midpoint() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.midpoint();
     expect(videoEvents.midpoint).toHaveBeenCalledTimes(1);
@@ -197,7 +200,7 @@ describe('OmidSession', () => {
 
   it('thirdQuartile() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.thirdQuartile();
     expect(videoEvents.thirdQuartile).toHaveBeenCalledTimes(1);
@@ -205,7 +208,7 @@ describe('OmidSession', () => {
 
   it('complete() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.complete();
     expect(videoEvents.complete).toHaveBeenCalledTimes(1);
@@ -213,7 +216,7 @@ describe('OmidSession', () => {
 
   it('pause() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.pause();
     expect(videoEvents.pause).toHaveBeenCalledTimes(1);
@@ -221,7 +224,7 @@ describe('OmidSession', () => {
 
   it('resume() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.resume();
     expect(videoEvents.resume).toHaveBeenCalledTimes(1);
@@ -229,7 +232,7 @@ describe('OmidSession', () => {
 
   it('skipped() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.skipped();
     expect(videoEvents.skipped).toHaveBeenCalledTimes(1);
@@ -237,7 +240,7 @@ describe('OmidSession', () => {
 
   it('volumeChange() passes volume to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.volumeChange(0.4);
     expect(videoEvents.volumeChange).toHaveBeenCalledWith(0.4);
@@ -245,7 +248,7 @@ describe('OmidSession', () => {
 
   it('playerStateChange() passes state to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.playerStateChange('fullscreen');
     expect(videoEvents.playerStateChange).toHaveBeenCalledWith('fullscreen');
@@ -253,7 +256,7 @@ describe('OmidSession', () => {
 
   it('adUserInteraction() passes type to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.adUserInteraction('click');
     expect(videoEvents.adUserInteraction).toHaveBeenCalledWith('click');
@@ -263,7 +266,7 @@ describe('OmidSession', () => {
 
   it('destroy() calls adSession.finish()', () => {
     const { sdk, adSession } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.destroy();
     expect(adSession.finish).toHaveBeenCalledTimes(1);
@@ -271,7 +274,7 @@ describe('OmidSession', () => {
 
   it('destroy() is idempotent', () => {
     const { sdk, adSession } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.destroy();
     session.destroy();
@@ -280,7 +283,7 @@ describe('OmidSession', () => {
 
   it('methods are no-ops after destroy()', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.destroy();
     session.start(30, 1);
@@ -308,7 +311,7 @@ describe('OmidSession', () => {
 
   it('passes limited access mode to context by default', () => {
     const { sdk } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     new OmidSession(makeVideo(), verifications); // default 'limited'
     const ctxInstance = sdk.Context.mock.results[0].value;
     expect(ctxInstance.setAccessMode).toHaveBeenCalledWith('limited');
@@ -316,7 +319,7 @@ describe('OmidSession', () => {
 
   it('passes domain access mode when specified', () => {
     const { sdk } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     new OmidSession(makeVideo(), verifications, 'domain');
     const ctxInstance = sdk.Context.mock.results[0].value;
     expect(ctxInstance.setAccessMode).toHaveBeenCalledWith('domain');
@@ -330,7 +333,7 @@ describe('OmidSession', () => {
         throw new Error('SDK init failed');
       }),
     });
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     let session: OmidSession | undefined;
     expect(() => {
@@ -344,7 +347,7 @@ describe('OmidSession', () => {
 
   it('bufferStart() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.bufferStart();
     expect(videoEvents.bufferStart).toHaveBeenCalledTimes(1);
@@ -352,20 +355,20 @@ describe('OmidSession', () => {
 
   it('bufferFinish() delegates to videoEvents', () => {
     const { sdk, videoEvents } = makeOmidSdk();
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
     const session = new OmidSession(makeVideo(), verifications);
     session.bufferFinish();
     expect(videoEvents.bufferFinish).toHaveBeenCalledTimes(1);
   });
 
   it('bufferStart() is a no-op when SDK absent', () => {
-    delete (window as any).OmidSessionClient;
+    delete winOmid.OmidSessionClient;
     const session = new OmidSession(makeVideo(), verifications);
     expect(() => session.bufferStart()).not.toThrow();
   });
 
   it('bufferFinish() is a no-op when SDK absent', () => {
-    delete (window as any).OmidSessionClient;
+    delete winOmid.OmidSessionClient;
     const session = new OmidSession(makeVideo(), verifications);
     expect(() => session.bufferFinish()).not.toThrow();
   });
@@ -382,7 +385,7 @@ describe('OmidSession', () => {
         // triggerSessionStart intentionally absent (not a function)
       })),
     });
-    (window as any).OmidSessionClient = sdk;
+    winOmid.OmidSessionClient = sdk;
 
     const session = new OmidSession(makeVideo(), verifications);
     // Clear calls made during constructor (adSession.start is called once on init)

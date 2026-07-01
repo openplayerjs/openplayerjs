@@ -1,10 +1,15 @@
 import { HlsMediaEngine } from './hls';
 
-(function (global: any) {
+type UMDGlobal = {
+  OpenPlayerPlugins?: Record<string, unknown>;
+  OpenPlayerHls?: unknown;
+};
+
+(function (global: UMDGlobal) {
   global.OpenPlayerPlugins = global.OpenPlayerPlugins || {};
   global.OpenPlayerPlugins.hls = {
     name: 'hls',
-    factory: (config?: any) => new HlsMediaEngine(config || {}),
+    factory: (config?: ConstructorParameters<typeof HlsMediaEngine>[0]) => new HlsMediaEngine(config || {}),
   };
 
   // Expose HlsMediaEngine for advanced UMD usage — e.g. to swap in a
@@ -18,4 +23,4 @@ import { HlsMediaEngine } from './hls';
   // Or simply pass hlsClass through the player config:
   //   new OpenPlayerJS('video', { hls: { hlsClass: MyHls } });
   global.OpenPlayerHls = { HlsMediaEngine };
-})(window);
+})(window as unknown as UMDGlobal);

@@ -5,6 +5,29 @@ import createFullscreenControl from '../src/controls/fullscreen';
 
 jest.useFakeTimers();
 
+// ─── Test-only type helpers ───────────────────────────────────────────────────
+
+// Exposes private methods on the fullscreen control for branch coverage
+type FullscreenControlHandle = ReturnType<typeof createFullscreenControl> & {
+  resolveFullscreenContainer: () => HTMLElement;
+  onOverlayChanged: () => void;
+};
+
+// Vendor-prefixed fullscreen request methods (non-standard, browser-specific)
+type VendorElement = HTMLElement & {
+  mozRequestFullScreen?: (() => void) | (() => Promise<void>);
+  webkitRequestFullScreen?: (() => void) | (() => Promise<void>);
+  msRequestFullscreen?: (() => void) | (() => Promise<void>);
+  webkitEnterFullscreen?: () => void;
+};
+
+// Vendor-prefixed fullscreen exit methods (non-standard, browser-specific)
+type VendorDocument = Document & {
+  mozCancelFullScreen?: () => void;
+  webkitCancelFullScreen?: () => void;
+  msExitFullscreen?: () => void;
+};
+
 function makeCore() {
   const v = document.createElement('video');
   v.src = 'https://example.com/video.mp4';
@@ -22,8 +45,7 @@ describe('FullscreenControl branch coverage', () => {
   test('click enters, click again exits (branch: getFullscreenElement truthy)', async () => {
     const p = makeCore();
     const c = createFullscreenControl();
-    type FullscreenControlHack = typeof c & { resolveFullscreenContainer: () => HTMLElement };
-    const ch = c as unknown as FullscreenControlHack;
+    const ch = c as unknown as FullscreenControlHandle;
     const btn = c.create(p) as HTMLButtonElement;
     document.body.appendChild(btn);
 
@@ -164,11 +186,11 @@ describe('FullscreenControl branch coverage', () => {
       },
     });
 
-    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    const container = (c as unknown as FullscreenControlHandle).resolveFullscreenContainer();
     // Remove standard requestFullscreen (if any) and add moz prefix
     Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
     const mozFn = jest.fn(async () => {});
-    (container as any).mozRequestFullScreen = mozFn;
+    (container as VendorElement).mozRequestFullScreen = mozFn;
 
     btn.click();
     expect(mozFn).toHaveBeenCalled();
@@ -187,11 +209,11 @@ describe('FullscreenControl branch coverage', () => {
       },
     });
 
-    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    const container = (c as unknown as FullscreenControlHandle).resolveFullscreenContainer();
     Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
-    (container as any).mozRequestFullScreen = undefined;
+    (container as VendorElement).mozRequestFullScreen = undefined;
     const webkitFn = jest.fn(async () => {});
-    (container as any).webkitRequestFullScreen = webkitFn;
+    (container as VendorElement).webkitRequestFullScreen = webkitFn;
 
     btn.click();
     expect(webkitFn).toHaveBeenCalled();
@@ -210,12 +232,12 @@ describe('FullscreenControl branch coverage', () => {
       },
     });
 
-    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    const container = (c as unknown as FullscreenControlHandle).resolveFullscreenContainer();
     Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
-    (container as any).mozRequestFullScreen = undefined;
-    (container as any).webkitRequestFullScreen = undefined;
+    (container as VendorElement).mozRequestFullScreen = undefined;
+    (container as VendorElement).webkitRequestFullScreen = undefined;
     const msFn = jest.fn(async () => {});
-    (container as any).msRequestFullscreen = msFn;
+    (container as VendorElement).msRequestFullscreen = msFn;
 
     btn.click();
     expect(msFn).toHaveBeenCalled();
@@ -234,13 +256,13 @@ describe('FullscreenControl branch coverage', () => {
       },
     });
 
-    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    const container = (c as unknown as FullscreenControlHandle).resolveFullscreenContainer();
     Object.defineProperty(container, 'requestFullscreen', { value: undefined, configurable: true });
-    (container as any).mozRequestFullScreen = undefined;
-    (container as any).webkitRequestFullScreen = undefined;
-    (container as any).msRequestFullscreen = undefined;
+    (container as VendorElement).mozRequestFullScreen = undefined;
+    (container as VendorElement).webkitRequestFullScreen = undefined;
+    (container as VendorElement).msRequestFullscreen = undefined;
     const webkitEnterFn = jest.fn();
-    (container as any).webkitEnterFullscreen = webkitEnterFn;
+    (container as VendorElement).webkitEnterFullscreen = webkitEnterFn;
 
     btn.click();
     expect(webkitEnterFn).toHaveBeenCalled();
@@ -252,7 +274,7 @@ describe('FullscreenControl branch coverage', () => {
     const btn = c.create(p) as HTMLButtonElement;
     document.body.appendChild(btn);
 
-    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    const container = (c as unknown as FullscreenControlHandle).resolveFullscreenContainer();
     let fsEl: Element | null = container;
     Object.defineProperty(document, 'fullscreenElement', {
       configurable: true,
@@ -261,20 +283,20 @@ describe('FullscreenControl branch coverage', () => {
       },
     });
     // Remove standard exitFullscreen from document
-    const origExit = (document as any).exitFullscreen;
+    const origExit = document.exitFullscreen;
     Object.defineProperty(document, 'exitFullscreen', { value: undefined, configurable: true });
 
     const mozCancel = jest.fn(() => {
       fsEl = null;
     });
-    (document as any).mozCancelFullScreen = mozCancel;
+    (document as VendorDocument).mozCancelFullScreen = mozCancel;
 
     btn.click(); // getFullscreenElement() is truthy → calls exitFullscreen()
     expect(mozCancel).toHaveBeenCalled();
 
     // Restore
     Object.defineProperty(document, 'exitFullscreen', { value: origExit, configurable: true });
-    delete (document as any).mozCancelFullScreen;
+    delete (document as VendorDocument).mozCancelFullScreen;
   });
 
   test('exitFullscreen: uses msExitFullscreen when webkit also absent', () => {
@@ -283,7 +305,7 @@ describe('FullscreenControl branch coverage', () => {
     const btn = c.create(p) as HTMLButtonElement;
     document.body.appendChild(btn);
 
-    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    const container = (c as unknown as FullscreenControlHandle).resolveFullscreenContainer();
     let fsEl: Element | null = container;
     Object.defineProperty(document, 'fullscreenElement', {
       configurable: true,
@@ -291,21 +313,21 @@ describe('FullscreenControl branch coverage', () => {
         return fsEl;
       },
     });
-    const origExit = (document as any).exitFullscreen;
+    const origExit = document.exitFullscreen;
     Object.defineProperty(document, 'exitFullscreen', { value: undefined, configurable: true });
-    (document as any).mozCancelFullScreen = undefined;
-    (document as any).webkitCancelFullScreen = undefined;
+    (document as VendorDocument).mozCancelFullScreen = undefined;
+    (document as VendorDocument).webkitCancelFullScreen = undefined;
 
     const msExit = jest.fn(() => {
       fsEl = null;
     });
-    (document as any).msExitFullscreen = msExit;
+    (document as VendorDocument).msExitFullscreen = msExit;
 
     btn.click();
     expect(msExit).toHaveBeenCalled();
 
     Object.defineProperty(document, 'exitFullscreen', { value: origExit, configurable: true });
-    delete (document as any).msExitFullscreen;
+    delete (document as VendorDocument).msExitFullscreen;
   });
 
   test('exitFullscreen: uses webkitCancelFullScreen when moz absent', () => {
@@ -314,7 +336,7 @@ describe('FullscreenControl branch coverage', () => {
     const btn = c.create(p) as HTMLButtonElement;
     document.body.appendChild(btn);
 
-    const container = (c as any).resolveFullscreenContainer() as HTMLElement;
+    const container = (c as unknown as FullscreenControlHandle).resolveFullscreenContainer();
     let fsEl: Element | null = container;
     Object.defineProperty(document, 'fullscreenElement', {
       configurable: true,
@@ -322,30 +344,26 @@ describe('FullscreenControl branch coverage', () => {
         return fsEl;
       },
     });
-    const origExit = (document as any).exitFullscreen;
+    const origExit = document.exitFullscreen;
     Object.defineProperty(document, 'exitFullscreen', { value: undefined, configurable: true });
-    (document as any).mozCancelFullScreen = undefined;
+    (document as VendorDocument).mozCancelFullScreen = undefined;
 
     const webkitCancel = jest.fn(() => {
       fsEl = null;
     });
-    (document as any).webkitCancelFullScreen = webkitCancel;
+    (document as VendorDocument).webkitCancelFullScreen = webkitCancel;
 
     btn.click();
     expect(webkitCancel).toHaveBeenCalled();
 
     Object.defineProperty(document, 'exitFullscreen', { value: origExit, configurable: true });
-    delete (document as any).webkitCancelFullScreen;
+    delete (document as VendorDocument).webkitCancelFullScreen;
   });
 
   test('onOverlayChanged dispatches fullscreenchange when fullscreen element exists', () => {
     const p = makeCore();
     const c = createFullscreenControl();
-    type FullscreenControlHack = typeof c & {
-      resolveFullscreenContainer: () => HTMLElement;
-      onOverlayChanged: () => void;
-    };
-    const ch = c as unknown as FullscreenControlHack;
+    const ch = c as unknown as FullscreenControlHandle;
     ch.create(p);
 
     const container = nn(ch.resolveFullscreenContainer()) as HTMLElement;

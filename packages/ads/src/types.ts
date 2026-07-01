@@ -220,29 +220,40 @@ export type AdsPluginConfig = {
 
 // ─── Internal media/creative types ──────────────────────────────────────────
 
+/**
+ * Objects parsed by `@dailymotion/vast-client` (Ad, Creative, MediaFile, CompanionAd,
+ * NonLinearAd). The library does not re-export its per-object types from its package
+ * entry, and these objects are accessed via many vendor-specific, deeply-nested,
+ * alternately-named fields. Per the project's documented `any` exception for
+ * "external library outputs with no shipped types", they are modelled as a single
+ * aliased `any` so call sites stay readable without scattering `any` across the code.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type VastParsed = any;
+
 export type NormalizedMediaFile = {
   type: string;
   fileURL: string;
   bitrate: number;
   width: number;
   height: number;
-  raw: any;
+  raw: VastParsed;
 };
 
 export type PodAd = {
   creativeIndex?: number;
-  ad: any;
-  creative: any;
+  ad: VastParsed;
+  creative: VastParsed;
   mediaFile: NormalizedMediaFile;
   sequence?: number;
   skipOffset?: string;
-  companions?: any[];
-  nonLinears?: any[];
+  companions?: VastParsed[];
+  nonLinears?: VastParsed[];
 };
 
 export type XmlNonLinearItem = {
-  nonLinear: any;
-  companions?: any[];
+  nonLinear: VastParsed;
+  companions?: VastParsed[];
 };
 
 export type AdVerification = {
@@ -256,12 +267,13 @@ export type AdVerification = {
 export class PluginBus<E extends string> {
   constructor(private bus: EventBus) {}
 
-  on(event: E, cb: (...args: any[]) => void) {
+  // `never` payload accepts a callback with any concrete payload type (contravariance).
+  on(event: E, cb: (payload: never) => void) {
     return this.bus.on(event, cb);
   }
 
-  emit(event: E, ...data: any[]) {
-    this.bus.emit(event, ...data);
+  emit(event: E, payload?: unknown) {
+    this.bus.emit(event, payload);
   }
 }
 

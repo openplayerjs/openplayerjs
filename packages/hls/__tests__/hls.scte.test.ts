@@ -15,13 +15,14 @@
  */
 
 import { EventBus, HtmlMediaSurface, Core } from '@openplayerjs/core';
+import type { MediaEngineContext, MediaSurface } from '@openplayerjs/core';
 import { HlsMediaEngine } from '../src/hls';
 
 type ScteOutCue = { id: string; scte35Out: string; plannedDuration?: number; startDate?: Date };
 
 // ─── hls.js mock ────────────────────────────────────────────────────────────
 
-let capturedLevelUpdatedHandler: ((event: string, data: any) => void) | undefined;
+let capturedLevelUpdatedHandler: ((event: string, data: unknown) => void) | undefined;
 
 jest.mock('hls.js', () => ({
   __esModule: true,
@@ -38,7 +39,7 @@ jest.mock('hls.js', () => ({
       SUBTITLE_TRACKS_UPDATED: 'SUBTITLE_TRACKS_UPDATED',
       ERROR: 'ERROR',
     };
-    on = jest.fn((event: string, handler: (...a: any[]) => void) => {
+    on = jest.fn((event: string, handler: (...a: unknown[]) => void) => {
       if (event === 'LEVEL_UPDATED') capturedLevelUpdatedHandler = handler;
     });
     off = jest.fn();
@@ -67,14 +68,14 @@ function makeCtx() {
     events,
     core,
     surface,
-    setSurface(s: any) {
+    setSurface(s: MediaSurface) {
       return s;
     },
     resetSurface() {
       return surface;
     },
     activeSource: { src: 'https://example.com/live.m3u8', type: 'application/x-mpegURL' },
-  } as any;
+  } as unknown as MediaEngineContext;
 }
 
 function makeDateRange(id: string, scte35Out: string, extras: Record<string, unknown> = {}) {

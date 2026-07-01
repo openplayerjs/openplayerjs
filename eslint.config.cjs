@@ -15,7 +15,7 @@ module.exports = defineConfig({
     plugins: { prettier: pluginPrettier, import: pluginImport },
     languageOptions: {
       parserOptions: {
-        project: ["./tsconfig.eslint.json"],
+        project: ["./tsconfig.json"],
         tsconfigRootDir: __dirname
       }
     },
@@ -33,7 +33,7 @@ module.exports = defineConfig({
     },
     rules: {
       '@typescript-eslint/no-empty-function': ['error', { allow: ['arrowFunctions']}],
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-deprecated': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],

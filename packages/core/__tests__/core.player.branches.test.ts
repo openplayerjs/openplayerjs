@@ -46,7 +46,7 @@ describe('core/player branches', () => {
     // autoload may run on a microtask; flush once
     await Promise.resolve();
     expect(p.state.current).toBe('ready');
-    expect((p as any).activeEngine?.name).toBe('engine-a');
+    expect((p as unknown as { activeEngine?: { name: string } }).activeEngine?.name).toBe('engine-a');
 
     // load again should early-return (not idle)
     const prevState = p.state.current;
@@ -461,7 +461,7 @@ describe('core/player branches', () => {
     p.events.emit('durationchange');
     expect(p.isLive).toBe(true);
 
-    (p as any).state.transition('idle');
+    p.state.transition('idle');
     Object.defineProperty(media, 'duration', { value: 300, configurable: true });
     p.load();
 

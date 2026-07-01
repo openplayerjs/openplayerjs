@@ -36,7 +36,17 @@ jobs:
           CI: true
         run: pnpm run test
 
-      - name: Upload coverage to Coveralls
+      # Coveralls is used for REPORTING only (badge + PR comment). It must never gate
+      # the merge: the authoritative, fault-tolerant coverage gate is the jest run above
+      # (global 85% floor in jest.config.cjs), which tolerates small coverage decreases.
+      #
+      # `fail-on-error: false` keeps a Coveralls upload/API hiccup — or its "coverage
+      # decreased" comparison status — from failing this job. The Coveralls-posted
+      # `coverage/coveralls` commit status should NOT be a required check in branch
+      # protection (its "coverage decrease" tolerance is a coveralls.io repo setting, not
+      # a repo file). Require the "Test + Coveralls" job instead.
+      - name: Upload coverage to Coveralls (report-only, non-blocking)
         uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
         with:
           allow-empty: true
+          fail-on-error: false

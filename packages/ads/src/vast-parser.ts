@@ -5,8 +5,15 @@ import type {
   PodAd,
   VastClosedCaption,
   VastInput,
+  VastParsed,
   XmlNonLinearItem,
 } from './types';
+
+/** A namespace-aware DOM query root. `ParentNode` alone lacks `getElementsByTagName*` in the TS lib. */
+type DOMQuerier = ParentNode & {
+  getElementsByTagNameNS?(ns: string, name: string): HTMLCollectionOf<Element>;
+  getElementsByTagName(name: string): HTMLCollectionOf<Element>;
+};
 
 // ─── Utility ─────────────────────────────────────────────────────────────────
 
@@ -69,7 +76,7 @@ export function computeSkipAtSeconds(skipOffset: string | undefined, duration: n
 
 // ─── Media file selection ─────────────────────────────────────────────────────
 
-export function pickBestMediaFile(mediaFiles: any[], preferredMediaTypes: string[]): NormalizedMediaFile | null {
+export function pickBestMediaFile(mediaFiles: VastParsed[], preferredMediaTypes: string[]): NormalizedMediaFile | null {
   if (!Array.isArray(mediaFiles) || mediaFiles.length === 0) return null;
 
   const normalized = mediaFiles
@@ -93,7 +100,7 @@ export function pickBestMediaFile(mediaFiles: any[], preferredMediaTypes: string
   return normalized.sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
 }
 
-export function extractSkipOffsetFromCreative(creative: any): string | undefined {
+export function extractSkipOffsetFromCreative(creative: VastParsed): string | undefined {
   const linear = creative?.linear || creative?.Linear || creative;
 
   const skipDelay = linear?.skipDelay ?? linear?.skipdelay;
@@ -112,8 +119,8 @@ export function extractSkipOffsetFromCreative(creative: any): string | undefined
 
   if (linear && typeof linear === 'object') {
     for (const k of ['skipOffset', 'skipoffset', 'skipDelay', 'skipdelay']) {
-      candidates.push((linear as any)[k]);
-      candidates.push((linear as any)?.attributes?.[k]);
+      candidates.push((linear as VastParsed)[k]);
+      candidates.push((linear as VastParsed)?.attributes?.[k]);
     }
   }
 
@@ -148,7 +155,7 @@ export function extractSkipOffsetFromCreative(creative: any): string | undefined
  * SIMID MediaFiles have `apiFramework="SIMID"` and `type="text/html"`.
  * Returns the URL of the first SIMID creative found, or undefined.
  */
-export function extractSimidUrl(creative: any, rawDoc?: XMLDocument | null): string | undefined {
+export function extractSimidUrl(creative: VastParsed, rawDoc?: XMLDocument | null): string | undefined {
   // Path 1: parsed library object
   // vast-client may expose InteractiveCreativeFile as interactiveCreativeFiles[] or inside mediaFiles[]
   const mediaFiles = [
@@ -198,16 +205,16 @@ export function extractSimidUrl(creative: any, rawDoc?: XMLDocument | null): str
  * Extracts AdVerification entries from a parsed VAST response or raw XMLDocument.
  * Returns an array of verification resources usable by OmidSession.
  */
-export function extractAdVerifications(parsed: any, rawDoc?: XMLDocument | null): AdVerification[] {
+export function extractAdVerifications(parsed: VastParsed, rawDoc?: XMLDocument | null): AdVerification[] {
   const out: AdVerification[] = [];
 
   // Path 1: library-parsed object
   const ads = extractAdsFromParsed(parsed);
   for (const ad of ads) {
-    const verifications: any[] = ad?.adVerifications || ad?.AdVerifications || [];
+    const verifications: VastParsed[] = ad?.adVerifications || ad?.AdVerifications || [];
     for (const v of verifications) {
       const vendor = String(v?.vendor || v?.Vendor || '');
-      const resources: any[] =
+      const resources: VastParsed[] =
         v?.resource ||
         v?.resources ||
         v?.JavaScriptResource ||
@@ -227,14 +234,15 @@ export function extractAdVerifications(parsed: any, rawDoc?: XMLDocument | null)
 
   // Path 2: raw XML fallback
   if (rawDoc) {
-    const byTag = (root: ParentNode, tag: string): Element[] => {
+    const byTag = (root: DOMQuerier, tag: string): Element[] => {
       try {
-        return Array.from((root as any).getElementsByTagNameNS('*', tag) as HTMLCollectionOf<Element>);
+        const ns = root.getElementsByTagNameNS?.('*', tag);
+        if (ns) return Array.from(ns);
       } catch {
         /* ignore */
       }
       try {
-        return Array.from((root as any).getElementsByTagName(tag) as HTMLCollectionOf<Element>);
+        return Array.from(root.getElementsByTagName(tag));
       } catch {
         return [];
       }
@@ -259,13 +267,13 @@ export function extractAdVerifications(parsed: any, rawDoc?: XMLDocument | null)
 
 // ─── Pod ad collection ────────────────────────────────────────────────────────
 
-export function extractAdsFromParsed(parsed: any): any[] {
+export function extractAdsFromParsed(parsed: VastParsed): VastParsed[] {
   const direct = parsed?.ads || parsed?.vastResponse?.ads;
   if (Array.isArray(direct) && direct.length) return direct;
 
   const adPods = parsed?.adPods || parsed?.vastResponse?.adPods || parsed?.vastResponse?.adpods;
   if (Array.isArray(adPods) && adPods.length) {
-    const flattened: any[] = [];
+    const flattened: VastParsed[] = [];
     for (const pod of adPods) {
       const ads = pod?.ads || pod?.Ads;
       if (Array.isArray(ads)) flattened.push(...ads);
@@ -280,7 +288,7 @@ export function extractAdsFromParsed(parsed: any): any[] {
   return [];
 }
 
-export function collectPodAds(parsed: any, preferredMediaTypes: string[]): PodAd[] {
+export function collectPodAds(parsed: VastParsed, preferredMediaTypes: string[]): PodAd[] {
   const ads = extractAdsFromParsed(parsed);
   const out: PodAd[] = [];
 
@@ -384,10 +392,10 @@ export function collectPodAdsFromXml(doc: XMLDocument, preferredMediaTypes: stri
 // ─── Non-linear collection ────────────────────────────────────────────────────
 
 export function collectNonLinearCreatives(
-  parsed: any
-): { ad: any; creative: any; nonLinear: any; sequence?: number }[] {
+  parsed: VastParsed
+): { ad: VastParsed; creative: VastParsed; nonLinear: VastParsed; sequence?: number }[] {
   const ads = extractAdsFromParsed(parsed);
-  const out: { ad: any; creative: any; nonLinear: any; sequence?: number }[] = [];
+  const out: { ad: VastParsed; creative: VastParsed; nonLinear: VastParsed; sequence?: number }[] = [];
 
   for (const ad of ads) {
     const creatives = ad?.creatives || ad?.Creatives || [];
@@ -427,18 +435,17 @@ export function collectNonLinearFromXml(doc: XMLDocument): XmlNonLinearItem[] {
   const out: XmlNonLinearItem[] = [];
   const pickText = (el: Element | null) => (el?.textContent || '').trim();
 
-  const byLocalName = (root: ParentNode, localName: string): Element[] => {
+  const byLocalName = (root: DOMQuerier, localName: string): Element[] => {
     try {
-      if ((root as any).getElementsByTagNameNS) {
-        const els = (root as any).getElementsByTagNameNS('*', localName) as HTMLCollectionOf<Element>;
-        const arr = Array.from(els);
+      if (root.getElementsByTagNameNS) {
+        const arr = Array.from(root.getElementsByTagNameNS('*', localName));
         if (arr.length) return arr;
       }
     } catch {
       /* ignore */
     }
     try {
-      return Array.from((root as any).getElementsByTagName(localName) as HTMLCollectionOf<Element>);
+      return Array.from(root.getElementsByTagName(localName));
     } catch {
       return [];
     }
@@ -449,7 +456,7 @@ export function collectNonLinearFromXml(doc: XMLDocument): XmlNonLinearItem[] {
     return pickText(els[0] ?? null);
   };
 
-  const companions: any[] = [];
+  const companions: VastParsed[] = [];
   try {
     const compEls = byLocalName(doc, 'Companion');
     for (const c of compEls) {
@@ -479,7 +486,7 @@ export function collectNonLinearFromXml(doc: XMLDocument): XmlNonLinearItem[] {
     const htmlRes = firstChildText(nl, 'HTMLResource');
     const click = firstChildText(nl, 'NonLinearClickThrough');
 
-    const nonLinear: any = {
+    const nonLinear: VastParsed = {
       width: w || undefined,
       height: h || undefined,
       minSuggestedDuration,
@@ -496,7 +503,7 @@ export function collectNonLinearFromXml(doc: XMLDocument): XmlNonLinearItem[] {
 
 // ─── Caption helpers (pure) ───────────────────────────────────────────────────
 
-export function extractClosedCaptions(mediaFileRaw: any): VastClosedCaption[] {
+export function extractClosedCaptions(mediaFileRaw: VastParsed): VastClosedCaption[] {
   if (!mediaFileRaw) return [];
 
   const cc =
@@ -506,7 +513,7 @@ export function extractClosedCaptions(mediaFileRaw: any): VastClosedCaption[] {
     mediaFileRaw.ClosedCaptionFile ??
     null;
 
-  const arr: any[] = Array.isArray(cc)
+  const arr: VastParsed[] = Array.isArray(cc)
     ? cc
     : Array.isArray(cc?.closedCaptionFiles)
       ? cc.closedCaptionFiles
@@ -525,7 +532,7 @@ export function extractClosedCaptions(mediaFileRaw: any): VastClosedCaption[] {
     .filter((x) => typeof x.fileURL === 'string' && x.fileURL.length > 0);
 }
 
-export function buildCaptionsFromVastMediaFileRaw(mediaFileRaw: any): CaptionResource[] {
+export function buildCaptionsFromVastMediaFileRaw(mediaFileRaw: VastParsed): CaptionResource[] {
   const ccFiles = extractClosedCaptions(mediaFileRaw);
   return ccFiles
     .map((f, i) => {

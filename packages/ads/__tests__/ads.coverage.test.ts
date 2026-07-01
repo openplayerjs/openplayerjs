@@ -4,7 +4,25 @@ import VMAP from '@dailymotion/vmap';
 import type { Core, Lease, PluginContext } from '@openplayerjs/core';
 import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
+import type { AdsBreakConfig } from '../src/types';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
+
+// ---------------------------------------------------------------------------
+// Test typing helpers
+// ---------------------------------------------------------------------------
+
+/** AdsPlugin with its `@internal` getters narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & {
+  bus: NonNullable<AdsPlugin['bus']>;
+  resolvedBreaks: NonNullable<AdsPlugin['resolvedBreaks']>;
+  active: boolean;
+};
+
+/** VMAP mock exposes a `__breaks` fixture array the parser mock reads. */
+const vmapMock = VMAP as unknown as { __breaks: unknown[] };
+/** Views over globals tests need to stub without fighting their ambient typing. */
+const globalWithFetch = globalThis as unknown as { fetch: unknown };
+const winOpen = window as unknown as { open: unknown };
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -183,7 +201,7 @@ function companionParsed() {
 
 describe('AdsPlugin additional coverage', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -192,21 +210,21 @@ describe('AdsPlugin additional coverage', () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    globalWithFetch.fetch = undefined;
   });
 
   test('PluginBus on/emit is wired through setup() and can be used for ads:error', () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false }) as any;
+    const p = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
-    const seen: any[] = [];
-    p.bus.on('ads:error', (e: any) => seen.push(e));
+    const seen: unknown[] = [];
+    p.bus.on('ads:error', (e) => seen.push(e));
     p.bus.emit('ads:error', { hello: 'world' });
     expect(seen).toEqual([{ hello: 'world' }]);
 
-    const other: any[] = [];
-    bus.on('ads:error', (e: any) => other.push(e));
+    const other: unknown[] = [];
+    bus.on('ads:error', (e) => other.push(e));
     p.bus.emit('ads:error', { again: true });
     expect(other.length).toBe(1);
   });
@@ -220,10 +238,10 @@ describe('AdsPlugin additional coverage', () => {
         { id: 'm1', at: 5, source: { type: 'VAST', src: 'https://example.com/mid.xml' }, once: true },
         { id: 'po', at: 'postroll', source: { type: 'VAST', src: 'https://example.com/post.xml' }, once: true },
       ],
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
-    const spy = jest.spyOn(p, 'playBreakFromVast').mockResolvedValue(undefined);
+    const spy = jest.spyOn(p, 'playBreakFromVast').mockResolvedValue(undefined as unknown as boolean);
 
     video.currentTime = 6;
     video.dispatchEvent(new Event('timeupdate'));
@@ -249,7 +267,7 @@ describe('AdsPlugin additional coverage', () => {
       allowNativeControls: true,
       interceptPlayForPreroll: true,
       breaks: [{ id: 'pre', at: 'preroll', source: { type: 'VAST', src: 'https://example.com/pre.xml' }, once: true }],
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
     const spy = jest.spyOn(p, 'startBreak').mockResolvedValue(undefined);
@@ -266,7 +284,7 @@ describe('AdsPlugin additional coverage', () => {
   });
 
   test('VMAP: merge breaks, including percent-based midroll resolved once duration is known', async () => {
-    (VMAP as any).__breaks = [
+    vmapMock.__breaks = [
       {
         breakType: 'linear',
         breakId: 'v-pre',
@@ -287,7 +305,7 @@ describe('AdsPlugin additional coverage', () => {
       },
     ];
 
-    (globalThis as any).fetch = jest.fn().mockResolvedValue({
+    globalWithFetch.fetch = jest.fn().mockResolvedValue({
       ok: true,
       text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
     });
@@ -298,15 +316,15 @@ describe('AdsPlugin additional coverage', () => {
     const p = new AdsPlugin({
       allowNativeControls: false,
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
     await p.loadVmapAndMerge([]);
 
-    const anyP: any = p;
+    const anyP = p;
     // getDueMidrollBreaks returns an array — nothing due before the 25% mark (20s)
     const dueBefore = anyP.getDueMidrollBreaks(10);
-    const dueBeforeIds = dueBefore.map((b: any) => b.id);
+    const dueBeforeIds = dueBefore.map((b) => b.id);
     expect(dueBeforeIds).not.toContain('v-mid');
 
     // At 21s the 25%-of-80 midroll (20s) is due
@@ -366,7 +384,7 @@ describe('AdsPlugin additional coverage', () => {
       allowNativeControls: false,
       sources: [{ type: 'VMAP', src: 'https://example.com/pre.xml' }],
       mountSelector: '#mount-here',
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
     p.ensureOverlayMounted();
@@ -375,12 +393,12 @@ describe('AdsPlugin additional coverage', () => {
 
   test('playAdsFromXml accepts an Element input (serialize then parse)', async () => {
     const { ctx, bus } = makeCtx();
-    const p = new AdsPlugin({ allowNativeControls: false }) as any;
+    const p = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
     vastParseMock.mockResolvedValueOnce({ ads: [] });
-    const errs: any[] = [];
-    bus.on('ads:error', (e: any) => errs.push(e));
+    const errs: unknown[] = [];
+    bus.on('ads:error', (e) => errs.push(e));
 
     const doc = new DOMParser().parseFromString('<VAST version="3.0"></VAST>', 'text/xml');
     const el = doc.documentElement;
@@ -399,15 +417,15 @@ describe('AdsPlugin additional coverage', () => {
 
     const oldOpen = window.open;
     const opened: string[] = [];
-    (window as any).open = jest.fn((url: string) => {
+    winOpen.open = jest.fn((url: string) => {
       opened.push(url);
       return null;
     });
 
     const quartiles: number[] = [];
-    bus.on('ads:quartile', (payload: any) => quartiles.push(payload.quartile));
+    bus.on('ads:quartile', (payload) => quartiles.push(payload.quartile));
     const clicks = [];
-    bus.on('ads:clickthrough', (c: any) => clicks.push(c));
+    bus.on('ads:clickthrough', (c) => clicks.push(c));
 
     const playPromise = p.playAds('https://example.com/vast.xml');
     const adVideo = await waitForAdVideo();
@@ -439,7 +457,7 @@ describe('AdsPlugin additional coverage', () => {
     adVideo.dispatchEvent(new Event('ended'));
     await playPromise;
 
-    (window as any).open = oldOpen;
+    winOpen.open = oldOpen;
   });
 });
 
@@ -449,7 +467,7 @@ describe('AdsPlugin additional coverage', () => {
 
 describe('AdsPlugin extra branch forcing', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -468,7 +486,7 @@ describe('AdsPlugin extra branch forcing', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    const errors: any[] = [];
+    const errors: unknown[] = [];
     ctx.events.on('ads:error', (e) => errors.push(e));
 
     await p.playAds('https://example.com/vast.xml');
@@ -533,7 +551,7 @@ describe('AdsPlugin extra branch forcing', () => {
 
 describe('AdsPlugin autoplay mute policy', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -707,11 +725,11 @@ describe('AdsPlugin autoplay mute policy', () => {
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx } = makeCtx({ autoplay: true, userInteracted: false, muted: false, volume: 1 });
-    const p = new AdsPlugin({ allowNativeControls: false }) as any;
+    const p = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     p.setup(ctx);
 
     // Verify no autoplaySupport field exists on the instance
-    expect(p.autoplaySupport).toBeUndefined();
+    expect((p as unknown as Record<string, unknown>).autoplaySupport).toBeUndefined();
 
     const playP = p.playAds('https://example.com/vast.xml');
     const adVideo = await waitForAdVideo();
@@ -801,7 +819,7 @@ describe('AdsPlugin autoplay mute policy', () => {
 
 describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll, active guard, VMAP XML', () => {
   beforeEach(() => {
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     document.body.innerHTML = '';
@@ -810,7 +828,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   afterEach(() => {
     jest.useRealTimers();
-    (globalThis as any).fetch = undefined;
+    globalWithFetch.fetch = undefined;
   });
 
   // -------------------------------------------------------------------------
@@ -824,7 +842,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
     const plugin = new AdsPlugin({
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // vmapLoadPromise must NOT have been started (no fetch on preload=none)
@@ -840,19 +858,19 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     video.setAttribute('preload', 'metadata');
     const { ctx } = makeCtx({}, video);
 
-    (globalThis as any).fetch = jest.fn().mockResolvedValue({
+    globalWithFetch.fetch = jest.fn().mockResolvedValue({
       ok: true,
       text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
     });
 
     const plugin = new AdsPlugin({
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // vmapLoadPromise should be a Promise (fetch started eagerly)
     expect(plugin.vmapLoadPromise).not.toBeNull();
-    expect(typeof plugin.vmapLoadPromise.then).toBe('function');
+    expect(typeof plugin.vmapLoadPromise!.then).toBe('function');
     // pendingVmapSrc should NOT be set (fetch already started)
     expect(plugin.pendingVmapSrc).toBeUndefined();
   });
@@ -870,14 +888,14 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
       ok: true,
       text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
     });
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
 
     const plugin = new AdsPlugin({
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
       interceptPlayForPreroll: true,
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // Before play: no fetch
@@ -911,10 +929,10 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
       ok: true,
       text: jest.fn().mockResolvedValue('<VMAP></VMAP>'),
     });
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     // VMAP returns no ad breaks — no preroll to intercept
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
 
     const plugin = new AdsPlugin({
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
@@ -934,7 +952,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     // The interceptor found no preroll: it must re-emit cmd:play so content starts
     expect(plays.length).toBeGreaterThanOrEqual(1);
     // Plugin must not be in active state (no ad played)
-    expect((plugin as any).active).toBe(false);
+    expect(plugin.active).toBe(false);
   });
 
   // -------------------------------------------------------------------------
@@ -943,7 +961,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   test('playBreakFromVast: returns false immediately when active=true (re-entry guard)', async () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // Force active to true (simulates an ad already playing)
@@ -967,7 +985,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // Start playing a postroll
@@ -991,7 +1009,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx, bus } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     const emittedPlays: string[] = [];
@@ -1021,19 +1039,22 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   test('startBreakGroup: break.id containing "bumper" is treated as bumper (case-insensitive)', async () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false, interceptPlayForPreroll: false }) as any;
+    const plugin = new AdsPlugin({
+      allowNativeControls: false,
+      interceptPlayForPreroll: false,
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     const startBreakSpy = jest.spyOn(plugin, 'startBreak').mockResolvedValue(undefined);
 
     // Group: main ad + post-bumper (identified by id, not URL)
-    const mainBreak = {
+    const mainBreak: AdsBreakConfig = {
       id: 'main-ad',
       at: 15,
       source: { type: 'VAST', src: 'https://example.com/main.xml' },
       once: true,
     };
-    const bumperBreak = {
+    const bumperBreak: AdsBreakConfig = {
       id: 'post-BUMPER-slot',
       at: 15,
       source: { type: 'VAST', src: 'https://example.com/bumper.xml' },
@@ -1050,24 +1071,27 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
     // bumper break should be marked as played (skipped)
     const bumperBreakId = plugin.getBreakId(bumperBreak);
-    expect(plugin.playedBreaks.has(bumperBreakId)).toBe(true);
+    expect(plugin.playedBreaks!.has(bumperBreakId)).toBe(true);
   });
 
   test('startBreakGroup: pre-bumper (before main ad) is NOT skipped', async () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false, interceptPlayForPreroll: false }) as any;
+    const plugin = new AdsPlugin({
+      allowNativeControls: false,
+      interceptPlayForPreroll: false,
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     const startBreakSpy = jest.spyOn(plugin, 'startBreak').mockResolvedValue(undefined);
 
     // Group: pre-bumper first, then main ad
-    const preBumper = {
+    const preBumper: AdsBreakConfig = {
       id: 'pre-bumper',
       at: 15,
       source: { type: 'VAST', src: 'https://example.com/bumper.xml' },
       once: true,
     };
-    const mainBreak = {
+    const mainBreak: AdsBreakConfig = {
       id: 'main-ad',
       at: 15,
       source: { type: 'VAST', src: 'https://example.com/main.xml' },
@@ -1085,7 +1109,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
   // -------------------------------------------------------------------------
 
   test('loadVmapAndMerge: raw XML string (starts with "<") is used directly without fetch', async () => {
-    (VMAP as any).__breaks = [
+    vmapMock.__breaks = [
       {
         breakType: 'linear',
         breakId: 'xml-pre',
@@ -1100,12 +1124,12 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     const { ctx } = makeCtx({}, video);
     const plugin = new AdsPlugin({
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // Now track fetch from this point — any call here would be unexpected
     const fetchMock = jest.fn();
-    (globalThis as any).fetch = fetchMock;
+    globalWithFetch.fetch = fetchMock;
 
     // Pass raw XML string directly (starts with "<")
     const rawXmlVmapSrc = '<VMAP version="2.0"></VMAP>';
@@ -1115,7 +1139,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     expect(fetchMock).not.toHaveBeenCalled();
 
     // The break from the mock VMAP should have been merged
-    expect(plugin.resolvedBreaks.some((b: any) => b.at === 'preroll')).toBe(true);
+    expect(plugin.resolvedBreaks.some((b) => b.at === 'preroll')).toBe(true);
   });
 
   // -------------------------------------------------------------------------
@@ -1163,16 +1187,16 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
         { type: 'VAST', src: 'https://ad1.example.com/vast' },
         { type: 'VAST', src: 'https://ad2.example.com/vast' },
       ],
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     const breaks = plugin.resolvedBreaks;
     // Each VAST source gets its own independent break
     expect(breaks).toHaveLength(2);
     expect(breaks[0].at).toBe('preroll');
-    expect(breaks[0].source.src).toBe('https://ad1.example.com/vast');
+    expect(breaks[0].source?.src).toBe('https://ad1.example.com/vast');
     expect(breaks[1].at).toBe('preroll');
-    expect(breaks[1].source.src).toBe('https://ad2.example.com/vast');
+    expect(breaks[1].source?.src).toBe('https://ad2.example.com/vast');
     // No waterfall sources array on playlist breaks
     for (const b of breaks) {
       expect(b.sources).toBeUndefined();
@@ -1187,7 +1211,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     vastGetMock.mockResolvedValueOnce(linearParsed('00:00:00'));
 
     const { ctx, bus } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false, resumeContent: true }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     const emittedPlays: string[] = [];
@@ -1215,7 +1239,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   test('destroy: removes overlay from DOM and clears all global subscriptions', () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // Mount overlay
@@ -1246,7 +1270,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
     const plugin = new AdsPlugin({
       sources: [{ type: 'VMAP', src: 'https://example.com/vmap.xml' }],
       interceptPlayForPreroll: false,
-    }) as any;
+    }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     // Before source:set: pendingVmapSrc should be set (preload=none path)
@@ -1270,11 +1294,15 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   test('getBreakId: uses explicit id when set, derives from source when not', () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
-    const withId = { id: 'my-custom-id', at: 'preroll', source: { type: 'VAST', src: 'https://example.com/vast.xml' } };
-    const withoutId = { at: 'preroll', source: { type: 'VAST', src: 'https://example.com/vast.xml' } };
+    const withId: AdsBreakConfig = {
+      id: 'my-custom-id',
+      at: 'preroll',
+      source: { type: 'VAST', src: 'https://example.com/vast.xml' },
+    };
+    const withoutId: AdsBreakConfig = { at: 'preroll', source: { type: 'VAST', src: 'https://example.com/vast.xml' } };
 
     expect(plugin.getBreakId(withId)).toBe('my-custom-id');
     expect(plugin.getBreakId(withoutId)).toContain('preroll');
@@ -1287,7 +1315,7 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   test('isXmlString: returns true for strings starting with "<", false otherwise', () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
     expect(plugin.isXmlString('<VAST version="3.0">')).toBe(true);
@@ -1302,10 +1330,10 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   test('getVastInputFromBreak: waterfall break with sources[] uses first source for input', () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
-    const waterfallBreak = {
+    const waterfallBreak: AdsBreakConfig = {
       at: 'preroll',
       sources: [
         { type: 'VAST', src: 'https://first.example.com/vast.xml' },
@@ -1321,10 +1349,10 @@ describe('AdsPlugin gap coverage – rebuildSchedule, preload, bumper, postroll,
 
   test('getVastInputFromBreak: XML source string returns xml input kind', () => {
     const { ctx } = makeCtx();
-    const plugin = new AdsPlugin({ allowNativeControls: false }) as any;
+    const plugin = new AdsPlugin({ allowNativeControls: false }) as unknown as AdsPluginInternals;
     plugin.setup(ctx);
 
-    const xmlBreak = {
+    const xmlBreak: AdsBreakConfig = {
       at: 'preroll',
       source: { type: 'VAST', src: '<VAST version="3.0"></VAST>' },
     };

@@ -27,13 +27,19 @@ import type { AdVerification } from './types';
 type OmidPlayerState = 'normal' | 'minimized' | 'collapsed' | 'expanded' | 'fullscreen' | 'background';
 type OmidInteractionType = 'click' | 'invocationCountExceeded' | 'acceptedLinearInvitation' | 'other';
 
+// The IAB OMID Session Client SDK is loaded at runtime and ships no TypeScript types.
+// Per the project's documented `any` exception for external, untyped SDK objects, OMID
+// instances are modelled as a single aliased `any` rather than scattering `any` inline.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type OmidObject = any;
+
 type OmidContext = {
-  new (partner: any, verificationScriptResources: any[]): any;
+  new (partner: OmidObject, verificationScriptResources: OmidObject[]): OmidObject;
   setVideoElement?(el: HTMLVideoElement): void;
 };
 
 type OmidAdSession = {
-  new (context: any): any;
+  new (context: OmidObject): OmidObject;
   start(): void;
   finish(): void;
   triggerSessionStart(): void;
@@ -41,9 +47,9 @@ type OmidAdSession = {
 };
 
 type OmidVideoEvents = {
-  new (adSession: any): any;
+  new (adSession: OmidObject): OmidObject;
   impressionOccurred(): void;
-  loaded(vastProperties: any): void;
+  loaded(vastProperties: OmidObject): void;
   start(duration: number, videoPlayerVolume: number): void;
   firstQuartile(): void;
   midpoint(): void;
@@ -62,24 +68,24 @@ type OmidVideoEvents = {
 type OmidSessionClientNamespace = {
   AdSession: OmidAdSession;
   Context: OmidContext;
-  Partner: new (name: string, version: string) => any;
-  VerificationScriptResource: new (scriptUrl: string, vendorKey?: string, params?: string) => any;
+  Partner: new (name: string, version: string) => OmidObject;
+  VerificationScriptResource: new (scriptUrl: string, vendorKey?: string, params?: string) => OmidObject;
   VideoEvents: OmidVideoEvents;
-  AdEvents: new (adSession: any) => { impressionOccurred(): void };
-  VastProperties: new (isSkippable: boolean, skipOffset: number, isAutoPlay: boolean, position: string) => any;
+  AdEvents: new (adSession: OmidObject) => { impressionOccurred(): void };
+  VastProperties: new (isSkippable: boolean, skipOffset: number, isAutoPlay: boolean, position: string) => OmidObject;
   AccessMode: { FULL: string; DOMAIN: string; LIMITED: string };
 };
 
 function getOmidClient(): OmidSessionClientNamespace | null {
-  return (window as any).OmidSessionClient ?? null;
+  return (window as { OmidSessionClient?: OmidSessionClientNamespace }).OmidSessionClient ?? null;
 }
 
 // ─── OmidSession ──────────────────────────────────────────────────────────────
 
 export class OmidSession {
-  private adSession: any = null;
-  private videoEvents: any = null;
-  private adEvents: any = null;
+  private adSession: OmidObject = null;
+  private videoEvents: OmidObject = null;
+  private adEvents: OmidObject = null;
   private destroyed = false;
 
   /**
@@ -123,7 +129,7 @@ export class OmidSession {
       const sdkAccessMode =
         accessMode === 'domain' ? (omid.AccessMode?.DOMAIN ?? 'domain') : (omid.AccessMode?.LIMITED ?? 'limited');
 
-      const context: any = new omid.Context(partner, verificationResources);
+      const context: OmidObject = new omid.Context(partner, verificationResources);
       if (typeof context.setVideoElement === 'function') context.setVideoElement(adVideo);
       if (typeof context.setAccessMode === 'function') context.setAccessMode(sdkAccessMode);
 

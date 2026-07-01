@@ -4,24 +4,44 @@ import { resolveUIConfig } from '../configuration';
 import type { Control } from '../control';
 import { BaseControl } from './base';
 
+type VendorDocument = Document & {
+  webkitFullscreenElement?: Element;
+  mozFullScreenElement?: Element;
+  msFullscreenElement?: Element;
+  mozCancelFullScreen?: () => void;
+  webkitCancelFullScreen?: () => void;
+  msExitFullscreen?: () => void;
+};
+
+type VendorElement = HTMLElement & {
+  mozRequestFullScreen?: () => void | Promise<void>;
+  webkitRequestFullScreen?: () => void | Promise<void>;
+  msRequestFullscreen?: () => void | Promise<void>;
+  webkitEnterFullscreen?: () => void;
+};
+
+// `lock()` is an experimental API not yet in TypeScript's ScreenOrientation lib.
+type LockableOrientation = ScreenOrientation & { lock?(orientation: string): Promise<void> };
+
 function getFullscreenElement(): Element | null {
-  const d: any = document as any;
+  const d = document as VendorDocument;
   return (
     document.fullscreenElement || d.webkitFullscreenElement || d.mozFullScreenElement || d.msFullscreenElement || null
   );
 }
 
-function requestFullscreen(el: any) {
+function requestFullscreen(el: HTMLElement | null) {
   if (!el) return;
-  if (el.requestFullscreen) return el.requestFullscreen();
-  if (el.mozRequestFullScreen) return el.mozRequestFullScreen();
-  if (el.webkitRequestFullScreen) return el.webkitRequestFullScreen();
-  if (el.msRequestFullscreen) return el.msRequestFullscreen();
-  if (el.webkitEnterFullscreen) return el.webkitEnterFullscreen();
+  const ve = el as VendorElement;
+  if (ve.requestFullscreen) return ve.requestFullscreen();
+  if (ve.mozRequestFullScreen) return ve.mozRequestFullScreen();
+  if (ve.webkitRequestFullScreen) return ve.webkitRequestFullScreen();
+  if (ve.msRequestFullscreen) return ve.msRequestFullscreen();
+  if (ve.webkitEnterFullscreen) return ve.webkitEnterFullscreen();
 }
 
 function exitFullscreen() {
-  const d: any = document as any;
+  const d = document as VendorDocument;
   if (document.exitFullscreen) return document.exitFullscreen();
   if (d.mozCancelFullScreen) return d.mozCancelFullScreen();
   if (d.webkitCancelFullScreen) return d.webkitCancelFullScreen();
@@ -129,7 +149,7 @@ export class FullscreenControl extends BaseControl {
         requestFullscreen(container);
 
         try {
-          await (window.screen.orientation as any)?.lock('landscape');
+          await (window.screen.orientation as LockableOrientation)?.lock('landscape');
         } catch {
           // ignore
         }

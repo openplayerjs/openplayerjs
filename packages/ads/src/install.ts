@@ -1,11 +1,14 @@
 import type { AdsPlugin } from './ads';
 
-export function installAds(PlayerCtor: any) {
-  if (!PlayerCtor || !PlayerCtor.prototype) return;
+type PlayerCtorLike = { prototype?: object };
 
-  const adsDesc = Object.getOwnPropertyDescriptor(PlayerCtor.prototype, 'ads');
+export function installAds(PlayerCtor: PlayerCtorLike | null | undefined) {
+  if (!PlayerCtor || !PlayerCtor.prototype) return;
+  const proto = PlayerCtor.prototype as Record<string, unknown>;
+
+  const adsDesc = Object.getOwnPropertyDescriptor(proto, 'ads');
   if (!adsDesc) {
-    Object.defineProperty(PlayerCtor.prototype, 'ads', {
+    Object.defineProperty(proto, 'ads', {
       configurable: true,
       enumerable: false,
       get() {
@@ -14,8 +17,8 @@ export function installAds(PlayerCtor: any) {
     });
   }
 
-  if (typeof PlayerCtor.prototype.playAds !== 'function') {
-    Object.defineProperty(PlayerCtor.prototype, 'playAds', {
+  if (typeof proto.playAds !== 'function') {
+    Object.defineProperty(proto, 'playAds', {
       configurable: true,
       enumerable: false,
       value: function playAds(input: string) {
@@ -38,7 +41,9 @@ export function installAds(PlayerCtor: any) {
   }
 }
 
-export function extendAds(player: any, plugin: AdsPlugin) {
+type PlayerLike = { extend?: (ext: Record<string, unknown>) => void; ads?: unknown };
+
+export function extendAds(player: PlayerLike | null | undefined, plugin: AdsPlugin) {
   if (!player) return;
   if (typeof player.extend === 'function') {
     player.extend({ ads: plugin });

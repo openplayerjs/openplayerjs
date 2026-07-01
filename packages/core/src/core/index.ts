@@ -1,7 +1,7 @@
 import { DefaultMediaEngine } from '../engines/html5';
 import { defaultConfiguration, type PlayerConfig } from './configuration';
 import { DisposableStore } from './dispose';
-import type { PlayerEvent } from './events';
+import type { PlayerEvent, PlayerEventPayloadMap } from './events';
 import { EventBus } from './events';
 import { Lease } from './lease';
 import type { MediaEngineContext, MediaEnginePlugin, MediaSource } from './media';
@@ -90,16 +90,21 @@ export class Core {
     return this.activeSurface;
   }
 
-  on<E extends PlayerEvent>(event: E, cb: (payload?: any) => void) {
+  on<E extends PlayerEvent>(
+    event: E,
+    cb: (payload: PlayerEventPayloadMap[E] extends void ? undefined : PlayerEventPayloadMap[E]) => void
+  ): () => boolean;
+  on(event: PlayerEvent | string, cb: (payload: never) => void): () => boolean;
+  on(event: PlayerEvent | string, cb: (payload: never) => void) {
     // Keep the surface flexible (plugins may emit custom events).
     return this.events.on(event, cb);
   }
 
-  emit(event: PlayerEvent | string, payload?: any) {
+  emit(event: PlayerEvent | string, payload?: unknown) {
     this.events.emit(event, payload);
     this.plugins
       .all()
-      .filter((p: any) => !p.capabilities?.includes('media-engine'))
+      .filter((p: PlayerPlugin) => !p.capabilities?.includes('media-engine'))
       .forEach((p: PlayerPlugin) => {
         p.onEvent?.(event as PlayerEvent, payload);
       });
@@ -119,7 +124,7 @@ export class Core {
       leases: this.leases,
       dispose,
       add: (d: (() => void) | void | null) => dispose.add(d ?? undefined),
-      on: (event: string, cb: (payload?: any) => void) => dispose.add(this.events.on(event, cb)),
+      on: (event: string, cb: (payload: never) => void) => dispose.add(this.events.on(event, cb)),
       listen: (
         target: EventTarget,
         type: string,
@@ -398,19 +403,15 @@ export class Core {
 
   extend(extension: Record<string, unknown>) {
     if (!extension || typeof extension !== 'object') return this;
+    const self = this as unknown as Record<string, unknown>;
     for (const key of Object.keys(extension)) {
-      if ((this as any)[key] === undefined) {
-        (this as any)[key] = extension[key];
-      } else if (
-        (this as any)[key] &&
-        typeof (this as any)[key] === 'object' &&
-        extension[key] &&
-        typeof extension[key] === 'object'
-      ) {
-        const target = (this as any)[key];
-        const source = extension[key];
+      if (self[key] === undefined) {
+        self[key] = extension[key];
+      } else if (self[key] && typeof self[key] === 'object' && extension[key] && typeof extension[key] === 'object') {
+        const target = self[key] as Record<string, unknown>;
+        const source = extension[key] as Record<string, unknown>;
         for (const k of Object.keys(source)) {
-          if (target[k] === undefined) target[k] = (source as any)[k];
+          if (target[k] === undefined) target[k] = source[k];
         }
       }
     }
@@ -450,8 +451,11 @@ export class Core {
   }
 
   private bindFirstInteraction() {
-    const doc = typeof document !== 'undefined' ? document : null;
-    if (!doc) return;
+    if (typeof document === 'undefined') return;
+    // Prefer the immediate DOM parent of the media element so listeners are scoped
+    // to this player instance. Multiple players on a page each listen on their own
+    // container rather than sharing a single set of document-level listeners.
+    const target: EventTarget = this.media.parentElement ?? document;
 
     const mark = () => {
       if (this.userInteracted) return;
@@ -465,8 +469,8 @@ export class Core {
     const removeOpts: AddEventListenerOptions = { capture: true };
 
     const on = (type: string) => {
-      doc.addEventListener(type, mark, opts);
-      this.interactionUnsubs.push(() => doc.removeEventListener(type, mark, removeOpts));
+      target.addEventListener(type, mark, opts);
+      this.interactionUnsubs.push(() => target.removeEventListener(type, mark, removeOpts));
     };
 
     on('pointerdown');

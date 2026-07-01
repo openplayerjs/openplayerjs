@@ -158,7 +158,7 @@ describe('AdsPlugin (ultimate patch)', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    const anyP: any = p;
+    const anyP = p;
 
     // skipOffset
     expect(anyP.computeSkipAtSeconds('00:00:10', 40)).toBe(10);
@@ -179,7 +179,7 @@ describe('AdsPlugin (ultimate patch)', () => {
     const p = new AdsPlugin({ allowNativeControls: false });
     p.setup(ctx);
 
-    const anyP: any = p;
+    const anyP = p;
 
     const raw = {
       closedCaptionFiles: [
@@ -189,10 +189,10 @@ describe('AdsPlugin (ultimate patch)', () => {
     };
 
     const captions = anyP.ensureRawCaptions(raw);
-    expect(captions.length).toBe(2);
+    expect(captions!.length).toBe(2);
 
     const adVideo = document.createElement('video');
-    const tracks = anyP.attachAdCaptionTracks(adVideo, raw);
+    const tracks = anyP.attachAdCaptionTracks(adVideo, raw)!;
     expect(tracks.length).toBe(1);
     expect(tracks[0].src).toContain('en.vtt');
   });
@@ -206,9 +206,9 @@ describe('AdsPlugin (ultimate patch)', () => {
     p.setup(ctx);
 
     const seen: string[] = [];
-    (p as any).bus.on('ads:requested', () => seen.push('requested'));
-    (p as any).bus.on('ads:ad:start', () => seen.push('ad:start'));
-    (p as any).bus.on('ads:impression', () => seen.push('impression'));
+    p.bus!.on('ads:requested', () => seen.push('requested'));
+    p.bus!.on('ads:ad:start', () => seen.push('ad:start'));
+    p.bus!.on('ads:impression', () => seen.push('impression'));
 
     const playPromise = p.playAds('https://example.com/vast.xml');
     // Flush enough microtasks for: loadRawDocForNonLinear + vastClient.get() + pauseAndAcquireLease
@@ -233,7 +233,7 @@ describe('AdsPlugin (ultimate patch)', () => {
     expect(skipBtn.textContent).toBe('Skip Ad');
 
     const skipped = [];
-    (p as any).bus.on('ads:skip', (payload: any) => skipped.push(payload));
+    p.bus!.on('ads:skip', (payload) => skipped.push(payload));
 
     skipBtn.click();
 

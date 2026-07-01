@@ -4,7 +4,7 @@ import { EventBus } from '../src/core/events';
 import { Lease } from '../src/core/lease';
 import type { MediaEngineContext, MediaSource } from '../src/core/media';
 import { StateManager } from '../src/core/state';
-import { HtmlMediaSurface } from '../src/core/surface';
+import { HtmlMediaSurface, type MediaSurface } from '../src/core/surface';
 import { BaseMediaEngine } from '../src/engines/base';
 
 class TestEngine extends BaseMediaEngine {
@@ -58,9 +58,9 @@ function ctx(media: HTMLMediaElement) {
     core: {
       leases: new Lease(),
       state: new StateManager('idle'),
-    } as any,
+    } as unknown as MediaEngineContext['core'],
     surface,
-    setSurface(s: any) {
+    setSurface(s: MediaSurface) {
       return s;
     },
     resetSurface() {

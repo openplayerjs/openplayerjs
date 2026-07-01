@@ -131,6 +131,38 @@ player.on(Hls.Events.LEVEL_SWITCHED, (data) => {
 
 > Use `player.on(...)` when you want HLS events to integrate cleanly with other plugins without importing `hls.js` directly.
 
+Beyond forwarding the raw hls.js events, the engine drives the player only through **standard core events** — there are no HLS-specific player events to subscribe to. Readiness fires as `loadedmetadata`, duration/live state reach the player via the native `durationchange` event (read `core.duration` / `core.isLive`), and subtitle-track changes fire as `texttrack:listchange`.
+
+---
+
+## Reading timed metadata (ID3)
+
+The engine turns on hls.js's native metadata cues (`enableID3MetadataCues`), so **ID3 timed metadata is exposed through the standard HTML5 `TextTrack` API** — there is no custom player event for it. hls.js attaches a `kind: 'metadata'` text track to your `<video>` element and adds each ID3 frame as a cue at its presentation time. Read it with the native `cuechange` event, exactly as you would with Safari's built-in HLS:
+
+```ts
+// `video` is the same element you passed to the player.
+function bindMetadata(track: TextTrack) {
+  // 'hidden' activates cue timing without rendering anything visible.
+  track.mode = 'hidden';
+  track.addEventListener('cuechange', () => {
+    for (const cue of track.activeCues ?? []) {
+      // hls.js exposes ID3 frames as a DataCue: `cue.value` holds the parsed
+      // frame ({ key, data, info }); `cue.data` holds the raw ArrayBuffer.
+      const c = cue as TextTrackCue & { value?: { key?: string; data?: unknown }; data?: ArrayBuffer };
+      console.log('ID3 frame at', cue.startTime, c.value?.key, c.value?.data ?? c.data);
+    }
+  });
+}
+
+// Bind tracks that already exist, plus any that arrive as the manifest is parsed.
+for (const t of video.textTracks) if (t.kind === 'metadata') bindMetadata(t);
+video.textTracks.addEventListener('addtrack', (e) => {
+  if (e.track?.kind === 'metadata') bindMetadata(e.track);
+});
+```
+
+> This is the same native mechanism the SSAI ad strategy uses to read SCTE-35 cues (see `@openplayerjs/ads`). Because it is pure DOM, it has zero coupling to the engine and behaves identically whether HLS plays via hls.js (Chrome/Firefox) or the browser's native HLS (Safari). It replaces the old engine-specific `playback:metadataready` event, which was removed.
+
 ---
 
 ## Quality / level switching

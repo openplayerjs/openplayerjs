@@ -37,6 +37,10 @@
     "lint": {
       "outputs": []
     },
+    "type-check": {
+      "dependsOn": ["^build:types"],
+      "outputs": []
+    },
     "watch": {
       "dependsOn": [
         "^build:bundles"

@@ -24,8 +24,8 @@ describe('AdsPlugin non-linear XML fallback', () => {
   </Ad>
 </VAST>`;
 
-    const doc = (p as any).buildParsedForNonLinearFromXml(xml);
-    const items = (p as any).collectNonLinearFromXml(doc);
+    const doc = p.buildParsedForNonLinearFromXml(xml);
+    const items = p.collectNonLinearFromXml(doc);
     expect(items.length).toBeGreaterThan(0);
     expect(items[0].nonLinear?.staticResource?.value).toContain('overlay.png');
   });

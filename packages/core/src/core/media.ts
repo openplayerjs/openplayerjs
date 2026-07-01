@@ -1,3 +1,4 @@
+import type { PlayerConfig } from './configuration';
 import type { EventBus } from './events';
 import type { Core } from './index';
 import type { HtmlMediaSurface, MediaSurface } from './surface';
@@ -30,7 +31,7 @@ export type MediaEngineContext = {
   container: HTMLElement;
   events: EventBus;
   activeSource?: MediaSource;
-  config?: any;
+  config?: PlayerConfig;
   core: Core;
   surface: MediaSurface;
   setSurface(surface: MediaSurface): MediaSurface;

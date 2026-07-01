@@ -3,6 +3,14 @@
 import { Core, getOverlayManager } from '@openplayerjs/core';
 import { bindCenterOverlay } from '../src/events';
 
+// Vendor-prefixed fullscreen properties (non-standard, browser-specific)
+type VendorElement = HTMLElement & {
+  webkitEnterFullscreen?: () => void;
+  webkitRequestFullScreen?: () => void;
+  mozRequestFullScreen?: () => void;
+  msRequestFullscreen?: () => void;
+};
+
 function keydown(target: EventTarget, key: string, extra?: Partial<KeyboardEventInit>) {
   const e = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...extra });
   target.dispatchEvent(e);
@@ -122,13 +130,12 @@ describe('ui/events - bindCenterOverlay', () => {
 
     bindCenterOverlay(player, wrapper);
 
-    const target = document.createElement('div');
-    target.requestFullscreen = jest.fn();
-    const e = new KeyboardEvent('keydown', { key: 'f', bubbles: true, cancelable: true });
-    Object.defineProperty(e, 'target', { value: target });
-    wrapper.dispatchEvent(e);
+    // Fullscreen is requested on keyTarget (wrapper), not e.target.
+    const requestFs = jest.fn();
+    (wrapper as unknown as { requestFullscreen: () => void }).requestFullscreen = requestFs;
+    wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', bubbles: true, cancelable: true }));
 
-    expect(target.requestFullscreen).toHaveBeenCalledTimes(1);
+    expect(requestFs).toHaveBeenCalledTimes(1);
   });
 
   test('fullscreen key falls back to webkitEnterFullscreen when requestFullscreen is missing', () => {
@@ -141,27 +148,17 @@ describe('ui/events - bindCenterOverlay', () => {
     wrapper.className = 'op-player';
     document.body.appendChild(wrapper);
 
-    // Attach overlay media so getActiveMedia returns a different element than player.media
-    const overlayVideo = document.createElement('video') as any;
-    overlayVideo.webkitEnterFullscreen = jest.fn();
-    getOverlayManager(player).activate({
-      id: 'test-overlay-2',
-      priority: 10,
-      mode: 'normal',
-      duration: 10,
-      value: 0,
-      canSeek: true,
-      fullscreenVideoEl: overlayVideo,
-    });
-
     bindCenterOverlay(player, wrapper);
 
-    // Ensure event.target is the overlay video to exercise the fallback chain.
-    const e = new KeyboardEvent('keydown', { key: 'f', bubbles: true, cancelable: true });
-    Object.defineProperty(e, 'target', { value: overlayVideo });
-    wrapper.dispatchEvent(e);
+    // Remove standard requestFullscreen so the webkit fallback branch is taken.
+    // Fullscreen is requested on keyTarget (wrapper), not e.target.
+    Object.defineProperty(wrapper, 'requestFullscreen', { value: undefined, configurable: true });
+    const webkitFn = jest.fn();
+    (wrapper as VendorElement).webkitEnterFullscreen = webkitFn;
 
-    expect(overlayVideo.webkitEnterFullscreen).toHaveBeenCalledTimes(1);
+    wrapper.dispatchEvent(new KeyboardEvent('keydown', { key: 'f', bubbles: true, cancelable: true }));
+
+    expect(webkitFn).toHaveBeenCalledTimes(1);
   });
 
   test('End key does not seek when duration is Infinity (branch)', () => {

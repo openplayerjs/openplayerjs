@@ -2,6 +2,7 @@
 
 import type { OverlayState } from '@openplayerjs/core';
 import { Core, getOverlayManager } from '@openplayerjs/core';
+import type { PlayerUIConfig } from '../src/configuration';
 import createCaptionsControl from '../src/controls/captions';
 import createCurrentTimeControl from '../src/controls/currentTime';
 import createDurationControl from '../src/controls/duration';
@@ -178,7 +179,7 @@ describe('UI Controls', () => {
     const v = document.createElement('video');
     v.src = 'https://example.com/live.m3u8';
     document.body.appendChild(v);
-    const p = new Core(v, { plugins: [], showLiveCurrentTime: true } as any);
+    const p = new Core(v, { plugins: [], showLiveCurrentTime: true } as PlayerUIConfig);
 
     const el = nn(createCurrentTimeControl()).create(p) as HTMLElement;
 

@@ -1,4 +1,4 @@
-import type { PlayerEventPayloadMap } from '@openplayerjs/core';
+import type { PlayerConfig, PlayerEventPayloadMap, PlayerPlugin } from '@openplayerjs/core';
 import * as CoreExports from '@openplayerjs/core';
 import { setA11yLabel } from './a11y';
 import type { Control } from './control';
@@ -31,26 +31,39 @@ declare global {
 
 export type UMDPluginEntry = {
   name: string;
-  factory: (config?: any) => any;
+  factory: (config?: unknown) => unknown;
   /** Prototype-level extension hook (optional). */
-  install?: (PlayerCtor: any) => void;
+  install?: (PlayerCtor: unknown) => void;
   /** Instance-level extension hook (optional). */
-  extend?: (player: any, plugin: any, cfg?: any) => void;
-  defaults?: any;
+  extend?: (player: unknown, plugin: unknown, cfg?: unknown) => void;
+  defaults?: unknown;
   kind?: 'plugin' | 'extension' | string;
 };
 
 type ControlId = string;
 
+type CoreWithControls = CoreExports.Core & {
+  controls?: {
+    addElement(el: HTMLElement, placement: ControlPlacement): void;
+    addControl(control: Control): void;
+  };
+};
+
 type Unsubscribe = () => void;
+
+/** UMD config is the typed player config plus arbitrary per-plugin config keys. */
+type UMDConfig = PlayerConfig & Record<string, unknown>;
+
+/** A plugin instance created from a UMD registry entry. */
+type CreatedPlugin = { entry: UMDPluginEntry; plugin: unknown; cfg: unknown };
 
 type PendingListener = {
   event: keyof PlayerEventPayloadMap;
-  cb: (...args: any[]) => void;
+  cb: (payload?: unknown) => void;
   off?: Unsubscribe;
 };
 
-function extractControlIds(controlsCfg: any): ControlId[] {
+function extractControlIds(controlsCfg: unknown): ControlId[] {
   const normalized = normalizeControlsConfig(controlsCfg);
   const ids = new Set<string>();
   for (const names of Object.values(normalized)) {
@@ -60,7 +73,7 @@ function extractControlIds(controlsCfg: any): ControlId[] {
 }
 
 function getControlFactory(id: string) {
-  const factories: Record<string, () => any> = {
+  const factories: Record<string, () => Control | null> = {
     play: createPlayControl,
     volume: createVolumeControl,
     captions: createCaptionsControl,
@@ -74,7 +87,7 @@ function getControlFactory(id: string) {
   return factories[id];
 }
 
-function registerControlsFromConfig(controlsCfg: any) {
+function registerControlsFromConfig(controlsCfg: unknown) {
   const ids = extractControlIds(controlsCfg);
   for (const id of ids) {
     const factory = getControlFactory(id);
@@ -102,14 +115,14 @@ function resolveMedia(target: string | HTMLMediaElement): HTMLMediaElement {
   return el;
 }
 
-function shallowMergeDefaults(defaults: any, cfg: any) {
+function shallowMergeDefaults(defaults: unknown, cfg: unknown): unknown {
   if (!defaults) return cfg ?? {};
-  if (!cfg) return { ...defaults };
+  if (!cfg) return { ...(defaults as Record<string, unknown>) };
   if (typeof defaults !== 'object' || typeof cfg !== 'object') return cfg;
-  return { ...defaults, ...cfg };
+  return { ...(defaults as Record<string, unknown>), ...(cfg as Record<string, unknown>) };
 }
 
-function maybeInstallEntry(entry: UMDPluginEntry, PlayerCtor: any) {
+function maybeInstallEntry(entry: UMDPluginEntry, PlayerCtor: unknown) {
   if (!entry.install) return;
   const enabled = !!window.OpenPlayerConfig?.extendPlayerPrototype;
   if (!enabled) return;
@@ -125,11 +138,11 @@ export default class Player {
   private media!: HTMLMediaElement;
   private core!: CoreExports.Core;
   private pendingListeners: PendingListener[] = [];
-  private createdPlugins: { entry: UMDPluginEntry; plugin: any; cfg: any }[] = [];
+  private createdPlugins: CreatedPlugin[] = [];
 
   constructor(
     target: string | HTMLMediaElement,
-    private config: any = {}
+    private config: UMDConfig = {}
   ) {
     this.media = resolveMedia(target);
   }
@@ -139,7 +152,7 @@ export default class Player {
   }
 
   init() {
-    const rawControls = this.config.controls;
+    const rawControls = this.config.controls as { alwaysVisible?: boolean } | undefined;
     const normalizedControls = normalizeControlsConfig(rawControls);
     const alwaysVisible = rawControls?.alwaysVisible === true;
 
@@ -153,7 +166,7 @@ export default class Player {
     // Core receives plugin instances only (core remains generic)
     this.core = new CoreExports.Core(this.media, {
       ...this.config,
-      plugins: this.createdPlugins.map((p) => p.plugin),
+      plugins: this.createdPlugins.map((p) => p.plugin) as PlayerPlugin[],
     });
 
     const controls = buildControls(normalizedControls);
@@ -165,20 +178,20 @@ export default class Player {
     // Apply instance-level extensions (e.g. player.ads)
     for (const p of this.createdPlugins) {
       try {
-        p.entry.extend?.(this.core as any, p.plugin, p.cfg);
+        p.entry.extend?.(this.core, p.plugin, p.cfg);
       } catch {
         // ignore plugin extension errors to keep core usable
       }
     }
 
     for (const l of this.pendingListeners) {
-      l.off = this.core.on(l.event as any, l.cb);
+      l.off = this.core.on(l.event, l.cb);
     }
 
     return this.core;
   }
 
-  on(event: keyof PlayerEventPayloadMap, cb: (...args: any[]) => void): Unsubscribe {
+  on(event: keyof PlayerEventPayloadMap, cb: (payload?: unknown) => void): Unsubscribe {
     if (this.core && typeof this.core.on === 'function') {
       return this.core.on(event, cb);
     }
@@ -193,7 +206,7 @@ export default class Player {
     };
   }
 
-  emit(event: keyof PlayerEventPayloadMap, ...args: any[]) {
+  emit(event: keyof PlayerEventPayloadMap, ...args: unknown[]) {
     if (!this.core || typeof this.core.emit !== 'function') {
       throw new Error('OpenPlayer.emit() called before init()');
     }
@@ -232,12 +245,12 @@ export default class Player {
   }
 
   addElement(el: HTMLElement, placement: ControlPlacement = { v: 'bottom', h: 'right' }) {
-    (this.core as any).controls.addElement(el, placement);
+    (this.core as CoreWithControls).controls?.addElement(el, placement);
   }
 
   addControl(control: Control) {
     if (!this.core) throw new Error('OpenPlayer.addControl() called before init()');
-    (this.core as any).controls.addControl(control);
+    (this.core as CoreWithControls).controls?.addControl(control);
   }
 
   get currentTime(): number {
@@ -299,7 +312,7 @@ export default class Player {
         const plugin = entry.factory(mergedCfg);
         return { entry: { ...entry, name }, plugin, cfg: mergedCfg };
       })
-      .filter(Boolean) as { entry: UMDPluginEntry; plugin: any; cfg: any }[];
+      .filter(Boolean) as CreatedPlugin[];
   }
 }
 
@@ -313,9 +326,8 @@ export default class Player {
 // exports as static properties for compatibility.
 //
 // This is safe in ESM/CJS too: it only adds extra static properties.
-const OpenPlayerAny = Player as any;
 try {
-  Object.assign(OpenPlayerAny, CoreExports, { registerControl, setA11yLabel });
+  Object.assign(Player as unknown as Record<string, unknown>, CoreExports, { registerControl, setA11yLabel });
 } catch {
   // ignore if environment prevents assignment
 }

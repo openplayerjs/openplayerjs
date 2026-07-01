@@ -6,6 +6,12 @@ import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
 
+/** AdsPlugin with `pendingPercentBreaks` narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & { pendingPercentBreaks: NonNullable<AdsPlugin['pendingPercentBreaks']> };
+
+/** VMAP mock exposes a `__breaks` fixture array the parser mock reads. */
+const vmapMock = VMAP as unknown as { __breaks: unknown[] };
+
 function makeCtx() {
   const bus = new EventBus();
   const video = document.createElement('video');
@@ -76,7 +82,7 @@ describe('AdsPlugin scheduling', () => {
     vastGetMock.mockReset();
     vastParseMock.mockReset();
     // Reset VMAP mock breaks between tests.
-    (VMAP as any).__breaks = [];
+    vmapMock.__breaks = [];
     // @ts-expect-error - test shim
     global.fetch = undefined;
   });
@@ -115,7 +121,7 @@ describe('AdsPlugin scheduling', () => {
     Object.defineProperty(video, 'duration', { value: 200, configurable: true });
 
     // VMAP mock provides one percent-offset break.
-    (VMAP as any).__breaks = [
+    vmapMock.__breaks = [
       {
         breakId: 'mid-50',
         timeOffset: '50%',
@@ -130,13 +136,13 @@ describe('AdsPlugin scheduling', () => {
     await flushPromises(5);
 
     // Pending break should be queued.
-    expect((plugin as any).pendingPercentBreaks?.length).toBe(1);
+    expect((plugin as unknown as AdsPluginInternals).pendingPercentBreaks?.length).toBe(1);
 
     // Resolve due break at ~100s (50% of 200).
-    const due = (plugin as any).getDueMidrollBreak(101);
+    const due = (plugin as unknown as AdsPluginInternals).getDueMidrollBreak(101);
     expect(due).toBeTruthy();
-    expect(due.at).toBeCloseTo(100, 3);
-    expect(due.source?.src).toBe('https://example.com/mid.xml');
+    expect(due!.at).toBeCloseTo(100, 3);
+    expect(due!.source?.src).toBe('https://example.com/mid.xml');
   });
 
   test('playedBreaks are reset on source:set so preroll can play again for new content', async () => {

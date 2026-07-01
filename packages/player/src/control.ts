@@ -18,6 +18,12 @@ export type Control = {
   destroy?(): void;
 };
 
+/** Payload for the `ui:addElement` event. */
+export type AddElementPayload = { el: HTMLElement; placement?: ControlPlacement };
+
+/** Payload for the `ui:addControl` event; the UI listener writes back the created `el`. */
+export type AddControlPayload = { control: Control; el?: HTMLElement };
+
 const registry = new Map<string, () => Control | null>();
 
 export const DEFAULT_CONTROLS: Record<string, string[]> = {
@@ -36,12 +42,14 @@ export const DEFAULT_CONTROLS: Record<string, string[]> = {
  * - **Layers** (`{ layers: { left, middle, right } }`) → mapped to
  *   `bottom-left`, `top`, and `bottom-right` respectively.
  */
-export function normalizeControlsConfig(cfg: any): Record<string, string[]> {
+export function normalizeControlsConfig(cfg: unknown): Record<string, string[]> {
   if (!cfg || typeof cfg !== 'object') return { ...DEFAULT_CONTROLS };
 
-  if (cfg.layers && typeof cfg.layers === 'object') {
+  const obj = cfg as Record<string, unknown>;
+
+  if (obj.layers && typeof obj.layers === 'object') {
     const result: Record<string, string[]> = {};
-    const { left, middle, right } = cfg.layers;
+    const { left, middle, right } = obj.layers as Record<string, unknown>;
     if (Array.isArray(left)) result['bottom-left'] = left;
     if (Array.isArray(middle)) result['top'] = middle;
     if (Array.isArray(right)) result['bottom-right'] = right;
@@ -49,7 +57,7 @@ export function normalizeControlsConfig(cfg: any): Record<string, string[]> {
   }
 
   const result: Record<string, string[]> = {};
-  for (const [key, val] of Object.entries(cfg)) {
+  for (const [key, val] of Object.entries(obj)) {
     if (Array.isArray(val)) result[key] = val as string[];
   }
   return Object.keys(result).length > 0 ? result : { ...DEFAULT_CONTROLS };
@@ -125,7 +133,7 @@ export function getControl(name: string): Control | null {
   return factory?.() || null;
 }
 
-export function buildControls(config?: any) {
+export function buildControls(config?: unknown) {
   const controls: Control[] = [];
   const normalized = normalizeControlsConfig(config);
 

@@ -12,7 +12,9 @@ export type PluginContext = {
   media?: HTMLMediaElement;
   dispose: DisposableStore;
   add(disposer?: void | null | Disposer): Disposer;
-  on<E extends PlayerEvent>(event: E, cb: (payload?: any) => void): Disposer;
+  // `never` payload param accepts a callback with any concrete payload type
+  // (parameter contravariance), matching the dynamic nature of plugin event wiring.
+  on(event: PlayerEvent | string, cb: (payload: never) => void): Disposer;
   listen(
     target: EventTarget,
     type: string,
@@ -21,7 +23,7 @@ export type PluginContext = {
   ): Disposer;
 };
 
-export type PluginClass<T extends PlayerPlugin> = new (config?: any) => T;
+export type PluginClass<T extends PlayerPlugin> = new (config?: unknown) => T;
 
 export type PlayerPlugin = {
   name: string;
@@ -29,7 +31,7 @@ export type PlayerPlugin = {
   capabilities?: string[];
 
   setup?(ctx: PluginContext): void;
-  onEvent?(event: PlayerEvent, payload?: any): void;
+  onEvent?(event: PlayerEvent, payload?: unknown): void;
   destroy?(): void;
 };
 
@@ -42,15 +44,5 @@ export class PluginRegistry {
 
   all() {
     return this.plugins;
-  }
-}
-
-export class PluginBus<E extends string> {
-  constructor(private bus: EventBus) {}
-  on(event: E, cb: (...args: any[]) => void) {
-    return this.bus.on(event as any, cb);
-  }
-  emit(event: E, ...data: any[]) {
-    this.bus.emit(event as any, ...data);
   }
 }

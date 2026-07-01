@@ -1,7 +1,7 @@
 import type { Core } from '@openplayerjs/core';
 import { EVENT_OPTIONS, getOverlayManager, isAudio, isMobile } from '@openplayerjs/core';
 import { resolveUIConfig } from './configuration';
-import { createControlGrid, type Control } from './control';
+import { createControlGrid, type AddControlPayload, type AddElementPayload, type Control } from './control';
 import { bindCenterOverlay } from './events';
 import { createCenterOverlayDom } from './overlay';
 
@@ -203,14 +203,14 @@ export function createUI(
       }
     });
 
-    const offAddElement = core.events.on('ui:addElement', (payload?: any) => {
+    const offAddElement = core.events.on('ui:addElement', (payload?: AddElementPayload) => {
       if (!payload?.el) return;
       const placement = payload.placement || { v: 'bottom', h: 'right' };
       ctx.grid?.place(placement, payload.el);
     });
 
-    const offAddControl = core.events.on('ui:addControl', (payload?: any) => {
-      const control = payload?.control as Control | undefined;
+    const offAddControl = core.events.on('ui:addControl', (payload?: AddControlPayload) => {
+      const control = payload?.control;
       if (!control) return;
       const el = control.create(core);
       el.dataset.controlId = control.id;
@@ -290,9 +290,12 @@ export function createUI(
     scheduleHide(KEYBOARD_SHOW_MS);
   };
   const onControlsFocusOut = () => {
-    window.setTimeout(() => {
+    // queueMicrotask defers the focus check until after the focusin on the new
+    // element fires (focus moves synchronously within the same task), avoiding
+    // the stale-activeElement issue without leaving an uncancellable timer.
+    queueMicrotask(() => {
       if (!controlsHaveFocus()) scheduleHide(lastInteraction === 'keyboard' ? KEYBOARD_SHOW_MS : POINTER_SHOW_MS);
-    }, 0);
+    });
   };
   trackListener(controlsRoot, 'focusin', onControlsFocusIn);
   trackListener(controlsRoot, 'focusout', onControlsFocusOut);
@@ -310,9 +313,9 @@ export function createUI(
     }
   };
   const onWrapperFocusOut = () => {
-    window.setTimeout(() => {
+    queueMicrotask(() => {
       if (!wrapper.contains(document.activeElement) && !controlsHaveFocus()) scheduleHide();
-    }, 0);
+    });
   };
   const onWrapperKeyDown = () => {
     lastInteraction = 'keyboard';
@@ -428,14 +431,14 @@ export function createUI(
     }
   });
 
-  const offAddElement = core.events.on('ui:addElement', (payload?: any) => {
+  const offAddElement = core.events.on('ui:addElement', (payload?: AddElementPayload) => {
     if (!payload?.el) return;
     const placement = payload.placement || { v: 'bottom', h: 'right' };
     ctx.grid?.place(placement, payload.el);
   });
 
-  const offAddControl = core.events.on('ui:addControl', (payload?: any) => {
-    const control = payload?.control as Control | undefined;
+  const offAddControl = core.events.on('ui:addControl', (payload?: AddControlPayload) => {
+    const control = payload?.control;
     if (!control) return;
     const el = control.create(core);
     el.dataset.controlId = control.id;

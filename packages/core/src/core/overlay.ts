@@ -17,15 +17,23 @@ export type OverlayState = {
 
 export type OverlayEvent = 'overlay:changed';
 
+/** Minimal structural view of a player exposing an event bus, used to bridge overlay state. */
+type PlayerLike = {
+  events?: {
+    on?: (event: string, cb: (payload?: unknown) => void) => () => void;
+    emit?: (event: string, payload?: unknown) => void;
+  };
+};
+
 class OverlayBus<E extends string> {
   constructor(private bus: EventBus) {}
 
-  on(event: E, cb: (...args: any[]) => void) {
-    return this.bus.on(event as any, cb);
+  on(event: E, cb: (payload: never) => void) {
+    return this.bus.on(event, cb);
   }
 
-  emit(event: E, ...data: any[]) {
-    this.bus.emit(event as any, ...data);
+  emit(event: E, payload?: unknown) {
+    this.bus.emit(event, payload);
   }
 
   clear() {
@@ -33,7 +41,7 @@ class OverlayBus<E extends string> {
   }
 }
 
-const OVERLAY_MANAGER_KEY = '__op::overlay::manager';
+const _overlayManagers = new WeakMap<object, OverlayManager>();
 
 export class OverlayManager {
   readonly bus: OverlayBus<OverlayEvent>;
@@ -85,15 +93,18 @@ export class OverlayManager {
   }
 }
 
-export function getOverlayManager(player: any): OverlayManager {
-  if (player[OVERLAY_MANAGER_KEY]) return player[OVERLAY_MANAGER_KEY] as OverlayManager;
+export function getOverlayManager(player: object): OverlayManager {
+  const existing = _overlayManagers.get(player);
+  if (existing) return existing;
+
   const mgr = new OverlayManager();
-  player[OVERLAY_MANAGER_KEY] = mgr;
+  _overlayManagers.set(player, mgr);
 
   try {
-    if (player?.events?.on && player?.events?.emit) {
-      const off = mgr.bus.on('overlay:changed', (active: any) => player.events.emit('overlay:changed', active));
-      player.events.on('player:destroy', () => {
+    const p = player as PlayerLike;
+    if (typeof p?.events?.on === 'function' && typeof p?.events?.emit === 'function') {
+      const off = mgr.bus.on('overlay:changed', (active) => p.events!.emit!('overlay:changed', active));
+      p.events.on('player:destroy', () => {
         try {
           off();
         } catch {
@@ -104,11 +115,7 @@ export function getOverlayManager(player: any): OverlayManager {
         } catch {
           // ignore
         }
-        try {
-          delete player[OVERLAY_MANAGER_KEY];
-        } catch {
-          // ignore
-        }
+        _overlayManagers.delete(player);
       });
     }
   } catch {

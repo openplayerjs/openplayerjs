@@ -6,6 +6,9 @@ import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
 
+/** AdsPlugin with `resolvedBreaks` narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & { resolvedBreaks: NonNullable<AdsPlugin['resolvedBreaks']> };
+
 function makeLeases(): {
   leases: Lease;
   acquire: jest.MockedFunction<(capability: string, owner: string) => boolean>;
@@ -49,7 +52,7 @@ function makeCtx(media?: HTMLVideoElement) {
 
     dispose,
     add: (d: void | null | (() => void)) => dispose.add(d ?? undefined),
-    on: (event: string, cb: (payload?: unknown) => void) => dispose.add(bus.on(event, cb)),
+    on: (event, cb) => dispose.add(bus.on(event, cb)),
     listen: (
       target: EventTarget,
       type: string,
@@ -307,7 +310,7 @@ describe('AdsPlugin branch coverage', () => {
     // Don't rely on a single event name; spy on all emits instead.
     const emitSpy = jest.spyOn(bus, 'emit');
 
-    await (p as unknown as { playBreakFromVast: (...args: any[]) => Promise<void> }).playBreakFromVast(
+    await (p as unknown as AdsPluginInternals).playBreakFromVast(
       { kind: 'xml', value: '<VAST version="3.0"></VAST>' },
       { kind: 'manual', id: 'nl' }
     );
@@ -377,9 +380,9 @@ describe('AdsPlugin branch coverage', () => {
     p.setup(ctx);
 
     await (p as unknown as { loadVmapAndMerge: (x: unknown[]) => Promise<void> }).loadVmapAndMerge([]);
-    const anyP: any = p;
+    const anyP = p as unknown as AdsPluginInternals;
     // should have turned end => postroll break
-    expect(anyP.resolvedBreaks.some((b: any) => b.at === 'postroll')).toBe(true);
+    expect(anyP.resolvedBreaks.some((b) => b.at === 'postroll')).toBe(true);
   });
 
   test('error branches: fetch failing in playAds emits ads:error and returns gracefully', async () => {

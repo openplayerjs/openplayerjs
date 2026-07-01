@@ -1,5 +1,7 @@
+import type { PlayerPlugin } from './plugin';
+
 export type PlayerConfig = {
-  plugins?: any[];
+  plugins?: PlayerPlugin[];
   startTime?: number;
   startVolume?: number;
   startPlaybackRate?: number;

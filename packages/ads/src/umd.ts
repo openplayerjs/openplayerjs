@@ -1,24 +1,32 @@
 import { AdsPlugin, extendAds, installAds } from './ads';
 
-(function (global: any) {
+type UMDGlobal = {
+  OpenPlayerPlugins?: Record<string, unknown>;
+  OpenPlayerJS?: { prototype: Record<string, unknown> };
+};
+
+type PlayerInstance = { getCore?: () => { getPlugin?: (name: string) => AdsPlugin | null } | null };
+
+(function (global: UMDGlobal) {
   global.OpenPlayerPlugins = global.OpenPlayerPlugins || {};
   global.OpenPlayerPlugins.ads = {
     name: 'ads',
     kind: 'plugin',
-    factory: (config?: any) => new AdsPlugin({ ...(config || {}), allowNativeControls: false }),
-    install: (PlayerCtor: any) => installAds(PlayerCtor),
-    extend: (player: any, plugin: any) => extendAds(player, plugin),
+    factory: (config?: ConstructorParameters<typeof AdsPlugin>[0]) =>
+      new AdsPlugin({ ...(config || {}), allowNativeControls: false }),
+    install: (PlayerCtor: Parameters<typeof installAds>[0]) => installAds(PlayerCtor),
+    extend: (player: Parameters<typeof extendAds>[0], plugin: AdsPlugin) => extendAds(player, plugin),
   };
-})(window);
+})(window as unknown as UMDGlobal);
 
 // ---- UMD helper: OpenPlayerJS.playAds(...) ---------------------------------
 // The core Ads plugin installs `player.playAds(input)` via installAds(Player).
 // So in UMD we only need a thin wrapper that delegates to the underlying Player.
-(function (global: any) {
-  function extendOpenPlayerJS(OpenPlayerJS: any) {
+(function (global: UMDGlobal) {
+  function extendOpenPlayerJS(OpenPlayerJS: UMDGlobal['OpenPlayerJS']) {
     if (!OpenPlayerJS || OpenPlayerJS.prototype.playAds) return;
 
-    OpenPlayerJS.prototype.playAds = function (input: string) {
+    OpenPlayerJS.prototype.playAds = function (this: PlayerInstance, input: string) {
       const core = typeof this.getCore === 'function' ? this.getCore() : null;
       if (!core) throw new Error('Call player.init() before player.playAds()');
       const plugin = typeof core.getPlugin === 'function' ? core.getPlugin('ads') : null;
@@ -31,4 +39,4 @@ import { AdsPlugin, extendAds, installAds } from './ads';
   }
 
   extendOpenPlayerJS(global.OpenPlayerJS);
-})(window);
+})(window as unknown as UMDGlobal);

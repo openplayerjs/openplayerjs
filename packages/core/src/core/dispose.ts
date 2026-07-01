@@ -48,4 +48,8 @@ export class DisposableStore {
 
     this.disposers = [];
   }
+
+  [Symbol.dispose](): void {
+    this.dispose();
+  }
 }

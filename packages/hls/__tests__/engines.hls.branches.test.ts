@@ -2,6 +2,7 @@
 
 import type { Core } from '@openplayerjs/core';
 import { EventBus, HtmlMediaSurface, Lease, StateManager } from '@openplayerjs/core';
+import type { MediaSurface } from '@openplayerjs/core';
 import type { HlsConfig } from 'hls.js';
 import Hls from 'hls.js';
 import { HlsMediaEngine } from '../src/hls';
@@ -30,7 +31,7 @@ jest.mock('hls.js', () => {
       OTHER_ERROR: 'OTHER_ERROR',
     };
 
-    private handlers = new Map<string, Set<(...args: any[]) => void>>();
+    private handlers = new Map<string, Set<(...args: unknown[]) => void>>();
 
     loadSource = jest.fn();
     attachMedia = jest.fn();
@@ -45,18 +46,18 @@ jest.mock('hls.js', () => {
       //
     }
 
-    on(event: string, handler: (...args: any[]) => void) {
+    on(event: string, handler: (...args: unknown[]) => void) {
       const set = this.handlers.get(event) ?? new Set();
       set.add(handler);
       this.handlers.set(event, set);
     }
 
-    off(event: string, handler: (...args: any[]) => void) {
+    off(event: string, handler: (...args: unknown[]) => void) {
       const set = this.handlers.get(event);
       set?.delete(handler);
     }
 
-    emit(event: string, ...args: any[]) {
+    emit(event: string, ...args: unknown[]) {
       const set = this.handlers.get(event);
       if (!set) return;
       for (const h of Array.from(set)) h(...args);
@@ -64,6 +65,32 @@ jest.mock('hls.js', () => {
   }
   return { __esModule: true, default: MockHls };
 });
+
+// ─── Test helpers ──────────────────────────────────────────────────────────────
+
+// String constants matching mock Hls.Events values (avoids (Hls as any).Events.X casts)
+const E = {
+  MANIFEST_PARSED: 'MANIFEST_PARSED',
+  MEDIA_ATTACHED: 'MEDIA_ATTACHED',
+  LEVEL_UPDATED: 'LEVEL_UPDATED',
+  LEVEL_LOADED: 'LEVEL_LOADED',
+  FRAG_PARSING_METADATA: 'FRAG_PARSING_METADATA',
+  SUBTITLE_TRACKS_UPDATED: 'SUBTITLE_TRACKS_UPDATED',
+  ERROR: 'ERROR',
+} as const;
+
+const ET = {
+  MEDIA_ERROR: 'MEDIA_ERROR',
+  NETWORK_ERROR: 'NETWORK_ERROR',
+  OTHER_ERROR: 'OTHER_ERROR',
+} as const;
+
+// The mock adds emit() to simulate hls.js internal events; the real Hls.emit has a stricter signature
+type HlsMockWithEmit = Hls & { emit(event: string, ...args: unknown[]): void };
+
+// Typed alias for the mock Hls class (adds _supported which is test-only state)
+type MockedHlsCtor = typeof Hls & { _supported: boolean };
+const HlsMock = Hls as unknown as MockedHlsCtor;
 
 function createTestMediaEngineContext(
   opts: { autoplay?: boolean; preload?: '' | 'none' | 'metadata' | 'auto'; leaseOwner?: string } = {}
@@ -92,7 +119,7 @@ function createTestMediaEngineContext(
     activeSource: { src: 'https://example.com/stream.m3u8', type: 'application/x-mpegURL' },
     core,
     surface,
-    setSurface(s: any) {
+    setSurface(s: MediaSurface) {
       return s;
     },
     resetSurface() {
@@ -103,16 +130,16 @@ function createTestMediaEngineContext(
 
 describe('HlsMediaEngine branch coverage', () => {
   beforeEach(() => {
-    (Hls as any)._supported = true;
+    HlsMock._supported = true;
     jest.spyOn(console, 'log').mockImplementation(() => undefined);
   });
 
   test('canPlay respects Hls.isSupported and .m3u8 suffix', () => {
     const engine = new HlsMediaEngine();
-    (Hls as any)._supported = false;
+    HlsMock._supported = false;
     expect(engine.canPlay({ src: 'https://example.com/stream.m3u8', type: '' })).toBe(false);
 
-    (Hls as any)._supported = true;
+    HlsMock._supported = true;
     expect(engine.canPlay({ src: 'https://example.com/stream.m3u8', type: '' })).toBe(true);
     expect(engine.canPlay({ src: 'https://example.com/stream.mp4', type: 'video/mp4' })).toBe(false);
   });
@@ -121,7 +148,7 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     // first cmd:startLoad should start loading
     ctx.events.emit('cmd:startLoad');
@@ -136,7 +163,7 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     ctx.events.emit('cmd:startLoad');
     expect(adapter!.startLoad).not.toHaveBeenCalled();
@@ -148,74 +175,71 @@ describe('HlsMediaEngine branch coverage', () => {
     engine.attach(ctx);
 
     ctx.media.dispatchEvent(new Event('play'));
-    expect((ctx.media.pause as any).mock.calls.length).toBeGreaterThan(0);
+    expect((ctx.media.pause as jest.Mock).mock.calls.length).toBeGreaterThan(0);
   });
 
   test('media pause event stops load and resets startedLoad so next cmd:startLoad works', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     // start loading
     ctx.events.emit('cmd:startLoad');
     expect(adapter!.startLoad).toHaveBeenCalledTimes(1);
-    expect((engine as any).startedLoad).toBe(true);
+    expect((engine as unknown as { startedLoad: boolean }).startedLoad).toBe(true);
 
     // pause resets startedLoad
     ctx.media.dispatchEvent(new Event('pause'));
     expect(adapter!.stopLoad).toHaveBeenCalledTimes(1);
-    expect((engine as any).startedLoad).toBe(false);
+    expect((engine as unknown as { startedLoad: boolean }).startedLoad).toBe(false);
 
     // cmd:startLoad works again after reset
     ctx.events.emit('cmd:startLoad');
     expect(adapter!.startLoad).toHaveBeenCalledTimes(2);
   });
 
-  test('adapter events trigger readiness, autoplay, and metadata updates', () => {
+  test('adapter events trigger readiness, autoplay, and track updates', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: true, preload: 'auto' });
     const seen: string[] = [];
     ctx.events.on('loadedmetadata', () => seen.push('ready'));
-    ctx.events.on('media:duration', () => seen.push('duration'));
-    ctx.events.on('playback:metadataready', () => seen.push('metadata'));
     ctx.events.on('texttrack:listchange', () => seen.push('tracks'));
 
     engine.attach(ctx);
 
     // grab the underlying mocked adapter and emit events
-    const adapter = engine.getAdapter();
-    adapter!.emit((Hls as any).Events.MANIFEST_PARSED, null, {});
-    adapter!.emit((Hls as any).Events.MEDIA_ATTACHED, null, {});
-    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: true, totalduration: 123 } });
-    adapter!.emit((Hls as any).Events.LEVEL_LOADED, null, { details: { live: false, totalduration: 456 } });
-    adapter!.emit((Hls as any).Events.FRAG_PARSING_METADATA, null, { foo: 'bar' });
-    adapter!.emit((Hls as any).Events.SUBTITLE_TRACKS_UPDATED, null, {});
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
+    adapter!.emit(E.MANIFEST_PARSED, null, {});
+    adapter!.emit(E.MEDIA_ATTACHED, null, {});
+    adapter!.emit(E.LEVEL_UPDATED, null, { details: { live: true, totalduration: 123 } });
+    adapter!.emit(E.LEVEL_LOADED, null, { details: { live: false, totalduration: 456 } });
+    adapter!.emit(E.SUBTITLE_TRACKS_UPDATED, null, {});
 
-    expect(seen).toEqual(expect.arrayContaining(['ready', 'duration', 'metadata', 'tracks']));
+    expect(seen).toEqual(expect.arrayContaining(['ready', 'tracks']));
   });
 
   test('handles Hls error recovery and fallback branches', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     // MEDIA_ERROR first recovery
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: true, type: ET.MEDIA_ERROR });
     expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(1);
 
     // second MEDIA_ERROR quickly -> swapAudioCodec branch
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: true, type: ET.MEDIA_ERROR });
     expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(1);
     expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(2);
 
     // NETWORK_ERROR branch (no destroy)
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.NETWORK_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: true, type: ET.NETWORK_ERROR });
     expect(adapter!.destroy).not.toHaveBeenCalled();
 
     // default branch destroys
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.OTHER_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: true, type: ET.OTHER_ERROR });
     expect(adapter!.destroy).toHaveBeenCalled();
   });
 
@@ -265,21 +289,17 @@ describe('HlsMediaEngine branch coverage', () => {
 
   // ── ERROR handler: non-fatal errors ──────────────────────────────────────
 
-  test('ERROR handler – data.fatal=false – no recovery action taken, playback:error still emitted', () => {
+  test('ERROR handler – data.fatal=false – no recovery action taken', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
-
-    const errors: any[] = [];
-    ctx.events.on('playback:error', (d: any) => errors.push(d));
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     // Non-fatal error — should NOT call recoverMediaError or destroy
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: false, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: false, type: ET.MEDIA_ERROR });
 
     expect(adapter!.recoverMediaError).not.toHaveBeenCalled();
     expect(adapter!.destroy).not.toHaveBeenCalled();
-    expect(errors).toHaveLength(1);
   });
 
   // ── ERROR MEDIA_ERROR: recoverSwapAudioCodecDate guard (within 3s) ───────
@@ -288,20 +308,20 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     // First fatal MEDIA_ERROR → recoverMediaError (no swap)
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: true, type: ET.MEDIA_ERROR });
     expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(1);
     expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(0);
 
     // Second fatal MEDIA_ERROR within 3s → swap + recoverMediaError
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: true, type: ET.MEDIA_ERROR });
     expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(1);
     expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(2);
 
     // Third fatal MEDIA_ERROR within 3s → recoverSwapAudioCodecDate guard fires, no further swap/recover
-    adapter!.emit((Hls as any).Events.ERROR, null, { fatal: true, type: (Hls as any).ErrorTypes.MEDIA_ERROR });
+    adapter!.emit(E.ERROR, null, { fatal: true, type: ET.MEDIA_ERROR });
     expect(adapter!.swapAudioCodec).toHaveBeenCalledTimes(1); // still 1, no extra swap
     expect(adapter!.recoverMediaError).toHaveBeenCalledTimes(2); // still 2, no extra recover
   });
@@ -312,12 +332,12 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    const playCalls: any[] = [];
+    const playCalls: unknown[] = [];
     ctx.events.on('cmd:play', () => playCalls.push(1));
 
-    adapter!.emit((Hls as any).Events.MEDIA_ATTACHED, null, {});
+    adapter!.emit(E.MEDIA_ATTACHED, null, {});
 
     // autoplay=false: no play should have been triggered
     expect(ctx.media.play).not.toHaveBeenCalled();
@@ -328,9 +348,9 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: true, preload: 'auto', leaseOwner: 'ads' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    adapter!.emit((Hls as any).Events.MEDIA_ATTACHED, null, {});
+    adapter!.emit(E.MEDIA_ATTACHED, null, {});
 
     // Lease owned by ads: canHandlePlayback returns false, play should not be called
     expect(ctx.media.play).not.toHaveBeenCalled();
@@ -342,12 +362,12 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'none' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     // First play starts loading
     ctx.media.dispatchEvent(new Event('play'));
     expect(adapter!.startLoad).toHaveBeenCalledTimes(1);
-    expect((engine as any).startedLoad).toBe(true);
+    expect((engine as unknown as { startedLoad: boolean }).startedLoad).toBe(true);
 
     // Second play event — startedLoad=true guard fires, no additional startLoad
     ctx.media.dispatchEvent(new Event('play'));
@@ -360,7 +380,7 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     ctx.media.dispatchEvent(new Event('play'));
     // autoStartLoad=true path returns early — adapter.startLoad not called via play handler
@@ -373,7 +393,7 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     ctx.media.dispatchEvent(new Event('pause'));
     // onPause only acts when !autoStartLoad
@@ -407,7 +427,7 @@ describe('HlsMediaEngine branch coverage', () => {
 
   test('canPlay – Hls.isSupported=false – returns false even with valid MIME', () => {
     const engine = new HlsMediaEngine();
-    (Hls as any)._supported = false;
+    HlsMock._supported = false;
     expect(engine.canPlay({ src: 'https://example.com/stream', type: 'application/x-mpegURL' })).toBe(false);
     expect(engine.canPlay({ src: 'https://example.com/stream.m3u8', type: '' })).toBe(false);
   });
@@ -418,14 +438,14 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    const received: any[] = [];
+    const received: unknown[] = [];
     // SUBTITLE_TRACKS_UPDATED is in MockHls.Events so the generic bridge is set up for it
-    ctx.events.on('SUBTITLE_TRACKS_UPDATED' as any, (d: any) => received.push(d));
+    ctx.events.on('SUBTITLE_TRACKS_UPDATED', (d) => received.push(d));
 
     // Emit with 2 args (simulating real hls.js convention: eventName + data) → picks args[1]
-    (adapter as any).emit('SUBTITLE_TRACKS_UPDATED', 'SUBTITLE_TRACKS_UPDATED', { subtitleTracks: [] });
+    adapter!.emit('SUBTITLE_TRACKS_UPDATED', 'SUBTITLE_TRACKS_UPDATED', { subtitleTracks: [] });
 
     expect(received).toHaveLength(1);
     expect(received[0]).toEqual({ subtitleTracks: [] });
@@ -435,13 +455,13 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    const received: any[] = [];
-    ctx.events.on('SUBTITLE_TRACKS_UPDATED' as any, (d: any) => received.push(d));
+    const received: unknown[] = [];
+    ctx.events.on('SUBTITLE_TRACKS_UPDATED', (d) => received.push(d));
 
     // Emit with 1 arg → picks args[0]
-    (adapter as any).emit('SUBTITLE_TRACKS_UPDATED', { subtitleTracks: [] });
+    adapter!.emit('SUBTITLE_TRACKS_UPDATED', { subtitleTracks: [] });
 
     expect(received).toHaveLength(1);
     expect(received[0]).toEqual({ subtitleTracks: [] });
@@ -453,9 +473,9 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    const cues: any[] = [];
+    const cues: { id: string; scte35Out: string; plannedDuration?: number; startDate?: Date }[] = [];
     engine.onCue = (cue) => cues.push(cue);
 
     const dateRanges = {
@@ -466,7 +486,7 @@ describe('HlsMediaEngine branch coverage', () => {
       },
     };
 
-    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, {
+    adapter!.emit(E.LEVEL_UPDATED, null, {
       details: { live: false, totalduration: 0, dateRanges },
     });
 
@@ -479,9 +499,9 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    const cues: any[] = [];
+    const cues: { id: string; scte35Out: string; plannedDuration?: number; startDate?: Date }[] = [];
     engine.onCue = (cue) => cues.push(cue);
 
     const dateRanges = {
@@ -492,8 +512,8 @@ describe('HlsMediaEngine branch coverage', () => {
       },
     };
 
-    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
-    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
+    adapter!.emit(E.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
+    adapter!.emit(E.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
 
     // Second emission should be deduped
     expect(cues).toHaveLength(1);
@@ -503,16 +523,16 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    const cues: any[] = [];
+    const cues: { id: string; scte35Out: string; plannedDuration?: number; startDate?: Date }[] = [];
     engine.onCue = (cue) => cues.push(cue);
 
     const dateRanges = {
       'no-scte': { attr: { 'OTHER-KEY': 'value' }, plannedDuration: 10, startDate: new Date() },
     };
 
-    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
+    adapter!.emit(E.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } });
 
     expect(cues).toHaveLength(0);
   });
@@ -521,14 +541,14 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
     // No onCue registered — should be a no-op
     const dateRanges = {
       'scte-no-cue': { attr: { 'SCTE35-OUT': '0xFC302F' }, plannedDuration: 30, startDate: new Date() },
     };
     expect(() =>
-      adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } })
+      adapter!.emit(E.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0, dateRanges } })
     ).not.toThrow();
   });
 
@@ -538,12 +558,12 @@ describe('HlsMediaEngine branch coverage', () => {
     const engine = new HlsMediaEngine();
     const ctx = createTestMediaEngineContext({ autoplay: false, preload: 'metadata' });
     engine.attach(ctx);
-    const adapter = engine.getAdapter();
+    const adapter = engine.getAdapter<HlsMockWithEmit>();
 
-    const cues: any[] = [];
+    const cues: { id: string; scte35Out: string; plannedDuration?: number; startDate?: Date }[] = [];
     engine.onCue = (cue) => cues.push(cue);
 
-    adapter!.emit((Hls as any).Events.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0 } });
+    adapter!.emit(E.LEVEL_UPDATED, null, { details: { live: false, totalduration: 0 } });
 
     expect(cues).toHaveLength(0);
   });

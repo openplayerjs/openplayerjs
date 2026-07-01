@@ -25,6 +25,37 @@ import { AdsPlugin } from '../src/ads';
 import { SsaiAdStrategy } from '../src/strategies/ssai';
 import type { AdLifecycleEvent } from '../src/types';
 
+/** Non-standard SCTE-35 fields hls.js attaches to metadata cues (DataCue / VTTCue / legacy). */
+type RawCue = TextTrackCue & {
+  data?: ArrayBuffer;
+  scte35Out?: string;
+  scte35In?: string;
+  attr?: Record<string, string>;
+  value?: unknown;
+};
+
+/** Internal shape of `SsaiAdStrategy` reached for white-box assertions. */
+type SsaiInternals = {
+  activeBreaks: Map<
+    string,
+    { id: string; startTimeSec: number; durationSec: number | null; firedQuartiles: Set<number> }
+  >;
+  boundTracks: { has(track: unknown): boolean };
+  endBreak(id: string): void;
+};
+
+/** Minimal mock of a metadata TextTrack used by the SSAI tests. */
+type FakeTrack = {
+  kind: TextTrackKind;
+  label: string;
+  language: string;
+  mode: TextTrackMode;
+  activeCues: TextTrackCueList | null;
+  addEventListener(event: string, h: EventListener): void;
+  removeEventListener(event: string, h: EventListener): void;
+  dispatchEvent(e: Event): boolean;
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeCtx(video?: HTMLVideoElement) {
@@ -77,7 +108,7 @@ function makeMetadataTrack(video: HTMLVideoElement): TextTrack {
 function makeDataCue(id: string, data: ArrayBuffer, startTime = 0, endTime = 0): TextTrackCue {
   const cue = new VTTCue(startTime, endTime, '');
   Object.defineProperty(cue, 'id', { value: id, configurable: true });
-  (cue as any).data = data;
+  (cue as RawCue).data = data;
   return cue;
 }
 
@@ -86,9 +117,9 @@ function makeDateRangeCue(id: string, direction: 'out' | 'in', startTime = 10, e
   const cue = new VTTCue(startTime, endTime, '');
   Object.defineProperty(cue, 'id', { value: id, configurable: true });
   if (direction === 'out') {
-    (cue as any).scte35Out = '0xFC302F';
+    (cue as RawCue).scte35Out = '0xFC302F';
   } else {
-    (cue as any).scte35In = '0xFC302F';
+    (cue as RawCue).scte35In = '0xFC302F';
   }
   return cue;
 }
@@ -97,7 +128,7 @@ function makeDateRangeCue(id: string, direction: 'out' | 'in', startTime = 10, e
 function makeAttrCue(id: string, direction: 'out' | 'in', startTime = 10, endTime = 40): TextTrackCue {
   const cue = new VTTCue(startTime, endTime, '');
   Object.defineProperty(cue, 'id', { value: id, configurable: true });
-  (cue as any).attr = direction === 'out' ? { 'SCTE35-OUT': '0xFC' } : { 'SCTE35-IN': '0xFC' };
+  (cue as RawCue).attr = direction === 'out' ? { 'SCTE35-OUT': '0xFC' } : { 'SCTE35-IN': '0xFC' };
   return cue;
 }
 
@@ -116,7 +147,7 @@ function fireCueChange(track: TextTrack, activeCues: TextTrackCue[]): void {
 // ─── jsdom shims ──────────────────────────────────────────────────────────────
 // VTTCue is not defined in older jsdom builds — add a minimal polyfill.
 if (typeof VTTCue === 'undefined') {
-  (global as any).VTTCue = class VTTCue {
+  (global as unknown as { VTTCue: unknown }).VTTCue = class VTTCue {
     startTime: number;
     endTime: number;
     text: string;
@@ -131,7 +162,7 @@ if (typeof VTTCue === 'undefined') {
 // jsdom does not implement HTMLMediaElement.prototype.addTextTrack or proper
 // TextTrackList dispatchEvent. Provide minimal fakes so SSAI tests can run.
 
-type FakeTrackState = { handlers: Map<string, EventListener[]>; tracks: any[] };
+type FakeTrackState = { handlers: Map<string, EventListener[]>; tracks: FakeTrack[] };
 const _fakeMediaState = new WeakMap<HTMLMediaElement, FakeTrackState>();
 
 function getMediaState(video: HTMLMediaElement): FakeTrackState {
@@ -174,7 +205,7 @@ beforeAll(() => {
   ) {
     const state = getMediaState(this);
     const trackHandlers = new Map<string, EventListener[]>();
-    const track: any = {
+    const track: FakeTrack = {
       kind,
       label,
       language: lang,
@@ -212,7 +243,7 @@ beforeAll(() => {
 
 afterAll(() => {
   jest.restoreAllMocks();
-  delete (HTMLMediaElement.prototype as any).textTracks;
+  delete (HTMLMediaElement.prototype as unknown as { textTracks?: unknown }).textTracks;
 });
 
 beforeEach(() => {
@@ -229,7 +260,7 @@ describe('SsaiAdStrategy — DataCue (ID3) path', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     const cue = makeDataCue('id3-out', makeSpliceInsertBuffer(true));
     fireCueChange(track, [cue]);
@@ -245,8 +276,8 @@ describe('SsaiAdStrategy — DataCue (ID3) path', () => {
     strategy.init(ctx, {});
 
     const breaks: string[] = [];
-    bus.on('ads:break:start' as any, () => breaks.push('start'));
-    bus.on('ads:break:end' as any, () => breaks.push('end'));
+    bus.on('ads:break:start', () => breaks.push('start'));
+    bus.on('ads:break:end', () => breaks.push('end'));
 
     // out
     fireCueChange(track, [makeDataCue('id3-1', makeSpliceInsertBuffer(true))]);
@@ -264,7 +295,7 @@ describe('SsaiAdStrategy — DataCue (ID3) path', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     // time_signal command (0x06) — not a splice_insert
     const buf = new Uint8Array(16);
@@ -286,7 +317,7 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE (scte35Out/In properties)', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeDateRangeCue('dr-1', 'out', 10, 40)]);
     expect(events).toEqual(['start']);
@@ -300,8 +331,8 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE (scte35Out/In properties)', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
-    bus.on('ads:break:end' as any, () => events.push('end'));
+    bus.on('ads:break:start', () => events.push('start'));
+    bus.on('ads:break:end', () => events.push('end'));
 
     fireCueChange(track, [makeDateRangeCue('dr-2', 'out', 10, 40)]);
     fireCueChange(track, [makeDateRangeCue('dr-2', 'in', 10, 40)]);
@@ -317,7 +348,7 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE (scte35Out/In properties)', () => {
 
     fireCueChange(track, [makeDateRangeCue('dr-dur', 'out', 10, 40)]);
     // Verify the break was stored with duration 30
-    const brk = (strategy as any).activeBreaks.get('dr-dur');
+    const brk = (strategy as unknown as SsaiInternals).activeBreaks.get('dr-dur');
     expect(brk?.durationSec).toBe(30);
     strategy.destroy();
   });
@@ -329,8 +360,8 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE (scte35Out/In properties)', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
-    bus.on('ads:break:end' as any, () => events.push('end'));
+    bus.on('ads:break:start', () => events.push('start'));
+    bus.on('ads:break:end', () => events.push('end'));
 
     fireCueChange(track, [makeAttrCue('attr-out', 'out')]);
     fireCueChange(track, [makeAttrCue('attr-out', 'in')]);
@@ -347,7 +378,7 @@ describe('SsaiAdStrategy — deduplication', () => {
     strategy.init(ctx, {});
 
     const starts: number[] = [];
-    bus.on('ads:break:start' as any, () => starts.push(1));
+    bus.on('ads:break:start', () => starts.push(1));
 
     const cue = makeDateRangeCue('dup-1', 'out');
     fireCueChange(track, [cue]);
@@ -366,7 +397,7 @@ describe('SsaiAdStrategy — quartile tracking', () => {
     strategy.init(ctx, {});
 
     const quartiles: number[] = [];
-    bus.on('ads:quartile' as any, ({ quartile }: { quartile: number }) => quartiles.push(quartile));
+    bus.on('ads:quartile', ({ quartile }: { quartile: number }) => quartiles.push(quartile));
 
     // Start a 40-second break at t=0
     fireCueChange(track, [makeDateRangeCue('q-break', 'out', 0, 40)]);
@@ -388,7 +419,7 @@ describe('SsaiAdStrategy — quartile tracking', () => {
     strategy.init(ctx, {});
 
     const quartiles: number[] = [];
-    bus.on('ads:quartile' as any, ({ quartile }: { quartile: number }) => quartiles.push(quartile));
+    bus.on('ads:quartile', ({ quartile }: { quartile: number }) => quartiles.push(quartile));
 
     fireCueChange(track, [makeDateRangeCue('q2', 'out', 0, 20)]);
 
@@ -408,7 +439,7 @@ describe('SsaiAdStrategy — quartile tracking', () => {
     strategy.init(ctx, {});
 
     const ends: number[] = [];
-    bus.on('ads:break:end' as any, () => ends.push(1));
+    bus.on('ads:break:end', () => ends.push(1));
 
     fireCueChange(track, [makeDateRangeCue('auto-end', 'out', 0, 10)]);
     Object.defineProperty(video, 'currentTime', { configurable: true, get: () => 10 });
@@ -478,7 +509,7 @@ describe('SsaiAdStrategy — late-arriving tracks', () => {
     video.textTracks.dispatchEvent(Object.assign(new Event('addtrack'), { track }));
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeDateRangeCue('late-1', 'out')]);
     expect(events).toEqual(['start']);
@@ -492,10 +523,10 @@ describe('SsaiAdStrategy — late-arriving tracks', () => {
 
     const track = makeMetadataTrack(video);
     // Simulate HlsMediaEngine emitting texttrack:listchange
-    ctx.events.emit('texttrack:listchange' as any);
+    ctx.events.emit('texttrack:listchange');
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeDateRangeCue('listchange-1', 'out')]);
     expect(events).toEqual(['start']);
@@ -512,7 +543,7 @@ describe('SsaiAdStrategy — destroy()', () => {
     strategy.destroy();
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeDateRangeCue('post-destroy', 'out')]);
     expect(events).toEqual([]);
@@ -525,10 +556,10 @@ describe('SsaiAdStrategy — destroy()', () => {
     strategy.init(ctx, {});
 
     fireCueChange(track, [makeDateRangeCue('clear-1', 'out')]);
-    expect((strategy as any).activeBreaks.size).toBe(1);
+    expect((strategy as unknown as SsaiInternals).activeBreaks.size).toBe(1);
 
     strategy.destroy();
-    expect((strategy as any).activeBreaks.size).toBe(0);
+    expect((strategy as unknown as SsaiInternals).activeBreaks.size).toBe(0);
   });
 });
 
@@ -543,7 +574,7 @@ describe('AdsPlugin — adDelivery="ssai"', () => {
     // CSAI overlay should NOT be in the DOM
     expect(document.querySelector('.op-ads')).toBeNull();
     // strategy is wired
-    expect((plugin as any).strategy).toBeInstanceOf(SsaiAdStrategy);
+    expect((plugin as unknown as { strategy?: unknown }).strategy).toBeInstanceOf(SsaiAdStrategy);
     plugin.destroy?.();
   });
 
@@ -552,7 +583,7 @@ describe('AdsPlugin — adDelivery="ssai"', () => {
     const plugin = new AdsPlugin({ adDelivery: 'ssai' });
     plugin.setup(ctx);
     expect(() => plugin.destroy?.()).not.toThrow();
-    expect((plugin as any).strategy).toBeUndefined();
+    expect((plugin as unknown as { strategy?: unknown }).strategy).toBeUndefined();
   });
 
   test('receives ads:break:start via strategy when cue fires', () => {
@@ -562,7 +593,7 @@ describe('AdsPlugin — adDelivery="ssai"', () => {
 
     const track = makeMetadataTrack(video);
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeDateRangeCue('plugin-1', 'out')]);
     expect(events).toEqual(['start']);
@@ -577,8 +608,8 @@ describe('AdsPlugin — adDelivery="csai" (default, unchanged)', () => {
     const plugin = new AdsPlugin({}); // default: csai
     plugin.setup(ctx);
 
-    expect((plugin as any).strategy).toBeDefined();
-    expect((plugin as any).bus).toBeDefined();
+    expect((plugin as unknown as { strategy?: unknown }).strategy).toBeDefined();
+    expect(plugin.bus).toBeDefined();
     plugin.destroy?.();
   });
 
@@ -587,8 +618,8 @@ describe('AdsPlugin — adDelivery="csai" (default, unchanged)', () => {
     const plugin = new AdsPlugin({ adDelivery: 'csai' });
     plugin.setup(ctx);
 
-    expect((plugin as any).strategy).toBeDefined();
-    expect((plugin as any).bus).toBeDefined();
+    expect((plugin as unknown as { strategy?: unknown }).strategy).toBeDefined();
+    expect(plugin.bus).toBeDefined();
     plugin.destroy?.();
   });
 });
@@ -603,7 +634,7 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
     const captionsTrack = video.addTextTrack('captions', 'English', 'en');
     strategy.init(ctx, {});
     // No error and no binding occurred for non-metadata track.
-    expect((strategy as any).boundTracks.has(captionsTrack)).toBe(false);
+    expect((strategy as unknown as SsaiInternals).boundTracks.has(captionsTrack)).toBe(false);
     strategy.destroy();
   });
 
@@ -617,7 +648,7 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
     video.textTracks.dispatchEvent(Object.assign(new Event('addtrack'), { track: captionsTrack }));
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
     // Nothing happens — no binding.
     expect(events).toEqual([]);
     strategy.destroy();
@@ -641,7 +672,7 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
     strategy.init(ctx, {});
 
     // Calling the private method with an id that was never started.
-    expect(() => (strategy as any).endBreak('unknown-id')).not.toThrow();
+    expect(() => (strategy as unknown as SsaiInternals).endBreak('unknown-id')).not.toThrow();
     strategy.destroy();
   });
 
@@ -652,7 +683,7 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
     strategy.init(ctx, {});
 
     const quartiles: number[] = [];
-    bus.on('ads:quartile' as any, ({ quartile }: { quartile: number }) => quartiles.push(quartile));
+    bus.on('ads:quartile', ({ quartile }: { quartile: number }) => quartiles.push(quartile));
 
     // splice_insert with no duration → durationSec: null
     fireCueChange(track, [makeDataCue('nodur', makeSpliceInsertBuffer(true), 0, 0)]);
@@ -673,10 +704,10 @@ describe('SsaiAdStrategy — branch coverage for defensive guards', () => {
     // Create cue where endTime === startTime (ternary false branch → null).
     const cue = new VTTCue(10, 10, '');
     Object.defineProperty(cue, 'id', { value: 'same-time', configurable: true });
-    (cue as any).scte35Out = '0xFC302F';
+    (cue as RawCue).scte35Out = '0xFC302F';
     fireCueChange(track, [cue]);
 
-    const brk = (strategy as any).activeBreaks.get('same-time');
+    const brk = (strategy as unknown as SsaiInternals).activeBreaks.get('same-time');
     expect(brk?.durationSec).toBeNull();
     strategy.destroy();
   });
@@ -697,9 +728,9 @@ function makeValueWrappedCue(
   const cue = new VTTCue(startTime, endTime, '');
   Object.defineProperty(cue, 'id', { value: id, configurable: true });
   if (direction === 'out') {
-    (cue as any).value = { key: 'SCTE35-OUT', data: data ?? makeSpliceInsertBuffer(true) };
+    (cue as RawCue).value = { key: 'SCTE35-OUT', data: data ?? makeSpliceInsertBuffer(true) };
   } else {
-    (cue as any).value = { key: 'SCTE35-IN' };
+    (cue as RawCue).value = { key: 'SCTE35-IN' };
   }
   return cue;
 }
@@ -716,7 +747,7 @@ function makeRawValueCue(
 ): TextTrackCue {
   const cue = new VTTCue(startTime, endTime, '');
   Object.defineProperty(cue, 'id', { value: id, configurable: true });
-  (cue as any).value = rawValue;
+  (cue as RawCue).value = rawValue;
   return cue;
 }
 
@@ -730,7 +761,7 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => 
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeValueWrappedCue('vw-out-1', 'out')]);
     expect(events).toEqual(['start']);
@@ -744,7 +775,7 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => 
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     // splice-in buffer (outOfNetwork=false) used on SCTE35-OUT cue — should be ignored
     fireCueChange(track, [makeValueWrappedCue('vw-bad', 'out', makeSpliceInsertBuffer(false))]);
@@ -759,7 +790,7 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => 
     strategy.init(ctx, {});
 
     fireCueChange(track, [makeValueWrappedCue('vw-dur', 'out', undefined, 10, 40)]);
-    const brk = (strategy as any).activeBreaks.get('vw-dur');
+    const brk = (strategy as unknown as SsaiInternals).activeBreaks.get('vw-dur');
     expect(brk?.durationSec).toBe(30);
     strategy.destroy();
   });
@@ -772,7 +803,7 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => 
 
     // endTime === startTime → ternary is false → uses cmd.durationSecs (null for no-duration buffer)
     fireCueChange(track, [makeValueWrappedCue('vw-nodur', 'out', makeSpliceInsertBuffer(true), 10, 10)]);
-    const brk = (strategy as any).activeBreaks.get('vw-nodur');
+    const brk = (strategy as unknown as SsaiInternals).activeBreaks.get('vw-nodur');
     expect(brk?.durationSec).toBeNull();
     strategy.destroy();
   });
@@ -784,8 +815,8 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => 
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
-    bus.on('ads:break:end' as any, () => events.push('end'));
+    bus.on('ads:break:start', () => events.push('start'));
+    bus.on('ads:break:end', () => events.push('end'));
 
     fireCueChange(track, [makeValueWrappedCue('vw-1', 'out')]);
     fireCueChange(track, [makeValueWrappedCue('vw-1', 'in')]);
@@ -800,13 +831,13 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => 
     strategy.init(ctx, {});
 
     const ended: string[] = [];
-    bus.on('ads:break:end' as any, () => ended.push('end'));
+    bus.on('ads:break:end', () => ended.push('end'));
 
     // Start break with base id 'brk-a'; end cue arrives with id 'brk-a-in'
     fireCueChange(track, [makeValueWrappedCue('brk-a', 'out')]);
     const inCue = new VTTCue(10, 40, '');
     Object.defineProperty(inCue, 'id', { value: 'brk-a-in', configurable: true });
-    (inCue as any).value = { key: 'SCTE35-IN' };
+    (inCue as RawCue).value = { key: 'SCTE35-IN' };
     fireCueChange(track, [inCue]);
 
     expect(ended).toHaveLength(1);
@@ -820,7 +851,7 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE value wrapper (hls.js 2.x)', () => 
     strategy.init(ctx, {});
 
     const ended: string[] = [];
-    bus.on('ads:break:end' as any, () => ended.push('end'));
+    bus.on('ads:break:end', () => ended.push('end'));
 
     // No break was started; the SCTE35-IN cue should silently do nothing
     fireCueChange(track, [makeValueWrappedCue('unknown-id', 'in')]);
@@ -839,7 +870,7 @@ describe('SsaiAdStrategy — raw value path (dash.js / shaka-player)', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeRawValueCue('rv-out', makeSpliceInsertBuffer(true))]);
     expect(events).toEqual(['start']);
@@ -853,8 +884,8 @@ describe('SsaiAdStrategy — raw value path (dash.js / shaka-player)', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
-    bus.on('ads:break:end' as any, () => events.push('end'));
+    bus.on('ads:break:start', () => events.push('start'));
+    bus.on('ads:break:end', () => events.push('end'));
 
     fireCueChange(track, [makeRawValueCue('rv-1', makeSpliceInsertBuffer(true))]);
     fireCueChange(track, [makeRawValueCue('rv-1', makeSpliceInsertBuffer(false))]);
@@ -869,7 +900,7 @@ describe('SsaiAdStrategy — raw value path (dash.js / shaka-player)', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     fireCueChange(track, [makeRawValueCue('rv-u8', new Uint8Array(makeSpliceInsertBuffer(true)))]);
     expect(events).toEqual(['start']);
@@ -883,7 +914,7 @@ describe('SsaiAdStrategy — raw value path (dash.js / shaka-player)', () => {
     strategy.init(ctx, {});
 
     const events: string[] = [];
-    bus.on('ads:break:start' as any, () => events.push('start'));
+    bus.on('ads:break:start', () => events.push('start'));
 
     // Empty ArrayBuffer — decodeSplice returns null (no 0xFC byte found)
     fireCueChange(track, [makeRawValueCue('rv-null', new ArrayBuffer(0))]);
@@ -898,13 +929,13 @@ describe('SsaiAdStrategy — raw value path (dash.js / shaka-player)', () => {
     strategy.init(ctx, {});
 
     const ended: string[] = [];
-    bus.on('ads:break:end' as any, () => ended.push('end'));
+    bus.on('ads:break:end', () => ended.push('end'));
 
     fireCueChange(track, [makeRawValueCue('rv-base', makeSpliceInsertBuffer(true))]);
     // End cue uses id 'rv-base-in' — the -in suffix should be stripped to find 'rv-base'
     const inCue = new VTTCue(10, 40, '');
     Object.defineProperty(inCue, 'id', { value: 'rv-base-in', configurable: true });
-    (inCue as any).value = makeSpliceInsertBuffer(false);
+    (inCue as RawCue).value = makeSpliceInsertBuffer(false);
     fireCueChange(track, [inCue]);
 
     expect(ended).toHaveLength(1);
@@ -918,7 +949,7 @@ describe('SsaiAdStrategy — raw value path (dash.js / shaka-player)', () => {
     strategy.init(ctx, {});
 
     const ended: string[] = [];
-    bus.on('ads:break:end' as any, () => ended.push('end'));
+    bus.on('ads:break:end', () => ended.push('end'));
 
     // Start break with id 'rv-direct', then end it with the same id
     fireCueChange(track, [makeRawValueCue('rv-direct', makeSpliceInsertBuffer(true))]);
@@ -938,8 +969,8 @@ describe('AdsPlugin — requestSkip', () => {
     plugin.setup(ctx);
 
     // SsaiAdStrategy does not implement requestSkip, but the call must not throw
-    expect(() => (plugin as any).requestSkip('button')).not.toThrow();
-    expect(() => (plugin as any).requestSkip()).not.toThrow();
+    expect(() => plugin.requestSkip('button')).not.toThrow();
+    expect(() => plugin.requestSkip()).not.toThrow();
     plugin.destroy?.();
   });
 });

@@ -1,6 +1,13 @@
 /** @jest-environment jsdom */
 
-import { DEFAULT_CONTROLS, buildControls, createControlGrid, getControl, normalizeControlsConfig, registerControl } from '../src/control';
+import {
+  DEFAULT_CONTROLS,
+  buildControls,
+  createControlGrid,
+  getControl,
+  normalizeControlsConfig,
+  registerControl,
+} from '../src/control';
 
 describe('ui/control branch coverage', () => {
   test('createControlGrid places into all rows/cols', () => {
@@ -57,7 +64,11 @@ describe('ui/control branch coverage', () => {
     // Register the built-in controls used in DEFAULT_CONTROLS
     for (const id of ['progress', 'play', 'time', 'volume', 'captions', 'settings', 'fullscreen']) {
       if (!getControl(id)) {
-        registerControl(id, () => ({ id, placement: { v: 'bottom', h: 'left' }, create: () => document.createElement('div') }));
+        registerControl(id, () => ({
+          id,
+          placement: { v: 'bottom', h: 'left' },
+          create: () => document.createElement('div'),
+        }));
       }
     }
 
@@ -73,26 +84,38 @@ describe('ui/control branch coverage', () => {
 
   test('buildControls with empty object returns default controls', () => {
     const withEmpty = buildControls({});
-    const withNone  = buildControls();
+    const withNone = buildControls();
     expect(withEmpty.map((c) => c.id)).toEqual(withNone.map((c) => c.id));
   });
 
   test('buildControls with layers format normalizes to flat slots', () => {
-    registerControl('vol', () => ({ id: 'vol', placement: { v: 'bottom', h: 'left' }, create: () => document.createElement('div') }));
-    registerControl('prog', () => ({ id: 'prog', placement: { v: 'top', h: 'left' }, create: () => document.createElement('div') }));
-    registerControl('fs', () => ({ id: 'fs', placement: { v: 'bottom', h: 'right' }, create: () => document.createElement('div') }));
+    registerControl('vol', () => ({
+      id: 'vol',
+      placement: { v: 'bottom', h: 'left' },
+      create: () => document.createElement('div'),
+    }));
+    registerControl('prog', () => ({
+      id: 'prog',
+      placement: { v: 'top', h: 'left' },
+      create: () => document.createElement('div'),
+    }));
+    registerControl('fs', () => ({
+      id: 'fs',
+      placement: { v: 'bottom', h: 'right' },
+      create: () => document.createElement('div'),
+    }));
 
     const controls = buildControls({
       layers: {
-        left:   ['vol'],
+        left: ['vol'],
         middle: ['prog'],
-        right:  ['fs'],
+        right: ['fs'],
       },
     });
 
-    const vol  = controls.find((c) => c.id === 'vol');
+    const vol = controls.find((c) => c.id === 'vol');
     const prog = controls.find((c) => c.id === 'prog');
-    const fs   = controls.find((c) => c.id === 'fs');
+    const fs = controls.find((c) => c.id === 'fs');
 
     expect(vol?.placement).toMatchObject({ v: 'bottom', h: 'left' });
     expect(prog?.placement).toMatchObject({ v: 'top' });
@@ -100,9 +123,13 @@ describe('ui/control branch coverage', () => {
   });
 
   test('buildControls ignores non-array properties like alwaysVisible', () => {
-    registerControl('p2', () => ({ id: 'p2', placement: { v: 'bottom', h: 'left' }, create: () => document.createElement('div') }));
+    registerControl('p2', () => ({
+      id: 'p2',
+      placement: { v: 'bottom', h: 'left' },
+      create: () => document.createElement('div'),
+    }));
 
-    const controls = buildControls({ top: ['p2'], alwaysVisible: true } as any);
+    const controls = buildControls({ top: ['p2'], alwaysVisible: true });
     expect(controls.some((c) => c.id === 'p2')).toBe(true);
   });
 

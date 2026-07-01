@@ -159,7 +159,7 @@ video.textTracks.addEventListener('addtrack', (e) => {
   track.mode = 'hidden';
   track.addEventListener('cuechange', () => {
     for (const cue of track.activeCues ?? []) {
-      const raw = cue as any;
+      const raw = cue as TextTrackCue;
       // ID3 / DataCue path (enableID3MetadataCues)
       if (raw.data instanceof ArrayBuffer) {
         const cmd: SpliceCommand | null = decodeSplice(raw.data);
@@ -474,50 +474,58 @@ adsPlugin.requestSkip('api');
 
 ## Events
 
-All events are prefixed with `ads:`. Listen with `ctx.events.on(...)` or via `core.on(...)`.
+All ad events use the shared EventBus and can be subscribed via `core.on()` regardless of delivery mode (CSAI, SSAI, or Hybrid). There is no separate channel — one API for everything.
 
-| Event                 | Payload                            | When it fires                            |
-| --------------------- | ---------------------------------- | ---------------------------------------- |
-| `ads:requested`       | `{ url, at, id }`                  | An ad tag request was sent               |
-| `ads:loaded`          | `{ break, count }`                 | VAST/VMAP was parsed and ads are ready   |
-| `ads:break:start`     | `{ id, kind, at }`                 | An ad break is starting; content pauses  |
-| `ads:break:end`       | `{ id, kind, at }`                 | An ad break finished; content resumes    |
-| `ads:ad:start`        | `{ break, index }`                 | An individual ad started                 |
-| `ads:ad:end`          | `{ break, index }`                 | An individual ad finished                |
-| `ads:impression`      | `{ break, index }`                 | Ad impression recorded (once per ad)     |
-| `ads:quartile`        | `{ break, quartile }`              | Playback reached 25 / 50 / 75 / 100 %    |
-| `ads:timeupdate`      | `{ break, currentTime, duration }` | Ad time updated                          |
-| `ads:duration`        | `{ break, duration }`              | Ad total duration became known           |
-| `ads:skip`            | `{ break, reason }`                | Ad was skipped                           |
-| `ads:clickthrough`    | `{ break, url }`                   | User clicked the ad                      |
-| `ads:pause`           | `{ break }`                        | Ad was paused                            |
-| `ads:resume`          | `{ break }`                        | Paused ad was resumed                    |
-| `ads:mute`            | `{ break }`                        | Ad was muted                             |
-| `ads:unmute`          | `{ break }`                        | Ad was unmuted                           |
-| `ads:volumeChange`    | `{ break, volume, muted }`         | Volume changed during ad                 |
-| `ads:allAdsCompleted` | `{ break }`                        | All scheduled breaks have finished       |
-| `ads:error`           | `{ reason, error?, url? }`         | Error during request, parse, or playback |
-
-### Listening to events
+> **TypeScript:** the `ads:*` event payloads are not declared in `@openplayerjs/core` (the kernel stays agnostic of ad concerns). Importing `@openplayerjs/ads` augments core's `PlayerEventPayloadMap` via declaration merging, so `core.on('ads:break:start', cb)` is fully typed automatically — no extra setup.
 
 ```ts
-core.on('ads:break:start', ({ kind, at }) => {
-  console.log(`Ad break "${kind}" at ${at}s starting`);
+const adsPlugin = new AdsPlugin({ ... });
+const core = new Core(video, { plugins: [adsPlugin] });
+
+core.on('ads:break:start', ({ id, kind, at }) => {
+  console.log(`Ad break "${kind}" starting`);
 });
 
-core.on('ads:break:end', () => {
+core.on('ads:break:end', ({ id }) => {
   console.log('Ad break finished, content resuming');
 });
 
-core.on('ads:quartile', ({ quartile }) => {
-  if (quartile === 50) console.log('Reached ad midpoint');
+core.on('ads:quartile', ({ breakId, quartile }) => {
+  if (quartile === 50) analytics.track('midpoint', { breakId });
 });
 
 core.on('ads:error', ({ reason, error }) => {
   console.warn('Ad error:', reason, error);
-  // Content playback resumes automatically
 });
 ```
+
+> **`adsPlugin.bus`** wraps the same shared EventBus and accepts the same event names. It is available for backward compatibility but `core.on()` is the preferred API.
+
+### Event reference
+
+| Event                 | Payload                                                          | When it fires                            |
+| --------------------- | ---------------------------------------------------------------- | ---------------------------------------- |
+| `ads:requested`       | `string` (URL or `'[xml]'`)                                      | An ad tag request was sent               |
+| `ads:loaded`          | `{ break: { id, kind }, count }`                                 | VAST/VMAP parsed; ads are ready          |
+| `ads:break:start`     | `{ id, kind, at? }`                                              | An ad break is starting; content pauses  |
+| `ads:break:end`       | `{ id, kind, at? }`                                              | An ad break finished; content resumes    |
+| `ads:ad:start`        | `{ break: { id, kind }, index, sequence? }`                      | An individual ad started                 |
+| `ads:ad:end`          | `{ break: { id, kind }, index, sequence? }`                      | An individual ad finished                |
+| `ads:impression`      | `{ break: { id, kind }, index?, event? }`                        | Ad impression recorded                   |
+| `ads:quartile`        | `{ breakId, quartile: 25\|50\|75\|100 }`                         | Playback reached 25 / 50 / 75 / 100 %    |
+| `ads:timeupdate`      | `{ break: { id, kind }, currentTime, remainingTime?, duration }` | Ad time updated                          |
+| `ads:duration`        | `{ break: { id, kind }, duration }`                              | Ad total duration became known           |
+| `ads:skip`            | `{ break: { id, kind } \| null, reason }`                        | Ad was skipped                           |
+| `ads:clickthrough`    | `{ break: { id, kind }, url }`                                   | User clicked the ad                      |
+| `ads:pause`           | `{ break: { id, kind } }`                                        | Ad was paused                            |
+| `ads:resume`          | `{ break: { id, kind } }`                                        | Paused ad was resumed                    |
+| `ads:mute`            | `{ break: { id, kind } }`                                        | Ad was muted                             |
+| `ads:unmute`          | `{ break: { id, kind } }`                                        | Ad was unmuted                           |
+| `ads:volumeChange`    | `{ break: { id, kind }, volume, muted }`                         | Volume changed during ad                 |
+| `ads:allAdsCompleted` | `{ break: { id, kind } }`                                        | All scheduled breaks have finished       |
+| `ads:error`           | `{ reason?, error?, message?, owner? }`                          | Error during request, parse, or playback |
+
+`kind` is `'preroll' | 'midroll' | 'postroll' | 'auto' | 'manual'` for CSAI/Hybrid, or `'ssai'` for SSAI.
 
 ### `AdLifecycleEvent` (structured sink)
 

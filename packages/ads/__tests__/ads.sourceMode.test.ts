@@ -12,6 +12,16 @@ import { DisposableStore, EventBus, StateManager } from '@openplayerjs/core';
 import { AdsPlugin } from '../src/ads';
 import { vastGetMock, vastParseMock } from './mocks/vast-client';
 
+/** AdsPlugin with its `@internal` getters narrowed to non-undefined for test access. */
+type AdsPluginInternals = AdsPlugin & {
+  bus: NonNullable<AdsPlugin['bus']>;
+  ctx: NonNullable<AdsPlugin['ctx']>;
+  overlay: NonNullable<AdsPlugin['overlay']>;
+  active: boolean;
+  resolvedBreaks: NonNullable<AdsPlugin['resolvedBreaks']>;
+  playedBreaks: NonNullable<AdsPlugin['playedBreaks']>;
+};
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -114,16 +124,16 @@ describe('AdsPlugin – source:set resets ad state', () => {
     plugin.setup(ctx);
 
     // Force-set active=true (simulates an ad mid-play when source switch happens)
-    (plugin as any).active = true;
-    (plugin as any).ctx.leases.acquire('playback', 'ads');
+    (plugin as unknown as AdsPluginInternals).active = true;
+    (plugin as unknown as AdsPluginInternals).ctx.leases.acquire('playback', 'ads');
 
     // Trigger source switch
     bus.emit('source:set');
     await Promise.resolve();
 
-    expect((plugin as any).active).toBe(false);
+    expect((plugin as unknown as AdsPluginInternals).active).toBe(false);
     // Lease should have been released
-    expect((plugin as any).ctx.leases.owner('playback')).toBeUndefined();
+    expect((plugin as unknown as AdsPluginInternals).ctx.leases.owner('playback')).toBeUndefined();
   });
 
   test('overlay is hidden after source:set', async () => {
@@ -136,12 +146,12 @@ describe('AdsPlugin – source:set resets ad state', () => {
     plugin.setup(ctx);
 
     // Manually show overlay (simulates mid-ad state)
-    (plugin as any).overlay.style.display = 'block';
+    (plugin as unknown as AdsPluginInternals).overlay.style.display = 'block';
 
     bus.emit('source:set');
     await Promise.resolve();
 
-    expect((plugin as any).overlay.style.display).toBe('none');
+    expect((plugin as unknown as AdsPluginInternals).overlay.style.display).toBe('none');
   });
 
   test('shouldInterceptPreroll returns true after source:set when active was stuck true', async () => {
@@ -154,13 +164,13 @@ describe('AdsPlugin – source:set resets ad state', () => {
     plugin.setup(ctx);
 
     // Simulate: ad was playing, active is stuck
-    (plugin as any).active = true;
+    (plugin as unknown as AdsPluginInternals).active = true;
 
     bus.emit('source:set');
     await Promise.resolve();
 
     // shouldInterceptPreroll should now return true (not blocked by active)
-    expect((plugin as any).shouldInterceptPreroll()).toBe(true);
+    expect((plugin as unknown as AdsPluginInternals).shouldInterceptPreroll()).toBe(true);
   });
 
   test('playedBreaks cleared after source:set so preroll can replay', async () => {
@@ -173,13 +183,13 @@ describe('AdsPlugin – source:set resets ad state', () => {
     plugin.setup(ctx);
 
     // Simulate a completed preroll in playedBreaks
-    (plugin as any).playedBreaks.add('preroll:VAST:https://ad.example.com/vast1');
+    (plugin as unknown as AdsPluginInternals).playedBreaks.add('preroll:VAST:https://ad.example.com/vast1');
 
     bus.emit('source:set');
     await Promise.resolve();
 
-    expect((plugin as any).playedBreaks.size).toBe(0);
-    expect((plugin as any).shouldInterceptPreroll()).toBe(true);
+    expect((plugin as unknown as AdsPluginInternals).playedBreaks.size).toBe(0);
+    expect((plugin as unknown as AdsPluginInternals).shouldInterceptPreroll()).toBe(true);
   });
 });
 
@@ -213,7 +223,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     plugin.setup(ctx);
 
     // Trigger preroll and wait for ad video to appear
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     const adVideo = await waitForAdVideo();
 
     // First source should have been called
@@ -241,7 +251,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     const adVideo = await waitForAdVideo();
 
     // Both sources tried
@@ -269,7 +279,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     // Flush all promises for 3 sources
     for (let i = 0; i < 10; i++) await Promise.resolve();
 
@@ -278,7 +288,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     expect(vastGetMock).toHaveBeenCalledWith('https://ad3.example.com/vast');
 
     // Plugin should not be in active state after all sources exhausted
-    expect((plugin as any).active).toBe(false);
+    expect((plugin as unknown as AdsPluginInternals).active).toBe(false);
     // No ad video mounted
     expect(document.querySelector('video.op-ads__media')).toBeNull();
   });
@@ -298,7 +308,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     const adVideo = await waitForAdVideo();
 
     expect(vastGetMock).toHaveBeenCalledWith('https://failing.example.com/vast');
@@ -323,7 +333,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     await waitForAdVideo();
 
     expect(errorPayloads).toHaveLength(1);
@@ -349,7 +359,7 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     await waitForAdVideo();
 
     expect(errorPayloads).toHaveLength(1);
@@ -369,10 +379,10 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     plugin.setup(ctx);
 
     // resolvedBreaks should have one break WITHOUT a sources array (single-source path)
-    const breaks = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as unknown as AdsPluginInternals).resolvedBreaks;
     expect(breaks).toHaveLength(1);
     expect(breaks[0].sources).toBeUndefined();
-    expect(breaks[0].source.src).toBe('https://ad1.example.com/vast');
+    expect(breaks[0].source?.src).toBe('https://ad1.example.com/vast');
   });
 
   test('waterfall: rebuildSchedule creates one break with all sources', () => {
@@ -388,12 +398,12 @@ describe('AdsPlugin – adSourcesMode: waterfall', () => {
     });
     plugin.setup(ctx);
 
-    const breaks = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as unknown as AdsPluginInternals).resolvedBreaks;
     expect(breaks).toHaveLength(1);
     expect(breaks[0].at).toBe('preroll');
     expect(breaks[0].sources).toHaveLength(2);
-    expect(breaks[0].sources[0].src).toBe('https://ad1.example.com/vast');
-    expect(breaks[0].sources[1].src).toBe('https://ad2.example.com/vast');
+    expect(breaks[0].sources?.[0]?.src).toBe('https://ad1.example.com/vast');
+    expect(breaks[0].sources?.[1]?.src).toBe('https://ad2.example.com/vast');
   });
 });
 
@@ -427,11 +437,11 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     });
     plugin.setup(ctx);
 
-    const breaks = (plugin as any).resolvedBreaks;
+    const breaks = (plugin as unknown as AdsPluginInternals).resolvedBreaks;
     expect(breaks).toHaveLength(3);
-    expect(breaks[0].source.src).toBe('https://ad1.example.com/vast');
-    expect(breaks[1].source.src).toBe('https://ad2.example.com/vast');
-    expect(breaks[2].source.src).toBe('https://ad3.example.com/vast');
+    expect(breaks[0].source?.src).toBe('https://ad1.example.com/vast');
+    expect(breaks[1].source?.src).toBe('https://ad2.example.com/vast');
+    expect(breaks[2].source?.src).toBe('https://ad3.example.com/vast');
     // Each break is independent (no waterfall sources array)
     for (const b of breaks) {
       expect(b.sources).toBeUndefined();
@@ -452,9 +462,9 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     });
     plugin.setup(ctx);
 
-    const breaks = (plugin as any).resolvedBreaks;
-    const id0 = (plugin as any).getBreakId(breaks[0]);
-    const id1 = (plugin as any).getBreakId(breaks[1]);
+    const breaks = (plugin as unknown as AdsPluginInternals).resolvedBreaks;
+    const id0 = (plugin as unknown as AdsPluginInternals).getBreakId(breaks[0]);
+    const id1 = (plugin as unknown as AdsPluginInternals).getBreakId(breaks[1]);
     expect(id0).not.toBe(id1);
   });
 
@@ -472,15 +482,15 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     plugin.setup(ctx);
 
     // Initially: first preroll break is available
-    const first = (plugin as any).getPrerollBreak();
+    const first = (plugin as unknown as AdsPluginInternals).getPrerollBreak();
     expect(first?.source?.src).toBe('https://ad1.example.com/vast');
 
     // Mark first as played
-    const firstId = (plugin as any).getBreakId(first);
-    (plugin as any).playedBreaks.add(firstId);
+    const firstId = (plugin as unknown as AdsPluginInternals).getBreakId(first!);
+    (plugin as unknown as AdsPluginInternals).playedBreaks.add(firstId);
 
     // Now: second preroll break should be returned
-    const second = (plugin as any).getPrerollBreak();
+    const second = (plugin as unknown as AdsPluginInternals).getPrerollBreak();
     expect(second?.source?.src).toBe('https://ad2.example.com/vast');
   });
 
@@ -499,8 +509,8 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     plugin.setup(ctx);
 
     // VMAP is handled separately; only VAST sources become playlist breaks
-    const breaks = (plugin as any).resolvedBreaks;
-    const vastBreaks = breaks.filter((b: any) => b.source?.type !== 'VMAP');
+    const breaks = (plugin as unknown as AdsPluginInternals).resolvedBreaks;
+    const vastBreaks = breaks.filter((b) => b.source?.type !== 'VMAP');
     expect(vastBreaks).toHaveLength(2);
   });
 
@@ -517,7 +527,7 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     const adVideo = await waitForAdVideo();
 
     expect(vastGetMock).toHaveBeenCalledWith('https://ad1.example.com/vast');
@@ -541,7 +551,7 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     // Flush enough microtasks for the first break to fail and error to emit
     for (let i = 0; i < 10; i++) await Promise.resolve();
 
@@ -565,7 +575,7 @@ describe('AdsPlugin – adSourcesMode: playlist', () => {
     });
     plugin.setup(ctx);
 
-    (ctx.events as any).emit('cmd:play');
+    ctx.events.emit('cmd:play');
     // Allow first break to fail and second to be attempted
     for (let i = 0; i < 15; i++) await Promise.resolve();
 

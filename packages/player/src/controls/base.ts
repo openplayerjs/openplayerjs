@@ -1,4 +1,4 @@
-import type { Core } from '@openplayerjs/core';
+import type { Core, PlayerEvent } from '@openplayerjs/core';
 import { DisposableStore, getOverlayManager, type OverlayState } from '@openplayerjs/core';
 import type { Control } from '../control';
 
@@ -52,8 +52,8 @@ export abstract class BaseControl implements Control {
     this.dispose.dispose();
   }
 
-  protected onPlayer(event: any, cb: (...args: any[]) => void) {
-    return this.dispose.add(this.core.events.on(event, cb as any));
+  protected onPlayer(event: PlayerEvent | string, cb: (payload?: unknown) => void) {
+    return this.dispose.add(this.core.events.on(event, cb));
   }
 
   protected listen(

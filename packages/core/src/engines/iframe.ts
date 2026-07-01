@@ -1,4 +1,5 @@
 import { EventBus } from '../core/events';
+import type { Listener, PlayerEvent } from '../core/events';
 import type { MediaSurface, MediaSurfaceEvent, MediaSurfaceEventMap } from '../core/surface';
 
 // ─── Adapter state ────────────────────────────────────────────────────────────
@@ -51,8 +52,8 @@ export type IframeMediaAdapter = {
   setSize?(w: number, h: number): void;
 
   // Events
-  on<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void;
-  off<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: IframeMediaAdapterEvents[E]): void;
+  on<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: NonNullable<IframeMediaAdapterEvents[E]>): void;
+  off<E extends keyof IframeMediaAdapterEvents>(evt: E, cb: NonNullable<IframeMediaAdapterEvents[E]>): void;
 };
 
 // ─── Surface options ──────────────────────────────────────────────────────────
@@ -104,17 +105,14 @@ export class IframeMediaSurface implements MediaSurface {
 
     this.adapter.on('ready', this.onAdapterReady);
     this.adapter.on('state', this.onAdapterState);
-    this.adapter.on('error' as keyof IframeMediaAdapterEvents, this.onAdapterError as any);
+    this.adapter.on('error', this.onAdapterError);
 
     // Wire optional push events
-    this.adapter.on('timeupdate' as keyof IframeMediaAdapterEvents, ((t: number) => this.applyTime(t)) as any);
-    this.adapter.on('durationchange' as keyof IframeMediaAdapterEvents, ((d: number) => this.applyDuration(d)) as any);
-    this.adapter.on('ratechange' as keyof IframeMediaAdapterEvents, ((r: number) => this.applyRate(r)) as any);
-    this.adapter.on(
-      'volumechange' as keyof IframeMediaAdapterEvents,
-      ((v: number, m: boolean) => this.applyVolume(v, m)) as any
-    );
-    this.adapter.on('ended' as keyof IframeMediaAdapterEvents, (() => this.applyEnded()) as any);
+    this.adapter.on('timeupdate', (t: number) => this.applyTime(t));
+    this.adapter.on('durationchange', (d: number) => this.applyDuration(d));
+    this.adapter.on('ratechange', (r: number) => this.applyRate(r));
+    this.adapter.on('volumechange', (v: number, m: boolean) => this.applyVolume(v, m));
+    this.adapter.on('ended', () => this.applyEnded());
   }
 
   // ─── MediaSurface properties (getter + setter adjacent) ──────────────────
@@ -197,7 +195,7 @@ export class IframeMediaSurface implements MediaSurface {
     handler: (payload: MediaSurfaceEventMap[E]) => void,
     _options?: boolean | AddEventListenerOptions
   ): () => void {
-    return this.internalBus.on(event as any, handler as any);
+    return this.internalBus.on(event as PlayerEvent, handler as Listener);
   }
 
   // ─── Extra lifecycle (beyond MediaSurface contract) ───────────────────────
@@ -212,7 +210,7 @@ export class IframeMediaSurface implements MediaSurface {
     this.stopPolling();
     this.adapter.off('ready', this.onAdapterReady);
     this.adapter.off('state', this.onAdapterState);
-    this.adapter.off('error' as keyof IframeMediaAdapterEvents, this.onAdapterError as any);
+    this.adapter.off('error', this.onAdapterError);
     this.adapter.destroy();
     this.internalBus.clear();
   }
@@ -253,12 +251,14 @@ export class IframeMediaSurface implements MediaSurface {
         this._paused = false;
         this._ended = false;
         this._playIntentAfterEnd = false;
+        this.startPolling();
         this.internalBus.emit('play');
         this.internalBus.emit('playing');
         break;
 
       case 'paused':
         this._paused = true;
+        this.stopPolling();
         this.internalBus.emit('pause');
         break;
 
@@ -272,6 +272,7 @@ export class IframeMediaSurface implements MediaSurface {
 
         this._paused = true;
         this._ended = true;
+        this.stopPolling();
         this.internalBus.emit('ended');
         // Explicitly pause the adapter so it doesn't auto-replay (e.g. YouTube
         // restarts from 0 after firing ENDED when seeking near the end).
@@ -289,7 +290,7 @@ export class IframeMediaSurface implements MediaSurface {
   }
 
   private onAdapterError(err: unknown): void {
-    this.internalBus.emit('error', err as any);
+    this.internalBus.emit('error', err as MediaError | null);
   }
 
   private applyTime(t: number): void {
@@ -324,6 +325,7 @@ export class IframeMediaSurface implements MediaSurface {
   private applyEnded(): void {
     this._ended = true;
     this._paused = true;
+    this.stopPolling();
     this.internalBus.emit('ended');
   }
 
