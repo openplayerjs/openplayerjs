@@ -41,4 +41,5 @@ playwright-report/
 !examples/**/*.vtt
 
 # AI
-.claude
+CLAUDE.local.md
+.claude/settings.json
