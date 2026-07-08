@@ -10,6 +10,15 @@
  *   • Core unchanged → release only packages that have their own changes since
  *                     their last per-package tag.
  *
+ * After the package tags are pushed, one GitHub Release is published so the
+ * repository home page reflects the current version:
+ *   • Lockstep / same-version cycle → a single umbrella release tagged
+ *     `v<version>` (marked "latest") carrying the combined notes.
+ *   • Diverged cycle → one release per package on its own
+ *     `@openplayerjs/<pkg>@<version>` tag, highest semver marked "latest".
+ * The npm publish workflow triggers on `@openplayerjs/*@*` tags only, so the
+ * umbrella `v*` tag never re-triggers publishing.
+ *
  * Usage:
  *   node scripts/orchestrate-release.cjs [options]
  *
@@ -23,6 +32,7 @@
 const { execSync, spawnSync } = require('child_process');
 const { existsSync, readFileSync, rmSync, writeFileSync } = require('fs');
 const { join, resolve } = require('path');
+const { tmpdir } = require('os');
 
 // TYPE_SECTIONS and SECTION_ORDER are the single source of truth — shared with
 // split-changelog.cjs.  Do not duplicate them here.
@@ -462,13 +472,16 @@ function restoreDryRunSideEffects(pkgs) {
   } catch { /* file may not exist in HEAD yet */ }
 }
 
-function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}, lockedToCore = new Set()) {
+function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}, lockedToCore = new Set(), releaseTag = null) {
   const notesPath = join(ROOT, 'RELEASE_NOTES.md');
   const changelogPath = join(ROOT, 'CHANGELOG.md');
   const date = new Date().toISOString().slice(0, 10);
 
   const leadPkg = pkgs.includes('core') ? 'core' : pkgs[0];
-  const tagUrl = `https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/${leadPkg}%40${version}`;
+  // Link the changelog header at the GitHub Release that will back this entry:
+  // the umbrella `v<version>` tag when supplied, else the lead package tag.
+  const encodedTag = releaseTag ?? `@openplayerjs/${leadPkg}%40${version}`;
+  const tagUrl = `https://github.com/openplayerjs/openplayerjs/releases/tag/${encodedTag}`;
 
   let content;
   if (existsSync(notesPath)) {
@@ -496,6 +509,99 @@ function mergeReleaseNotesToChangelog(version, pkgs, prevTags = {}, lockedToCore
   // Do NOT commit here — the staged CHANGELOG is picked up by release-it's
   // addFiles config and included in the chore(release) commit.
   console.log(`\n✔ CHANGELOG.md updated to v${version} and staged for release commit.`);
+
+  // Returned so the caller can reuse the exact notes as the GitHub Release body.
+  return content;
+}
+
+// ─── GitHub Release creation ──────────────────────────────────────────────────
+
+const REPO_SLUG = 'openplayerjs/openplayerjs';
+
+/**
+ * Resolve a GitHub token: prefer an ambient GITHUB_TOKEN, else parse it out of
+ * the repo-root .env (the same file release-it reads via dotenv).
+ */
+function getGithubToken() {
+  if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN.trim();
+  try {
+    const env = readFileSync(join(ROOT, '.env'), 'utf8');
+    const m = env.match(/^\s*GITHUB_TOKEN\s*=\s*(.+?)\s*$/m);
+    if (m) return m[1].trim().replace(/^['"]|['"]$/g, '');
+  } catch { /* no .env present */ }
+  return null;
+}
+
+/** Current HEAD commit SHA — used as target_commitish for the umbrella tag. */
+function headSha() {
+  return execSync('git rev-parse HEAD', {
+    cwd: ROOT, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],
+  }).trim();
+}
+
+/**
+ * Create a GitHub Release. `body` is the markdown notes. `tagName` must already
+ * exist on the remote UNLESS `targetCommitish` is supplied, in which case GitHub
+ * creates the tag at that commit when the release is published.
+ *
+ * Never throws: a failure here must not fail a release whose packages are
+ * already published to npm — it logs and returns false. The token is passed to
+ * curl via the environment so it never appears in the command line.
+ */
+function createGitHubRelease({ tagName, name, body, targetCommitish, makeLatest = true }) {
+  if (isDryRun) {
+    console.log(`  [dry-run] would create GitHub Release ${tagName} (latest=${makeLatest})`);
+    return true;
+  }
+  const token = getGithubToken();
+  if (!token) {
+    console.warn(`\n⚠ No GITHUB_TOKEN found (env or .env) — skipping GitHub Release ${tagName}.`);
+    return false;
+  }
+
+  const payload = {
+    tag_name: tagName,
+    name: name ?? tagName,
+    body: body ?? '',
+    make_latest: makeLatest ? 'true' : 'false',
+    ...(targetCommitish ? { target_commitish: targetCommitish } : {}),
+  };
+  const tmp = join(tmpdir(), `op-gh-release-${Date.now()}.json`);
+  writeFileSync(tmp, JSON.stringify(payload), 'utf8');
+
+  try {
+    const out = execSync(
+      `curl -sS -w '\\n%{http_code}' -X POST ` +
+      `-H "Authorization: Bearer $GH_TOKEN" ` +
+      `-H "Accept: application/vnd.github+json" ` +
+      `-H "X-GitHub-Api-Version: 2022-11-28" ` +
+      `-H "Content-Type: application/json" ` +
+      `https://api.github.com/repos/${REPO_SLUG}/releases ` +
+      `--data @${JSON.stringify(tmp)}`,
+      { cwd: ROOT, encoding: 'utf8', env: { ...process.env, GH_TOKEN: token } },
+    );
+    const nl = out.lastIndexOf('\n');
+    const status = Number(out.slice(nl + 1).trim());
+    const respBody = out.slice(0, nl);
+
+    if (status >= 200 && status < 300) {
+      let url = null;
+      try { url = JSON.parse(respBody).html_url; } catch { /* non-JSON body */ }
+      console.log(`\n✔ GitHub Release ${tagName} created${url ? `: ${url}` : ''}`);
+      return true;
+    }
+    if (status === 422 && /already_exists/.test(respBody)) {
+      console.warn(`\n⚠ GitHub Release ${tagName} already exists — leaving it as-is.`);
+      return false;
+    }
+    console.warn(`\n⚠ GitHub Release ${tagName} not created (HTTP ${status}): ${respBody.slice(0, 300)}`);
+    return false;
+  } catch (err) {
+    console.warn(`\n⚠ GitHub Release ${tagName} failed: ${err.message}`);
+    return false;
+  } finally {
+    rmSync(tmp, { force: true });
+  }
 }
 
 /**
@@ -585,6 +691,7 @@ if (coreChanged) {
       }
       releasePackage(dep, targetVersion);
     }
+    createGitHubRelease({ tagName: `v${lockstepVersion}`, name: lockstepVersion, makeLatest: true });
     restoreDryRunSideEffects(['core', ...CORE_DEPENDENTS]);
     console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
   } else {
@@ -598,7 +705,9 @@ if (coreChanged) {
       // satisfy this condition — the filter is a safety net, not a skip rule.
       return isFirstRelease || semverCompare(readVersion(dep), lockstepVersion) < 0;
     });
-    mergeReleaseNotesToChangelog(lockstepVersion, ['core', ...releasedDeps], prevTags, new Set(releasedDeps));
+    const umbrellaNotes = mergeReleaseNotesToChangelog(
+      lockstepVersion, ['core', ...releasedDeps], prevTags, new Set(releasedDeps), `v${lockstepVersion}`,
+    );
 
     releasePackage('core', lockstepVersion);
     console.log(`\nCore released at ${lockstepVersion} → releasing dependents at same version.\n`);
@@ -611,6 +720,16 @@ if (coreChanged) {
       }
       releasePackage(dep, targetVersion);
     }
+
+    // All package tags are pushed; publish one umbrella GitHub Release so the
+    // repo home page shows the current version as "latest".
+    createGitHubRelease({
+      tagName: `v${lockstepVersion}`,
+      name: lockstepVersion,
+      body: umbrellaNotes,
+      targetCommitish: headSha(),
+      makeLatest: true,
+    });
   }
 } else {
   console.log('Core unchanged → releasing only packages with their own changes.\n');
@@ -643,10 +762,19 @@ if (coreChanged) {
       // what will actually be tagged.  Calling getPlannedVersion() for the first
       // package is enough — all packages in this group bump to the same version.
       const plannedVersion = getPlannedVersion(released[0]) ?? versions[0];
-      mergeReleaseNotesToChangelog(plannedVersion, released, prevTags);
+      const umbrellaNotes = mergeReleaseNotesToChangelog(
+        plannedVersion, released, prevTags, undefined, `v${plannedVersion}`,
+      );
       for (const pkg of released) {
         releasePackage(pkg);
       }
+      createGitHubRelease({
+        tagName: `v${plannedVersion}`,
+        name: plannedVersion,
+        body: umbrellaNotes,
+        targetCommitish: headSha(),
+        makeLatest: true,
+      });
     } else {
       // Packages diverged to independent versions.  Write a separate changelog
       // entry for each package so the version header is accurate, then release
@@ -655,11 +783,27 @@ if (coreChanged) {
       //
       // Each package may bump by a different increment, so we need a separate
       // getPlannedVersion() call per package.
+      const releasedInfo = [];
       for (let i = 0; i < released.length; i++) {
         const pkg = released[i];
         const plannedVersion = getPlannedVersion(pkg) ?? versions[i];
-        mergeReleaseNotesToChangelog(plannedVersion, [pkg], prevTags);
+        const notes = mergeReleaseNotesToChangelog(plannedVersion, [pkg], prevTags);
         releasePackage(pkg);
+        releasedInfo.push({ pkg, version: plannedVersion, notes });
+      }
+
+      // Versions diverged: one GitHub Release per package on its own tag, with
+      // the highest semver marked as the repo's "latest".
+      const latestVersion = releasedInfo
+        .map(r => r.version)
+        .reduce((max, v) => (semverCompare(v, max) > 0 ? v : max), '0.0.0');
+      for (const { pkg, version, notes } of releasedInfo) {
+        createGitHubRelease({
+          tagName: `@openplayerjs/${pkg}@${version}`,
+          name: `@openplayerjs/${pkg}@${version}`,
+          body: notes,
+          makeLatest: version === latestVersion,
+        });
       }
     }
   }
@@ -669,6 +813,7 @@ if (coreChanged) {
       releasePackage(pkg);
     }
     if (released.length) {
+      console.log(`  [dry-run] would create GitHub Release(s) for: ${released.join(', ')}`);
       restoreDryRunSideEffects(released);
       console.log('\n✔ Dry-run complete. Working tree restored to HEAD.');
     }
