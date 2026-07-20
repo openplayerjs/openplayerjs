@@ -72,7 +72,7 @@
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
     "lint-staged": "16.4.0",
-    "postcss": "8.5.16",
+    "postcss": "8.5.19",
     "postcss-cli": "11.0.1",
     "postcss-preset-env": "11.3.2",
     "prettier": "3.9.4",
