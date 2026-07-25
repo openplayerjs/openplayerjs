@@ -20,7 +20,7 @@ overrides:
   basic-ftp: 5.3.1
   brace-expansion: 5.0.7
   defu: 6.1.7
-  fast-uri: 3.1.3
+  fast-uri: 3.1.4
   ip-address: 10.2.0
   js-yaml: 4.3.0
   picomatch: 4.0.5
@@ -40,3 +40,6 @@ peerDependencyRules:
 #     dependency that is already installed, so blocking the script is safe.
 allowBuilds:
   unrs-resolver: false
+minimumReleaseAgeExclude:
+  # Renovate security update: fast-uri@3.1.4
+  - fast-uri@3.1.4
