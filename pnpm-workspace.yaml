@@ -10,6 +10,9 @@ engineStrict: false
 # The value is in MINUTES — 5 days = 5 × 24 × 60 = 7200.
 minimumReleaseAge: 7200
 
+minimumReleaseAgeExclude:
+  - brace-expansion
+
 # Before running any package script, warn if installed node_modules have drifted
 # from the lockfile — surfaces tampering or a stale/partial install.
 verifyDepsBeforeRun: warn
