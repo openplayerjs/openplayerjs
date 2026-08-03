@@ -12,6 +12,7 @@ minimumReleaseAge: 7200
 
 minimumReleaseAgeExclude:
   - brace-expansion
+  - fast-uri@3.1.5
 
 # Before running any package script, warn if installed node_modules have drifted
 # from the lockfile — surfaces tampering or a stale/partial install.
@@ -21,14 +22,14 @@ overrides:
   '@babel/core': 7.29.7
   '@xmldom/xmldom': 0.9.10
   basic-ftp: 5.3.1
-  brace-expansion: 5.0.8
+  brace-expansion: 5.0.9
   defu: 6.1.7
-  fast-uri: 3.1.4
-  ip-address: 10.2.0
+  fast-uri: 3.1.5
+  ip-address: 10.3.1
   js-yaml: 4.3.0
   picomatch: 4.0.5
   svgo: 4.0.2
-  undici: 7.28.0
+  undici: 7.29.0
   ws: 8.21.1
 
 peerDependencyRules:
