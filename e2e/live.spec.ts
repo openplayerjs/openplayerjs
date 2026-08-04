@@ -29,7 +29,9 @@ test.describe('Live — HLS live stream', () => {
   test('renders player wrapper and controls', async ({ page }) => {
     await expect(page.locator(sel.wrapper)).toBeVisible();
     await expect(page.locator(sel.play)).toBeVisible();
-    await expect(page.locator(sel.progress)).toBeVisible();
+    // The progress bar is built, but it hides itself as soon as `isLive` is
+    // detected — asserting visibility here races the manifest parse.
+    await expect(page.locator(sel.progress)).toBeAttached();
     await expect(page.locator(sel.settings)).toBeVisible();
   });
 

@@ -2,6 +2,7 @@
 
 import type { PluginContext } from '@openplayerjs/core';
 import { EventBus } from '@openplayerjs/core';
+import VMAP from '@dailymotion/vmap';
 import { AdsPlugin } from '../src/ads';
 
 /** AdsPlugin with `@internal` getters narrowed to non-undefined for test access. */
@@ -10,9 +11,17 @@ type AdsPluginInternals = AdsPlugin & {
   pendingPercentBreaks: NonNullable<AdsPlugin['pendingPercentBreaks']>;
 };
 
+/** VMAP mock knobs: `__breaks` is what the library "parses", `__throw` makes it choke. */
+const vmapMock = VMAP as unknown as { __breaks: unknown[]; __throw: unknown };
+
 const globalWithFetch = globalThis as unknown as { fetch: unknown };
 
 describe('AdsPlugin VMAP DOM fallback parser', () => {
+  beforeEach(() => {
+    vmapMock.__breaks = [];
+    vmapMock.__throw = null;
+  });
+
   test('parses namespaced VMAP XML directly when VMAP lib returns no breaks', async () => {
     const video = document.createElement('video');
     document.body.appendChild(video);
@@ -59,5 +68,42 @@ describe('AdsPlugin VMAP DOM fallback parser', () => {
     Object.defineProperty(video, 'duration', { configurable: true, value: 200 });
     const due = plugin.getDueMidrollBreaks(101);
     expect(due.some((b) => b.id?.includes('mid'))).toBe(true);
+  });
+
+  test('falls back to XML parsing when the VMAP library throws', async () => {
+    vmapMock.__throw = new Error('VMAP library exploded');
+
+    const video = document.createElement('video');
+    document.body.appendChild(video);
+
+    const ctx = {
+      core: { media: video, muted: false, volume: 1 },
+      events: new EventBus(),
+      state: { current: 'ready' },
+      leases: { acquire: () => true, release: () => undefined, owner: () => undefined },
+    } as unknown as PluginContext;
+
+    const plugin = new AdsPlugin({
+      interceptPlayForPreroll: false,
+      allowNativeControls: true,
+    }) as unknown as AdsPluginInternals;
+    plugin.setup(ctx);
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+      <VMAP xmlns="http://www.iab.net/videosuite/vmap" version="1.0">
+        <AdBreak breakType="linear" timeOffset="start" breakId="pre">
+          <AdSource><AdTagURI><![CDATA[https://example.com/pre.xml]]></AdTagURI></AdSource>
+        </AdBreak>
+      </VMAP>`;
+
+    globalWithFetch.fetch = jest.fn(async () => ({ ok: true, text: async () => xml }));
+
+    await plugin.loadVmapAndMerge([], 'https://example.com/vmap.xml');
+
+    // The library never produced a break, so the DOM parser must supply it.
+    const pre = plugin.resolvedBreaks.find((b) => b.at === 'preroll');
+    expect(pre?.source?.src).toBe('https://example.com/pre.xml');
+    // A library crash is recovered, not surfaced as a failed load.
+    expect(plugin.vmapPending).toBe(false);
   });
 });

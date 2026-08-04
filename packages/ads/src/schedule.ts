@@ -85,6 +85,9 @@ type PendingPercentBreak = {
   source: AdsSource;
 };
 
+/** Ad break as produced by `@dailymotion/vmap`; the library ships no types, so fields stay `unknown`. */
+type VmapAdBreak = { breakType?: unknown; timeOffset?: unknown; breakId?: unknown; adSource?: unknown };
+
 /** A namespace-aware DOM query root. `ParentNode` alone lacks `getElementsByTagName*` in the TS lib. */
 type DOMQuerier = ParentNode & {
   getElementsByTagNameNS?(ns: string, name: string): HTMLCollectionOf<Element>;
@@ -280,10 +283,19 @@ export class AdScheduler {
           });
 
       const xmlDoc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const vmap = new VMAP(xmlDoc);
       const vmapBreaks: AdsBreakConfig[] = [];
-      const breaks = vmap.adBreaks || [];
       const prevPendingCount = this.pendingPercentBreaks.length;
+
+      let breaks: VmapAdBreak[] = [];
+      try {
+        const vmap = new VMAP(xmlDoc);
+        breaks = Array.isArray(vmap?.adBreaks) ? (vmap.adBreaks as VmapAdBreak[]) : [];
+      } catch (err) {
+        this.warn('VMAP library parse failed, falling back to XML parser', err);
+        this.parseVmapFallback(xmlDoc, vmapBreaks, prevPendingCount);
+        this.resolvedBreaks = [...existing, ...vmapBreaks];
+        return;
+      }
 
       const rawAdBreakCount = (() => {
         try {
