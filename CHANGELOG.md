@@ -1,5 +1,61 @@
 # Changelog
 
+## [3.6.1](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.1) (2026-08-04)
+
+_August 3, 2026_
+
+### `@openplayerjs/ads@3.6.1`
+
+#### Bug Fixes
+
+- **[ads]** recover vmap breaks when the parser library throws (919ec28) @Rafael Miranda
+- **[repo]** replace dead example video and de-flake live progress assertion (919ec28) @Rafael Miranda
+
+### General
+
+#### Features
+
+- **[release]** publish a GitHub Release per version from the orchestrator ([#603](https://github.com/openplayerjs/openplayerjs/pull/603)) @Rafael Miranda
+  - lockstep / same-version cycles -> a single umbrella release tagged
+  - diverged cycles -> one release per package on its existing
+
+#### Bug Fixes
+
+- **[deps]** Added exclusion for package to accept vulnerability (c72393f) @Rafael Miranda
+- **[deps]** Fixed vulnerabilities: GHSA-mh99-v99m-4gvg, GHSA-2p49-hgcm-8545 and GHSA-v2hh-gcrm-f6hx (13819d8) @Rafael Miranda
+- **[deps]** repair broken pnpm-lock.yaml js-yaml entry (cdb81ce) @Rafael Miranda
+
+#### Documentation
+
+- **[repo]** rewrite CLAUDE.md as operating manual and add AI skills ([#602](https://github.com/openplayerjs/openplayerjs/pull/602)) @Rafael Miranda
+
+#### Chores
+
+- **[deps]** update dependency postcss to v8.5.23 [security] ([#626](https://github.com/openplayerjs/openplayerjs/pull/626)) @renovate[bot]
+- **[deps]** update dependency prettier to v3.9.6 (5b3cf5b) @renovate[bot]
+- **[deps]** Fixed vulnerabilities: GHSA-4cwx-7wf7-3272, GHSA-7p8r-x3mc-p8w7, GHSA-mwp4-54f8-5fhr, GHSA-rgw5-rvv9-x895 (5b3cf5b) @renovate[bot]
+- **[deps]** update postcss ([#617](https://github.com/openplayerjs/openplayerjs/pull/617)) @renovate[bot]
+- **[deps]** update actions/checkout action to v6.1.0 ([#618](https://github.com/openplayerjs/openplayerjs/pull/618)) @renovate[bot]
+- **[deps]** update dependency turbo to v2.10.7 ([#619](https://github.com/openplayerjs/openplayerjs/pull/619)) @renovate[bot]
+- **[deps]** update eslint ([#620](https://github.com/openplayerjs/openplayerjs/pull/620)) @renovate[bot]
+- **[deps]** update github/codeql-action action to v4.37.3 ([#621](https://github.com/openplayerjs/openplayerjs/pull/621)) @renovate[bot]
+- **[deps]** update coverallsapp/github-action action to v2.3.8 ([#622](https://github.com/openplayerjs/openplayerjs/pull/622)) @renovate[bot]
+- **[deps]** update dependency rollup to v4.62.3 ([#623](https://github.com/openplayerjs/openplayerjs/pull/623)) @renovate[bot]
+- **[deps]** update dependency ts-jest to v29.4.12 ([#624](https://github.com/openplayerjs/openplayerjs/pull/624)) @renovate[bot]
+- **[deps]** update dependency @playwright/test to v1.62.0 ([#625](https://github.com/openplayerjs/openplayerjs/pull/625)) @renovate[bot]
+- **[deps]** update dependency ws to v8.21.1 ([#613](https://github.com/openplayerjs/openplayerjs/pull/613)) @renovate[bot]
+- **[deps]** update actions/setup-node action to v6.5.0 ([#614](https://github.com/openplayerjs/openplayerjs/pull/614)) @renovate[bot]
+- **[deps]** update dependency prettier to v3.9.5 ([#612](https://github.com/openplayerjs/openplayerjs/pull/612)) @renovate[bot]
+- **[deps]** update dependency postcss to v8.5.19 ([#611](https://github.com/openplayerjs/openplayerjs/pull/611)) @renovate[bot]
+- **[deps]** update dependency prettier to v3.9.4 ([#610](https://github.com/openplayerjs/openplayerjs/pull/610)) @renovate[bot]
+- **[deps]** update dependency @types/node to v24.13.3 ([#609](https://github.com/openplayerjs/openplayerjs/pull/609)) @renovate[bot]
+- **[deps]** update github/codeql-action action to v4.36.3 ([#608](https://github.com/openplayerjs/openplayerjs/pull/608)) @renovate[bot]
+- **[deps]** update dependency picomatch to v4.0.5 ([#607](https://github.com/openplayerjs/openplayerjs/pull/607)) @renovate[bot]
+- **[deps]** update dependency js-yaml to v4.3.0 ([#601](https://github.com/openplayerjs/openplayerjs/pull/601)) @renovate[bot]
+- **[deps]** update postcss ([#600](https://github.com/openplayerjs/openplayerjs/pull/600)) @renovate[bot]
+- **[deps]** update dependency fast-uri to v3.1.3 ([#599](https://github.com/openplayerjs/openplayerjs/pull/599)) @renovate[bot]
+- **[deps]** update dependency brace-expansion to v5.0.7 ([#598](https://github.com/openplayerjs/openplayerjs/pull/598)) @renovate[bot]
+
 ## [3.6.0](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/core%403.6.0) (2026-07-01)
 
 _July 1, 2026_
