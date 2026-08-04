@@ -59,4 +59,33 @@ const SCOPE_TO_PACKAGE = {
   youtube: { dir: 'packages/youtube', name: '@openplayerjs/youtube' },
 };
 
-module.exports = { TYPE_SECTIONS, SECTION_ORDER, PACKAGES, SCOPE_TO_PACKAGE };
+/**
+ * Maps a git author name (`%an`) to a GitHub login, so changelog credits render
+ * as real @mentions. Keyed on the name rather than the email because the same
+ * contributor commits under several addresses over the years.
+ *
+ * Bot authors ('renovate[bot]', 'dependabot[bot]') already commit under their
+ * exact GitHub login and need no entry here.
+ */
+const AUTHOR_ALIASES = {
+  'Rafael Miranda': 'rafa8626',
+  'Snyk bot': 'snyk-bot',
+};
+
+/**
+ * Render a git author name as a changelog credit.
+ *
+ * A GitHub login never contains whitespace, so an unmapped multi-word name
+ * cannot be mentioned safely — `@Nejc Sever` would either dangle or, worse,
+ * notify whoever happens to own `@Nejc`. Those fall back to the plain name with
+ * no `@`; add an AUTHOR_ALIASES entry to turn one into a real mention.
+ */
+function authorCredit(author) {
+  const name = String(author ?? '').trim();
+  if (!name) return '';
+  const alias = AUTHOR_ALIASES[name];
+  if (alias) return `@${alias}`;
+  return /\s/.test(name) ? name : `@${name}`;
+}
+
+module.exports = { TYPE_SECTIONS, SECTION_ORDER, PACKAGES, SCOPE_TO_PACKAGE, AUTHOR_ALIASES, authorCredit };
