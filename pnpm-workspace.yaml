@@ -13,6 +13,8 @@ minimumReleaseAge: 7200
 minimumReleaseAgeExclude:
   - brace-expansion
   - fast-uri@3.1.5
+  # Renovate security update: postcss@8.5.23
+  - postcss@8.5.23
 
 # Before running any package script, warn if installed node_modules have drifted
 # from the lockfile — surfaces tampering or a stale/partial install.
