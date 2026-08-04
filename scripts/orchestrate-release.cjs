@@ -36,7 +36,7 @@ const { tmpdir } = require('os');
 
 // TYPE_SECTIONS and SECTION_ORDER are the single source of truth — shared with
 // split-changelog.cjs.  Do not duplicate them here.
-const { TYPE_SECTIONS, SECTION_ORDER, SCOPE_TO_PACKAGE } = require('./changelog-config.cjs');
+const { TYPE_SECTIONS, SECTION_ORDER, SCOPE_TO_PACKAGE, authorCredit } = require('./changelog-config.cjs');
 
 // ─── Commit body helpers ──────────────────────────────────────────────────────
 
@@ -178,9 +178,10 @@ function generateReleaseNotes(version, pkgs, prevTags, lockedToCore = new Set())
       ? `([#${pr}](https://github.com/openplayerjs/openplayerjs/pull/${pr}))`
       : `(${hash.slice(0, 7)})`;
     const bodyLines = cleanBody(body);
+    const credit = authorCredit(author);
     const text = bodyLines
-      ? `- ${scopePrefix}${desc} ${ref} @${author}\n${bodyLines}`
-      : `- ${scopePrefix}${desc} ${ref} @${author}`;
+      ? `- ${scopePrefix}${desc} ${ref} ${credit}\n${bodyLines}`
+      : `- ${scopePrefix}${desc} ${ref} ${credit}`;
     return { sectionName, scope, text };
   }
 
@@ -532,6 +533,52 @@ function getGithubToken() {
   return null;
 }
 
+/**
+ * Verify the GitHub token BEFORE anything is published.
+ *
+ * The GitHub Release step deliberately never fails a release (see
+ * createGitHubRelease), so a dead token used to surface only as a 401 after the
+ * packages were already on npm — unfixable without a version bump. Checking up
+ * front turns that into a clean abort.
+ *
+ * Note the token precedence: an ambient GITHUB_TOKEN shadows the one in .env, so
+ * a stale export in a shell profile silently wins over a freshly updated .env.
+ * The reported source makes that visible.
+ */
+function preflightGithubToken() {
+  if (isDryRun) return;
+  const token = getGithubToken();
+  if (!token) {
+    console.warn('\n⚠ No GITHUB_TOKEN found (env or .env) — the GitHub Release step will be skipped.\n');
+    return;
+  }
+  const source = process.env.GITHUB_TOKEN ? 'ambient env' : '.env';
+  let status = '000';
+  try {
+    status = execSync(
+      `curl -sS -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/user`,
+      { cwd: ROOT, encoding: 'utf8', env: { ...process.env, GH_TOKEN: token }, stdio: ['pipe', 'pipe', 'pipe'] },
+    ).trim();
+  } catch {
+    // Network failure is not a reason to block a release; the release step logs it.
+    console.warn(`\n⚠ Could not reach api.github.com to verify GITHUB_TOKEN (from ${source}) — continuing.\n`);
+    return;
+  }
+  if (status === '200') {
+    console.log(`✔ GITHUB_TOKEN (from ${source}) verified.\n`);
+    return;
+  }
+  console.error(
+    `\n✖ GITHUB_TOKEN (from ${source}) was rejected by GitHub (HTTP ${status}).\n` +
+    `  Aborting BEFORE publishing — nothing has been released.\n` +
+    (source === 'ambient env'
+      ? `  An ambient GITHUB_TOKEN overrides .env; if you just updated .env, clear the stale\n` +
+        `  export (e.g. in ~/.zshenv) or update it there instead.\n`
+      : `  Mint a new token with 'repo' scope (or fine-grained Contents: read & write).\n`),
+  );
+  process.exit(1);
+}
+
 /** Current HEAD commit SHA — used as target_commitish for the umbrella tag. */
 function headSha() {
   return execSync('git rev-parse HEAD', {
@@ -635,12 +682,13 @@ function getPlannedVersion(pkg) {
 
 // ─── Exports (for testing / tooling) ─────────────────────────────────────────
 
-module.exports = { generateReleaseNotes, readVersion, getLastTag };
+module.exports = { generateReleaseNotes, readVersion, getLastTag, preflightGithubToken };
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 if (require.main !== module) return; // allow require() without side-effects
 
+preflightGithubToken();
 checkTagAncestry();
 
 const coreTag = getLastTag('core');
