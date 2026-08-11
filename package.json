@@ -42,6 +42,7 @@
     "lint:affected": "turbo run lint --affected",
     "type-check": "tsc --noEmit -p tsconfig.typecheck.json",
     "preflight": "node scripts/preflight.cjs",
+    "audit:fix": "node scripts/audit-fix.cjs",
     "test:e2e": "NODE_OPTIONS=--no-deprecation playwright test",
     "test:e2e:ui": "NODE_OPTIONS=--no-deprecation playwright test --ui",
     "test:e2e:debug": "NODE_OPTIONS=--no-deprecation playwright test --debug"

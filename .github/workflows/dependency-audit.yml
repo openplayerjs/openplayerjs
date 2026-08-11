@@ -41,3 +41,89 @@ jobs:
         # Fails the job (and blocks merge) for high or critical vulnerabilities.
         # Use --audit-level=critical to only block on critical CVEs.
         run: pnpm audit --audit-level=high
+
+  audit-fix:
+    name: Auto-resolve audit findings
+    needs: audit
+    # Only for same-repo PR branches: a fork PR's GITHUB_TOKEN is read-only regardless
+    # of the `permissions` below (GitHub-enforced), so a push back to the fork would
+    # fail anyway — skip straight to leaving the failing `audit` job as the signal.
+    if: always() && needs.audit.result == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 26.3.1
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Attempt automatic remediation
+        # Deterministic only — no AI/network beyond the npm registry. See
+        # scripts/audit-fix.cjs and the `audit-fix` skill for exactly what this can
+        # and can't fix. Non-zero exit (partial or no fix) is expected and handled
+        # below; the `audit` job staying red is what still blocks the merge.
+        continue-on-error: true
+        env:
+          AUDIT_FIX_SUMMARY_PATH: ${{ runner.temp }}/audit-fix-summary.json
+        run: node scripts/audit-fix.cjs
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet -- pnpm-workspace.yaml pnpm-lock.yaml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push fix
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          SUMMARY_PATH: ${{ runner.temp }}/audit-fix-summary.json
+        run: |
+          node scripts/audit-fix-report.cjs --format=commit "$SUMMARY_PATH" > "$RUNNER_TEMP/commit-message.txt"
+          git config user.name 'openplayerjs-bot'
+          git config user.email 'actions@github.com'
+          git add pnpm-workspace.yaml pnpm-lock.yaml
+          git commit -F "$RUNNER_TEMP/commit-message.txt"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
+
+      - name: Comment on PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          SUMMARY_PATH: ${{ runner.temp }}/audit-fix-summary.json
+        run: |
+          node scripts/audit-fix-report.cjs --format=comment "$SUMMARY_PATH" > "$RUNNER_TEMP/comment-body.md" || true
+          if [ ! -s "$RUNNER_TEMP/comment-body.md" ]; then
+            exit 0
+          fi
+
+          MARKER="<!-- audit-fix-bot -->"
+          EXISTING_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\"))][0].id")
+
+          if [ -n "$EXISTING_ID" ] && [ "$EXISTING_ID" != "null" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$EXISTING_ID" -f body=@"$RUNNER_TEMP/comment-body.md"
+          else
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file "$RUNNER_TEMP/comment-body.md"
+          fi
