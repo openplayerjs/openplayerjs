@@ -28,8 +28,9 @@ function listNativeTracks(media: HTMLMediaElement): { index: number; track: Text
   return out;
 }
 
-function getNativeShowingIndex(media: HTMLMediaElement): number | 'off' {
-  for (const x of listNativeTracks(media)) {
+/** Derives the showing index from an already-computed track list, skipping a redundant textTracks read. */
+function getShowingIndex(tracks: { index: number; track: TextTrack }[]): number | 'off' {
+  for (const x of tracks) {
     if (x.track.mode === 'showing') return x.index;
   }
   return 'off';
@@ -95,7 +96,7 @@ export class CaptionsControl extends BaseControl {
           const adTracks = listNativeTracks(adVideo);
           this.button.style.display = adTracks.length > 0 ? '' : 'none';
           if (adTracks.length > 0) {
-            const on = getNativeShowingIndex(adVideo) !== 'off';
+            const on = getShowingIndex(adTracks) !== 'off';
             this.button.classList.toggle('op-controls__captions--on', on);
             this.button.setAttribute('aria-pressed', on ? 'true' : 'false');
           }
@@ -111,7 +112,7 @@ export class CaptionsControl extends BaseControl {
       const hasTracks = nativeTracks.length > 0 || providerTracks.length > 0;
       this.button.style.display = hasTracks ? '' : 'none';
 
-      const on = provider ? provider.getActiveTrack() !== null : getNativeShowingIndex(core.media) !== 'off';
+      const on = provider ? provider.getActiveTrack() !== null : getShowingIndex(nativeTracks) !== 'off';
 
       this.button.classList.toggle('op-controls__captions--on', on);
       this.button.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -129,12 +130,12 @@ export class CaptionsControl extends BaseControl {
           // Toggle captions on the ad video. Use 'hidden' (not 'disabled') so
           // the browser keeps VTT data; 'disabled' discards it and re-enabling
           // silently fails.
-          const showing = getNativeShowingIndex(adVideo);
+          const adTracks = listNativeTracks(adVideo);
+          const showing = getShowingIndex(adTracks);
           if (showing === 'off') {
-            const tracks = listNativeTracks(adVideo);
             // Use lastAdTrackIndex (ad-specific) — not lastSelectedIndex which
             // tracks content-media state and may point to a wrong index.
-            const idx = this.lastAdTrackIndex ?? tracks[0]?.index;
+            const idx = this.lastAdTrackIndex ?? adTracks[0]?.index;
             if (typeof idx === 'number') selectNativeIndex(adVideo, idx, 'hidden');
           } else {
             setNativeAllHidden(adVideo);
@@ -154,10 +155,10 @@ export class CaptionsControl extends BaseControl {
               }
             }
           } else {
-            const showing = getNativeShowingIndex(core.media);
+            const nativeTracks = listNativeTracks(core.media);
+            const showing = getShowingIndex(nativeTracks);
             if (showing === 'off') {
-              const tracks = listNativeTracks(core.media);
-              const idx = this.lastSelectedIndex ?? tracks[0]?.index;
+              const idx = this.lastSelectedIndex ?? nativeTracks[0]?.index;
               if (typeof idx === 'number') selectNativeIndex(core.media, idx);
             } else {
               setNativeAllOff(core.media);
@@ -185,7 +186,7 @@ export class CaptionsControl extends BaseControl {
           // Show ad video's caption tracks in the submenu
           const adTracks = listNativeTracks(adVideo);
           if (!adTracks.length) return null;
-          const showing = getNativeShowingIndex(adVideo);
+          const showing = getShowingIndex(adTracks);
           return {
             id: 'captions',
             label,
@@ -251,7 +252,7 @@ export class CaptionsControl extends BaseControl {
         }
 
         if (!nativeTracks.length) return null;
-        const showing = getNativeShowingIndex(core.media);
+        const showing = getShowingIndex(nativeTracks);
 
         return {
           id: 'captions',
