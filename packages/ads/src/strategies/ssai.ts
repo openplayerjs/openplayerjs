@@ -10,6 +10,14 @@ type SsaiBreak = {
   firedQuartiles: Set<number>;
 };
 
+/**
+ * Resolves a SCTE35-IN cue's id back to its open break's id. Some hls.js builds/tests mint a
+ * `-in` suffix on the end-cue id instead of reusing the start-cue id verbatim.
+ */
+function resolveEndBreakId(activeBreaks: ReadonlyMap<string, SsaiBreak>, id: string): string {
+  return activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
+}
+
 /** Non-standard SCTE-35 fields hls.js attaches to metadata cues (DataCue / VTTCue / legacy). */
 type RawCue = TextTrackCue & {
   data?: ArrayBuffer;
@@ -134,7 +142,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
       return;
     }
     if (value?.key === 'SCTE35-IN') {
-      const resolvedId = this.activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
+      const resolvedId = resolveEndBreakId(this.activeBreaks, id);
       this.endBreak(resolvedId);
       return;
     }
@@ -149,7 +157,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
       return;
     }
     if (hasSpliceIn) {
-      const resolvedId = this.activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
+      const resolvedId = resolveEndBreakId(this.activeBreaks, id);
       this.endBreak(resolvedId);
       return;
     }
@@ -165,7 +173,7 @@ export class SsaiAdStrategy implements AdSessionStrategy {
           isFinite(cue.endTime) && cue.endTime > cue.startTime ? cue.endTime - cue.startTime : cmd.durationSecs;
         this.startBreak(id, dur, cue.startTime);
       } else {
-        const resolvedId = this.activeBreaks.has(id) ? id : id.endsWith('-in') ? id.slice(0, -3) : id;
+        const resolvedId = resolveEndBreakId(this.activeBreaks, id);
         this.endBreak(resolvedId);
       }
     }
