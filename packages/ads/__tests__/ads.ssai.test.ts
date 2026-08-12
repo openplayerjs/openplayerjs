@@ -368,6 +368,23 @@ describe('SsaiAdStrategy — EXT-X-DATERANGE (scte35Out/In properties)', () => {
     expect(events).toEqual(['start', 'end']);
     strategy.destroy();
   });
+
+  test('legacy scte35In property resolves -in suffix to base break id', () => {
+    const { ctx, bus, video } = makeCtx();
+    const strategy = new SsaiAdStrategy();
+    const track = makeMetadataTrack(video);
+    strategy.init(ctx, {});
+
+    const ended: string[] = [];
+    bus.on('ads:break:end', () => ended.push('end'));
+
+    // Start break with base id 'legacy-base'; end cue arrives with id 'legacy-base-in'
+    fireCueChange(track, [makeDateRangeCue('legacy-base', 'out')]);
+    fireCueChange(track, [makeDateRangeCue('legacy-base-in', 'in')]);
+
+    expect(ended).toHaveLength(1);
+    strategy.destroy();
+  });
 });
 
 describe('SsaiAdStrategy — deduplication', () => {
