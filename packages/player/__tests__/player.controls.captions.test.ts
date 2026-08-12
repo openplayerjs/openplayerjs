@@ -34,6 +34,33 @@ function mockTextTracksOn(media: HTMLMediaElement, tracks: MockTrack[]): MockTra
   return trackObjs;
 }
 
+/** Same shape as mockTextTracksOn, but counts every `media.textTracks` getter read. */
+function mockTextTracksWithReadCounter(media: HTMLMediaElement, tracks: MockTrack[]): { reads: () => number } {
+  const trackObjs: MockTrack[] = tracks.map((t) => ({ ...t }));
+  const trackList = {
+    length: trackObjs.length,
+    ...Object.fromEntries(trackObjs.map((t, i) => [i, t])),
+    item: (i: number) => trackObjs[i] as unknown as TextTrack,
+    getTrackById: (_id: string) => null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+    onchange: null,
+    onaddtrack: null,
+    onremovetrack: null,
+  } as unknown as TextTrackList;
+
+  let readCount = 0;
+  Object.defineProperty(media, 'textTracks', {
+    configurable: true,
+    get() {
+      readCount += 1;
+      return trackList;
+    },
+  });
+  return { reads: () => readCount };
+}
+
 // ─── createCaptionsControl factory ───────────────────────────────────────────
 
 describe('createCaptionsControl factory', () => {
@@ -816,6 +843,69 @@ describe('CaptionsControl – provider-based captions', () => {
     expect(provider._active).toBeNull();
 
     localStorage.removeItem('op:caption:track');
+    control.destroy();
+  });
+});
+
+// ─── refresh() reads textTracks once per pass (perf) ────────────────────────
+
+describe('CaptionsControl – refresh avoids a redundant textTracks read', () => {
+  test('refresh() reads media.textTracks once when computing button state', () => {
+    const player = makeCore();
+    const video = player.media as HTMLVideoElement;
+    const counter = mockTextTracksWithReadCounter(video, [
+      { kind: 'captions', label: 'English', language: 'en', mode: 'disabled' },
+    ]);
+
+    const control = new CaptionsControl();
+    control.create(player);
+
+    const baseline = counter.reads();
+    player.events.emit('loadedmetadata'); // triggers exactly one refresh() call
+
+    // refresh() derives both "has tracks" and "is showing" from a single
+    // listNativeTracks() list, instead of reading textTracks a second time
+    // inside getNativeShowingIndex.
+    expect(counter.reads() - baseline).toBe(1);
+
+    control.destroy();
+  });
+
+  test('toggling captions on (ad video) reads textTracks once to resolve showing state and fallback index', async () => {
+    const player = makeCore();
+    const overlayMgr = getOverlayManager(player);
+    const adVideo = document.createElement('video');
+    const counter = mockTextTracksWithReadCounter(adVideo, [
+      { kind: 'captions', label: 'Ad EN', language: 'en', mode: 'disabled' },
+    ]);
+
+    const control = new CaptionsControl();
+    const el = control.create(player);
+    document.body.appendChild(el);
+
+    overlayMgr.activate({
+      id: 'ads',
+      priority: 100,
+      mode: 'normal',
+      duration: 10,
+      value: 0,
+      canSeek: false,
+      fullscreenVideoEl: adVideo as HTMLElement,
+    });
+
+    await Promise.resolve();
+
+    const baseline = counter.reads();
+    (el as HTMLButtonElement).click();
+
+    // Click handler: 1 read to resolve both "showing" and the lastAdTrackIndex fallback
+    // (was 2: one via getNativeShowingIndex(adVideo), one explicit listNativeTracks(adVideo))
+    // + 1 read inside selectNativeIndex (untouched by this change).
+    // Trailing refresh(): 1 read reused for both "has tracks" and "is showing"
+    // (was 2: listNativeTracks(adVideo) + a second read via getNativeShowingIndex(adVideo)).
+    // Total: 3 reads post-fix, was 5 pre-fix.
+    expect(counter.reads() - baseline).toBe(3);
+
     control.destroy();
   });
 });
