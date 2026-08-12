@@ -1,0 +1,64 @@
+on:
+  pull_request:
+    branches: ['**']
+
+name: Test coverage checklist
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-gap-check:
+    name: Flag new elements without tests
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 26.3.1
+
+      - name: Run heuristic scan
+        # Advisory only — this job never fails the build (see scripts/test-gap-check.cjs).
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/test-gap-check.cjs "$PR_BASE" "$PR_HEAD" > "$RUNNER_TEMP/test-gap-report.md"
+
+      - name: Post, update, or clear PR comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          MARKER="<!-- test-gap-check-bot -->"
+          EXISTING_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"$MARKER\"))][0].id")
+
+          if ! grep -q "$MARKER" "$RUNNER_TEMP/test-gap-report.md"; then
+            # Nothing to flag on this push — clear a stale checklist from an earlier one.
+            if [ -n "$EXISTING_ID" ] && [ "$EXISTING_ID" != "null" ]; then
+              gh api -X DELETE "repos/$REPO/issues/comments/$EXISTING_ID"
+            fi
+            exit 0
+          fi
+
+          if [ -n "$EXISTING_ID" ] && [ "$EXISTING_ID" != "null" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$EXISTING_ID" -f body=@"$RUNNER_TEMP/test-gap-report.md"
+          else
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file "$RUNNER_TEMP/test-gap-report.md"
+          fi

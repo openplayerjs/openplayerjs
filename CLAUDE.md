@@ -40,10 +40,23 @@ pnpm run type-check        # tsc --noEmit, all packages
 pnpm run preflight         # workspace sanity gate (also first step of release)
 pnpm run test:e2e          # Playwright (headless); :ui / :debug variants exist
 pnpm run release:dry-run   # preview release; NEVER run non-dry release unprompted (E1)
+pnpm run audit:fix         # deterministic pnpm-audit remediation — see the audit-fix skill
 ```
 
 Run a single test file with `pnpm exec jest packages/ads/__tests__/ads.test.ts`. Never bypass
 these scripts with hand-rolled tsc/rollup/jest invocations that use different configs.
+
+### CI automation you'll see on PRs
+
+- **`dependency-audit.yml`'s `audit-fix` job** auto-commits a `pnpm-workspace.yaml`
+  overrides fix onto same-repo PR branches when the `audit` job goes red, deterministically
+  (`scripts/audit-fix.cjs` — no AI, no new secret). See the `audit-fix` skill for the
+  procedure and its E1 carve-out; it does not fix everything (published-package direct
+  dependencies, cooldown-blocked versions) — those still need a human.
+- **`test-gap-check.yml`** posts a non-blocking PR comment checklist when a diff adds a
+  new control/engine/plugin/export/event (per gates G2/G4/G5) without an apparent matching
+  test. It is a diff heuristic, not a coverage tool — false positives happen; it never
+  fails the build. See `scripts/test-gap-check.cjs`.
 
 ## 3. Non-negotiable rules — each exists because the mistake actually happened
 
@@ -243,10 +256,12 @@ choosing between two internal implementations when one clearly matches existing 
 **Stop and ask first (E1):** running `pnpm run release*` (anything non-dry-run) or `npm
 publish`; `git push` of any kind; deleting files you did not create in the session; changing
 a public API signature, an event name, or an event payload shape (all are breaking for
-downstream consumers); adding or upgrading any dependency; editing shared config
-(`tsconfig*`, `rollup*`, `jest.config.cjs`, `eslint.config.cjs`, `turbo.json`,
-`commitlint.config.cjs`); editing any repository outside this one when the task didn't
-mention it; weakening a coverage threshold or excluding a file from coverage; anything
+downstream consumers); adding or upgrading any dependency **except** a same-package-version
+security override applied via the `audit-fix` skill's exact procedure (`pnpm-workspace.yaml`
+`overrides:` only, verified clean by `pnpm audit` afterward — never a `package.json` edit);
+editing shared config (`tsconfig*`, `rollup*`, `jest.config.cjs`, `eslint.config.cjs`,
+`turbo.json`, `commitlint.config.cjs`); editing any repository outside this one when the task
+didn't mention it; weakening a coverage threshold or excluding a file from coverage; anything
 under R16.
 
 **Ambiguity rule:** if two readings of the task lead to different public behavior, ask. If

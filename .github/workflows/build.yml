@@ -24,24 +24,65 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+
+      # Keeps this job always green and reporting (it's a required branch-protection
+      # check) while skipping build/lint/type-check for diffs that can't affect their
+      # output — e.g. a docs-only or CI-config-only PR. Diffs PR base..head (or the
+      # previous commit on a push) against everything build/lint/type-check actually
+      # read. Falls back to "run everything" whenever the base commit isn't usable (new
+      # branch, force-push, shallow history) rather than risk skipping a real change.
+      - name: Detect relevant changes
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          fi
+
+          PATHSPECS=(
+            '*.ts' '*.css' 'tsconfig*.json' 'rollup.config.mjs' 'postcss.config.cjs'
+            'turbo.json' 'eslint.config.cjs' 'package.json' 'packages/*/package.json'
+            'pnpm-lock.yaml' 'pnpm-workspace.yaml'
+          )
+
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BASE" 2>/dev/null; then
+            echo "No usable base commit — running the full suite."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$BASE" "$HEAD" -- "${PATHSPECS[@]}" | grep -q .; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No build/lint/type-check-relevant changes in this diff — skipping."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Setup pnpm
+        if: steps.changes.outputs.changed == 'true'
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
 
       - name: Setup Node
+        if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: 26.3.1
           cache: pnpm
 
       - name: Install dependencies
+        if: steps.changes.outputs.changed == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build
+        if: steps.changes.outputs.changed == 'true'
         run: pnpm run build
 
       - name: Lint (affected packages only)
+        if: steps.changes.outputs.changed == 'true'
         run: pnpm exec turbo run lint --affected
 
       - name: Type check
+        if: steps.changes.outputs.changed == 'true'
         run: pnpm run type-check

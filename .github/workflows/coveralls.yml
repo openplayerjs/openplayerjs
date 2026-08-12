@@ -18,20 +18,52 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+
+      # Keeps this job itself always green and reporting (see the branch-protection note
+      # below) while skipping the actual test run for diffs that can't affect it — e.g. a
+      # docs-only or CI-config-only PR. Diffs the PR base..head (or the previous commit on
+      # a push). Falls back to "run everything" whenever the base commit isn't usable (new
+      # branch, force-push, shallow history) rather than risk silently skipping a real change.
+      - name: Detect TypeScript changes
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          fi
+
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BASE" 2>/dev/null; then
+            echo "No usable base commit — running the full suite."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$BASE" "$HEAD" -- '*.ts' | grep -q .; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No .ts changes in this diff — skipping the unit test run."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Setup pnpm
+        if: steps.changes.outputs.changed == 'true'
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
 
       - name: Setup Node
+        if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: 26.3.1
           cache: pnpm
 
       - name: Install dependencies
+        if: steps.changes.outputs.changed == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Run unit tests (with coverage)
+        if: steps.changes.outputs.changed == 'true'
         env:
           CI: true
         run: pnpm run test
@@ -46,6 +78,7 @@ jobs:
       # protection (its "coverage decrease" tolerance is a coveralls.io repo setting, not
       # a repo file). Require the "Test + Coveralls" job instead.
       - name: Upload coverage to Coveralls (report-only, non-blocking)
+        if: steps.changes.outputs.changed == 'true'
         uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
         with:
           allow-empty: true
