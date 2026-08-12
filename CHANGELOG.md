@@ -1,5 +1,53 @@
 # Changelog
 
+## [3.6.1](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/player%403.6.1) (2026-08-12)
+
+_August 12, 2026_
+
+### `@openplayerjs/player@3.6.1`
+
+#### Performance Improvements
+
+- **[player]** cache root offset in progress tooltip pointermove handler ([#637](https://github.com/openplayerjs/openplayerjs/pull/637)) @rafa8626
+  - New regression test spies on root.getBoundingClientRect and asserts
+  - Full G0 gate green: type-check, lint, build, test (1150 tests,
+  - No new as any/@ts-ignore/@ts-expect-error/eslint-disable.
+  - dist/types/ diffed before vs after: controls/progress.d.ts is
+  - Touched files: packages/player/src/controls/progress.ts and its
+
+### General
+
+#### Features
+
+- **[ci,repo]** auto-resolve audit findings and flag missing tests on PRs (e370277) @rafa8626
+  - scripts/audit-fix.cjs + the `audit-fix` job in dependency-audit.yml: when
+  - scripts/test-gap-check.cjs + test-gap-check.yml: diffs each PR against its
+- **[repo]** add on-demand optimize skill (no CI wiring) (e370277) @rafa8626
+
+#### Bug Fixes
+
+- **[release]** verify github token before publishing and credit real handles ([#629](https://github.com/openplayerjs/openplayerjs/pull/629)) @rafa8626
+
+#### Chores
+
+- **[deps]** update dependency @playwright/test to v1.62.1 ([#630](https://github.com/openplayerjs/openplayerjs/pull/630)) @renovate[bot]
+- **[deps]** update dependency postcss to v8.5.25 ([#632](https://github.com/openplayerjs/openplayerjs/pull/632)) @renovate[bot]
+- **[deps]** update dependency rollup to v4.62.4 ([#633](https://github.com/openplayerjs/openplayerjs/pull/633)) @renovate[bot]
+- **[deps]** bump js-yaml and nanoid overrides for security fixes ([#634](https://github.com/openplayerjs/openplayerjs/pull/634)) @rafa8626
+  - js-yaml 4.3.0 -> 4.3.1: patches CVE-2026-59870, quadratic CPU
+  - nanoid: pin override to 3.3.17 (was resolving to 3.3.16 via
+
+#### Tests
+
+- **[player]** debounce clickPlay's class check past the ad-intercept flash ([#636](https://github.com/openplayerjs/openplayerjs/pull/636)) @rafa8626
+
+#### CI
+
+- **[ci]** skip unit-test run in Test + Coveralls when no .ts files changed (e370277) @rafa8626
+- **[ci]** skip Build and ESLint jobs when the diff can't affect them (e370277) @rafa8626
+  - build.yml gates on: *.ts, *.css, tsconfig*.json, rollup.config.mjs,
+  - linter.yml gates on the narrower set `pnpm run lint` actually touches:
+
 ## [3.6.1](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.1) (2026-08-04)
 
 _August 3, 2026_
