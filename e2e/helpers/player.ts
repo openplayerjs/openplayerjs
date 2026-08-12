@@ -37,12 +37,26 @@ export async function loadExample(page: Page, path: string): Promise<void> {
  * Click play and wait until the button enters the paused-icon state
  * (`op-controls__playpause--pause` class is present, meaning the player
  * believes it is playing).
+ *
+ * On a page with a preroll ad, this class can flash true → false → true
+ * within the first ~100-300ms of the click: the media engine's synchronous
+ * `cmd:play` handler (packages/ads CLAUDE.md "cmd:play is synchronous")
+ * fires a native `play` event that bridges to the UI optimistically,
+ * milliseconds before the ads plugin's own synchronous preroll interceptor
+ * re-pauses content to start the ad break — then the class goes true again
+ * once the ad actually mounts and plays. A caller that acts on "is playing"
+ * immediately after the first `true` (clicking pause next, in particular)
+ * can land its click in that gap, before the ad element even exists, so the
+ * click is a no-op and the ad autoplays moments later regardless. Re-assert
+ * after a short settle window so callers only see the class once it's
+ * stable, not the transient flash.
  */
 export async function clickPlay(page: Page): Promise<void> {
   await page.click(sel.play);
-  await expect(page.locator(sel.play)).toHaveClass(/op-controls__playpause--pause/, {
-    timeout: 12_000,
-  });
+  const locator = page.locator(sel.play);
+  await expect(locator).toHaveClass(/op-controls__playpause--pause/, { timeout: 12_000 });
+  await page.waitForTimeout(400);
+  await expect(locator).toHaveClass(/op-controls__playpause--pause/, { timeout: 12_000 });
 }
 
 /**
