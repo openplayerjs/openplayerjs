@@ -71,11 +71,17 @@ export function getVastInputFromBreakFn(b: AdsBreakConfig): { input?: VastInput;
   return { input: undefined, sourceType: undefined };
 }
 
+/** Derives a break's id from an already-computed VAST input, skipping a redundant re-derivation. */
+function breakIdFromInput(b: AdsBreakConfig, input?: VastInput, sourceType?: AdsSourceType): string {
+  if (b.id) return b.id;
+  const key = input?.kind === 'url' ? input.value : 'xml';
+  return `${String(b.at)}:${sourceType || 'VAST'}:${key}`;
+}
+
 export function getBreakIdFn(b: AdsBreakConfig): string {
   if (b.id) return b.id;
   const { input, sourceType } = getVastInputFromBreakFn(b);
-  const key = input?.kind === 'url' ? input.value : 'xml';
-  return `${String(b.at)}:${sourceType || 'VAST'}:${key}`;
+  return breakIdFromInput(b, input, sourceType);
 }
 
 type PendingPercentBreak = {
@@ -149,23 +155,24 @@ export class AdScheduler {
   getBreakId(b: AdsBreakConfig): string {
     if (b.id) return b.id;
     const { input, sourceType } = this.getVastInputFromBreak(b);
-    const key = input?.kind === 'url' ? input.value : 'xml';
-    return `${String(b.at)}:${sourceType || 'VAST'}:${key}`;
+    return breakIdFromInput(b, input, sourceType);
   }
 
   getPrerollBreak(): AdsBreakConfig | undefined {
     for (const b of this.resolvedBreaks) {
       if (b.at !== 'preroll') continue;
-      if (!this.getVastInputFromBreak(b).input) continue;
-      const id = this.getBreakId(b);
+      const { input, sourceType } = this.getVastInputFromBreak(b);
+      if (!input) continue;
+      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       return b;
     }
 
     for (const b of this.cfg.breaks) {
       if (b.at !== 'preroll') continue;
-      if (!this.getVastInputFromBreak(b).input) continue;
-      const id = this.getBreakId(b);
+      const { input, sourceType } = this.getVastInputFromBreak(b);
+      if (!input) continue;
+      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       return b;
     }
@@ -185,8 +192,9 @@ export class AdScheduler {
   getPostrollBreak(): AdsBreakConfig | undefined {
     for (const b of this.resolvedBreaks) {
       if (b.at !== 'postroll') continue;
-      if (!this.getVastInputFromBreak(b).input) continue;
-      const id = this.getBreakId(b);
+      const { input, sourceType } = this.getVastInputFromBreak(b);
+      if (!input) continue;
+      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       return b;
     }
@@ -209,8 +217,9 @@ export class AdScheduler {
     const due: AdsBreakConfig[] = [];
     for (const b of this.resolvedBreaks) {
       if (typeof b.at !== 'number') continue;
-      if (!this.getVastInputFromBreak(b).input) continue;
-      const id = this.getBreakId(b);
+      const { input, sourceType } = this.getVastInputFromBreak(b);
+      if (!input) continue;
+      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       if (currentTime + (this.cfg.breakTolerance ?? 0.25) >= b.at) due.push(b);
     }

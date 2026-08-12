@@ -336,6 +336,51 @@ describe('AdScheduler.getDueMidrollBreaks', () => {
   });
 });
 
+describe('AdScheduler break-lookup methods avoid redundant getVastInputFromBreak calls (perf)', () => {
+  it('getPrerollBreak calls getVastInputFromBreak once per id-less candidate break', () => {
+    const breakCfg: AdsBreakConfig = {
+      at: 'preroll',
+      source: { type: 'VAST', src: 'https://example.com/preroll.xml' },
+    };
+    const sched = makeScheduler([], [breakCfg]);
+    const spy = jest.spyOn(sched, 'getVastInputFromBreak');
+
+    const result = sched.getPrerollBreak();
+
+    expect(result?.source?.src).toBe('https://example.com/preroll.xml');
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('getPostrollBreak calls getVastInputFromBreak once per id-less candidate break', () => {
+    const breakCfg: AdsBreakConfig = {
+      at: 'postroll',
+      source: { type: 'VAST', src: 'https://example.com/postroll.xml' },
+    };
+    const sched = makeScheduler([]);
+    sched.resolvedBreaks = [breakCfg];
+    const spy = jest.spyOn(sched, 'getVastInputFromBreak');
+
+    const result = sched.getPostrollBreak();
+
+    expect(result?.source?.src).toBe('https://example.com/postroll.xml');
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('getDueMidrollBreaks calls getVastInputFromBreak once per id-less resolved break', () => {
+    const sched = makeScheduler([]);
+    sched.resolvedBreaks = [
+      { at: 10, source: { type: 'VAST', src: 'https://example.com/m1.xml' } },
+      { at: 30, source: { type: 'VAST', src: 'https://example.com/m2.xml' } },
+    ];
+    const spy = jest.spyOn(sched, 'getVastInputFromBreak');
+
+    const due = sched.getDueMidrollBreaks(30);
+
+    expect(due).toHaveLength(2);
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+});
+
 describe('AdScheduler.inferSourceTypeForUrl', () => {
   it('returns NONLINEAR when the exact url is a NONLINEAR source', () => {
     const sched = makeScheduler([{ type: 'NONLINEAR', src: 'https://example.com/nl.xml' }]);
