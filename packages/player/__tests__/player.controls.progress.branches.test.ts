@@ -519,3 +519,40 @@ test('pointermove middle position covers pos -= half (line 293) and out-of-range
   // percentage=1.5 > 1 → tooltip class removed (line 296)
   expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
 });
+
+test('pointermove reads the player root offset only once per event (no redundant getBoundingClientRect)', () => {
+  const p = makeCore();
+  setDuration(p.media, 100);
+
+  const opPlayer = document.createElement('div');
+  opPlayer.className = 'op-player';
+  document.body.appendChild(opPlayer);
+  opPlayer.appendChild(p.media);
+  Object.defineProperty(opPlayer, 'offsetWidth', { value: 500, configurable: true });
+
+  const c = createProgressControl();
+  const el = c.create(p);
+  opPlayer.appendChild(el);
+
+  const tooltip = el.querySelector('.op-controls__tooltip') as HTMLElement;
+  Object.defineProperty(el, 'offsetWidth', { value: 200, configurable: true });
+  Object.defineProperty(tooltip, 'offsetWidth', { value: 60, configurable: true });
+
+  let rootRectCalls = 0;
+  const originalRect = opPlayer.getBoundingClientRect.bind(opPlayer);
+  opPlayer.getBoundingClientRect = () => {
+    rootRectCalls += 1;
+    return originalRect();
+  };
+
+  // Middle-position branch (pos -= half) — the one that previously read offset(root) twice.
+  const moveEvent = new MouseEvent('pointermove', { bubbles: true, cancelable: true });
+  Object.defineProperty(moveEvent, 'pageX', { value: 300 });
+  el.dispatchEvent(moveEvent);
+
+  expect(rootRectCalls).toBe(1);
+  // Behavior unchanged from the "pos -= half" case above: percentage=1.5 > 1 hides the tooltip,
+  // and pos is computed from the same rootLeft value in both the clamp checks and the fallback.
+  expect(tooltip.classList.contains('op-controls__tooltip--visible')).toBe(false);
+  expect(tooltip.style.left).toBe('270px'); // pos = (300 - 0) - 30 (half) = 270
+});
