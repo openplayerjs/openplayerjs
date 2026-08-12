@@ -279,6 +279,17 @@ function main() {
         'bypass it), not auto-overridden.',
     );
     process.stderr.write(String(err.stdout || err.message) + '\n');
+    // updateOverrides() already wrote pnpm-workspace.yaml above; pnpm may also have
+    // partially rewritten pnpm-lock.yaml before failing. Neither edit was verified, so
+    // revert both to their committed state — otherwise a summary reporting `fixed: []`
+    // (correct: nothing was verified) disagrees with a dirty git tree, the CI job's
+    // change-detection step sees the untracked edit and tries to commit it anyway, and
+    // the commit message renders empty for zero fixed advisories, aborting `git commit`.
+    try {
+      sh('git', ['checkout', '--', 'pnpm-workspace.yaml', 'pnpm-lock.yaml']);
+    } catch (revertErr) {
+      fail(`Also failed to revert pnpm-workspace.yaml/pnpm-lock.yaml: ${revertErr.message}`);
+    }
     writeSummary({ clean: false, fixed: [], skipped: [...skipped, ...fixed.map(f => ({ ...f, reason: 'pnpm install failed post-override (see job log)' }))] });
     process.exit(1);
   }

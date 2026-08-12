@@ -99,6 +99,15 @@ jobs:
           SUMMARY_PATH: ${{ runner.temp }}/audit-fix-summary.json
         run: |
           node scripts/audit-fix-report.cjs --format=commit "$SUMMARY_PATH" > "$RUNNER_TEMP/commit-message.txt"
+          # Defense in depth: scripts/audit-fix.cjs now reverts pnpm-workspace.yaml/
+          # pnpm-lock.yaml whenever nothing was verified fixed, so this step's `if`
+          # condition (a real diff) and a non-empty commit message (fixed.length > 0)
+          # should never disagree. Guard anyway rather than let `git commit -F` abort
+          # the job on an empty message if that invariant is ever broken again.
+          if [ ! -s "$RUNNER_TEMP/commit-message.txt" ]; then
+            echo "No advisories were verified as fixed — nothing to commit." >&2
+            exit 0
+          fi
           git config user.name 'openplayerjs-bot'
           git config user.email 'actions@github.com'
           git add pnpm-workspace.yaml pnpm-lock.yaml
