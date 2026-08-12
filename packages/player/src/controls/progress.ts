@@ -301,9 +301,10 @@ export class ProgressControl extends BaseControl {
 
         const root = this.resolvePlayerRoot();
         const limit = root.offsetWidth - tooltip.offsetWidth;
+        const rootLeft = offset(root).left;
 
-        if (pos <= 0 || x - offset(root).left <= half) pos = 0;
-        else if (x - offset(root).left >= limit) pos = limit - offset(slider).left - 10;
+        if (pos <= 0 || x - rootLeft <= half) pos = 0;
+        else if (x - rootLeft >= limit) pos = limit - offset(slider).left - 10;
         else pos -= half;
 
         if (percentage >= 0 && percentage <= 1) tooltip.classList.add('op-controls__tooltip--visible');
