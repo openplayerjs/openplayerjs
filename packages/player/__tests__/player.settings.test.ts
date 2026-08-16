@@ -3,6 +3,7 @@
 import { Core, getOverlayManager } from '@openplayerjs/core';
 import createCaptionsControl from '../src/controls/captions';
 import createSettingsControl from '../src/controls/settings';
+import { SettingsRegistry } from '../src/settings';
 
 function makeCore() {
   const v = document.createElement('video');
@@ -159,5 +160,65 @@ describe('Settings control + registry', () => {
       );
       expect(anySpeedRow).toBe(false);
     }
+  });
+});
+
+// ─── SettingsRegistry.list() caches the sorted result (perf) ────────────────
+
+describe('SettingsRegistry.list() sort caching', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('repeated list() calls with no registration changes sort only once', () => {
+    const registry = new SettingsRegistry();
+    registry.register({ id: 'b', label: 'Bravo', getSubmenu: () => null });
+    registry.register({ id: 'a', label: 'Alpha', getSubmenu: () => null });
+
+    const sortSpy = jest.spyOn(Array.prototype, 'sort');
+
+    const first = registry.list();
+    const second = registry.list();
+    const third = registry.list();
+
+    expect(first.map((p) => p.id)).toEqual(['a', 'b']);
+    expect(second.map((p) => p.id)).toEqual(['a', 'b']);
+    expect(third.map((p) => p.id)).toEqual(['a', 'b']);
+    // Only the first list() call should actually sort; later calls reuse the cache.
+    expect(sortSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test('registering a new provider invalidates the cache and the next list() re-sorts', () => {
+    const registry = new SettingsRegistry();
+    registry.register({ id: 'b', label: 'Bravo', getSubmenu: () => null });
+    registry.list();
+
+    registry.register({ id: 'a', label: 'Alpha', getSubmenu: () => null });
+    const after = registry.list();
+
+    expect(after.map((p) => p.id)).toEqual(['a', 'b']);
+  });
+
+  test('unregistering a provider invalidates the cache', () => {
+    const registry = new SettingsRegistry();
+    const unregisterA = registry.register({ id: 'a', label: 'Alpha', getSubmenu: () => null });
+    registry.register({ id: 'b', label: 'Bravo', getSubmenu: () => null });
+    registry.list();
+
+    unregisterA();
+    const after = registry.list();
+
+    expect(after.map((p) => p.id)).toEqual(['b']);
+  });
+
+  test('list() returns a fresh array each call so caller mutation cannot corrupt the cache', () => {
+    const registry = new SettingsRegistry();
+    registry.register({ id: 'a', label: 'Alpha', getSubmenu: () => null });
+
+    const first = registry.list();
+    first.push({ id: 'z', label: 'Zulu', getSubmenu: () => null });
+
+    const second = registry.list();
+    expect(second.map((p) => p.id)).toEqual(['a']);
   });
 });

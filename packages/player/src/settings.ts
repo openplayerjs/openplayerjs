@@ -27,16 +27,34 @@ export type SettingsSubmenuProvider = {
 // Use a symbol to avoid collisions with user-land fields.
 const SETTINGS_REGISTRY_KEY: unique symbol = Symbol.for('openplayerjs.settings.registry');
 
+// Keyed by registry instance rather than a class field so adding this cache doesn't add
+// a new `private` member to SettingsRegistry (TypeScript emits private member names into
+// .d.ts, which would otherwise change the package's declared public API surface).
+// Invalidated on register/unregister; list() re-sorts only then instead of on every call.
+// render() calls list() on every closed-menu overlay:changed tick (i.e. every ad-video
+// timeupdate), so an unconditional localeCompare sort there is wasted work.
+const sortedProvidersCache = new WeakMap<SettingsRegistry, SettingsSubmenuProvider[]>();
+
 export class SettingsRegistry {
   private providers = new Map<string, SettingsSubmenuProvider>();
 
   register(provider: SettingsSubmenuProvider) {
     this.providers.set(provider.id, provider);
-    return () => this.providers.delete(provider.id);
+    sortedProvidersCache.delete(this);
+    return () => {
+      sortedProvidersCache.delete(this);
+      return this.providers.delete(provider.id);
+    };
   }
 
   list(): SettingsSubmenuProvider[] {
-    return Array.from(this.providers.values()).sort((a, b) => a.label.localeCompare(b.label));
+    let sorted = sortedProvidersCache.get(this);
+    if (!sorted) {
+      sorted = Array.from(this.providers.values()).sort((a, b) => a.label.localeCompare(b.label));
+      sortedProvidersCache.set(this, sorted);
+    }
+    // Return a copy so a caller mutating the result can't corrupt the cache.
+    return sorted.slice();
   }
 }
 
