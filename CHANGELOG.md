@@ -1,5 +1,29 @@
 # Changelog
 
+## [3.6.2](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.2) (2026-08-16)
+
+_August 16, 2026_
+
+### `@openplayerjs/player@3.6.2`
+
+#### Performance Improvements
+
+- **[player]** cache SettingsRegistry.list()'s sorted result ([#642](https://github.com/openplayerjs/openplayerjs/pull/642)) @rafa8626
+
+#### Refactoring
+
+- **[player]** dedupe redundant textTracks reads in CaptionsControl ([#641](https://github.com/openplayerjs/openplayerjs/pull/641)) @rafa8626
+
+### General
+
+#### Bug Fixes
+
+- **[ci]** revert overrides edit when audit-fix's pnpm install fails ([#640](https://github.com/openplayerjs/openplayerjs/pull/640)) @rafa8626
+
+#### Chores
+
+- **[deps]** Fixed vulnerability GHSA-2v37-7h3g-55p8 (fce0897) @rafa8626
+
 ## [3.6.2](https://github.com/openplayerjs/openplayerjs/releases/tag/@openplayerjs/ads%403.6.2) (2026-08-12)
 
 _August 12, 2026_
