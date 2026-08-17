@@ -84,8 +84,8 @@ importers:
         specifier: 5.5.6
         version: 5.5.6(eslint@10.8.0(jiti@2.6.1))(prettier@3.9.6)
       hls.js:
-        specifier: 1.6.16
-        version: 1.6.16
+        specifier: 1.6.18
+        version: 1.6.18
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -1766,6 +1766,7 @@ packages:
   '@xmldom/xmldom@0.9.10':
     resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
     engines: {node: '>=14.6'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@zeit/schemas@2.36.0':
     resolution: {integrity: sha512-7kjMwcChYEzMKjeex9ZFXkt1AyNov9R5HZtjBKVsmVpw7pa7ZtlCGvCBC2vnnXctaYN+aRI61HjIqeetZW5ROg==}
@@ -2950,8 +2951,8 @@ packages:
   hls.js@1.6.15:
     resolution: {integrity: sha512-E3a5VwgXimGHwpRGV+WxRTKeSp2DW5DI5MWv34ulL3t5UNmyJWCQ1KmLEHbYzcfThfXG8amBL+fCYPneGHC4VA==}
 
-  hls.js@1.6.16:
-    resolution: {integrity: sha512-VSIRpLfRwlAAdGL4wiTucx2ScRipo0ed1FBatWkyt832jC4CReKstga6yIhYVwGu9LOBjuX9wzmRMeQdBJtzEA==}
+  hls.js@1.6.18:
+    resolution: {integrity: sha512-Rtovq9oJt9HWBqFJF9wZrZM7dRvdGHYNdMMv+wSDGDE2+FIybgs8RPJpR3kya1TZKBHVv2NOgLmn/M0MFjrQ3g==}
 
   hookified@1.15.1:
     resolution: {integrity: sha512-MvG/clsADq1GPM2KGo2nyfaWVyn9naPiXrqIe4jYjXNZQt238kWyOGrsyc/DmRAQ+Re6yeo6yX/yoNCG5KAEVg==}
@@ -8201,7 +8202,7 @@ snapshots:
 
   hls.js@1.6.15: {}
 
-  hls.js@1.6.16: {}
+  hls.js@1.6.18: {}
 
   hookified@1.15.1: {}
 
