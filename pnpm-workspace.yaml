@@ -33,7 +33,7 @@ overrides:
   picomatch: 4.0.5
   svgo: 4.0.2
   undici: 7.29.0
-  ws: 8.21.1
+  ws: 8.21.3
 
 peerDependencyRules:
   allowedVersions:
