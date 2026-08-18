@@ -1,5 +1,33 @@
 # Changelog
 
+## [3.6.3](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.3) (2026-08-18)
+
+_August 18, 2026_
+
+### `@openplayerjs/ads@3.6.3`
+
+#### Performance Improvements
+
+- **[ads]** hoist setSafeHTMLFn's blocked-tags Set to module scope ([#651](https://github.com/openplayerjs/openplayerjs/pull/651)) @rafa8626
+
+### General
+
+#### Bug Fixes
+
+- **[ci]** revert overrides edit when audit-fix's pnpm install fails ([#640](https://github.com/openplayerjs/openplayerjs/pull/640)) @rafa8626
+
+#### Chores
+
+- **[deps]** update node.js to v26.7.0 ([#650](https://github.com/openplayerjs/openplayerjs/pull/650)) @renovate[bot]
+- **[deps]** update eslint ([#649](https://github.com/openplayerjs/openplayerjs/pull/649)) @renovate[bot]
+- **[deps]** update dependency ip-address to v10.5.0 ([#648](https://github.com/openplayerjs/openplayerjs/pull/648)) @renovate[bot]
+- **[deps]** update github/codeql-action action to v4.37.6 ([#647](https://github.com/openplayerjs/openplayerjs/pull/647)) @renovate[bot]
+- **[deps]** update dependency ws to v8.21.3 ([#646](https://github.com/openplayerjs/openplayerjs/pull/646)) @renovate[bot]
+- **[deps]** update dependency turbo to v2.10.9 ([#645](https://github.com/openplayerjs/openplayerjs/pull/645)) @renovate[bot]
+- **[deps]** update dependency postcss to v8.5.26 ([#644](https://github.com/openplayerjs/openplayerjs/pull/644)) @renovate[bot]
+- **[deps]** update dependency hls.js to v1.6.18 ([#643](https://github.com/openplayerjs/openplayerjs/pull/643)) @renovate[bot]
+- **[deps]** Fixed vulnerability GHSA-2v37-7h3g-55p8 (fce0897) @rafa8626
+
 ## [3.6.2](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.2) (2026-08-16)
 
 _August 16, 2026_
