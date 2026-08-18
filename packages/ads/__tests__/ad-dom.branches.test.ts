@@ -162,6 +162,32 @@ describe('setSafeHTMLFn', () => {
     expect(imgs[2].getAttribute('src')).toBe('http://example.com/c.png');
     expect(imgs[3].getAttribute('src')).toBe('https://example.com/d.png');
   });
+
+  it('does not reconstruct the blocked-tags Set on repeated calls (perf)', () => {
+    // The Set constructor calls Set.prototype.add once per seed element when built
+    // from an iterable, so spying on `add` (an ordinary method, unlike the
+    // constructor itself) detects a fresh 15-tag Set being built without needing
+    // to intercept `new Set(...)` directly.
+    const addSpy = jest.spyOn(Set.prototype, 'add');
+
+    const el1 = document.createElement('div');
+    const el2 = document.createElement('div');
+    const el3 = document.createElement('div');
+    setSafeHTMLFn(el1, '<p>one</p>');
+    setSafeHTMLFn(el2, '<script>bad()</script><p>two</p>');
+    setSafeHTMLFn(el3, '<iframe src="x"></iframe><p>three</p>');
+
+    // The blocked-tags Set is a module-level constant built once at import time,
+    // not rebuilt inside the function on every call.
+    expect(addSpy).not.toHaveBeenCalled();
+
+    // Sanitization still behaves correctly after the hoist.
+    expect(el2.querySelector('script')).toBeNull();
+    expect(el3.querySelector('iframe')).toBeNull();
+    expect(el1.querySelector('p')).not.toBeNull();
+
+    addSpy.mockRestore();
+  });
 });
 
 // ─── AdDomManager.setSafeHTML (instance method mirrors setSafeHTMLFn) ─────────
