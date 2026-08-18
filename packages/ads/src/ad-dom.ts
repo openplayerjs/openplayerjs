@@ -5,33 +5,36 @@ import { computeSkipAtSeconds, extractSkipOffsetFromCreative } from './vast-pars
 
 // ─── Standalone export (no class state needed) ────────────────────────────────
 
+// Static blocklist, never varies per call — hoisted so setSafeHTMLFn (called once per
+// rendered companion/non-linear ad resource) doesn't rebuild this Set every invocation.
+const SAFE_HTML_BLOCKED_TAGS = new Set([
+  'SCRIPT',
+  'IFRAME',
+  'OBJECT',
+  'EMBED',
+  'LINK',
+  'STYLE',
+  'SVG',
+  'MATH',
+  'FORM',
+  'INPUT',
+  'TEXTAREA',
+  'SELECT',
+  'OPTION',
+  'META',
+  'BASE',
+]);
+
 export function setSafeHTMLFn(el: HTMLElement, html: string) {
   const tpl = document.createElement('template');
   tpl.innerHTML = String(html || '');
 
-  const blockedTags = new Set([
-    'SCRIPT',
-    'IFRAME',
-    'OBJECT',
-    'EMBED',
-    'LINK',
-    'STYLE',
-    'SVG',
-    'MATH',
-    'FORM',
-    'INPUT',
-    'TEXTAREA',
-    'SELECT',
-    'OPTION',
-    'META',
-    'BASE',
-  ]);
   const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
   const toRemove: Element[] = [];
 
   while (walker.nextNode()) {
     const node = walker.currentNode as Element;
-    if (blockedTags.has(node.tagName)) {
+    if (SAFE_HTML_BLOCKED_TAGS.has(node.tagName)) {
       toRemove.push(node);
       continue;
     }
