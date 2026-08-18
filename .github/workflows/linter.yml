@@ -60,7 +60,7 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
-          node-version: 26.3.1
+          node-version: 26.7.0
           cache: pnpm
 
       - name: Install dependencies
