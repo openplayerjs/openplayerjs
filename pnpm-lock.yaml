@@ -84,8 +84,8 @@ importers:
         specifier: 5.5.6
         version: 5.5.6(eslint@10.8.1(jiti@2.6.1))(prettier@3.9.6)
       hls.js:
-        specifier: 1.6.18
-        version: 1.6.18
+        specifier: 1.7.0
+        version: 1.7.0
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -2951,8 +2951,8 @@ packages:
   hls.js@1.6.15:
     resolution: {integrity: sha512-E3a5VwgXimGHwpRGV+WxRTKeSp2DW5DI5MWv34ulL3t5UNmyJWCQ1KmLEHbYzcfThfXG8amBL+fCYPneGHC4VA==}
 
-  hls.js@1.6.18:
-    resolution: {integrity: sha512-Rtovq9oJt9HWBqFJF9wZrZM7dRvdGHYNdMMv+wSDGDE2+FIybgs8RPJpR3kya1TZKBHVv2NOgLmn/M0MFjrQ3g==}
+  hls.js@1.7.0:
+    resolution: {integrity: sha512-NnQpT6Z//+2IB2qovSUbKbrlXY1MOpi0JynZ9L2NNOuTJiNCyMSQj9k2laEj1v7CxU/Hb8oTWR98eT3mVpPQVQ==}
 
   hookified@1.15.1:
     resolution: {integrity: sha512-MvG/clsADq1GPM2KGo2nyfaWVyn9naPiXrqIe4jYjXNZQt238kWyOGrsyc/DmRAQ+Re6yeo6yX/yoNCG5KAEVg==}
@@ -8198,7 +8198,7 @@ snapshots:
 
   hls.js@1.6.15: {}
 
-  hls.js@1.6.18: {}
+  hls.js@1.7.0: {}
 
   hookified@1.15.1: {}
 
