@@ -22,7 +22,7 @@ verifyDepsBeforeRun: warn
 
 overrides:
   '@babel/core': 7.29.7
-  '@xmldom/xmldom': 0.9.10
+  '@xmldom/xmldom': 0.9.11
   basic-ftp: 5.3.1
   brace-expansion: 5.0.9
   defu: 6.1.7

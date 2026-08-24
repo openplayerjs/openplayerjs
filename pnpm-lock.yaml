@@ -6,7 +6,7 @@ settings:
 
 overrides:
   '@babel/core': 7.29.7
-  '@xmldom/xmldom': 0.9.10
+  '@xmldom/xmldom': 0.9.11
   basic-ftp: 5.3.1
   brace-expansion: 5.0.9
   defu: 6.1.7
@@ -1763,8 +1763,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@xmldom/xmldom@0.9.10':
-    resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
+  '@xmldom/xmldom@0.9.11':
+    resolution: {integrity: sha512-tW8bcK3hsG0/uqSnNz6TK4BkcuZSezoU7DlnYssILmZDktPnSHHuDJJFM0AJv+13gz2r0iGdrj6qqKeUnxXEDg==}
     engines: {node: '>=14.6'}
     deprecated: this version has critical issues, please update to the latest version
 
@@ -5869,7 +5869,7 @@ snapshots:
 
   '@dailymotion/vast-client@6.4.5':
     dependencies:
-      '@xmldom/xmldom': 0.9.10
+      '@xmldom/xmldom': 0.9.11
 
   '@dailymotion/vmap@3.3.3': {}
 
@@ -6851,7 +6851,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@xmldom/xmldom@0.9.10': {}
+  '@xmldom/xmldom@0.9.11': {}
 
   '@zeit/schemas@2.36.0': {}
 
