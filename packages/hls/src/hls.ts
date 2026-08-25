@@ -1,5 +1,5 @@
 import type { IEngine, MediaEngineContext, MediaSource } from '@openplayerjs/core';
-import { BaseMediaEngine, EVENT_OPTIONS } from '@openplayerjs/core';
+import { BaseMediaEngine } from '@openplayerjs/core';
 import type { ErrorData, HlsConfig, LevelLoadedData, LevelUpdatedData } from 'hls.js';
 import Hls from 'hls.js';
 
@@ -13,7 +13,6 @@ type HlsEventHandler = (...args: never[]) => void;
 type AdapterListener = {
   event: string;
   handler: HlsEventHandler;
-  options?: AddEventListenerOptions;
 };
 
 /** hls.js `.on`/`.off` narrowed to a string-keyed event API for the generic forwarder. */
@@ -87,14 +86,10 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.adapter.attachMedia(ctx.media);
 
     for (const e of Object.values(this.HlsClass.Events) as string[]) {
-      this.onAdapterEvent(
-        e,
-        (...args: unknown[]) => {
-          const data = args.length > 1 ? args[1] : args[0];
-          ctx.events.emit(e, data);
-        },
-        EVENT_OPTIONS
-      );
+      this.onAdapterEvent(e, (...args: unknown[]) => {
+        const data = args.length > 1 ? args[1] : args[0];
+        ctx.events.emit(e, data);
+      });
     }
 
     const onPlay = () => {
@@ -118,94 +113,74 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
       })
     );
 
-    this.onAdapterEvent(this.HlsClass.Events.MANIFEST_PARSED, () => ctx.events.emit('loadedmetadata'), EVENT_OPTIONS);
-    this.onAdapterEvent(
-      this.HlsClass.Events.MEDIA_ATTACHED,
-      () => {
-        if (ctx.media.autoplay && this.canHandlePlayback(ctx)) {
-          ctx.surface.muted = true;
-          void ctx.surface.play();
-        }
-      },
-      EVENT_OPTIONS
-    );
+    this.onAdapterEvent(this.HlsClass.Events.MANIFEST_PARSED, () => ctx.events.emit('loadedmetadata'));
+    this.onAdapterEvent(this.HlsClass.Events.MEDIA_ATTACHED, () => {
+      if (ctx.media.autoplay && this.canHandlePlayback(ctx)) {
+        ctx.surface.muted = true;
+        void ctx.surface.play();
+      }
+    });
     // LEVEL_LOADED fires once per level load — keep `core.isLive` in sync.
     // Duration itself reaches the player via the native `durationchange` event
     // (bridged by bindMediaEvents) which updates `core.duration`.
-    this.onAdapterEvent(
-      this.HlsClass.Events.LEVEL_LOADED,
-      (_: unknown, { details }: LevelLoadedData) => {
-        ctx.core.isLive = details.live;
-      },
-      EVENT_OPTIONS
-    );
+    this.onAdapterEvent(this.HlsClass.Events.LEVEL_LOADED, (_: unknown, { details }: LevelLoadedData) => {
+      ctx.core.isLive = details.live;
+    });
     // LEVEL_UPDATED fires on every playlist refresh (frequent on live streams).
     // Keep its work minimal: only sync isLive and process EXT-X-DATERANGE SCTE-35
     // cues for the hybrid ad strategy.
-    this.onAdapterEvent(
-      this.HlsClass.Events.LEVEL_UPDATED,
-      (_, { details }: LevelUpdatedData) => {
-        ctx.core.isLive = details.live;
-        if (this.onCue && details?.dateRanges) {
-          for (const [id, range] of Object.entries(details.dateRanges)) {
-            if (!range || this.seenCueIds.has(id)) continue;
-            const attr = range.attr;
-            const scte35Out = attr?.['SCTE35-OUT'];
-            if (!scte35Out) continue;
-            this.seenCueIds.add(id);
-            this.onCue({
-              id,
-              scte35Out,
-              plannedDuration: typeof range.plannedDuration === 'number' ? range.plannedDuration : undefined,
-              startDate: range.startDate instanceof Date ? range.startDate : undefined,
-            });
-          }
+    this.onAdapterEvent(this.HlsClass.Events.LEVEL_UPDATED, (_, { details }: LevelUpdatedData) => {
+      ctx.core.isLive = details.live;
+      if (this.onCue && details?.dateRanges) {
+        for (const [id, range] of Object.entries(details.dateRanges)) {
+          if (!range || this.seenCueIds.has(id)) continue;
+          const attr = range.attr;
+          const scte35Out = attr?.['SCTE35-OUT'];
+          if (!scte35Out) continue;
+          this.seenCueIds.add(id);
+          this.onCue({
+            id,
+            scte35Out,
+            plannedDuration: typeof range.plannedDuration === 'number' ? range.plannedDuration : undefined,
+            startDate: range.startDate instanceof Date ? range.startDate : undefined,
+          });
         }
-      },
-      EVENT_OPTIONS
-    );
-    this.onAdapterEvent(
-      this.HlsClass.Events.SUBTITLE_TRACKS_UPDATED,
-      () => ctx.events.emit('texttrack:listchange'),
-      EVENT_OPTIONS
-    );
-    this.onAdapterEvent(
-      this.HlsClass.Events.ERROR,
-      (_: unknown, data: ErrorData) => {
-        if (data.fatal) {
-          switch (data.type) {
-            case this.HlsClass.ErrorTypes.MEDIA_ERROR: {
-              const now = Date.now();
-              if (!this.attemptedErrorRecovery || now - this.attemptedErrorRecovery > ERROR_RECOVERY_THROTTLE_MS) {
-                this.attemptedErrorRecovery = now;
+      }
+    });
+    this.onAdapterEvent(this.HlsClass.Events.SUBTITLE_TRACKS_UPDATED, () => ctx.events.emit('texttrack:listchange'));
+    this.onAdapterEvent(this.HlsClass.Events.ERROR, (_: unknown, data: ErrorData) => {
+      if (data.fatal) {
+        switch (data.type) {
+          case this.HlsClass.ErrorTypes.MEDIA_ERROR: {
+            const now = Date.now();
+            if (!this.attemptedErrorRecovery || now - this.attemptedErrorRecovery > ERROR_RECOVERY_THROTTLE_MS) {
+              this.attemptedErrorRecovery = now;
+              this.adapter?.recoverMediaError();
+            } else {
+              if (
+                !this.recoverSwapAudioCodecTimestamp ||
+                now - this.recoverSwapAudioCodecTimestamp > ERROR_RECOVERY_THROTTLE_MS
+              ) {
+                this.recoverSwapAudioCodecTimestamp = now;
+                this.adapter?.swapAudioCodec();
                 this.adapter?.recoverMediaError();
-              } else {
-                if (
-                  !this.recoverSwapAudioCodecTimestamp ||
-                  now - this.recoverSwapAudioCodecTimestamp > ERROR_RECOVERY_THROTTLE_MS
-                ) {
-                  this.recoverSwapAudioCodecTimestamp = now;
-                  this.adapter?.swapAudioCodec();
-                  this.adapter?.recoverMediaError();
-                }
               }
-              break;
             }
-            case this.HlsClass.ErrorTypes.NETWORK_ERROR:
-              // All retries and media options have been exhausted.
-              // Immediately trying to restart loading could cause loop loading.
-              // Consider modifying loading policies to best fit your asset and network
-              // conditions (manifestLoadPolicy, playlistLoadPolicy, fragLoadPolicy).
-              break;
-            default:
-              this.adapter?.destroy();
-              this.adapter = null;
-              break;
+            break;
           }
+          case this.HlsClass.ErrorTypes.NETWORK_ERROR:
+            // All retries and media options have been exhausted.
+            // Immediately trying to restart loading could cause loop loading.
+            // Consider modifying loading policies to best fit your asset and network
+            // conditions (manifestLoadPolicy, playlistLoadPolicy, fragLoadPolicy).
+            break;
+          default:
+            this.adapter?.destroy();
+            this.adapter = null;
+            break;
         }
-      },
-      EVENT_OPTIONS
-    );
+      }
+    });
   }
 
   private ensurePlaybackOwnership(ctx: MediaEngineContext): boolean {
@@ -260,13 +235,13 @@ export class HlsMediaEngine extends BaseMediaEngine implements IEngine {
     this.seenCueIds.clear();
   }
 
-  private onAdapterEvent(event: string, handler: HlsEventHandler, options?: AddEventListenerOptions) {
+  private onAdapterEvent(event: string, handler: HlsEventHandler) {
     if (!this.adapter) return;
     // hls.js types `.on`/`.off` per-event via its `Events` enum; the generic forwarder
     // works structurally, so narrow the adapter to a string-keyed event API.
     const adapter = this.adapter as unknown as HlsStringEventApi;
     adapter.on(event, handler);
-    this.adapterListeners.push({ event, handler, options });
+    this.adapterListeners.push({ event, handler });
   }
 
   private unbindAdapterEvents() {
