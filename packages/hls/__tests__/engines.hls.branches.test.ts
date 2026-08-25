@@ -254,6 +254,29 @@ describe('HlsMediaEngine branch coverage', () => {
     expect(engine.getAdapter()).toBeNull();
   });
 
+  test('detach unregisters every adapter listener attach() registered (onAdapterEvent bookkeeping)', () => {
+    const engine = new HlsMediaEngine();
+    const ctx = createTestMediaEngineContext();
+    engine.attach(ctx);
+
+    // Grab the live adapter reference before detach() nulls it out, so we can still
+    // inspect its internal handler map afterwards.
+    const adapter = engine.getAdapter<HlsMockWithEmit>()!;
+    const handlers = (adapter as unknown as { handlers: Map<string, Set<unknown>> }).handlers;
+    const countRegistered = () => Array.from(handlers.values()).reduce((sum, set) => sum + set.size, 0);
+
+    // Sanity: attach() actually registered listeners via onAdapterEvent — both the
+    // generic per-event forwarder loop and the named lifecycle handlers (MANIFEST_PARSED,
+    // MEDIA_ATTACHED, LEVEL_LOADED, LEVEL_UPDATED, SUBTITLE_TRACKS_UPDATED, ERROR).
+    expect(countRegistered()).toBeGreaterThan(0);
+
+    engine.detach();
+
+    // unbindAdapterEvents() must have called adapter.off() for every listener onAdapterEvent
+    // pushed onto adapterListeners, leaving no dangling handlers on the (still-referenced) adapter.
+    expect(countRegistered()).toBe(0);
+  });
+
   // ── canPlay explicit MIME / URL branches ──────────────────────────────────
 
   test('canPlay – accepts application/x-mpegURL MIME type', () => {
