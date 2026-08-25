@@ -102,12 +102,13 @@ export class Core {
 
   emit(event: PlayerEvent | string, payload?: unknown) {
     this.events.emit(event, payload);
-    this.plugins
-      .all()
-      .filter((p: PlayerPlugin) => !p.capabilities?.includes('media-engine'))
-      .forEach((p: PlayerPlugin) => {
-        p.onEvent?.(event as PlayerEvent, payload);
-      });
+    // Single pass instead of filter().forEach(): this runs on every cmd:* emission
+    // (volume/mute/rate/seek drags fire it continuously), so avoid allocating a
+    // throwaway filtered array each call.
+    for (const p of this.plugins.all()) {
+      if (p.capabilities?.includes('media-engine')) continue;
+      p.onEvent?.(event as PlayerEvent, payload);
+    }
   }
 
   registerPlugin(plugin: PlayerPlugin) {
