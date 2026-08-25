@@ -1,5 +1,48 @@
 # Changelog
 
+## [3.6.4](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.4) (2026-08-25)
+
+_August 25, 2026_
+
+### `@openplayerjs/core@3.6.4`
+
+#### Performance Improvements
+
+- **[core]** make Core.emit's plugin notification a single pass ([#657](https://github.com/openplayerjs/openplayerjs/pull/657)) @rafa8626
+
+### `@openplayerjs/player@3.6.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.6.4`
+
+### `@openplayerjs/hls@3.6.4`
+
+#### Refactoring
+
+- **[hls]** drop dead options param from onAdapterEvent bookkeeping ([#656](https://github.com/openplayerjs/openplayerjs/pull/656)) @rafa8626
+
+### `@openplayerjs/ads@3.6.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.6.4`
+
+### `@openplayerjs/youtube@3.6.4`
+
+#### Version Bump
+
+- Version bump to stay in sync with `@openplayerjs/core@3.6.4`
+
+### General
+
+#### Chores
+
+- **[deps]** update dependency @xmldom/xmldom to v0.9.11 ([#652](https://github.com/openplayerjs/openplayerjs/pull/652)) @renovate[bot]
+- **[deps]** update github/codeql-action action to v4.37.7 ([#654](https://github.com/openplayerjs/openplayerjs/pull/654)) @renovate[bot]
+- **[deps]** update dependency hls.js to v1.7.0 ([#655](https://github.com/openplayerjs/openplayerjs/pull/655)) @renovate[bot]
+- **[deps]** update dependency turbo to v2.10.11 ([#653](https://github.com/openplayerjs/openplayerjs/pull/653)) @renovate[bot]
+
 ## [3.6.3](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.3) (2026-08-18)
 
 _August 18, 2026_
