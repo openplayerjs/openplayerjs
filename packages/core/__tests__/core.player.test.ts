@@ -31,6 +31,29 @@ describe('Player core', () => {
     expect(seen).toEqual([['media:rate', 1.25]]);
   });
 
+  test('emit skips media-engine plugins and notifies every other plugin, in registration order', () => {
+    const p = makeCore();
+    const seen: string[] = [];
+    const makePlugin = (name: string, mediaEngine: boolean): PlayerPlugin => ({
+      name,
+      version: '1',
+      capabilities: mediaEngine ? ['media-engine'] : [],
+      onEvent(evt) {
+        seen.push(`${name}:${evt}`);
+      },
+    });
+
+    // Interleave a media-engine plugin between two ordinary ones to prove the
+    // exclusion filter and the ordering both survive a single-pass rewrite.
+    p.registerPlugin(makePlugin('a', false));
+    p.registerPlugin(makePlugin('engine', true));
+    p.registerPlugin(makePlugin('b', false));
+
+    p.emit('media:rate', 1);
+
+    expect(seen).toEqual(['a:media:rate', 'b:media:rate']);
+  });
+
   test('play emits cmd:play immediately (user-gesture context) and does not double-fire; pause emits cmd:pause', async () => {
     const p = makeCore();
     const calls: string[] = [];
