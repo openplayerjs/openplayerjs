@@ -30,7 +30,7 @@ overrides:
   ip-address: 10.5.0
   js-yaml: 4.3.1
   nanoid: 3.3.18
-  picomatch: 4.0.5
+  picomatch: 4.0.7
   svgo: 4.0.2
   undici: 7.29.0
   ws: 8.21.3
