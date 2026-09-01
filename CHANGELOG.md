@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.6.5](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.5) (2026-09-01)
+
+_September 1, 2026_
+
+### `@openplayerjs/ads@3.6.5`
+
+#### Performance Improvements
+
+- **[ads]** cache derived break id/input across repeated schedule lookups ([#664](https://github.com/openplayerjs/openplayerjs/pull/664)) @rafa8626
+
+### General
+
+#### Chores
+
+- **[deps]** update github/codeql-action action to v4.37.8 ([#663](https://github.com/openplayerjs/openplayerjs/pull/663)) @renovate[bot]
+- **[deps]** update dependency turbo to v2.10.12 ([#662](https://github.com/openplayerjs/openplayerjs/pull/662)) @renovate[bot]
+- **[deps]** update dependency picomatch to v4.0.7 ([#661](https://github.com/openplayerjs/openplayerjs/pull/661)) @renovate[bot]
+- **[deps]** update dependency hls.js to v1.7.1 ([#660](https://github.com/openplayerjs/openplayerjs/pull/660)) @renovate[bot]
+- **[deps]** update dependency fast-uri to v3.1.6 ([#659](https://github.com/openplayerjs/openplayerjs/pull/659)) @renovate[bot]
+- **[deps]** update dependency @xmldom/xmldom to v0.9.12 ([#658](https://github.com/openplayerjs/openplayerjs/pull/658)) @renovate[bot]
+
 ## [3.6.4](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.4) (2026-08-25)
 
 _August 25, 2026_
