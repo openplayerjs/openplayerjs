@@ -379,6 +379,59 @@ describe('AdScheduler break-lookup methods avoid redundant getVastInputFromBreak
     expect(due).toHaveLength(2);
     expect(spy).toHaveBeenCalledTimes(2);
   });
+
+  it('getDueMidrollBreaks does not re-derive input/id for the same break objects across repeated calls', () => {
+    // Simulates the real hot path: bindBreakScheduler() calls getDueMidrollBreaks on every
+    // native `timeupdate` while resolvedBreaks stays the same array of break objects.
+    const sched = makeScheduler([]);
+    sched.resolvedBreaks = [
+      { at: 10, source: { type: 'VAST', src: 'https://example.com/m1.xml' } },
+      { at: 30, source: { type: 'VAST', src: 'https://example.com/m2.xml' } },
+    ];
+    const spy = jest.spyOn(sched, 'getVastInputFromBreak');
+
+    const first = sched.getDueMidrollBreaks(5);
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    // Repeated ticks against the same (unchanged) break objects must not re-derive.
+    const second = sched.getDueMidrollBreaks(15);
+    const third = sched.getDueMidrollBreaks(35);
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    expect(first).toEqual([]);
+    expect(second.map((b) => b.at)).toEqual([10]);
+    expect(third.map((b) => b.at)).toEqual([10, 30]);
+  });
+
+  it('getPrerollBreak and getBreakId share the cached id for the same break object', () => {
+    const breakCfg: AdsBreakConfig = {
+      at: 'preroll',
+      source: { type: 'VAST', src: 'https://example.com/preroll.xml' },
+    };
+    const sched = makeScheduler([], [breakCfg]);
+    const spy = jest.spyOn(sched, 'getVastInputFromBreak');
+
+    const pre = sched.getPrerollBreak();
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    // getBreakId on the same object should hit the cache populated by getPrerollBreak.
+    const id = sched.getBreakId(pre!);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(id).toBe(sched.getBreakId(breakCfg));
+  });
+
+  it('a fresh break object (new identity) is never confused with a cached one', () => {
+    const sched = makeScheduler([]);
+    const a: AdsBreakConfig = { at: 10, source: { type: 'VAST', src: 'https://example.com/a.xml' } };
+    const b: AdsBreakConfig = { at: 10, source: { type: 'VAST', src: 'https://example.com/b.xml' } };
+    sched.resolvedBreaks = [a];
+
+    const idA = sched.getBreakId(a);
+    sched.resolvedBreaks = [b];
+    const idB = sched.getBreakId(b);
+
+    expect(idA).not.toBe(idB);
+  });
 });
 
 describe('AdScheduler.inferSourceTypeForUrl', () => {

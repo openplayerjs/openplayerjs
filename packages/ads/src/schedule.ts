@@ -108,6 +108,13 @@ export class AdScheduler {
   vmapLoadPromise: Promise<void> | null = null;
   pendingVmapSrc?: string;
 
+  // resolvedBreaks/cfg.breaks entries are never mutated after creation (source/sources/id
+  // are fixed at construction), so the derived input/sourceType/id triple is safe to cache
+  // by object identity. getDueMidrollBreaks runs on every native `timeupdate` while content
+  // plays, so recomputing this per break on every tick is pure waste once a break has been
+  // seen; the WeakMap keeps this from leaking should a break object ever be dropped.
+  private breakMetaCache = new WeakMap<AdsBreakConfig, { input?: VastInput; sourceType?: AdsSourceType; id: string }>();
+
   constructor(
     private cfg: Pick<
       Required<
@@ -152,27 +159,33 @@ export class AdScheduler {
     return getVastInputFromBreakFn(b);
   }
 
+  private resolveBreakMeta(b: AdsBreakConfig): { input?: VastInput; sourceType?: AdsSourceType; id: string } {
+    const cached = this.breakMetaCache.get(b);
+    if (cached) return cached;
+    const { input, sourceType } = this.getVastInputFromBreak(b);
+    const meta = { input, sourceType, id: breakIdFromInput(b, input, sourceType) };
+    this.breakMetaCache.set(b, meta);
+    return meta;
+  }
+
   getBreakId(b: AdsBreakConfig): string {
     if (b.id) return b.id;
-    const { input, sourceType } = this.getVastInputFromBreak(b);
-    return breakIdFromInput(b, input, sourceType);
+    return this.resolveBreakMeta(b).id;
   }
 
   getPrerollBreak(): AdsBreakConfig | undefined {
     for (const b of this.resolvedBreaks) {
       if (b.at !== 'preroll') continue;
-      const { input, sourceType } = this.getVastInputFromBreak(b);
+      const { input, id } = this.resolveBreakMeta(b);
       if (!input) continue;
-      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       return b;
     }
 
     for (const b of this.cfg.breaks) {
       if (b.at !== 'preroll') continue;
-      const { input, sourceType } = this.getVastInputFromBreak(b);
+      const { input, id } = this.resolveBreakMeta(b);
       if (!input) continue;
-      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       return b;
     }
@@ -192,9 +205,8 @@ export class AdScheduler {
   getPostrollBreak(): AdsBreakConfig | undefined {
     for (const b of this.resolvedBreaks) {
       if (b.at !== 'postroll') continue;
-      const { input, sourceType } = this.getVastInputFromBreak(b);
+      const { input, id } = this.resolveBreakMeta(b);
       if (!input) continue;
-      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       return b;
     }
@@ -217,9 +229,8 @@ export class AdScheduler {
     const due: AdsBreakConfig[] = [];
     for (const b of this.resolvedBreaks) {
       if (typeof b.at !== 'number') continue;
-      const { input, sourceType } = this.getVastInputFromBreak(b);
+      const { input, id } = this.resolveBreakMeta(b);
       if (!input) continue;
-      const id = breakIdFromInput(b, input, sourceType);
       if (b.once !== false && this.playedBreaks.has(id)) continue;
       if (currentTime + (this.cfg.breakTolerance ?? 0.25) >= b.at) due.push(b);
     }
