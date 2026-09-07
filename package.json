@@ -75,7 +75,7 @@
     "lint-staged": "16.4.0",
     "postcss": "8.5.26",
     "postcss-cli": "11.0.1",
-    "postcss-preset-env": "11.3.2",
+    "postcss-preset-env": "11.5.1",
     "prettier": "3.9.6",
     "release-it": "19.2.4",
     "rollup": "4.62.4",
