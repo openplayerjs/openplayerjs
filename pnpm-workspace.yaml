@@ -28,7 +28,7 @@ overrides:
   defu: 6.1.7
   fast-uri: 3.1.6
   ip-address: 10.5.0
-  js-yaml: 4.3.1
+  js-yaml: 4.3.2
   nanoid: 3.3.18
   picomatch: 4.0.7
   svgo: 4.0.2
