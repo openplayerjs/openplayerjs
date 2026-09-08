@@ -26,13 +26,29 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
     }
   };
 
+  const onTouch = () => {
+    if (!keyTarget.classList.contains('op-player__touch-events--supported')) {
+      keyTarget.classList.add('op-player__touch-events--supported');
+    }
+  };
+
+  const onMouse = () => {
+    if (keyTarget.classList.contains('op-player__touch-events--supported')) {
+      keyTarget.classList.remove('op-player__touch-events--supported');
+    }
+  };
+
   keyTarget.addEventListener('click', onPointer, EVENT_OPTIONS);
   keyTarget.addEventListener('pointerdown', onPointer, EVENT_OPTIONS);
   keyTarget.addEventListener('pointerleave', onPointer, EVENT_OPTIONS);
+  keyTarget.addEventListener('touchstart', onTouch, EVENT_OPTIONS);
+  keyTarget.addEventListener('mousemove', onMouse, EVENT_OPTIONS);
 
   window.addEventListener('click', onPointer, EVENT_OPTIONS);
   window.addEventListener('pointerdown', onPointer, EVENT_OPTIONS);
   window.addEventListener('keydown', onKeyboard, EVENT_OPTIONS);
+  window.addEventListener('touchstart', onTouch, EVENT_OPTIONS);
+  window.addEventListener('mousemove', onMouse, EVENT_OPTIONS);
 
   const onKeydown = async (e: KeyboardEvent) => {
     const key = e.key;
@@ -246,9 +262,13 @@ export function bindCenterOverlay(core: Core, keyTarget: HTMLElement, bindings?:
     keyTarget.removeEventListener('pointerdown', onPointer);
     keyTarget.removeEventListener('pointerleave', onPointer);
     keyTarget.removeEventListener('keydown', onKeydown);
+    keyTarget.removeEventListener('touchstart', onTouch);
+    keyTarget.removeEventListener('mousemove', onMouse);
     window.removeEventListener('click', onPointer);
     window.removeEventListener('pointerdown', onPointer);
     window.removeEventListener('keydown', onKeyboard);
+    window.removeEventListener('touchstart', onTouch);
+    window.removeEventListener('mousemove', onMouse);
     offWaiting();
     offSeeking();
     offSeeked();

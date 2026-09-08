@@ -261,7 +261,7 @@
   min-width: 0;
 }
 .op-controls button:hover {
-    opacity: 0.5;
+    opacity: 1;
 }
 
 .op-controls input[type='range'],
@@ -650,9 +650,6 @@
     text-align: center;
     width: auto;
 }
-.op-ads__skip button:hover {
-    border-color: rgb(255, 255, 255);
-}
 /* Non-linear ads: lift above the control bar when it is visible */
 .op-player__video:not(.op-controls--hidden) .op-ads__nonlinear {
     bottom: calc(var(--op-controls-height, 48px) + 12px) !important;
@@ -873,5 +870,15 @@
     background: Highlight;
     border-color: Highlight;
     color: HighlightText;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .op-player:not(.op-player__touch-events--supported) .op-controls button:hover {
+    opacity: 0.5;
+  }
+
+  .op-player:not(.op-player__touch-events--supported) .op-ads__skip button:hover {
+    border-color: rgb(255, 255, 255);
   }
 }
