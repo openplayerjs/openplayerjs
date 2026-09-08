@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.6.5](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.5) (2026-09-08)
+
+_September 8, 2026_
+
+### `@openplayerjs/player@3.6.5`
+
+#### Bug Fixes
+
+- **[player]** Added new media queries to avoid trap hover styles in mobile or hybrid devices (c26c29e) @rafa8626
+
+### General
+
+#### Chores
+
+- **[deps]** update dependency ip-address to v10.7.0 (93e79f8) @renovate[bot]
+- **[deps]** Fixed vulnerabilities GHSA-73wf-gq98-2v4g / GHSA-c83g-rgw3-j3cx (93e79f8) @renovate[bot]
+- **[deps]** update dependency postcss-preset-env to v11.5.1 ([#669](https://github.com/openplayerjs/openplayerjs/pull/669)) @renovate[bot]
+- **[deps]** update github/codeql-action action to v4.37.9 ([#667](https://github.com/openplayerjs/openplayerjs/pull/667)) @renovate[bot]
+- **[deps]** update dependency js-yaml to v4.3.2 ([#666](https://github.com/openplayerjs/openplayerjs/pull/666)) @renovate[bot]
+
 ## [3.6.5](https://github.com/openplayerjs/openplayerjs/releases/tag/v3.6.5) (2026-09-01)
 
 _September 1, 2026_
