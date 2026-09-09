@@ -15,6 +15,8 @@ minimumReleaseAgeExclude:
   - fast-uri@3.1.5
   # Renovate security update: postcss@8.5.23
   - postcss@8.5.23
+  # Renovate security update: svgo@4.1.0
+  - svgo@4.1.0
 
 # Before running any package script, warn if installed node_modules have drifted
 # from the lockfile — surfaces tampering or a stale/partial install.
@@ -32,7 +34,7 @@ overrides:
   js-yaml: 4.3.2
   nanoid: 3.3.18
   picomatch: 4.0.7
-  svgo: 4.0.2
+  svgo: 4.1.0
   undici: 7.29.0
   ws: 8.21.3
 
