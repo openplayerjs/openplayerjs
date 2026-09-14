@@ -85,8 +85,8 @@ importers:
         specifier: 5.5.6
         version: 5.5.6(eslint@10.8.1(jiti@2.7.0))(prettier@3.9.6)
       hls.js:
-        specifier: 1.7.1
-        version: 1.7.1
+        specifier: 1.7.2
+        version: 1.7.2
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -2983,6 +2983,9 @@ packages:
 
   hls.js@1.7.1:
     resolution: {integrity: sha512-DlzIkeBAS9IIQ432k3BUf3HlwbsR0+trB1i2lDdN2gUkNkrehFurh0/48M5c1/EjlDkdGng1gwZIpwyPxvdZ/g==}
+
+  hls.js@1.7.2:
+    resolution: {integrity: sha512-CW/pPvSOFIRsosbwxrYaE9ERmpTo5fbTqL7wCvuCFlqW1Bmb1K5fXsY7yiH95rmlr4rVuA7UXHbM/cIXQ6AXwg==}
 
   hookified@1.15.1:
     resolution: {integrity: sha512-MvG/clsADq1GPM2KGo2nyfaWVyn9naPiXrqIe4jYjXNZQt238kWyOGrsyc/DmRAQ+Re6yeo6yX/yoNCG5KAEVg==}
@@ -8262,6 +8265,8 @@ snapshots:
       function-bind: 1.1.2
 
   hls.js@1.7.1: {}
+
+  hls.js@1.7.2: {}
 
   hookified@1.15.1: {}
 
