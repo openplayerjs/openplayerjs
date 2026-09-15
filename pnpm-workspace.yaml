@@ -50,4 +50,5 @@ peerDependencyRules:
 #     check` (a diagnostic). The prebuilt native binary ships as an optional
 #     dependency that is already installed, so blocking the script is safe.
 allowBuilds:
+  '@parcel/watcher': false
   unrs-resolver: false
