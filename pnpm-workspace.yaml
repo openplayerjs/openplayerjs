@@ -29,7 +29,7 @@ overrides:
   brace-expansion: 5.0.12
   browserlist: 4.28.7
   defu: 6.1.7
-  fast-uri: 3.1.7
+  fast-uri: 3.1.8
   ip-address: 10.7.0
   js-yaml: 4.3.2
   nanoid: 3.3.18
