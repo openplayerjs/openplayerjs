@@ -165,7 +165,7 @@ settings:
 overrides:
   '@babel/core': 7.29.7
   '@xmldom/xmldom': 0.9.12
-  basic-ftp: 6.2.1
+  basic-ftp: 6.2.2
   brace-expansion: 5.0.12
   browserlist: 4.28.7
   defu: 6.1.7
@@ -2222,8 +2222,8 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  basic-ftp@6.2.1:
-    resolution: {integrity: sha512-bK67isD+lKq46AU8vNtjvMaT2ZqAOAmNCbxUHlFBRD4k15NWxyEjmaKtZPlgce58So4BNTjITGQOVTjL9y0ECA==}
+  basic-ftp@6.2.2:
+    resolution: {integrity: sha512-LIkJcf/F6bTTfvE3k2YcTxrJsLKKVXiEpHZYkQP6JoqTb7khng7c13ckRTDQbqRh5IkehVH3F00sSlAa2F6DwA==}
     engines: {node: '>=10.0.0'}
 
   before-after-hook@4.0.0:
@@ -7373,7 +7373,7 @@ snapshots:
 
   baseline-browser-mapping@2.11.26: {}
 
-  basic-ftp@6.2.1: {}
+  basic-ftp@6.2.2: {}
 
   before-after-hook@4.0.0: {}
 
@@ -8388,7 +8388,7 @@ snapshots:
 
   get-uri@6.0.5(supports-color@10.2.2):
     dependencies:
-      basic-ftp: 6.2.1
+      basic-ftp: 6.2.2
       data-uri-to-buffer: 6.0.2
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
