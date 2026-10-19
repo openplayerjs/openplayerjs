@@ -28,8 +28,10 @@ overrides:
   basic-ftp: 6.2.3
   brace-expansion: 5.0.12
   browserlist: 4.28.7
+  compression: 1.8.2
   defu: 6.1.7
   fast-uri: 3.1.8
+  handlebars: 4.7.10
   ip-address: 10.7.4
   js-yaml: 4.3.2
   nanoid: 3.3.20
