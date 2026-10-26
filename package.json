@@ -78,7 +78,7 @@
     "postcss-preset-env": "11.6.1",
     "prettier": "3.9.10",
     "release-it": "19.2.4",
-    "rollup": "4.63.5",
+    "rollup": "4.64.12",
     "serve": "14.2.6",
     "stylelint": "17.16.0",
     "stylelint-order": "8.1.1",
