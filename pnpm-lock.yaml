@@ -316,8 +316,8 @@ importers:
         version: link:../core
     devDependencies:
       '@types/dailymotion__vast-client':
-        specifier: 6.3.0
-        version: 6.3.0
+        specifier: 6.4.1
+        version: 6.4.1
 
   packages/core: {}
 
@@ -1823,8 +1823,9 @@ packages:
   '@types/babel__traverse@7.28.0':
     resolution: {integrity: sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==}
 
-  '@types/dailymotion__vast-client@6.3.0':
-    resolution: {integrity: sha512-ry9uoD9eT/8mXJlgW5QS5/QdPtICaaHhh6ur2Ul6Wja9SFG0zkOsiOIAuhXyv1s5JQ91SytRykFF6+G+36vLLQ==}
+  '@types/dailymotion__vast-client@6.4.1':
+    resolution: {integrity: sha512-59S+ACBPym4xa70whr+bkOQmCsPSZTxsQEgXqbAc4eEz4PIp26CLLhstxwYhKsbE2eLvDjdKMxuXQN9E3UuSKw==}
+    deprecated: This is a stub types definition. @dailymotion/vast-client provides its own type definitions, so you do not need this installed.
 
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
@@ -6954,9 +6955,9 @@ snapshots:
     dependencies:
       '@babel/types': 7.29.8
 
-  '@types/dailymotion__vast-client@6.3.0':
+  '@types/dailymotion__vast-client@6.4.1':
     dependencies:
-      '@types/node': 24.13.6
+      '@dailymotion/vast-client': 6.4.5
 
   '@types/esrecurse@4.3.1': {}
 
