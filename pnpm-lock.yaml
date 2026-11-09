@@ -232,8 +232,8 @@ importers:
         specifier: 7.1.9
         version: 7.1.9(postcss@8.5.32)
       dotenv-cli:
-        specifier: 11.0.0
-        version: 11.0.0
+        specifier: 11.1.0
+        version: 11.1.0
       eslint:
         specifier: 10.10.0
         version: 10.10.0(jiti@2.7.0)(supports-color@10.2.2)
@@ -2733,8 +2733,8 @@ packages:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
 
-  dotenv-cli@11.0.0:
-    resolution: {integrity: sha512-r5pA8idbk7GFWuHEU7trSTflWcdBpQEK+Aw17UrSHjS6CReuhrrPcyC3zcQBPQvhArRHnBo/h6eLH1fkCvNlww==}
+  dotenv-cli@11.1.0:
+    resolution: {integrity: sha512-YUBODAS0puvSc9bGdu07o1GSouVn63xDazqZqvT99Hta4nPqZ1jTdBcz12dDdxSC9jYbVlpWlnu0IJaMR8TIEQ==}
     hasBin: true
 
   dotenv-expand@12.0.3:
@@ -7877,7 +7877,7 @@ snapshots:
     dependencies:
       is-obj: 2.0.0
 
-  dotenv-cli@11.0.0:
+  dotenv-cli@11.1.0:
     dependencies:
       cross-spawn: 7.0.6
       dotenv: 17.4.2
