@@ -63,7 +63,7 @@
     "@typescript-eslint/eslint-plugin": "8.70.0",
     "@typescript-eslint/parser": "8.70.0",
     "cssnano": "7.1.9",
-    "dotenv-cli": "11.0.0",
+    "dotenv-cli": "11.1.0",
     "eslint": "10.10.0",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import": "2.32.0",
