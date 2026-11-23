@@ -26,7 +26,7 @@ overrides:
   '@babel/core': 7.29.13
   '@xmldom/xmldom': 0.9.12
   basic-ftp: 6.2.6
-  brace-expansion: 5.0.12
+  brace-expansion: 5.0.13
   browserlist: 4.28.7
   compression: 1.8.2
   defu: 6.1.7
