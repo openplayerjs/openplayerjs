@@ -31,7 +31,7 @@ overrides:
   compression: 1.8.2
   defu: 6.1.7
   fast-uri: 3.1.9
-  glob: 14.0.4
+  glob: 14.0.6
   handlebars: 4.7.10
   ip-address: 10.7.6
   js-yaml: 4.3.2
